@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cyanspring.client</groupId>
+	<artifactId>cyanspring-client</artifactId>
+	<name>cyanspring-client</name>
+	<version>2.56</version>
+	<url>http://www.cyanspring.com</url>
+
+  	<build>
+	  	<resources>
+	      <resource>
+        	<directory>${basedir}</directory>
+	        <includes>
+	          <include>conf/**</include>
+	        </includes>
+	      </resource>
+	    </resources>
+
+	<pluginManagement>
+	    <plugins>
+			<plugin>
+			  	<artifactId>maven-assembly-plugin</artifactId>
+			  	<version>2.3</version>
+			  	<configuration>
+			    	<descriptor>src/main/assembly/assembly.xml</descriptor>
+			  	</configuration>
+			</plugin>
+			<plugin>
+			 	<groupId>org.apache.maven.plugins</groupId>
+			 	<artifactId>maven-jar-plugin</artifactId>
+			  	<version>2.4</version>
+			   	<configuration>
+			 		<archive>
+			        	<manifest>
+			        		<addClasspath>true</addClasspath>
+			      		</manifest>
+			     		<manifestEntries>
+			      			<Main-Class>com.cyanspring.client.MobileAdaptor</Main-Class>            
+			      			<packageName>com.cyanspring.client</packageName>            			
+			      		</manifestEntries>
+			   		</archive>
+			 	</configuration>
+				</plugin>
+				<plugin> 
+					<groupId>org.apache.maven.plugins</groupId> 
+					<artifactId>maven-compiler-plugin</artifactId> 
+					<!-- Lock down plugin version for build reproducibility --> 
+					<version>2.5.1</version> 
+					<configuration> 
+						  <source>1.6</source> 
+						  <target>1.6</target> 
+					</configuration> 
+				</plugin>
+	    </plugins>
+	    </pluginManagement>
+	</build>
+	
+	<properties>
+		<cyanspring.version>2.56</cyanspring.version>
+		<spring-version>3.0.5.RELEASE</spring-version>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>apache-log4j-extras</artifactId>
+			<version>1.1</version>
+			<scope>runtime</scope>
+		</dependency>		
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+		<dependency>  
+			<groupId>org.slf4j</groupId>  
+			<artifactId>jcl-over-slf4j</artifactId>  
+			<version>1.6.1</version>  
+			<scope>runtime</scope>  
+		</dependency>  
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<scope>runtime</scope>  
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring-version}</version>
+			<exclusions>  
+				<exclusion>  
+					<groupId>commons-logging</groupId>  
+					<artifactId>commons-logging</artifactId>  
+				</exclusion>  
+			</exclusions>  
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-core</artifactId>
+			<version>5.5.0</version>
+			<scope>runtime</scope>
+		</dependency>	
+	
+		<dependency>
+		    <groupId>com.thoughtworks.xstream</groupId>
+		    <artifactId>xstream</artifactId>
+		    <version>1.4.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>kxml2</groupId>
+		    <artifactId>kxml2</artifactId>
+		    <version>2.3.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- cyan spring dependencies -->
+		<dependency>
+			<groupId>com.cyanspring.common</groupId>
+			<artifactId>cyanspring-common</artifactId>
+			<version>${cyanspring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cyanspring.event</groupId>
+			<artifactId>cyanspring-event</artifactId>
+			<version>${cyanspring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cyanspring.transport</groupId>
+			<artifactId>cyanspring-transport</artifactId>
+			<version>${cyanspring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+</project>
