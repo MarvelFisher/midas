@@ -1,0 +1,3 @@
+symbol=NZDUSD,time=2014-11-13 18:50:35.757,
+symbol=NZDUSD,time=2014-11-13 18:50:35.930,bid=0.77965,bid_vol=200000,bid0=0.77965,bid_vol0=200000.0,
+symbol=NZDUSD,time=2014-11-13 18:50:35.930,bid=0.77965,bid_vol=200000,ask=0.77995,ask_vol=200000,bid0=0.77965,bid_vol0=200000.0,ask0=0.77995,ask_vol0=200000.0,

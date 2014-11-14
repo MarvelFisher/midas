@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cyanspring.dependency</groupId>
+	<artifactId>cyanspring-dependency</artifactId>
+	<version>1.65</version>
+	<name>cyanspring-dependency</name>
+	<url>http://www.cyanspring.com</url>
+
+  	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.3.1</version>
+					<executions>
+						<execution>
+							<id>install-3</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>install-file</goal>
+							</goals> 
+							<configuration>
+								<artifactId>quickfixj-core</artifactId>
+								<groupId>quickfixj</groupId>
+								<version>1.5.3</version>
+								<file>quickfixj-core-1.5.3.jar</file>
+								<packaging>jar</packaging>
+							</configuration>
+						</execution>
+						<execution>
+							<id>install-4</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>install-file</goal>
+							</goals> 
+							<configuration>
+								<artifactId>quickfixj-message42</artifactId>
+								<groupId>quickfixj</groupId>
+								<version>1.5.3</version>
+								<file>quickfixj-msg-fix42-1.5.3.jar</file>
+								<packaging>jar</packaging>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>    
+	</build>
+	
+</project>

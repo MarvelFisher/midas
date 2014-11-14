@@ -1,0 +1,6 @@
+20141114-08:03:38: Session FIX.4.2:ACCEPTOR1->INITIATOR1 schedule is daily, 00:00:00-UTC - 00:00:00-UTC
+20141114-08:03:38: Created session: FIX.4.2:ACCEPTOR1->INITIATOR1
+20141114-08:03:39: Accepting session FIX.4.2:ACCEPTOR1->INITIATOR1 from /127.0.0.1:49933
+20141114-08:03:39: Acceptor heartbeat set to 30 seconds
+20141114-08:03:39: Received logon
+20141114-08:03:39: Responding to Logon request

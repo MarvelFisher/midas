@@ -1,0 +1,37 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+	<bean id="stopStrategy" class="com.cyanspring.sample.singleorder.stop.StopStrategy" scope="prototype">
+		<property name="strategyName" value="STOP"/>
+		<property name="quantityAnalyzer">
+			<bean class="com.cyanspring.strategy.singleorder.AllQuantityAnalyzer"></bean>	
+		</property>
+		<property name="priceAnalyzer">
+			<bean class="com.cyanspring.sample.singleorder.stop.StopPriceAnalyzer"></bean>	
+		</property>
+		<property name="executionAnalyzer">
+			<ref bean="defaultExecutionAnalyzer"/>
+		</property>
+		<property name="executionManager">
+			<ref bean="defaultExecutionManager"/>
+		</property>
+		<property name="strategyFieldDefs">
+	        <list>
+            	<bean class="com.cyanspring.common.business.FieldDef">
+            		<property name="name" value="Stop Loss"/>
+            		<property name="type" value="java.lang.Double"/>
+            		<property name="input" value="true"/>
+            		<property name="amendable" value="true"/>
+            		<property name="value" value="0"/>
+				</bean>
+	        </list>
+		</property>
+	</bean>
+</beans>

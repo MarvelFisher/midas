@@ -1,0 +1,5 @@
+symbol=27130.HK,time=2014-10-07 17:14:50.065,
+symbol=27130.HK,time=2014-10-07 17:14:51.078,bid=6.8,bid_vol=20000,bid0=6.8,bid_vol0=20000.0,
+symbol=27130.HK,time=2014-10-07 17:14:51.090,bid=6.8,bid_vol=20000,ask=6.84,ask_vol=20000,bid0=6.8,bid_vol0=20000.0,bid1=6.79,bid_vol1=20000.0,bid2=6.78,bid_vol2=20000.0,ask0=6.84,ask_vol0=20000.0,ask1=6.85,ask_vol1=20000.0,ask2=6.86,ask_vol2=20000.0,
+symbol=27130.HK,time=2014-10-07 17:17:01.872,bid=6.79,bid_vol=20000,ask=6.84,ask_vol=20000,bid0=6.79,bid_vol0=20000.0,bid1=6.78,bid_vol1=20000.0,ask0=6.84,ask_vol0=20000.0,ask1=6.85,ask_vol1=20000.0,ask2=6.86,ask_vol2=20000.0,
+symbol=27130.HK,time=2014-10-07 17:17:01.884,

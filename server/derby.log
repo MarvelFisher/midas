@@ -1,0 +1,10 @@
+----------------------------------------------------------------
+Fri Nov 14 16:03:35 CST 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-0149-ad54-2c4c-00001bea9390 
+on database directory C:\projects\algo-build\release\algo\server\database  with class loader sun.misc.Launcher$AppClassLoader@1d5f0876 
+Loaded from file:/C:/Users/PC/.m2/repository/org/apache/derby/derby/10.8.2.2/derby-10.8.2.2.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.7.0_65-b19
+user.dir=C:\projects\algo-build\release\algo\server
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
