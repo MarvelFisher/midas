@@ -1,2 +1,2 @@
-symbol=USDCAD,time=2014-11-14 16:54:01.903,
-symbol=USDCAD,time=2014-11-14 16:54:01.992,bid=1.12365,bid_vol=200000,ask=1.1253,ask_vol=200000,bid0=1.12365,bid_vol0=200000.0,ask0=1.1253,ask_vol0=200000.0,
+symbol=USDCAD,time=2014-11-15 15:56:19.660,
+symbol=USDCAD,time=2014-11-15 15:56:19.890,bid=1.12365,bid_vol=200000,ask=1.1253,ask_vol=200000,bid0=1.12365,bid_vol0=200000.0,ask0=1.1253,ask_vol0=200000.0,

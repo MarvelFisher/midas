@@ -21,7 +21,9 @@ Bundle-ClassPath: apache-log4j-extras-1.1.jar,
  conf/,
  cyanspring-event-2.38.jar,
  cyanspring-transport-2.38.jar,
- slf4j-api-1.6.1.jar
+ slf4j-api-1.6.1.jar,
+ cyanspring-event-2.56.jar,
+ cyanspring-transport-2.56.jar
 Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util,com.cyanspring.common.transport,com.cyanspring.common.event",
  com.cyanspring.common.account,
  com.cyanspring.common.business;uses:="com.cyanspring.common.data,com.cyanspring.common.type,com.cyanspring.common.strategy",

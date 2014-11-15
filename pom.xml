@@ -20,6 +20,7 @@
 		<module>adaptor</module>
 		<module>server</module>
 		<module>client</module>
+		<module>soak</module>
  	</modules>
 	
 	<repositories>

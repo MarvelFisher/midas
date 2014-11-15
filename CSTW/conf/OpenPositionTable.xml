@@ -98,8 +98,8 @@
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Ur. P&amp;&amp;L</title>
-        <width>69</width>
+        <title>PnL</title>
+        <width>50</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>
