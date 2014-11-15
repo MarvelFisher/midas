@@ -16,6 +16,7 @@
 	<import resource="persistence.xml" />
 
 
+
 	<bean id="server" class="com.cyanspring.server.Server">
 		<property name="simulatorMode">
 			<value>true</value>

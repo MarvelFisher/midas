@@ -518,7 +518,7 @@ public class Server implements ApplicationContextAware{
 	 */
 	public static void main(String[] args) throws Exception {
 		DOMConfigurator.configure("conf/log4j.xml");
-		String configFile = "conf/server.xml";
+		String configFile = "conf/server_hyper.xml";
 		if(args.length>0)
 			configFile = args[0];
 		ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
