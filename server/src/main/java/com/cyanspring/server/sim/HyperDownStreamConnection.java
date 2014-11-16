@@ -35,6 +35,8 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.marketdata.IQuoteChecker;
+import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
@@ -53,6 +55,8 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 
 	@Autowired
 	protected MarketDataManager marketDataManager;
+	
+	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
 
 	private String id = "HyperMarket" + "-" + IdGenerator.getInstance().getNextID();
 	private Map<String, Map<String, ChildOrder>> orders = new ConcurrentHashMap<String, Map<String, ChildOrder>>();
@@ -142,6 +146,9 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	}
 	
 	private boolean isMarketable(Quote quote, ChildOrder order) {
+		if(null != quoteChecker && !quoteChecker.check(quote))
+			return false;
+		
 		if(order.getType() == ExchangeOrderType.MARKET)
 			return true;
 		
@@ -323,4 +330,14 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 		this.onEvent(new HyperCancelOrderEvent(order));
 	}
 
+	// getters and setters
+	public IQuoteChecker getQuoteChecker() {
+		return quoteChecker;
+	}
+
+	public void setQuoteChecker(IQuoteChecker quoteChecker) {
+		this.quoteChecker = quoteChecker;
+	}
+
+	
 }

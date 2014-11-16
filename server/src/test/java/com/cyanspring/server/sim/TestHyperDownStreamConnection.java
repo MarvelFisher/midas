@@ -181,7 +181,7 @@ public class TestHyperDownStreamConnection {
 
 	@Test
 	public void testMarketOrderWithoutMarket() throws DownStreamException {
-		IDownStreamSender sender = connection.setListener(rejectOrderListener);
+		IDownStreamSender sender = connection.setListener(newOrderListener);
 		quote.setBid(0);
 		quote.setAsk(0);
 		connection.processQuoteEvent(new QuoteEvent(symbol, null, quote));
