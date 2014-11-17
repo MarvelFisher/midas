@@ -660,7 +660,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 	protected void processCancelStrategyOrderEvent(CancelStrategyOrderEvent event) {
 		logDebug("processCancelStrategyOrderEvent received: " + event.getSourceId());
 		CancelParentOrderReplyEvent reply = null;
-		if( pendingAckHandler != null ) {
+		if( pendingAckHandler != null || pendingExecInstrEvent != null) {
 			reply = new CancelParentOrderReplyEvent(
 					event.getSourceId(), event.getSender(), false, "Order has pending amendment/cancellation", event.getTxId(), parentOrder);
 			container.sendLocalOrRemoteEvent(reply);

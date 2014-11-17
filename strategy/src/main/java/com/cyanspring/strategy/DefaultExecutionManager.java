@@ -297,8 +297,8 @@ public class DefaultExecutionManager implements IExecutionManager, IAsyncExecute
 		
 		ExecType execType = event.getExecType();
 		ChildOrder order = event.getOrder();
-		if ((order.getType() != ExchangeOrderType.MARKET && execType.equals(ExecType.NEW)) || 
-				(order.getType() != ExchangeOrderType.MARKET && execType.equals(ExecType.PARTIALLY_FILLED)) ||
+		if (execType.equals(ExecType.NEW) || 
+				execType.equals(ExecType.PARTIALLY_FILLED) ||
 				execType.equals(ExecType.FILLED)) {
 			ExecutionInstruction ei = tranTracker.findInstruction(order.getId());
 			if(ei != null && ei.getAction() == OrderAction.NEW) {
@@ -355,7 +355,8 @@ public class DefaultExecutionManager implements IExecutionManager, IAsyncExecute
 			} else { // unsolicited reject
 				log.warn("unsolicited child reject: " + order);
 			}
-		} // rest we don't care
+		} else {// rest we don't care
+		}
 	}
 	
 	@Override
