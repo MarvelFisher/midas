@@ -170,6 +170,9 @@
 	<bean id="accountRecoveryProcessor" class="com.cyanspring.server.AccountRecoveryProcessor">
 	</bean>
 	
+	<bean id="accountSettingRecoveryProcessor" class="com.cyanspring.server.AccountSettingRecoveryProcessor">
+	</bean>
+	
 	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
 	</bean>
 	
