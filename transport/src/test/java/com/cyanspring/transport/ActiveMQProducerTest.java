@@ -23,7 +23,7 @@ public class ActiveMQProducerTest {
 	// ActiveMQ configuration parameters
     private String user = ActiveMQConnection.DEFAULT_USER;
     private String password = ActiveMQConnection.DEFAULT_PASSWORD;
-    private String url = "tcp://localhost:61616";
+    private String url = "nio://localhost:61616";
     private boolean transacted;
     private int ackMode = Session.AUTO_ACKNOWLEDGE;
 
@@ -36,7 +36,7 @@ public class ActiveMQProducerTest {
 		DOMConfigurator.configure("conf/log4j.xml");
 		BrokerService broker = new BrokerService();
 		TransportConnector connector = new TransportConnector();
-		connector.setUri(new URI("tcp://localhost:61616"));
+		connector.setUri(new URI("nio://localhost:61616"));
 		broker.addConnector(connector);
 		broker.setPersistent(false);
 		broker.start();

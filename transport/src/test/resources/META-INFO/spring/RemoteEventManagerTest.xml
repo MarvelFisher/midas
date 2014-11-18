@@ -10,6 +10,6 @@
 	<context:annotation-config />
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="tcp://localhost:61616"></property>
+		<property name="url" value="nio://localhost:61616"></property>
 	</bean>
 </beans>
