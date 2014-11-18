@@ -1,2 +1,2 @@
-symbol=USDCHF,time=2014-11-15 15:56:19.660,
-symbol=USDCHF,time=2014-11-15 15:56:19.889,bid=0.9525,bid_vol=200000,ask=0.95455,ask_vol=200000,bid0=0.9525,bid_vol0=200000.0,ask0=0.95455,ask_vol0=200000.0,
+symbol=USDCHF,time=2014-11-18 11:06:13.745,
+symbol=USDCHF,time=2014-11-18 11:06:13.876,bid=0.9525,bid_vol=200000,ask=0.95455,ask_vol=200000,bid0=0.9525,bid_vol0=200000.0,ask0=0.95455,ask_vol0=200000.0,

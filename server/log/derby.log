@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Sat Nov 15 15:56:15 CST 2014:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-0149-b273-d1fe-0000030483f8 
-on database directory C:\java\git\LTS\server\database  with class loader sun.misc.Launcher$AppClassLoader@41bf9980 
+Tue Nov 18 11:06:08 CST 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-0149-c0dd-4c04-000002f731a8 
+on database directory C:\java\git\LTS\server\database  with class loader sun.misc.Launcher$AppClassLoader@7db81d4f 
 Loaded from file:/C:/Users/PC/.m2/repository/org/apache/derby/derby/10.8.2.2/derby-10.8.2.2.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.7.0_65-b19
@@ -9,5 +9,5 @@ user.dir=C:\java\git\LTS\server
 derby.system.home=null
 derby.stream.error.file=log/derby.log
 Database Class Loader started - derby.database.classpath=''
-Sat Nov 15 15:56:17 CST 2014 : Apache Derby Network Server - 10.8.2.2 - (1181258) started and ready to accept connections on port 1527
-Sat Nov 15 16:02:52 CST 2014 : Apache Derby Network Server - 10.8.2.2 - (1181258) shutdown
+Tue Nov 18 11:06:11 CST 2014 : Apache Derby Network Server - 10.8.2.2 - (1181258) started and ready to accept connections on port 1527
+Tue Nov 18 11:09:54 CST 2014 : Apache Derby Network Server - 10.8.2.2 - (1181258) shutdown

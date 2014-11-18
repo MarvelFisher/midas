@@ -1,2 +1,2 @@
-symbol=GBPUSD,time=2014-11-15 15:56:19.660,
-symbol=GBPUSD,time=2014-11-15 15:56:19.891,bid=1.66365,bid_vol=200000,ask=1.6643,ask_vol=200000,bid0=1.66365,bid_vol0=200000.0,ask0=1.6643,ask_vol0=200000.0,
+symbol=GBPUSD,time=2014-11-18 11:06:13.745,
+symbol=GBPUSD,time=2014-11-18 11:06:13.878,bid=1.66365,bid_vol=200000,ask=1.6643,ask_vol=200000,bid0=1.66365,bid_vol0=200000.0,ask0=1.6643,ask_vol0=200000.0,

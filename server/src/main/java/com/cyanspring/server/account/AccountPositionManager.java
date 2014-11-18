@@ -46,12 +46,11 @@ import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
-import com.cyanspring.common.event.account.PmAccountDailyEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
+import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
-import com.cyanspring.common.event.account.PmResetAccountPnLEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateUserEvent;
@@ -541,13 +540,12 @@ public class AccountPositionManager implements IPlugin {
 	
 	private void processDayEndTasks() {
 		log.info("Account day end processing start");
-		eventManager.sendEvent(new PmAccountDailyEvent(PersistenceManager.ID, null));
-		
 		List<Account> list = accountKeeper.getAllAccounts();
 		for(Account account: list) {
-			account.setUrPnL(0.0);
+			account.updateEndOfDay();
 		}
-		eventManager.sendEvent(new PmResetAccountPnLEvent(PersistenceManager.ID, null));
+		
+		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null));
 	}
 	
 	private String generateAccountId() {

@@ -171,7 +171,7 @@ public abstract class BaseAccount {
 	public synchronized void updateEndOfDay() {
 		if(!PriceUtils.isZero(this.cashDeposited))
 			this.unitPrice += this.PnL/this.cashDeposited;
-		this.PnL = 0;
+		this.PnL = 0.0;
 	}
 
 	@Override

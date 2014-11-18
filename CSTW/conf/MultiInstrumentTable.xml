@@ -190,6 +190,61 @@
     </list>
   </entry>
   <entry>
+    <string>MARKET_MAKING</string>
+    <list>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Leg</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Qty</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>id</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Strategy Id</title>
+        <width>196</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Symbol</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Position</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Derivative</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Server Id</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Pos Px</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>P/L</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+    </list>
+  </entry>
+  <entry>
     <string>BASIN</string>
     <list>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -259,61 +314,6 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>AH</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-    </list>
-  </entry>
-  <entry>
-    <string>MARKET_MAKING</string>
-    <list>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Leg</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Qty</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>id</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Strategy Id</title>
-        <width>196</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Symbol</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Position</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Derivative</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Server Id</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Pos Px</title>
-        <width>100</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>P/L</title>
         <width>100</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>

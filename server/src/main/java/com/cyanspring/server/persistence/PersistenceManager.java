@@ -40,12 +40,11 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
-import com.cyanspring.common.event.account.PmAccountDailyEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
+import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
-import com.cyanspring.common.event.account.PmResetAccountPnLEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateUserEvent;
@@ -101,9 +100,8 @@ public class PersistenceManager {
 			subscribeToEvent(PmRemoveDetailOpenPositionEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUpdateDetailOpenPositionEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
-			subscribeToEvent(PmAccountDailyEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmResetAccountPnLEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -650,46 +648,6 @@ public class PersistenceManager {
 		
 	}
 
-	public void processPmAccountDailyEvent(PmAccountDailyEvent event) {
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		try {
-		    tx = session.beginTransaction();
-		    Query query = session.getNamedQuery("rollAccountDaily");
-	        query.executeUpdate();
-
-	        tx.commit();
-		}
-		catch (Exception e) {
-			log.error(e.getMessage(), e);
-		    if (tx!=null) 
-		    	tx.rollback();
-		}
-		finally {
-			session.close();
-		}
-	}
-	
-	public void processPmResetAccountPnLEvent(PmResetAccountPnLEvent event) {
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		try {
-		    tx = session.beginTransaction();
-		    Query query = session.getNamedQuery("resetAccountPnL");
-	        query.executeUpdate();
-
-	        tx.commit();
-		}
-		catch (Exception e) {
-			log.error(e.getMessage(), e);
-		    if (tx!=null) 
-		    	tx.rollback();
-		}
-		finally {
-			session.close();
-		}
-	}
-	
 	public void processPmChangeAccountSettingEvent(PmChangeAccountSettingEvent event) {
 		Session session = sessionFactory.openSession();
 		AccountSetting accountSetting = event.getAccountSetting();
@@ -708,6 +666,30 @@ public class PersistenceManager {
 			session.close();
 		}
 		
+	}
+	
+	public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+		    tx = session.beginTransaction();
+		    Query query;
+		    query = session.getNamedQuery("rollEndOfDay1");
+	        query.executeUpdate();
+		    query = session.getNamedQuery("rollEndOfDay2");
+	        query.executeUpdate();
+		    query = session.getNamedQuery("rollEndOfDay3");
+	        query.executeUpdate();
+	        tx.commit();
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+		    if (tx!=null) 
+		    	tx.rollback();
+		}
+		finally {
+			session.close();
+		}
 	}
 	
 	// getters and setters

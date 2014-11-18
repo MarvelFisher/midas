@@ -63,6 +63,7 @@ import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.StrategyState;
+import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
@@ -113,7 +114,7 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	private int noOfContainers = 20;
 	private ArrayList<IStrategyContainer> containers = new ArrayList<IStrategyContainer>();
-	private Map<String, ParentOrder> orders = new HashMap<String, ParentOrder>();
+	private DualKeyMap<String, String, ParentOrder> orders = new DualKeyMap<String, String, ParentOrder>();
 	private boolean autoStartStrategy;
 	
 	
@@ -187,7 +188,7 @@ public class BusinessManager implements ApplicationContextAware {
 				throw new OrderValidationException("Enter order: this order id already exists: " + order.getId());
 			} 
 			// add order to local map
-			orders.put(order.getId(), order);
+			orders.put(order.getId(), order.getAccount(), order);
 			
 			// ack order
 			EnterParentOrderReplyEvent reply = new EnterParentOrderReplyEvent(event.getKey(), event.getSender(), 
@@ -593,7 +594,7 @@ public class BusinessManager implements ApplicationContextAware {
 				log.debug("strategy " + strategy.getId() + " assigned to container " + container.getId());
 				if(strategy instanceof SingleOrderStrategy) {
 					ParentOrder parentOrder = ((SingleOrderStrategy)strategy).getParentOrder();
-					orders.put(parentOrder.getId(), parentOrder);
+					orders.put(parentOrder.getId(), parentOrder.getAccount(), parentOrder);
 				}
 				AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, autoStartStrategy);
 				eventManager.sendEvent(addStrategyEvent);

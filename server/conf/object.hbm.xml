@@ -148,6 +148,8 @@
   	<property column="PNL"				name="PnL"			type="java.lang.Double"/>
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	type="java.lang.Double"/>
   	<property column="UR_PNL"			name="urPnL"		type="java.lang.Double"/>
+  	<property column="CASH_DEPOSITED"	name="cashDeposited"		type="java.lang.Double"/>
+  	<property column="UNIT_PRICE"		name="unitPrice"	type="java.lang.Double"/>
   	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
   	<property column="CURRENCY"			name="currency" 	type="java.lang.String"/>
@@ -165,6 +167,8 @@
   	<property column="PNL"				name="PnL"			type="java.lang.Double"/>
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	type="java.lang.Double"/>
   	<property column="UR_PNL"			name="urPnL"		type="java.lang.Double"/>
+  	<property column="CASH_DEPOSITED"	name="cashDeposited"		type="java.lang.Double"/>
+  	<property column="UNIT_PRICE"		name="unitPrice"	type="java.lang.Double"/>
   	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
   	<property column="CURRENCY"			name="currency" 	type="java.lang.String"/>
@@ -196,13 +200,22 @@
   	<property column="STOP_LOSS_VALUE"	name="stopLossValue"	type="java.lang.Double"/>
   </class>
 
-  <sql-query name="rollAccountDaily">
-    <![CDATA[INSERT INTO ANYONE.ACCOUNTS_DAILY SELECT a.*, CURRENT_DATE FROM ANYONE.ACCOUNTS a]]>
+  <sql-query name="rollEndOfDay1">
+    <![CDATA[
+    UPDATE ANYONE.ACCOUNTS SET UNIT_PRICE = UNIT_PRICE + PNL / CASH_DEPOSITED
+    ]]>
+  </sql-query>
+  <sql-query name="rollEndOfDay2">
+    <![CDATA[
+    INSERT INTO ANYONE.ACCOUNTS_DAILY SELECT a.*, CURRENT_DATE FROM ANYONE.ACCOUNTS a
+    ]]>
+  </sql-query>
+  <sql-query name="rollEndOfDay3">
+    <![CDATA[
+    UPDATE ANYONE.ACCOUNTS SET PNL = 0
+    ]]>
   </sql-query>
 
-  <sql-query name="resetAccountPnL">
-    <![CDATA[UPDATE ANYONE.ACCOUNTS SET PNL = 0]]>
-  </sql-query>
 
 
 </hibernate-mapping> 
