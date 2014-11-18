@@ -52,7 +52,7 @@
 	</bean>	
 	
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="tcp://localHost:61616"></property>
+		<property name="url" value="nio://localHost:61616"></property>
 	</bean>
 	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">

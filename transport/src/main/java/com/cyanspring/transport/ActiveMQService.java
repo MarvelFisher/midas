@@ -47,7 +47,7 @@ public class ActiveMQService implements ITransportService, ExceptionListener {
 	// ActiveMQ configuration parameters
     private String user = ActiveMQConnection.DEFAULT_USER;
     private String password = ActiveMQConnection.DEFAULT_PASSWORD;
-    private String url = "tcp://localhost:61616";
+    private String url = "nio://localhost:61616";
     protected int persistent = DeliveryMode.NON_PERSISTENT;
     private boolean transacted;
     private int ackMode = Session.AUTO_ACKNOWLEDGE;

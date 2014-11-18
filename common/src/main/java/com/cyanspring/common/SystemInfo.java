@@ -14,7 +14,7 @@ public class SystemInfo {
 	private String env = "Test";
 	private String category = "EB";
 	private String id = "CSTW";
-	private String url = "tcp://localhost:61616";
+	private String url = "nio://localhost:61616";
 	
 	public String getId() {
 		return id;

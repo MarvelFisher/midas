@@ -20,7 +20,7 @@ public class ActiveMQConsumerTest {
 	// ActiveMQ configuration parameters
     private String user = ActiveMQConnection.DEFAULT_USER;
     private String password = ActiveMQConnection.DEFAULT_PASSWORD;
-    private String url = "tcp://localhost:61616";
+    private String url = "nio://localhost:61616";
     private boolean transacted;
     private int ackMode = Session.AUTO_ACKNOWLEDGE;
 
@@ -54,7 +54,7 @@ public class ActiveMQConsumerTest {
 	public static void main(String[] args) throws URISyntaxException, Exception {
 //		BrokerService broker = new BrokerService();
 //		TransportConnector connector = new TransportConnector();
-//		connector.setUri(new URI("tcp://localhost:61616"));
+//		connector.setUri(new URI("nio://localhost:61616"));
 //		broker.addConnector(connector);
 //		broker.start();
 
