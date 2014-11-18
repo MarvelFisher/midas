@@ -18,7 +18,6 @@ import com.cyanspring.common.type.OrderType;
 import com.cyanspring.strategy.singleorder.SingleOrderStrategy;
 
 public class SDMAStrategy extends SingleOrderStrategy {
-	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory
 		.getLogger(SDMAStrategy.class);
 	

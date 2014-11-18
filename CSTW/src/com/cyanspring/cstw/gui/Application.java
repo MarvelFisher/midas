@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * This class controls all aspects of the application's execution
  */
 public class Application implements IApplication {
-	@SuppressWarnings("unused")
 	final private static Logger log = LoggerFactory.getLogger(Application.class); 
 
 	/* (non-Javadoc)

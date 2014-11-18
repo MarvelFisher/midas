@@ -38,6 +38,7 @@ import webcurve.fix.ExchangeFixAgent;
 /**
  * @author dennis_d_chen@yahoo.com
  */
+@SuppressWarnings("rawtypes")
 public class TradeJFrame extends javax.swing.JFrame implements ExecutionListener {
     /**
 	 * 
@@ -375,12 +376,10 @@ public class TradeJFrame extends javax.swing.JFrame implements ExecutionListener
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			@SuppressWarnings("rawtypes")
 			Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class
             };
 
-            @SuppressWarnings("rawtypes")
 			public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
