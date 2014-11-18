@@ -23,6 +23,7 @@
 			<outputDirectory></outputDirectory> 
 			<includes>
 				<include>*.bat</include>
+				<include>*.sh</include>
 				<include>/conf/*</include>
 				<include>/backtest/**</include>
 		        <include>/mm/*</include>
