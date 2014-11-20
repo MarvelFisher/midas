@@ -15,7 +15,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,9 @@ import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
+import com.cyanspring.common.event.order.ClosePositionReplyEvent;
+import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
@@ -49,6 +56,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private DynamicTableViewer closedPositionViewer;
 	private DynamicTableViewer executionViewer;
 	private Composite topComposite;
+	private Menu menu;
 	
 	// display data
 	private Account account;
@@ -203,6 +211,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		rightData.bottom = new FormAttachment (100, 0);
 		rightComposite.setLayoutData (rightData);
 
+		createMenu(leftComposite);
+		
 		// finally lay them out
 		mainComposite.layout();
 		
@@ -302,6 +312,39 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		executionViewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		executionViewer.init();
+	}
+	
+	private void createMenu(Composite parent) {
+		menu = new Menu(openPositionViewer.getTable().getShell(), SWT.POP_UP);
+		MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText("Close position");
+		item.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				try {
+					Table table = openPositionViewer.getTable();
+
+					TableItem items[] = table.getSelection();
+
+					for(TableItem item: items) {
+						Object obj = item.getData();
+						if (obj instanceof OpenPosition) {
+							@SuppressWarnings("unchecked")
+							OpenPosition position = (OpenPosition)obj;
+							//TODO: we need to change when CSTW talks to multip servers
+							String server = Business.getInstance().getFirstServer();
+							
+							ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
+									server, position.getAccount(), 
+									position.getSymbol(), IdGenerator.getInstance().getNextID());
+							Business.getInstance().getEventManager().sendRemoteEvent(request);
+						}
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		});
+		openPositionViewer.setBodyMenu(menu);
 	}
 	
 	@Override
@@ -433,6 +476,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				Business.getInstance().getAccount(), this);
 		Business.getInstance().getEventManager().subscribe(AccountDynamicUpdateEvent.class, 
 				Business.getInstance().getAccount(), this);
+		Business.getInstance().getEventManager().subscribe(ClosePositionReplyEvent.class, 
+				Business.getInstance().getAccount(), this);
 		
 		AccountSnapshotRequestEvent request = 
 				new AccountSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(),
@@ -513,6 +558,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				executions.add(evt.getExecution());
 			}
 			showExecutions();
+		} else if(event instanceof ClosePositionReplyEvent) {
+			ClosePositionReplyEvent evt = (ClosePositionReplyEvent)event;
+			log.info("Close position reply: " + evt.getAccount() + ", " + evt.getSymbol() + ", " + evt.isOk() + ", " + evt.getMessage());
 		}
 	}
 

@@ -136,11 +136,11 @@ public abstract class BaseOrder extends DataObject {
 		return get(String.class, OrderField.ACCOUNT.value());
 	}
 	
-	protected void setUser(String user) {
+	public void setUser(String user) {
 		put(OrderField.USER.value(), user);
 	}
 	
-	protected void setAccount(String account) {
+	public void setAccount(String account) {
 		put(OrderField.ACCOUNT.value(), account);
 	}
 	

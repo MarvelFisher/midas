@@ -210,7 +210,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		parentOrder.setState(state);
 		String txId = parentOrder.get(String.class, OrderField.CLORDERID.value());
 		UpdateParentOrderEvent updateEvent = 
-			new UpdateParentOrderEvent(ExecType.RESTATED, txId, parentOrder, null);
+			new UpdateParentOrderEvent(parentOrder.getId(), ExecType.RESTATED, txId, parentOrder, null);
 		container.sendEvent(updateEvent);
 		
 	}
@@ -248,7 +248,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		parentOrder.put(OrderField.ALERT_TYPE.value(), alertType);
 		parentOrder.put(OrderField.ALERT_MSG.value(), msg);
 		UpdateParentOrderEvent updateEvent = 
-			new UpdateParentOrderEvent(ExecType.RESTATED, IdGenerator.getInstance().getNextID(), parentOrder, null);
+			new UpdateParentOrderEvent(parentOrder.getId(), ExecType.RESTATED, IdGenerator.getInstance().getNextID(), parentOrder, null);
 		container.sendEvent(updateEvent);
 	}
 	
@@ -256,7 +256,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		parentOrder.remove(OrderField.ALERT_TYPE.value());
 		parentOrder.remove(OrderField.ALERT_MSG.value());
 		UpdateParentOrderEvent updateEvent = 
-			new UpdateParentOrderEvent(ExecType.RESTATED, IdGenerator.getInstance().getNextID(), parentOrder, null);
+			new UpdateParentOrderEvent(parentOrder.getId(), ExecType.RESTATED, IdGenerator.getInstance().getNextID(), parentOrder, null);
 		container.sendEvent(updateEvent);
 	}
 
@@ -482,7 +482,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		
 			String txId = parentOrder.get(String.class, OrderField.CLORDERID.value());
 			UpdateParentOrderEvent updateEvent = 
-				new UpdateParentOrderEvent(execType, txId, parentOrder, null);
+				new UpdateParentOrderEvent(parentOrder.getId(), execType, txId, parentOrder, null);
 			
 			container.sendEvent(updateEvent);
 		}
@@ -514,7 +514,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 				parentOrder.update(originalFields);
 			} else {
 				amendParentOrder(event);
-				UpdateParentOrderEvent update = new UpdateParentOrderEvent(ExecType.REPLACE, event.getTxId(), parentOrder, info);
+				UpdateParentOrderEvent update = new UpdateParentOrderEvent(parentOrder.getId(), ExecType.REPLACE, event.getTxId(), parentOrder, info);
 				container.sendEvent(update);
 			}
 			AmendParentOrderReplyEvent reply = new AmendParentOrderReplyEvent(
@@ -603,7 +603,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 			container.sendLocalOrRemoteEvent(reply);
 			
 			if(reply.isOk()) {
-				UpdateParentOrderEvent update = new UpdateParentOrderEvent(ExecType.REPLACE, event.getTxId(), parentOrder, null);
+				UpdateParentOrderEvent update = new UpdateParentOrderEvent(parentOrder.getId(), ExecType.REPLACE, event.getTxId(), parentOrder, null);
 				container.sendEvent(update);
 			}
 		} else {
@@ -624,7 +624,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		public void postHandle(boolean success, String info) {
 			if(success){
 				cancelParentOrder(event);
-				UpdateParentOrderEvent update = new UpdateParentOrderEvent(ExecType.CANCELED, event.getTxId(), parentOrder, info);
+				UpdateParentOrderEvent update = new UpdateParentOrderEvent(parentOrder.getId(), ExecType.CANCELED, event.getTxId(), parentOrder, info);
 				container.sendEvent(update);
 			}
 			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
@@ -672,7 +672,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 			reply = new CancelParentOrderReplyEvent(
 					event.getSourceId(), event.getSender(), true, null, event.getTxId(), parentOrder);
 			container.sendLocalOrRemoteEvent(reply);
-			container.sendEvent(new UpdateParentOrderEvent(ExecType.CANCELED, event.getTxId(), parentOrder, null));
+			container.sendEvent(new UpdateParentOrderEvent(parentOrder.getId(), ExecType.CANCELED, event.getTxId(), parentOrder, null));
 			return;
 		}
 		

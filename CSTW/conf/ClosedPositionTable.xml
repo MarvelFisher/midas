@@ -48,18 +48,18 @@
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Buy Px</title>
+        <title>BuyPrice</title>
         <width>50</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Sell Px</title>
+        <title>SellPrice</title>
         <width>50</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>P&amp;&amp;L</title>
-        <width>91</width>
+        <title>PnL</title>
+        <width>50</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>

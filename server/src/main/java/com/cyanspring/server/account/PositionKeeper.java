@@ -275,7 +275,7 @@ public class PositionKeeper {
 	}
 	
 	// this one gives the overall positions for a specific account and symbol
-	protected OpenPosition getOverallPosition(Account account, String symbol) {
+	public OpenPosition getOverallPosition(Account account, String symbol) {
 		OpenPosition result = new OpenPosition(account.getUserId(), account.getId(), symbol, 0, 0);
 		Map<String, List<OpenPosition>> ap = accountPositions.get(account.getId());
 		if(null == ap)

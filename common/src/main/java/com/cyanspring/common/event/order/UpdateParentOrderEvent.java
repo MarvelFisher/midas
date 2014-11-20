@@ -20,9 +20,9 @@ public class UpdateParentOrderEvent extends AsyncEvent {
 	private ParentOrder parent;
 	private String info;
 
-	public UpdateParentOrderEvent(ExecType execType, String txId,
+	public UpdateParentOrderEvent(String key, ExecType execType, String txId,
 			ParentOrder parent, String info) {
-		super();
+		super(key);
 		this.execType = execType;
 		this.txId = txId;
 		this.parent = parent.clone();

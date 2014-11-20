@@ -65,6 +65,8 @@ public abstract class ClientAdaptor {
 	
 	public void subscribeToEvents() {
 		subscribeToEvent(ServerHeartBeatEvent.class, null);
+		subscribeToEvent(NodeInfoEvent.class, null);
+		subscribeToEvent(AsyncTimerEvent.class, null);
 	}
 	
 	public void init() throws Exception {

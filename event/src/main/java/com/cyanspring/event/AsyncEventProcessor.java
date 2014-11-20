@@ -51,6 +51,14 @@ public abstract class AsyncEventProcessor implements IAsyncEventListener {
 		subs.add(new AsyncEventSub(clazz, key));
 	}
 	
+	public void subscribeToEventNow(Class<? extends AsyncEvent> clazz, String key) {
+		getEventManager().subscribe(clazz, key, this);
+	}
+	
+	public void unsubscribeToEvent(Class<? extends AsyncEvent> clazz, String key) {
+		getEventManager().unsubscribe(clazz, key, this);
+	}
+	
 	public void init() throws Exception {
 		if(!sync && thread == null)
 			createThread();

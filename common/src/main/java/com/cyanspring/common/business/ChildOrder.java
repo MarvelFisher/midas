@@ -74,14 +74,6 @@ public class ChildOrder extends Order {
 		put(OrderField.STRATEGY_ID.value(), strategyId);
 	}
 	
-	protected void setUser(String user) {
-		put(OrderField.USER.value(), user);
-	}
-	
-	protected void setAccount(String account) {
-		put(OrderField.ACCOUNT.value(), account);
-	}
-	
 	@Override
 	protected String fieldsToString() {
 		return super.fieldsToString() + ", " + getType() + ", " + getParentOrderId() + ", " + getStrategyId() + ", " + getClOrderId();

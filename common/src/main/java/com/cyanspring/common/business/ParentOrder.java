@@ -42,7 +42,7 @@ public class ParentOrder extends Order {
 		super(map);
 	}
 	
-	public ParentOrder(String symbol, OrderSide side, long quantity, double price, OrderType orderType) {
+	public ParentOrder(String symbol, OrderSide side, double quantity, double price, OrderType orderType) {
 		super(symbol, side, quantity, price);
 		put(OrderField.TYPE.value(), orderType);
 	}
@@ -142,6 +142,14 @@ public class ParentOrder extends Order {
 
 	public void setEndTime(Date endTime) {
 		put(OrderField.END_TIME.value(), endTime);
+	}
+	
+	public String getSender() {
+		return get(String.class, OrderField.SENDER.value());
+	}
+	
+	public void setSender(String sender) {
+		put(OrderField.SENDER.value(), sender);
 	}
 
 	public boolean priceInLimit(double price) {

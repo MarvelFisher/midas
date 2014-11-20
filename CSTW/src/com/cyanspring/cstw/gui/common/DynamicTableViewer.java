@@ -483,4 +483,11 @@ public class DynamicTableViewer extends TableViewer {
 		return viewClosing;
 	}
 	
+	@Override
+	public void refresh() {
+		int[] indices = this.getTable().getSelectionIndices();
+		super.refresh();
+		this.getTable().select(indices);
+	}
+	
 }
