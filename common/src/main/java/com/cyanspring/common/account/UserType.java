@@ -4,4 +4,5 @@ public enum UserType {
 	NORMAL,
 	SUPPORT,
 	ADMIN,
+	TEST,
 }
