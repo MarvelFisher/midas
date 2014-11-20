@@ -1,2 +1,0 @@
-symbol=EURJPY,time=2014-11-18 11:06:13.745,
-symbol=EURJPY,time=2014-11-18 11:06:13.877,bid=136.05,bid_vol=200000,ask=137.5,ask_vol=200000,bid0=136.05,bid_vol0=200000.0,ask0=137.5,ask_vol0=200000.0,

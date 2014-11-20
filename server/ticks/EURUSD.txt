@@ -1,2 +1,0 @@
-symbol=EURUSD,time=2014-11-18 11:06:13.745,
-symbol=EURUSD,time=2014-11-18 11:06:13.877,bid=1.26365,bid_vol=200000,ask=1.2643,ask_vol=200000,bid0=1.26365,bid_vol0=200000.0,ask0=1.2643,ask_vol0=200000.0,
