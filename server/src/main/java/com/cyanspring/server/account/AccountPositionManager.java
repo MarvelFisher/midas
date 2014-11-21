@@ -337,7 +337,8 @@ public class AccountPositionManager implements IPlugin {
 
 				Account account = new Account(defaultAccountId, event.getUser().getId());
 				accountKeeper.createAccount(account);
-				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, Arrays.asList(account)));
+				
+				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));
 			} catch (UserException ue) {
 				message = ue.getMessage();
 				ok = false;
@@ -350,13 +351,15 @@ public class AccountPositionManager implements IPlugin {
 			message = "System doesn't support user creation";
 		}
 		
-		try {
-			eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getKey(), 
-					event.getSender(), user, ok, message, event.getTxId()));
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+		if(!ok)
+		{
+			try {
+				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getKey(), 
+						event.getSender(), user, ok, message, event.getTxId()));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
-		
 	}
 	
 	public void processCreateAccountEvent(CreateAccountEvent event) {
@@ -556,7 +559,7 @@ public class AccountPositionManager implements IPlugin {
 		userKeeper.injectUsers(users);
 		User defaultUser = userKeeper.tryCreateDefaultUser();
 		if(null != defaultUser)
-			eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, defaultUser));
+			eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, defaultUser, null));
 	}
 	
 	public void injectAccounts(List<Account> accounts) {
