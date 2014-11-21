@@ -4,8 +4,8 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class Default {
-	private static String user = "DEFAULT";
-	private static String account = "DEFAULT";
+	private static String user = "default";
+	private static String account = "default";
 	private static String currency = "USD";
 	private static String accountPrefix = "A";
 	private static double accountCash = 100000.0;
