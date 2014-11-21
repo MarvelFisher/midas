@@ -1,6 +1,7 @@
 package com.cyanspring.server.account;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -336,8 +337,7 @@ public class AccountPositionManager implements IPlugin {
 
 				Account account = new Account(defaultAccountId, event.getUser().getId());
 				accountKeeper.createAccount(account);
-				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user));
-				eventManager.sendEvent(new PmCreateAccountEvent(PersistenceManager.ID, null, account));
+				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, Arrays.asList(account)));
 			} catch (UserException ue) {
 				message = ue.getMessage();
 				ok = false;

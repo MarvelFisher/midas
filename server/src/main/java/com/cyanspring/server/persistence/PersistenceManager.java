@@ -521,6 +521,7 @@ public class PersistenceManager {
 		    tx = session.beginTransaction();
 	    	session.save(user);
 		    tx.commit();
+		    log.debug("Persisted user: " + event.getUser());
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -530,7 +531,9 @@ public class PersistenceManager {
 		finally {
 			session.close();
 		}
-		log.debug("Persisted user: " + event.getUser());
+		
+		for(Account account : event.getAccounts())
+			createAccount(account);
 	}
 	
 	public void processPmUpdateUserEvent(PmUpdateUserEvent event) {
@@ -553,13 +556,19 @@ public class PersistenceManager {
 	}
 	
 	public void processPmCreateAccountEvent(PmCreateAccountEvent event) {
-		Session session = sessionFactory.openSession();
 		Account account = event.getAccount();
+		createAccount(account);
+	}
+	
+	protected void createAccount(Account account)
+	{
+		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
 		    tx = session.beginTransaction();
 	    	session.save(account);
 		    tx.commit();
+		    log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
