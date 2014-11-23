@@ -39,7 +39,9 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.IAsyncEventManager;
+import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
+import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
@@ -72,7 +74,7 @@ public class PersistenceManager {
 	public static String ID = PersistenceManager.class.toString();
 	
 	@Autowired
-	private IAsyncEventManager eventManager;
+	private IRemoteEventManager eventManager;
 	
 	@Autowired
 	SessionFactory sessionFactory;
@@ -517,20 +519,38 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		User user = event.getUser();
 		Transaction tx = null;
+		boolean ok = true;
+		String message = "";
+		
 		try {
 		    tx = session.beginTransaction();
 	    	session.save(user);
 		    tx.commit();
+		    log.debug("Persisted user: " + event.getUser());
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
+			ok = false;
+			message = String.format("can't create user, err=[%s]", e.getMessage());
 		    if (tx!=null) 
 		    	tx.rollback();
 		}
 		finally {
 			session.close();
 		}
-		log.debug("Persisted user: " + event.getUser());
+		
+		for(Account account : event.getAccounts())
+			createAccount(account);
+		
+		if(event.getOriginalEvent() != null)
+		{
+			try {
+				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getOriginalEvent().getKey(), 
+						event.getOriginalEvent().getSender(), user, true, message, event.getOriginalEvent().getTxId()));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}
 	}
 	
 	public void processPmUpdateUserEvent(PmUpdateUserEvent event) {
@@ -553,13 +573,19 @@ public class PersistenceManager {
 	}
 	
 	public void processPmCreateAccountEvent(PmCreateAccountEvent event) {
-		Session session = sessionFactory.openSession();
 		Account account = event.getAccount();
+		createAccount(account);
+	}
+	
+	protected void createAccount(Account account)
+	{
+		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
 		    tx = session.beginTransaction();
 	    	session.save(account);
 		    tx.commit();
+		    log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
