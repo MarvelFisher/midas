@@ -80,6 +80,9 @@ public class PersistenceManager {
 	@Autowired
 	SessionFactory sessionFactory;
 	
+	@Autowired
+	CentralDbConnector centralDbConnector;
+	
 	private boolean embeddedSQLServer;
 	private int textSize = 4000;
 	private boolean cleanStart;
@@ -523,15 +526,17 @@ public class PersistenceManager {
 		boolean ok = true;
 		String message = "";
 		
-		try {
-			CentralDbConnector conn = CentralDbConnector.getInstance();
-			if(conn.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
-			{
-				tx = session.beginTransaction();
-				session.save(user);
-				tx.commit();
-				log.debug("Persisted user: " + event.getUser());
-			}
+		try 
+		{
+			if(centralDbConnector.isUserExist(user.getId()))
+				throw new CentralDbException("This user already exists");
+			if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
+				throw new CentralDbException("can't create this user");
+			
+			tx = session.beginTransaction();
+			session.save(user);
+			tx.commit();
+			log.debug("Persisted user: " + event.getUser());
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);

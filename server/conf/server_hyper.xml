@@ -240,5 +240,13 @@
 	        </list>
 	    </constructor-arg>
 	</bean>
+	
+	<bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
+		<property name="host" value="125.227.191.247"/>
+		<property name="port" value="3306"/>
+		<property name="user" value="tqt001"/>
+		<property name="pass" value="tqt001"/>
+		<property name="database" value="LTS"/>
+	</bean>
 
 </beans>

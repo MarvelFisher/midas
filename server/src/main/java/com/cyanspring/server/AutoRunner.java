@@ -30,6 +30,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.Clock.Mode;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -132,6 +133,10 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		
 		for(int i=1; i<=10; i++) {
 			User user = new User("test"+i, "xxx");
+			user.setName("test"+i);
+			user.setEmail("test"+i+"@test.com");
+			user.setPhone("12345678");
+			user.setUserType(UserType.TEST);
 			CreateUserEvent event = new CreateUserEvent(null, null, user, "123");
 			eventManager.sendEvent(event);
 		}

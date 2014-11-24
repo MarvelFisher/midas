@@ -4,6 +4,7 @@ package com.cyanspring.server.persistence;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -27,7 +28,7 @@ public class CentralDbConnector
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static CentralDbConnector inst = null; 
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d)";
-	//private static String insertAccount = "INSERT INTO ACCOUNTS(`ACCOUNT_ID`, `USER_ID`, `MARKET`, `CASH`, `MARGIN`, `PNL`, `ALL_TIME_PNL`, `UR_PNL`, `CASH_DEPOSITED`, `UNIT_PRICE`, `ACTIVE`, `CREATED`, `CURRENCY`) VALUES('%s', '%s', '%s', %f, %f, %f, %f, %f, %f, %f, %s, '%s', '%s')";
+	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE USERID='%s'";
 	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true";
 	
 	static Logger log = Logger.getLogger(CentralDbConnector.class);
@@ -112,16 +113,26 @@ public class CentralDbConnector
 		return String.format(insertAccount, accountId, userId, margin, cash, margin, pl, allTimePl, urPl, cashDeposited, unitPrice, (bActive)?"0x01":"0x02", sdf.format(created), currency);
 	}
 	*/
-	public boolean registerUser(String userId, String userName, String password, String email, String phone, UserType userType)
+	protected boolean checkConnected()
 	{
+		if(!isClosed())
+			return true;
+		return connect();
+	}
+	public boolean registerUser(String userId, String userName, String password, String email, String phone, UserType userType)
+	{	
+		if(!checkConnected())
+			return false;
+		
 		boolean bIsSuccess = false;
 		Date now = Default.getCalendar().getTime();
 		String sUserSQL = getInsertUserSQL(userId, userName, password, email, phone, now, userType);
+		Statement stmt = null;
 		
 		try
 		{
 			conn.setAutoCommit(false);
-			Statement stmt = conn.createStatement();
+			stmt = conn.createStatement();
 			
 			stmt.executeUpdate(sUserSQL);
 			
@@ -138,7 +149,48 @@ public class CentralDbConnector
 				se.printStackTrace();
 			}
 		}
+		finally
+		{
+			if(stmt != null)
+			{
+				try{
+					stmt.close();
+				}catch(SQLException e){
+					e.printStackTrace();
+				}
+			}
+		}
 		return bIsSuccess;
+	}
+	public boolean isUserExist(String sUSer)
+	{
+		if(!checkConnected())
+			return false;
+		
+		String sQuery = String.format(isUserExist, sUSer);
+		Statement stmt = null;
+		int nCount = 0;
+		
+		try {
+	        stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(sQuery);
+	        
+	        if(rs.next()) 
+	        	nCount = rs.getInt("COUNT(*)");
+
+	    } catch (SQLException e ) {
+	        e.printStackTrace();
+	    } finally {
+	        if (stmt != null) 
+	        { 
+	        	try{
+	        		stmt.close();
+	        	}catch(SQLException e){
+	        		e.printStackTrace();
+	        	}
+	        }
+	    }
+		return (nCount > 0);
 	}
 	public String getHost()
 	{
@@ -186,6 +238,10 @@ public class CentralDbConnector
 		CentralDbConnector conn = new CentralDbConnector();
 		boolean bConnect = conn.connect("125.227.191.247", 3306, "tqt001", "tqt001", "LTS");
 		if(bConnect)
-			conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
+		{
+			//conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
+			boolean bExist = conn.isUserExist("test1");
+			System.out.println(bExist);
+		}
 	}
 }
