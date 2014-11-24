@@ -268,6 +268,7 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processUserLoginEvent(UserLoginEvent event) {
 		log.debug("Received UserLoginEvent: " + event.getUserId());
+		String userId = event.getUserId().toLowerCase();
 		boolean ok = false;
 		String message = "";
 		User user = null;
@@ -275,18 +276,18 @@ public class AccountPositionManager implements IPlugin {
 		List<Account> list = null;
 		if(null != userKeeper) {
 			try {
-				ok = userKeeper.login(event.getUserId(), event.getPassword());
+				ok = userKeeper.login(userId, event.getPassword());
 			} catch (UserException ue) {
 				message = ue.getMessage();
 			}
 			
 			if(ok) {
-				user = userKeeper.getUser(event.getUserId());
+				user = userKeeper.getUser(userId);
 				if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
 					defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
 				} 
 				
-				list = accountKeeper.getAccounts(event.getUserId());
+				list = accountKeeper.getAccounts(userId);
 				
 				if(defaultAccount == null && (list == null || list.size() <= 0)) {
 					ok = false;

@@ -141,8 +141,8 @@
         <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
         <property name="arguments">
 		    <list>
-	           	<value>DEFAULT</value>
-	           	<value>DEFAULT</value>
+	           	<value>default</value>
+	           	<value>default</value>
 	           	<value>USD</value>
 	           	<value>A</value>
 	           	<value>100000.0</value>

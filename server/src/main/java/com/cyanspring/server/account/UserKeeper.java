@@ -12,9 +12,11 @@ public class UserKeeper {
 	private Map<String, User> users = new ConcurrentHashMap<String, User>();
 
 	public void createUser(User user) throws UserException {
-		if(users.containsKey(user.getId()))
-			throw new UserException("User already exists: " + user.getId());
+		String lowCases = user.getId().toLowerCase();
+		if(users.containsKey(lowCases))
+			throw new UserException("User already exists: " + lowCases);
 
+		user.setId(lowCases);
 		users.put(user.getId(), user);
 	}
 	
@@ -27,19 +29,20 @@ public class UserKeeper {
 	}
 	
 	public boolean login(String userId, String password) throws UserException {
-		User user = getUser(userId);
+		String lowCases = userId.toLowerCase();
+		User user = getUser(lowCases);
 		if(null == user)
 			throw new UserException("Invalid user id or password");
 		synchronized(user) {
-			if(!user.getId().equals(userId) || !user.getPassword().equals(password))
-				throw new UserException("Invalid user id or password");
+			if(!user.getId().equals(lowCases) || !user.getPassword().equals(password))
+				throw new UserException("Invalid user or password");
 		}
 		return true;
 	}
 	
 	public synchronized User tryCreateDefaultUser() {
 		if(!userExists(Default.getUser())) {
-			User user = new User(Default.getUser(), "");
+			User user = new User(Default.getUser(), "guess?");
 			user.setDefaultAccount(Default.getAccount());
 			this.users.put(user.getId(), user);
 			return user;

@@ -80,7 +80,7 @@ public class User implements Cloneable {
 		return id;
 	}
 	
-	protected synchronized void setId(String id) {
+	public synchronized void setId(String id) {
 		this.id = id;
 	}
 
