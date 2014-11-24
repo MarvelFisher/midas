@@ -29,6 +29,7 @@ public class CentralDbConnector
 	private static CentralDbConnector inst = null; 
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d)";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE USERID='%s'";
+	private static String getUserPassword = "SELECT PASSWORD FROM AUTH WHERE USERID='%s'";
 	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true";
 	
 	static Logger log = Logger.getLogger(CentralDbConnector.class);
@@ -162,12 +163,12 @@ public class CentralDbConnector
 		}
 		return bIsSuccess;
 	}
-	public boolean isUserExist(String sUSer)
+	public boolean isUserExist(String sUser)
 	{
 		if(!checkConnected())
 			return false;
 		
-		String sQuery = String.format(isUserExist, sUSer);
+		String sQuery = String.format(isUserExist, sUser);
 		Statement stmt = null;
 		int nCount = 0;
 		
@@ -191,6 +192,42 @@ public class CentralDbConnector
 	        }
 	    }
 		return (nCount > 0);
+	}
+	public boolean userLogin(String sUser, String sPassword)
+	{
+		if(!checkConnected())
+			return false;
+		
+		String sQuery = String.format(getUserPassword, sUser);
+		Statement stmt = null;
+		String curPassword = "";
+		
+		try {
+	        stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(sQuery);
+	        
+	        if(rs.next()) 
+	        	curPassword = rs.getString("PASSWORD");
+	        
+	        if(curPassword.length() == 0)
+	        	return false;
+	        
+	        if(curPassword.equals(sPassword))
+	        	return true;
+
+	    } catch (SQLException e ) {
+	        e.printStackTrace();
+	    } finally {
+	        if (stmt != null) 
+	        { 
+	        	try{
+	        		stmt.close();
+	        	}catch(SQLException e){
+	        		e.printStackTrace();
+	        	}
+	        }
+	    }
+		return false;
 	}
 	public String getHost()
 	{
@@ -240,8 +277,9 @@ public class CentralDbConnector
 		if(bConnect)
 		{
 			//conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
-			boolean bExist = conn.isUserExist("test1");
-			System.out.println(bExist);
+			//boolean bExist = conn.isUserExist("test1");
+			boolean bLogin = conn.userLogin("test1", "xxx");
+			System.out.println(bLogin);
 		}
 	}
 }

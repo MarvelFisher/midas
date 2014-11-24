@@ -49,9 +49,9 @@ import com.cyanspring.common.util.IdGenerator;
 public class MobileAdaptor extends ClientAdaptor {
 	private static Logger log = LoggerFactory.getLogger(MobileAdaptor.class);
 	private String server;
-	private final String user = "test100";
-	private final String account = "test100";
-	private final String password = "";
+	private final String user = "test1";
+	private final String account = "test1";
+	private final String password = "xxx";
 	private AtomicInteger pendingOrderCount = new AtomicInteger();
 	
 	@Override
@@ -92,6 +92,7 @@ public class MobileAdaptor extends ClientAdaptor {
 			sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
 			sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
 			sendEvent(new CreateUserEvent(getId(), server, new User(user, password), IdGenerator.getInstance().getNextID()));
+			//sendEvent(new UserLoginEvent(getId(), server, user, password, IdGenerator.getInstance().getNextID()));
 		}
 		//#############################################
 	}

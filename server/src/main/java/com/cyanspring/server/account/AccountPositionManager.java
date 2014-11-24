@@ -55,6 +55,7 @@ import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateUserEvent;
+import com.cyanspring.common.event.account.PmUserLoginEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
@@ -268,48 +269,7 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processUserLoginEvent(UserLoginEvent event) {
 		log.debug("Received UserLoginEvent: " + event.getUserId());
-		String userId = event.getUserId().toLowerCase();
-		boolean ok = false;
-		String message = "";
-		User user = null;
-		Account defaultAccount = null;
-		List<Account> list = null;
-		if(null != userKeeper) {
-			try {
-				ok = userKeeper.login(userId, event.getPassword());
-			} catch (UserException ue) {
-				message = ue.getMessage();
-			}
-			
-			if(ok) {
-				user = userKeeper.getUser(userId);
-				if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
-					defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
-				} 
-				
-				list = accountKeeper.getAccounts(userId);
-				
-				if(defaultAccount == null && (list == null || list.size() <= 0)) {
-					ok = false;
-					message = "No trading account available for this user";
-				}
-			}
-		} else {
-			ok = false;
-			message = "Server is not set up for login";
-		}
-		
-		try {
-			eventManager.sendRemoteEvent(new UserLoginReplyEvent(event.getKey(), 
-					event.getSender(), user, defaultAccount, list, ok, message, event.getTxId()));
-			
-			if(ok) {
-				user.setLastLogin(Clock.getInstance().now());
-				eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+		eventManager.sendEvent(new PmUserLoginEvent(PersistenceManager.ID, event.getReceiver(), userKeeper, accountKeeper, event));
 	}
 	
 	public void processCreateUserEvent(CreateUserEvent event) {

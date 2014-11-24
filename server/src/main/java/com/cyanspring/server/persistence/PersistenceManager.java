@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.server.persistence;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
@@ -51,6 +53,8 @@ import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateUserEvent;
+import com.cyanspring.common.event.account.PmUserLoginEvent;
+import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.signal.CancelSignalEvent;
@@ -62,6 +66,8 @@ import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.server.account.AccountKeeper;
+import com.cyanspring.server.account.UserKeeper;
 
 import org.apache.derby.drda.NetworkServerControl;
 
@@ -108,6 +114,7 @@ public class PersistenceManager {
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -289,6 +296,59 @@ public class PersistenceManager {
 		}
 		finally {
 			session.close();
+		}
+	}
+	
+	public void processPmUserLoginEvent(PmUserLoginEvent event)
+	{
+		log.debug("Received PmUserLoginEvent: " + event.getOriginalEvent().getUserId());
+		String userId = event.getOriginalEvent().getUserId().toLowerCase();
+		UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
+		AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
+		boolean ok = false;
+		String message = "";
+		User user = null;
+		Account defaultAccount = null;
+		List<Account> list = null;
+		if(null != userKeeper) {
+			try 
+			{
+				if(centralDbConnector.userLogin(userId, event.getOriginalEvent().getPassword()))
+					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
+
+			} catch (UserException ue) {
+				ue.printStackTrace();
+				message = ue.getMessage();
+			}
+			
+			if(ok) {
+				user = userKeeper.getUser(userId);
+				if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+					defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+				} 
+				
+				list = accountKeeper.getAccounts(userId);
+				
+				if(defaultAccount == null && (list == null || list.size() <= 0)) {
+					ok = false;
+					message = "No trading account available for this user";
+				}
+			}
+		} else {
+			ok = false;
+			message = "Server is not set up for login";
+		}
+		
+		try {
+			eventManager.sendRemoteEvent(new UserLoginReplyEvent(event.getOriginalEvent().getKey(), 
+					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
+			
+			if(ok) {
+				user.setLastLogin(Clock.getInstance().now());
+				eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 	
