@@ -33,10 +33,12 @@ public class UserKeeper {
 		User user = getUser(lowCases);
 		if(null == user)
 			throw new UserException("Invalid user id or password");
+		/*
 		synchronized(user) {
 			if(!user.getId().equals(lowCases) || !user.getPassword().equals(password))
 				throw new UserException("Invalid user or password");
 		}
+		*/
 		return true;
 	}
 	
