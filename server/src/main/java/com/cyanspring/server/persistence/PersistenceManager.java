@@ -31,6 +31,7 @@ import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.Instrument;
@@ -523,10 +524,14 @@ public class PersistenceManager {
 		String message = "";
 		
 		try {
-		    tx = session.beginTransaction();
-	    	session.save(user);
-		    tx.commit();
-		    log.debug("Persisted user: " + event.getUser());
+			CentralDbConnector conn = CentralDbConnector.getInstance();
+			if(conn.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
+			{
+				tx = session.beginTransaction();
+				session.save(user);
+				tx.commit();
+				log.debug("Persisted user: " + event.getUser());
+			}
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -546,7 +551,7 @@ public class PersistenceManager {
 		{
 			try {
 				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getOriginalEvent().getKey(), 
-						event.getOriginalEvent().getSender(), user, true, message, event.getOriginalEvent().getTxId()));
+						event.getOriginalEvent().getSender(), user, ok, message, event.getOriginalEvent().getTxId()));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}

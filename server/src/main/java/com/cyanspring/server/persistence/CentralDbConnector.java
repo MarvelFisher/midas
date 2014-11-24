@@ -26,13 +26,26 @@ public class CentralDbConnector
 	private static String MARKET_FX = "FX";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static CentralDbConnector inst = null; 
-	private static String insertUser = "INSERT INTO USERS(`USER_ID`, `USER_NAME`, `PASSWORD`, `EMAIL`, `PHONE`, `CREATED`, `LAST_LOGIN`, `USER_TYPE`, `DEFAULT_ACCOUNT`) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')";
-	private static String insertAccount = "INSERT INTO ACCOUNTS(`ACCOUNT_ID`, `USER_ID`, `MARKET`, `CASH`, `MARGIN`, `PNL`, `ALL_TIME_PNL`, `UR_PNL`, `CASH_DEPOSITED`, `UNIT_PRICE`, `ACTIVE`, `CREATED`, `CURRENCY`) VALUES('%s', '%s', '%s', %f, %f, %f, %f, %f, %f, %f, %s, '%s', '%s')";
+	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d)";
+	//private static String insertAccount = "INSERT INTO ACCOUNTS(`ACCOUNT_ID`, `USER_ID`, `MARKET`, `CASH`, `MARGIN`, `PNL`, `ALL_TIME_PNL`, `UR_PNL`, `CASH_DEPOSITED`, `UNIT_PRICE`, `ACTIVE`, `CREATED`, `CURRENCY`) VALUES('%s', '%s', '%s', %f, %f, %f, %f, %f, %f, %f, %s, '%s', '%s')";
 	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true";
 	
 	static Logger log = Logger.getLogger(CentralDbConnector.class);
 	
-	public CentralDbConnector()
+	public static CentralDbConnector getInstance() throws CentralDbException
+	{
+		if(inst == null)
+			inst = new CentralDbConnector();
+		
+		if(inst.isClosed())
+		{
+			if(!inst.connect())
+				throw new CentralDbException("can't connect to central database");
+		}
+		
+		return inst;
+	}
+	private CentralDbConnector()
 	{
 		
 	}
@@ -50,9 +63,10 @@ public class CentralDbConnector
 		catch (Exception e) 
 		{
 			e.printStackTrace();
+			return false;
 		}
 		
-		return (conn != null);
+		return true;
 	}
 	public boolean isClosed()
 	{
@@ -88,20 +102,21 @@ public class CentralDbConnector
 			}
 		}
 	}
-	protected String getInsertUserSQL(String userId, String userName, String password, String email, String phone, Date created, Date lastLogin, UserType userType, String defaultAccount)
+	protected String getInsertUserSQL(String userId, String userName, String password, String email, String phone, Date created, UserType userType)
 	{
-		return String.format(insertUser, userId, userName, password, email, phone, sdf.format(created), sdf.format(lastLogin), userType.name(), defaultAccount);
+		return String.format(insertUser, userId, userName, password, email, phone, sdf.format(created), userType.getCode());
 	}
+	/*
 	protected String getInsertAccountSQL(String accountId, String userId, String market, double cash, double margin, double pl, double allTimePl, double urPl, double cashDeposited, double unitPrice, boolean bActive, Date created, String currency)
 	{
 		return String.format(insertAccount, accountId, userId, margin, cash, margin, pl, allTimePl, urPl, cashDeposited, unitPrice, (bActive)?"0x01":"0x02", sdf.format(created), currency);
 	}
-	public boolean registerUser(String userId, String userName, String password, String email, String phone, UserType userType, String defaultAccount)
+	*/
+	public boolean registerUser(String userId, String userName, String password, String email, String phone, UserType userType)
 	{
 		boolean bIsSuccess = false;
 		Date now = Default.getCalendar().getTime();
-		String sUserSQL = getInsertUserSQL(userId, userName, password, email, phone, now, now, userType, defaultAccount);
-		String sAccountSQL = getInsertAccountSQL(defaultAccount, userId, MARKET_FX, Default.getAccountCash(), Default.getAccountCash()*Default.getMarginTimes(), 0, 0, 0, Default.getAccountCash(), 0, true, now, "USD");
+		String sUserSQL = getInsertUserSQL(userId, userName, password, email, phone, now, userType);
 		
 		try
 		{
@@ -109,7 +124,6 @@ public class CentralDbConnector
 			Statement stmt = conn.createStatement();
 			
 			stmt.executeUpdate(sUserSQL);
-			stmt.executeUpdate(sAccountSQL);
 			
 			conn.commit();
 			bIsSuccess = true;
@@ -125,5 +139,53 @@ public class CentralDbConnector
 			}
 		}
 		return bIsSuccess;
+	}
+	public String getHost()
+	{
+		return this.host;
+	}
+	public void setHost(String host)
+	{
+		this.host = host;
+	}
+	public int getPort()
+	{
+		return this.port;
+	}
+	public void setPort(int port)
+	{
+		this.port = port;
+	}
+	public String getUser()
+	{
+		return this.user;
+	}
+	public void setUser(String user)
+	{
+		this.user = user;
+	}
+	public String getPass()
+	{
+		return this.pass;
+	}
+	public void setPass(String pass)
+	{
+		this.pass = pass;
+	}
+	public String getDatabase()
+	{
+		return this.database;
+	}
+	public void setDatabase(String database)
+	{
+		this.database = database;
+	}
+	
+	public static void main(String[] argv)
+	{
+		CentralDbConnector conn = new CentralDbConnector();
+		boolean bConnect = conn.connect("125.227.191.247", 3306, "tqt001", "tqt001", "LTS");
+		if(bConnect)
+			conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
 	}
 }
