@@ -74,5 +74,6 @@ public class BeanHolder {
 	public void setLoginRequired(boolean loginRequired) {
 		this.loginRequired = loginRequired;
 	}
+	
 
 }

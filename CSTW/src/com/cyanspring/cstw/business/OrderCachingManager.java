@@ -228,17 +228,29 @@ public class OrderCachingManager implements IAsyncEventListener {
 	public void init() {
 		eventManager.subscribe(StrategySnapshotEvent.class, this);
 		eventManager.subscribe(StrategyLogEvent.class, this);
-		eventManager.subscribe(ParentOrderUpdateEvent.class, Business.getInstance().getAccount(), this);
-		eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
-		eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+		if(Business.getInstance().isLoginRequired()) {
+			eventManager.subscribe(ParentOrderUpdateEvent.class, Business.getInstance().getAccount(), this);
+			eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+			eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+		} else {
+			eventManager.subscribe(ParentOrderUpdateEvent.class, this);
+			eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, this);
+			eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, this);
+		}
 	}
 
 	public void uninit() {
 		eventManager.unsubscribe(StrategySnapshotEvent.class, this);
 		eventManager.unsubscribe(StrategyLogEvent.class, this);
-		eventManager.unsubscribe(ParentOrderUpdateEvent.class, Business.getInstance().getAccount(), this);
-		eventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
-		eventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+		if(Business.getInstance().isLoginRequired()) {
+			eventManager.unsubscribe(ParentOrderUpdateEvent.class, Business.getInstance().getAccount(), this);
+			eventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+			eventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+		} else {
+			eventManager.unsubscribe(ParentOrderUpdateEvent.class, this);
+			eventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class, this);
+			eventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class, this);
+		}
 	}
 
 	public ArrayList<String> getServers() {

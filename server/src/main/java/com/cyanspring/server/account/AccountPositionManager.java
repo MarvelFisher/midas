@@ -37,6 +37,8 @@ import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
+import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
@@ -420,6 +422,18 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 	
+	public void processAllAccountSnapshotRequestEvent(AllAccountSnapshotRequestEvent event) {
+		if(null == accountKeeper)
+			return;
+		
+		AllAccountSnapshotReplyEvent reply = new AllAccountSnapshotReplyEvent(event.getKey(), event.getSender(), accountKeeper.getAllAccounts());
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	public void processMarketDataReadyEvent(MarketDataReadyEvent event) {
 		if(fxSymbols == null)
 			return;
@@ -455,6 +469,7 @@ public class AccountPositionManager implements IPlugin {
 		String message = null;
 		AccountSetting accountSetting = null;
 		try {
+			log.info("Updating account settings: " + event.getAccountSetting());
 			accountSetting = accountKeeper.setAccountSetting(event.getAccountSetting());
 		} catch (AccountException e) {
 			ok = false;

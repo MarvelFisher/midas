@@ -44,6 +44,7 @@ import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
@@ -65,6 +66,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private List<Execution> executions;
 	
 	private DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
+	private String currentAccount = Business.getInstance().getAccount();
 	
 	@Override
 	public void createPartControl(Composite parent) {
@@ -216,9 +218,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		// finally lay them out
 		mainComposite.layout();
 		
+		if(!Business.getInstance().isLoginRequired())
+			Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
+
+		Business.getInstance().getEventManager().subscribe(AccountSnapshotReplyEvent.class, ID, this);
 
 		if(Business.getInstance().getOrderManager().isReady())
-			sendSubscriptionRequest();
+			sendSubscriptionRequest(Business.getInstance().getAccount());
 		else
 			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
 	}
@@ -328,7 +334,6 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					for(TableItem item: items) {
 						Object obj = item.getData();
 						if (obj instanceof OpenPosition) {
-							@SuppressWarnings("unchecked")
 							OpenPosition position = (OpenPosition)obj;
 							//TODO: we need to change when CSTW talks to multip servers
 							String server = Business.getInstance().getFirstServer();
@@ -461,27 +466,43 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 	
-	private void sendSubscriptionRequest() {
-		// business logic goes here
-		Business.getInstance().getEventManager().subscribe(AccountSnapshotReplyEvent.class, ID, this);
+	private void sendSubscriptionRequest(String account) {
+		// unsubscribe for current account event
+		Business.getInstance().getEventManager().unsubscribe(OpenPositionUpdateEvent.class, 
+				currentAccount, this);
+		Business.getInstance().getEventManager().unsubscribe(OpenPositionDynamicUpdateEvent.class, 
+				currentAccount, this);
+		Business.getInstance().getEventManager().unsubscribe(ClosedPositionUpdateEvent.class, 
+				currentAccount, this);
+		Business.getInstance().getEventManager().unsubscribe(ExecutionUpdateEvent.class, 
+				currentAccount, this);
+		Business.getInstance().getEventManager().unsubscribe(AccountUpdateEvent.class, 
+				currentAccount, this);
+		Business.getInstance().getEventManager().unsubscribe(AccountDynamicUpdateEvent.class, 
+				currentAccount, this);
+		Business.getInstance().getEventManager().unsubscribe(ClosePositionReplyEvent.class, 
+				currentAccount, this);
+		
+		currentAccount = account;
+		// subscribe for new account
 		Business.getInstance().getEventManager().subscribe(OpenPositionUpdateEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		Business.getInstance().getEventManager().subscribe(OpenPositionDynamicUpdateEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		Business.getInstance().getEventManager().subscribe(ClosedPositionUpdateEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		Business.getInstance().getEventManager().subscribe(ExecutionUpdateEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		Business.getInstance().getEventManager().subscribe(AccountUpdateEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		Business.getInstance().getEventManager().subscribe(AccountDynamicUpdateEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		Business.getInstance().getEventManager().subscribe(ClosePositionReplyEvent.class, 
-				Business.getInstance().getAccount(), this);
+				currentAccount, this);
 		
 		AccountSnapshotRequestEvent request = 
 				new AccountSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(),
-						Business.getInstance().getAccount());
+						currentAccount);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(request);
 		} catch (Exception e) {
@@ -516,7 +537,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if(event instanceof OrderCacheReadyEvent) {
-			sendSubscriptionRequest();
+			sendSubscriptionRequest(Business.getInstance().getAccount());
 		} else if(event instanceof AccountSnapshotReplyEvent) {
 			AccountSnapshotReplyEvent evt = (AccountSnapshotReplyEvent)event;
 			this.account = evt.getAccount();
@@ -561,6 +582,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		} else if(event instanceof ClosePositionReplyEvent) {
 			ClosePositionReplyEvent evt = (ClosePositionReplyEvent)event;
 			log.info("Close position reply: " + evt.getAccount() + ", " + evt.getSymbol() + ", " + evt.isOk() + ", " + evt.getMessage());
+		} else if(event instanceof AccountSelectionEvent) {
+			AccountSelectionEvent evt = (AccountSelectionEvent)event;
+			sendSubscriptionRequest(evt.getAccount());
 		}
 	}
 

@@ -49,6 +49,7 @@ import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.ServerStatusDisplay;
 import com.thoughtworks.xstream.XStream;
@@ -147,10 +148,19 @@ public class Business {
 				processingMultiInstrumentStrategyFieldDefUpdateEvent((MultiInstrumentStrategyFieldDefUpdateEvent)event);
 			} else if (event instanceof AsyncTimerEvent) {
 				processAsyncTimerEvent((AsyncTimerEvent)event);
+			} else if (event instanceof SelectUserAccountEvent) {
+				processSelectUserAccountEvent((SelectUserAccountEvent)event);
 			} else {
 				log.error("I dont expect this event: " + event);
 			}
 		}
+
+	}
+	
+	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
+		log.info("Setting current user/account to: " + this.user + "/" + this.account);
+		this.user = event.getUser();
+		this.account = event.getAccount();
 	}
 	
 	private void requestStrategyInfo(String server) {
@@ -269,6 +279,7 @@ public class Business {
 		eventManager.subscribe(NodeInfoEvent.class, listener);
 		eventManager.subscribe(InitClientEvent.class, listener);		
 		eventManager.subscribe(UserLoginReplyEvent.class, listener);		
+		eventManager.subscribe(SelectUserAccountEvent.class, listener);		
 		eventManager.subscribe(ServerHeartBeatEvent.class, listener);		
 		eventManager.subscribe(ServerReadyEvent.class, listener);		
 		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		

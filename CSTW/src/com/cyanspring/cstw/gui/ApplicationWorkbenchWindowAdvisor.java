@@ -22,9 +22,13 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.event.SelectUserAccountEvent;
 
-public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
+public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(ApplicationWorkbenchWindowAdvisor.class);
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
@@ -43,6 +47,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(true);
 		configurer.setTitle("Cyan Spring Trader Workstation");
+		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
 	}
 	
 	@Override
@@ -60,10 +65,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 				LoginDialog loginDialog = new LoginDialog(window.getShell());
 				loginDialog.open();
 			}
-			IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-			configurer.setTitle("Cyan Spring Trader Workstation - " + 
-					Business.getInstance().getUser() + "/" + 
-					Business.getInstance().getAccount());
+			setUserAccount(Business.getInstance().getUser(), Business.getInstance().getAccount());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -78,6 +80,20 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			log.error(e.getMessage(), e);
 		}
 		return true;
+	}
+
+	private void setUserAccount(String user, String account) {
+		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
+		configurer.setTitle("Cyan Spring Trader Workstation - " + 
+				user + "/" + account);
+	}
+	
+	@Override
+	public void onEvent(AsyncEvent event) {
+		if(event instanceof SelectUserAccountEvent) {
+			setUserAccount(((SelectUserAccountEvent) event).getUser(), ((SelectUserAccountEvent) event).getAccount());
+		}
+		
 	}
 
 }

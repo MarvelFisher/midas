@@ -98,6 +98,14 @@
             name="Positions"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.gui.AccountView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.AccountViewer"
+            name="Account View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -162,6 +170,11 @@
             <command
                   commandId="CSTW.ExecutionView"
                   label="Executions"
+                  style="push">
+            </command>
+            <command
+                  commandId="CSTW.AccountView"
+                  label="Accounts"
                   style="push">
             </command>
             <command
@@ -279,6 +292,12 @@
             description="Account positions"
             id="CSTW.PositionView"
             name="Account Positions">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.AccountViewCommand"
+            description="Accounts"
+            id="CSTW.AccountView"
+            name="Accounts">
       </command>
    </extension>
 
