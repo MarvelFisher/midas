@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo jps|grep cyanspring-server-2.56.jar|cut -d ' ' -f1|xargs sudo kill -9
+jps|grep cyanspring-server-2.56.jar|cut -d ' ' -f1|xargs kill -9
 
 ulimit -n 1024000
 
