@@ -89,6 +89,7 @@ public class PersistenceManager {
 	@Autowired
 	CentralDbConnector centralDbConnector;
 	
+	private boolean syncCentralDb = true;
 	private boolean embeddedSQLServer;
 	private int textSize = 4000;
 	private boolean cleanStart;
@@ -313,7 +314,7 @@ public class PersistenceManager {
 		if(null != userKeeper) {
 			try 
 			{
-				if(centralDbConnector.userLogin(userId, event.getOriginalEvent().getPassword()))
+				if(!syncCentralDb || centralDbConnector.userLogin(userId, event.getOriginalEvent().getPassword()))
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 
 			} catch (UserException ue) {
@@ -588,10 +589,13 @@ public class PersistenceManager {
 		
 		try 
 		{
-			if(centralDbConnector.isUserExist(user.getId()))
-				throw new CentralDbException("This user already exists");
-			if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
-				throw new CentralDbException("can't create this user");
+			if(syncCentralDb)
+			{
+				if(centralDbConnector.isUserExist(user.getId()))
+					throw new CentralDbException("This user already exists");
+				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
+					throw new CentralDbException("can't create this user");
+			}
 			
 			tx = session.beginTransaction();
 			session.save(user);
@@ -836,5 +840,12 @@ public class PersistenceManager {
 	public void setEmbeddedSQLServer(boolean embeddedSQLServer) {
 		this.embeddedSQLServer = embeddedSQLServer;
 	}
-
+	
+	public boolean isSyncCentralDb(){
+		return this.syncCentralDb;
+	}
+	
+	public void setSyncCentralDb(boolean syncCentralDb){
+		this.syncCentralDb = syncCentralDb;
+	}
 }

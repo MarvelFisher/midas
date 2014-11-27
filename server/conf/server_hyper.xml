@@ -67,6 +67,7 @@
 		<property name="textSize" value="4000"></property>
 		<property name="cleanStart" value="false"></property>
 		<property name="todayOnly" value="true"></property>
+		<property name="syncCentralDb" value="false"></property>
 	</bean>
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
