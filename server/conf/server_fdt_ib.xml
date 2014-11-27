@@ -145,6 +145,7 @@
 	            <value>GBPJPY</value>
 	        </list>    
 		</property>
+		<property name="dailyExecTime" value="05:00:00"/> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
