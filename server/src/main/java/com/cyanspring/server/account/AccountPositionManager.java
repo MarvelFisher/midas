@@ -190,7 +190,7 @@ public class AccountPositionManager implements IPlugin {
 		try{
 			Date date = getScheuledDate();
 			log.info("Scheduling day end processing at: " + date);
-			scheduleManager.scheduleTimerEvent(date, timerProcessor, dayEndEvent);
+			scheduleManager.scheduleTimerEvent(date, eventProcessor, dayEndEvent);
 		}catch(AccountException e){
 			log.error("can't schedule daily timer", e);
 		}
@@ -213,7 +213,7 @@ public class AccountPositionManager implements IPlugin {
 			timerProcessor.getThread().setName("UserAccountManager-Timer");
 
 		dayOfYear = getDayOfYear();
-		scheduleManager.scheduleRepeatTimerEvent(jobInterval, timerProcessor, timerEvent);
+		scheduleManager.scheduleRepeatTimerEvent(jobInterval, eventProcessor, timerEvent);
 		
 		scheduleDayEndEvent();
 	}
@@ -539,7 +539,7 @@ public class AccountPositionManager implements IPlugin {
 		log.info("Account day end processing start");
 		List<Account> list = accountKeeper.getAllAccounts();
 		for(Account account: list) {
-			account.updateEndOfDay();
+			positionKeeper.rollAccount(account);
 		}
 		
 		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null));

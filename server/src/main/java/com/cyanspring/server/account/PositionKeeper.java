@@ -532,4 +532,10 @@ public class PositionKeeper {
 		}
 	}
 	
+	public void rollAccount(Account account) {
+		synchronized(getSyncAccount(account.getId())) {
+			account.updateEndOfDay();
+		}
+	}
+	
 }

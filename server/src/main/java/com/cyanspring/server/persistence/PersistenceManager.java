@@ -600,7 +600,7 @@ public class PersistenceManager {
 			tx = session.beginTransaction();
 			session.save(user);
 			tx.commit();
-			log.debug("Persisted user: " + event.getUser());
+			log.info("Created user: " + event.getUser());
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);

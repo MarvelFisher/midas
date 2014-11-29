@@ -418,7 +418,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 	
-	private void showOpenPositions() {
+	private void showOpenPositions(final boolean setInput) {
 		openPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -429,14 +429,16 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					if(PositionView.this.openPositions.size() > 0)
 						createOpenPositionColumns(PositionView.this.openPositions);
 					
-					openPositionViewer.setInput(PositionView.this.openPositions);
+					if(setInput)
+						openPositionViewer.setInput(PositionView.this.openPositions);
+
 					openPositionViewer.refresh();
 				}
 			}
 		});
 	}
 	
-	private void showClosedPositions() {
+	private void showClosedPositions(final boolean setInput) {
 		closedPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -447,14 +449,15 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					if(PositionView.this.closedPositions.size() > 0)
 						createClosedPositionColumns(PositionView.this.closedPositions);
 					
-					closedPositionViewer.setInput(PositionView.this.closedPositions);
+					if(setInput)
+						closedPositionViewer.setInput(PositionView.this.closedPositions);
 					closedPositionViewer.refresh();
 				}
 			}
 		});	
 	}
 	
-	private void showExecutions() {
+	private void showExecutions(final boolean setInput) {
 		executionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -464,7 +467,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						return;				
 					if(PositionView.this.executions.size() > 0)
 						createExecutionColumns(PositionView.this.executions);
-					executionViewer.setInput(PositionView.this.executions);
+					
+					if(setInput)
+						executionViewer.setInput(PositionView.this.executions);
 					executionViewer.refresh();
 				}
 			}
@@ -536,7 +541,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			if(!found && !PriceUtils.isZero(position.getQty()))
 				openPositions.add(position);
 		}
-		showOpenPositions();
+		showOpenPositions(false);
 	}
 	
 	@Override
@@ -551,9 +556,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			this.executions = evt.getExecutions();
 			
 			showAccount();
-			showOpenPositions();
-			showClosedPositions();
-			showExecutions();
+			showOpenPositions(true);
+			showClosedPositions(true);
+			showExecutions(true);
 		} else if(event instanceof AccountUpdateEvent) {
 			this.account = ((AccountUpdateEvent)event).getAccount();
 			showAccount();
@@ -574,7 +579,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			synchronized(closedPositions) {
 				closedPositions.add(evt.getPosition());
 			}
-			showClosedPositions();
+			showClosedPositions(false);
 		} else if(event instanceof ExecutionUpdateEvent) {
 			ExecutionUpdateEvent evt = (ExecutionUpdateEvent)event;
 			if(null == executions)
@@ -583,7 +588,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			synchronized(executions) {
 				executions.add(evt.getExecution());
 			}
-			showExecutions();
+			showExecutions(false);
 		} else if(event instanceof ClosePositionReplyEvent) {
 			ClosePositionReplyEvent evt = (ClosePositionReplyEvent)event;
 			log.info("Close position reply: " + evt.getAccount() + ", " + evt.getSymbol() + ", " + evt.isOk() + ", " + evt.getMessage());
