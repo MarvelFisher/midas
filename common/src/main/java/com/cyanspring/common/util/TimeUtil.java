@@ -60,6 +60,15 @@ public class TimeUtil {
 		return cal.getTime();
 	}
 	
+	public static Date getScheduledDate(Calendar cal, Date date, int nHour, int nMin, int nSecond) {
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY, nHour);
+		cal.set(Calendar.MINUTE, nMin);
+		cal.set(Calendar.SECOND, nSecond);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime();
+	}
+	
 	public static Date getPreviousDay() {
 	   Date result = new Date (Clock.getInstance().now().getTime() -  24 * 60 * 60 * 1000);
 	   return result;
@@ -69,6 +78,11 @@ public class TimeUtil {
 	   Date result = new Date (date.getTime() -  24 * 60 * 60 * 1000);
 	   return result;
 	}
+	
+	public static Date getNextDay(Date date) {
+		   Date result = new Date (date.getTime() +  24 * 60 * 60 * 1000);
+		   return result;
+		}
 	
 	public static boolean sameDate(Date d1, Date d2) {
 		if(null == d1 || null == d2)

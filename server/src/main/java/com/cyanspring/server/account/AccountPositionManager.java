@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,13 +79,13 @@ public class AccountPositionManager implements IPlugin {
 	private final static String ID = AccountPositionManager.class.toString();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent dayEndEvent = new AsyncTimerEvent();
-	private long dayEndOffset;
 	private long jobInterval = 1000;
 	private List<String> fxSymbols = new ArrayList<String>();
 	private boolean allFxRatesReceived = false;
 	private Map<String, Quote> marketData = new HashMap<String, Quote>();
 	private int dayOfYear;
 	private IQuoteChecker quoteChecker;
+	private String dailyExecTime;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -161,20 +162,38 @@ public class AccountPositionManager implements IPlugin {
 		return cal.get(Calendar.DAY_OF_YEAR);
 	}
 	
-	private void scheduleDayEndEvent() {
+	private Date getScheuledDate() throws AccountException
+	{
+		if(dailyExecTime == null || dailyExecTime.length() == 0)
+			throw new AccountException("didn't set scheduled daily execution time");
+		
+		String[] times = dailyExecTime.split(":");
+		if(times.length != 3)
+			throw new AccountException("daily execution time is not valid");
+		
+		int nHour = Integer.parseInt(times[0]);
+		int nMin = Integer.parseInt(times[1]);
+		int nSecond = Integer.parseInt(times[2]);
+		
 		Calendar cal = Default.getCalendar();
 		Date now = Clock.getInstance().now();
-		Date date = TimeUtil.getOnlyDate(cal, now);
 		
-		long timePass = TimeUtil.getTimePass(now, date);
+		Date scheduledToday = TimeUtil.getScheduledDate(cal, now, nHour, nMin, nSecond);
 		
-		long offset = dayEndOffset;
-		if(timePass > dayEndOffset) // already pass day end
-			offset += 24 * 60 * 60 * 1000; 
+		if(TimeUtil.getTimePass(now, scheduledToday) > 0)
+			scheduledToday = TimeUtil.getNextDay(scheduledToday);
 		
-		date.setTime(date.getTime() + offset);
-		log.info("Scheduling day end processing at: " + date);
-		scheduleManager.scheduleTimerEvent(date, timerProcessor, dayEndEvent);
+		return scheduledToday;
+	}
+	
+	private void scheduleDayEndEvent() {
+		try{
+			Date date = getScheuledDate();
+			log.info("Scheduling day end processing at: " + date);
+			scheduleManager.scheduleTimerEvent(date, timerProcessor, dayEndEvent);
+		}catch(AccountException e){
+			log.error("can't schedule daily timer", e);
+		}
 	}
 	
 	@Override
@@ -195,6 +214,8 @@ public class AccountPositionManager implements IPlugin {
 
 		dayOfYear = getDayOfYear();
 		scheduleManager.scheduleRepeatTimerEvent(jobInterval, timerProcessor, timerEvent);
+		
+		scheduleDayEndEvent();
 	}
 
 	IPositionListener positionListener = new IPositionListener() {
@@ -489,13 +510,13 @@ public class AccountPositionManager implements IPlugin {
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == timerEvent) {
 			updateDynamicData();
-			int today = getDayOfYear();
-			if(dayOfYear != today) {
-				dayOfYear = today;
-				processDayEndTasks();
-			}
 		} else if (event == dayEndEvent) {
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			int nDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 			
+			if(nDayOfWeek != Calendar.SUNDAY && nDayOfWeek != Calendar.SATURDAY)
+				processDayEndTasks();
+			scheduleDayEndEvent();
 		}
 	}
 	
@@ -572,16 +593,6 @@ public class AccountPositionManager implements IPlugin {
 		this.fxSymbols = fxSymbols;
 	}
 
-	public long getDayEndOffset() {
-		return dayEndOffset;
-	}
-
-	public void setDayEndOffset(long dayEndOffset) throws Exception {
-		if(dayEndOffset < 0)
-			throw new Exception("dayEndOffset can not be less than 0");
-		this.dayEndOffset = dayEndOffset;
-	}
-
 	public IQuoteChecker getQuoteChecker() {
 		return quoteChecker;
 	}
@@ -590,4 +601,11 @@ public class AccountPositionManager implements IPlugin {
 		this.quoteChecker = quoteChecker;
 	}
 	
+	public void setDailyExecTime(String dailyExecTime){
+		this.dailyExecTime = dailyExecTime;
+	}
+	
+	public String getDailyExecTime(){
+		return this.dailyExecTime;
+	}
 }
