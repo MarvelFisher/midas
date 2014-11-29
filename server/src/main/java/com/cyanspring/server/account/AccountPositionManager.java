@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import webcurve.util.PriceUtils;
@@ -19,7 +18,6 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
-import com.cyanspring.common.account.AccountDaily;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
@@ -32,11 +30,11 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
-import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
@@ -47,8 +45,8 @@ import com.cyanspring.common.event.account.CreateAccountReplyEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
-import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
+import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
@@ -56,10 +54,8 @@ import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
-import com.cyanspring.common.event.account.PmUpdateUserEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
-import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
@@ -285,7 +281,7 @@ public class AccountPositionManager implements IPlugin {
 				String defaultAccountId = user.getDefaultAccount();
 				if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
 					if(!accountKeeper.accountExists(user.getId())) {
-						defaultAccountId = user.getId();
+						defaultAccountId = user.getId() + "-" + Default.getMarket();
 					} else {
 						defaultAccountId = generateAccountId();
 						if(accountKeeper.accountExists(defaultAccountId)) {
@@ -299,6 +295,7 @@ public class AccountPositionManager implements IPlugin {
 					user.setUserType(UserType.NORMAL);
 
 				Account account = new Account(defaultAccountId, event.getUser().getId());
+				account.setMarket(Default.getMarket());
 				accountKeeper.createAccount(account);
 				
 				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));

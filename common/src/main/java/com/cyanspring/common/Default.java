@@ -6,6 +6,7 @@ import java.util.TimeZone;
 public class Default {
 	private static String user = "default";
 	private static String account = "default";
+	private static String market = "FX";
 	private static String currency = "USD";
 	private static String accountPrefix = "A";
 	private static double accountCash = 100000.0;
@@ -16,6 +17,7 @@ public class Default {
 	protected static void setValues(
 		String user,  
 		String account,
+		String market,
 		String currency,
 		String accountPrefix,
 		double accountCash,
@@ -25,6 +27,7 @@ public class Default {
 							) {
 		Default.user = user;
 		Default.account = account;
+		Default.market = market;
 		Default.currency = currency;
 		Default.accountPrefix = accountPrefix;
 		Default.accountCash = accountCash;
@@ -39,6 +42,10 @@ public class Default {
 
 	static public String getAccount() {
 		return account;
+	}
+
+	public static String getMarket() {
+		return market;
 	}
 
 	static public String getCurrency() {

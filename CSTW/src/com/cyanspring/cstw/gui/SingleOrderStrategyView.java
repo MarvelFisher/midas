@@ -68,11 +68,13 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
+import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
 
 public class SingleOrderStrategyView extends ViewPart implements IAsyncEventListener {
@@ -88,6 +90,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private Action filterAction;
 	private Action orderPadAction;
 	private ParentOrderFilter viewFilter;
+	private ParentOrderFilter accountFilter;
 	private ImageRegistry imageRegistry;
 	private Action enterOrderAction;
 	private Action cancelOrderAction;
@@ -95,6 +98,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private Action stopOrderAction;
 	private Action startOrderAction;
 	private Action saveOrderAction;
+	private Action pinAction;
 	private OrderDialog orderDialog;
 	private AmendDialog amendDialog;
 	private Menu menu;
@@ -102,6 +106,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private AsyncTimerEvent timerEvent;
 	private Date lastRefreshTime = Clock.getInstance().now();
 	private final long maxRefreshInterval = 300;
+	private boolean pinned = true;
 	
 	// QuickOrderPad
 	private String currentOrderPadId;
@@ -192,6 +197,9 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 			}
 		});
 
+		// create pin order action
+		createPinAction(parent);
+
 		createBodyMenu(parent);
 		createQuickOrderPad(parent);
 
@@ -201,6 +209,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		Business.getInstance().getEventManager().subscribe(EnterParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(AmendParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(CancelParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
 		showOrders();
 	}
 	
@@ -679,6 +688,37 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		}
 	}
 	
+	private void createPinAction(final Composite parent) {
+		// create local toolbars
+		pinAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+			public void run() {
+				pinned = pinned?false:true;
+				if(!pinned) {
+					viewer.removeFilter(accountFilter);
+				} else { 
+					accountFilter.setMatch("Account", Business.getInstance().getAccount());
+					viewer.addFilter(accountFilter);
+				}
+				smartShowOrders();
+			}
+		};
+		
+		pinAction.setChecked(true);
+		pinned = true;
+		accountFilter = new ParentOrderFilter();
+		accountFilter.setMatch("Account", Business.getInstance().getAccount());
+		viewer.addFilter(accountFilter);
+		
+		pinAction.setText("Pin Account");
+		pinAction.setToolTipText("Pin account");
+
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PIN_ICON.toString());
+		pinAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(pinAction);
+	}
+
 	private void createPauseOrderAction(final Composite parent) {
 		// create local toolbars
 		pauseOrderAction = new Action() {
@@ -868,7 +908,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 			Business.getInstance().getScheduleManager().scheduleTimerEvent(maxRefreshInterval, this, timerEvent);
 		}
 	}
-
+	
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof OrderCacheReadyEvent) {
@@ -880,6 +920,11 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		} else if (event instanceof AsyncTimerEvent) {
 			timerEvent = null;
 			asyncShowOrders();
+		} else if (event instanceof AccountSelectionEvent) {
+			if(pinned) {
+				accountFilter.setMatch("Account", ((AccountSelectionEvent) event).getAccount());
+				smartShowOrders();
+			}
 		} else if (event instanceof ParentOrderReplyEvent) {
 			final ParentOrderReplyEvent evt = (ParentOrderReplyEvent)event;
 			viewer.getControl().getDisplay().asyncExec(new Runnable() {

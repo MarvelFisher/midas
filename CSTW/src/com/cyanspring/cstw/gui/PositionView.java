@@ -423,11 +423,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			@Override
 			public void run() {
 				synchronized(openPositionViewer) {
-					if(null == PositionView.this.openPositions ||
-							openPositionViewer.isViewClosing())
+					if(null == PositionView.this.openPositions || openPositionViewer.isViewClosing())
 						return;
+					
 					if(PositionView.this.openPositions.size() > 0)
 						createOpenPositionColumns(PositionView.this.openPositions);
+					
+					openPositionViewer.setInput(PositionView.this.openPositions);
 					openPositionViewer.refresh();
 				}
 			}
@@ -444,6 +446,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						return;
 					if(PositionView.this.closedPositions.size() > 0)
 						createClosedPositionColumns(PositionView.this.closedPositions);
+					
+					closedPositionViewer.setInput(PositionView.this.closedPositions);
 					closedPositionViewer.refresh();
 				}
 			}
@@ -460,6 +464,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						return;				
 					if(PositionView.this.executions.size() > 0)
 						createExecutionColumns(PositionView.this.executions);
+					executionViewer.setInput(PositionView.this.executions);
 					executionViewer.refresh();
 				}
 			}

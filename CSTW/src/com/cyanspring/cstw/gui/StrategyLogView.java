@@ -103,7 +103,7 @@ public class StrategyLogView extends ViewPart implements IAsyncEventListener {
 	 	Font font = fontRegistry.get("Courier New");
 		console.setFont(font);
 
-		createPauseOrderAction(parent);
+		createPinAction(parent);
 
 		createActions();
 		initializeToolBar();
@@ -116,7 +116,7 @@ public class StrategyLogView extends ViewPart implements IAsyncEventListener {
 	}
 
 	
-	private void createPauseOrderAction(final Composite parent) {
+	private void createPinAction(final Composite parent) {
 		// create local toolbars
 		pinAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {

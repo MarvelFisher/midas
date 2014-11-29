@@ -166,7 +166,10 @@ public class Business {
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server));
+			if(Business.getInstance().isLoginRequired())
+				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server));
+			else
+				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(null, server));
 			eventManager.sendEvent(new ServerStatusEvent(server, true));	
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

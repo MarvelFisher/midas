@@ -72,12 +72,14 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				if (obj instanceof Account) {
 					Account account = (Account)obj;
 					Business.getInstance().getEventManager().
+						sendEvent(new SelectUserAccountEvent(account.getUserId(), account.getId()));
+					Business.getInstance().getEventManager().
 						sendEvent(new AccountSelectionEvent(account.getId()));
 				}
 			}
 		});
 
-		createMenu(parent);
+		//createMenu(parent);
 		
 		if(Business.getInstance().getOrderManager().isReady())
 			sendSubscriptionRequest();
