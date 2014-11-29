@@ -132,6 +132,9 @@
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
+	    <property name="quoteChecker">
+	    	<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"></bean>	
+	    </property>
 		<property name="fxSymbols">
 		<list>
 	            <value>AUDUSD</value>
