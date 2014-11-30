@@ -181,6 +181,7 @@
   	<property column="SYMBOL"			name="symbol"		type="java.lang.String"/>
   	<property column="QTY"				name="qty"			type="java.lang.Double"/>
   	<property column="PNL"				name="PnL"			type="java.lang.Double"/>
+  	<property column="AC_PNL"			name="acPnL"		type="java.lang.Double"/>
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
 
     <union-subclass name="com.cyanspring.common.account.OpenPosition" table="ANYONE.OPEN_POSITIONS">
@@ -188,7 +189,6 @@
     </union-subclass>
     
     <union-subclass name="com.cyanspring.common.account.ClosedPosition" table="ANYONE.CLOSED_POSITIONS">
-	  	<property column="AC_PNL"			name="acPnL"		type="java.lang.Double"/>
 	  	<property column="BUY_PRICE"		name="buyPrice"		type="java.lang.Double"/>
 	  	<property column="SELL_PRICE"		name="sellPrice"	type="java.lang.Double"/>
     </union-subclass>

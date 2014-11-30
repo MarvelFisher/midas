@@ -8,7 +8,6 @@ import com.cyanspring.common.staticdata.RefDataManager;
 public class ClosedPosition extends Position {
 	private double buyPrice;
 	private double sellPrice; // close price is always sell price
-	private double acPnL;
 
 	protected ClosedPosition() {
 		
@@ -28,14 +27,6 @@ public class ClosedPosition extends Position {
 
 	protected void setSellPrice(double closePrice) {
 		this.sellPrice = closePrice;
-	}
-	
-	public double getAcPnL() {
-		return acPnL;
-	}
-
-	protected void setAcPnL(double acPnL) {
-		this.acPnL = acPnL;
 	}
 	
 	static public ClosedPosition create(RefDataManager refDataManager, IFxConverter fxConverter, 

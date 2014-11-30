@@ -59,6 +59,7 @@ import com.cyanspring.common.event.account.PmUserLoginEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.fx.IFxConverter;
@@ -83,7 +84,6 @@ public class AccountPositionManager implements IPlugin {
 	private List<String> fxSymbols = new ArrayList<String>();
 	private boolean allFxRatesReceived = false;
 	private Map<String, Quote> marketData = new HashMap<String, Quote>();
-	private int dayOfYear;
 	private IQuoteChecker quoteChecker;
 	private String dailyExecTime;
 	
@@ -156,12 +156,6 @@ public class AccountPositionManager implements IPlugin {
 
 	};
 	
-	private int getDayOfYear() {
-		Calendar cal = Default.getCalendar();
-		cal.setTime(Clock.getInstance().now());
-		return cal.get(Calendar.DAY_OF_YEAR);
-	}
-	
 	private Date getScheuledDate() throws AccountException
 	{
 		if(dailyExecTime == null || dailyExecTime.length() == 0)
@@ -212,7 +206,6 @@ public class AccountPositionManager implements IPlugin {
 		if(timerProcessor.getThread() != null)
 			timerProcessor.getThread().setName("UserAccountManager-Timer");
 
-		dayOfYear = getDayOfYear();
 		scheduleManager.scheduleRepeatTimerEvent(jobInterval, eventProcessor, timerEvent);
 		
 		scheduleDayEndEvent();
@@ -531,8 +524,41 @@ public class AccountPositionManager implements IPlugin {
 			log.info("FX rates: " + fxConverter.toString());
 		}
 		List<Account> accounts = accountKeeper.getJobs();
-		positionKeeper.updateDynamicData(accounts);
+		for(Account account: accounts) {
+			positionKeeper.updateAccountDynamicData(account);
+			checkStopLoss(account);
+		}
+	}
+	
+	private void checkStopLoss(Account account) {
+		AccountSetting accountSetting = null;
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+			return;
+		}
 		
+		Double positionStopLoss = Default.getPositionStopLoss();
+		
+		if(null != accountSetting) {
+			positionStopLoss = accountSetting.getStopLossValue();
+			if(null == positionStopLoss || PriceUtils.isZero(positionStopLoss))
+				positionStopLoss = Default.getPositionStopLoss();
+		}
+		
+		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+		
+		for(OpenPosition position: positions) {
+			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss)) {
+				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
+						position.getSymbol() + ", " + position.getPnL() + ", " + positionStopLoss);
+				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
+						null, position.getAccount(), position.getSymbol(), IdGenerator.getInstance().getNextID());
+				
+				eventManager.sendEvent(event);
+			}
+		}
 	}
 	
 	private void processDayEndTasks() {

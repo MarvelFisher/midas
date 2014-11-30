@@ -13,6 +13,7 @@ public abstract class Position {
 	private double qty;
 	private double PnL;
 	private Date created;
+	private double acPnL;
 
 	protected Position() {
 		
@@ -65,6 +66,14 @@ public abstract class Position {
 
 	public void setQty(double qty) {
 		this.qty = qty;
+	}
+	
+	public double getAcPnL() {
+		return acPnL;
+	}
+
+	public void setAcPnL(double acPnL) {
+		this.acPnL = acPnL;
 	}
 	
 	///// end of getters and setters ////////
