@@ -63,7 +63,7 @@ public class TestPositionKeeper {
 		assertEquals(1.2, openPositions.get(2).getPrice(), epsilon);
 		log.debug(openPositions.get(2).toString());
 		
-		OpenPosition overallPosition = keeper.getOverallPosition(openPositions);
+		OpenPosition overallPosition = keeper.getOverallPosition(account, "AUDUSD");
 		assertEquals(2000.0 + 5000.0 + 4000.0, overallPosition.getQty(), epsilon);
 		double price = (2000.0 * 0.8 + 5000.0 * 1.6 + 4000.0 * 1.2)/(2000.0 + 5000.0 + 4000.0);
 		assertEquals(price, overallPosition.getPrice(), epsilon);
@@ -167,7 +167,7 @@ public class TestPositionKeeper {
 		assertEquals(1.2, openPositions.get(2).getPrice(), epsilon);
 		log.debug(openPositions.get(2).toString());
 		
-		OpenPosition overallPosition = keeper.getOverallPosition(openPositions);
+		OpenPosition overallPosition = keeper.getOverallPosition(account, "AUDUSD");
 		assertEquals(-2000.0 - 5000.0 - 4000.0, overallPosition.getQty(), epsilon);
 		double price = (-2000.0 * 0.8 + -5000.0 * 1.6 + -4000.0 * 1.2)/(-2000.0 - 5000.0 - 4000.0);
 		assertEquals(price, overallPosition.getPrice(), epsilon);

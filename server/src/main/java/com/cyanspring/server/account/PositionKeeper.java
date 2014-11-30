@@ -288,13 +288,15 @@ public class PositionKeeper {
 		OpenPosition pos = null;
 		try {
 			pos = getOverallPosition(list);
-			Quote quote = quoteFeeder.getQuote(symbol);
-			if(null != quote && null != pos) {
-				double price = getMarketablePrice(quote, pos.getQty());
-				pos.setPnL((price-pos.getPrice())*pos.getQty());
-				double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
-						quote.getSymbol(), pos.getPnL());
-				pos.setAcPnL(urPnL);
+			if(null != quoteFeeder) {
+				Quote quote = quoteFeeder.getQuote(symbol);
+				if(null != quote && null != pos) {
+					double price = getMarketablePrice(quote, pos.getQty());
+					pos.setPnL((price-pos.getPrice())*pos.getQty());
+					double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+							quote.getSymbol(), pos.getPnL());
+					pos.setAcPnL(urPnL);
+				}
 			}
 		} catch (PositionException e) {
 			log.error(e.getMessage(), e);
@@ -303,7 +305,7 @@ public class PositionKeeper {
 		return null == pos? result : pos;
 	}
 	
-	protected OpenPosition getOverallPosition(List<OpenPosition> list) throws PositionException {
+	private OpenPosition getOverallPosition(List<OpenPosition> list) throws PositionException {
 		if(null == list || list.size() <= 0)
 			return null;
 		
