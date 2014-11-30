@@ -12,7 +12,7 @@ public class User implements Cloneable {
 	private String phone;
 	private Date created;
 	private Date lastLogin;
-	private UserType userType;
+	private UserType userType = UserType.NORMAL;
 	private String defaultAccount;
 	
 	private User() {
