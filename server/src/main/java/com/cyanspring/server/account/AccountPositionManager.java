@@ -325,6 +325,8 @@ public class AccountPositionManager implements IPlugin {
 			message = "System doesn't support user creation";
 		}
 		
+		log.info("processCreateUserEvent: " + event.getUser() + ", " + ok + ", " + message);
+		
 		if(!ok)
 		{
 			try {

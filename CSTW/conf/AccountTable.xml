@@ -4,7 +4,7 @@
     <list>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Id</title>
-        <width>77</width>
+        <width>91</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -14,7 +14,7 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>UrPnL</title>
-        <width>88</width>
+        <width>52</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -24,17 +24,17 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Cash</title>
-        <width>94</width>
+        <width>83</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>DailyPnL</title>
-        <width>91</width>
+        <width>53</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Margin</title>
-        <width>98</width>
+        <width>82</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -44,7 +44,7 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>AllTimePnL</title>
-        <width>76</width>
+        <width>51</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -69,12 +69,12 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Value</title>
-        <width>111</width>
+        <width>83</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>CashDeposited</title>
-        <width>105</width>
+        <width>81</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>

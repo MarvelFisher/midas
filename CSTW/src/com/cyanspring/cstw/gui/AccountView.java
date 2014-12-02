@@ -2,6 +2,9 @@ package com.cyanspring.cstw.gui;
 
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,6 +15,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,7 @@ import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
@@ -44,9 +49,16 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	
 	private boolean columnCreated;
 	private Menu menu;
+	private CreateUserDialog createUserDialog;
+	private Action createUserAction;
+	private ImageRegistry imageRegistry;
 	
 	@Override
 	public void createPartControl(Composite parent) {
+		log.info("Creating account view");
+		// create ImageRegistery
+		imageRegistry = Activator.getDefault().getImageRegistry();
+		
 		// create parent layout
 		GridLayout layout = new GridLayout(1, false);
 		parent.setLayout(layout);
@@ -79,6 +91,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			}
 		});
 
+		createUserAccountAction(parent);
 		//createMenu(parent);
 		
 		if(Business.getInstance().getOrderManager().isReady())
@@ -87,6 +100,25 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
 	}
 
+	private void createUserAccountAction(final Composite parent) {
+		createUserDialog = new CreateUserDialog(parent.getShell());
+		// create local toolbars
+		createUserAction = new Action() {
+			public void run() {
+				//orderDialog.open();
+				createUserDialog.open();
+			}
+		};
+		createUserAction.setText("Creat a user & account");
+		createUserAction.setToolTipText("Create a user & account");
+
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PLUS_ICON.toString());
+		createUserAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createUserAction);
+	}
+	
 	private void createMenu(Composite parent) {
 		menu = new Menu(viewer.getTable().getShell(), SWT.POP_UP);
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
@@ -175,6 +207,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			for(Account account: evt.getAccounts()) {
 				accounts.put(account.getId(), account);
 			}
+			log.info("Loaded accounts: " + evt.getAccounts().size());
 			showOpenPositions();
 		} else if (event instanceof AccountUpdateEvent) {
 			processAccountUpdate(((AccountUpdateEvent)event).getAccount());
