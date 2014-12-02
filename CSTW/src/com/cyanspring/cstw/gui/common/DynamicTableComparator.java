@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui.common;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import org.eclipse.jface.viewers.Viewer;
@@ -17,10 +18,17 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.internal.intro.impl.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.util.ReflectionUtil;
+import com.cyanspring.cstw.gui.PositionView;
 
 public class DynamicTableComparator extends ViewerComparator {
+	private static final Logger log = LoggerFactory
+			.getLogger(DynamicTableComparator.class);
+	
 	private int propertyIndex;
 	private boolean descending;
 
@@ -44,21 +52,24 @@ public class DynamicTableComparator extends ViewerComparator {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public int compare(Viewer viewer, Object e1, Object e2) {
-		if (!(e1 instanceof HashMap && 
-				e2 instanceof HashMap && 
-				viewer instanceof DynamicTableViewer)) 
+		if (!(viewer instanceof DynamicTableViewer)) 
 			return 0;
 		
-		HashMap<String, Object> map1 = (HashMap<String, Object>)e1;
-		HashMap<String, Object> map2 = (HashMap<String, Object>)e2;
-		final Table table = ((DynamicTableViewer)viewer).getTable();
+		DynamicTableViewer vw = (DynamicTableViewer)viewer;
+		final Table table = vw.getTable();
 		TableColumn col = table.getColumn(propertyIndex);
-		String key = col.getText();
-		Object obj1 = map1.get(key);
-		Object obj2 = map2.get(key);
+		
+		Object obj1 = null;
+		Object obj2 = null;
+
+		try {
+			obj1 = vw.getColumnValue(e1, col);
+			obj2 = vw.getColumnValue(e2, col);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 
 		Integer result = 0;
 		if(null == obj1 && null == obj2) {

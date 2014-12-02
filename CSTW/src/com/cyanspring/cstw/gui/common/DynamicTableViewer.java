@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -385,6 +386,21 @@ public class DynamicTableViewer extends TableViewer {
 			}
 		}
 		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Object getColumnValue(Object obj, TableColumn col) throws Exception {
+		String title = this.getTitleMappedTo(col.getText());
+		
+		Object result = null;
+		if(obj instanceof HashMap) {
+			HashMap<String, Object> map = (HashMap<String, Object>)obj;
+			result = map.get(title);
+		} else {
+			Method method = methodMap.get(title);
+			result = method.invoke(obj);
+		}
+		return result;
 	}
 	
 	public void setSmartColumnProperties(String columnLayoutKey, List<ColumnProperty> columnProperty) {

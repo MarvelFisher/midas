@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -99,6 +100,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private Action startOrderAction;
 	private Action saveOrderAction;
 	private Action pinAction;
+	private Action countOrderAction;
 	private OrderDialog orderDialog;
 	private AmendDialog amendDialog;
 	private Menu menu;
@@ -199,7 +201,9 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 
 		// create pin order action
 		createPinAction(parent);
-
+		
+		createCountOrderAction(parent);
+		
 		createBodyMenu(parent);
 		createQuickOrderPad(parent);
 
@@ -768,6 +772,26 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(startOrderAction);
+	}
+	
+	private void createCountOrderAction(final Composite parent) {
+		// create local toolbars
+		countOrderAction = new Action() {
+			public void run() {
+				MessageBox messageBox = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION);
+				messageBox.setText("Info");
+				messageBox.setMessage("Number of orders: " + Business.getInstance().getOrderManager().getParentOrders().size());
+				messageBox.open();
+			}
+		};
+		countOrderAction.setText("Check number of orders");
+		countOrderAction.setToolTipText("Check number of orders");
+
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.TRUE_ICON.toString());
+		countOrderAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(countOrderAction);
 	}
 	
 	private void createFilterControls(final Composite parent) {

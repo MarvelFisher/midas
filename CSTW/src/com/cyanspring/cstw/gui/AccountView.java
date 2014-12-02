@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IActionBars;
@@ -51,6 +52,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Menu menu;
 	private CreateUserDialog createUserDialog;
 	private Action createUserAction;
+	private Action createCountAccountAction;
 	private ImageRegistry imageRegistry;
 	
 	@Override
@@ -92,6 +94,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		});
 
 		createUserAccountAction(parent);
+		createCountAccountAction(parent);
 		//createMenu(parent);
 		
 		if(Business.getInstance().getOrderManager().isReady())
@@ -117,6 +120,26 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createUserAction);
+	}
+	
+	private void createCountAccountAction(final Composite parent) {
+		// create local toolbars
+		createCountAccountAction = new Action() {
+			public void run() {
+				MessageBox messageBox = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION);
+				messageBox.setText("Info");
+				messageBox.setMessage("Number of accounts: " + accounts.size());
+				messageBox.open();
+			}
+		};
+		createCountAccountAction.setText("Check number of accounts");
+		createCountAccountAction.setToolTipText("Check number of accounts");
+
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.TRUE_ICON.toString());
+		createCountAccountAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createCountAccountAction);
 	}
 	
 	private void createMenu(Composite parent) {
