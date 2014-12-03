@@ -40,7 +40,7 @@
             	<ref bean="mdManager"/>
             	<ref bean="downStreamManager"/>
             	<ref bean="accountPositionManager"/>
-            	<ref bean="autoRunner"/>
+            	<ref bean="alertManager"/>
 	        </list>
 		</property>
 	</bean>
@@ -187,6 +187,15 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
+	<bean id="alertManager" class="com.cyanspring.server.alert.AlertManager">
+		<property name="tradeAlertSender" ref="parseAlertSender"/>
+	</bean>
+	
+	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
+		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073"/>
+		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z"/>
+	</bean>
+	
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 	    <constructor-arg>
 	        <list>
