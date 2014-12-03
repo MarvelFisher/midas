@@ -592,9 +592,9 @@ public class PersistenceManager {
 			if(syncCentralDb)
 			{
 				if(centralDbConnector.isUserExist(user.getId()))
-					throw new CentralDbException("This user already exists");
+					throw new CentralDbException("This user already exists: " + user.getId());
 				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
-					throw new CentralDbException("can't create this user");
+					throw new CentralDbException("can't create this user: " + user.getId());
 			}
 			
 			tx = session.beginTransaction();

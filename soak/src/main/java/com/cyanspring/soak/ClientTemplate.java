@@ -28,7 +28,7 @@ public class ClientTemplate extends ClientAdaptor {
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
 		
 	}
-
+	
 	public static void main(String[] args) throws Exception {
 		DOMConfigurator.configure("conf/log4j.xml");
 		String configFile = "conf/client.xml";
@@ -37,8 +37,8 @@ public class ClientTemplate extends ClientAdaptor {
 		ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
 		
 		// start server
-		SoakTest soakTest = (SoakTest)context.getBean("clientTemplate");
-		soakTest.init();
+		ClientTemplate bean = (ClientTemplate)context.getBean("clientTemplate");
+		bean.init();
 	}
 	
 }

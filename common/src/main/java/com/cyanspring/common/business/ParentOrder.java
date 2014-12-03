@@ -151,7 +151,15 @@ public class ParentOrder extends Order {
 	public void setSender(String sender) {
 		put(OrderField.SENDER.value(), sender);
 	}
-
+	
+	public String getNote() {
+		return get(String.class, OrderField.NOTE.value());
+	}
+	
+	public void setNote(String sender) {
+		put(OrderField.NOTE.value(), sender);
+	}
+	
 	public boolean priceInLimit(double price) {
 		OrderType orderType = getOrderType();
 		double myPrice = getPrice();

@@ -14,6 +14,7 @@ public class Default {
 	private static double commision = 0.0;
 	private static TimeZone timeZone;
 	private static double positionStopLoss = 1000.0;
+	private static double marginCall = 0.95;
 	
 	protected static void setValues(
 		String user,  
@@ -25,7 +26,8 @@ public class Default {
 		double marginTimes,
 		double commision,
 		TimeZone timeZone,
-		double positionStopLoss
+		double positionStopLoss,
+		double marginCall
 							) {
 		Default.user = user;
 		Default.account = account;
@@ -37,6 +39,7 @@ public class Default {
 		Default.commision = commision;
 		Default.timeZone = timeZone;
 		Default.positionStopLoss = positionStopLoss;
+		Default.marginCall = marginCall;
 	}
 	
 	static public String getUser() {
@@ -85,6 +88,10 @@ public class Default {
 
 	public static double getPositionStopLoss() {
 		return positionStopLoss;
+	}
+
+	public static double getMarginCall() {
+		return marginCall;
 	}
 	
 	

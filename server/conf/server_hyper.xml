@@ -30,7 +30,6 @@
             	<ref bean="refDataManager"/>
             	<ref bean="mdManager"/>
             	<ref bean="downStreamManager"/>
-            	<ref bean="tickDataManager"/>
             	<ref bean="upStreamManager"/>
             	<ref bean="accountPositionManager"/>
             	<ref bean="alertManager"/>
@@ -148,7 +147,7 @@
 	            <value>GBPJPY</value>
 	        </list>    
 		</property>
-		<property name="dailyExecTime" value="05:00:00"/> <!-- format=[HH:mm:ss] 24hr -->
+		<property name="dailyExecTime" value="06:00:00"/> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">

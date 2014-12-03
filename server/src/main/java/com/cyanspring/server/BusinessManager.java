@@ -454,7 +454,7 @@ public class BusinessManager implements ApplicationContextAware {
 			order.put(OrderField.CLORDERID.value(), event.getTxId());
 			// stick in source for FIX orders
 			order.put(OrderField.SOURCE.value(), event.getKey());
-
+			order.put(OrderField.NOTE.value(), event.getReason().toString());
 			
 			// add order to local map
 			orders.put(order.getId(), order.getAccount(), order);

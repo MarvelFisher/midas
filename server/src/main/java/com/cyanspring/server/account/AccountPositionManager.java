@@ -3,6 +3,8 @@ package com.cyanspring.server.account;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
+import com.cyanspring.common.account.PositionCloseReason;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
@@ -529,6 +532,7 @@ public class AccountPositionManager implements IPlugin {
 		for(Account account: accounts) {
 			positionKeeper.updateAccountDynamicData(account);
 			checkStopLoss(account);
+			checkMarginCall(account);
 		}
 	}
 	
@@ -554,13 +558,50 @@ public class AccountPositionManager implements IPlugin {
 		for(OpenPosition position: positions) {
 			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss)) {
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
-						position.getSymbol() + ", " + position.getPnL() + ", " + positionStopLoss);
+						position.getSymbol() + ", " + position.getAcPnL() + ", " + positionStopLoss);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), IdGenerator.getInstance().getNextID());
+						null, position.getAccount(), position.getSymbol(), PositionCloseReason.StopLoss,
+						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);
 			}
 		}
+	}
+	
+	private boolean checkMarginCall(Account account) {
+		double marginLimit = account.getCash() * Default.getMarginCall() + account.getUrPnL();
+		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+		if(PriceUtils.LessThan(marginLimit, 0.0) && positions.size() > 0) {
+			log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL());
+			
+			Collections.sort(positions, new Comparator<OpenPosition>() {
+
+				@Override
+				public int compare(OpenPosition p1, OpenPosition p2) {
+					if(PriceUtils.GreaterThan(p2.getAcPnL(), p1.getAcPnL()))
+						return 1;
+					else if(PriceUtils.LessThan(p1.getAcPnL(), p2.getAcPnL()))
+						return -1;
+					
+					return 0;
+				}
+				
+			});
+			
+			for(int i=0; i<positions.size() && PriceUtils.LessThan(marginLimit, 0.0); i++) {
+				OpenPosition position = positions.get(i);
+				log.info("Margin cut: " + position.getAccount() + ", " +
+						position.getSymbol() + ", " + position.getAcPnL() + ", " + marginLimit);
+				marginLimit -= position.getAcPnL();
+				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
+						null, position.getAccount(), position.getSymbol(), PositionCloseReason.MarginCall,
+						IdGenerator.getInstance().getNextID());
+				
+				eventManager.sendEvent(event);
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	private void processDayEndTasks() {

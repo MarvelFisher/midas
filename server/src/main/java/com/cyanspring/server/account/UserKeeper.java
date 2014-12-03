@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
+import com.cyanspring.common.account.UserType;
 
 public class UserKeeper {
 	private Map<String, User> users = new ConcurrentHashMap<String, User>();
@@ -46,6 +47,7 @@ public class UserKeeper {
 		if(!userExists(Default.getUser())) {
 			User user = new User(Default.getUser(), "guess?");
 			user.setDefaultAccount(Default.getAccount());
+			user.setUserType(UserType.SUPPORT);
 			this.users.put(user.getId(), user);
 			return user;
 		}

@@ -39,6 +39,7 @@
 <!-- 	        <value>Label</value>  -->  
 	            <value>User</value>  
 	            <value>Account</value>  
+	            <value>Note</value>  
 	        </list>
 	    </constructor-arg>
 	</bean> 
