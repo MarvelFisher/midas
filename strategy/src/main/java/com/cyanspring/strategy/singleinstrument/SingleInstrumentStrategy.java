@@ -88,11 +88,11 @@ public class SingleInstrumentStrategy extends Strategy {
 
 	@Override
 	public StrategyState getState(){
-		return instrument.get(StrategyState.class, OrderField.STATE.value());
+		return instrument.getState();
 	}
 	
 	private void setState(StrategyState state) {
-		instrument.put(OrderField.STATE.value(), state);
+		instrument.setState(state);
 	}
 	
 	@Override

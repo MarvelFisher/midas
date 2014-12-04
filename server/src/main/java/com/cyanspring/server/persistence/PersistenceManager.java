@@ -241,7 +241,7 @@ public class PersistenceManager {
 		}
 	}
 
-	private void persistXml(String id, PersistType persistType, String xml) {
+	private void persistXml(String id, PersistType persistType, StrategyState state, String xml) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
@@ -256,7 +256,7 @@ public class PersistenceManager {
 		    	session.delete(obj);
 		    }
 	        
-	        List<TextObject> list2 = TextObject.createTextObjects(id, persistType, xml, textSize);
+	        List<TextObject> list2 = TextObject.createTextObjects(id, persistType, state, xml, textSize);
 		    for(TextObject obj: list2) {
 		    	session.save(obj);
 		    }
@@ -354,7 +354,7 @@ public class PersistenceManager {
 	}
 	
 	public void processSignalEvent(SignalEvent event) {
-		persistXml(event.getKey(), PersistType.SIGNAL, event.getSignal().toCompactXML());
+		persistXml(event.getKey(), PersistType.SIGNAL, StrategyState.Running, event.getSignal().toCompactXML());
 	}
 	
 	public void processCancelSignalEvent(CancelSignalEvent event) {
@@ -364,17 +364,20 @@ public class PersistenceManager {
 	
 	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
 		ParentOrder order = event.getParent();
-		persistXml(order.getId(), PersistType.SINGLE_ORDER_STRATEGY, order.toCompactXML());
+		StrategyState state = order.getState();
+		persistXml(order.getId(), PersistType.SINGLE_ORDER_STRATEGY, state, order.toCompactXML());
 	}
 
 	public void processMultiInstrumentStrategyUpdateEvent(MultiInstrumentStrategyUpdateEvent event) {
 		MultiInstrumentStrategyData data = event.getStrategyData();
-		persistXml(data.getId(), PersistType.MULTI_INSTRUMENT_STRATEGY, data.toCompactXML());
+		StrategyState state = data.getState();
+		persistXml(data.getId(), PersistType.MULTI_INSTRUMENT_STRATEGY, state, data.toCompactXML());
 	}
 
 	public void processSingleInstrumentStrategyUpdateEvent(SingleInstrumentStrategyUpdateEvent event) {
 		Instrument data = event.getInstrument();
-		persistXml(data.getId(), PersistType.SINGLE_INSTRUMENT_STRATEGY, data.toCompactXML());
+		StrategyState state = data.getState();
+		persistXml(data.getId(), PersistType.SINGLE_INSTRUMENT_STRATEGY, state, data.toCompactXML());
 	}
 
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {

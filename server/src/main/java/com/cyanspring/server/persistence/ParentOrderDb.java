@@ -13,6 +13,7 @@ package com.cyanspring.server.persistence;
 import java.util.Date;
 
 import com.cyanspring.common.type.PersistType;
+import com.cyanspring.common.type.StrategyState;
 
 public class ParentOrderDb extends TextObject {
 	/**
@@ -20,8 +21,8 @@ public class ParentOrderDb extends TextObject {
 	 */
 	private static final long serialVersionUID = 7861415236682494413L;
 
-	public ParentOrderDb(String id, PersistType persistType, Date timeStamp, String xml, int line) {
-		super(id, persistType, timeStamp, xml, line);
+	public ParentOrderDb(String id, PersistType persistType, StrategyState state, Date timeStamp, String xml, int line) {
+		super(id, persistType, state, timeStamp, xml, line);
 	}
 	
 }

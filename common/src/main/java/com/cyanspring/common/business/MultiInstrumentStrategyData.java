@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 
 public class MultiInstrumentStrategyData extends DataObject {
@@ -80,4 +81,13 @@ public class MultiInstrumentStrategyData extends DataObject {
 	public String getAccount() {
 		return this.get(String.class, OrderField.ACCOUNT.value());
 	}
+
+	public StrategyState getState() {
+		return get(StrategyState.class, OrderField.STATE.value());
+	}
+	
+	public void setState(StrategyState state) {
+		put(OrderField.STATE.value(), state);
+	}
+
 }

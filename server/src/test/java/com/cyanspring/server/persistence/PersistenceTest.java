@@ -40,6 +40,7 @@ import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.PersistType;
+import com.cyanspring.common.type.StrategyState;
 
 @ContextConfiguration(locations = { "classpath:conf/persistence.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -252,7 +253,8 @@ public class PersistenceTest {
 		order.setCumQty(3000);
 		
 		String xml1 = order.toXML();
-		List<TextObject> list = TextObject.createTextObjects(order.getId(), PersistType.SINGLE_ORDER_STRATEGY, xml1, 20);
+		List<TextObject> list = TextObject.createTextObjects(order.getId(), PersistType.SINGLE_ORDER_STRATEGY, 
+				StrategyState.Running, xml1, 20);
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {

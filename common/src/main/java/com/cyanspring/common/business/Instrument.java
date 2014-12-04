@@ -17,6 +17,7 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.strategy.PriceAllocation;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 
 public class Instrument extends DataObject {
@@ -89,6 +90,14 @@ public class Instrument extends DataObject {
 		return this.get(String.class, OrderField.ACCOUNT.value());
 	}
 
+	public StrategyState getState(){
+		return get(StrategyState.class, OrderField.STATE.value());
+	}
+	
+	public void setState(StrategyState state) {
+		put(OrderField.STATE.value(), state);
+	}
+	
 	public void processExecution(Execution execution) {
 		double qty = execution.getSide().isBuy()? execution.getQuantity() : -execution.getQuantity();
 		double oldPos = getPosition();

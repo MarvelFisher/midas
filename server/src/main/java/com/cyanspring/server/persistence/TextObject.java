@@ -17,12 +17,14 @@ import java.util.List;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.type.PersistType;
+import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 
 public class TextObject implements Serializable {
 	private static final long serialVersionUID = -2201356105198952571L;
 	private String id;
 	private PersistType persistType;
+	private StrategyState state;
 	private String serverId;
 	private Date timeStamp;
 	private String xml;
@@ -31,10 +33,11 @@ public class TextObject implements Serializable {
 	public TextObject() {
 		super();
 	}
-	public TextObject(String id, PersistType persistType, Date timeStamp, String xml, int line) {
+	public TextObject(String id, PersistType persistType, StrategyState state, Date timeStamp, String xml, int line) {
 		super();
 		this.id = id;
 		this.persistType = persistType;
+		this.state = state;
 		this.timeStamp = timeStamp;
 		this.xml = xml;
 		this.line = line;
@@ -83,6 +86,12 @@ public class TextObject implements Serializable {
 		this.persistType = persistType;
 	}
 	
+	public StrategyState getState() {
+		return state;
+	}
+	public void setState(StrategyState state) {
+		this.state = state;
+	}
 	public static List<String> chop(String str, int size) {
 		ArrayList<String> result = new ArrayList<String>();
 		int pos = 0;
@@ -104,12 +113,12 @@ public class TextObject implements Serializable {
 		return sb.toString();
 	}
 	
-	public static List<TextObject> createTextObjects(String id, PersistType persistType, String xml, int size) {
+	public static List<TextObject> createTextObjects(String id, PersistType persistType, StrategyState state, String xml, int size) {
 		ArrayList<TextObject> result = new ArrayList<TextObject>();
 		List<String> lines = chop(xml, size);
 		int lineNo = 0;
 		for(String line: lines) {
-			result.add(new TextObject(id, persistType, Clock.getInstance().now(), line, ++lineNo));
+			result.add(new TextObject(id, persistType, state, Clock.getInstance().now(), line, ++lineNo));
 		}
 		return result;
 	}

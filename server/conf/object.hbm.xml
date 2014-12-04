@@ -117,6 +117,12 @@
 		</key-property>
 		<key-property 	column="LINE_NO" 		name="line" type="java.lang.Integer"/>
   	</composite-id> 
+	<property column="STRATEGY_STATE" 		name="state" 	length="20">
+   		<type name="org.hibernate.type.EnumType">
+   			<param name="enumClass">com.cyanspring.common.type.StrategyState</param>   
+       		<param name="type">12</param>
+   		</type>
+	</property>
 	<property column="TIME_STAMP" 		name="timeStamp" type="java.util.Date"/>
 	<property column="XML_TEXT" 		name="xml" type="java.lang.String"/>
 	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>

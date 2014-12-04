@@ -828,11 +828,11 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 
 	@Override
 	public StrategyState getState() {
-		return data.get(StrategyState.class, OrderField.STATE.value());
+		return data.getState();
 	}
 	
 	protected void setState(StrategyState state) {
-		data.put(OrderField.STATE.value(), state);
+		data.setState(state);
 	}
 
 	public MultiInstrumentStrategyData getData() {
