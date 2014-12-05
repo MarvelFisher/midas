@@ -54,21 +54,7 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
     	
 		@Override
 		public void onMessage(Message message) {
-            if (message instanceof TextMessage) {
-            	try {
-            		String str = ((TextMessage) message).getText();
-            		log.debug("Received message: \n" + str);
-            		Object obj = xstream.fromXML(str);
-					listener.onMessage(obj);
-				} catch (JMSException e) {
-					log.error(e.getMessage(), e);
-					e.printStackTrace();
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-					e.printStackTrace();
-				}
-            }
-            else if(message instanceof BytesMessage) {
+            if(message instanceof BytesMessage) {
             	try {
             		BytesMessage bms = (BytesMessage)message;
             		int nLength = (int)bms.getBodyLength();
