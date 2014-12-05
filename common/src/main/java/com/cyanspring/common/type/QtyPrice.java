@@ -10,7 +10,9 @@
  ******************************************************************************/
 package com.cyanspring.common.type;
 
-public class QtyPrice implements Cloneable{
+import java.io.Serializable;
+
+public class QtyPrice implements Cloneable, Serializable{
 	public double quantity;
 	public double price;
 	

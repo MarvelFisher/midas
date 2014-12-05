@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.common.marketdata;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.IdGenerator;
 
-public class Quote implements Cloneable{
+public class Quote implements Cloneable, Serializable {
 	private static final Logger log = LoggerFactory
 			.getLogger(Quote.class);
 	String id = IdGenerator.getInstance().getNextID();

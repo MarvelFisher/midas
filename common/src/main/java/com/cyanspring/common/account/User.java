@@ -1,10 +1,11 @@
 package com.cyanspring.common.account;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.cyanspring.common.Clock;
 
-public class User implements Cloneable {
+public class User implements Cloneable, Serializable {
 	private String id;
 	private String name;
 	private String password;

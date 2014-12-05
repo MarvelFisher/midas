@@ -10,7 +10,9 @@
  ******************************************************************************/
 package com.cyanspring.common.event;
 
-public abstract class AsyncEvent {
+import java.io.Serializable;
+
+public abstract class AsyncEvent implements Serializable {
 	private String key;
 	private EventPriority priority = EventPriority.NORMAL;;
 	

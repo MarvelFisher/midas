@@ -11,8 +11,12 @@
 package com.cyanspring.transport;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
+import javassist.bytecode.annotation.ByteMemberValue;
+
+import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -21,9 +25,12 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 
+import org.nustaq.serialization.simpleapi.DefaultCoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.Account;
+import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.transport.IObjectListener;
 import com.cyanspring.common.transport.IObjectSender;
 import com.cyanspring.common.transport.IObjectTransportService;
@@ -33,6 +40,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class ActiveMQObjectService extends ActiveMQService implements IObjectTransportService {
 	static Logger log = LoggerFactory.getLogger(ActiveMQObjectService.class);
 	private XStream xstream = new XStream(new DomDriver());
+	DefaultCoder coder = new DefaultCoder();
 
     private HashMap<String, ArrayList<IObjectListener>> objSubscribers = new HashMap<String, ArrayList<IObjectListener>>();
     private HashMap<IObjectListener, MessageConsumer> objConsumers = new HashMap<IObjectListener, MessageConsumer>();
@@ -60,7 +68,29 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 					log.error(e.getMessage(), e);
 					e.printStackTrace();
 				}
-            } else {
+            }
+            else if(message instanceof BytesMessage) {
+            	try {
+            		BytesMessage bms = (BytesMessage)message;
+            		byte[] bs = new byte[(int)bms.getBodyLength()];
+            		bms.readBytes(bs);
+            		Object obj = coder.toObject(bs);
+					listener.onMessage(obj);
+					
+					if(log.isDebugEnabled())
+					{
+						String str = xstream.toXML(obj);
+						log.debug("Received message: \n" + str);
+					}
+				} catch (JMSException e) {
+					log.error(e.getMessage(), e);
+					e.printStackTrace();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+					e.printStackTrace();
+				}
+            }
+            else {
             	log.error("Unexpected text message: " + message);
             }
 			
@@ -77,10 +107,17 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 
 		@Override
 		public void sendMessage(Object obj) throws Exception {
-			String message = xstream.toXML(obj);
-			log.debug("Sending message: \n" + message);
-			TextMessage txt = session.createTextMessage(message);
-			producer.send(txt);
+			byte[] bs = coder.toByteArray(obj);
+			BytesMessage message = session.createBytesMessage();
+			message.writeBytes(bs);
+			
+			if(log.isDebugEnabled())
+			{
+				String xmlmsg = xstream.toXML(obj);
+				log.debug("Sending message: \n" + xmlmsg);
+			}
+			//TextMessage txt = session.createTextMessage(message);
+			producer.send(message);
 		}
     	
     }
@@ -176,4 +213,34 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 		return new ObjectSender(producer);
 	}
 
+	/*
+	public static void main(String[] argv)
+	{
+		DefaultCoder coder = new DefaultCoder();
+		AccountUpdateEvent event = new AccountUpdateEvent("123", "456", new Account("abc", "abccc"));
+		Object o;
+		
+		long pretime = Calendar.getInstance().getTimeInMillis();
+		
+		for(int i=0 ; i<1000 ; i++)
+		{
+			byte[] bs = coder.toByteArray(event);
+			o = coder.toObject(bs);
+		}
+		
+		long posttime = Calendar.getInstance().getTimeInMillis();
+		System.out.println("FST=[" + (posttime-pretime) + "]");
+		
+		XStream xstream = new XStream(new DomDriver());
+		
+		pretime = Calendar.getInstance().getTimeInMillis();
+		for(int i=0 ; i<1000 ; i++)
+		{
+			String xml = xstream.toXML(event);
+			o = xstream.fromXML(xml);
+		}
+		posttime = Calendar.getInstance().getTimeInMillis();
+		System.out.println("XML=[" + (posttime-pretime) + "]");
+	}
+	*/
 }
