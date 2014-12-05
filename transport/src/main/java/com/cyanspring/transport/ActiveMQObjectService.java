@@ -25,6 +25,7 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 
+import org.apache.activemq.command.ActiveMQBytesMessage;
 import org.nustaq.serialization.simpleapi.DefaultCoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
             	try {
             		BytesMessage bms = (BytesMessage)message;
             		byte[] bs = new byte[(int)bms.getBodyLength()];
-            		bms.readBytes(bs);
+            		bms.readBytes(bs, bs.length);
             		Object obj = coder.toObject(bs);
 					listener.onMessage(obj);
 					
@@ -107,6 +108,7 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 
 		@Override
 		public void sendMessage(Object obj) throws Exception {
+			System.out.println(obj.getClass().getName());
 			byte[] bs = coder.toByteArray(obj);
 			BytesMessage message = session.createBytesMessage();
 			message.writeBytes(bs);
