@@ -1,5 +1,6 @@
 package com.cyanspring.common.account;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.data.DataObject;
 
 public class AccountSetting extends DataObject {
@@ -9,6 +10,8 @@ public class AccountSetting extends DataObject {
 	}
 	public AccountSetting(String accountId) {
 		setId(accountId);
+		setDefaultQty(Default.getOrderQuantity());
+		setStopLossValue(Default.getPositionStopLoss());
 	}	
 	public String getId() {
 		return get(String.class, AccountSettingType.ID.value());

@@ -13,6 +13,7 @@ public class Default {
 	private static double marginTimes = 40.0;
 	private static double commision = 0.0;
 	private static TimeZone timeZone;
+	private static double orderQuantity = 100000;
 	private static double positionStopLoss = 1000.0;
 	private static double marginCall = 0.95;
 	
@@ -26,6 +27,7 @@ public class Default {
 		double marginTimes,
 		double commision,
 		TimeZone timeZone,
+		double orderQuantity,
 		double positionStopLoss,
 		double marginCall
 							) {
@@ -38,6 +40,7 @@ public class Default {
 		Default.marginTimes = marginTimes;
 		Default.commision = commision;
 		Default.timeZone = timeZone;
+		Default.orderQuantity = orderQuantity;
 		Default.positionStopLoss = positionStopLoss;
 		Default.marginCall = marginCall;
 	}
@@ -84,6 +87,10 @@ public class Default {
 			cal.setTimeZone(Default.getTimeZone());
 
 		return cal;
+	}
+
+	public static double getOrderQuantity() {
+		return orderQuantity;
 	}
 
 	public static double getPositionStopLoss() {

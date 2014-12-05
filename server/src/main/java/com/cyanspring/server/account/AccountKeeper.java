@@ -33,7 +33,7 @@ public class AccountKeeper {
 		
 		AccountSetting setting = accountSettings.get(account);
 		if(null == setting)
-			return null;
+			return new AccountSetting(account);
 		
 		synchronized(setting) {
 			return setting.clone();
@@ -44,17 +44,17 @@ public class AccountKeeper {
 		if(!accounts.containsKey(setting.getId()))
 			throw new AccountException("Account id doesn't exist: " + setting.getId());
 		
-		AccountSetting existing = accountSettings.putIfAbsent(setting.getId(), setting);
-		if(null != existing) {
-			synchronized(existing) {
-				for(Entry<String, Object> entry: setting.getFields().entrySet()) {
-					existing.getFields().put(entry.getKey(), entry.getValue());
-				}
-			}
-			return existing;
+		AccountSetting existing = accountSettings.get(setting.getId());
+		if(null == existing) {
+			existing = new AccountSetting(setting.getId());
+			accountSettings.put(setting.getId(), existing);
 		}
-		
-		return setting;
+		synchronized(existing) {
+			for(Entry<String, Object> entry: setting.getFields().entrySet()) {
+				existing.getFields().put(entry.getKey(), entry.getValue());
+			}
+		}
+		return existing;
 	}
 	
 	private void addAccount(Account account) {
