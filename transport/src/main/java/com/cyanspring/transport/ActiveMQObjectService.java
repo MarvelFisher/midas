@@ -80,7 +80,7 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
             		
             		byte[] bs = new byte[nLength];
             		bms.readBytes(bs, bs.length);
-            		Object obj = fastSerialize(bs);
+            		Object obj = fastDeserialize(bs);
             		
             		if(obj == null)
             			return;
