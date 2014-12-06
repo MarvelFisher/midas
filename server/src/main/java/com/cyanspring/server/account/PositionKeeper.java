@@ -372,6 +372,8 @@ public class PositionKeeper {
 		if(null == quoteFeeder)
 			return;
 
+		boolean needAccountUpdate = false;
+		
 		synchronized(getSyncAccount(account.getId())) {
 			// since margin is contributed by both open position and open orders, we need
 			// to work out a combined list of symbols with either one of them
@@ -396,7 +398,9 @@ public class PositionKeeper {
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
 						accountMargin += overallPosition.getAcPnL();
-						notifyOpenPositionUrPnLUpdate(overallPosition);
+						
+						if(account.isNeedNotifyOpenPositionUpdate(overallPosition))
+							notifyOpenPositionUrPnLUpdate(overallPosition);
 					}
 				}
 				
@@ -404,10 +408,16 @@ public class PositionKeeper {
 				accountMargin -= marginValue;
 			}
 
-			account.setUrPnL(accountUrPnL);
-			account.setMargin(accountMargin);
+			if((account.getPnL() != accountUrPnL) || (account.getMargin() != accountMargin))
+			{
+				needAccountUpdate = true;
+				account.setUrPnL(accountUrPnL);
+				account.setMargin(accountMargin);
+			}
 		}
-		notifyAccountDynamicUpdate(account);
+		
+		if(needAccountUpdate)
+			notifyAccountDynamicUpdate(account);
 	}
 	
 	private double getMarginQtyByAccountAndSymbol(Account account, String symbol, double extraQty) {
