@@ -97,6 +97,8 @@ public class PersistenceManager {
 	private boolean deleteTerminated = true;
 	protected boolean persistSignal;
 	NetworkServerControl server;
+	private String embeddedHost = "localhost";
+	private int embeddedPort = 1527;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -158,7 +160,7 @@ public class PersistenceManager {
 	
 	private void startEmbeddedSQLServer() throws UnknownHostException, Exception {
 		server = new NetworkServerControl
-				(InetAddress.getByName("localhost"),1527);
+				(InetAddress.getByName(embeddedHost),embeddedPort);
 		server.start(null);
 		log.info("Embedded SQL server started");	
 	}
@@ -851,4 +853,21 @@ public class PersistenceManager {
 	public void setSyncCentralDb(boolean syncCentralDb){
 		this.syncCentralDb = syncCentralDb;
 	}
+
+	public String getEmbeddedHost() {
+		return embeddedHost;
+	}
+
+	public void setEmbeddedHost(String embeddedHost) {
+		this.embeddedHost = embeddedHost;
+	}
+
+	public int getEmbeddedPort() {
+		return embeddedPort;
+	}
+
+	public void setEmbeddedPort(int embeddedPort) {
+		this.embeddedPort = embeddedPort;
+	}
+	
 }

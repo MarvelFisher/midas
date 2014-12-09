@@ -333,11 +333,6 @@ public class OrderManager {
 
 	public void injectStrategies(List<DataObject> list) {
 		for (DataObject obj : list) {
-			StrategyState state = obj.get(StrategyState.class,
-					OrderField.STATE.value());
-			if (state.equals(StrategyState.Terminated))
-				continue;
-
 			if (obj instanceof ParentOrder) {
 				ParentOrder parentOrder = (ParentOrder)obj;
 				parentOrders.put(parentOrder.getId(), parentOrder.getAccount(), parentOrder);

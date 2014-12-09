@@ -63,6 +63,9 @@
 	
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
 		<property name="embeddedSQLServer" value="true"></property>
+		<property name="embeddedHost" value="0.0.0.0"></property>
+		<property name="embeddedPort" value="1527"></property>
+		<property name="deleteTerminated" value="false"></property>
 		<property name="textSize" value="4000"></property>
 		<property name="cleanStart" value="false"></property>
 		<property name="todayOnly" value="true"></property>
