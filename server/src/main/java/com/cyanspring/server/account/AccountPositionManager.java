@@ -67,6 +67,7 @@ import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
+import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
@@ -87,8 +88,9 @@ public class AccountPositionManager implements IPlugin {
 	private List<String> fxSymbols = new ArrayList<String>();
 	private boolean allFxRatesReceived = false;
 	private Map<String, Quote> marketData = new HashMap<String, Quote>();
-	private IQuoteChecker quoteChecker;
+	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
 	private String dailyExecTime;
+	private Map<String, Boolean> validQuotes = new HashMap<String, Boolean>();
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -396,10 +398,25 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 	
+	private void setQuoteValid(String symbol, Boolean valid) {
+		Boolean existing = validQuotes.put(symbol, valid);
+		if(null != existing && !valid.equals(existing)) {
+			log.info("Quote has turned valid: " + symbol + ", " + valid);
+		}
+	}
+	
+	private boolean getQuoteValid(String symbol) {
+		Boolean result = validQuotes.get(symbol);
+		return null != result && result;
+	}
+	
 	public void processQuoteEvent(QuoteEvent event) {
 		Quote quote = event.getQuote();
 		if(null != quoteChecker && !quoteChecker.check(quote)) {
+			setQuoteValid(quote.getSymbol(), false);
 			return;
+		} else {
+			setQuoteValid(quote.getSymbol(), true);
 		}
 		
 		marketData.put(event.getQuote().getSymbol(), event.getQuote());
@@ -556,7 +573,7 @@ public class AccountPositionManager implements IPlugin {
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		for(OpenPosition position: positions) {
-			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss)) {
+			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && getQuoteValid(position.getSymbol())) {
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + positionStopLoss);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
@@ -590,6 +607,9 @@ public class AccountPositionManager implements IPlugin {
 			
 			for(int i=0; i<positions.size() && PriceUtils.LessThan(marginLimit, 0.0); i++) {
 				OpenPosition position = positions.get(i);
+				if(!getQuoteValid(position.getSymbol()))
+					continue;
+
 				log.info("Margin cut: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + marginLimit);
 				marginLimit -= position.getAcPnL();
