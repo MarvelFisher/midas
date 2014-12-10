@@ -8,5 +8,7 @@ JAVA_OPTS="${JAVA_OPTS} -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTen
 
 java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar conf/server_fdt_ib.xml > ./log/console.log &
 
+sleep 5
+
 cd ../appServer
 ./run.sh
