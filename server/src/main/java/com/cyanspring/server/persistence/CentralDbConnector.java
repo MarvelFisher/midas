@@ -27,9 +27,9 @@ public class CentralDbConnector {
 	private static SimpleDateFormat sdf = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
 	private static CentralDbConnector inst = null;
-	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d)";
-	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE USERID='%s'";
-	private static String getUserPassword = "SELECT PASSWORD FROM AUTH WHERE USERID='%s'";
+	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', %d)";
+	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
+	private static String verifyUserPassword = "SELECT COUNT(*) FROM AUTH WHERE `USERID` ='%s' AND `PASSWORD` = md5('%s')";
 	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true";
 
 	private static final Logger log = LoggerFactory
@@ -193,21 +193,18 @@ public class CentralDbConnector {
 		if (!checkConnected())
 			return false;
 
-		String sQuery = String.format(getUserPassword, sUser);
+		String sQuery = String.format(verifyUserPassword, sUser, sPassword);
 		Statement stmt = null;
-		String curPassword = "";
+		int nCount = 0;
 
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sQuery);
 
 			if (rs.next())
-				curPassword = rs.getString("PASSWORD");
+				nCount = rs.getInt("COUNT(*)");
 
-			if (curPassword.length() == 0)
-				return false;
-
-			if (curPassword.equals(sPassword))
+			if (nCount > 0)
 				return true;
 
 		} catch (SQLException e) {
