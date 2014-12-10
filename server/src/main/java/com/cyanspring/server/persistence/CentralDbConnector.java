@@ -211,7 +211,7 @@ public class CentralDbConnector {
 				salt = rs.getString("SALT");
 			}
 
-			String fullPassword = sPassword + salt;
+			String fullPassword = (salt == null)? sPassword : sPassword + salt;
 			
 			if(md5Password.equals(md5(fullPassword)))
 				return true;
@@ -332,7 +332,7 @@ public class CentralDbConnector {
 		if (bConnect) {
 			//conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
 			//boolean bExist = conn.isUserExist("test1");
-			boolean bLogin = conn.userLogin("test1", "test1");
+			boolean bLogin = conn.userLogin("test101", "test101");
 			System.out.println(bLogin);
 		}
 	}
