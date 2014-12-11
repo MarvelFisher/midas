@@ -9,7 +9,7 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>PnL</title>
-        <width>63</width>
+        <width>97</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -49,7 +49,7 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>UnitPrice</title>
-        <width>60</width>
+        <width>71</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -80,6 +80,11 @@
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Class</title>
         <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>RollPrice</title>
+        <width>50</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>

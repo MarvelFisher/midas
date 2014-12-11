@@ -12,7 +12,7 @@
 	</appender>
 
 	<appender name="FILE" class="org.apache.log4j.rolling.RollingFileAppender">
-		<param name="Append" value="true" />
+		<param name="Append" value="false" />
 		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
 		    <param name="fileNamePattern" value="log/server%d.log" />
 		</rollingPolicy>
@@ -45,6 +45,7 @@
   	<root>
 		<priority value="DEBUG" />
 		<appender-ref ref="FILE" />
+		<appender-ref ref="CONSOLE" />
 	</root>
 
 </log4j:configuration>

@@ -69,12 +69,12 @@
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Account</title>
-        <width>83</width>
+        <width>89</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Note</title>
-        <width>100</width>
+        <width>113</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>
