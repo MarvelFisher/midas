@@ -23,7 +23,8 @@ Bundle-ClassPath: apache-log4j-extras-1.1.jar,
  cyanspring-transport-2.38.jar,
  slf4j-api-1.6.1.jar,
  cyanspring-event-2.56.jar,
- cyanspring-transport-2.56.jar
+ cyanspring-transport-2.56.jar,
+ fst-2.16.jar
 Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util,com.cyanspring.common.transport,com.cyanspring.common.event",
  com.cyanspring.common.account,
  com.cyanspring.common.business;uses:="com.cyanspring.common.data,com.cyanspring.common.type,com.cyanspring.common.strategy",
@@ -617,4 +618,4 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  org.springframework.validation.support;uses:="org.springframework.ui",
  org.xmlpull.v1
 Eclipse-RegisterBuddy: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
