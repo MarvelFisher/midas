@@ -155,6 +155,7 @@
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	type="java.lang.Double"/>
   	<property column="UR_PNL"			name="urPnL"		type="java.lang.Double"/>
   	<property column="CASH_DEPOSITED"	name="cashDeposited"		type="java.lang.Double"/>
+  	<property column="ROLL_PRICE"		name="rollPrice"	type="java.lang.Double"/>
   	<property column="UNIT_PRICE"		name="unitPrice"	type="java.lang.Double"/>
   	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
@@ -174,6 +175,7 @@
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	type="java.lang.Double"/>
   	<property column="UR_PNL"			name="urPnL"		type="java.lang.Double"/>
   	<property column="CASH_DEPOSITED"	name="cashDeposited"		type="java.lang.Double"/>
+  	<property column="ROLL_PRICE"		name="rollPrice"	type="java.lang.Double"/>
   	<property column="UNIT_PRICE"		name="unitPrice"	type="java.lang.Double"/>
   	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
@@ -208,7 +210,7 @@
 
   <sql-query name="rollEndOfDay1">
     <![CDATA[
-    UPDATE ANYONE.ACCOUNTS SET UNIT_PRICE = UNIT_PRICE + PNL / CASH_DEPOSITED
+    UPDATE ANYONE.ACCOUNTS SET ROLL_PRICE = ROLL_PRICE + PNL / CASH_DEPOSITED, UNIT_PRICE = ROLL_PRICE + PNL/CASH_DEPOSITED + UR_PNL/CASH_DEPOSITED
     ]]>
   </sql-query>
   <sql-query name="rollEndOfDay2">

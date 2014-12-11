@@ -12,6 +12,7 @@ public class Default {
 	private static double accountCash = 100000.0;
 	private static double marginTimes = 40.0;
 	private static double commision = 0.0;
+	private static double commisionMin = 0.0;
 	private static TimeZone timeZone;
 	private static double orderQuantity = 100000;
 	private static double positionStopLoss = 1000.0;
@@ -26,6 +27,7 @@ public class Default {
 		double accountCash,
 		double marginTimes,
 		double commision,
+		double commisionMin,
 		TimeZone timeZone,
 		double orderQuantity,
 		double positionStopLoss,
@@ -39,6 +41,7 @@ public class Default {
 		Default.accountCash = accountCash;
 		Default.marginTimes = marginTimes;
 		Default.commision = commision;
+		Default.commisionMin = commisionMin;
 		Default.timeZone = timeZone;
 		Default.orderQuantity = orderQuantity;
 		Default.positionStopLoss = positionStopLoss;
@@ -100,6 +103,12 @@ public class Default {
 	public static double getMarginCall() {
 		return marginCall;
 	}
+
+	public static double getCommisionMin() {
+		return commisionMin;
+	}
 	
-	
+	public static double getCommision(double value) {
+		return Math.max(commisionMin, value * commision);
+	}
 }

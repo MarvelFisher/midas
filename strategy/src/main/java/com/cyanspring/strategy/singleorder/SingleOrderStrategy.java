@@ -361,17 +361,18 @@ public abstract class SingleOrderStrategy extends Strategy {
 				logInfo("QuantityInstruction: " + qi);
 			logInfo("PriceInstruction: " + pi);
 			logInfo("ExecutionInstruction: " + eis);
-		} else {
-			Collection<ChildOrder> children = this.getChildOrders();
-			logDebug("Parent order: " + "Qty: " + parentOrder.getQuantity() + ", Cum: " + parentOrder.getCumQty());
-			logDebug("Open orders: " + children);
-			logDebug("Quote: " + quote);
-			logDebug("AdjQuote: " + adjQuote);
-			if(null != qi)
-				logDebug("QuantityInstruction: " + qi);
-			logDebug("PriceInstruction: " + pi);
-			logDebug("ExecutionInstruction: " + eis);
 		}
+//		else {
+//			Collection<ChildOrder> children = this.getChildOrders();
+//			logDebug("Parent order: " + "Qty: " + parentOrder.getQuantity() + ", Cum: " + parentOrder.getCumQty());
+//			logDebug("Open orders: " + children);
+//			logDebug("Quote: " + quote);
+//			logDebug("AdjQuote: " + adjQuote);
+//			if(null != qi)
+//				logDebug("QuantityInstruction: " + qi);
+//			logDebug("PriceInstruction: " + pi);
+//			logDebug("ExecutionInstruction: " + eis);
+//		}
 
 		executeInstructions(eis);
 	}

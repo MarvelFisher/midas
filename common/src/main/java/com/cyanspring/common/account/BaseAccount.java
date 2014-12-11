@@ -16,7 +16,7 @@ public abstract class BaseAccount {
 	private String currency;
 	private double cash;
 	private double cashDeposited;
-	private double unitPrice = 1.0;
+	private double rollPrice = 1.0;
 	private double margin;
 	private Date created;
 	
@@ -135,14 +135,23 @@ public abstract class BaseAccount {
 	}
 
 	public synchronized double getUnitPrice() {
-		return unitPrice;
+		if(!PriceUtils.isZero(this.cashDeposited)) {
+			return rollPrice + this.urPnL/this.cashDeposited;
+		}
+		return rollPrice;
 	}
 
-	protected synchronized void setUnitPrice(double unitPrice) {
-		this.unitPrice = unitPrice;
+	protected void setUnitPrice(double unitPrice) {
 	}
-
 	
+	public synchronized double getRollPrice() {
+		return rollPrice;
+	}
+
+	protected synchronized void setRollPrice(double rollPrice) {
+		this.rollPrice = rollPrice;
+	}
+
 	// end of getters/setters
 	
 	public synchronized void addMargin(double value) {
@@ -170,7 +179,7 @@ public abstract class BaseAccount {
 	
 	public synchronized void updateEndOfDay() {
 		if(!PriceUtils.isZero(this.cashDeposited))
-			this.unitPrice += this.PnL/this.cashDeposited;
+			this.rollPrice += this.PnL/this.cashDeposited;
 		this.PnL = 0.0;
 	}
 
