@@ -195,8 +195,8 @@
 	</bean>
 	
 	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
-		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073"/>
-		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z"/>
+		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D"/>
+		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx"/>
 	</bean>
 	
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
