@@ -182,6 +182,9 @@ public class BusinessManager implements ApplicationContextAware {
 		boolean failed = false;
 		String message = "";
 		ParentOrder order = null;
+		String user = (String)fields.get(OrderField.USER.value());
+		String account = (String)fields.get(OrderField.ACCOUNT.value());
+		
 		try {
 			String strategyName = (String)fields.get(OrderField.STRATEGY.value());
 			if(null == strategyName)
@@ -224,7 +227,7 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			// ack order
 			EnterParentOrderReplyEvent reply = new EnterParentOrderReplyEvent(event.getKey(), event.getSender(), 
-						true, "", event.getTxId(), order);
+						true, "", event.getTxId(), order, user, account);
 
 			eventManager.sendLocalOrRemoteEvent(reply);
 
@@ -273,7 +276,8 @@ public class BusinessManager implements ApplicationContextAware {
 		if (failed) {
 			log.debug("Enter order failed: " + message);
 			EnterParentOrderReplyEvent replyEvent = new EnterParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, message, event.getTxId(), order);
+					event.getKey(), event.getSender(), false, message, event.getTxId(), order, 
+					user, account);
 			eventManager.sendLocalOrRemoteEvent(replyEvent);
 		}
 	

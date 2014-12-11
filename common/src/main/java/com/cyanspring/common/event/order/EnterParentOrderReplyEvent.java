@@ -14,10 +14,24 @@ import com.cyanspring.common.business.ParentOrder;
 
 public final class EnterParentOrderReplyEvent extends ParentOrderReplyEvent {
 
+	private String user;
+	private String account;
+	
 	public EnterParentOrderReplyEvent(String key, String receiver, boolean ok,
-			String message, String txId, ParentOrder order) {
+			String message, String txId, ParentOrder order, String user, String account) {
 		super(key, receiver, ok, message, txId, order);
+		
+		this.user = user;
+		this.account = account;
 	}
 
+	public String getUser()
+	{
+		return this.user;
+	}
 	
+	public String getAccount()
+	{
+		return this.account;
+	}
 }
