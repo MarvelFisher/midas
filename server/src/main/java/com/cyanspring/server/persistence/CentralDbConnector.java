@@ -273,7 +273,7 @@ public class CentralDbConnector {
 		this.database = database;
 	}
 	
-	 public String md5(String str) 
+	 protected String md5(String str) 
 	 {
 	    String md5 = null;
 	    
@@ -295,7 +295,7 @@ public class CentralDbConnector {
 	    return md5;
 	 }
 	 
-	 public String byte2Hex(byte b) 
+	 protected String byte2Hex(byte b) 
 	 {
 	    String[] h={"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"};
 	    int i=b;
@@ -306,7 +306,7 @@ public class CentralDbConnector {
 	    return h[i/16] + h[i%16];
 	 }
 		  
-	 public String getRandomSalt(int nLength)
+	 protected String getRandomSalt(int nLength)
 	 {
 		  int[] word = new int[nLength];
 		  int mod;
