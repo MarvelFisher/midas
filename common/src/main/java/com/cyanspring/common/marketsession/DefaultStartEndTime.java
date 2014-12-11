@@ -10,13 +10,14 @@
  ******************************************************************************/
 package com.cyanspring.common.marketsession;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.TimeUtil;
 
-public class DefaultStartEndTime {
+public class DefaultStartEndTime implements Serializable {
 	private Date start;
 	private Date end;
 	public DefaultStartEndTime(String start, String end) throws ParseException {

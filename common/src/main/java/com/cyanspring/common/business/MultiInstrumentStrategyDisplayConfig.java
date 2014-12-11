@@ -10,11 +10,12 @@
  ******************************************************************************/
 package com.cyanspring.common.business;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MultiInstrumentStrategyDisplayConfig {
+public class MultiInstrumentStrategyDisplayConfig implements Serializable{
 	private String strategy;
 	private Map<String, FieldDef> strategyLevelFieldDefs;
 	private List<String> instrumentDisplayFields;

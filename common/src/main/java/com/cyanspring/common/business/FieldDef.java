@@ -1,6 +1,8 @@
 package com.cyanspring.common.business;
 
-public class FieldDef {
+import java.io.Serializable;
+
+public class FieldDef implements Serializable{
 	private String name;
 	private Class<?> type;
 	private boolean input;
