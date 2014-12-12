@@ -153,8 +153,8 @@ public class DynamicTableViewer extends TableViewer {
 				} 
 			}
 			
-			if(null != display && display instanceof Boolean)
-					return ((Boolean)display)?trueImage : falseImage;
+//			if(null != display && display instanceof Boolean)
+//					return ((Boolean)display)?trueImage : falseImage;
 					
 			return null;
 		}

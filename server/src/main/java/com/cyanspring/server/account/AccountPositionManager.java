@@ -138,6 +138,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(UpdateParentOrderEvent.class, null);
 			subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
+			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
 		}
 
 		@Override

@@ -515,6 +515,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		AccountSnapshotRequestEvent request = 
 				new AccountSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(),
 						currentAccount);
+		
+		log.debug("AccountSnapshotRequestEvent sent: " + currentAccount);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(request);
 		} catch (Exception e) {
@@ -552,6 +554,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		} else if(event instanceof AccountSnapshotReplyEvent) {
 			AccountSnapshotReplyEvent evt = (AccountSnapshotReplyEvent)event;
+			log.debug("AccountSnapshotReplyEvent received: " + evt.getAccount());
 			this.account = evt.getAccount();
 			this.openPositions = evt.getOpenPositions();
 			this.closedPositions = evt.getClosedPositions();

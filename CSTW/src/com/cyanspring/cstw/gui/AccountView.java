@@ -25,6 +25,7 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
@@ -54,6 +55,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createUserAction;
 	private Action createCountAccountAction;
 	private ImageRegistry imageRegistry;
+	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private long maxRefreshInterval = 500;
+	private boolean show;
 	
 	@Override
 	public void createPartControl(Composite parent) {
@@ -101,6 +105,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			sendSubscriptionRequest();
 		else
 			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
+		
+		Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval, this, timerEvent);
+
 	}
 
 	private void createUserAccountAction(final Composite parent) {
@@ -178,6 +185,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				this);
 		
 		AllAccountSnapshotRequestEvent request = new AllAccountSnapshotRequestEvent(ID, Business.getInstance().getFirstServer());
+		log.debug("AllAccountSnapshotRequestEvent sent");
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(request);
 		} catch (Exception e) {
@@ -195,7 +203,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 
-	private void showOpenPositions() {
+	private void showAccounts() {
+		if(!show)
+			return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -208,6 +218,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 		});
+		show = false;
 	}
 
 	@Override
@@ -218,7 +229,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	private void processAccountUpdate(Account account) {
 		accounts.put(account.getId(), account);
-		showOpenPositions();
+		show = true;
 	}
 	
 	@Override
@@ -231,11 +242,14 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				accounts.put(account.getId(), account);
 			}
 			log.info("Loaded accounts: " + evt.getAccounts().size());
-			showOpenPositions();
+			show = true;
+			showAccounts();
 		} else if (event instanceof AccountUpdateEvent) {
 			processAccountUpdate(((AccountUpdateEvent)event).getAccount());
 		} else if (event instanceof AccountDynamicUpdateEvent) {
 			processAccountUpdate(((AccountDynamicUpdateEvent)event).getAccount());
+		} else if (event instanceof AsyncTimerEvent) {
+			showAccounts();
 		}
 	}
 
