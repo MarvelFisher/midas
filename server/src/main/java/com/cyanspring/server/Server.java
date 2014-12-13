@@ -533,10 +533,15 @@ public class Server implements ApplicationContextAware{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		DOMConfigurator.configure("conf/log4j.xml");
 		String configFile = "conf/server_hyper.xml";
-		if(args.length>0)
+		String logConfigFile = "conf/log4j.xml";
+		if(args.length == 1) {
 			configFile = args[0];
+		} else if (args.length == 2) {
+			configFile = args[0];
+			logConfigFile = args[1];
+		}
+		DOMConfigurator.configure(logConfigFile);
 		ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
 		
 		// start server
