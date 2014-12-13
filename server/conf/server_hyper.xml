@@ -36,6 +36,12 @@
             	<ref bean="autoRunner"/>
 	        </list>
 		</property>
+		<property name="readyMap">
+	  		<map key-type="java.lang.String" value-type="java.lang.Boolean">
+		        <entry key="DownStream" value="false" />
+		        <entry key="Recovery" value="false" />
+		    </map>
+		</property>
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">

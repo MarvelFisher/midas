@@ -145,8 +145,15 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 		listener.onOrder(ExecType.CANCELED, order, null, null);
 	}
 	
-	private boolean isMarketable(Quote quote, ChildOrder order) {
+	private boolean quoteIsValid(Quote quote) {
 		if(null != quoteChecker && !quoteChecker.check(quote))
+			return false;
+		
+		return !quote.isStale();
+	}
+	
+	private boolean isMarketable(Quote quote, ChildOrder order) {
+		if(!quoteIsValid(quote))
 			return false;
 		
 		if(order.getType() == ExchangeOrderType.MARKET)

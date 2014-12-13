@@ -77,6 +77,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private Label lblNewLabel_1;
 	private Label lbChange;
 	private Label lbChangePercent;
+	private Label lbStale;
 	
 	public MarketDataView() {
 	}
@@ -225,6 +226,10 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		lbChange = new Label(topComposite, SWT.NONE);
 		
 		lbChangePercent = new Label(topComposite, SWT.NONE);
+		
+		Label lbLabelStale = new Label(topComposite, SWT.NONE);
+		lbLabelStale.setText("Stale");
+		lbStale = new Label(topComposite, SWT.NONE);
 		
 		tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
@@ -462,6 +467,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 					lbChange.setText("");
 					lbChangePercent.setText("");
 				}
+				lbStale.setText(""+quote.isStale());
 				
 				topComposite.layout();
 				

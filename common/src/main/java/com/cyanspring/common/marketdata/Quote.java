@@ -40,6 +40,7 @@ public class Quote implements Cloneable{
 	double totalVolume;
 	Date timeStamp;
 	Date timeSent;
+	boolean stale;
 	
 	public String getSymbol() {
 		return symbol;
@@ -144,6 +145,13 @@ public class Quote implements Cloneable{
 	}
 	public void setTotalVolume(double totalVolume) {
 		this.totalVolume = totalVolume;
+	}
+	
+	public boolean isStale() {
+		return stale;
+	}
+	public void setStale(boolean stale) {
+		this.stale = stale;
 	}
 
 	public String toString()

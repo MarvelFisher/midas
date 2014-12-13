@@ -88,9 +88,8 @@ public class AccountPositionManager implements IPlugin {
 	private List<String> fxSymbols = new ArrayList<String>();
 	private boolean allFxRatesReceived = false;
 	private Map<String, Quote> marketData = new HashMap<String, Quote>();
-	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
 	private String dailyExecTime;
-	private Map<String, Boolean> validQuotes = new HashMap<String, Boolean>();
+	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -399,33 +398,19 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 	
-	private void setQuoteValid(String symbol, Boolean valid) {
-		Boolean existing = validQuotes.put(symbol, valid);
-		if(null != existing && !valid.equals(existing)) {
-			log.info("Quote has turned valid: " + symbol + ", " + valid);
-		}
-	}
-	
-	private boolean getQuoteValid(String symbol) {
-		Boolean result = validQuotes.get(symbol);
-		return null != result && result;
-	}
-	
 	public void processQuoteEvent(QuoteEvent event) {
 		Quote quote = event.getQuote();
-		if(null != quoteChecker && !quoteChecker.check(quote)) {
-			setQuoteValid(quote.getSymbol(), false);
-			return;
-		} else {
-			setQuoteValid(quote.getSymbol(), true);
-		}
 		
 		marketData.put(event.getQuote().getSymbol(), event.getQuote());
-		RefData refData = refDataManager.getRefData(event.getQuote().getSymbol());
+		updateFxRates(quote);
+	}
+	
+	private void updateFxRates(Quote quote) {
+		RefData refData = refDataManager.getRefData(quote.getSymbol());
 		if(refData != null && 
 		   refData.getExchange() != null && 
 		   refData.getExchange().equals("FX")) {
-			fxConverter.updateRate(event.getQuote());
+			fxConverter.updateRate(quote);
 		}
 	}
 	
@@ -460,9 +445,11 @@ public class AccountPositionManager implements IPlugin {
 		if(null == accountKeeper)
 			return;
 		
-		AllAccountSnapshotReplyEvent reply = new AllAccountSnapshotReplyEvent(event.getKey(), event.getSender(), accountKeeper.getAllAccounts());
+		List<Account> allAccounts = accountKeeper.getAllAccounts();
+		AllAccountSnapshotReplyEvent reply = new AllAccountSnapshotReplyEvent(event.getKey(), event.getSender(), allAccounts);
 		try {
 			eventManager.sendRemoteEvent(reply);
+			log.info("AllAccountSnapshotReplyEvent sent: " + allAccounts.size());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -554,6 +541,18 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 	
+	private boolean quoteIsValid(Quote quote) {
+		if(null != quoteChecker && !quoteChecker.check(quote))
+			return false;
+		
+		return !quote.isStale();
+	}
+	
+	private boolean quoteIsValid(String symbol) {
+		Quote quote = marketData.get(symbol);
+		return quoteIsValid(quote);
+	}
+	
 	private void checkStopLoss(Account account) {
 		AccountSetting accountSetting = null;
 		try {
@@ -574,7 +573,7 @@ public class AccountPositionManager implements IPlugin {
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		for(OpenPosition position: positions) {
-			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && getQuoteValid(position.getSymbol())) {
+			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && quoteIsValid(position.getSymbol())) {
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + positionStopLoss);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
@@ -608,7 +607,7 @@ public class AccountPositionManager implements IPlugin {
 			
 			for(int i=0; i<positions.size() && PriceUtils.LessThan(marginLimit, 0.0); i++) {
 				OpenPosition position = positions.get(i);
-				if(!getQuoteValid(position.getSymbol()))
+				if(!quoteIsValid(position.getSymbol()))
 					continue;
 
 				log.info("Margin cut: " + position.getAccount() + ", " +
@@ -683,6 +682,14 @@ public class AccountPositionManager implements IPlugin {
 		this.fxSymbols = fxSymbols;
 	}
 
+	public void setDailyExecTime(String dailyExecTime){
+		this.dailyExecTime = dailyExecTime;
+	}
+	
+	public String getDailyExecTime(){
+		return this.dailyExecTime;
+	}
+
 	public IQuoteChecker getQuoteChecker() {
 		return quoteChecker;
 	}
@@ -691,11 +698,4 @@ public class AccountPositionManager implements IPlugin {
 		this.quoteChecker = quoteChecker;
 	}
 	
-	public void setDailyExecTime(String dailyExecTime){
-		this.dailyExecTime = dailyExecTime;
-	}
-	
-	public String getDailyExecTime(){
-		return this.dailyExecTime;
-	}
 }

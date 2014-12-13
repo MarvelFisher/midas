@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.xml.DOMConfigurator;
@@ -110,7 +111,7 @@ public class Server implements ApplicationContextAware{
 	private List<IPlugin> plugins;
 	private boolean simulatorMode;
 	private boolean headless;
-	private ReadyList readyList = new ReadyList();
+	private ReadyList readyList;
 	private String inbox;
 	private String uid;
 	private String channel;
@@ -120,6 +121,9 @@ public class Server implements ApplicationContextAware{
 	private AsyncTimerEvent shutdownEvent = new AsyncTimerEvent(); 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent(); 
 	private ServerHeartBeatEvent heartBeat = new ServerHeartBeatEvent(null, null);
+	private Map<String, Boolean> readyMap = new HashMap<String, Boolean>();
+	private boolean serverReady;
+	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -193,19 +197,20 @@ public class Server implements ApplicationContextAware{
 	}
 	
 	class ReadyList {
-		HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+		Map<String, Boolean> map = new HashMap<String, Boolean>();
 		
-		ReadyList() {
-			map.put("DownStream", false);
-			map.put("MarketData", false);
-			map.put("Recovery", false);
+		ReadyList(Map<String, Boolean> map) {
+			this.map = map;
+//			map.put("DownStream", false);
+//			map.put("MarketData", false);
+//			map.put("Recovery", false);
 		}
 		
 		synchronized void update(String key, boolean value) {
-			boolean prev = allUp();
 			map.put(key, value);
 			boolean now = allUp();
-			if(prev != now) {
+			if(!serverReady && now) {
+				serverReady = true;
 				log.info("Server is ready: " + now);
 				ServerReadyEvent event = new ServerReadyEvent(now);
 				eventManager.sendEvent(event);
@@ -300,6 +305,9 @@ public class Server implements ApplicationContextAware{
 		OrderField.validate();
 		TickField.validate();
 		IdGenerator.getInstance().setPrefix(systemInfo.getId()+"-");
+		
+		// setting ready List
+		readyList = new ReadyList(readyMap);
 		
 		// create node.info subscriber and publisher
 		log.info("SystemInfo: " + systemInfo);
@@ -510,6 +518,14 @@ public class Server implements ApplicationContextAware{
 
 	public void setHeadless(boolean headless) {
 		this.headless = headless;
+	}
+
+	public Map<String, Boolean> getReadyMap() {
+		return readyMap;
+	}
+
+	public void setReadyMap(Map<String, Boolean> readyMap) {
+		this.readyMap = readyMap;
 	}
 
 	/**
