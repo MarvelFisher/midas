@@ -208,8 +208,20 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		
 		loadLastQuotes();
 
-		adaptor.init();
 		adaptor.subscribeMarketDataState(this);
+		Thread thread = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try {
+					adaptor.init();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+			
+		});
+		thread.start();
+		
 		if(adaptor.getState())
 			preSubscribe();
 	}
