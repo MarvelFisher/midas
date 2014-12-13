@@ -73,6 +73,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private long lastQuoteSaveInterval = 20000;
 	private Date lastQuoteSaveTime = new Date();
 	private XStream xstream = new XStream(new DomDriver());
+	private boolean staleQuotesSent;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -173,6 +174,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 		quotesToBeSent.clear();
 		saveLastQuotes();
+		broadCastStaleQuotes();
 	}
 	
 	public void processTradeEvent(TradeEvent event) {
@@ -243,6 +245,20 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			os.close();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+		}
+	}
+	
+	private void broadCastStaleQuotes() {
+		if(staleQuotesSent)
+			return;
+		
+		if(TimeUtil.getTimePass(lastQuoteSaveTime) < 2 * lastQuoteSaveInterval) 
+			return;
+		
+		staleQuotesSent = true;
+		for(Quote quote: quotes.values()) {
+			if(quote.isStale())
+				this.clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
 		}
 	}
 		
