@@ -207,6 +207,8 @@ public class Server implements ApplicationContextAware{
 		}
 		
 		synchronized void update(String key, boolean value) {
+			if(!map.containsKey(key))
+				return;
 			map.put(key, value);
 			boolean now = allUp();
 			if(!serverReady && now) {
