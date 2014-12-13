@@ -71,9 +71,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private String tickDir = "ticks";
 	private String lastQuoteFile = "last.xml";
 	private long lastQuoteSaveInterval = 20000;
-	private Date lastQuoteSaveTime = new Date();
+	private Date lastQuoteSaveTime = Clock.getInstance().now();
 	private XStream xstream = new XStream(new DomDriver());
 	private boolean staleQuotesSent;
+	private Date initTime = Clock.getInstance().now();
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -252,7 +253,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		if(staleQuotesSent)
 			return;
 		
-		if(TimeUtil.getTimePass(lastQuoteSaveTime) < 2 * lastQuoteSaveInterval) 
+		if(TimeUtil.getTimePass(initTime) < lastQuoteSaveInterval) 
 			return;
 		
 		staleQuotesSent = true;
