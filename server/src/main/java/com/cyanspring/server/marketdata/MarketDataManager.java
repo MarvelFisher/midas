@@ -230,6 +230,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		if(TimeUtil.getTimePass(lastQuoteSaveTime) < lastQuoteSaveInterval) 
 			return;
 		
+		if(quotes.size() <= 0)
+			return;
+		
 		lastQuoteSaveTime = Clock.getInstance().now();
 		String fileName = tickDir + "/" + lastQuoteFile;
 		File file = new File(fileName);
