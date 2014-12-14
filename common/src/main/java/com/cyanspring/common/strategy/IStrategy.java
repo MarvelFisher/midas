@@ -1,5 +1,6 @@
 package com.cyanspring.common.strategy;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +16,7 @@ import com.cyanspring.common.strategy.ExecuteTiming;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
 
-public interface IStrategy {
+public interface IStrategy extends Serializable{
 	public List<FieldDef> getCommonFieldDefs();
 	public Map<String, FieldDef> getCombinedFieldDefs() throws StrategyException;
 	

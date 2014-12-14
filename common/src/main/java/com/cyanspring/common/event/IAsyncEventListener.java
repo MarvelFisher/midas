@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.cyanspring.common.event;
 
-public interface IAsyncEventListener{
+import java.io.Serializable;
+
+public interface IAsyncEventListener extends Serializable{
 	void onEvent(AsyncEvent event);
 }

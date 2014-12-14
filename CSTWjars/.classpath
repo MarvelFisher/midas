@@ -19,7 +19,8 @@
 	<classpathentry exported="true" kind="lib" path="xstream-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="activemq-core-5.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="geronimo-jms_1.1_spec-1.1.1.jar"/>
-	<classpathentry kind="lib" path="apache-log4j-extras-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="apache-log4j-extras-1.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="fst-2.16.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

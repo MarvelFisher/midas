@@ -11,6 +11,7 @@
 package com.cyanspring.common.data;
 
 import java.io.CharArrayWriter;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.CompactWriter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class DataObject implements Cloneable{
+public class DataObject implements Cloneable, Serializable{
 	private static final Logger log = LoggerFactory
 			.getLogger(DataObject.class);
 	static private XStream xstream = new XStream(new DomDriver());

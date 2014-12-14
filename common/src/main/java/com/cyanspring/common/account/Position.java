@@ -1,11 +1,12 @@
 package com.cyanspring.common.account;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.PriceUtils;
 
-public abstract class Position {
+public abstract class Position implements Serializable{
 	private String id;
 	private String account;
 	private String user;

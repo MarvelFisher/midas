@@ -12,6 +12,8 @@ package com.cyanspring.event;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
+
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -27,7 +29,7 @@ import com.cyanspring.transport.ActiveMQObjectService;
 
 //@ContextConfiguration(locations = { "classpath:META-INFO/spring/RemoteEventManagerTest.xml" })
 //@RunWith(SpringJUnit4ClassRunner.class)
-public class RemoteEventManagerTest {
+public class RemoteEventManagerTest implements Serializable {
 	static RemoteEventManager mgr1;
 	static RemoteEventManager mgr2;
 	static RemoteEventManager mgr3;
@@ -46,7 +48,7 @@ public class RemoteEventManagerTest {
 		
 	}
 	
-	class RemoteListener implements IAsyncEventListener {
+	class RemoteListener implements IAsyncEventListener, Serializable {
 		public AsyncEvent event;
 		public void onEvent(AsyncEvent event) {
 			System.out.println(event);
