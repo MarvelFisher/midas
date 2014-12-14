@@ -103,6 +103,7 @@ public class Business {
 			if (event instanceof NodeInfoEvent ){
 				NodeInfoEvent nodeInfo = (NodeInfoEvent)event;
 				if(nodeInfo.getServer()) {
+					log.info("NodeInfoEvent received: " + nodeInfo.getSender());
 					Boolean serverIsUp = servers.get(nodeInfo.getInbox());
 					if(serverIsUp != null && serverIsUp) {
 						log.error("ignore since server " + nodeInfo.getInbox() + " is still up");
@@ -131,6 +132,7 @@ public class Business {
 					requestStrategyInfo(evt.getSender());
 				}
 			} else if (event instanceof ServerReadyEvent) {
+				log.info("ServerReadyEvent  received: " + ((ServerReadyEvent) event).getSender());
 				InitClientRequestEvent request = new InitClientRequestEvent(null, ((ServerReadyEvent) event).getSender());
 				try {
 					eventManager.sendRemoteEvent(request);
