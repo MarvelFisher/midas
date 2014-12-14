@@ -10,9 +10,14 @@
  ******************************************************************************/
 package com.cyanspring.transport;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -21,6 +26,8 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +37,8 @@ import com.cyanspring.common.transport.IObjectTransportService;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class ActiveMQObjectService extends ActiveMQService implements IObjectTransportService {
-	static Logger log = LoggerFactory.getLogger(ActiveMQObjectService.class);
+public class ActiveMQFastService extends ActiveMQService implements IObjectTransportService {
+	static Logger log = LoggerFactory.getLogger(ActiveMQFastService.class);
 	private XStream xstream = new XStream(new DomDriver());
 
     private HashMap<String, ArrayList<IObjectListener>> objSubscribers = new HashMap<String, ArrayList<IObjectListener>>();
@@ -47,12 +54,30 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
     	
 		@Override
 		public void onMessage(Message message) {
-            if (message instanceof TextMessage) {
+            if(message instanceof BytesMessage) {
             	try {
-            		String str = ((TextMessage) message).getText();
-            		log.debug("Received message: \n" + str);
-            		Object obj = xstream.fromXML(str);
+            		BytesMessage bms = (BytesMessage)message;
+            		int nLength = (int)bms.getBodyLength();
+            		if(nLength == 0)
+            		{
+            			log.warn("message length is 0, message=[" + message.toString() + "]");
+            			return;
+            		}
+            		
+            		byte[] bs = new byte[nLength];
+            		bms.readBytes(bs, bs.length);
+            		Object obj = fastDeserialize(bs);
+            		
+            		if(obj == null)
+            			return;
+            		
 					listener.onMessage(obj);
+					
+					if(log.isDebugEnabled())
+					{
+						String str = xstream.toXML(obj);
+						log.debug("Received message: \n" + str);
+					}
 				} catch (JMSException e) {
 					log.error(e.getMessage(), e);
 					e.printStackTrace();
@@ -60,7 +85,8 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 					log.error(e.getMessage(), e);
 					e.printStackTrace();
 				}
-            } else {
+            }
+            else {
             	log.error("Unexpected text message: " + message);
             }
 			
@@ -77,10 +103,29 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 
 		@Override
 		public void sendMessage(Object obj) throws Exception {
-			String message = xstream.toXML(obj);
-			log.debug("Sending message: \n" + message);
-			TextMessage txt = session.createTextMessage(message);
-			producer.send(txt);
+			if(obj == null)
+				return;
+			
+			if(!(obj instanceof Serializable))
+			{
+				log.warn(obj.getClass() + " is not serializable");
+				return;
+			}
+			
+			byte[] bs = fastSerialize(obj);
+			
+			if(bs == null || bs.length == 0)
+				return;
+			
+			BytesMessage message = session.createBytesMessage();
+			message.writeBytes(bs);
+			producer.send(message);
+			
+			if(log.isDebugEnabled())
+			{
+				String xmlmsg = xstream.toXML(obj);
+				log.debug("Sending message: \n" + xmlmsg);
+			}
 		}
     	
     }
@@ -175,5 +220,97 @@ public class ActiveMQObjectService extends ActiveMQService implements IObjectTra
 
 		return new ObjectSender(producer);
 	}
+	
+	   public static byte[] fastSerialize(Object obj) {
+	        ByteArrayOutputStream byteArrayOutputStream = null;
+	        FSTObjectOutput out = null;
+	        try {
+	            // stream closed in the finally
+	            byteArrayOutputStream = new ByteArrayOutputStream(512);
+	            out = new FSTObjectOutput(byteArrayOutputStream);  //32000  buffer size
+	            out.writeObject(obj);
+	            out.flush();
+	            return byteArrayOutputStream.toByteArray();
+	        } catch (IOException ex) {
+	            log.error(ex.getMessage(), ex);
+	            return null;
+	        } finally {
+	            try {
+	                obj = null;
+	                if (out != null) {
+	                    out.close();    //call flush byte buffer
+	                    out = null;
+	                }
+	                if (byteArrayOutputStream != null) {
 
+	                    byteArrayOutputStream.close();
+	                    byteArrayOutputStream = null;
+	                }
+	            } catch (IOException ex) {
+	                // ignore close exception
+	            }
+	        }
+	    }
+	   
+	    public static Object fastDeserialize(byte[] objectData) throws Exception {
+	        ByteArrayInputStream byteArrayInputStream = null;
+	        FSTObjectInput in = null;
+	        try {
+	            // stream closed in the finally
+	            byteArrayInputStream = new ByteArrayInputStream(objectData);
+	            in = new FSTObjectInput(byteArrayInputStream);
+	            return in.readObject();
+	        } catch (ClassNotFoundException ex) {
+	            log.error(ex.getMessage(), ex);
+	            return null;
+	        } catch (IOException ex) {
+	        	log.error(ex.getMessage(), ex);
+	        	return null;
+	        } finally {
+	            try {
+	                objectData = null;
+	                if (in != null) {
+	                    in.close();
+	                    in = null;
+	                }
+	                if (byteArrayInputStream != null) {
+	                    byteArrayInputStream.close();
+	                    byteArrayInputStream = null;
+	                }
+	            } catch (IOException ex) {
+	                // ignore close exception
+	            }
+	        }
+	    }
+
+	/*
+	public static void main(String[] argv)
+	{
+		DefaultCoder coder = new DefaultCoder();
+		AccountUpdateEvent event = new AccountUpdateEvent("123", "456", new Account("abc", "abccc"));
+		Object o;
+		
+		long pretime = Calendar.getInstance().getTimeInMillis();
+		
+		for(int i=0 ; i<1000 ; i++)
+		{
+			byte[] bs = coder.toByteArray(event);
+			o = coder.toObject(bs);
+		}
+		
+		long posttime = Calendar.getInstance().getTimeInMillis();
+		System.out.println("FST=[" + (posttime-pretime) + "]");
+		
+		XStream xstream = new XStream(new DomDriver());
+		
+		pretime = Calendar.getInstance().getTimeInMillis();
+		for(int i=0 ; i<1000 ; i++)
+		{
+			String xml = xstream.toXML(event);
+			o = xstream.fromXML(xml);
+		}
+		posttime = Calendar.getInstance().getTimeInMillis();
+		System.out.println("XML=[" + (posttime-pretime) + "]");
+	}
+	*/
 }

@@ -154,19 +154,18 @@ public class PositionKeeper {
 			
 			OpenPosition update = getOverallPosition(account, execution.getSymbol());
 			notifyOpenPositionUpdate(update);
-			double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
-					execution.getSymbol(), execution.getQuantity(), execution.getPrice());
-			double commision = Default.getCommision(value);
 			if(!PriceUtils.isZero(Default.getCommision())) {
+				double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
+				double commision = Default.getCommision() * value;
 				account.updatePnL(-commision);
 				needAccountUpdate = true;
 			} 
 			
-			updateAccountDynamicData(account);
-
 			if(needAccountUpdate)
 				notifyAccountUpdate(account);
 			
+			updateAccountDynamicData(account);
 		}
 	}
 	
@@ -373,8 +372,6 @@ public class PositionKeeper {
 		if(null == quoteFeeder)
 			return;
 
-		boolean needAccountUpdate = false;
-		
 		synchronized(getSyncAccount(account.getId())) {
 			// since margin is contributed by both open position and open orders, we need
 			// to work out a combined list of symbols with either one of them
@@ -399,9 +396,7 @@ public class PositionKeeper {
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
 						accountMargin += overallPosition.getAcPnL();
-						
-						if(account.isNeedNotifyOpenPositionUpdate(overallPosition))
-							notifyOpenPositionUrPnLUpdate(overallPosition);
+						notifyOpenPositionUrPnLUpdate(overallPosition);
 					}
 				}
 				
@@ -409,16 +404,10 @@ public class PositionKeeper {
 				accountMargin -= marginValue;
 			}
 
-			if((account.getPnL() != accountUrPnL) || (account.getMargin() != accountMargin))
-			{
-				needAccountUpdate = true;
-				account.setUrPnL(accountUrPnL);
-				account.setMargin(accountMargin);
-			}
+			account.setUrPnL(accountUrPnL);
+			account.setMargin(accountMargin);
 		}
-		
-		if(needAccountUpdate)
-			notifyAccountDynamicUpdate(account);
+		notifyAccountDynamicUpdate(account);
 	}
 	
 	private double getMarginQtyByAccountAndSymbol(Account account, String symbol, double extraQty) {
