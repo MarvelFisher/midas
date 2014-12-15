@@ -31,7 +31,7 @@ public class CentralDbConnector {
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d)";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
-	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true";
+	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true&autoReconnect=true&autoReconnectForPools=true";
 
 	private static final Logger log = LoggerFactory
 			.getLogger(CentralDbConnector.class);
