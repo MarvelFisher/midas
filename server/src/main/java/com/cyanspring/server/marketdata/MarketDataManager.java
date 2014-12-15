@@ -28,6 +28,7 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.PresubscribeEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
@@ -82,6 +83,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		public void subscribeToEvents() {
 			subscribeToEvent(QuoteSubEvent.class, null);
 			subscribeToEvent(TradeSubEvent.class, null);
+			subscribeToEvent(PresubscribeEvent.class, null);
 		}
 
 		@Override
@@ -89,6 +91,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			return eventManager;
 		}
 	};	
+	
+	public void processPresubscribeEvent(PresubscribeEvent event) {
+		preSubscribe();
+	}
 	
 	public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
 		log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
@@ -226,7 +232,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		thread.start();
 		
 		if(adaptor.getState())
-			preSubscribe();
+			eventProcessor.onEvent(new PresubscribeEvent(null));
 	}
 	
 	private void saveLastQuotes() {
@@ -316,7 +322,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			log.warn("MarketData feed is down");
 		} else {
 			log.info("MarketData feed is up");
-			preSubscribe();
+			eventProcessor.onEvent(new PresubscribeEvent(null));
 		}
 		eventManager.sendEvent(new MarketDataReadyEvent(null, on));
 	

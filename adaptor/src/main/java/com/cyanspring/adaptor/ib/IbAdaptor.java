@@ -178,7 +178,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	public void subscribeMarketData(String instrument,
 			IMarketDataListener listener) throws MarketDataException {
 		log.info("subscribeMarketData: " + instrument);
-		log.debug("Setting refDataManager: " + refDataManager);
+		log.debug("Setting refDataManager: " + refDataManager.getClass());
 		RefData refData = refDataManager.getRefData(instrument);
 		if(refData == null) {
 			throw new MarketDataException("Symbol " + instrument + " is not found in reference data");
