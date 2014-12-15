@@ -28,7 +28,7 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
-import com.cyanspring.common.account.PositionCloseReason;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -341,7 +341,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 							
 							ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
 									server, position.getAccount(), 
-									position.getSymbol(), PositionCloseReason.ManualClose, 
+									position.getSymbol(), OrderReason.ManualClose, 
 									IdGenerator.getInstance().getNextID());
 							Business.getInstance().getEventManager().sendRemoteEvent(request);
 						}

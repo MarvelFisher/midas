@@ -1,16 +1,16 @@
 package com.cyanspring.common.event.order;
 
-import com.cyanspring.common.account.PositionCloseReason;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class ClosePositionRequestEvent extends RemoteAsyncEvent {
 	private String account;
 	private String symbol;
-	private PositionCloseReason reason;
+	private OrderReason reason;
 	private String txId;
 	
 	public ClosePositionRequestEvent(String key, String receiver,
-			String account, String symbol, PositionCloseReason reason, String txId) {
+			String account, String symbol, OrderReason reason, String txId) {
 		super(key, receiver);
 		this.account = account;
 		this.symbol = symbol;
@@ -26,7 +26,7 @@ public class ClosePositionRequestEvent extends RemoteAsyncEvent {
 		return symbol;
 	}
 
-	public PositionCloseReason getReason() {
+	public OrderReason getReason() {
 		return reason;
 	}
 	

@@ -25,7 +25,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
-import com.cyanspring.common.account.PositionCloseReason;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
@@ -577,7 +577,7 @@ public class AccountPositionManager implements IPlugin {
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + positionStopLoss);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), PositionCloseReason.StopLoss,
+						null, position.getAccount(), position.getSymbol(), OrderReason.StopLoss,
 						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);
@@ -614,7 +614,7 @@ public class AccountPositionManager implements IPlugin {
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + marginLimit);
 				marginLimit -= position.getAcPnL();
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), PositionCloseReason.MarginCall,
+						null, position.getAccount(), position.getSymbol(), OrderReason.MarginCall,
 						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);

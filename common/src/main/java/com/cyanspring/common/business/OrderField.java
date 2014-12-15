@@ -62,6 +62,7 @@ public enum OrderField {
 		ACCOUNT("Account"),
 		STOP_LOSS_PRICE("Stop Loss"),
 		SENDER("Sender"),
+		REASON("Reason")
 		;
 		
 		static HashMap<String, OrderField> map = new HashMap<String, OrderField>();

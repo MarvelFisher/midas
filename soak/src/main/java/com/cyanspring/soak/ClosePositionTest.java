@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.cyanspring.client.ClientAdaptor;
-import com.cyanspring.common.account.PositionCloseReason;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
@@ -78,7 +78,7 @@ public class ClosePositionTest extends ClientAdaptor {
 	
 	private void action2() {
 		sendEvent(new ClosePositionRequestEvent(account, null, account, 
-				symbol, PositionCloseReason.ManualClose, IdGenerator.getInstance().getNextID()));
+				symbol, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
 		//this should get rejected
 		sendEvent(getEnterOrderEvent(0.9));
 		
@@ -93,7 +93,7 @@ public class ClosePositionTest extends ClientAdaptor {
 
 		//this should be rejected
 		sendEvent(new ClosePositionRequestEvent(account, null, account, 
-				symbol, PositionCloseReason.ManualClose, IdGenerator.getInstance().getNextID()));
+				symbol, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
 
 		CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
 				tobeAmended, IdGenerator.getInstance().getNextID());

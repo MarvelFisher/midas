@@ -40,6 +40,7 @@
 	            <value>User</value>  
 	            <value>Account</value>  
 	            <value>Note</value>  
+	            <value>Reason</value>  
 	        </list>
 	    </constructor-arg>
 	</bean> 
@@ -173,6 +174,11 @@
             		<property name="name" value="Account"/>
             		<property name="type" value="java.lang.String"/>
             		<property name="input" value="true"/>
+            		<property name="amendable" value="false"/>
+				</bean>
+            	<bean class="com.cyanspring.common.business.FieldDef">
+            		<property name="name" value="Reason"/>
+            		<property name="type" value="com.cyanspring.common.account.OrderReason"/>
             		<property name="amendable" value="false"/>
 				</bean>
 	        </list>

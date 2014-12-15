@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.BeanHolder;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.util.DataConvertException;
@@ -403,6 +404,10 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 		fields.put(OrderField.END_TIME.value(), txtEndTime.getText());
 		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
 		fields.put(OrderField.ACCOUNT.value(), Business.getInstance().getAccount());
+		
+		if(cbStrategy.getText().equals("STOP"))
+			fields.put(OrderField.REASON.value(), OrderReason.StopOrder);
+			
 			
 		HashMap<String, String> extraFields = (HashMap<String, String>)viewer.getInput();
 		if(null != extraFields)

@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
@@ -156,8 +157,16 @@ public class ParentOrder extends Order {
 		return get(String.class, OrderField.NOTE.value());
 	}
 	
-	public void setNote(String sender) {
-		put(OrderField.NOTE.value(), sender);
+	public void setNote(String note) {
+		put(OrderField.NOTE.value(), note);
+	}
+	
+	public OrderReason getReason() {
+		return get(OrderReason.class, OrderField.REASON.value());
+	}
+	
+	public void setReason(OrderReason reason) {
+		put(OrderField.REASON.value(), reason);
 	}
 	
 	public boolean priceInLimit(double price) {
