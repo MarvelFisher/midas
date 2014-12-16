@@ -31,6 +31,7 @@ public class CentralDbConnector {
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d)";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
+	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
 	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true&autoReconnect=true&autoReconnectForPools=true";
 
 	private static final Logger log = LoggerFactory
@@ -232,6 +233,58 @@ public class CentralDbConnector {
 		}
 		return false;
 	}
+	
+	public boolean changePassword(String sUser, String originalPass, String newPass) {
+		if (!checkConnected())
+			return false;
+
+		String sQuery = String.format(getUserPasswordSalt, sUser);
+		Statement stmt = null;
+
+		String md5Password = null;
+		String salt = null;
+
+		try {
+			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sQuery);
+
+			if (rs.next())
+			{
+				md5Password = rs.getString("PASSWORD");
+				salt = rs.getString("SALT");
+			}
+			
+			if(md5Password == null)
+				return false;
+
+			String fullPassword = (salt == null)? originalPass : originalPass + salt;
+			
+			if(!md5Password.equals(md5(fullPassword)))
+				return false;
+			
+			String newMd5Password = md5(newPass + salt);
+			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser);
+			
+			int nResult = stmt.executeUpdate(sQuerySet);
+			if(1 != nResult)
+				return false;
+			conn.commit();
+
+		} catch (SQLException e) {
+			log.error(e.getMessage(), e);
+			return false;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		return true;
+	}
 
 	public String getHost() {
 		return this.host;
@@ -335,8 +388,9 @@ public class CentralDbConnector {
 		if (bConnect) {
 			//conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
 			//boolean bExist = conn.isUserExist("test1");
-			boolean bLogin = conn.userLogin("test1011", "test101");
-			System.out.println(bLogin);
+			//boolean bLogin = conn.userLogin("test1011", "test101");
+			boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
+			System.out.println(bChangePassword);
 		}
 	}
 }
