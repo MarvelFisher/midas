@@ -30,6 +30,7 @@ public class CentralDbConnector {
 	private static CentralDbConnector inst = null;
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d)";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
+	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
 	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true&autoReconnect=true&autoReconnectForPools=true";
@@ -168,6 +169,35 @@ public class CentralDbConnector {
 			return false;
 
 		String sQuery = String.format(isUserExist, sUser);
+		Statement stmt = null;
+		int nCount = 0;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sQuery);
+
+			if (rs.next())
+				nCount = rs.getInt("COUNT(*)");
+
+		} catch (SQLException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		return (nCount > 0);
+	}
+	
+	public boolean isEmailExist(String sEmail) {
+		if (!checkConnected())
+			return false;
+
+		String sQuery = String.format(isEmailExist, sEmail);
 		Statement stmt = null;
 		int nCount = 0;
 
@@ -388,9 +418,10 @@ public class CentralDbConnector {
 		if (bConnect) {
 			//conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
 			//boolean bExist = conn.isUserExist("test1");
+			boolean bExist = conn.isEmailExist("phoenix.su@hkfdt.com");
 			//boolean bLogin = conn.userLogin("test1011", "test101");
-			boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
-			System.out.println(bChangePassword);
+			//boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
+			System.out.println(bExist);
 		}
 	}
 }
