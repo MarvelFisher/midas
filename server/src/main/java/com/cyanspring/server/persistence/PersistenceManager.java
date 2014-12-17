@@ -800,6 +800,7 @@ public class PersistenceManager {
 		finally {
 			session.close();
 		}
+		log.info("Account day end processing end");
 	}
 	
 	public void processChangeUserPasswordEvent(ChangeUserPasswordEvent event)
