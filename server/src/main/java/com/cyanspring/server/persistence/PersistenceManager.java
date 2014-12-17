@@ -43,6 +43,8 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.account.ChangeUserPasswordEvent;
+import com.cyanspring.common.event.account.ChangeUserPasswordReplyEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
@@ -118,6 +120,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
+			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -598,6 +601,8 @@ public class PersistenceManager {
 			{
 				if(centralDbConnector.isUserExist(user.getId()))
 					throw new CentralDbException("This user already exists: " + user.getId());
+				if(centralDbConnector.isEmailExist(user.getEmail()))
+					throw new CentralDbException("This email already exists: " + user.getEmail());
 				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
 					throw new CentralDbException("can't create this user: " + user.getId());
 			}
@@ -794,6 +799,36 @@ public class PersistenceManager {
 		}
 		finally {
 			session.close();
+		}
+	}
+	
+	public void processChangeUserPasswordEvent(ChangeUserPasswordEvent event)
+	{
+		boolean ok = false;
+		String message = "";
+		
+		try 
+		{
+			if(!syncCentralDb || centralDbConnector.changePassword(event.getUser(), event.getOriginalPassword(), event.getNewPassword()))
+			{
+				ok = true;
+				log.info("Change password, user: " + event.getUser());
+			}
+			else
+				message = "can't change user's password";
+		}
+		catch (Exception e) 
+		{
+			log.error(e.getMessage(), e);
+			ok = false;
+			message = String.format("can't change user's password, err=[%s]", e.getMessage());
+		}
+		
+		try {
+			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(), 
+					event.getSender(), event.getUser(), ok, message, event.getTxId()));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 	
