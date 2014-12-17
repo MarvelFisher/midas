@@ -126,11 +126,11 @@ public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
 		String strPrice = priceFormat.format(execution.getPrice());
 		String tradeMessage = "Trade " + execution.getSymbol() + " " + 
 				execution.getSide().toString() + " " + strQty + "@" + strPrice;
-		String account = execution.getAccount();
+		String user = execution.getUser();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String strDate = dateFormat.format(Clock.getInstance().now());
 		String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty + "," + (execution.getSide().isBuy()?"BOUGHT":"SOLD");
-		ParseData data = new ParseData(account, tradeMessage, account + IdGenerator.getInstance().getNextID(),
+		ParseData data = new ParseData(user, tradeMessage, user + IdGenerator.getInstance().getNextID(),
 				MSG_TYPE_ORDER, strDate, keyValue);
 		
 		try {
