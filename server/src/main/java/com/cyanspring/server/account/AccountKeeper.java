@@ -24,8 +24,36 @@ public class AccountKeeper {
 	private List<Account> jobs = new ArrayList<Account>();
 	private ConcurrentHashMap<String, AccountSetting> accountSettings = 
 				new ConcurrentHashMap<String, AccountSetting>();
-	private int jobIndex = 0;
-	private int jobBatch = 50;
+	private int dynamicJobBatch = 100;
+	private int rmJobBatch = 2000;
+	private AccountJobs dynamicJobs;
+	private AccountJobs rmJobs;
+	
+	public void init() {
+		dynamicJobs = new AccountJobs(dynamicJobBatch);
+		rmJobs = new AccountJobs(rmJobBatch);
+	}
+	
+	public class AccountJobs {
+		private int jobIndex = 0;
+		private int jobBatch = 50;
+		
+		public AccountJobs(int jobBatch) {
+			this.jobBatch = jobBatch;
+		}
+		
+		public List<Account> getJobs() {
+			List<Account> result = new ArrayList<Account>();
+			int i = 0;
+			while(i < this.jobBatch && i < jobs.size()) {
+				result.add(jobs.get(this.jobIndex++));
+				if(this.jobIndex>=jobs.size())
+					this.jobIndex = 0;
+				i++;
+			}
+			return result;
+		}
+	}
 	
 	public AccountSetting getAccountSetting(String account) throws AccountException {
 		if(!accounts.containsKey(account))
@@ -112,26 +140,6 @@ public class AccountKeeper {
 		return result;
 	}
 	
-	public int getJobBatch() {
-		return jobBatch;
-	}
-
-	public void setJobBatch(int jobBatch) {
-		this.jobBatch = jobBatch;
-	}
-
-	public List<Account> getJobs() {
-		List<Account> result = new ArrayList<Account>();
-		int i = 0;
-		while(i < this.jobBatch && i < jobs.size()) {
-			result.add(jobs.get(this.jobIndex++));
-			if(this.jobIndex>=jobs.size())
-				this.jobIndex = 0;
-			i++;
-		}
-		return result;
-	}
-	
 	public Account tryCreateDefaultAccount() {
 		if(!accountExists(Default.getAccount())) {
 			Account account = null;
@@ -157,4 +165,30 @@ public class AccountKeeper {
 			this.accountSettings.put(accountSetting.getId(), accountSetting);
 		}
 	}
+
+	public AccountJobs getDynamicJobs() {
+		return dynamicJobs;
+	}
+
+	public AccountJobs getRmJobs() {
+		return rmJobs;
+	}
+
+	public int getDynamicJobBatch() {
+		return dynamicJobBatch;
+	}
+
+	public void setDynamicJobBatch(int dynamicJobBatch) {
+		this.dynamicJobBatch = dynamicJobBatch;
+	}
+
+	public int getRmJobBatch() {
+		return rmJobBatch;
+	}
+
+	public void setRmJobBatch(int rmJobBatch) {
+		this.rmJobBatch = rmJobBatch;
+	}
+	
+	
 }

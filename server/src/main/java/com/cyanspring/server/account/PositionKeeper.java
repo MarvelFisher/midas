@@ -152,8 +152,7 @@ public class PositionKeeper {
 				}
 			}
 			
-			OpenPosition update = getOverallPosition(account, execution.getSymbol());
-			notifyOpenPositionUpdate(update);
+
 			if(!PriceUtils.isZero(Default.getCommision())) {
 				double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
@@ -162,10 +161,14 @@ public class PositionKeeper {
 				needAccountUpdate = true;
 			} 
 			
+			updateAccountDynamicData(account);
+
+			OpenPosition update = getOverallPosition(account, execution.getSymbol());
+			notifyOpenPositionUpdate(update);
+
 			if(needAccountUpdate)
 				notifyAccountUpdate(account);
 			
-			updateAccountDynamicData(account);
 		}
 	}
 	
@@ -396,7 +399,7 @@ public class PositionKeeper {
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
 						accountMargin += overallPosition.getAcPnL();
-						notifyOpenPositionUrPnLUpdate(overallPosition);
+						//notifyOpenPositionUrPnLUpdate(overallPosition);
 					}
 				}
 				
@@ -407,7 +410,7 @@ public class PositionKeeper {
 			account.setUrPnL(accountUrPnL);
 			account.setMargin(accountMargin);
 		}
-		notifyAccountDynamicUpdate(account);
+		//notifyAccountDynamicUpdate(account);
 	}
 	
 	private double getMarginQtyByAccountAndSymbol(Account account, String symbol, double extraQty) {

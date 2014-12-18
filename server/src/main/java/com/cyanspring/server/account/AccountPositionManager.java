@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,9 @@ import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.PerfDurationCounter;
+import com.cyanspring.common.util.PerfFrequencyCounter;
+import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.persistence.PersistenceManager;
@@ -90,6 +94,18 @@ public class AccountPositionManager implements IPlugin {
 	private Map<String, Quote> marketData = new HashMap<String, Quote>();
 	private String dailyExecTime;
 	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
+	private long dynamicUpdateInterval = 2000;
+	private long rmUpdateInterval = 900;
+	private TimeThrottler dynamicUpdateThrottler;
+	private TimeThrottler rmUpdateThrottler;
+	private Map<String, Account> accountUpdates = new ConcurrentHashMap<String, Account>();
+	private Map<String, OpenPosition> positionUpdates = new ConcurrentHashMap<String, OpenPosition>();
+	private long perfUpdateInterval = 20000;
+	private long perfRmInterval = 20000;
+	private PerfDurationCounter perfDataRm;
+	private PerfDurationCounter perfDataUpdate;
+	private PerfFrequencyCounter perfFqyAccountUpdate;
+	private PerfFrequencyCounter perfFqyPositionUpdate;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -197,6 +213,17 @@ public class AccountPositionManager implements IPlugin {
 	
 	@Override
 	public void init() throws Exception {
+		if(null != accountKeeper)
+			accountKeeper.init();
+		
+		perfDataUpdate = new PerfDurationCounter("Dynamic data update", perfUpdateInterval);
+		perfDataRm = new PerfDurationCounter("Risk management", perfRmInterval);
+		perfFqyAccountUpdate = new PerfFrequencyCounter("Dynamic account update", 30000);
+		perfFqyPositionUpdate = new PerfFrequencyCounter("Dynamic position update", 30000);
+		
+		dynamicUpdateThrottler = new TimeThrottler(dynamicUpdateInterval);
+		rmUpdateThrottler = new TimeThrottler(rmUpdateInterval);
+		
 		positionKeeper.setListener(positionListener);
 		positionKeeper.setQuoteFeeder(quoteFeeder);
 		
@@ -217,6 +244,29 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	IPositionListener positionListener = new IPositionListener() {
+
+		boolean dynamicDataHasChanged(Account account) {
+			Account last = accountUpdates.get(account.getId());
+			if(last == null || account == null || last.getMargin() != account.getMargin() || last.getUrPnL() != account.getUrPnL()) {
+				try {
+					accountUpdates.put(account.getId(), account.clone());
+				} catch (CloneNotSupportedException e) {
+					log.error(e.getMessage(), e);
+				}
+				return true;
+			}
+			return false;
+		}
+		
+		boolean dynamicDataHasChanged(OpenPosition position) {
+			OpenPosition last = positionUpdates.get(position.getId());
+			if(last == null || position == null || last.getPnL() != position.getPnL()) {
+				positionUpdates.put(position.getId(), position);
+				return true;
+			}
+			return false;
+		}
+		
 		@Override
 		public void onRemoveDetailOpenPosition(OpenPosition position) {
 			eventManager.sendEvent(new PmRemoveDetailOpenPositionEvent(PersistenceManager.ID, position));
@@ -231,6 +281,7 @@ public class AccountPositionManager implements IPlugin {
 		@Override
 		public void onOpenPositionUpdate(OpenPosition position) {
 			try {
+				positionUpdates.put(position.getId(), position);
 				eventManager.sendRemoteEvent(new OpenPositionUpdateEvent(position.getAccount(), null, position));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -240,7 +291,10 @@ public class AccountPositionManager implements IPlugin {
 		@Override
 		public void onOpenPositionDynamiceUpdate(OpenPosition position) {
 			try {
-				eventManager.sendRemoteEvent(new OpenPositionDynamicUpdateEvent(position.getAccount(), null, position));
+				if(dynamicDataHasChanged(position)) {
+					perfFqyPositionUpdate.count();
+					eventManager.sendRemoteEvent(new OpenPositionDynamicUpdateEvent(position.getAccount(), null, position));
+				}
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -258,6 +312,7 @@ public class AccountPositionManager implements IPlugin {
 		@Override
 		public void onAccountUpdate(Account account) {
 			try {
+				accountUpdates.put(account.getId(), account.clone());
 				eventManager.sendRemoteEvent(new AccountUpdateEvent(account.getId(), null, account));
 				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
 			} catch (Exception e) {
@@ -268,7 +323,10 @@ public class AccountPositionManager implements IPlugin {
 		@Override
 		public void onAccountDynamicUpdate(Account account) {
 			try {
-				eventManager.sendRemoteEvent(new AccountDynamicUpdateEvent(account.getId(), null, account));
+				if(dynamicDataHasChanged(account)) {
+					perfFqyAccountUpdate.count();
+					eventManager.sendRemoteEvent(new AccountDynamicUpdateEvent(account.getId(), null, account));
+				}
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -431,6 +489,16 @@ public class AccountPositionManager implements IPlugin {
 			} catch (AccountException e) {
 				log.error(e.getMessage(), e);
 			}
+			
+			for(OpenPosition position: openPositions) {
+				positionUpdates.put(position.getId(), position);
+			}
+			
+			try {
+				accountUpdates.put(account.getId(), account.clone());
+			} catch (CloneNotSupportedException e) {
+				log.error(e.getMessage(), e);
+			}
 			reply = new AccountSnapshotReplyEvent(event.getKey(), event.getSender(), 
 					account, accountSetting, openPositions, closedPosition, executions);
 		}
@@ -533,11 +601,29 @@ public class AccountPositionManager implements IPlugin {
 			allFxRatesReceived = true;
 			log.info("FX rates: " + fxConverter.toString());
 		}
-		List<Account> accounts = accountKeeper.getJobs();
-		for(Account account: accounts) {
-			positionKeeper.updateAccountDynamicData(account);
-			checkStopLoss(account);
-			checkMarginCall(account);
+		
+		if(rmUpdateThrottler.check()) {
+			perfDataRm.start();
+			List<Account> accounts = accountKeeper.getRmJobs().getJobs();
+			for(Account account: accounts) {
+				positionKeeper.updateAccountDynamicData(account);
+				checkStopLoss(account);
+				checkMarginCall(account);
+			}
+			perfDataRm.end();
+		}
+		
+		if(dynamicUpdateThrottler.check()) {
+			perfDataUpdate.start();
+			List<Account> accounts = accountKeeper.getDynamicJobs().getJobs();
+			for(Account account: accounts) {
+				List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+				for(OpenPosition position: positions) {
+					positionListener.onOpenPositionDynamiceUpdate(position);
+				}
+				positionListener.onAccountDynamicUpdate(account);
+			}
+			perfDataUpdate.end();
 		}
 	}
 	
@@ -696,6 +782,38 @@ public class AccountPositionManager implements IPlugin {
 
 	public void setQuoteChecker(IQuoteChecker quoteChecker) {
 		this.quoteChecker = quoteChecker;
+	}
+
+	public long getDynamicUpdateInterval() {
+		return dynamicUpdateInterval;
+	}
+
+	public void setDynamicUpdateInterval(long dynamicUpdateInterval) {
+		this.dynamicUpdateInterval = dynamicUpdateInterval;
+	}
+
+	public long getRmUpdateInterval() {
+		return rmUpdateInterval;
+	}
+
+	public void setRmUpdateInterval(long rmUpdateInterval) {
+		this.rmUpdateInterval = rmUpdateInterval;
+	}
+
+	public long getPerfUpdateInterval() {
+		return perfUpdateInterval;
+	}
+
+	public void setPerfUpdateInterval(long perfUpdateInterval) {
+		this.perfUpdateInterval = perfUpdateInterval;
+	}
+
+	public long getPerfRmInterval() {
+		return perfRmInterval;
+	}
+
+	public void setPerfRmInterval(long perfRmInterval) {
+		this.perfRmInterval = perfRmInterval;
 	}
 	
 }
