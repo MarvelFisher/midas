@@ -624,8 +624,11 @@ public class PersistenceManager {
 			session.close();
 		}
 		
-		for(Account account : event.getAccounts())
-			createAccount(account);
+		if(ok)
+		{
+			for(Account account : event.getAccounts())
+				createAccount(account);
+		}
 		
 		if(event.getOriginalEvent() != null)
 		{
