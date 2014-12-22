@@ -10,6 +10,11 @@
 	<context:annotation-config />
 
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
+		<property name = "plugins">
+	        <list>
+            	<ref bean="alertManager"/>
+	        </list>
+		</property>
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
@@ -41,6 +46,15 @@
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://localhost:61617"></property>
+	</bean>
+	
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
+		<property name="tradeAlertSender" ref="parseAlertSender"/>
+	</bean>
+
+	<bean id="parseAlertSender" class="com.cyanspring.info.alert.ParseAlertSender">
+		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D"/>
+		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx"/>
 	</bean>
 	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">

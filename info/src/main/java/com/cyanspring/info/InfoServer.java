@@ -1,5 +1,7 @@
 package com.cyanspring.info;
 
+import java.util.List;
+
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
@@ -39,36 +42,7 @@ public class InfoServer
 	private ScheduleManager scheduleManager;
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	
-
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(NodeInfoEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
-		
-	};
-	
-	private AsyncEventProcessor eventProcessorMD = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(NodeInfoEvent.class, null);
-			subscribeToEvent(QuoteEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManagerMD;
-		}
-		
-	};
+	private List<IPlugin> plugins;
 	
 	public void init() throws Exception {
 		// create eventManager
@@ -89,22 +63,16 @@ public class InfoServer
 		eventManagerMD.addEventChannel(channel); //receiver channel
 		eventManagerMD.addEventChannel(nodeInfoChannel);
 
-		// subscribe to events
-		eventProcessor.setHandler(this);
-		eventProcessor.init();
-		if(eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("Info-Server");
-
-		eventProcessorMD.setHandler(this);
-		eventProcessorMD.init();
-		if(eventProcessorMD.getThread() != null)
-			eventProcessorMD.getThread().setName("Info-MD");
-
 		// ScheduleManager initialization
 		log.debug("ScheduleManager initialized");
 		scheduleManager.init();
 		
-		scheduleManager.scheduleRepeatTimerEvent(15000, eventProcessor, timerEvent);
+		if(null != plugins) {
+			for(IPlugin plugin: plugins) {
+				plugin.init();
+			}
+		}
+
 	}
 	
 	public void processQuoteEvent(QuoteEvent event) {
@@ -117,6 +85,15 @@ public class InfoServer
 	
 	public void processNodeInfoEvent(NodeInfoEvent event) {
 		log.debug("NodeInfoEvent: " + event.getSender());
+	}
+	
+	//getters and setters
+	public List<IPlugin> getPlugins() {
+		return plugins;
+	}
+
+	public void setPlugins(List<IPlugin> plugins) {
+		this.plugins = plugins;
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -135,4 +112,5 @@ public class InfoServer
 		InfoServer server = (InfoServer)context.getBean("infoServer");
 		server.init();
 	}
+
 }
