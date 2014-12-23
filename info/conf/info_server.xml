@@ -13,8 +13,20 @@
 		<property name = "plugins">
 	        <list>
             	<ref bean="alertManager"/>
+            	<ref bean="historicalInfoManager"/>
+            	<ref bean="marketInfoManager"/>
 	        </list>
 		</property>
+	</bean>
+	
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
+		<property name="tradeAlertSender" ref="parseAlertSender"/>
+	</bean>
+
+	<bean id="historicalInfoManager" class="com.cyanspring.info.alert.HistoricalInfoManager">
+	</bean>
+
+	<bean id="marketInfoManager" class="com.cyanspring.info.alert.MarketInfoManager">
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
@@ -48,10 +60,6 @@
 		<property name="url" value="nio://localhost:61617"></property>
 	</bean>
 	
-	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
-		<property name="tradeAlertSender" ref="parseAlertSender"/>
-	</bean>
-
 	<bean id="parseAlertSender" class="com.cyanspring.info.alert.ParseAlertSender">
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D"/>
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx"/>

@@ -30,6 +30,9 @@ public class AlertManager implements IPlugin {
 
 	@Autowired
 	private IRemoteEventManager eventManagerMD;
+
+	@Autowired
+	private IRemoteEventManager eventManager;
 	
 	private boolean tradeAlert;
 	private boolean priceAlert;

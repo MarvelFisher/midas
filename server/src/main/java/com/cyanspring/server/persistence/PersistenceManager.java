@@ -635,8 +635,10 @@ public class PersistenceManager {
 			try {
 				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getOriginalEvent().getKey(), 
 						event.getOriginalEvent().getSender(), user, ok, message, event.getOriginalEvent().getTxId()));
-				for(Account account : event.getAccounts())
-					eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+				if(ok) {
+					for(Account account : event.getAccounts())
+						eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+				}
 
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);

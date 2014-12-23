@@ -490,18 +490,10 @@ public class AccountPositionManager implements IPlugin {
 				log.error(e.getMessage(), e);
 			}
 			
-			for(OpenPosition position: openPositions) {
-				positionUpdates.put(position.getId(), position);
-			}
-			
-			try {
-				accountUpdates.put(account.getId(), account.clone());
-			} catch (CloneNotSupportedException e) {
-				log.error(e.getMessage(), e);
-			}
 			reply = new AccountSnapshotReplyEvent(event.getKey(), event.getSender(), 
 					account, accountSetting, openPositions, closedPosition, executions);
 		}
+		
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
