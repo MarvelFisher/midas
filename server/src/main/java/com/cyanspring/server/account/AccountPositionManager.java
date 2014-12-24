@@ -644,9 +644,20 @@ public class AccountPositionManager implements IPlugin {
 		
 		if(null != accountSetting) {
 			positionStopLoss = accountSetting.getStopLossValue();
-			if(null == positionStopLoss || PriceUtils.isZero(positionStopLoss))
+			Double companyStopLoss = accountSetting.getCompanySLValue();
+			if(null == positionStopLoss)
 				positionStopLoss = Default.getPositionStopLoss();
+			
+			if(null != companyStopLoss && !PriceUtils.isZero(companyStopLoss)) {
+				if(PriceUtils.isZero(positionStopLoss))
+					positionStopLoss = companyStopLoss;
+				else
+					positionStopLoss = Math.min(positionStopLoss, companyStopLoss);
+			}
 		}
+		
+		if(PriceUtils.isZero(positionStopLoss))
+			return;
 		
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
