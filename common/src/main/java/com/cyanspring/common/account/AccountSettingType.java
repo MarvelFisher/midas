@@ -33,6 +33,6 @@ public enum AccountSettingType {
 				map.put(field.value(), field);
 			}
 		}
-		
+		    
 	}
 }
