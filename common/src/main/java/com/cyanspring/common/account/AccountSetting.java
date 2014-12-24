@@ -39,7 +39,7 @@ public class AccountSetting extends DataObject {
 	}
 	public AccountSetting clone() {
 		return (AccountSetting)super.clone();
-	}
+	} 
 	@Override
 	public String toString() {
 		return this.getFields().toString();

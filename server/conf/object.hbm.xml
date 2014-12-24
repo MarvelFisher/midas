@@ -223,7 +223,7 @@
     <![CDATA[
     UPDATE ANYONE.ACCOUNTS SET PNL = 0  
     ]]>
-  </sql-query>   
+  </sql-query>    
 
 
 

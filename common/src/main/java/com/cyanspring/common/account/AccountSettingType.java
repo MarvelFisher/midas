@@ -6,7 +6,7 @@ public enum AccountSettingType {
 	ID("Id"),
 	DEFAULT_QTY("Default Qty"),
 	STOP_LOSS_VALUE("SL Value"),
-	COMPANY_SL_VALUE("Company SL Value"),
+	COMPANY_SL_VALUE("Company SL Value"), 
 	;
    
 	static HashMap<String, AccountSettingType> map = new HashMap<String, AccountSettingType>();
