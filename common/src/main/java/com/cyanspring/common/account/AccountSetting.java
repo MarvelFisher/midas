@@ -30,12 +30,10 @@ public class AccountSetting extends DataObject {
 	}
 	public void setStopLossValue(Double stopLossValue) {
 		put(AccountSettingType.STOP_LOSS_VALUE.value(), stopLossValue);
-	}
-	
+	}	
 	public Double getCompanySLValue(){
 		return get(Double.class, AccountSettingType.COMPANY_SL_VALUE.value());
-	}
-	
+	}	  
 	public void setCompanySLValue(Double companySLValue){
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
 	}

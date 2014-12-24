@@ -8,7 +8,7 @@ public enum AccountSettingType {
 	STOP_LOSS_VALUE("SL Value"),
 	COMPANY_SL_VALUE("Company SL Value"),
 	;
-
+   
 	static HashMap<String, AccountSettingType> map = new HashMap<String, AccountSettingType>();
 	
 	private String value;

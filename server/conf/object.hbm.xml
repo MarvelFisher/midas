@@ -221,7 +221,7 @@
   </sql-query>
   <sql-query name="rollEndOfDay3">
     <![CDATA[
-    UPDATE ANYONE.ACCOUNTS SET PNL = 0
+    UPDATE ANYONE.ACCOUNTS SET PNL = 0  
     ]]>
   </sql-query>
 
