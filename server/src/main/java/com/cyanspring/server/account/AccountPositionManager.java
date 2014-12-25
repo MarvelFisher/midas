@@ -1,5 +1,6 @@
 package com.cyanspring.server.account;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -106,6 +107,7 @@ public class AccountPositionManager implements IPlugin {
 	private PerfDurationCounter perfDataUpdate;
 	private PerfFrequencyCounter perfFqyAccountUpdate;
 	private PerfFrequencyCounter perfFqyPositionUpdate;
+	private String tradeDateTime;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -720,7 +722,7 @@ public class AccountPositionManager implements IPlugin {
 			positionKeeper.rollAccount(account);
 		}
 		
-		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null));
+		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, getTradeDate()));
 	}
 	
 	private String generateAccountId() {
@@ -818,5 +820,31 @@ public class AccountPositionManager implements IPlugin {
 	public void setPerfRmInterval(long perfRmInterval) {
 		this.perfRmInterval = perfRmInterval;
 	}
+
+	public String getTradeDateTime() {
+		return tradeDateTime;
+	}
+
+	public void setTradeDateTime(String tradeDateTime) {
+		this.tradeDateTime = tradeDateTime;
+	}
 	
+	private String getTradeDate(){
+		String[] times = tradeDateTime.split(":");
+		
+		int nHour = Integer.parseInt(times[0]);
+		int nMin = Integer.parseInt(times[1]);
+		int nSecond = Integer.parseInt(times[2]);
+		
+		Calendar cal = Default.getCalendar();
+		Date now = Clock.getInstance().now();
+		Date scheduledToday = TimeUtil.getScheduledDate(cal, now, nHour, nMin, nSecond);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date ret = Clock.getInstance().now();
+		if(TimeUtil.getTimePass(now, scheduledToday) < 0)
+			ret =  TimeUtil.getPreviousDay(scheduledToday);
+
+		return sdf.format(ret);
+	}
 }

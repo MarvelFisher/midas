@@ -161,6 +161,7 @@
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
   	<property column="CURRENCY"			name="currency" 	type="java.lang.String"/>
   </class>
+  
 <!--   
   <class name="com.cyanspring.common.account.AccountDaily" table="ANYONE.ACCOUNTS_DAILY">
   	<composite-id>
@@ -180,8 +181,11 @@
   	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
   	<property column="CURRENCY"			name="currency" 	type="java.lang.String"/>
+  	<property column="ON_TIME"			name="onTime"		type="java.util.Date"/>
+  	<property column="TRADE_DATE"		name="tradeDate"	type="java.lang.String"/>
   </class>
--->   
+ -->
+ 
   <class name="com.cyanspring.common.account.Position" abstract="true">
   	<id 	  column="POSITION_ID" 		name="id"			type="java.lang.String"/>
   	<property column="USER_ID"			name="user"			type="java.lang.String"/>
@@ -216,7 +220,7 @@
   </sql-query>
   <sql-query name="rollEndOfDay2">
     <![CDATA[
-    INSERT INTO ANYONE.ACCOUNTS_DAILY SELECT a.*, CURRENT_DATE, CURRENT_TIMESTAMP FROM ANYONE.ACCOUNTS a
+    INSERT INTO ANYONE.ACCOUNTS_DAILY SELECT a.*, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS a
     ]]>
   </sql-query>
   <sql-query name="rollEndOfDay3">

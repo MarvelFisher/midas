@@ -153,6 +153,7 @@ public class PersistenceManager {
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("PersistenceManager");
+
 	}
 
 	public void uninit() {
@@ -796,6 +797,7 @@ public class PersistenceManager {
 		    query = session.getNamedQuery("rollEndOfDay1");
 	        query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay2");
+		    query.setParameter("tradeDate", event.getTradeDateTime());
 	        query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay3");
 	        query.executeUpdate();
@@ -810,7 +812,7 @@ public class PersistenceManager {
 			session.close();
 		}
 		log.info("Account day end processing end");
-	}
+	}	
 	
 	public void processChangeUserPasswordEvent(ChangeUserPasswordEvent event)
 	{
