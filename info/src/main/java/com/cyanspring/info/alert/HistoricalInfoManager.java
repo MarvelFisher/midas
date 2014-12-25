@@ -44,7 +44,7 @@ public class HistoricalInfoManager implements IPlugin {
 		
 	}
 	
-	public void processHistoricalClosedPositionRequestEvent(HistoricalTradeRequestEvent event) {
+	public void processHistoricalTradeRequestEvent(HistoricalTradeRequestEvent event) {
 		
 	}
 	

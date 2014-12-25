@@ -1,6 +1,10 @@
 package com.cyanspring.info;
 
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -16,7 +20,12 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.system.DuplicateSystemIdEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
+import com.cyanspring.common.event.system.ServerHeartBeatEvent;
+import com.cyanspring.common.server.event.DownStreamReadyEvent;
+import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncEventProcessor;
 
@@ -24,6 +33,17 @@ public class InfoServer
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(InfoServer.class);
+	private ReadyList readyList;
+	private String inbox;
+	private String uid;
+	private String channel;
+	private String nodeInfoChannel;
+	private int heartBeatInterval = 3000; // 3000 miliseconds
+//	private String shutdownTime;
+//	private AsyncTimerEvent shutdownEvent = new AsyncTimerEvent(); 
+	private ServerHeartBeatEvent heartBeat = new ServerHeartBeatEvent(null, null);
+	private Map<String, Boolean> readyMap = new HashMap<String, Boolean>();
+	private boolean serverReady;
 	
 	
 	@Autowired
@@ -43,29 +63,110 @@ public class InfoServer
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<IPlugin> plugins;
+
+	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(NodeInfoEvent.class, null);
+			subscribeToEvent(DuplicateSystemIdEvent.class, null);
+//			subscribeToEvent(DownStreamReadyEvent.class, null);
+//			subscribeToEvent(MarketDataReadyEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+		
+	};
+	
+	public void processNodeInfoEvent(NodeInfoEvent event) throws Exception {
+		log.debug("NodeInfoEvent: " + event.getSender());
+		if(event.getFirstTime() && 
+				!event.getUid().equals(InfoServer.this.uid)) { // not my own message
+			//check duplicate system id
+			if (event.getServer() && event.getInbox().equals(InfoServer.this.inbox)) {
+				log.error("Duplicated system id detected: " + event.getSender());
+				DuplicateSystemIdEvent de = 
+					new DuplicateSystemIdEvent(null, null, event.getUid());
+				de.setSender(InfoServer.this.uid);
+				eventManager.publishRemoteEvent(nodeInfoChannel, de);
+			} else {
+				// publish my node info
+				NodeInfoEvent myInfo = 
+					new NodeInfoEvent(null, null, true, false, 
+							InfoServer.this.inbox, InfoServer.this.uid);
+					eventManager.publishRemoteEvent(nodeInfoChannel, myInfo);
+				log.info("Replied my nodeInfo");
+			}
+			if(!event.getServer() && readyList.allUp()) {
+				try {
+					eventManager.publishRemoteEvent(channel, new ServerReadyEvent(true));
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}	
+	}
+	public void processDuplicateSystemIdEvent(DuplicateSystemIdEvent event) {
+		if(event.getUid().equals(InfoServer.this.uid)) {
+			log.error("System id duplicated: " + systemInfo.getId());
+			log.error("Fatal error, existing system");
+			System.exit(1);
+		}
+	}
 	
 	public void init() throws Exception {
+		
+		IdGenerator.getInstance().setPrefix(systemInfo.getId()+"-");
+		
+		// setting ready List
+		readyList = new ReadyList(readyMap);
+		
 		// create eventManager
 		log.info("SystemInfo: " + systemInfo);
-		String channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "channel"; 
-		String nodeInfoChannel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "node";
-		String inbox = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getId();
+		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "channel"; 
+		this.nodeInfoChannel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "node";
+		this.inbox = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getId();
 		IdGenerator.getInstance().setSystemId(inbox);
+		
+		InetAddress addr = InetAddress.getLocalHost();
+		String hostName = addr.getHostName();
+		this.uid = hostName + "." + IdGenerator.getInstance().getNextID();
 		eventManager.init(channel, inbox);
 		eventManager.addEventChannel(nodeInfoChannel);
 		
 		// create MD eventManager
-		log.info("SystemInfo: " + systemInfoMD);
-		channel = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "channel"; 
-		nodeInfoChannel = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "node";
+		log.info("SystemInfo: " + systemInfoMD);		
+		String channelMD = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "channel"; 
+		String nodeInfoChannelMD = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "node";
 		IdGenerator.getInstance().setSystemId(inbox);
-		eventManagerMD.init(channel, inbox);
-		eventManagerMD.addEventChannel(channel); //receiver channel
-		eventManagerMD.addEventChannel(nodeInfoChannel);
+		eventManagerMD.init(channelMD, inbox);
+		eventManagerMD.addEventChannel(channelMD); //receiver channel
+		eventManagerMD.addEventChannel(nodeInfoChannelMD);
 
+		
+		// publish my node info
+		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, true, true, inbox, uid);
+		// Set sender as uid. This is to cater the situation when
+		// duplicate inbox happened, the other node can receive the NodeInfoEvent and detect it.
+		// For this reason, one should never use NodeInfoEvent.getSender() to reply anything for this event
+		nodeInfo.setSender(uid); 
+		
+		eventManager.publishRemoteEvent(nodeInfoChannel, nodeInfo);
+		log.info("Published my node info");
+
+		// subscribe to events
+		eventProcessor.setHandler(this);
+		eventProcessor.init();
+		if(eventProcessor.getThread() != null)
+			eventProcessor.getThread().setName("InfoServer");
+		
 		// ScheduleManager initialization
 		log.debug("ScheduleManager initialized");
 		scheduleManager.init();
+		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, eventProcessor, timerEvent);
 		
 		if(null != plugins) {
 			for(IPlugin plugin: plugins) {
@@ -75,17 +176,61 @@ public class InfoServer
 
 	}
 	
+	class ReadyList {
+		Map<String, Boolean> map = new HashMap<String, Boolean>();
+		
+		ReadyList(Map<String, Boolean> map) {
+			this.map = map;
+		}
+		
+		synchronized void update(String key, boolean value) {
+			if(!map.containsKey(key))
+				return;
+			map.put(key, value);
+			boolean now = allUp();
+			if(!serverReady && now) {
+				serverReady = true;
+				log.info("Server is ready: " + now);
+				ServerReadyEvent event = new ServerReadyEvent(now);
+				eventManager.sendEvent(event);
+				try {
+					eventManager.publishRemoteEvent(channel, event);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		
+		synchronized boolean isUp(String component) {
+			return map.get(component);
+		}
+		
+		synchronized boolean allUp() {
+			for(Entry<String, Boolean> entry: map.entrySet()) {
+				if(!entry.getValue())
+					return false;
+			}
+			return true;
+		}
+	}
+	
+	
 	public void processQuoteEvent(QuoteEvent event) {
 		log.debug("Quote: " + event.getQuote());
 	}
 	
-	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		//log.debug("AsyncTimerEvent");
+	public void processAsyncTimerEvent(AsyncTimerEvent event) throws Exception {
+		if(event == timerEvent) {
+			eventManager.publishRemoteEvent(nodeInfoChannel, heartBeat);
+		}
+		/*
+		else if(event == shutdownEvent) {
+			log.info("System hits end time, shutting down...");
+			System.exit(0);
+		}
+		*/
 	}
 	
-	public void processNodeInfoEvent(NodeInfoEvent event) {
-		log.debug("NodeInfoEvent: " + event.getSender());
-	}
 	
 	//getters and setters
 	public List<IPlugin> getPlugins() {
