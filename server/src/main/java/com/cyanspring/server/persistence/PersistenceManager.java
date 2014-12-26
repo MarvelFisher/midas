@@ -605,7 +605,8 @@ public class PersistenceManager {
 					throw new CentralDbException("This user already exists: " + user.getId());
 				if(centralDbConnector.isEmailExist(user.getEmail()))
 					throw new CentralDbException("This email already exists: " + user.getEmail());
-				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getPhone(), user.getUserType()))
+				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
+							user.getPhone(), user.getUserType(), user.getCountry(), user.getLanguage()))
 					throw new CentralDbException("can't create this user: " + user.getId());
 			}
 			

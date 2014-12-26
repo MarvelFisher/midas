@@ -15,6 +15,8 @@ public class User implements Cloneable, Serializable {
 	private Date lastLogin;
 	private UserType userType = UserType.NORMAL;
 	private String defaultAccount;
+	private String country;
+	private String language;
 	
 	private User() {
 		created = Clock.getInstance().now();
@@ -27,7 +29,7 @@ public class User implements Cloneable, Serializable {
 	}
 
 	public User(String id, String name, String password, String email, String phone,
-			UserType userType) {
+			UserType userType, String country, String language) {
 		this();
 		this.id = id;
 		this.name = name;
@@ -35,6 +37,8 @@ public class User implements Cloneable, Serializable {
 		this.phone = phone;
 		this.email = email;
 		this.userType = userType;
+		this.country = country;
+		this.language = language;
 	}
 
 	public synchronized String getName() {
@@ -107,6 +111,22 @@ public class User implements Cloneable, Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	
+	public String getCountry() {
+		return this.country;
+	}
+	
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+	
+	public String getLanguage() {
+		return this.language;
 	}
 
 	public synchronized boolean login(String id, String password) {
