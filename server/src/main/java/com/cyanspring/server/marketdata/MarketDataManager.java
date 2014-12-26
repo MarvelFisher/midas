@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
@@ -31,6 +32,7 @@ import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketdata.PresubscribeEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketdata.TradeSubEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
@@ -76,6 +78,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private XStream xstream = new XStream(new DomDriver());
 	private boolean staleQuotesSent;
 	private Date initTime = Clock.getInstance().now();
+	private String tradeDate;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -182,8 +185,21 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		quotesToBeSent.clear();
 		saveLastQuotes();
 		broadCastStaleQuotes();
+		checkNewTradeDate();
 	}
 	
+	private void checkNewTradeDate() {
+		String today = TimeUtil.getTradeDate(Default.getTradeDateTime());
+		if(!today.equals(tradeDate) || tradeDate == null){
+			tradeDate = today;
+			try {
+				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}	
+	}
+
 	public void processTradeEvent(TradeEvent event) {
 		eventManager.sendEvent(event);
 	}
@@ -372,6 +388,5 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 
 	public void setQuoteChecker(IQuoteChecker quoteChecker) {
 		this.quoteChecker = quoteChecker;
-	}
-	
+	}	
 }
