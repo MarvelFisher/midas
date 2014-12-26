@@ -91,7 +91,7 @@ public class MobileAdaptor extends ClientAdaptor {
 			server = event.getSender();
 			sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
 			sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
-			sendEvent(new CreateUserEvent(getId(), server, new User(user, password), IdGenerator.getInstance().getNextID()));
+			sendEvent(new CreateUserEvent(getId(), server, new User(user, password), "", "", IdGenerator.getInstance().getNextID()));
 			//sendEvent(new UserLoginEvent(getId(), server, user, password, IdGenerator.getInstance().getNextID()));
 		}
 		//#############################################

@@ -28,7 +28,7 @@ public class CentralDbConnector {
 	private static SimpleDateFormat sdf = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
 	private static CentralDbConnector inst = null;
-	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d)";
+	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
@@ -104,9 +104,9 @@ public class CentralDbConnector {
 
 	protected String getInsertUserSQL(String userId, String userName,
 			String password, String salt, String email, String phone, Date created,
-			UserType userType) {
+			UserType userType, String country, String language) {
 		return String.format(insertUser, userId, userName, password+salt, salt, email,
-				phone, sdf.format(created), userType.getCode());
+				phone, sdf.format(created), userType.getCode(), country, language, 0);
 	}
 
 	/*
@@ -125,7 +125,7 @@ public class CentralDbConnector {
 	}
 
 	public boolean registerUser(String userId, String userName,
-			String password, String email, String phone, UserType userType) {
+			String password, String email, String phone, UserType userType, String country, String language) {
 		if (!checkConnected())
 			return false;
 
@@ -133,7 +133,7 @@ public class CentralDbConnector {
 		Date now = Default.getCalendar().getTime();
 		String salt = getRandomSalt(10);
 		
-		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, userType);
+		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, userType, country, language);
 		Statement stmt = null;
 
 		try {
@@ -416,7 +416,7 @@ public class CentralDbConnector {
 		boolean bConnect = conn.connect("125.227.191.247", 3306, "tqt001",
 				"tqt001", "LTS");
 		if (bConnect) {
-			//conn.registerUser("test1", "TestUser1", "test1", "test1@test.com", "+886-12345678", UserType.NORMAL);
+			conn.registerUser("aaaaaaa", "aaaaaaa", "aaaaaaa", "test1@test.com", "+886-12345678", UserType.NORMAL, "TW", "ZH");
 			//boolean bExist = conn.isUserExist("test1");
 			boolean bExist = conn.isEmailExist("phoenix.su@hkfdt.com");
 			//boolean bLogin = conn.userLogin("test1011", "test101");

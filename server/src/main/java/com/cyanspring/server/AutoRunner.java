@@ -137,7 +137,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 			user.setEmail("test"+i+"@test.com");
 			user.setPhone("12345678");
 			user.setUserType(UserType.TEST);
-			CreateUserEvent event = new CreateUserEvent(null, null, user, "123");
+			CreateUserEvent event = new CreateUserEvent(null, null, user, "", "", "123");
 			eventManager.sendEvent(event);
 		}
 	}

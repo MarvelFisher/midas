@@ -327,7 +327,7 @@ public class SoakTest extends ClientAdaptor {
 	}
 	
 	void createNextUser() {
-		sendEvent(new CreateUserEvent(getId(), null, new User("test"+userCount++, password), 
+		sendEvent(new CreateUserEvent(getId(), null, new User("test"+userCount++, password), "", "", 
 				IdGenerator.getInstance().getNextID()));
 	}
 	
