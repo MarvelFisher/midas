@@ -27,7 +27,7 @@ public class User implements Cloneable, Serializable {
 	}
 
 	public User(String id, String name, String password, String email, String phone,
-			UserType userType, String country, String language) {
+			UserType userType) {
 		this();
 		this.id = id;
 		this.name = name;
