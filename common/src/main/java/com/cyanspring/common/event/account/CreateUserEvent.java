@@ -6,10 +6,14 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 public class CreateUserEvent extends RemoteAsyncEvent {
 	private User user;
 	private String txId;
+	private String country;
+	private String language;
 
-	public CreateUserEvent(String key, String receiver, User user, String txId) {
+	public CreateUserEvent(String key, String receiver, User user, String country, String language, String txId) {
 		super(key, receiver);
 		this.user = user;
+		this.country = country;
+		this.language = language;
 		this.txId = txId;
 	}
 
@@ -21,4 +25,11 @@ public class CreateUserEvent extends RemoteAsyncEvent {
 		return txId;
 	}
 	
+	public String getCountry() {
+		return country;
+	}
+	
+	public String getLanguage() {
+		return language;
+	}
 }

@@ -185,7 +185,7 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		user.setPhone(txtPhone.getText());
 		user.setUserType(UserType.valueOf(cbUserType.getText()));
 		CreateUserEvent event = new CreateUserEvent(id, server, 
-				user, IdGenerator.getInstance().getNextID());
+				user, "", "", IdGenerator.getInstance().getNextID());
 		try {
 			business.getEventManager().sendRemoteEvent(event);
 		} catch (Exception ex) {
