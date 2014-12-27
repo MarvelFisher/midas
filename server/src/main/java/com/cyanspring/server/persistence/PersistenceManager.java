@@ -48,6 +48,7 @@ import com.cyanspring.common.event.account.ChangeUserPasswordEvent;
 import com.cyanspring.common.event.account.ChangeUserPasswordReplyEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
+import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
@@ -358,6 +359,7 @@ public class PersistenceManager {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+		log.info("Login: " + user.getId() + ", " + ok);
 	}
 	
 	public void processSignalEvent(SignalEvent event) {
@@ -630,6 +632,7 @@ public class PersistenceManager {
 		{
 			for(Account account : event.getAccounts())
 				createAccount(account);
+			eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
 		}
 		
 		if(event.getOriginalEvent() != null)

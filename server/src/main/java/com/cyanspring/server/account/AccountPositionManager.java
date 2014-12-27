@@ -50,6 +50,7 @@ import com.cyanspring.common.event.account.CreateAccountReplyEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
+import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
@@ -155,6 +156,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
 			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
+			subscribeToEvent(OnUserCreatedEvent.class, null);
 		}
 
 		@Override
@@ -354,11 +356,13 @@ public class AccountPositionManager implements IPlugin {
 		String message = "";
 		if(null != userKeeper && null != accountKeeper) {
 			try {
-				userKeeper.createUser(user);
+				user.setId(user.getId().toLowerCase());
+				if(userKeeper.userExists(user.getId()))
+					throw new UserException("User already exists: " + user);
 				//Account account = new Account(generateAccountId(), event.getUser().getId(), defaultCurrency);
 				String defaultAccountId = user.getDefaultAccount();
 				if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
-					if(!accountKeeper.accountExists(user.getId())) {
+					if(!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
 						defaultAccountId = user.getId() + "-" + Default.getMarket();
 					} else {
 						defaultAccountId = generateAccountId();
@@ -373,8 +377,7 @@ public class AccountPositionManager implements IPlugin {
 					user.setUserType(UserType.NORMAL);
 
 				Account account = new Account(defaultAccountId, event.getUser().getId());
-				account.setMarket(Default.getMarket());
-				accountKeeper.createAccount(account);
+				accountKeeper.setupAccount(account);
 				
 				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));
 			} catch (UserException ue) {
@@ -383,7 +386,7 @@ public class AccountPositionManager implements IPlugin {
 			} catch (AccountException ae) {
 				message = ae.getMessage();
 				ok = false;
-			}
+			} 
 		} else {
 			ok = false;
 			message = "System doesn't support user creation";
@@ -400,6 +403,17 @@ public class AccountPositionManager implements IPlugin {
 				log.error(e.getMessage(), e);
 			}
 		}
+	}
+	
+	public void processOnUserCreatedEvent(OnUserCreatedEvent event) {
+		try {
+			userKeeper.createUser(event.getUser());
+			for(Account account: event.getAccounts())
+				accountKeeper.addAccount(account);
+		} catch (Exception e) {
+			log.error(e.getMessage() + ", possible data inconsistency", e);
+		}
+		log.info("User created in cache: " + event.getUser().getId());
 	}
 	
 	public void processCreateAccountEvent(CreateAccountEvent event) {

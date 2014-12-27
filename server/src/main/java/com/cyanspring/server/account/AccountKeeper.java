@@ -85,7 +85,7 @@ public class AccountKeeper {
 		return existing;
 	}
 	
-	private void addAccount(Account account) {
+	void addAccount(Account account) {
 		accounts.put(account.getId(), account);
 		List<Account> list = userAccounts.get(account.getUserId());
 		if(null == list) {
@@ -100,15 +100,21 @@ public class AccountKeeper {
 	}
 	
 	public void createAccount(Account account) throws AccountException {
+		setupAccount(account);
+		addAccount(account);
+	}
+	
+	public void setupAccount(Account account) throws AccountException {
 		if(accounts.containsKey(account.getId()))
 			throw new AccountException("Account already exists: " + account.getId());
 		if(null == account.getCurrency())
 			account.setCurrency(Default.getCurrency());
 		if(PriceUtils.isZero(account.getCash()))
 				account.addCash(Default.getAccountCash());
+		if(account.getMarket() == null)
+			account.setMarket(Default.getMarket());
 		account.addMargin(account.getCash() * Default.getMarginTimes());
 		account.setActive(true);
-		addAccount(account);
 	}
 	
 	public boolean accountExists(String id) {
