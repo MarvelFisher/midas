@@ -152,15 +152,14 @@ public class PositionKeeper {
 				}
 			}
 			
-
 			if(!PriceUtils.isZero(Default.getCommision())) {
 				double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
-				double commision = Default.getCommision() * value;
+				double commision = Default.getCommision(value);
 				account.updatePnL(-commision);
 				needAccountUpdate = true;
 			} 
-			
+
 			updateAccountDynamicData(account);
 
 			OpenPosition update = getOverallPosition(account, execution.getSymbol());
