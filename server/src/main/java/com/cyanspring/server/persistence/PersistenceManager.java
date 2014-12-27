@@ -326,7 +326,7 @@ public class PersistenceManager {
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 
 			} catch (UserException ue) {
-				ue.printStackTrace();
+				log.error(ue.getMessage(), ue);
 				message = ue.getMessage();
 			}
 			
