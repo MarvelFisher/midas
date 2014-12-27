@@ -29,6 +29,7 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
 import com.cyanspring.common.event.marketdata.PresubscribeEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
@@ -55,6 +56,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			.getLogger(MarketDataManager.class);
 	
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
+	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
+	
 	@Autowired
 	protected IRemoteEventManager eventManager;
 	
@@ -87,6 +90,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			subscribeToEvent(QuoteSubEvent.class, null);
 			subscribeToEvent(TradeSubEvent.class, null);
 			subscribeToEvent(PresubscribeEvent.class, null);
+			subscribeToEvent(LastTradeDateQuotesRequestEvent.class, null);
 		}
 
 		@Override
@@ -94,6 +98,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			return eventManager;
 		}
 	};	
+	
+	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {
+		//TODO: send LastTradeDateQuotesEvent here
+	}
 	
 	public void processPresubscribeEvent(PresubscribeEvent event) {
 		preSubscribe();
@@ -194,6 +202,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			tradeDate = today;
 			try {
 				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
+				//TODO: copy quotes to lastTradeDateQuotes, save lastTradeDateQuotes to last_tdq.xml
+				//TODO: sendRemoteEvent of LastTradeDateQuotesEvent 
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -232,6 +242,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 		
 		loadLastQuotes();
+		// TODO: load last_tdq.xml to lastTradeDateQuotes here
 
 		adaptor.subscribeMarketDataState(this);
 		Thread thread = new Thread(new Runnable(){
