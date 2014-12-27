@@ -359,7 +359,7 @@ public class PersistenceManager {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		log.info("Login: " + user.getId() + ", " + ok);
+		log.info("Login: " + event.getOriginalEvent().getUserId() + ", " + ok);
 	}
 	
 	public void processSignalEvent(SignalEvent event) {
