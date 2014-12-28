@@ -23,10 +23,10 @@
 		<property name="tradeAlertSender" ref="parseAlertSender"/>
 	</bean>
 
-	<bean id="historicalInfoManager" class="com.cyanspring.info.alert.HistoricalInfoManager">
+	<bean id="historicalInfoManager" class="com.cyanspring.info.market.HistoricalInfoManager">
 	</bean>
 
-	<bean id="marketInfoManager" class="com.cyanspring.info.alert.MarketInfoManager">
+	<bean id="marketInfoManager" class="com.cyanspring.info.market.MarketInfoManager">
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">

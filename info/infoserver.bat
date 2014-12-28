@@ -1,0 +1,1 @@
+java -XX:PermSize=128m -XX:MaxPermSize=128 -jar jars/cyanspring-info-2.56.jar

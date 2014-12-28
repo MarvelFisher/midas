@@ -20,15 +20,24 @@
 	</dependencySets>
 	<fileSets>
 		<fileSet>
+			<directory>${basedir}/../info/</directory>
+			<includes>
+				<include>conf/*</include>
+				<include>*.bat</include>
+				<include>*.sh</include>
+			</includes>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+		<fileSet>
 			<outputDirectory></outputDirectory> 
 			<includes>
 				<include>*.bat</include>
 				<include>*.sh</include>
-				<include>/conf/*</include>
 				<include>/backtest/**</include>
 		        <include>/mm/*</include>
 		        <include>/strategies/*</include>
 		        <include>/templates/*</include>
+				<include>/conf/*</include>
 				<include>/conf/*/*</include>
 				<include>/refdata/*</include>
 				<include>/database/**</include>

@@ -10,6 +10,30 @@
 	<artifactId>cyanspring-info</artifactId>
 	<name>cyanspring-info</name>
 	<url>http://www.fdt.io</url>
+
+  	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+							</manifest>
+							<manifestEntries>
+								<Main-Class>com.cyanspring.info.InfoServer</Main-Class>            
+								<packageName>com.cyanspring.info</packageName>            			
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+			</plugins>
+	    </pluginManagement>
+	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.cyanspring.common</groupId>

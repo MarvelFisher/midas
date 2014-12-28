@@ -1,4 +1,4 @@
-package com.cyanspring.info.alert;
+package com.cyanspring.info.market;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,16 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.info.HistoricalTradeEvent;
-import com.cyanspring.common.event.info.HistoricalTradeRequestEvent;
+import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.event.AsyncEventProcessor;
 
-public class HistoricalInfoManager implements IPlugin {
+public class MarketInfoManager implements IPlugin {
 	private static final Logger log = LoggerFactory
 			.getLogger(MarketInfoManager.class);
 
-
+	@Autowired
+	private IRemoteEventManager eventManagerMD;
+	
 	@Autowired
 	private IRemoteEventManager eventManager;
 
@@ -24,12 +25,12 @@ public class HistoricalInfoManager implements IPlugin {
 
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(HistoricalTradeRequestEvent.class, null);
+			subscribeToEvent(QuoteEvent.class, null);
 		}
 
 		@Override
 		public IAsyncEventManager getEventManager() {
-			return eventManager;
+			return eventManagerMD;
 		}
 
 	};
@@ -43,18 +44,6 @@ public class HistoricalInfoManager implements IPlugin {
 			eventProcessor.getThread().setName("MarketInfoManager");
 		
 	}
-	
-	public void processHistoricalTradeRequestEvent(HistoricalTradeRequestEvent event) {
-		
-	}
-	
-	public void sendHistoricalClosedPositionEvent(HistoricalTradeEvent event) {
-		try {
-			eventManager.sendRemoteEvent(event);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-	}
 
 	@Override
 	public void uninit() {
@@ -64,6 +53,14 @@ public class HistoricalInfoManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {
 		log.info("Quote: " + event.getQuote());
+	}
+	
+	public void sendPriceHighLowEvent(PriceHighLowEvent event) {
+		try {
+			eventManager.sendRemoteEvent(event);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 }
