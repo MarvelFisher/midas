@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+
+	<bean id="IdMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+		<property name="account" value="fdtcanned"></property>		
+		<property name="password" value="MFW9dC26"></property>	
+	<!--    
+		<property name="gateway" value="false"></property>		
+		<property name="host" value="198.190.11.31"></property>		
+		<property name="port" value="4001"></property>	
+	-->  
+		<property name="gateway" value="true"></property>		
+		<property name="host" value="10.0.0.41"></property>		
+		<property name="port" value="6086"></property>
+	
+		<property name="exch" value="687"></property>
+		<property name="preOpen" value="610"></property>
+		<property name="open" value="615"></property>
+		<property name="close" value="600"></property>
+	</bean>
+</beans>

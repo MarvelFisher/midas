@@ -1,0 +1,113 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+
+	<bean id="IdGateway" class="com.cyanspring.id.gateway.IdGateway">
+		<!-- global setting -->
+		<property name="gateway" value="true"></property>
+		<property name="showGui" value="false"></property>			
+	
+		<!-- trading time  -->
+		<property name="preOpen" value="610"></property>
+		<property name="open" value="615"></property>
+		<property name="close" value="600"></property>
+		
+		
+		<!-- source--> 
+		<property name="reqIp" value="10.0.0.32"></property>
+		<property name="reqPort" value="6086"></property>		
+		<property name="account" value="fdtcanned"></property>
+		<property name="password" value="MFW9dC26"></property>
+		<property name="exch" value="687"></property>
+		
+		<!-- 
+		<property name="reqIp" value="198.190.11.31"></property> 
+		<property name="reqPort" value="4001"></property> 
+		-->
+		<!-- socket server port-->
+		<property name="hostPort" value="6086"></property>
+		<!-- web server port-->
+		<property name="httpPort" value="8080"></property>
+
+		<!-- preSubscriptionList -->
+		<property name="preSubscriptionList">
+			<list>
+				<value>USDCAD</value>
+				<value>USDCHF</value>
+				<value>USDCNH</value>
+				<value>USDCZK</value>
+				<value>USDDKK</value>
+				<value>USDHKD</value>
+				<value>USDHUF</value>
+				<value>USDILS</value>
+				<value>USDJPY</value>
+				<value>USDMXN</value>
+				<value>USDNOK</value>
+				<value>USDPLN</value>
+				<value>USDRUB</value>
+				<value>USDSEK</value>
+				<value>USDSGD</value>
+				<value>NZDUSD</value>
+				<value>EURUSD</value>
+				<value>GBPUSD</value>
+				<value>AUDUSD</value>
+				<value>EURAUD</value>
+				<value>EURCAD</value>
+				<value>EURCHF</value>
+				<value>EURCNH</value>
+				<value>EURCZK</value>
+				<value>EURDKK</value>
+				<value>EURGBP</value>
+				<value>EURHKD</value>
+				<value>EURILS</value>
+				<value>EURJPY</value>
+				<value>EURMXN</value>
+				<value>EURNOK</value>
+				<value>EURNZD</value>
+				<value>EURRUB</value>
+				<value>EURSEK</value>
+				<value>EURSGD</value>
+				<value>GBPAUD</value>
+				<value>GBPCAD</value>
+				<value>GBPCHF</value>
+				<value>GBPCNH</value>
+				<value>GBPDKK</value>
+				<value>GBPHKD</value>
+				<value>GBPJPY</value>
+				<value>GBPNOK</value>
+				<value>GBPNZD</value>
+				<value>GBPSEK</value>
+				<value>AUDCHF</value>
+				<value>AUDHKD</value>
+				<value>AUDJPY</value>
+				<value>AUDCAD</value>
+				<value>AUDCNH</value>
+				<value>AUDNZD</value>
+				<value>AUDSGD</value>
+				<value>CHFJPY</value>
+				<value>CHFCNH</value>
+				<value>CHFDKK</value>
+				<value>CHFNOK</value>
+				<value>CHFSEK</value>
+				<value>CNHJPY</value>
+				<value>DKKJPY</value>
+				<value>DKKNOK</value>
+				<value>DKKSEK</value>
+				<value>HKDJPY</value>
+				<value>MXNJPY</value>
+				<value>NOKJPY</value>
+				<value>NOKSEK</value>
+				<value>SEKJPY</value>
+				<value>SGDCNH</value>
+				<value>SGDJPY</value>
+				<value>NZDCHF</value>
+				<value>NZDJPY</value>
+			</list>
+		</property>
+	</bean>
+</beans>
