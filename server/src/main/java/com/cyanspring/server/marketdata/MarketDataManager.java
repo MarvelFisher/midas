@@ -12,6 +12,7 @@ package com.cyanspring.server.marketdata;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.LastTradeDateQuotesEvent;
 import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
 import com.cyanspring.common.event.marketdata.PresubscribeEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
@@ -76,6 +78,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private IMarketDataAdaptor adaptor;
 	private String tickDir = "ticks";
 	private String lastQuoteFile = "last.xml";
+	private String lastTradeDateQuoteFile = "last_tdq.xml";
 	private long lastQuoteSaveInterval = 20000;
 	private Date lastQuoteSaveTime = Clock.getInstance().now();
 	private XStream xstream = new XStream(new DomDriver());
@@ -97,10 +100,17 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		public IAsyncEventManager getEventManager() {
 			return eventManager;
 		}
-	};	
+	};
 	
 	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {
-		//TODO: send LastTradeDateQuotesEvent here
+		tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
+		List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+		LastTradeDateQuotesEvent lastTDQevent  = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
+		try {
+			eventManager.sendRemoteEvent(lastTDQevent);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	public void processPresubscribeEvent(PresubscribeEvent event) {
@@ -202,8 +212,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			tradeDate = today;
 			try {
 				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
-				//TODO: copy quotes to lastTradeDateQuotes, save lastTradeDateQuotes to last_tdq.xml
-				//TODO: sendRemoteEvent of LastTradeDateQuotesEvent 
+				saveLastTradeDateQuotes();
+				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+				log.info("Sending LastTradeDatesQuotes: " + lst);
+				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -240,10 +252,14 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		} else {
 			log.info("Existing tick directory: " + tickDir);
 		}
-		
-		loadLastQuotes();
-		// TODO: load last_tdq.xml to lastTradeDateQuotes here
 
+		quotes = loadQuotes(tickDir + "/" + lastQuoteFile);
+		lastTradeDateQuotes = loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
+		if(lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0){
+			log.warn("No lastTradeDateQuotes values while initialing.");			
+			lastTradeDateQuotes = clone((HashMap<String, Quote>)quotes);
+		}
+		
 		adaptor.subscribeMarketDataState(this);
 		Thread thread = new Thread(new Runnable(){
 			@Override
@@ -262,6 +278,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			eventProcessor.onEvent(new PresubscribeEvent(null));
 	}
 	
+	private HashMap clone(HashMap map){		
+		return (HashMap)map.clone();
+	}
+	
 	private void saveLastQuotes() {
 		if(TimeUtil.getTimePass(lastQuoteSaveTime) < lastQuoteSaveInterval) 
 			return;
@@ -271,6 +291,18 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		
 		lastQuoteSaveTime = Clock.getInstance().now();
 		String fileName = tickDir + "/" + lastQuoteFile;
+		saveQuotesToFile(fileName);
+	}
+	
+	private void saveLastTradeDateQuotes(){
+		if (lastTradeDateQuotes.size() <= 0 && quotes.size() <= 0)
+			return;		
+		lastTradeDateQuotes = quotes;			
+		String fileName = tickDir + "/" + lastTradeDateQuoteFile;
+		saveQuotesToFile(fileName); 		
+	}
+
+	private void saveQuotesToFile(String fileName) {
 		File file = new File(fileName);
 		try {
 			file.createNewFile();
@@ -294,33 +326,32 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			if(quote.isStale())
 				this.clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
 		}
-	}
-		
-	@SuppressWarnings("unchecked")
-	private void loadLastQuotes() {
-		String fileName = tickDir + "/" + lastQuoteFile;
+	}		
+	
+	private Map<String, Quote> loadQuotes(String fileName){
 		File file = new File(fileName);
-		if(file.exists() && quotes.size() <= 0) {
-			try {
+		Map<String, Quote> quotes = new HashMap<>();
+		if(file.exists() && quotes.size() <= 0){
+			try{
 				ClassLoader save = xstream.getClassLoader();
 				ClassLoader cl = HashMap.class.getClassLoader();
-				if (cl != null)
+				if (cl != null) 
 					xstream.setClassLoader(cl);
-	
-				quotes = (HashMap<String, Quote>)xstream.fromXML(file);
-				if(!(quotes instanceof HashMap))
+				quotes = (Map<String, Quote>)xstream.fromXML(file);
+				if(!(quotes instanceof HashMap)) 
 					throw new Exception("Can't xstream load last quote: " + fileName);
 				xstream.setClassLoader(save);
-			} catch (Exception e) {
+			}catch(Exception e){
 				log.error(e.getMessage(), e);
 			}
 			for(Quote quote: quotes.values()) {
 				quote.setStale(true);
 			}
-			log.info("Last quotes loaded: " + fileName);
+			log.info("Quotes loaded: " + fileName);
 		}
+		return quotes;
 	}
-
+	
 	@Override
 	public void uninit() {
 		log.info("uninitialising");
