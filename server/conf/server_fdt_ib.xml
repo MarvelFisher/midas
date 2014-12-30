@@ -235,6 +235,24 @@
 		</property>	
 	</bean>
 
+	<bean id="IdMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+		<property name="account" value="fdtcanned"></property>		
+		<property name="password" value="MFW9dC26"></property>	
+	<!--    
+		<property name="gateway" value="false"></property>		
+		<property name="host" value="198.190.11.31"></property>		
+		<property name="port" value="4001"></property>	
+	-->  
+		<property name="gateway" value="true"></property>		
+		<property name="reqIp" value="localHost"></property>		
+		<property name="reqPort" value="6086"></property>
+	
+		<property name="exch" value="687"></property>
+		<property name="preOpen" value="610"></property>
+		<property name="open" value="615"></property>
+		<property name="close" value="600"></property>
+	</bean>
+
 	<bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
 		<property name="host" value="10.0.0.10"/>
 		<property name="port" value="3306"/>
