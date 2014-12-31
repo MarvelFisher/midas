@@ -102,9 +102,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 	};
 	
-	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {
+	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
 		tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
 		List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+		log.info("Get last trade date quotes request event! Sendinig lastTradeDateQuotes: " + lst );
 		LastTradeDateQuotesEvent lastTDQevent  = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
 		try {
 			eventManager.sendRemoteEvent(lastTDQevent);
@@ -237,11 +238,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("MarketDataManager");
+			eventProcessor.getThread().setName("MarketDataManager");				
 
-		if(!eventProcessor.isSync())
-			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);
-		
 		// create tick directory
 		File file = new File(tickDir);
 		if(!file.isDirectory()) {
@@ -276,6 +274,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		
 		if(adaptor.getState())
 			eventProcessor.onEvent(new PresubscribeEvent(null));
+		
+		if(!eventProcessor.isSync())
+			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);	
+		
 	}
 	
 	private HashMap clone(HashMap map){		
