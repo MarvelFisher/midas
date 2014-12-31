@@ -157,7 +157,7 @@ public class Parser implements IReqThreadCallback {
 					if (!bOk)
 						continue;
 
-					log.debug(str);
+					//log.debug(str);
 
 					Date tNow = new Date();
 					TimeSpan ts = TimeSpan.getTimeSpan(tNow, tLast);

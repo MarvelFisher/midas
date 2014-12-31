@@ -1,1 +1,1 @@
-java -classpath "jars/*" com.cyanspring.id.gateway.IdGateway
+java -classpath "jars/*" com.cyanspring.id.gateway.IdGateway&

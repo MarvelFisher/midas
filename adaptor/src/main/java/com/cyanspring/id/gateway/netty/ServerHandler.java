@@ -131,7 +131,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			return;
 
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
-		LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
+		//LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
 
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
 		ChannelGroupFuture future = channels.writeAndFlush(buffer);

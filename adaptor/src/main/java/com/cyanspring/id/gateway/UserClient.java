@@ -109,7 +109,7 @@ public class UserClient implements AutoCloseable {
 
 		ServerHandler.sendData(ctx, symbol, data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
-		LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
+		//LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
 	}
 
 	public void onReceive(byte[] srcData) {

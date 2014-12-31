@@ -71,7 +71,7 @@ public class Program implements IFrameClose {
 
 		// start server
 		IdMarketDataAdaptor bean = (IdMarketDataAdaptor) context
-				.getBean("IdMarketDataAdaptor");
+				.getBean("idMarketDataAdaptor");
 
 		adapter = bean;
 
