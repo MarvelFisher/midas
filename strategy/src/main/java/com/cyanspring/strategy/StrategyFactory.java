@@ -36,6 +36,9 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 
 import com.cyanspring.common.business.FieldDef;
+import com.cyanspring.common.downstream.DownStreamManager;
+import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.downstream.IOrderRouter;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -60,7 +63,13 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
+	
+	@Autowired
+	DownStreamManager downStreamManager;
 
+	@Autowired(required=false)
+	IOrderRouter orderRouter; 
+	
 	private ApplicationContext applicationContext;
 	
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -93,7 +102,7 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 		return registry.containsKey(name);
 	}
 	
-	public IStrategy createStrategy(String name, Object... objects) throws StrategyException {
+	public IStrategy createStrategy(String name, Object... objects) throws Exception {
 		if(!initialised)
 			this.init();
 		
@@ -109,6 +118,15 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 			throw new StrategyException(e.getMessage());
 		}
 		strategy.create(objects);
+		
+		IDownStreamSender sender = null;
+		if(null != orderRouter) {
+			sender = orderRouter.setRoute(downStreamManager, strategy.getDataObject());
+		} else {
+			sender = downStreamManager.getSender();
+		}
+		strategy.setSender(sender);
+		
 		strategy.setCheckAdjQuote(globalStrategySettings.isCheckAdjQuote());
 		strategy.setValidateQuote(globalStrategySettings.isValidateQuote());
 		return strategy;

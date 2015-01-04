@@ -59,7 +59,7 @@ public class PersistenceTest {
 	@Test
 	public void testExecutionPersistence() throws Exception {
 		Execution execution = new Execution("0005.HK", OrderSide.Sell, 2000, 68.2, 
-				"orderId2", "parentId", "strategyId", "execId", Default.getUser(), Default.getAccount());
+				"orderId2", "parentId", "strategyId", "execId", Default.getUser(), Default.getAccount(), null);
 		
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
@@ -118,7 +118,7 @@ public class PersistenceTest {
 	@Test
 	public void testChildOrderPersistence() throws Exception {
 		ChildOrder child1 = new ChildOrder("0005.HK", OrderSide.Sell, 4000, 68.3, 
-				ExchangeOrderType.LIMIT, "parentId", "strategyId", Default.getUser(), Default.getAccount());
+				ExchangeOrderType.LIMIT, "parentId", "strategyId", Default.getUser(), Default.getAccount(), null);
 		child1.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
 		child1.setCumQty(1000);
 		child1.setAvgPx(68.5);
@@ -183,7 +183,7 @@ public class PersistenceTest {
 	@Test
 	public void testChildOrderAuditPersistence() throws Exception {
 		ChildOrder c1 = new ChildOrder("0005.HK", OrderSide.Sell, 4000, 68.3, 
-				ExchangeOrderType.LIMIT, "parentId", "strategyId", Default.getUser(), Default.getAccount());
+				ExchangeOrderType.LIMIT, "parentId", "strategyId", Default.getUser(), Default.getAccount(), null);
 		c1.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
 		c1.setCumQty(1000);
 		c1.setAvgPx(68.5);
@@ -254,7 +254,7 @@ public class PersistenceTest {
 		
 		String xml1 = order.toXML();
 		List<TextObject> list = TextObject.createTextObjects(order.getId(), PersistType.SINGLE_ORDER_STRATEGY, 
-				StrategyState.Running, xml1, 20);
+				StrategyState.Running, order.getUser(), order.getAccount(), order.getRoute(), xml1, 20);
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {

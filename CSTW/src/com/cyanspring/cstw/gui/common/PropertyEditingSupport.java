@@ -30,9 +30,10 @@ import com.cyanspring.common.util.ReflectionUtil;
 public class PropertyEditingSupport extends EditingSupport {
 	private static final Logger log = LoggerFactory
 			.getLogger(PropertyEditingSupport.class);
-	List<String> editableFields;
+	private List<String> editableFields;
 	private final PropertyTableViewer viewer;
-	GenericDataConverter dataConverter;
+	private GenericDataConverter dataConverter;
+	private boolean allEditable;
 	
 	public PropertyEditingSupport(PropertyTableViewer viewer, GenericDataConverter dataConverter) {
 		super(viewer);
@@ -62,7 +63,7 @@ public class PropertyEditingSupport extends EditingSupport {
 	protected boolean canEdit(Object element) {
 		if(element instanceof KeyValue) {
 			KeyValue kv = (KeyValue)element;
-			if(null != editableFields && editableFields.contains(kv.key))
+			if(allEditable || null != editableFields && editableFields.contains(kv.key))
 				return true;
 		}
 		return false;
@@ -134,6 +135,14 @@ public class PropertyEditingSupport extends EditingSupport {
 
 	public void setEditableFields(List<String> editableFields) {
 		this.editableFields = editableFields;
+	}
+
+	public boolean isAllEditable() {
+		return allEditable;
+	}
+
+	public void setAllEditable(boolean allEditable) {
+		this.allEditable = allEditable;
 	}
 
 }

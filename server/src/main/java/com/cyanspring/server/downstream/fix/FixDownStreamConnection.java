@@ -312,7 +312,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 
         	Execution exec = new Execution(order.getSymbol(), order.getSide(), execQty, execPrice, 
         			order.getId(), order.getParentOrderId(), order.getStrategyId(), execId, 
-        			order.getUser(), order.getAccount());
+        			order.getUser(), order.getAccount(), order.getRoute());
 
         	if (message.isSetField(quickfix.field.OrdStatus.FIELD)) {
         		char status = message.getField(new quickfix.field.OrdStatus()).getValue();

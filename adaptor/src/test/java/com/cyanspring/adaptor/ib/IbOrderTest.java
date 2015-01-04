@@ -69,7 +69,7 @@ public class IbOrderTest implements IDownStreamListener {
 		
 		// new order
 		ChildOrder order = new ChildOrder("C", OrderSide.Buy, 100, 20, 
-				ExchangeOrderType.LIMIT, "", "", Default.getUser(), Default.getAccount());
+				ExchangeOrderType.LIMIT, "", "", Default.getUser(), Default.getAccount(), null);
 		try {
 			sender.newOrder(order);
 		} catch (DownStreamException e) {
@@ -101,7 +101,7 @@ public class IbOrderTest implements IDownStreamListener {
 		
 		//test reject
 		order = new ChildOrder("C", OrderSide.Buy, 0, 28, 
-				ExchangeOrderType.LIMIT, "", "", Default.getUser(), Default.getAccount());
+				ExchangeOrderType.LIMIT, "", "", Default.getUser(), Default.getAccount(), null);
 		try {
 			sender.newOrder(order);
 		} catch (DownStreamException e) {

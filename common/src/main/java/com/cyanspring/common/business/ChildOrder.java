@@ -24,13 +24,14 @@ public class ChildOrder extends Order {
 
 	public ChildOrder(String symbol, OrderSide side, double quantity,
 			double price, ExchangeOrderType type, String parentOrderId, String strategyId,
-			String user, String account) {
+			String user, String account, String route) {
 		super(symbol, side, quantity, price);
 		put(OrderField.TYPE.value(), type);
 		put(OrderField.PARENT_ORDER_ID.value(), parentOrderId);
 		put(OrderField.STRATEGY_ID.value(), strategyId);
 		put(OrderField.USER.value(), user);
 		put(OrderField.ACCOUNT.value(), account);
+		this.setRoute(route);
 	}
 	
 	protected ChildOrder() {

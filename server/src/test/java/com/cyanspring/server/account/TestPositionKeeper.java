@@ -30,7 +30,7 @@ public class TestPositionKeeper {
 		return new Execution("AUDUSD", side, qty,
 				price, "orderId", "parentOrderId", 
 				"strategyId", "EXEC-"+count++,
-				Default.getUser(), Default.getAccount());
+				Default.getUser(), Default.getAccount(), null);
 	}
 	
 	@Before

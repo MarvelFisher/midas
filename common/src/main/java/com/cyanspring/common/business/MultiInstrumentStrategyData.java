@@ -90,4 +90,12 @@ public class MultiInstrumentStrategyData extends DataObject {
 		put(OrderField.STATE.value(), state);
 	}
 
+	public String getRoute() {
+		return get(String.class, OrderField.ROUTE.value());
+	}
+	
+	public void setRoute(String route) {
+		put(OrderField.ROUTE.value(), route);
+	}
+	
 }

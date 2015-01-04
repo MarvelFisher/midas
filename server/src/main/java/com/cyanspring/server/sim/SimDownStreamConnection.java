@@ -112,7 +112,7 @@ public class SimDownStreamConnection implements IDownStreamConnection {
 		Execution execution = new Execution(uOrder.getSymbol(), uOrder.getSide(), trade.getQuantity(), 
 				trade.getPrice(), uOrder.getId(), uOrder.getParentOrderId(), 
 				uOrder.getStrategyId(), ""+trade.getTradeID(),
-				uOrder.getUser(), uOrder.getAccount());
+				uOrder.getUser(), uOrder.getAccount(), uOrder.getRoute());
 		uOrder.setOrdStatus(OrdStatus.getStatus(execType.value()));
 		listener.onOrder(execType, uOrder, execution, null);
 	}

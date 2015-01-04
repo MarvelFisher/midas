@@ -135,7 +135,7 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 				tradePrice, order.getId(), order.getParentOrderId(), 
 				order.getStrategyId(),
 				IdGenerator.getInstance().getNextID() + "T",
-				order.getUser(), order.getAccount());
+				order.getUser(), order.getAccount(), order.getRoute());
 
 		listener.onOrder(ExecType.FILLED, order, execution, null);
 	}
@@ -185,6 +185,10 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	@Override
 	public String getId() {
 		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Override

@@ -14,11 +14,12 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 
 public class Execution extends BaseOrder {
+	private static final long serialVersionUID = 1L;
 
 	public Execution(String symbol, OrderSide side, double quantity,
 			double price, String orderId, String parentOrderId, 
 			String strategyId, String execId,
-			String user, String account) {
+			String user, String account, String route) {
 		super(symbol, side, quantity, price);
 		put(OrderField.ORDER_ID.value(), orderId);
 		put(OrderField.PARENT_ORDER_ID.value(), parentOrderId);
@@ -26,6 +27,7 @@ public class Execution extends BaseOrder {
 		put(OrderField.EXECID.value(), execId);
 		put(OrderField.USER.value(), user);
 		put(OrderField.ACCOUNT.value(), account);
+		this.setRoute(route);
 	}
 
 	private Execution() {

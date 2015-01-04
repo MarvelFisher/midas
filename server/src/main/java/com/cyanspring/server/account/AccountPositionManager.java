@@ -36,6 +36,7 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
+import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
@@ -550,7 +551,7 @@ public class AccountPositionManager implements IPlugin {
 			message =  e.getMessage();
 		}
 		
-		ChangeAccountSettingReplyEvent reply = new ChangeAccountSettingReplyEvent(event.getKey(), 
+		AccountSettingSnapshotReplyEvent reply = new AccountSettingSnapshotReplyEvent(event.getKey(), 
 				event.getSender(), accountSetting, ok, message);
 		try {
 			eventManager.sendRemoteEvent(reply);
