@@ -9,7 +9,7 @@
 
 	<context:annotation-config />
 
-	<bean id="IdMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+	<bean id="idMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>		
 		<property name="password" value="MFW9dC26"></property>	
 	<!--    
