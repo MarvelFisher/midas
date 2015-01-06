@@ -223,7 +223,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	private void fillOrder(ChildOrder order, double price, double qty) {
 		Execution execution = new Execution(order.getSymbol(), order.getSide(), qty,
 				price, order.getId(), order.getParentOrderId(), order.getStrategyId(),
-				IdGenerator.getInstance().getNextID() + "E", order.getUser(), order.getAccount());
+				IdGenerator.getInstance().getNextID() + "E", order.getUser(), order.getAccount(), order.getRoute());
 		
 		double remainingQty = order.getRemainingQty();
 		double cumQty = order.getCumQty();

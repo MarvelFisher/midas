@@ -12,6 +12,8 @@ public class AccountSetting extends DataObject {
 		setId(accountId);
 		setDefaultQty(Default.getOrderQuantity());
 		setStopLossValue(Default.getPositionStopLoss());
+		setCompanySLValue(0.0);
+		setRoute("");
 	}	
 	public String getId() {
 		return get(String.class, AccountSettingType.ID.value());
@@ -36,6 +38,12 @@ public class AccountSetting extends DataObject {
 	}	  
 	public void setCompanySLValue(Double companySLValue){
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
+	}
+	public String getRoute() {
+		return get(String.class, AccountSettingType.ROUTE.value());
+	}
+	public void setRoute(String route) {
+		put(AccountSettingType.ROUTE.value(), route);
 	}
 	public AccountSetting clone() {
 		return (AccountSetting)super.clone();

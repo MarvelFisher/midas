@@ -39,6 +39,7 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.DownStreamManager;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.downstream.IOrderRouter;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -97,9 +98,6 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
-	
-	@Autowired
-	DownStreamManager downStreamManager;
 	
 	@Autowired
 	IStrategyFactory strategyFactory;
@@ -222,6 +220,11 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
 			
+			// create the strategy		
+			IStrategy strategy = strategyFactory.createStrategy(
+					order.getStrategy(), 
+					new Object[]{refDataManager, tickTableManager, order});
+			
 			// add order to local map
 			orders.put(order.getId(), order.getAccount(), order);
 			
@@ -235,12 +238,6 @@ public class BusinessManager implements ApplicationContextAware {
 			UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(order.getId(), ExecType.NEW, event.getTxId(), order, null);
 			eventManager.sendEvent(updateEvent);
 			
-			// create the strategy
-			IDownStreamSender sender = downStreamManager.getSender();
-			IStrategy strategy = strategyFactory.createStrategy(
-					order.getStrategy(), 
-					new Object[]{refDataManager, tickTableManager, order});
-			strategy.setSender(sender);
 			IStrategyContainer container = getLeastLoadContainer();
 			
 			String note = order.get(String.class, OrderField.NOTE.value());
@@ -469,11 +466,9 @@ public class BusinessManager implements ApplicationContextAware {
 			eventManager.sendEvent(updateEvent);
 
 			// create the strategy
-			IDownStreamSender sender = downStreamManager.getSender();
 			IStrategy strategy = strategyFactory.createStrategy(
 					order.getStrategy(), 
 					new Object[]{refDataManager, tickTableManager, order});
-			strategy.setSender(sender);
 			IStrategyContainer container = getLeastLoadContainer();
 			
 			log.debug("Close position order " + strategy.getId() + " assigned to container " + container.getId());
@@ -565,14 +560,12 @@ public class BusinessManager implements ApplicationContextAware {
 		String message = "";
 		String strategyName = "";
 		try {
-			IDownStreamSender sender = downStreamManager.getSender();
 			strategyName = (String)event.getStrategy().get(OrderField.STRATEGY.value());
 			if(null == strategyName)
 				throw new StrategyException("Strategy field not present in NewMultiInstrumentStrategyEvent");
 			IStrategy strategy = strategyFactory.createStrategy(
 					strategyName, 
 					new Object[]{refDataManager, tickTableManager, event.getStrategy(), event.getInstruments()});
-			strategy.setSender(sender);
 			IStrategyContainer container = getLeastLoadContainer();
 			log.debug("strategy " + strategy.getId() + " assigned to container " + container.getId());
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
@@ -598,14 +591,12 @@ public class BusinessManager implements ApplicationContextAware {
 		String message = "";
 		String strategyName = "";
 		try {
-			IDownStreamSender sender = downStreamManager.getSender();
 			strategyName = (String)event.getInstrument().get(OrderField.STRATEGY.value());
 			if(null == strategyName)
 				throw new StrategyException("Strategy field not present in NewSingleInstrumentStrategyEvent");
 			IStrategy strategy = strategyFactory.createStrategy(
 					strategyName, 
 					new Object[]{refDataManager, tickTableManager, event.getInstrument()});
-			strategy.setSender(sender);
 			IStrategyContainer container = getLeastLoadContainer();
 			log.debug("strategy " + strategy.getId() + " assigned to container " + container.getId());
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
@@ -737,10 +728,8 @@ public class BusinessManager implements ApplicationContextAware {
 					continue;
 				
 				String strategyName = obj.get(String.class, OrderField.STRATEGY.value());
-				IDownStreamSender sender = downStreamManager.getSender();
 				IStrategy strategy;
 				strategy = strategyFactory.createStrategy(strategyName, new Object[]{refDataManager, tickTableManager, obj});
-				strategy.setSender(sender);
 				IStrategyContainer container = getLeastLoadContainer();
 				log.debug("strategy " + strategy.getId() + " assigned to container " + container.getId());
 				if(strategy instanceof SingleOrderStrategy) {

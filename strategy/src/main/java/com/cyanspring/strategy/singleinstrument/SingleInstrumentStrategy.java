@@ -16,6 +16,7 @@ import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.Instrument;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.data.AlertType;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.RemoteAsyncEvent;
@@ -98,6 +99,11 @@ public class SingleInstrumentStrategy extends Strategy {
 	@Override
 	public String getAccount() {
 		return instrument.getAccount();
+	}
+	
+	@Override
+	public DataObject getDataObject() {
+		return instrument;
 	}
 	
 	protected void sendStrategyUpdate() {

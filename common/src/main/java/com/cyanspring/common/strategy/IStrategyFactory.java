@@ -8,7 +8,7 @@ import com.cyanspring.common.business.FieldDef;
 public interface IStrategyFactory {
 	void init() throws StrategyException;
 	void uninit();
-	public IStrategy createStrategy(String name, Object... objects) throws StrategyException;
+	public IStrategy createStrategy(String name, Object... objects) throws StrategyException, Exception;
 	public boolean validStrategy(String name);
 	List<IStrategy> getAllStrategyTemplates();
 	public List<String> getStrategyAmendableFields(String strategy) throws StrategyException;

@@ -28,7 +28,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 2000, 68.3, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -52,7 +52,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 double askVol = quote.getAskVol();
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.3, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -74,7 +74,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -102,7 +102,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 OrderAck orderAck = popFirstOrderAck();
 		 assertTrue(orderAck.execType.equals(ExecType.NEW));
@@ -128,7 +128,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 OrderAck orderAck = popFirstOrderAck();
 		 assertTrue(orderAck.execType.equals(ExecType.NEW));
@@ -155,7 +155,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 OrderAck orderAck = popFirstOrderAck();
 		 assertTrue(orderAck.execType.equals(ExecType.NEW));
@@ -186,7 +186,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -215,7 +215,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 double askVol = quote.getAskVol();
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -255,7 +255,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -265,7 +265,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 assertTrue(orderAck.order.getCumQty() == 0);
 		 
 		 order = new ChildOrder("0005.HK", OrderSide.Buy, 40000, 68.25, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 orderAck = popFirstOrderAck();
@@ -302,7 +302,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -326,7 +326,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -336,7 +336,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 assertTrue(orderAck.order.getCumQty() == 0);
 		 
 		 order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 
 		 sender.cancelOrder(order);
 		 orderAck = popFirstOrderAck();
@@ -351,7 +351,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 double askVol = quote.getAskVol();
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 80000, 0, ExchangeOrderType.MARKET,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -377,7 +377,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 20000, 0, ExchangeOrderType.MARKET,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -402,7 +402,7 @@ public class ExchangeBtLevelOneBuyOrderTest extends ExchangeBtOrderTest {
 		 quote.setAskVol(0);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Buy, 20000, 0, ExchangeOrderType.MARKET,
-				 "", "", "", "");
+				 "", "", "", "", null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();

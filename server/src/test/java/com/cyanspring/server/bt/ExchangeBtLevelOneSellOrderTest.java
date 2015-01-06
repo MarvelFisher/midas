@@ -27,7 +27,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 2000, 68.3, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -49,7 +49,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 double BidVol = quote.getBidVol();
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.3, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -70,7 +70,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -99,7 +99,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.5, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 OrderAck orderAck = popFirstOrderAck();
 		 assertTrue(orderAck.execType.equals(ExecType.NEW));
@@ -126,7 +126,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 OrderAck orderAck = popFirstOrderAck();
 		 assertTrue(orderAck.execType.equals(ExecType.NEW));
@@ -153,7 +153,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 OrderAck orderAck = popFirstOrderAck();
 		 assertTrue(orderAck.execType.equals(ExecType.NEW));
@@ -185,7 +185,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -214,7 +214,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 double BidVol = quote.getBidVol();
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -254,7 +254,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.5, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -264,7 +264,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 assertTrue(orderAck.order.getCumQty() == 0);
 		 
 		 order = new ChildOrder("0005.HK", OrderSide.Sell, 40000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 orderAck = popFirstOrderAck();
@@ -301,7 +301,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -325,7 +325,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.4, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -335,7 +335,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 assertTrue(orderAck.order.getCumQty() == 0);
 		 
 		 order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 68.2, ExchangeOrderType.LIMIT,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 
 		 sender.cancelOrder(order);
 		 orderAck = popFirstOrderAck();
@@ -350,7 +350,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 double BidVol = quote.getBidVol();
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 80000, 0, ExchangeOrderType.MARKET,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -377,7 +377,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(40000);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 20000, 0, ExchangeOrderType.MARKET,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();
@@ -402,7 +402,7 @@ public class ExchangeBtLevelOneSellOrderTest extends ExchangeBtOrderTest {
 		 quote.setBidVol(0);
 		 exchange.setQuote(quote);
 		 ChildOrder order = new ChildOrder("0005.HK", OrderSide.Sell, 20000, 0, ExchangeOrderType.MARKET,
-				 "", "", Default.getUser(), Default.getAccount());
+				 "", "", Default.getUser(), Default.getAccount(), null);
 		 sender.newOrder(order);
 		 
 		 OrderAck orderAck = popFirstOrderAck();

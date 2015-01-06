@@ -29,6 +29,7 @@ import com.cyanspring.common.business.MultiInstrumentStrategyData;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.data.AlertType;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.RemoteAsyncEvent;
@@ -112,6 +113,11 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 	@Override
 	public String getAccount() {
 		return this.data.getAccount();
+	}
+	
+	@Override
+	public DataObject getDataObject() {
+		return data;
 	}
 	
 	@Override
@@ -751,7 +757,7 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 	public ChildOrder createChildOrder(String parentId, String symbol, OrderSide side,
 			double quantity, double price, ExchangeOrderType type) {
 		return new ChildOrder(symbol, side, quantity, 
-				price, type, parentId, this.getId(), this.data.getUser(), this.data.getAccount());
+				price, type, parentId, this.getId(), this.data.getUser(), this.data.getAccount(), this.data.getRoute());
 	}
 
 	@Override

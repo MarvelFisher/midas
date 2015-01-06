@@ -144,6 +144,14 @@ public abstract class BaseOrder extends DataObject {
 		put(OrderField.ACCOUNT.value(), account);
 	}
 	
+	public String getRoute() {
+		return get(String.class, OrderField.ROUTE.value());
+	}
+	
+	public void setRoute(String route) {
+		put(OrderField.ROUTE.value(), route);
+	}
+	
 	protected String fieldsToString() {
 		String id = get(String.class, OrderField.ID.value());
 		String symbol = get(String.class, OrderField.SYMBOL.value());
@@ -152,6 +160,7 @@ public abstract class BaseOrder extends DataObject {
 		double price = get(Double.TYPE, OrderField.PRICE.value());
 		String user = get(String.class, OrderField.USER.value());
 		String account = get(String.class, OrderField.ACCOUNT.value());
+		String route = get(String.class, OrderField.ROUTE.value());
 		
 		return id + ", "
 		+ symbol + ", "
@@ -160,6 +169,7 @@ public abstract class BaseOrder extends DataObject {
 		+ quantity + ", "
 		+ user + ", "
 		+ account + ", "
+		+ route
 		;
 	}
 	

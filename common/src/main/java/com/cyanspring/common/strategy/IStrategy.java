@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.FieldDef;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.event.IAsyncEventInbox;
 import com.cyanspring.common.event.RemoteAsyncEvent;
@@ -66,8 +67,8 @@ public interface IStrategy extends Serializable{
 
 	public List<FieldDef> getStrategyFieldDefs();
 	public void setSender(IDownStreamSender sender);
-	boolean isValidateQuote();
-	void setValidateQuote(boolean validateQuote);
-	String getAccount();
-
+	public boolean isValidateQuote();
+	public void setValidateQuote(boolean validateQuote);
+	public String getAccount();
+	public DataObject getDataObject();
 }
