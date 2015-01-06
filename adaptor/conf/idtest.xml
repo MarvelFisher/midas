@@ -12,13 +12,13 @@
 	<bean id="idMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>		
 		<property name="password" value="MFW9dC26"></property>	
-	<!--    
+	<!--     
 		<property name="gateway" value="false"></property>		
 		<property name="host" value="198.190.11.31"></property>		
 		<property name="port" value="4001"></property>	
-	-->  
+	-->    
 		<property name="gateway" value="true"></property>		
-		<property name="reqIp" value="10.0.0.41"></property>		
+		<property name="reqIp" value="10.0.0.32"></property>		
 		<property name="reqPort" value="6086"></property>
 	
 		<property name="exch" value="687"></property>

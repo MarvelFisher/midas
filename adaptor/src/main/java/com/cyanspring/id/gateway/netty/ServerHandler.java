@@ -47,6 +47,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static void onAsyncSend(byte[] data) {
 		byte[] packet = SocketUtil.packData(data);
+		data = null;
 		sendData(packet);
 	}
 
@@ -57,10 +58,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static void asyncSendData(byte[] data) {
 		CustomThreadPool.asyncMethod(methodSend, data);
+		data = null;
 	}
 
 	public static void asyncSendData(String symbol, byte[] data) {
 		CustomThreadPool.asyncMethod(methodSend2, symbol, data);
+		data = null;
 	}
 
 	public static final ChannelGroup channels = new DefaultChannelGroup(
@@ -116,24 +119,31 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	public static void sendData(String symbol, byte[] data) {
-		if (channels.size() <= 0)
-			return;
+		try {
 
-		UserClient[] arr = new UserClient[clientlist.size()];
+			if (channels.size() <= 0)
+				return;
 
-		for (UserClient client : clientlist.toArray(arr)) {
-			client.sendData(symbol, data);
+			UserClient[] arr = new UserClient[clientlist.size()];
+
+			for (UserClient client : clientlist.toArray(arr)) {
+				client.sendData(symbol, data);
+			}
+		} finally {
+			data = null;
 		}
 	}
 
 	public static void sendData(byte[] data) {
-		if (channels.size() <= 0)
+		if (channels.size() <= 0) {
+			data = null;
 			return;
+		}
 
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
-		//LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
 
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
+		data = null;
 		ChannelGroupFuture future = channels.writeAndFlush(buffer);
 		future.addListener(new ChannelGroupFutureListener() {
 			@Override
@@ -154,10 +164,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			byte[] data) {
 
 		if (!channels.contains(ctx.channel())) {
+			data = null;
 			return;
 		}
 
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
+		data = null;
 		ChannelFuture future = ctx.writeAndFlush(buffer);
 		future.addListener(new ChannelFutureListener() {
 			@Override
@@ -218,6 +230,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		byte[] data = new byte[buffer.readableBytes()];
 		buffer.readBytes(data);
 		buffer.release();
+		data = null;
 		UserClient client = getUserClient(ctx);
 		client.onReceive(data);
 	}

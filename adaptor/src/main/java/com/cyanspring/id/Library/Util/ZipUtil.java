@@ -483,7 +483,7 @@ public class ZipUtil {
 			LogUtil.logException(log, e1);
 		}
 		if (data == null) {
-			log.error(String.format("Read file fail %s", inFile));
+			LogUtil.logError(log, "Read file fail %s", inFile);
 			return;
 		}
 		byte[] zipdata = null;
@@ -515,7 +515,7 @@ public class ZipUtil {
 			LogUtil.logException(log, e1);
 		}
 		if (data == null) {
-			log.error(String.format("Read file fail %s", inFile));
+			LogUtil.logError(log, "Read file fail %s", inFile);
 			return;
 		}
 

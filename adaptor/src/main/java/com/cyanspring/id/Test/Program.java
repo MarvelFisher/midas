@@ -20,6 +20,7 @@ import com.cyanspring.id.IdMarketDataAdaptor;
 import com.cyanspring.id.QuoteMgr;
 import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Frame.InfoString;
+import com.cyanspring.id.Library.Util.LogUtil;
 
 public class Program implements IFrameClose {
 
@@ -66,19 +67,24 @@ public class Program implements IFrameClose {
 		DOMConfigurator.configure("conf/log4j.xml");
 
 		String configFile = "conf/idtest.xml";
-		ApplicationContext context = new FileSystemXmlApplicationContext(
-				configFile);
+		try {
+			ApplicationContext context = new FileSystemXmlApplicationContext(
+					configFile);
 
-		// start server
-		IdMarketDataAdaptor bean = (IdMarketDataAdaptor) context
-				.getBean("idMarketDataAdaptor");
+			// start server
+			IdMarketDataAdaptor bean = (IdMarketDataAdaptor) context
+					.getBean("idMarketDataAdaptor");
 
-		adapter = bean;
+			adapter = bean;
 
-		adapter.init();
+			adapter.init();
 
-		log.info("Program Start");
-		mainFrame.addLog("Program Start");
+			LogUtil.logInfo(log, "Program Start");
+			mainFrame.addLog("Program Start");
+		} catch (Exception e) {
+			mainFrame.addLog(InfoString.Error, "init fail reason : [%s]", e.getMessage());
+		}
+
 	}
 
 	ForexClient _client= null;
@@ -90,7 +96,7 @@ public class Program implements IFrameClose {
 			public void actionPerformed(ActionEvent event) {
 
 				adapter.closeClient();
-				log.info("reconnect ....");				
+				LogUtil.logInfo(log, "reconnect ....");				
 				mainFrame.addLog(InfoString.Info, "reconnect ....");
 			}
 		});
@@ -115,7 +121,7 @@ public class Program implements IFrameClose {
 						};
 					}	
 				}
-				//log.info("refresh ....");
+				//LogUtil.logInfo(log, "refresh ....");
 				//mainFrame.addLog(InfoString.Info, "refresh ....");
 				//QuoteMgr.instance().refresh();
 			}
@@ -126,7 +132,7 @@ public class Program implements IFrameClose {
 		JButton writrFile = new JButton("write");
 		writrFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				log.info("writrFile ....");
+				LogUtil.logInfo(log, "writrFile ....");
 				mainFrame.addLog(InfoString.Info, "writrFile ....");
 				QuoteMgr.instance().writeFile(false);
 			}
@@ -139,7 +145,7 @@ public class Program implements IFrameClose {
 
 				// QuoteMgr.Instance().refresh();
 				if (_client == null) {
-					log.info("add new client ....");
+					LogUtil.logInfo(log, "add new client ....");
 					mainFrame.addLog(InfoString.Info, "add new client .....");
 					_client = new ForexClient(Program.instance());
 					Program.instance().addClient(_client);
@@ -152,12 +158,16 @@ public class Program implements IFrameClose {
 
 	public void onCloseAction() {
 
-		adapter.uninit();
+		if (adapter != null) {
+			adapter.uninit();
+		}
 		System.exit(0);
 	}
 
 	public void reconClient() {
-		adapter.reconClient();
+		if (adapter != null) {
+			adapter.reconClient();
+		}
 	}
 
 	public void addClient(ForexClient client) {

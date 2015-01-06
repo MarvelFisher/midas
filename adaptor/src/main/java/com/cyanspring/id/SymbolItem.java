@@ -14,6 +14,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
 
 public class SymbolItem implements AutoCloseable {
@@ -90,7 +91,9 @@ public class SymbolItem implements AutoCloseable {
 
 	/**
 	 * SymbolItem
-	 * @param strID symbol ID e.g. USDJPY
+	 * 
+	 * @param strID
+	 *            symbol ID e.g. USDJPY
 	 */
 	SymbolItem(String strID) {
 		clear(false);
@@ -145,7 +148,8 @@ public class SymbolItem implements AutoCloseable {
 			preclose = close;
 			close = 0;
 			if (bSunrise) {
-				log.info(String.format("%s Sunrise Preclose=%s", symbol, StringUtil.formatDouble(dp, preclose)));
+				LogUtil.logInfo(log, "%s Sunrise Preclose=%s", symbol,
+						StringUtil.formatDouble(dp, preclose));
 			}
 		} else {
 			close = preclose = 0.0;
@@ -168,10 +172,10 @@ public class SymbolItem implements AutoCloseable {
 	 */
 	public void doRefreshJob() {
 		String strDoubleformat = String.format("%%.%df", dp);
-		log.info(String.format("Refresh [%s ] High=%s Low= %s Preclose=%s",
+		LogUtil.logInfo(log, "Refresh [%s ] High=%s Low= %s Preclose=%s",
 				symbol, StringUtil.formatDouble(dp, high),
 				String.format(strDoubleformat, low),
-				String.format(strDoubleformat, preclose)));
+				String.format(strDoubleformat, preclose));
 
 		ArrayList<String> vecTokens = new ArrayList<String>();
 
@@ -210,12 +214,11 @@ public class SymbolItem implements AutoCloseable {
 	 */
 	public void parseTick(Date timeRev, Date timeTick, int nDP,
 			Hashtable<Integer, String> table) {
-		
+
 		Date timeGmt = DateUtil.toGmt(timeTick);
-		
+
 		dp = nDP;
 		boolean bTick = false;
-		tick.reset();
 		if (table.containsKey(FieldID.AskPrice)
 				&& table.containsKey(FieldID.BidPrice)) {
 			bTick = true;
@@ -233,17 +236,18 @@ public class SymbolItem implements AutoCloseable {
 				double dValue = Double.parseDouble(strValue);
 				tick.setValue(nField, dValue);
 			}
-				break;			
+				break;
 			default:
 				break;
 			}
 		}
 
 		double dPrice = 0;
-		//long lPrice = 0;
+		// long lPrice = 0;
 		if (bTick) {
 			dPrice = (tick.ask + tick.bid) / 2;
-			//lPrice = getPriceKey(dPrice, dp);
+			dPrice = Double.parseDouble(FixStringBuilder.getString(dPrice, dp));
+			// lPrice = getPriceKey(dPrice, dp);
 			if (0.0 == dPrice || false == checkPrice(dPrice, tick.ask)) {
 				bTick = false;
 			} else {
@@ -252,24 +256,29 @@ public class SymbolItem implements AutoCloseable {
 		}
 
 		if (!bTick) {
-			tick.reset();
 			return;
 		}
-		if (0.0 == open)
-		{
+
+		tick.price = dPrice;
+		price = dPrice;
+
+		if (0.0 == preclose) {
+			preclose = price;
+		}
+
+		if (0.0 == open) {
 			open = dPrice;
 		}
 
-		if (0.0 == low || low > dPrice)
-		{
+		if (0.0 == low || low > dPrice) {
 			low = dPrice;
 		}
 
-		if (0.0 == high || high < dPrice)
-		{
+		if (0.0 == high || high < dPrice) {
 			high = dPrice;
 		}
-		Quote quote = getQuote();		
+
+		Quote quote = getQuote();
 		IdMarketDataAdaptor.instance.sendQuote(quote);
 	}
 
@@ -279,9 +288,12 @@ public class SymbolItem implements AutoCloseable {
 	 */
 	Quote getQuote() {
 		Quote quote = new Quote(symbol, null, null);
+		quote.setTimeStamp(tick.time);
 		quote.setBid(tick.bid);
 		quote.setAsk(tick.ask);
-		quote.setTimeStamp(tick.time);
+		if (price != 0)
+			quote.setLast(price);
+
 		if (open != 0)
 			quote.setOpen(open);
 		if (high != 0)
@@ -292,7 +304,7 @@ public class SymbolItem implements AutoCloseable {
 			quote.setClose(preclose);
 		return quote;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -361,8 +373,6 @@ public class SymbolItem implements AutoCloseable {
 			return false;
 		}
 	}
-
-
 
 	/**
 	 * 

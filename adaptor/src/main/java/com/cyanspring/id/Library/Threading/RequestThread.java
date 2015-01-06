@@ -49,7 +49,7 @@ public class RequestThread implements AutoCloseable {
 	}
 
 	protected void finalize() throws Throwable {
-		log.info(String.format("[%s] finalize", this.getName()));
+		LogUtil.logInfo(log, String.format("[%s] finalize", this.getName()));
 		uninit();
 	}
 
@@ -67,7 +67,7 @@ public class RequestThread implements AutoCloseable {
 		reqThreadCallback = null;
 
 		stop(3000);
-		log.info(String.format("[%s] close", this.getName()));
+		LogUtil.logInfo(log, String.format("[%s] close", this.getName()));
 
 		if (m_queue != null) {
 			m_queue.close();
@@ -114,14 +114,14 @@ public class RequestThread implements AutoCloseable {
 				// m_eventExit.set();
 				try {
 					m_eventExited.waitOne();
-					log.info(String.format("RequestThread %s exit",
+					LogUtil.logInfo(log, String.format("RequestThread %s exit",
 							m_thread == null ? "null" : m_thread.getName()));
 				} catch (InterruptedException e) {
 					LogUtil.logException(log, e);
 				}
 			} catch (RuntimeException ex) {
-				log.error(String.format("RequestThread Stop Exception: %s",
-						ex.getMessage()));
+				LogUtil.logError(log, "RequestThread Stop Exception: %s",
+						ex.getMessage());
 			} finally {
 				m_thread = null;
 			}
@@ -172,7 +172,7 @@ public class RequestThread implements AutoCloseable {
 				}
 			} catch (Exception ex) {
 				LogUtil.logException(log, ex);
-				log.error(
+				LogUtil.logError(log, 
 						"RequestThread %s OnRequestThreadProc Exception ex: %s",
 						m_thread == null ? "null" : m_thread.getName(),
 						ex.getMessage());
@@ -182,9 +182,9 @@ public class RequestThread implements AutoCloseable {
 		fireOnEndEvent();
 
 		m_eventExited.set();
-		log.info(String.format(
+		LogUtil.logInfo(log, 
 				"RequestThread %s ThreadProc Fire m_eventExited",
-				m_thread == null ? "null" : m_thread.getName()));
+				m_thread == null ? "null" : m_thread.getName());
 	}
 
 	public final void addRequest(Object objRequest) {
@@ -230,10 +230,10 @@ public class RequestThread implements AutoCloseable {
 				reqThreadCallback.onStartEvent(this);
 			}
 		} catch (RuntimeException ex) {
-			log.error(String.format(
+			LogUtil.logError(log, 
 					"RequestThread %s FireOnStartEvent Exception: %s",
 					m_thread == null ? "null" : m_thread.getName(),
-					ex.getMessage()));
+					ex.getMessage());
 		}
 	}
 
@@ -244,9 +244,9 @@ public class RequestThread implements AutoCloseable {
 			}
 
 		} catch (Exception ex) {
-			log.error(String.format(
+			LogUtil.logError(log, 
 					"RequestThread FireOnEndEvent Exception: %s",
-					ex.getMessage()));
+					ex.getMessage());
 			LogUtil.logException(log, ex);
 		}
 	}
@@ -262,9 +262,9 @@ public class RequestThread implements AutoCloseable {
 
 			}
 		} catch (Exception ex) {
-			log.error(String.format(
+			LogUtil.logError(log, 
 					"RequestThread FireOnRequestEvent Exception: %s",
-					ex.getMessage()));
+					ex.getMessage());
 			LogUtil.logException(log, ex);
 		}
 	}

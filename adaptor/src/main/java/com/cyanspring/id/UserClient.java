@@ -82,7 +82,6 @@ public class UserClient implements AutoCloseable {
 	void uninit() {
 
 		if (list != null) {
-
 			list.clear();
 			list = null;
 		}

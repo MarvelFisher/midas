@@ -24,7 +24,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 	private static final Logger log = LoggerFactory
 			.getLogger(IdGateway.class);
 	
-	private FullHttpRequest fullHttpRequest;
+	//private FullHttpRequest fullHttpRequest;
 
 	private HttpPostRequestDecoder decoder;
 
@@ -37,7 +37,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 	public void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
 
-		fullHttpRequest = (FullHttpRequest) msg;
+		FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
 
 		if (IdGateway.isSSL) {
 			System.out.println("Your session is protected by "

@@ -15,6 +15,7 @@ import com.cyanspring.id.Library.Util.BitConverter;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.TimeSpan;
 import com.cyanspring.id.Library.Util.Network.SpecialCharDef;
@@ -51,7 +52,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	public static void sendData(byte[] data) {
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
-
+		data = null;
 		ChannelFuture future = _ctx.writeAndFlush(buffer);
 		future.addListener(new ChannelFutureListener() {
 			@Override
@@ -59,7 +60,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 				if (buffer.refCnt() > 0)
 					buffer.release();
 			}
-		});
+		});		
 	}
 
 	/**
@@ -93,7 +94,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		isActive = true;
 		_ctx = ctx;
 		logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
-		setCTFOn(687);
+		setCTFOn(IdGateway.instance().getExch());
 		//setCTFOnSymbols();
 	}
 
@@ -115,6 +116,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		Parser.Instance().processData(data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_InSize, data.length);
 		buffer.release();
+		data = null;
 		lastRecv = DateUtil.now();
 	}
 
@@ -259,8 +261,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		sbSymbol.append(4);
 		sbSymbol.append(nSourceID);
 		sbSymbol.append(5);
-		String sIDSymbol = String.format("X:S%s", strSymbol);
-		sbSymbol.append(sIDSymbol);
+		String idSymbol = IdSymbolUtil.toIdSymbol(strSymbol, nSourceID);
+		sbSymbol.append(idSymbol);
 		sbSymbol.append(5026);
 		sbSymbol.append(1);
 

@@ -13,6 +13,7 @@ import io.netty.channel.ChannelFuture;
 
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.id.IdMarketDataAdaptor;
+import com.cyanspring.id.Library.Util.LogUtil;
 
 public class ColsoleTest {
 
@@ -66,7 +67,7 @@ public class ColsoleTest {
 
 		adapter.init();
 
-		log.info("Program Start");
+		LogUtil.logInfo(log, "Program Start");
 	}
 
 

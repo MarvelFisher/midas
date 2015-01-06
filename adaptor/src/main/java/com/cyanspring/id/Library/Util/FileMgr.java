@@ -103,7 +103,7 @@ public class FileMgr implements AutoCloseable, IReqThreadCallback {
 	public void onRequestEvent(RequestThread sender, Object reqObj) {
 		
 		FileItem item = (FileItem) reqObj;
-		log.info(String.format("[%s]onRequestEvent %d", sender.getName(), item.size()));		
+		LogUtil.logInfo(log, String.format("[%s]onRequestEvent %d", sender.getName(), item.size()));		
 
 		ArrayList<String> listFile = new ArrayList<String>(item.popData());
 		writeFile(item.key(), listFile, item.isOverride());
@@ -113,7 +113,7 @@ public class FileMgr implements AutoCloseable, IReqThreadCallback {
 
 	@Override
 	public void onStopEvent(RequestThread sender) {
-		log.info("onStopEvent");
+		LogUtil.logInfo(log, "onStopEvent");
 		Object[] arr = sender.getAllRequests();
 		FileItem[] arrItem  = Arrays.copyOf(arr, arr.length, FileItem[].class);
 		

@@ -214,7 +214,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	@Override
 	public void uninit() {
 		isClose = true;
-		log.info("IdMarketDataAdaptor exit");
+		LogUtil.logInfo(log, "IdMarketDataAdaptor exit");
 		closeClient();
 
 		QuoteMgr.instance().close();
@@ -252,7 +252,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	public static void initClient(final String HOST, final int PORT) throws Exception {
 
 		Util.addLog(InfoString.ALert, "initClient enter %s:%d", HOST, PORT);
-		log.info(String.format("initClient enter%s:%d", HOST, PORT));
+		LogUtil.logInfo(log, "initClient enter%s:%d", HOST, PORT);
 
 		// Configure the client.
 		NioEventLoopGroup group = new NioEventLoopGroup();
@@ -276,9 +276,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 				public void operationComplete(ChannelFuture f) throws Exception {
 
 					if (f.isSuccess()) {
-						log.info(String.format(
+						LogUtil.logInfo(log, 
 								"client socket connected : %s:%d",
-								HOST, PORT));
+								HOST, PORT);
 						Util.addLog("client socket connected : %s:%d",
 								HOST, PORT);
 					} else {
@@ -307,7 +307,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 			fClient = null;
 		}
 		Parser.instance().clearRingbuffer();
-		log.info("initClient exit");
+		LogUtil.logInfo(log, "initClient exit");
 		Util.addLog(InfoString.ALert, "initClient exit");
 	}
 
@@ -321,7 +321,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 
 		try {
 			Thread.sleep(1000);
-			log.info(String.format("reconnect %s:%d", getReqIp(), getReqPort()));
+			LogUtil.logInfo(log, "reconnect %s:%d", getReqIp(), getReqPort());
 			CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
 		} catch (Exception e) {
 			LogUtil.logException(log, e);
@@ -587,6 +587,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	 * @return
 	 */
 	public String getDataPath(String strSymbolID) {
-		return String.format("%s\\Data\\%s", path, strSymbolID);
+		return String.format("%s\\ticks\\%s", path, strSymbolID);
 	}
 }
