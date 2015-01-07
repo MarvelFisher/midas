@@ -20,14 +20,17 @@ import com.cyanspring.id.IdMarketDataAdaptor;
 import com.cyanspring.id.QuoteMgr;
 import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Frame.InfoString;
+import com.cyanspring.id.Library.Threading.TimerThread;
+import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.LogUtil;
 
-public class Program implements IFrameClose {
+public class Program implements IFrameClose, TimerEventHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(Program.class);
 
 	static Program instance = new Program();
 
+	TimerThread timer = new TimerThread();
 	public static Program instance() {
 		return instance;
 	}
@@ -38,6 +41,12 @@ public class Program implements IFrameClose {
 	public static final String version = "1.00R01";
 	public static final String timeStamp = "2014-12-15";
 
+	public Program() {
+		timer.TimerEvent = this;
+		timer.setInterval(5000);
+		timer.start();
+	}
+	
 	public static void setStatus(boolean connected) {
 		if (isConnected != connected) {
 			isConnected = connected;
@@ -161,6 +170,10 @@ public class Program implements IFrameClose {
 		if (adapter != null) {
 			adapter.uninit();
 		}
+		try {
+			timer.close();
+		} catch (Exception e) {
+		}
 		System.exit(0);
 	}
 
@@ -200,6 +213,13 @@ public class Program implements IFrameClose {
 	}
 	
 	public void onClientclose( ForexClient client) {
+		
+	}
+
+	@Override
+	public void onTimer(TimerThread objSender) {
+		System.gc();
+
 		
 	}
 }

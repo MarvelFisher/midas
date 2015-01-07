@@ -3,9 +3,11 @@ package com.cyanspring.id.gateway;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cyanspring.id.Library.Threading.TimerThread;
+import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 
-public class QuoteMgr implements AutoCloseable {
+public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	static QuoteMgr _Instance = new QuoteMgr();
 
 	public static QuoteMgr Instance() {
@@ -23,12 +25,21 @@ public class QuoteMgr implements AutoCloseable {
 
 	public ArrayList<String> symbolList = new ArrayList<String>();
 
+	TimerThread timer = new TimerThread();
 	public QuoteMgr() {
+		timer.TimerEvent = this;
+		timer.setInterval(5000);
+		timer.start();		
 	}
 
 	void fini() {
 		synchronized (m_lock) {
 			symbolList.clear();
+		}		
+		
+		try {
+			timer.close();
+		} catch (Exception e) {
 		}
 	}
 
@@ -55,6 +66,11 @@ public class QuoteMgr implements AutoCloseable {
 	
 	public void addSymbols(List<String> list) {
 		symbolList.addAll(list);
+	}
+
+	@Override
+	public void onTimer(TimerThread objSender) {
+		//System.gc();		
 	}
 
 }
