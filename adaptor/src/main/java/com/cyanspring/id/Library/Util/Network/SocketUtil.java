@@ -48,7 +48,7 @@ public class SocketUtil {
 		} catch (Exception ex) {
 			LogUtil.logException(log, ex);
 		}
-
+		data = null;
 		return null;
 
 	}
@@ -66,14 +66,14 @@ public class SocketUtil {
 				}
 
 				if (data[0] != SpecialCharDef.STX) {
-					log.error(String.format("Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-							data[0]));
+					LogUtil.logError(log, "Parser.Parse szTempBuf[0] != EOT [0x%02x]",
+							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
 				if (data[1] != '0' && data[1] != '1') {
-					log.error(String.format("Parser.Parse szTempBuf[1] != SPC"));
-					log.error(String.format("Parser.Parse pop [0x%02x]", data[0]));
+					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
+					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
@@ -93,10 +93,10 @@ public class SocketUtil {
 				int iPacketDataLength = iDataLength + 7;
 				int dwQueueLength = buffer.getQueuedSize();
 				if (iPacketDataLength >= buffer.getBufSize()) {
-					log.error(String.format(						
+					LogUtil.logError(log, 						
 							"Parser.Parse iPacketDataLength[%d] >= sizeof(szTempBuf)[%d]",
-							iPacketDataLength, data.length));
-					log.error(String.format("Parser.Parse pop [0x%02x]", data[0]));
+							iPacketDataLength, data.length);
+					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
@@ -105,17 +105,17 @@ public class SocketUtil {
 					data = new byte[iPacketDataLength];
 					int nSize = buffer.read(data, iPacketDataLength, false);
 					if (nSize != iPacketDataLength) {
-						log.error(
+						LogUtil.logError(log, 
 								"Parser.Parse m_RecvQueue.PeekData Fail! iPacketDataLength[%d]",
 								iPacketDataLength);
 						break;
 					}
 
 					if (data[iPacketDataLength - 1] != SpecialCharDef.ETX) {
-						log.error(
+						LogUtil.logError(log, 
 								"Parser.Parse szTempBuf[iPacketDataLength - 1][0x%02x] != ETX iPacketDataLength = %d",
 								data[iPacketDataLength - 1], iPacketDataLength);
-						log.error(String.format("Parser.Parse pop [0x%02x]", data[0]));
+						LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
 						buffer.purge(1); // Skip One Byte
 						continue;
 					}

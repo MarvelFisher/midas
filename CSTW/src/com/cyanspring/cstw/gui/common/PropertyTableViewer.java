@@ -289,9 +289,17 @@ public class PropertyTableViewer extends TableViewer {
 		editingSupport.setEditableFields(editableFields);
 	}
 	
+	public void turnOnEditMode() {
+		savedInput = (HashMap<String, Object>)this.getInput();
+		if(savedInput != null)
+			this.setInput(savedInput.clone());
+		editingSupport.setAllEditable(true);
+	}
+
 	public void turnOffEditMode() {
 		setInput(savedInput);
 		resetEditModeColor();
+		editingSupport.setAllEditable(false);
 		editingSupport.setEditableFields(null);
 	}
 

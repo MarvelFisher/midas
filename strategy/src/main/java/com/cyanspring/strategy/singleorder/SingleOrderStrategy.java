@@ -27,6 +27,7 @@ import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.AlertType;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.RemoteAsyncEvent;
@@ -112,6 +113,11 @@ public abstract class SingleOrderStrategy extends Strategy {
 	@Override
 	public String getAccount() {
 		return parentOrder.getAccount();
+	}
+	
+	@Override
+	public DataObject getDataObject() {
+		return parentOrder;
 	}
 	
 	@Override

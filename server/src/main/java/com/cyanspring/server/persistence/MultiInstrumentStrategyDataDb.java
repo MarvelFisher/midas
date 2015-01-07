@@ -21,7 +21,8 @@ public class MultiInstrumentStrategyDataDb extends TextObject {
 	 */
 	private static final long serialVersionUID = 3465310772084393362L;
 
-	public MultiInstrumentStrategyDataDb(String id, PersistType persistType, StrategyState state, Date timeStamp, String xml, int line) {
-		super(id, persistType, state, timeStamp, xml, line);
+	public MultiInstrumentStrategyDataDb(String id, PersistType persistType, StrategyState state, String user, 
+			String account, String route, Date timeStamp, String xml, int line) {
+		super(id, persistType, state, user, account, route, timeStamp, xml, line);
 	}
 }

@@ -25,6 +25,7 @@
 	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
 	<property column="TRADER" 			name="user" type="java.lang.String"/>
 	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
+	<property column="ROUTE" 			name="route" type="java.lang.String"/>
   </class> 
   
   <class name="com.cyanspring.common.business.ChildOrder" table="ANYONE.ACTIVE_CHILD_ORDERS"> 
@@ -61,6 +62,7 @@
 	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
 	<property column="TRADER" 			name="user" type="java.lang.String"/>
 	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
+	<property column="ROUTE" 			name="route" type="java.lang.String"/>
   </class> 
   
   <class name="com.cyanspring.server.persistence.ChildOrderAudit" table="ANYONE.CHILD_ORDER_AUDIT"> 
@@ -104,6 +106,7 @@
 	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
 	<property column="TRADER" 			name="user" type="java.lang.String"/>
 	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
+	<property column="ROUTE" 			name="route" type="java.lang.String"/>
   </class> 
   
   <class name="com.cyanspring.server.persistence.TextObject" table="ANYONE.TEXT_OBJECTS"> 
@@ -126,6 +129,9 @@
 	<property column="TIME_STAMP" 		name="timeStamp" type="java.util.Date"/>
 	<property column="XML_TEXT" 		name="xml" type="java.lang.String"/>
 	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
+	<property column="TRADER" 			name="user" type="java.lang.String"/>
+	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
+	<property column="ROUTE" 			name="route" type="java.lang.String"/>
   </class> 
   
   <class name="com.cyanspring.common.account.User" table="ANYONE.USERS">
@@ -211,6 +217,7 @@
   	<property column="DEFAULT_QTY"		name="defaultQty"	type="java.lang.Double"/>
   	<property column="STOP_LOSS_VALUE"	name="stopLossValue"	type="java.lang.Double"/>
   	<property column="COMPANY_SL_VALUE"	name="companySLValue"	type="java.lang.Double"/>
+	<property column="ROUTE" 			name="route" 		type="java.lang.String"/>
   </class>
 
   <sql-query name="rollEndOfDay1">

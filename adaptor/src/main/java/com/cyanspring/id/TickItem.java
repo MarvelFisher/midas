@@ -4,16 +4,13 @@ import io.netty.util.internal.StringUtil;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 
 public class TickItem {
 
-	private final ReentrantReadWriteLock readWriteLockList = new ReentrantReadWriteLock();
-	private final Lock writeLockList = readWriteLockList.writeLock();
+	//private final ReentrantReadWriteLock readWriteLockList = new ReentrantReadWriteLock();
+	//private final Lock writeLockList = readWriteLockList.writeLock();
 
 	Date time;
 	double price = 0, bid = 0, ask = 0;
@@ -25,16 +22,6 @@ public class TickItem {
 		clear();
 	}
 
-	/**
-	 * 
-	 */
-	void reset() {
-		writeLockList.lock();
-
-		// m_arrTokens.clear();
-
-		writeLockList.unlock();
-	}
 
 	/**
 	 * 
@@ -44,7 +31,6 @@ public class TickItem {
 		price = 0;
 		bid = 0;
 		ask = 0.0;
-		reset();
 	}
 
 	/**
@@ -53,7 +39,7 @@ public class TickItem {
 	 * @param tValue
 	 */
 	void setValue(int nField, Date tValue) {
-		writeLockList.lock();
+		//writeLockList.lock();
 		switch (nField) {
 		case FieldID.LastTradeTime: {	
 			time = tValue;
@@ -64,7 +50,7 @@ public class TickItem {
 		default:
 			break;
 		}
-		writeLockList.unlock();
+		//writeLockList.unlock();
 	}
 
 	/**
@@ -73,7 +59,7 @@ public class TickItem {
 	 * @param dValue
 	 */
 	void setValue(int nField, double dValue) {
-		writeLockList.lock();
+		//writeLockList.lock();
 
 		switch (nField) {
 		case FieldID.AskPrice: {
@@ -95,7 +81,7 @@ public class TickItem {
 		default:
 			break;
 		}
-		writeLockList.unlock();
+		//writeLockList.unlock();
 	}
 
 	/**

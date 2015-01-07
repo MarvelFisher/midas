@@ -103,16 +103,16 @@ public class TestHyperDownStreamConnection {
 		connection.setSync(true);
 		//connection.init();
 		buyOrder = new ChildOrder(symbol, OrderSide.Buy, 2000,
-				68, ExchangeOrderType.LIMIT, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount());
+				68, ExchangeOrderType.LIMIT, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
 		
 		sellOrder = new ChildOrder(symbol, OrderSide.Sell, 2000,
-				67, ExchangeOrderType.LIMIT, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount());
+				67, ExchangeOrderType.LIMIT, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
 		
 		buyMarketOrder = new ChildOrder(symbol, OrderSide.Buy, 2000,
-				0.0, ExchangeOrderType.MARKET, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount());
+				0.0, ExchangeOrderType.MARKET, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
 		
 		sellMarketOrder = new ChildOrder(symbol, OrderSide.Sell, 2000,
-				0.0, ExchangeOrderType.MARKET, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount());
+				0.0, ExchangeOrderType.MARKET, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
 		
 		
 		quote = new Quote(symbol, null, null);

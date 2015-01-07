@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.RingBuffer;
 import com.cyanspring.id.Library.Util.BitConverter;
@@ -71,6 +72,7 @@ public class Parser implements IReqThreadCallback {
 		} else {
 			addData(time, data);
 		}
+		data = null;
 	}
 
 	/**
@@ -81,6 +83,7 @@ public class Parser implements IReqThreadCallback {
 	public void parse(Date time, byte[] srcData) {
 
 		buffer.write(srcData, srcData.length);
+		srcData = null;
 		try {
 			while (true) {
 
@@ -92,16 +95,16 @@ public class Parser implements IReqThreadCallback {
 				}
 
 				if (data[0] != SpecialCharDef.EOT) {
-					log.error(String.format(
+					LogUtil.logError(log, 
 							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-							data[0]));
+							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
 				if (data[1] != SpecialCharDef.SPC) {
-					log.error(String.format("Parser.Parse szTempBuf[1] != SPC"));
-					log.error(String.format("Parser.Parse pop [0x%02x]",
-							data[0]));
+					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
+					LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
+							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
@@ -117,11 +120,11 @@ public class Parser implements IReqThreadCallback {
 				int iPacketDataLength = iDataLength + 7;
 				int dwQueueLength = buffer.getQueuedSize();
 				if (iPacketDataLength >= buffer.getBufSize()) {
-					log.error(
+					LogUtil.logError(log, 
 							"Parser.Parse iPacketDataLength[%d] >= sizeof(szTempBuf)[%d]",
 							iPacketDataLength, data.length);
-					log.error(String.format("Parser.Parse pop [0x%02x]",
-							data[0]));
+					LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
+							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
@@ -130,18 +133,18 @@ public class Parser implements IReqThreadCallback {
 					data = new byte[iPacketDataLength];
 					int nSize = buffer.read(data, iPacketDataLength, false);
 					if (nSize != iPacketDataLength) {
-						log.error(
+						LogUtil.logError(log, 
 								"Parser.Parse m_RecvQueue.PeekData Fail! iPacketDataLength[%d]",
 								iPacketDataLength);
 						break;
 					}
 
 					if (data[iPacketDataLength - 1] != SpecialCharDef.ETX) {
-						log.error(
+						LogUtil.logError(log, 
 								"Parser.Parse szTempBuf[iPacketDataLength - 1][0x%02x] != ETX iPacketDataLength = %d",
 								data[iPacketDataLength - 1], iPacketDataLength);
-						log.error(String.format("Parser.Parse pop [0x%02x]",
-								data[0]));
+						LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
+								data[0]);
 						buffer.purge(1); // Skip One Byte
 						continue;
 					}
@@ -189,6 +192,7 @@ public class Parser implements IReqThreadCallback {
 
 		Date tTime = new Date(0);
 		String[] vec = StringUtil.split(strLine, '|');
+		int nSource = 0;
 		for (int i = 0; i < vec.length; i++) {
 
 			String[] vec2 = StringUtil.split(vec[i], '=');
@@ -200,19 +204,17 @@ public class Parser implements IReqThreadCallback {
 
 			switch (nField) {
 			case FieldID.SourceID: {
-				int nSource = Integer.parseInt(vec2[1]);
+				nSource = Integer.parseInt(vec2[1]);
 				if (nSource != 687) {
 					return false;
 				}
 			}
 				break;
 			case FieldID.Symbol: {
+				
 				String sID = new String(vec2[1]);
-				int nPos = sID.indexOf("X:S"); // Forex
-				if (nPos >= 0) {
-					sID = sID.substring(nPos + 3);
-				}
-
+				sID = IdSymbolUtil.toSymbol(sID, nSource);
+				
 				if (sID.isEmpty()
 						|| QuoteMgr.instance().checkSymbol(sID) == false)
 					return false;
@@ -273,6 +275,7 @@ public class Parser implements IReqThreadCallback {
 		IdMarketDataAdaptor adaptor = IdMarketDataAdaptor.instance;
 		adaptor.setTime(tTime);
 		int nStatus = adaptor.getStatus(tTime);
+		
 		if (MarketStatus.CLOSE == nStatus) {
 			if (false == adaptor.getIsClose()) {
 				if (adaptor.getStatus() == MarketStatus.CLOSE) {
@@ -283,6 +286,14 @@ public class Parser implements IReqThreadCallback {
 			return false;
 		}
 
+		if (true == adaptor.getIsClose()) {
+			if (nStatus == MarketStatus.PREOPEN || nStatus == MarketStatus.OPEN ) {
+				adaptor.setIsClose(false);
+				QuoteMgr.instance().sunrise();
+				QuoteMgr.instance().writeFile(false);
+			}
+		}
+		
 		// Get ForexData and process ForexData
 		SymbolItem item = QuoteMgr.instance().getItem(strID);
 		if (item != null) {
@@ -308,6 +319,7 @@ public class Parser implements IReqThreadCallback {
 	 */
 	public void addData(Date time, byte[] data) {
 		reqThread.addRequest(new Object[] { time, data });
+		data = null;
 	}
 
 	/*
@@ -345,6 +357,7 @@ public class Parser implements IReqThreadCallback {
 		} catch (Exception ex) {
 			LogUtil.logException(log, ex);
 		}
+		data = null;
 	}
 
 	/*

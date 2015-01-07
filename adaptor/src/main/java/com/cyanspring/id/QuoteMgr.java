@@ -230,9 +230,21 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 		}
 		return true;
 	}
+	
+	public void sunrise()
+	{
+		Util.addLog("Sunrise");
+		LogUtil.logInfo(log, "Sunrise");
 
+		List<SymbolItem> list = new ArrayList<SymbolItem>(symbolTable.values());
+		
+		for (SymbolItem item : list) {
+			item.sunrise();
+		}
+	}
+	
 	boolean readFile() throws Exception {
-		String fileName = IdMarketDataAdaptor.instance.getDataPath("ForexData");
+		String fileName = IdMarketDataAdaptor.instance.getDataPath("id-forex");
 
 		File file = new File(fileName);
 		if (!file.exists()) {
@@ -259,7 +271,8 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 
 					SymbolItem item = symbolTable.get(strID);
 					if (null == item) {
-						continue;
+						item = new SymbolItem(strID);
+						symbolTable.put(strID, item);
 					}
 
 					item.loadFromFile(sValue);
@@ -272,8 +285,8 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	}
 
 	public void writeFile(boolean bClose) {
-		String strPath = IdMarketDataAdaptor.instance.getDataPath("ForexData");
-		log.info(String.format("Write File %s", strPath));
+		String strPath = IdMarketDataAdaptor.instance.getDataPath("id-forex");
+		LogUtil.logInfo(log, "Write File %s", strPath);
 
 		try {
 			ArrayList<String> listData = new ArrayList<String>();
@@ -301,7 +314,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 
 		} catch (Exception ex) {
 			LogUtil.logException(log, ex);
-			log.error(String.format("Fail to write file %s", strPath));
+			LogUtil.logError(log, "Fail to write file %s", strPath);
 		}
 	}
 }

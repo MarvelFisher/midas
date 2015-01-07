@@ -81,6 +81,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	//private Map<Integer, Map<String, Object>> pendingAmends = Collections.synchronizedMap(new HashMap<Integer, Map<String, Object>>());
 	private boolean qtyHasChanged;
 	private boolean priceHasChanged;
+	private String id = "IB";
 	
 	// caching
 	DualMap<String, Integer> symbolToId = new DualMap<String, Integer>();
@@ -397,7 +398,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 
 		@Override
 		public String getId() {
-			return "IB";
+			return IbAdaptor.this.getId();
 		}
 
 		@Override
@@ -750,7 +751,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 				new com.cyanspring.common.business.Execution(order.getSymbol(), order.getSide(), filled-oldFilled, 
 						lastFillPrice, order.getId(), order.getParentOrderId(), order.getStrategyId(), 
 						IdGenerator.getInstance().getNextID() + "E",
-						order.getUser(), order.getAccount());
+						order.getUser(), order.getAccount(), order.getRoute());
 			downStreamListener.onOrder(execType, order, execution, "");
 			return;
 		} 
@@ -1002,4 +1003,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	public void setRefDataManager(IRefDataManager refDataManager) {
 		this.refDataManager = refDataManager;
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 }

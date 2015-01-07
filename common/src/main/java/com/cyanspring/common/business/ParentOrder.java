@@ -185,7 +185,7 @@ public class ParentOrder extends Order {
 	
 	public ChildOrder createChild(double quantity, double price, ExchangeOrderType type) {
 		return new ChildOrder(getSymbol(), getSide(), quantity, 
-				price, type, getId(), getId(), getUser(), getAccount());
+				price, type, getId(), getId(), getUser(), getAccount(), getRoute());
 	}
 	
 	public Map<String, Object> diff(ParentOrder order) {

@@ -1,4 +1,4 @@
-package com.cyanspring.id.gateway; 
+package com.cyanspring.id.gateway;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -20,10 +20,10 @@ import com.cyanspring.id.Library.Util.Network.SpecialCharDef;
 import com.cyanspring.id.gateway.netty.ServerHandler;
 
 public class UserClient implements AutoCloseable {
-	private static final Logger log = LoggerFactory
-			.getLogger(IdGateway.class);
+	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
 	static final int MAX_COUNT = 1024 * 1024;
-	String key = createUniqKey(); 
+	String key = createUniqKey();
+
 	public String getKey() {
 		return key;
 	}
@@ -37,7 +37,7 @@ public class UserClient implements AutoCloseable {
 	boolean gateway = false;
 
 	String ip;
-	
+
 	public String getIp() {
 		return ip;
 	}
@@ -50,7 +50,7 @@ public class UserClient implements AutoCloseable {
 		uuid = uuid.substring(uuid.length() - 4);
 		return String.format("%s-%s", sTime, uuid).toUpperCase();
 	}
-	
+
 	public boolean isGateway() {
 		return gateway;
 	}
@@ -71,7 +71,7 @@ public class UserClient implements AutoCloseable {
 			refList.clear();
 			refList = null;
 		}
-		
+
 		ctx = null;
 	}
 
@@ -109,18 +109,20 @@ public class UserClient implements AutoCloseable {
 
 		ServerHandler.sendData(ctx, symbol, data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
-		//LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
+		// LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
 	}
 
 	public void onReceive(byte[] srcData) {
 
 		buffer.write(srcData, srcData.length);
+		srcData = null;
 		try {
 			while (true) {
 
 				byte[] data = new byte[6];
 
-				if (buffer.getQueuedSize() <= 0 || buffer.read(data, 6, false) != 6) {
+				if (buffer.getQueuedSize() <= 0
+						|| buffer.read(data, 6, false) != 6) {
 					break;
 				}
 
@@ -135,7 +137,8 @@ public class UserClient implements AutoCloseable {
 
 				int iDataLength = 0;
 				try {
-					iDataLength = (int) BitConverter.toLong(data, 2, data.length);
+					iDataLength = (int) BitConverter.toLong(data, 2,
+							data.length);
 				} catch (Exception e) {
 					LogUtil.logError(log, e.getMessage());
 					LogUtil.logException(log, e);
@@ -164,8 +167,8 @@ public class UserClient implements AutoCloseable {
 					System.arraycopy(data, 6, data2, 0, iDataLength);
 					buffer.purge(iPacketDataLength);
 
-					String strFrame = new String(data2, Charset.defaultCharset());
-
+					String strFrame = new String(data2,
+							Charset.defaultCharset());
 					parse(strFrame);
 
 				} else {
@@ -223,8 +226,7 @@ public class UserClient implements AutoCloseable {
 	}
 
 	public String toXml() {
-		
-		return String.format("<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" />%n", key, ip, gateway ? "true" : "false");
-
+		return String.format("<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" />%n",
+				key, ip, gateway ? "true" : "false");
 	}
 }

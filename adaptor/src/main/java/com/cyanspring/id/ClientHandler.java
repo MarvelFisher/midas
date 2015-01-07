@@ -12,6 +12,7 @@ import com.cyanspring.id.Library.Util.BitConverter;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.TimeSpan;
 import com.cyanspring.id.Library.Util.Network.SpecialCharDef;
@@ -120,6 +121,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 
 		Parser.instance().processData(new Date(), data);
 		buffer.release();
+		data = null;
 	}
 
 	/*
@@ -191,7 +193,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		login.append(strPassword);
 
 		String strLogon = login.toString();
-		log.info(String.format("[logOn] %s", strLogon));
+		LogUtil.logInfo(log, "[logOn] %s", strLogon);
 		Util.addLog("[logOn] %s", strLogon);
 
 		byte[] arrData = makeFrame(strLogon);
@@ -216,7 +218,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		sbSymbol.append(1);
 
 		String strSetCTFOn = sbSymbol.toString();
-		log.info(String.format("[Subscribe]%s", strSetCTFOn));
+		LogUtil.logInfo(log, "[Subscribe]%s", strSetCTFOn);
 		Util.addLog("[Subscribe]%s", strSetCTFOn);
 
 		byte[] arrData = makeFrame(strSetCTFOn);
@@ -262,13 +264,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		sbSymbol.append(4);
 		sbSymbol.append(nSourceID);
 		sbSymbol.append(5);
-		String sIDSymbol = String.format("X:S%s", strSymbol);
-		sbSymbol.append(sIDSymbol);
+		String idSymbol = IdSymbolUtil.toIdSymbol(strSymbol, nSourceID);
+		sbSymbol.append(idSymbol);
 		sbSymbol.append(5026);
 		sbSymbol.append(1);
 
 		String strSetCTFOn = sbSymbol.toString();
-		log.info(String.format("[Subscribe]%s", strSetCTFOn));
+		LogUtil.logInfo(log, "[Subscribe]%s", strSetCTFOn);
 
 		byte[] arrData = makeFrame(strSetCTFOn);
 
@@ -292,13 +294,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		sbSymbol.append(4);
 		sbSymbol.append(nSourceID);
 		sbSymbol.append(5);
-		String sIDSymbol = String.format("X:S%s", strSymbol);
-		sbSymbol.append(sIDSymbol);
+		String idSymbol = IdSymbolUtil.toIdSymbol(strSymbol, nSourceID);
+		sbSymbol.append(idSymbol);
+		
 		sbSymbol.append(5026);
 		sbSymbol.append(1);
 
 		String strSetCTFOn = sbSymbol.toString();
-		log.info(String.format("[unSubscribe]%s", strSetCTFOn));
+		LogUtil.logInfo(log, "[unSubscribe]%s", strSetCTFOn);
 
 		byte[] arrData = makeFrame(strSetCTFOn);
 

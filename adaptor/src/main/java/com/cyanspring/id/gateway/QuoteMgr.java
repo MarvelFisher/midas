@@ -1,25 +1,11 @@
 package com.cyanspring.id.gateway; 
 
-import io.netty.util.internal.StringUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.xpath.XPathException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import com.cyanspring.id.Library.Util.FinalizeHelper;
-import com.cyanspring.id.Library.Util.LogUtil;
-import com.cyanspring.id.Library.Xml.XmlUtil;
 
 public class QuoteMgr implements AutoCloseable {
-	private static final Logger log = LoggerFactory
-			.getLogger(IdGateway.class);
 	static QuoteMgr _Instance = new QuoteMgr();
 
 	public static QuoteMgr Instance() {
@@ -70,26 +56,5 @@ public class QuoteMgr implements AutoCloseable {
 	public void addSymbols(List<String> list) {
 		symbolList.addAll(list);
 	}
-	
-	public boolean parseXml(Node nodeSymbols) {
-		try {
-			NodeList list = XmlUtil.selectNodes(nodeSymbols, "Symbol");
-			for (int i = 0; i < list.getLength(); i++) {
-				Node nodeSymbol = list.item(i);
-				String s = XmlUtil.getAttribute((Element) nodeSymbol, "ID");
-				String[] arrItem = StringUtil.split(s, ',');
-				for (String symbol : arrItem) {
-					symbolList.add(symbol);
-				}
-			}
 
-		} catch (XPathException e) {
-			LogUtil.logError(log, e.getMessage());
-			LogUtil.logException(log, e);
-			return false;
-		}
-
-		return true;
-
-	}
 }

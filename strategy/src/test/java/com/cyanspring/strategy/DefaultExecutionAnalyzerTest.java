@@ -26,6 +26,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.event.IAsyncEventInbox;
 import com.cyanspring.common.event.RemoteAsyncEvent;
@@ -54,7 +55,7 @@ public class DefaultExecutionAnalyzerTest {
 		public ChildOrder createChildOrder(String parentId, String symbol,
 				OrderSide side, double quantity, double price,
 				ExchangeOrderType type) {
-			return new ChildOrder(symbol, side, quantity, price, type, parentId, getId(), Default.getUser(), Default.getAccount());
+			return new ChildOrder(symbol, side, quantity, price, type, parentId, getId(), Default.getUser(), Default.getAccount(), null);
 		}
 
 		@Override
@@ -288,6 +289,12 @@ public class DefaultExecutionAnalyzerTest {
 		public void setValidateQuote(boolean validateQuote) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public DataObject getDataObject() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 

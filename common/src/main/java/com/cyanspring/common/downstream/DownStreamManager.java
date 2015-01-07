@@ -150,7 +150,14 @@ public class DownStreamManager implements IPlugin {
 		return list.get(i);
 	}
 	
-	public IDownStreamSender getSender(String dest) {
-		return senders.get(dest);
+	public IDownStreamSender getSender(String dest) throws DownStreamException {
+		if(null == dest)
+			return this.getSender();
+		
+		IDownStreamSender sender = senders.get(dest);
+		if(null == sender)
+			throw new DownStreamException("Can't find this sender: " + dest);
+		return sender;
 	}
+	
 }

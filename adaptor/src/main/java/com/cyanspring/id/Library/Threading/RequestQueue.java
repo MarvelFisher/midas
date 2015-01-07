@@ -127,7 +127,7 @@ public class RequestQueue extends LinkedList<Object> implements AutoCloseable {
 	
 	@Override
 	public void close() {
-		log.info("RequestQueue close");
+		LogUtil.logInfo(log, "RequestQueue close");
 		clearRequest();
 		FinalizeHelper.suppressFinalize(this);
 

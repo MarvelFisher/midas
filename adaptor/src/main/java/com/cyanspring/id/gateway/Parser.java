@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
+import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.RingBuffer;
 import com.cyanspring.id.Library.Util.BitConverter;
@@ -135,15 +136,29 @@ public class Parser implements IReqThreadCallback {
 					m_buffer.purge(iPacketDataLength);
 
 					String str = new String(data2, Charset.defaultCharset());
-					int nStartIdx = str.indexOf("|5=X:S");
+					
+					int nStartIdx = str.indexOf("|4=");
+					if (nStartIdx < 0)
+						continue;
+					
+					int nEndIdx = str.indexOf("|", nStartIdx + 3);
+					if (nEndIdx < 0)
+						continue;
+					
+					String source = str.substring(nStartIdx + 3, nEndIdx);
+					int sourceInt = Integer.parseInt(source);
+					
+					nStartIdx = str.indexOf("|5=");
 					if (nStartIdx < 0)
 						continue;
 
-					int nEndIdx = str.indexOf("|", nStartIdx + 5);
+					nEndIdx = str.indexOf("|", nStartIdx + 3);
 					if (nEndIdx < 0)
 						continue;
 
-					String symbol = str.substring(nStartIdx + 6, nEndIdx);
+					
+					String symbol = str.substring(nStartIdx + 3, nEndIdx);
+					symbol = IdSymbolUtil.toSymbol(symbol, sourceInt);		
 
 					if (QuoteMgr.Instance().checkSymbol(symbol) == false) {
 						continue;

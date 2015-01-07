@@ -29,15 +29,22 @@ public class TextObject implements Serializable {
 	private Date timeStamp;
 	private String xml;
 	private int line;
+	private String user;
+	private String account;
+	private String route;
 	
 	public TextObject() {
 		super();
 	}
-	public TextObject(String id, PersistType persistType, StrategyState state, Date timeStamp, String xml, int line) {
+	public TextObject(String id, PersistType persistType, StrategyState state, String user, 
+			String account, String route, Date timeStamp, String xml, int line) {
 		super();
 		this.id = id;
 		this.persistType = persistType;
 		this.state = state;
+		this.user = user;
+		this.account = account;
+		this.route = route;
 		this.timeStamp = timeStamp;
 		this.xml = xml;
 		this.line = line;
@@ -92,6 +99,24 @@ public class TextObject implements Serializable {
 	public void setState(StrategyState state) {
 		this.state = state;
 	}
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
+	public String getAccount() {
+		return account;
+	}
+	public void setAccount(String account) {
+		this.account = account;
+	}
+	public String getRoute() {
+		return route;
+	}
+	public void setRoute(String route) {
+		this.route = route;
+	}
 	public static List<String> chop(String str, int size) {
 		ArrayList<String> result = new ArrayList<String>();
 		int pos = 0;
@@ -113,12 +138,13 @@ public class TextObject implements Serializable {
 		return sb.toString();
 	}
 	
-	public static List<TextObject> createTextObjects(String id, PersistType persistType, StrategyState state, String xml, int size) {
+	public static List<TextObject> createTextObjects(String id, PersistType persistType, StrategyState state, 
+			String user, String account, String route, String xml, int size) {
 		ArrayList<TextObject> result = new ArrayList<TextObject>();
 		List<String> lines = chop(xml, size);
 		int lineNo = 0;
 		for(String line: lines) {
-			result.add(new TextObject(id, persistType, state, Clock.getInstance().now(), line, ++lineNo));
+			result.add(new TextObject(id, persistType, state, user, account, route, Clock.getInstance().now(), line, ++lineNo));
 		}
 		return result;
 	}

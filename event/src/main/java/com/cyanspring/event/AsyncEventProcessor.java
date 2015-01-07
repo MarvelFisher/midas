@@ -14,6 +14,8 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 
 public abstract class AsyncEventProcessor implements IAsyncEventListener {
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger log = LoggerFactory
 			.getLogger(AsyncEventProcessor.class);
 	
