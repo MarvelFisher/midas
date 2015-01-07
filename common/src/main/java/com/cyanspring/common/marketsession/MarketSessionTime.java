@@ -11,15 +11,32 @@
 package com.cyanspring.common.marketsession;
 
 import java.text.ParseException;
-import java.util.Date;
-
-import com.cyanspring.common.util.TimeUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MarketSessionTime {
-	public MarketSessionType session;
-	public Date start;
-	public Date end;
-	private static String timeFormat = "HH:mm:ss";
+		
+	public List<SessionData> lst = new ArrayList<>();
+//	public MarketSessionTimeFormat timeFormat;
+	private String timeFormat;
+	
+	
+	public static class SessionData{
+		public MarketSessionType session;
+		public String weekDay;
+		public String date;
+		public String start;
+		public String end;		
+		public SessionData(MarketSessionType session, String start, String end){
+			this.session = session;
+			this.start = start;
+			this.end = end;
+		}
+		
+		public SessionData(){
+			
+		}
+	}
 	
 //	public MarketSessionTime(MarketSessionType session, Date start, Date end) {
 //		super();
@@ -28,20 +45,32 @@ public class MarketSessionTime {
 //		this.end = end;
 //	}
 	
-	public MarketSessionTime(MarketSessionType session, String start, String end) throws ParseException {
-		super();
-		this.session = session;
-		this.start = TimeUtil.parseTime(timeFormat, start);
-		this.end = TimeUtil.parseTime(timeFormat, end);
+	public MarketSessionTime(List<SessionData> data) throws ParseException {
+		timeFormat = "HH:mm:ss";
+		lst = data;
+	}
+	
+	public MarketSessionTime(MarketSessionType session, List<String> data){
+		timeFormat = "yyyy-MM-dd";
+		for(String date : data){
+			SessionData sessionData = new SessionData();
+			sessionData.session = session;
+			if(date.length() == 1){				
+				sessionData.weekDay = date;
+			}else{
+				sessionData.date = date;
+			}
+			lst.add(sessionData);
+		}
 	}
 
 	
-	public static String getTimeFormat() {
+	public String getTimeFormat() {
 		return timeFormat;
 	}
 
-	public static void setTimeFormat(String timeFormat) {
-		MarketSessionTime.timeFormat = timeFormat;
+	public void setTimeFormat(String timeFormat) {
+		this.timeFormat = timeFormat;
 	}
 	
 }
