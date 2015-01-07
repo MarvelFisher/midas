@@ -13,14 +13,16 @@ package com.cyanspring.common.marketsession;
 import java.util.Date;
 
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class MarketSessionEvent extends AsyncEvent {
+public class MarketSessionEvent extends RemoteAsyncEvent {
 	private MarketSessionType session;
 	private Date start;
 	private Date end;
 
-	public MarketSessionEvent(MarketSessionType session, Date start, Date end) {
-		super();
+	public MarketSessionEvent(String key, String receiver,
+			MarketSessionType session, Date start, Date end) {
+		super(key, receiver);
 		this.session = session;
 		this.start = start;
 		this.end = end;
@@ -37,5 +39,6 @@ public class MarketSessionEvent extends AsyncEvent {
 	public Date getEnd() {
 		return end;
 	}
+	
 	
 }

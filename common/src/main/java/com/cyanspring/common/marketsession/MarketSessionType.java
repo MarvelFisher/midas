@@ -32,7 +32,10 @@ public enum MarketSessionType {
 	LUNCH_BLOCKING, 				
 	LUNCH_BLOCKING_AMEND_CANCEL_ALLOW, 
 	PM_CONTINUOUS_TRADING,
-	PM_NO_TRADING;
+	PM_NO_TRADING,
+	CLOSE,
+	OPEN,
+	PREOPEN;
 	
 	
 	// add exchange to market session set here
@@ -47,7 +50,10 @@ public enum MarketSessionType {
 				LUNCH_BLOCKING, 				
 				LUNCH_BLOCKING_AMEND_CANCEL_ALLOW, 
 				PM_CONTINUOUS_TRADING,
-				PM_NO_TRADING));
+				PM_NO_TRADING,
+				CLOSE,
+				OPEN,
+				PREOPEN));
 		
 		map.put(ExchangeType.HKEX, types);
 	}
