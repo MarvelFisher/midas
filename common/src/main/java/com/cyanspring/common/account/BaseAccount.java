@@ -181,6 +181,9 @@ public abstract class BaseAccount implements Serializable {
 	public synchronized void updateEndOfDay() {
 		if(!PriceUtils.isZero(this.cashDeposited))
 			this.rollPrice += this.PnL/this.cashDeposited;
+	}
+
+	public synchronized void resetDailyPnL() {
 		this.PnL = 0.0;
 	}
 

@@ -734,6 +734,12 @@ public class AccountPositionManager implements IPlugin {
 		List<Account> list = accountKeeper.getAllAccounts();
 		for(Account account: list) {
 			positionKeeper.rollAccount(account);
+			try {
+				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account.clone()));
+			} catch (CloneNotSupportedException e) {
+				log.error(e.getMessage(), e);
+			}
+			account.resetDailyPnL();
 		}
 		String tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
 		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, tradeDate));
