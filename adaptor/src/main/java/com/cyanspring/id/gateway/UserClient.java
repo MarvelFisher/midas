@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,8 @@ public class UserClient implements AutoCloseable {
 	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
 	static final int MAX_COUNT = 1024 * 1024;
 	String key = createUniqKey();
+	
+	Date timeLast = new Date(0);
 
 	public String getKey() {
 		return key;
@@ -107,6 +110,8 @@ public class UserClient implements AutoCloseable {
 		if (ctx == null)
 			return;
 
+		timeLast = DateUtil.now();
+		
 		ServerHandler.sendData(ctx, symbol, data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
 		// LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
@@ -114,9 +119,11 @@ public class UserClient implements AutoCloseable {
 
 	public void onReceive(byte[] srcData) {
 
-		buffer.write(srcData, srcData.length);
-		srcData = null;
 		try {
+
+			buffer.write(srcData, srcData.length);
+			srcData = null;
+			
 			while (true) {
 
 				byte[] data = new byte[6];
@@ -226,7 +233,7 @@ public class UserClient implements AutoCloseable {
 	}
 
 	public String toXml() {
-		return String.format("<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" />%n",
-				key, ip, gateway ? "true" : "false");
+		return String.format("<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" Last=\"%s\"/>%n",
+				key, ip, gateway ? "true" : "false", DateUtil.formatDate(timeLast, "yyyyMMdd-HH:mm:ss.SSS"));
 	}
 }

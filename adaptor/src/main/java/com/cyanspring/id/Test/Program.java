@@ -218,8 +218,6 @@ public class Program implements IFrameClose, TimerEventHandler {
 
 	@Override
 	public void onTimer(TimerThread objSender) {
-		System.gc();
-
-		
+		System.gc();		
 	}
 }

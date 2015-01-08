@@ -230,9 +230,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		byte[] data = new byte[buffer.readableBytes()];
 		buffer.readBytes(data);
 		buffer.release();
-		data = null;
 		UserClient client = getUserClient(ctx);
 		client.onReceive(data);
+		data = null;
 	}
 
 	@Override

@@ -230,7 +230,11 @@ public class IDForexFeedDialog extends JFrame {
 	
 	public void addMsg(String f, Object... args) {
 
-		final String strMsg = String.format(f, args);
+		//final String strMsg = String.format(f, args);
+		final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		final String strMsg = String.format("[%s] %s", sdf.format(new java.util.Date()), 
+				String.format(f, args));
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
