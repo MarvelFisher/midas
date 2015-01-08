@@ -19,7 +19,7 @@
 		
 		
 		<!-- source--> 
-		<property name="reqIp" value="10.0.0.32"></property>
+		<property name="reqIp" value="202.55.14.140"></property>
 		<property name="reqPort" value="6086"></property>		
 		<property name="account" value="fdtcanned"></property>
 		<property name="password" value="MFW9dC26"></property>

@@ -587,6 +587,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	 * @return
 	 */
 	public String getDataPath(String strSymbolID) {
-		return String.format("%s\\ticks\\%s", path, strSymbolID);
+		return String.format("%s/ticks/%s", path, strSymbolID);
 	}
 }

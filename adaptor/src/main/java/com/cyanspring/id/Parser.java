@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
-import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.RingBuffer;
@@ -159,15 +158,14 @@ public class Parser implements IReqThreadCallback {
 
 					if (!bOk)
 						continue;
-
-					//log.debug(str);
-
+					
 					Date tNow = new Date();
 					TimeSpan ts = TimeSpan.getTimeSpan(tNow, tLast);
-					if (ts.getTotalSeconds() >= 3) {
+					if (ts.getTotalSeconds() >= 30) {
 						tLast = tNow;
 						Util.addMsg("[%d] %s", str.length(), str);
-						Util.setStatus(DateUtil.formatDate("[HH:mm:ss]"));
+						log.debug(str);
+						//Util.setStatus(DateUtil.formatDate("[HH:mm:ss]"));
 					}
 				} else {
 					break;
