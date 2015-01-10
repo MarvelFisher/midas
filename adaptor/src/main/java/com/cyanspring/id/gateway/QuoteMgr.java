@@ -70,7 +70,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 
 	@Override
 	public void onTimer(TimerThread objSender) {
-		//System.gc();		
+		System.gc();		
 	}
 
 }

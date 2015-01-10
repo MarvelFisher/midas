@@ -1,23 +1,27 @@
 package com.cyanspring.common.event.alert;
 
-import com.cyanspring.common.alert.PriceAlert;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class CreatePriceAlertReplyEvent extends RemoteAsyncEvent {
-	private PriceAlert priceAlert;
+public class SetPriceAlertReplyEvent extends RemoteAsyncEvent {
+	private String id;
 	private String txId;
 	private boolean ok;
 	private String message;
-	public CreatePriceAlertReplyEvent(String key, String receiver,
-			PriceAlert priceAlert, String txId, boolean ok, String message) {
+	private int Type ;
+	/*
+	 * if Success , ok = true ,message = "";
+	 * if reject , ok = false ,message = error msg ;
+	 * */
+	public SetPriceAlertReplyEvent(String key, String receiver,
+			String id, String txId, boolean ok, String message) {
 		super(key, receiver);
-		this.priceAlert = priceAlert;
+		this.id = id;
 		this.txId = txId;
 		this.ok = ok;
 		this.message = message;
 	}
-	public PriceAlert getPriceAlert() {
-		return priceAlert;
+	public String getId(){
+		return id ;
 	}
 	public String getTxId() {
 		return txId;
@@ -28,5 +32,4 @@ public class CreatePriceAlertReplyEvent extends RemoteAsyncEvent {
 	public String getMessage() {
 		return message;
 	}
-
 }

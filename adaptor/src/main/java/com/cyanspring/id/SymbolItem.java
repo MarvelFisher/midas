@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
@@ -215,14 +214,14 @@ public class SymbolItem implements AutoCloseable {
 	public void parseTick(Date timeRev, Date timeTick, int nDP,
 			Hashtable<Integer, String> table) {
 
-		Date timeGmt = DateUtil.toGmt(timeTick);
+		//Date timeGmt = DateUtil.toGmt(timeTick);
 
 		dp = nDP;
 		boolean bTick = false;
 		if (table.containsKey(FieldID.AskPrice)
 				&& table.containsKey(FieldID.BidPrice)) {
 			bTick = true;
-			tick.setValue(FieldID.LastTradeTime, timeGmt);
+			tick.setValue(FieldID.LastTradeTime, timeTick);
 		}
 
 		Set<Integer> set = table.keySet();

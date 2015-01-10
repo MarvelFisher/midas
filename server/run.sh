@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# fix Apps could not login between LTS restart - AppServer restart
+WORKDIR=$PWD
+cd ../appServer
+./run.sh stop
+cd $WORKDIR
+
 jps|grep cyanspring-server-2.56.jar|cut -d ' ' -f1|xargs kill -9
 sleep 5
 #ulimit -n 1024000
@@ -11,4 +18,4 @@ java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar con
 sleep 15
 echo "Starting AppServer "`date` | tee -a ./log/console.log
 cd ../appServer
-./run.sh
+./run.sh start

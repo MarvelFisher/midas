@@ -90,7 +90,7 @@
 	
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		    <constructor-arg>
-		    	<ref bean="ibAdaptor"/>
+		    	<ref bean="IdMarketDataAdaptor"/>
 		    </constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -244,7 +244,7 @@
 		<property name="port" value="4001"></property>	
 	-->  
 		<property name="gateway" value="true"></property>		
-		<property name="reqIp" value="localHost"></property>		
+		<property name="reqIp" value="10.0.0.32"></property>		
 		<property name="reqPort" value="6086"></property>
 	
 		<property name="exch" value="687"></property>
