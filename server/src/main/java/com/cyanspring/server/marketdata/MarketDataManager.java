@@ -57,7 +57,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private static final Logger log = LoggerFactory
 			.getLogger(MarketDataManager.class);
 	
-	private Map<String, Quote> quotes = new HashMap<String, Quote>();
+	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
 	
 	@Autowired
@@ -121,7 +121,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
 		log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
 		Quote quote = quotes.get(event.getSymbol());
-		if (quote == null) {
+		if (quote == null || quote.isStale()) {
 			adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
 		} else {
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
@@ -255,7 +255,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		lastTradeDateQuotes = loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
 		if(lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0){
 			log.warn("No lastTradeDateQuotes values while initialing.");			
-			lastTradeDateQuotes = clone((HashMap<String, Quote>)quotes);
+			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
 		
 		adaptor.subscribeMarketDataState(this);
@@ -278,10 +278,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		if(!eventProcessor.isSync())
 			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);	
 		
-	}
-	
-	private HashMap clone(HashMap map){		
-		return (HashMap)map.clone();
 	}
 	
 	private void saveLastQuotes() {
@@ -330,16 +326,16 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 	}		
 	
-	private Map<String, Quote> loadQuotes(String fileName){
+	private HashMap<String, Quote> loadQuotes(String fileName){
 		File file = new File(fileName);
-		Map<String, Quote> quotes = new HashMap<>();
+		HashMap<String, Quote> quotes = new HashMap<>();
 		if(file.exists() && quotes.size() <= 0){
 			try{
 				ClassLoader save = xstream.getClassLoader();
 				ClassLoader cl = HashMap.class.getClassLoader();
 				if (cl != null) 
 					xstream.setClassLoader(cl);
-				quotes = (Map<String, Quote>)xstream.fromXML(file);
+				quotes = (HashMap<String, Quote>)xstream.fromXML(file);
 				if(!(quotes instanceof HashMap)) 
 					throw new Exception("Can't xstream load last quote: " + fileName);
 				xstream.setClassLoader(save);
@@ -354,6 +350,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		return quotes;
 	}
 	
+	public void reset() {
+		quotes.clear();
+	}
+	
 	@Override
 	public void uninit() {
 		log.info("uninitialising");
@@ -362,7 +362,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 
 		eventProcessor.uninit();
 	}
-	
 	
 	@Override
 	public void onQuote(Quote quote) {

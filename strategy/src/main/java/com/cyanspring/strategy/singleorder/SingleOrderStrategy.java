@@ -320,7 +320,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 			return;
 		
 		if(isQuoteRequired()) {
-			if(quote == null) {
+			if(quote == null || quote.isStale()) {
 				logDebug("not doing anything since we haven't recieved any quote yet");
 				return;
 			}

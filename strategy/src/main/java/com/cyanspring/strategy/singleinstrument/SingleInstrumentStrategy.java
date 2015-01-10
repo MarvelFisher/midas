@@ -298,7 +298,7 @@ public class SingleInstrumentStrategy extends Strategy {
 		if(!preCheck())
 			return;
 		
-		if(quote == null) {
+		if(quote == null || quote.isStale()) {
 			logDebug("not doing anything since we haven't recieved any quote yet");
 			return;
 		}

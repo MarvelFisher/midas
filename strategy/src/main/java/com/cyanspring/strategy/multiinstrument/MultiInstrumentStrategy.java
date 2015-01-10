@@ -715,7 +715,7 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 	protected boolean checkQuotes() {
 		for(Instrument instr: this.data.getInstrumentData().values()) {
 			Quote quote = quotes.get(instr.getSymbol());
-			if(quote == null) {
+			if(this.isQuoteRequired() && (quote == null || quote.isStale())) {
 				logDebug("Not all quotes are received");
 				return false;
 			}
