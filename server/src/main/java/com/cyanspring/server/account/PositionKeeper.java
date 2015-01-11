@@ -93,6 +93,25 @@ public class PositionKeeper {
 			throw new PositionException("Execution has no account: " + execution);
 		
 		addExecution(execution);
+		
+		//update execution
+		boolean parentOrderUdpated = false;
+		Map<String, Map<String, ParentOrder>> accountOrders =  parentOrders.get(execution.getAccount());
+		if(null != accountOrders) {
+			Map<String, ParentOrder> symbolOrders = accountOrders.get(execution.getSymbol());
+			if(null != symbolOrders) {		
+				ParentOrder parentOrder = symbolOrders.get(execution.getParentOrderId());
+				if(null != parentOrder) {
+					parentOrder.processExecution(execution);
+					parentOrderUdpated = true;
+				}
+			}
+		} 
+		
+		if(!parentOrderUdpated){
+			log.warn("Cant location parent order: " + execution.getParentOrderId());
+		}
+		
 		Map<String, List<OpenPosition>> symbolPositions = accountPositions.get(execution.getAccount());
 		if(null == symbolPositions) {
 			symbolPositions = new HashMap<String, List<OpenPosition>>();
@@ -370,7 +389,7 @@ public class PositionKeeper {
 
 	public void updateAccountDynamicData(Account account) {
 		double accountUrPnL = 0;
-		double accountMargin = account.getCash() * Default.getMarginTimes();
+		double marginValue = 0;
 		if(null == quoteFeeder)
 			return;
 
@@ -397,19 +416,16 @@ public class PositionKeeper {
 						
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
-						accountMargin += overallPosition.getAcPnL();
-						//notifyOpenPositionUrPnLUpdate(overallPosition);
 					}
 				}
 				
-				double marginValue = getMarginValueByAccountAndSymbol(account, symbol, quote);
-				accountMargin -= marginValue;
+				marginValue += getMarginValueByAccountAndSymbol(account, symbol, quote);
 			}
-
 			account.setUrPnL(accountUrPnL);
-			account.setMargin(accountMargin);
+
+			double accountMargin = (account.getCash() +  account.getUrPnL()) * Default.getMarginTimes();
+			account.setMargin(accountMargin - marginValue);
 		}
-		//notifyAccountDynamicUpdate(account);
 	}
 	
 	private double getMarginQtyByAccountAndSymbol(Account account, String symbol, double extraQty) {
@@ -425,10 +441,12 @@ public class PositionKeeper {
 				Map<String, ParentOrder> symbolMap = accountMap.get(symbol);
 				if(null != symbolMap) {
 					for(ParentOrder order: symbolMap.values()) {
-						if(order.getSide().isBuy()) {
-							buyQty += order.getQuantity() - order.getCumQty();
-						} else {
-							sellQty += order.getQuantity() - order.getCumQty();
+						if(order.getOrdStatus().isReady()) {
+							if(order.getSide().isBuy()) {
+								buyQty += order.getQuantity() - order.getCumQty();
+							} else {
+								sellQty += order.getQuantity() - order.getCumQty();
+							}
 						}
 					}
 				}
@@ -468,7 +486,9 @@ public class PositionKeeper {
 		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter,
 				account.getCurrency(), quote.getSymbol(), 
 				deltaQty, price));
-		return account.getMargin() - deltaValue >= 0;
+		
+		deltaValue += Default.getCommision(deltaValue);
+		return account.getMargin() * Default.getMarginCall() - deltaValue >= 0;
 	}
 	
 	public List<Execution> getExecutions(String account) {
