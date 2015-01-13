@@ -5,15 +5,15 @@ import com.cyanspring.common.alert.PriceAlert;
 
 public class SetPriceAlertRequestEvent extends RemoteAsyncEvent {
 	private PriceAlert priceAlert;
-	private int Type;
+	private AlertType Type;
 	private String txId;
 	/*
-	 * SetType : 0 : NEW
-	 * SetType : 1 : MODIFY
-	 * SetType : 2 : CANCEL
+	 * 	PRICE_SET_NEW(1),
+	 * 	PRICE_SET_MODIFY(2),
+	 * 	PRICE_SET_CANCEL(3),
 	 * */
 	public SetPriceAlertRequestEvent(String key, String receiver,
-			PriceAlert priceAlert, String txId, int type) {
+			PriceAlert priceAlert, String txId, AlertType type) {
 		super(key, receiver);		
 		this.priceAlert = priceAlert;
 		this.txId = txId ;
@@ -26,7 +26,7 @@ public class SetPriceAlertRequestEvent extends RemoteAsyncEvent {
 	public String getTxId() {
 		return txId;
 	}
-	public int getType()
+	public AlertType getType()
 	{
 		return Type ;
 	}

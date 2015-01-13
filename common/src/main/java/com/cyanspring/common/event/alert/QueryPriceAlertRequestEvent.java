@@ -2,16 +2,16 @@ package com.cyanspring.common.event.alert;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class QueryPriceAlertRquestEvent extends RemoteAsyncEvent{
-	private int Type;
+public class QueryPriceAlertRequestEvent extends RemoteAsyncEvent{
+	private AlertType Type;
 	private String txId;
 	private String accountId;
 	/*
-	 * SetType : 0 : QUERY FINISHED PRICE ALERT
-	 * SetType : 1 : QUERY CURRENCY PRICE ALERT
+	 * 	PRICE_QUERY_OLD(4),
+	 *  PRICE_QUERY_CUR(5),
 	 * */
-	public QueryPriceAlertRquestEvent(String key, String receiver,
-			String accountId, String txId, int type) {
+	public QueryPriceAlertRequestEvent(String key, String receiver,
+			String accountId, String txId, AlertType type) {
 		super(key, receiver);		
 		this.accountId = accountId;
 		this.txId = txId ;
@@ -21,7 +21,7 @@ public class QueryPriceAlertRquestEvent extends RemoteAsyncEvent{
 	public String getTxId() {
 		return txId;
 	}
-	public int getType()
+	public AlertType getType()
 	{
 		return Type ;
 	}

@@ -7,7 +7,6 @@ public class SetPriceAlertReplyEvent extends RemoteAsyncEvent {
 	private String txId;
 	private boolean ok;
 	private String message;
-	private int Type ;
 	/*
 	 * if Success , ok = true ,message = "";
 	 * if reject , ok = false ,message = error msg ;
