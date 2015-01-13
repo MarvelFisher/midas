@@ -1,19 +1,22 @@
 package com.cyanspring.common.alert;
 
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.util.IdGenerator;
 public class TradeAlert implements Comparable<TradeAlert>{
 		private String id;
 		private String userId;
 		private String symbol;
 		private double price;
-		private long quantity ;		
+		private long quantity ;
+		private OrderReason orderReason;
 		private String dateTime ;
 		
-		public TradeAlert(String userId, String symbol, long quantity, double price, String strdateTime) {
+		public TradeAlert(String userId, String symbol,OrderReason orderReason, long quantity, double price, String strdateTime) {
 			super();
 			this.id = "A" + IdGenerator.getInstance().getNextID();
 			this.userId = userId; //david
 			this.symbol = symbol;  //USDJPY
+			this.orderReason = orderReason ;
 			this.quantity = quantity; //-1000000
 			this.price = price; // 118.153
 			this.dateTime = strdateTime; // yyyy-mm-dd hh:mm:ss
@@ -45,6 +48,10 @@ public class TradeAlert implements Comparable<TradeAlert>{
 			return symbol;
 		}
 		
+		public OrderReason getOrderReason()
+		{
+			return orderReason ;
+		}
 		public long getQuantity()
 		{
 			return quantity ;
