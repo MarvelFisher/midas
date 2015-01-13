@@ -66,6 +66,8 @@ import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
@@ -109,6 +111,7 @@ public class AccountPositionManager implements IPlugin {
 	private PerfDurationCounter perfDataUpdate;
 	private PerfFrequencyCounter perfFqyAccountUpdate;
 	private PerfFrequencyCounter perfFqyPositionUpdate;
+	private String tradeDate;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -158,6 +161,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
 			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(OnUserCreatedEvent.class, null);
+			subscribeToEvent(TradeDateEvent.class, null);
 		}
 
 		@Override
@@ -242,6 +246,16 @@ public class AccountPositionManager implements IPlugin {
 		if(timerProcessor.getThread() != null)
 			timerProcessor.getThread().setName("UserAccountManager-Timer");
 
+		if(tradeDate == null){
+			log.info("Send tradeDateRequestEvent!");
+			try{
+				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
+				eventManager.sendEvent(tdrEvent);
+			}catch(Exception e){
+				log.error(e.getMessage(), e);
+			}
+		}
+		
 		scheduleManager.scheduleRepeatTimerEvent(jobInterval, eventProcessor, timerEvent);
 		
 		scheduleDayEndEvent();
@@ -751,8 +765,11 @@ public class AccountPositionManager implements IPlugin {
 			}
 			account.resetDailyPnL();
 		}
-		String tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
 		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, tradeDate));
+	}
+	
+	public void processTradeDateEvent(TradeDateEvent event){
+		tradeDate = event.getTradeDate();
 	}
 	
 	private String generateAccountId() {

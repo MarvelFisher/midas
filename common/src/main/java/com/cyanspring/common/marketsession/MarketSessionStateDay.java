@@ -5,17 +5,20 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.cyanspring.common.Default;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+
 
 public class MarketSessionStateDay extends MarketSessionState{
 //	private static final Logger log = LoggerFactory
 //			.getLogger(MarketSessionStateDay.class);
 	
-	public MarketSessionStateDay(MarketSessionTime sessionTime) {
+	public MarketSessionStateDay(MarketSessionTime sessionTime){
 		super(sessionTime);
 	}
 	
 	@Override
-	protected MarketSessionEvent createEvent(Date date, MarketSessionTime.SessionData sessionData, MarketSessionTime sessionTime) throws ParseException{
+	protected MarketSessionEvent createEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat(sessionTime.getTimeFormat());
 		Date parseDate = dateFormat.parse(sessionData.date);
@@ -31,7 +34,7 @@ public class MarketSessionStateDay extends MarketSessionState{
 		cal.set(Calendar.SECOND, 59);
 		Date end = cal.getTime();
 		
-		return new MarketSessionEvent(null, null, sessionData.session, start, end);
+		return new MarketSessionEvent(null, null, sessionData.session, start, end, null, Default.getMarket());
 	}
 	
 	@Override

@@ -38,6 +38,8 @@ import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketdata.TradeSubEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
@@ -94,6 +96,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			subscribeToEvent(TradeSubEvent.class, null);
 			subscribeToEvent(PresubscribeEvent.class, null);
 			subscribeToEvent(LastTradeDateQuotesRequestEvent.class, null);
+			subscribeToEvent(TradeDateEvent.class, null);
 		}
 
 		@Override
@@ -103,14 +106,35 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	};
 	
 	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
-		tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
-		List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-		log.info("Get last trade date quotes request event! Sendinig lastTradeDateQuotes: " + lst );
-		LastTradeDateQuotesEvent lastTDQevent  = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
 		try {
-			eventManager.sendRemoteEvent(lastTDQevent);
+			if(tradeDate == null){
+				log.info("Send TradeDateRequestEvent!");
+				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
+				eventManager.sendEvent(tdrEvent);
+			}else{
+				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+				log.info("LastTradeDateQuotesRequestEvent sendinig lastTradeDateQuotes: " + lst );
+				LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
+				eventManager.sendRemoteEvent(lastTDQEvent);				
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+		}
+	}
+	
+	public void processTradeDateEvent(TradeDateEvent event){
+		String newTradeDate = event.getTradeDate();
+		if(!newTradeDate.equals(tradeDate) || tradeDate == null){
+			tradeDate = newTradeDate;
+			try {
+				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
+				saveLastTradeDateQuotes();
+				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+				log.info("TradeDateEvent sending LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
+				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
 	}
 	
@@ -204,23 +228,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		quotesToBeSent.clear();
 		saveLastQuotes();
 		broadCastStaleQuotes();
-		checkNewTradeDate();
-	}
-	
-	private void checkNewTradeDate() {
-		String today = TimeUtil.getTradeDate(Default.getTradeDateTime());
-		if(!today.equals(tradeDate) || tradeDate == null){
-			tradeDate = today;
-			try {
-				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
-				saveLastTradeDateQuotes();
-				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-				log.info("Sending LastTradeDatesQuotes: " + lst);
-				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}	
 	}
 
 	public void processTradeEvent(TradeEvent event) {

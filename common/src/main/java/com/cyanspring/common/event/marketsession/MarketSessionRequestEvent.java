@@ -1,4 +1,4 @@
-package com.cyanspring.common.marketsession;
+package com.cyanspring.common.event.marketsession;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 

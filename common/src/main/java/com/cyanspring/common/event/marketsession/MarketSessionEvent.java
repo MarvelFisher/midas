@@ -8,24 +8,29 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.common.marketsession;
+package com.cyanspring.common.event.marketsession;
 
 import java.util.Date;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.marketsession.MarketSessionType;
 
 public class MarketSessionEvent extends RemoteAsyncEvent {
 	private MarketSessionType session;
+	private String market;
 	private Date start;
 	private Date end;
+	private String tradeDate;
 
 	public MarketSessionEvent(String key, String receiver,
-			MarketSessionType session, Date start, Date end) {
+			MarketSessionType session, Date start, Date end, String tradeDate, String market) {
 		super(key, receiver);
 		this.session = session;
 		this.start = start;
 		this.end = end;
+		this.tradeDate = tradeDate;
+		this.market = market;
 	}
 
 	public MarketSessionType getSession() {
@@ -40,5 +45,7 @@ public class MarketSessionEvent extends RemoteAsyncEvent {
 		return end;
 	}
 	
-	
+	public String getTradeDate(){
+		return tradeDate;
+	}
 }
