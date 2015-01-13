@@ -80,7 +80,9 @@ public class AlertManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
-			//subscribeToEvent(PriceAlertRequestEvent.class, null);
+//			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
+//			subscribeToEvent(QueryPriceAlertRequestEvent.class, null);
+//			subscribeToEvent(QueryOrderAlertRequestEvent.class, null);
 		}
 
 		@Override

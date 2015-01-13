@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.alert.PriceAlert;
+import com.cyanspring.common.alert.*;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-//import com.cyanspring.common.event.alert.CreatePriceAlertRequestEvent;
+import com.cyanspring.common.event.alert.*;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
@@ -82,14 +82,15 @@ public class AlertManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
-			//subscribeToEvent(CreatePriceAlertRequestEvent.class, null);
+//			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
+//			subscribeToEvent(QueryPriceAlertRequestEvent.class, null);
+//			subscribeToEvent(QueryOrderAlertRequestEvent.class, null);
 		}
 
 		@Override
 		public IAsyncEventManager getEventManager() {
 			return eventManager;
 		}
-
 	};
 	
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {

@@ -3,18 +3,18 @@ package com.cyanspring.common.event.alert;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class QueryOrderAlertRequestEvent extends RemoteAsyncEvent{
-	private AlertType Type;
+	private AlertType type;
 	private String txId;
-	private String accountId;
+	private String userId;
 	/*
 	 * 	TRADE_QUERY_OLD(6),
 	 * */
 	public QueryOrderAlertRequestEvent(String key, String receiver,
-			String accountId, String txId, AlertType type) {
+			String userId, String txId, AlertType type) {
 		super(key, receiver);		
-		this.accountId = accountId;
+		this.userId = userId;
 		this.txId = txId ;
-		this.Type = type;
+		this.type = type;
 	}
 	
 	public String getTxId() {
@@ -23,10 +23,10 @@ public class QueryOrderAlertRequestEvent extends RemoteAsyncEvent{
 	
 	public AlertType getType()
 	{
-		return Type ;
+		return type ;
 	}
 
-	public String getAccountId() {
-		return accountId;
+	public String getuserId() {
+		return userId;
 	}
 }

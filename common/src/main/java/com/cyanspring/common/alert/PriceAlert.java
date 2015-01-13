@@ -5,20 +5,19 @@ import com.cyanspring.common.util.IdGenerator;
 public class PriceAlert implements Comparable<PriceAlert>{
 	private String id;
 	private String userId;
-	private String senderId;
 	private String symbol;
 	private double price;
 	private String dateTime ;
+	private String content ;
 	
-	public PriceAlert(String SenderId,String userId, String symbol, double price, String strdateTime) {
+	public PriceAlert(String userId, String symbol, double price, String strdateTime) {
 		super();
 		this.id = "A" + IdGenerator.getInstance().getNextID();
-		this.senderId = SenderId ; // david
 		this.userId = userId; //david
-		//this.userAccountId = accountId; //david-FX
 		this.symbol = symbol;  //USDJPY
 		this.price = price;
 		this.dateTime = strdateTime; // yyyy-mm-dd hh:mm:ss
+		this.content = "" ;
 	}
 	
 	@Override
@@ -41,11 +40,7 @@ public class PriceAlert implements Comparable<PriceAlert>{
 
 	public String getUserId() {
 		return userId;
-	}
-	
-	public String getSenderId(){
-		return senderId ;
-	}
+	}	
 
 	public String getSymbol() {
 		return symbol;
@@ -60,4 +55,13 @@ public class PriceAlert implements Comparable<PriceAlert>{
 		return dateTime ;
 	}
 	
+	public String getContent()
+	{
+		return content ;
+	}
+	
+	public void setContent(String content)
+	{
+		this.content = content ;
+	}
 }
