@@ -40,6 +40,7 @@ import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyContainer;
 import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.type.QtyPrice;
+import com.cyanspring.server.marketdata.MarketDataManager;
 import com.cyanspring.strategy.StrategyFactory;
 
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/StrategyTest.xml" })
@@ -73,6 +74,9 @@ public abstract class StrategyTest implements ApplicationContextAware {
 	
 	@Autowired
 	protected TickTableManager tickTableManager;
+	
+	@Autowired
+	protected MarketDataManager mdManager;
 	
 	protected IStrategy _strategy;
 
@@ -135,6 +139,8 @@ public abstract class StrategyTest implements ApplicationContextAware {
 	
 	@Before
 	public void before() throws StrategyException {
+		exchange.reset();
+		mdManager.reset();
 		setNow();
 		createStrategy();
 		setupOrderBook();
@@ -144,7 +150,6 @@ public abstract class StrategyTest implements ApplicationContextAware {
 	
 	@After
 	public void after() {
-		exchange.reset();
 		_strategy.stop();
 		_strategy.uninit();
 	}

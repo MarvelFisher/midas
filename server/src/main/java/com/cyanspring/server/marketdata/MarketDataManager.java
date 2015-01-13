@@ -38,6 +38,8 @@ import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketdata.TradeSubEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
@@ -57,7 +59,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private static final Logger log = LoggerFactory
 			.getLogger(MarketDataManager.class);
 	
-	private Map<String, Quote> quotes = new HashMap<String, Quote>();
+	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
 	
 	@Autowired
@@ -94,6 +96,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			subscribeToEvent(TradeSubEvent.class, null);
 			subscribeToEvent(PresubscribeEvent.class, null);
 			subscribeToEvent(LastTradeDateQuotesRequestEvent.class, null);
+			subscribeToEvent(TradeDateEvent.class, null);
 		}
 
 		@Override
@@ -103,14 +106,35 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	};
 	
 	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
-		tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
-		List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-		log.info("Get last trade date quotes request event! Sendinig lastTradeDateQuotes: " + lst );
-		LastTradeDateQuotesEvent lastTDQevent  = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
 		try {
-			eventManager.sendRemoteEvent(lastTDQevent);
+			if(tradeDate == null){
+				log.info("Send TradeDateRequestEvent!");
+				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
+				eventManager.sendEvent(tdrEvent);
+			}else{
+				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+				log.info("LastTradeDateQuotesRequestEvent sendinig lastTradeDateQuotes: " + lst );
+				LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
+				eventManager.sendRemoteEvent(lastTDQEvent);				
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+		}
+	}
+	
+	public void processTradeDateEvent(TradeDateEvent event){
+		String newTradeDate = event.getTradeDate();
+		if(!newTradeDate.equals(tradeDate) || tradeDate == null){
+			tradeDate = newTradeDate;
+			try {
+				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
+				saveLastTradeDateQuotes();
+				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+				log.info("TradeDateEvent sending LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
+				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
 	}
 	
@@ -121,7 +145,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
 		log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
 		Quote quote = quotes.get(event.getSymbol());
-		if (quote == null) {
+		if (quote == null || quote.isStale()) {
 			adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
 		} else {
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
@@ -204,23 +228,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		quotesToBeSent.clear();
 		saveLastQuotes();
 		broadCastStaleQuotes();
-		checkNewTradeDate();
-	}
-	
-	private void checkNewTradeDate() {
-		String today = TimeUtil.getTradeDate(Default.getTradeDateTime());
-		if(!today.equals(tradeDate) || tradeDate == null){
-			tradeDate = today;
-			try {
-				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
-				saveLastTradeDateQuotes();
-				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-				log.info("Sending LastTradeDatesQuotes: " + lst);
-				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}	
 	}
 
 	public void processTradeEvent(TradeEvent event) {
@@ -255,7 +262,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		lastTradeDateQuotes = loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
 		if(lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0){
 			log.warn("No lastTradeDateQuotes values while initialing.");			
-			lastTradeDateQuotes = clone((HashMap<String, Quote>)quotes);
+			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
 		
 		adaptor.subscribeMarketDataState(this);
@@ -278,10 +285,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		if(!eventProcessor.isSync())
 			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);	
 		
-	}
-	
-	private HashMap clone(HashMap map){		
-		return (HashMap)map.clone();
 	}
 	
 	private void saveLastQuotes() {
@@ -330,16 +333,16 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 	}		
 	
-	private Map<String, Quote> loadQuotes(String fileName){
+	private HashMap<String, Quote> loadQuotes(String fileName){
 		File file = new File(fileName);
-		Map<String, Quote> quotes = new HashMap<>();
+		HashMap<String, Quote> quotes = new HashMap<>();
 		if(file.exists() && quotes.size() <= 0){
 			try{
 				ClassLoader save = xstream.getClassLoader();
 				ClassLoader cl = HashMap.class.getClassLoader();
 				if (cl != null) 
 					xstream.setClassLoader(cl);
-				quotes = (Map<String, Quote>)xstream.fromXML(file);
+				quotes = (HashMap<String, Quote>)xstream.fromXML(file);
 				if(!(quotes instanceof HashMap)) 
 					throw new Exception("Can't xstream load last quote: " + fileName);
 				xstream.setClassLoader(save);
@@ -354,6 +357,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		return quotes;
 	}
 	
+	public void reset() {
+		quotes.clear();
+	}
+	
 	@Override
 	public void uninit() {
 		log.info("uninitialising");
@@ -362,7 +369,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 
 		eventProcessor.uninit();
 	}
-	
 	
 	@Override
 	public void onQuote(Quote quote) {

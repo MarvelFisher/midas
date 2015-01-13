@@ -28,13 +28,18 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.server.strategy.MultiInstrumentStrategyTest;
+import com.cyanspring.strategy.multiinstrument.MultiInstrumentStrategy;
 
 public class LowHighTest extends MultiInstrumentStrategyTest {
 
 	@Override
 	protected void setupOrderBook() {
-		// TODO Auto-generated method stub
+	}
 
+	@Override
+	protected void createStrategy() {
+		super.createStrategy();
+		_strategy.setQuoteRequired(false);
 	}
 
 	@Override

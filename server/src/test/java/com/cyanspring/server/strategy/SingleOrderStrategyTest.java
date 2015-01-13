@@ -14,6 +14,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -24,6 +26,8 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.strategy.singleorder.SingleOrderStrategy;
 
 public abstract class SingleOrderStrategyTest extends StrategyTest implements ApplicationContextAware {
+	private static final Logger log = LoggerFactory
+			.getLogger(SingleOrderStrategyTest.class);
 
 	protected SingleOrderStrategy strategy;
 	protected String getSymbol() {
@@ -59,7 +63,7 @@ public abstract class SingleOrderStrategyTest extends StrategyTest implements Ap
 				webcurve.common.BaseOrder.SIDE.BID, BID_VOL, BID, "", "");
 		exchange.enterOrder(getSymbol(), webcurve.common.Order.TYPE.LIMIT, 
 				webcurve.common.BaseOrder.SIDE.ASK, ASK_VOL, ASK, "", "");
-	
+		log.info("Marke data is set up");
 	}
 
 	protected abstract ParentOrder createData();

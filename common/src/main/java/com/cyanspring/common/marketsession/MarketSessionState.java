@@ -1,11 +1,16 @@
 package com.cyanspring.common.marketsession;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.Default;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.util.TimeUtil;
 
 public abstract class MarketSessionState {
@@ -15,54 +20,97 @@ public abstract class MarketSessionState {
 	private MarketSessionState successNext;
 	protected MarketSessionEvent currentMarketSessionEvent;
 	protected MarketSessionTime sessionTime;
+	protected static String tradeDate;
+	protected static String nextTradeDate;
+	protected static boolean tradeDateUpdate;
 	
 	public MarketSessionState(MarketSessionTime sessionTime){
 		this.sessionTime = sessionTime;
 	}
 	
-	public boolean isChanged(Date date){
+	public void init() throws ParseException{
+		tradeDateUpdate = false;
+		Date date = Clock.getInstance().now();
+		while(tradeDate == null){
+			log.info(tradeDate);
+			date = TimeUtil.getPreviousDay(date);
+			calTradeDate(date);
+		}
+	}
+	
+	public boolean isStateChanged(Date date){
 		if(currentMarketSessionEvent == null)
 			return true;
 		return TimeUtil.getTimePass(date, currentMarketSessionEvent.getEnd()) >= 0 ||
 				   TimeUtil.getTimePass(date, currentMarketSessionEvent.getStart()) <= 0;
 	}
 	
+	public boolean isTradeDateChange(Date date) throws ParseException{		
+		calTradeDate(date);
+		return tradeDateUpdate;
+	}
+	
 	public MarketSessionEvent getCurrentMarketSessionEvent(Date date) throws ParseException{
 		if(currentMarketSessionEvent == null)
 			return calCurrentMarketSession(date);		
-		if(!isChanged(date))
+		if(!isStateChanged(date))
 			return currentMarketSessionEvent;
 		return calCurrentMarketSession(date);		
 	}
 	
-	protected void goSuccess(Date date) throws ParseException{
+	protected void createSuccessEvent(Date date) throws ParseException{
 		if(successNext != null)
 			currentMarketSessionEvent = successNext.calCurrentMarketSession(date);
 	}
 	
-	protected void goFail(Date date) throws ParseException{
+	protected void createFailEvent(Date date) throws ParseException{
 		if(failNext != null)
 			currentMarketSessionEvent = failNext.calCurrentMarketSession(date);
 	}
 	
-	protected MarketSessionEvent calCurrentMarketSession(Date date) throws ParseException{
+	protected void goSuccess(Date date) throws ParseException{
+		if(successNext != null)
+			tradeDate = successNext.calTradeDate(date);
+	}
+	
+	protected void goFail(Date date) throws ParseException{
+		if(failNext != null)
+			tradeDate = failNext.calTradeDate(date);
+	}
+	
+	private String calTradeDate(Date date) throws ParseException{
 		if(sessionTime.lst != null){
 			for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
 				if(compareTime(sessionTime, sessionData, date)){
-					currentMarketSessionEvent = createEvent(date, sessionData, sessionTime);
 					goSuccess(date);
-					return currentMarketSessionEvent; // find and return;
+					return tradeDate;
 				}
 			}
 		}else{
 			log.error("No MarketSessionTime data set in: " + sessionTime + "[" + sessionTime.hashCode() + "]");
 		}
 		goFail(date);
+		return tradeDate;
+	}
+	
+	protected MarketSessionEvent calCurrentMarketSession(Date date) throws ParseException{
+		if(sessionTime.lst != null){
+			for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
+				if(compareTime(sessionTime, sessionData, date)){
+					currentMarketSessionEvent = createEvent(sessionTime, sessionData, date);
+					createSuccessEvent(date);
+					return currentMarketSessionEvent; // find and return;
+				}
+			}
+		}else{
+			log.error("No MarketSessionTime data set in: " + sessionTime + "[" + sessionTime.hashCode() + "]");
+		}
+		createFailEvent(date);
 		return currentMarketSessionEvent; 
 	}		
 	
 	protected abstract boolean compareTime(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException;
-	protected abstract MarketSessionEvent createEvent(Date date, MarketSessionTime.SessionData sessionData, MarketSessionTime sessionTime) throws ParseException;
+	protected abstract MarketSessionEvent createEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException;
 	
 	public void setFailNext(MarketSessionState failNext) {
 		this.failNext = failNext;
@@ -70,5 +118,9 @@ public abstract class MarketSessionState {
 	
 	public void setSuccessNext(MarketSessionState successNext) {
 		this.successNext = successNext;
+	}
+	
+	public String getTradeDate(){
+		return tradeDate;
 	}
 }

@@ -62,6 +62,8 @@ public interface IStrategy extends Serializable{
 
 	public boolean isCheckAdjQuote();
 	public void setCheckAdjQuote(boolean checkAdjQuote);
+	public boolean isQuoteRequired();
+	public void setQuoteRequired(boolean checkQuote);
 
 	public String getStrategyName();
 

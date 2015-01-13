@@ -24,6 +24,7 @@ import com.cyanspring.common.event.alert.ClearSingleAlertEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.ManualActionReplyEvent;
 import com.cyanspring.common.event.order.ManualAmendChildOrderEvent;
@@ -42,7 +43,6 @@ import com.cyanspring.common.event.strategy.StopStrategyEvent;
 import com.cyanspring.common.event.strategy.StrategyEndTimerEvent;
 import com.cyanspring.common.event.strategy.StrategyStartTimerEvent;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketsession.MarketSessionEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.ITickTable;
@@ -298,7 +298,7 @@ public class SingleInstrumentStrategy extends Strategy {
 		if(!preCheck())
 			return;
 		
-		if(quote == null) {
+		if(quote == null || quote.isStale()) {
 			logDebug("not doing anything since we haven't recieved any quote yet");
 			return;
 		}
