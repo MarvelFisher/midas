@@ -1,7 +1,6 @@
 package com.cyanspring.common.event.info;
 
 public enum PriceHighLowType {
+	DAY,
 	W52,
-	M1,
-	W1,
 }
