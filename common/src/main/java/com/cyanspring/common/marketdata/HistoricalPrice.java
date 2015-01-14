@@ -1,32 +1,24 @@
 package com.cyanspring.common.marketdata;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
 
-public class HistoricalPrice  implements Serializable, Comparable<HistoricalPrice> {
-	Date   timestamp = null ;
-	String symbol = null ;
+public class HistoricalPrice  implements Serializable {
+	Date   timestamp ;
+	String symbol ;
 	double open ;
 	double high ;
 	double low ;
 	double close ;
-	int    volume ;
+	int    volumn ;
 	
-	public HistoricalPrice()
-	{
-	}
-	public HistoricalPrice(String symbol)
-	{
-		this.symbol = symbol ;
-	}
-	public HistoricalPrice(Date   timestamp, 
+	HistoricalPrice(Date   timestamp, 
 					String symbol, 
 					double open, 
 					double high, 
 					double low, 
 					double close, 
-					int    volume)
+					int    volumn)
 	{
 		this.timestamp = timestamp ;
 		this.symbol = symbol ;
@@ -34,50 +26,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		this.high = high ;
 		this.low = low ;
 		this.close = close ;
-		this.volume = volume ;
-	}
-	public void setPrice(double price)
-	{
-		if (open == 0)
-		{
-			open = price ;
-		}
-		if (high < price)
-		{
-			high = price ;
-		}
-		if (low == 0 || low > price)
-		{
-			low = price ;
-		}
-		close = price ;
-	}
-	public void copy(HistoricalPrice price)
-	{
-		this.setTimestamp(price.getTimestamp());
-		this.setSymbol(price.getSymbol());
-		this.setOpen(price.getOpen());
-		this.setClose(price.getClose());
-		this.setHigh(price.getHigh());
-		this.setLow(price.getLow());
-		this.setVolume(price.getVolume());
-	}
-	public void update(HistoricalPrice price)
-	{
-		if (this.open == 0)
-		{
-			this.open = price.open ;
-		}
-		this.close = price.close;
-		if (this.high < price.high)
-		{
-			this.high = price.high;
-		}
-		if (this.low > price.low)
-		{
-			this.low = price.low;
-		}
-		this.volume += price.volume;
+		this.volumn = volumn ;
 	}
 	
 	public Date getTimestamp() {
@@ -116,16 +65,11 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	public void setClose(double close) {
 		this.close = close;
 	}
-	public int getVolume() {
-		return volume;
+	public int getVolumn() {
+		return volumn;
 	}
-	public void setVolume(int volume) {
-		this.volume = volume;
-	}
-
-	@Override
-	public int compareTo(HistoricalPrice o) {
-		return timestamp.compareTo(o.getTimestamp());
+	public void setVolumn(int volumn) {
+		this.volumn = volumn;
 	}
 
 }
