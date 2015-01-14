@@ -297,6 +297,18 @@ public class DefaultExecutionAnalyzerTest {
 			return null;
 		}
 
+		@Override
+		public boolean isQuoteRequired() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void setQuoteRequired(boolean checkQuote) {
+			// TODO Auto-generated method stub
+			
+		}
+
 
 	}
 	

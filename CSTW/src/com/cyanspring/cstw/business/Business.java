@@ -77,7 +77,7 @@ public class Business {
 	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefs;
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private int heartBeatInterval = 5000; // 5 seconds
+	private int heartBeatInterval = 10000; // 5 seconds
 	private HashMap<String, Date> lastHeartBeats = new HashMap<String, Date>();
 	private DefaultStartEndTime defaultStartEndTime;
 	private Map<AlertType, Integer> alertColorConfig;
@@ -170,8 +170,8 @@ public class Business {
 			orderManager.init();
 			if(Business.getInstance().isLoginRequired())
 				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server));
-			else
-				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(null, server));
+//			else
+//				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(null, server));
 			eventManager.sendEvent(new ServerStatusEvent(server, true));	
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -418,6 +418,11 @@ public class Business {
 				return entry.getKey();
 		}
 		return null;
+	}
+	
+	public boolean isFirstServerReady() {
+		Boolean result = servers.get(getFirstServer());
+		return result == null?false:result;
 	}
 	
 	public boolean isLoginRequired() {

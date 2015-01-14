@@ -66,6 +66,8 @@ import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
@@ -109,6 +111,7 @@ public class AccountPositionManager implements IPlugin {
 	private PerfDurationCounter perfDataUpdate;
 	private PerfFrequencyCounter perfFqyAccountUpdate;
 	private PerfFrequencyCounter perfFqyPositionUpdate;
+	private String tradeDate;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -158,6 +161,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
 			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(OnUserCreatedEvent.class, null);
+			subscribeToEvent(TradeDateEvent.class, null);
 		}
 
 		@Override
@@ -242,6 +246,16 @@ public class AccountPositionManager implements IPlugin {
 		if(timerProcessor.getThread() != null)
 			timerProcessor.getThread().setName("UserAccountManager-Timer");
 
+		if(tradeDate == null){
+			log.info("Send tradeDateRequestEvent!");
+			try{
+				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
+				eventManager.sendEvent(tdrEvent);
+			}catch(Exception e){
+				log.error(e.getMessage(), e);
+			}
+		}
+		
 		scheduleManager.scheduleRepeatTimerEvent(jobInterval, eventProcessor, timerEvent);
 		
 		scheduleDayEndEvent();
@@ -447,7 +461,7 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
 		Account account = accountKeeper.getAccount(event.getParent().getAccount());
-		positionKeeper.processParentOrder(event.getParent(), account);
+		positionKeeper.processParentOrder(event.getParent().clone(), account);
 	}
 	
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
@@ -678,9 +692,13 @@ public class AccountPositionManager implements IPlugin {
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		for(OpenPosition position: positions) {
-			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && quoteIsValid(position.getSymbol())) {
+			Quote quote = marketData.get(position.getSymbol());
+			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && 
+					null != quote &&
+					quoteIsValid(quote)) {
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
-						position.getSymbol() + ", " + position.getAcPnL() + ", " + positionStopLoss);
+						position.getSymbol() + ", " + position.getAcPnL() + ", " + 
+						positionStopLoss + ", " + quote);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
 						null, position.getAccount(), position.getSymbol(), OrderReason.StopLoss,
 						IdGenerator.getInstance().getNextID());
@@ -691,16 +709,15 @@ public class AccountPositionManager implements IPlugin {
 	}
 	
 	private boolean checkMarginCall(Account account) {
-		double marginLimit = account.getCash() * Default.getMarginCall() + account.getUrPnL();
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
-		if(PriceUtils.LessThan(marginLimit, 0.0) && positions.size() > 0) {
+		if(PriceUtils.LessThan(account.getMargin(), 0.0) && positions.size() > 0) {
 			log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL());
 			
 			Collections.sort(positions, new Comparator<OpenPosition>() {
 
 				@Override
 				public int compare(OpenPosition p1, OpenPosition p2) {
-					if(PriceUtils.GreaterThan(p2.getAcPnL(), p1.getAcPnL()))
+					if(PriceUtils.GreaterThan(p1.getAcPnL(), p2.getAcPnL()))
 						return 1;
 					else if(PriceUtils.LessThan(p1.getAcPnL(), p2.getAcPnL()))
 						return -1;
@@ -710,19 +727,26 @@ public class AccountPositionManager implements IPlugin {
 				
 			});
 			
-			for(int i=0; i<positions.size() && PriceUtils.LessThan(marginLimit, 0.0); i++) {
+			String sortedList = "";
+			for(OpenPosition position: positions) {
+				sortedList += position.getAcPnL() + ",";
+			}
+			log.debug("Sorted list: " + sortedList);
+			
+			for(int i=0; i<positions.size(); i++) {
 				OpenPosition position = positions.get(i);
-				if(!quoteIsValid(position.getSymbol()))
+				Quote quote = marketData.get(position.getSymbol());
+				if(!quoteIsValid(quote))
 					continue;
 
 				log.info("Margin cut: " + position.getAccount() + ", " +
-						position.getSymbol() + ", " + position.getAcPnL() + ", " + marginLimit);
-				marginLimit -= position.getAcPnL();
+						position.getSymbol() + ", " + position.getAcPnL() + ", " + account.getMargin() + ", " + quote);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
 						null, position.getAccount(), position.getSymbol(), OrderReason.MarginCall,
 						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);
+				break;
 			}
 			return true;
 		}
@@ -741,8 +765,11 @@ public class AccountPositionManager implements IPlugin {
 			}
 			account.resetDailyPnL();
 		}
-		String tradeDate = TimeUtil.getTradeDate(Default.getTradeDateTime());
 		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, tradeDate));
+	}
+	
+	public void processTradeDateEvent(TradeDateEvent event){
+		tradeDate = event.getTradeDate();
 	}
 	
 	private String generateAccountId() {

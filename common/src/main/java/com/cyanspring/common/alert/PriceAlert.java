@@ -2,42 +2,45 @@ package com.cyanspring.common.alert;
 
 import com.cyanspring.common.util.IdGenerator;
 
-public class PriceAlert {
+public class PriceAlert implements Comparable<PriceAlert>{
 	private String id;
-	private String user;
-	private String account;
+	private String userId;
 	private String symbol;
 	private double price;
-	private double startPrice;
+	private String dateTime ;
+	private String content ;
 	
-	public PriceAlert(String user, String account, String symbol, double price) {
+	public PriceAlert(String userId, String symbol, double price, String strdateTime) {
 		super();
 		this.id = "A" + IdGenerator.getInstance().getNextID();
-		this.user = user;
-		this.account = account;
-		this.symbol = symbol;
+		this.userId = userId; //david
+		this.symbol = symbol;  //USDJPY
 		this.price = price;
+		this.dateTime = strdateTime; // yyyy-mm-dd hh:mm:ss
+		this.content = "" ;
 	}
-
-	public double getStartPrice() {
-		return startPrice;
+	
+	@Override
+	public int compareTo(PriceAlert other) {
+		int iReturn = this.userId.compareTo(other.userId);
+		if (iReturn == 0)
+		{
+			iReturn = this.id.compareTo(other.id);
+		}
+		return iReturn;
 	}
-
-	public void setStartPrice(double startPrice) {
-		this.startPrice = startPrice;
-	}
-
+	
 	public String getId() {
 		return id;
 	}
-
-	public String getUser() {
-		return user;
+	
+	public void setId(String strId){
+		this.id = strId ;
 	}
 
-	public String getAccount() {
-		return account;
-	}
+	public String getUserId() {
+		return userId;
+	}	
 
 	public String getSymbol() {
 		return symbol;
@@ -47,8 +50,18 @@ public class PriceAlert {
 		return price;
 	}
 	
-	@Override
-	public String toString() {
-		return "[" + user + ", " + account + ", " + symbol + ", " + price + ", " + startPrice + "]";
+	public String getTime()
+	{
+		return dateTime ;
+	}
+	
+	public String getContent()
+	{
+		return content ;
+	}
+	
+	public void setContent(String content)
+	{
+		this.content = content ;
 	}
 }

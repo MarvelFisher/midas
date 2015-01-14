@@ -91,21 +91,21 @@ public class TimeUtil {
 		return getOnlyDate(d1).equals(getOnlyDate(d2));
 	}
 	
-	public static String getTradeDate(String tradeDateTime){
-		String[] times = tradeDateTime.split(":");	
-		int nHour = Integer.parseInt(times[0]);
-		int nMin = Integer.parseInt(times[1]);
-		int nSecond = Integer.parseInt(times[2]);
-		
-		Calendar cal = Default.getCalendar();
-		Date now = Clock.getInstance().now();
-		Date scheduledToday = getScheduledDate(cal, now, nHour, nMin, nSecond);
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date ret = Clock.getInstance().now();
-		if(getTimePass(now, scheduledToday) < 0)
-			ret =  getPreviousDay(scheduledToday);
-
-		return sdf.format(ret);
-	}
+//	public static String getTradeDate(String tradeDateTime){
+//		String[] times = tradeDateTime.split(":");	
+//		int nHour = Integer.parseInt(times[0]);
+//		int nMin = Integer.parseInt(times[1]);
+//		int nSecond = Integer.parseInt(times[2]);
+//		
+//		Calendar cal = Default.getCalendar();
+//		Date now = Clock.getInstance().now();
+//		Date scheduledToday = getScheduledDate(cal, now, nHour, nMin, nSecond);
+//		
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//		Date ret = Clock.getInstance().now();
+//		if(getTimePass(now, scheduledToday) < 0)
+//			ret =  getPreviousDay(scheduledToday);
+//
+//		return sdf.format(ret);
+//	}
 }
