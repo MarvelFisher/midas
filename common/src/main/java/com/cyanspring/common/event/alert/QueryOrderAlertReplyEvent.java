@@ -32,8 +32,7 @@ public class QueryOrderAlertReplyEvent extends RemoteAsyncEvent{
 	public String getMessage() {
 		return message;
 	}
-
-	public List<TradeAlert> getTrades() {
+	public List<TradeAlert> getTradeAlertList() {
 		return trades;
 	}
 }

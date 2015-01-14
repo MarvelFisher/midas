@@ -31,7 +31,7 @@ public class QueryPriceAlertReplyEvent extends RemoteAsyncEvent{
 	public String getMessage() {
 		return message;
 	}
-	public List<PriceAlert> getTrades() {
+	public List<PriceAlert> getPriceAlertList() {
 		return PriceAlert;
 	}
 }
