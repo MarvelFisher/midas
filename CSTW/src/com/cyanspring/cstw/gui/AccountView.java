@@ -32,6 +32,7 @@ import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
@@ -39,6 +40,7 @@ import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
+import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 
@@ -93,6 +95,13 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						sendEvent(new SelectUserAccountEvent(account.getUserId(), account.getId()));
 					Business.getInstance().getEventManager().
 						sendEvent(new AccountSelectionEvent(account.getId()));
+					
+					try {
+						Business.getInstance().getEventManager().
+							sendRemoteEvent(new StrategySnapshotRequestEvent(account.getId(), Business.getInstance().getFirstServer()));
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
 				}
 			}
 		});
@@ -101,10 +110,10 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createCountAccountAction(parent);
 		//createMenu(parent);
 		
-		if(Business.getInstance().getOrderManager().isReady())
-			sendSubscriptionRequest();
+		if(Business.getInstance().isFirstServerReady())
+			sendSubscriptionRequest(Business.getInstance().getFirstServer());
 		else
-			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
+			Business.getInstance().getEventManager().subscribe(ServerStatusEvent.class, this);
 		
 		Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval, this, timerEvent);
 
@@ -174,7 +183,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		viewer.setBodyMenu(menu);
 	}
 
-	private void sendSubscriptionRequest() {
+	private void sendSubscriptionRequest(String server) {
 		if(Business.getInstance().isLoginRequired())
 			return;
 		Business.getInstance().getEventManager().subscribe(AccountUpdateEvent.class, 
@@ -184,7 +193,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager().subscribe(AllAccountSnapshotReplyEvent.class, ID,
 				this);
 		
-		AllAccountSnapshotRequestEvent request = new AllAccountSnapshotRequestEvent(ID, Business.getInstance().getFirstServer());
+		AllAccountSnapshotRequestEvent request = new AllAccountSnapshotRequestEvent(ID, server);
 		log.debug("AllAccountSnapshotRequestEvent sent");
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(request);
@@ -234,8 +243,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if(event instanceof OrderCacheReadyEvent) {
-			sendSubscriptionRequest();
+		if(event instanceof ServerStatusEvent) {
+			sendSubscriptionRequest(((ServerStatusEvent) event).getServer());
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent)event;
 			for(Account account: evt.getAccounts()) {

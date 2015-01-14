@@ -33,6 +33,7 @@ import com.cyanspring.common.event.order.StrategySnapshotEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.StrategyLogEvent;
+import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiMultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.cstw.event.GuiSingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
@@ -51,6 +52,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 	private HashMap<String, LinkedList<StrategyLogEvent>> logs = new HashMap<String, LinkedList<StrategyLogEvent>>();
 	private boolean ready;
 	private static final int maxLog = 100;
+	private String currentAccount;
 	
 	public OrderCachingManager(IRemoteEventManager eventManager) {
 		this.eventManager = eventManager;
@@ -226,17 +228,18 @@ public class OrderCachingManager implements IAsyncEventListener {
 	}
 
 	public void init() {
+		eventManager.subscribe(AccountSelectionEvent.class, this);
 		eventManager.subscribe(StrategySnapshotEvent.class, this);
 		eventManager.subscribe(StrategyLogEvent.class, this);
-		if(Business.getInstance().isLoginRequired()) {
-			eventManager.subscribe(ParentOrderUpdateEvent.class, Business.getInstance().getAccount(), this);
-			eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
-			eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
-		} else {
-			eventManager.subscribe(ParentOrderUpdateEvent.class, this);
-			eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, this);
-			eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, this);
-		}
+		subscribeAccountOrder(Business.getInstance().getAccount());
+		eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+		eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+	}
+	
+	private void subscribeAccountOrder(String account) {
+		eventManager.unsubscribe(ParentOrderUpdateEvent.class, currentAccount, this);
+		currentAccount = account;
+		eventManager.subscribe(ParentOrderUpdateEvent.class, currentAccount, this);
 	}
 
 	public void uninit() {
@@ -300,6 +303,8 @@ public class OrderCachingManager implements IAsyncEventListener {
 	synchronized public void onEvent(AsyncEvent event) {
 		if (event instanceof StrategySnapshotEvent) {
 			processStrategySnapshotEvent((StrategySnapshotEvent)event);
+		} else if (event instanceof AccountSelectionEvent) {
+			subscribeAccountOrder(((AccountSelectionEvent) event).getAccount());
 		} else if (event instanceof StrategyLogEvent) {
 			processStrategyLogEvent((StrategyLogEvent)event);
 		} else if (event instanceof ParentOrderUpdateEvent) {
