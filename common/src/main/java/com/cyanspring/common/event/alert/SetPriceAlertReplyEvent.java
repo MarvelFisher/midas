@@ -5,6 +5,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 public class SetPriceAlertReplyEvent extends RemoteAsyncEvent {
 	private String id;
 	private String txId;
+	private String userId;
 	private boolean ok;
 	private String message;
 	/*
@@ -30,5 +31,11 @@ public class SetPriceAlertReplyEvent extends RemoteAsyncEvent {
 	}
 	public String getMessage() {
 		return message;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }
