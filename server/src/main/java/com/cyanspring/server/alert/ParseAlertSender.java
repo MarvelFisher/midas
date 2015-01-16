@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -16,6 +17,7 @@ import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.util.IdGenerator;
 
 public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
+	public ConcurrentLinkedQueue<ParseData> ParseDataQueue ;
 	private static final Logger log = LoggerFactory
 			.getLogger(ParseAlertSender.class);
 
@@ -56,7 +58,12 @@ public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
 	        strMsgType = MsgType;
 	        strLocalTime = LocalTime;
 	        strKeyValue = KeyValue;	        
-	    }    
+	    }
+	    
+	    public String getMsg()
+	    {
+	    	return strpushMessage ;
+	    }
 	}
 
 	//********************************************************************************************
@@ -87,7 +94,7 @@ public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
 	 
 	 // We only have 1:Alert, 2:Order
 	//********************************************************************************************
-	protected void sendPost(ParseData PD) throws Exception 
+	protected void sendPost(ParseData PD, int timeoutSecond) throws Exception 
 	{   	 		
 		URL obj = new URL("https://api.parse.com/1/push") ;
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -105,21 +112,23 @@ public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
 		con.setRequestProperty("X-Parse-REST-API-KEY", parseRestApiId);
 		con.setRequestProperty("Content-type", "application/json");
 		con.setRequestProperty("Content-Length", Integer.toString(strPoststring.length()));
-		
+		con.setConnectTimeout(timeoutSecond);
+		con.setReadTimeout(timeoutSecond);
 		// Send post request
 		con.setDoOutput(true);
 		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 		wr.writeBytes(strPoststring);
 		wr.flush();
 		wr.close();
- 
+		
 		int responseCode = con.getResponseCode();
+		con.disconnect();
 		
 		log.debug("Return code: " + responseCode);
 	}
 
 	@Override
-	public void sendTradeAlert(Execution execution) {
+	public void sendTradeAlert(Execution execution, int timeoutSecond) {
 		DecimalFormat qtyFormat = new DecimalFormat("#0");
 		String strQty = qtyFormat.format(execution.getQuantity());
 		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
@@ -134,16 +143,15 @@ public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
 				MSG_TYPE_ORDER, strDate, keyValue);
 		
 		try {
-			sendPost(data);
+			sendPost(data, timeoutSecond);
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.error(e.getMessage() + " : " + data.getMsg(), e);
 		}
 	}
 
 	@Override
-	public void sendPriceAlert(PriceAlert priceAlert) {
+	public void sendPriceAlert(PriceAlert priceAlert, int timeoutSecond) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	// getters and setters
@@ -162,6 +170,4 @@ public class ParseAlertSender implements IPriceAlertSender, ITradeAlertSender {
 	public void setParseRestApiId(String parseRestApiId) {
 		this.parseRestApiId = parseRestApiId;
 	}
-
-
 }

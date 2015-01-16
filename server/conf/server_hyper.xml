@@ -214,12 +214,17 @@
 	
 	<bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
 	</bean>
-	
+
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
-	
+
 	<bean id="alertManager" class="com.cyanspring.server.alert.AlertManager">
-		<property name="tradeAlertSender" ref="parseAlertSender"/>
+		<property name="timeoutSecond" value="3000" />
+		<property name="createThreadCount" value="5" />
+		<property name="maxRetrytimes" value="3" />
+		<property name="killTimeoutSecond" value="60000" />
+		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073" />
+		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z" />
 	</bean>
 	
 	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">

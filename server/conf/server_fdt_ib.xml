@@ -198,9 +198,14 @@
 	</bean>
 
 	<bean id="alertManager" class="com.cyanspring.server.alert.AlertManager">
-		<property name="tradeAlertSender" ref="parseAlertSender"/>
+		<property name="timeoutSecond" value="3000" />
+		<property name="createThreadCount" value="5" />
+		<property name="maxRetrytimes" value="3" />
+		<property name="killTimeoutSecond" value="60000" />
+		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
+		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
 	</bean>
-	
+
 	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D"/>
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx"/>
@@ -221,10 +226,10 @@
 	        </list>
 	    </constructor-arg>
 	</bean>
-	
+
 	<bean id="hyperDownStreamAdaptor" class="com.cyanspring.server.sim.HyperDownStreamAdaptor">
 	</bean>
-	
+
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
 
@@ -252,7 +257,7 @@
 		<property name="gateway" value="true"></property>		
 		<property name="reqIp" value="10.0.0.32"></property>		
 		<property name="reqPort" value="6086"></property>
-	
+
 		<property name="exch" value="687"></property>
 		<property name="preOpen" value="610"></property>
 		<property name="open" value="615"></property>
