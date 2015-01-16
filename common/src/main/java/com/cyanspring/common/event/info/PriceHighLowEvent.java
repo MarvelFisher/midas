@@ -1,47 +1,39 @@
 package com.cyanspring.common.event.info;
 
+import java.util.List;
+
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.marketdata.PriceHighLow;
 
 public class PriceHighLowEvent extends RemoteAsyncEvent {
-	
-	private PriceHighLowType type;
-	private String symbol ;
-	private double high;
-	private double low;
+	private List<PriceHighLow> listHighLow ;
+	private boolean isSuccess ;
+	private String errorMsg ;
 
 	public PriceHighLowEvent(String key, String receiver) {
 		super(key, receiver);
 	}
 	public PriceHighLowEvent(String key, String receiver,
-			PriceHighLowType type, String symbol, double high, double low) {
+			List<PriceHighLow> listHighLow) {
 		super(key, receiver);
-		this.setType(type);
-		this.setSymbol(symbol) ;
-		this.setHigh(high);
-		this.setLow(low);
+		this.listHighLow = listHighLow ;
 	}
-	public PriceHighLowType getType() {
-		return type;
+	public boolean isSuccess() {
+		return isSuccess;
 	}
-	public double getHigh() {
-		return high;
+	public void setSuccess(boolean isSuccess) {
+		this.isSuccess = isSuccess;
 	}
-	public double getLow() {
-		return low;
+	public String getErrorMsg() {
+		return errorMsg;
 	}
-	public String getSymbol() {
-		return symbol;
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
 	}
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
+	public List<PriceHighLow> getListHighLow() {
+		return listHighLow;
 	}
-	public void setType(PriceHighLowType type) {
-		this.type = type;
-	}
-	public void setHigh(double high) {
-		this.high = high;
-	}
-	public void setLow(double low) {
-		this.low = low;
+	public void setListHighLow(List<PriceHighLow> listHighLow) {
+		this.listHighLow = listHighLow;
 	}
 }

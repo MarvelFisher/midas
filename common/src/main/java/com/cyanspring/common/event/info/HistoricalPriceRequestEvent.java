@@ -1,6 +1,7 @@
 package com.cyanspring.common.event.info;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
@@ -12,6 +13,10 @@ public class HistoricalPriceRequestEvent extends RemoteAsyncEvent
 	private Date   startDate ;
 	private Date   endDate ;
 
+	public HistoricalPriceRequestEvent(String key, String receiver)
+	{
+		super(key, receiver);
+	}
 	public HistoricalPriceRequestEvent(String key, 
 								  	   String receiver,
 								  	   String symbol, 
@@ -20,18 +25,10 @@ public class HistoricalPriceRequestEvent extends RemoteAsyncEvent
 								  	   Date endDate) 
 	{
 		super(key, receiver);
-		this.symbol = symbol ;
+		this.setSymbol(symbol) ;
 		this.historyType = historyType ;
 		this.startDate = startDate ;
 		this.endDate = endDate ;
-	}
-
-	public String getSymbol() {
-		return symbol;
-	}
-
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
 	}
 
 	public String getHistoryType() {
@@ -56,6 +53,12 @@ public class HistoricalPriceRequestEvent extends RemoteAsyncEvent
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	public String getSymbol() {
+		return symbol;
+	}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 
 }

@@ -1,29 +1,35 @@
 package com.cyanspring.common.event.info;
 
+import java.util.List;
+
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class PriceHighLowRequestEvent extends RemoteAsyncEvent {
 	private PriceHighLowType type;
-	private String symbol ;
+	private List<String>  symbolList ;
 
+	public PriceHighLowRequestEvent(String key, String receiver, PriceHighLowType type)
+	{
+		super(key, receiver);
+	}
 	public PriceHighLowRequestEvent(String key, String receiver,
 			PriceHighLowType type,
-			String symbol) {
+			List<String> symbolList) {
 		super(key, receiver);
 		this.type = type;
-		this.symbol = symbol ;
+		this.symbolList = symbolList ;
 	}
 
 	public PriceHighLowType getType() {
 		return type;
 	}
 
-	public String getSymbol() {
-		return symbol;
+	public List<String> getSymbolList() {
+		return symbolList;
 	}
 
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
+	public void setSymbolList(List<String> symbolList) {
+		this.symbolList = symbolList;
 	}
 
 }
