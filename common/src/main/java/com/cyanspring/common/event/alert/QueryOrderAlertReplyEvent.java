@@ -8,6 +8,7 @@ import com.cyanspring.common.alert.TradeAlert;
 public class QueryOrderAlertReplyEvent extends RemoteAsyncEvent{
 	private List<TradeAlert> trades;
 	private String txId;
+	private String userId;
 	private boolean ok;
 	private String message;
 	/*
@@ -34,5 +35,13 @@ public class QueryOrderAlertReplyEvent extends RemoteAsyncEvent{
 	}
 	public List<TradeAlert> getTradeAlertList() {
 		return trades;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }
