@@ -65,6 +65,4 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 	public void setRefDataFile(String refDataFile) {
 		this.refDataFile = refDataFile;
 	}
-
-	
 }

@@ -108,7 +108,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
 		try {
 			if(tradeDate == null){
-				log.info("Send TradeDateRequestEvent!");
 				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
 				eventManager.sendEvent(tdrEvent);
 			}else{

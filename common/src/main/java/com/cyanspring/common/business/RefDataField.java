@@ -18,6 +18,9 @@ public enum RefDataField {
 	SHORT_MA("short MA"),
 	MID_MA("mid MA"),
 	LONG_MA("long MA"),
+	EN_DISPLAYNAME("ENName"),
+	TW_DISPLAYNAME("TWName"),
+	CN_DISPLAYNAME("CNName"),
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();
