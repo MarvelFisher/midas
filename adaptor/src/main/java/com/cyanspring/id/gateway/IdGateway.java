@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 
@@ -49,7 +50,7 @@ public class IdGateway implements IFrameClose {
 	static final double GB = (double)KB * MB;
 	static final double MaxSize = 10 * GB;
 	
-	static IdGateway instance = new IdGateway();
+	public static IdGateway instance = new IdGateway();
 	public static String version = "1.00R01";
 	public static String lastUpdated = "2014-12-26";
 	public long inNo = 0, outNo = 0;
@@ -75,7 +76,20 @@ public class IdGateway implements IFrameClose {
 	int hostPort = 0;
 	int httpPort = 0;
 	
-	private List<String> preSubscriptionList;		
+	private List<String> preSubscriptionList;
+	
+	private Map<String, Integer> nonFX;
+	
+	public Map<String, Integer> getNonFX() {
+		return nonFX;
+	}
+
+
+	public void setNonFX(Map<String, Integer> nonFX) {
+		this.nonFX = nonFX;
+	}
+
+
 	public boolean isShowGui() {
 		return showGui;
 	}
@@ -293,6 +307,15 @@ public class IdGateway implements IFrameClose {
 			}
 		});
 		mainFrame.addButton(button);
+		JButton buttonSymbol = new JButton("dump symbols");
+		buttonSymbol.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				QuoteMgr.Instance().dumpSymbols();
+				LogUtil.logInfo(log, "dump symbols");
+				addLog(InfoString.Info, "dump symbols");
+			}
+		});
+		mainFrame.addButton(buttonSymbol);	
 	}
 
 	public void onCloseAction() {
@@ -565,7 +588,7 @@ public class IdGateway implements IFrameClose {
 		
 
 		bean.init();
-		
+
 		IdGateway.instance = bean;
 		
 		// GUI Mode
