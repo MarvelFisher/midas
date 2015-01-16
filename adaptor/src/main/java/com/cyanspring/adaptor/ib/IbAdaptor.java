@@ -448,13 +448,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	@Override
 	synchronized public void error(int id, int errorCode, String errorMsg) {
 		log.info("IB-ERR: " + EWrapperMsgGenerator.error(id, errorCode, errorMsg));
-//		ChildOrder order = idToOrder.get(id);
-//		if(null != order && 
-//		   order.getOrdStatus().isPending() &&
-//		   errorCode != 202){
-//			order.setOrdStatus(autoStatus(order));
-//			downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
-//		}
+		ChildOrder order = idToOrder.get(id);
+		if(null != order && 
+		   order.getOrdStatus().isPending() &&
+		   errorCode != 202 &&
+		   (errorCode != 399 || !errorMsg.contains("Warning"))){
+			order.setOrdStatus(autoStatus(order));
+			downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
+		}
 	}
 
 	@Override
