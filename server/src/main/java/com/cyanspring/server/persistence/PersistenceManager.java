@@ -619,7 +619,10 @@ public class PersistenceManager {
 			log.info("Created user: " + event.getUser());
 		}
 		catch (Exception e) {
-			log.error(e.getMessage(), e);
+			if(e instanceof CentralDbException)
+				log.warn(e.getMessage(), e);
+			else 
+				log.error(e.getMessage(), e);
 			ok = false;
 			message = String.format("can't create user, err=[%s]", e.getMessage());
 		    if (tx!=null) 

@@ -40,12 +40,14 @@ public class DownStreamManager implements IPlugin {
 	private List<IStreamAdaptor<IDownStreamConnection>> adaptors;
 	private Map<String, IDownStreamSender> senders = Collections.synchronizedMap(new HashMap<String, IDownStreamSender>());
 	// these are special connection that will not be in the load balancing pool
-	private List<String> specialConnections = new ArrayList<String>();
+	private List<IStreamAdaptor<IDownStreamConnection>> specialAdaptors;
+	private Map<String, IDownStreamSender> specialSenders = Collections.synchronizedMap(new HashMap<String, IDownStreamSender>());
 	
 	
-	public DownStreamManager(List<IStreamAdaptor<IDownStreamConnection>> adaptors, List<String> specialConnections) {
+	public DownStreamManager(List<IStreamAdaptor<IDownStreamConnection>> adaptors, 
+			List<IStreamAdaptor<IDownStreamConnection>> specialAdaptors) {
 		this.adaptors = adaptors;
-		this.specialConnections = specialConnections;
+		this.specialAdaptors = specialAdaptors;
 	}
 	
 	@Override
@@ -63,6 +65,20 @@ public class DownStreamManager implements IPlugin {
 					throw new DownStreamException("This connection id already exists: " + connection.getId());
 				IDownStreamSender sender = connection.setListener(new DownStreamListener(connection));
 				senders.put(connection.getId(), sender);
+			}
+		}
+		for(IStreamAdaptor<IDownStreamConnection> adaptor: specialAdaptors) {
+			try {
+				adaptor.init();
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				throw new DownStreamException(e.getMessage());
+			}
+			for(IDownStreamConnection connection: adaptor.getConnections()) {
+				if(senders.containsKey(connection.getId()))
+					throw new DownStreamException("This connection id already exists: " + connection.getId());
+				IDownStreamSender sender = connection.setListener(new DownStreamListener(connection));
+				specialSenders.put(connection.getId(), sender);
 			}
 		}
 		if(allReady()) {
@@ -140,9 +156,7 @@ public class DownStreamManager implements IPlugin {
 			throw new DownStreamException("There are no DownStreamSender available");
 		
 		for(Entry<String, IDownStreamSender> entry: senders.entrySet()) {
-			// not in special connection and online
-			if(!specialConnections.contains(entry.getKey()) && entry.getValue().getState())
-				list.add(entry.getValue());
+			list.add(entry.getValue());
 		}
 		if(list.size() == 0)
 			throw new DownStreamException("There are no DownStreamSender available yet");
@@ -155,6 +169,9 @@ public class DownStreamManager implements IPlugin {
 			return this.getSender();
 		
 		IDownStreamSender sender = senders.get(dest);
+		if(null == sender)
+			sender = specialSenders.get(dest);
+		
 		if(null == sender)
 			throw new DownStreamException("Can't find this sender: " + dest);
 		return sender;

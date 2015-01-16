@@ -90,7 +90,7 @@
 	
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		    <constructor-arg>
-		    	<ref bean="IdMarketDataAdaptor"/>
+		    	<ref bean="ibAdaptor"/>
 		    </constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -164,6 +164,7 @@
 	</bean>
 
 	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
+		<property name="rmJobBatch" value="5000"></property>
 	</bean>
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
@@ -205,6 +206,9 @@
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx"/>
 	</bean>
 	
+	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
+	</bean>
+
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 	    <constructor-arg>
 	        <list>
@@ -213,6 +217,7 @@
 	    </constructor-arg>
 	    <constructor-arg>
 	        <list>
+		    	<ref bean="ibAdaptor"/>
 	        </list>
 	    </constructor-arg>
 	</bean>
@@ -224,7 +229,8 @@
 	</bean>
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
-		<property name="host" value="125.227.191.250"/>
+		<property name="id" value="IB01"/>
+		<property name="host" value=""/>
 		<!-- property name="host" value=""/-->
 		<property name="port" value="4001"/>
 		<property name="clientId" value="1"/>

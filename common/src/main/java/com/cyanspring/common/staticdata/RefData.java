@@ -55,4 +55,16 @@ public class RefData extends DataObject {
 			return FxUtils.getToCurrency(this.getSymbol());
 		return cur;
 	}
+	
+	public String getENDisplayName(){
+		return this.get(String.class, RefDataField.EN_DISPLAYNAME.value());
+	}
+	
+	public String getTWDisplayName(){
+		return this.get(String.class, RefDataField.TW_DISPLAYNAME.value());
+	}
+
+	public String getCNDisplayName(){
+		return this.get(String.class, RefDataField.CN_DISPLAYNAME.value());
+	}
 }

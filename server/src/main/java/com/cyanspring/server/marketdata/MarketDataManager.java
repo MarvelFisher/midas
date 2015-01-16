@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
-import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
@@ -87,6 +86,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private boolean staleQuotesSent;
 	private Date initTime = Clock.getInstance().now();
 	private String tradeDate;
+	boolean isUninit = false;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -108,7 +108,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
 		try {
 			if(tradeDate == null){
-				log.info("Send TradeDateRequestEvent!");
 				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
 				eventManager.sendEvent(tdrEvent);
 			}else{
@@ -279,6 +278,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		});
 		thread.start();
 		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			  public void run() {
+				  uninit();
+			  }
+			});
+		
+		
 		if(adaptor.getState())
 			eventProcessor.onEvent(new PresubscribeEvent(null));
 		
@@ -363,9 +369,16 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	
 	@Override
 	public void uninit() {
+		if (isUninit)
+			return;
+		
+		isUninit = true;
+
 		log.info("uninitialising");
 		if(!eventProcessor.isSync())
 			scheduleManager.cancelTimerEvent(timerEvent);
+
+		adaptor.uninit();
 
 		eventProcessor.uninit();
 	}
