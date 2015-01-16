@@ -163,6 +163,7 @@
 	</bean>
 
 	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
+		<property name="rmJobBatch" value="5000"></property>
 	</bean>
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">

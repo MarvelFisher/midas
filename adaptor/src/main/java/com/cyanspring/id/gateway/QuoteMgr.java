@@ -1,10 +1,15 @@
 package com.cyanspring.id.gateway; 
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.TimerThread;
 import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
+import com.cyanspring.id.Library.Util.FileMgr;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 
 public class QuoteMgr implements AutoCloseable, TimerEventHandler {
@@ -22,9 +27,11 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 			+ "	<Symbol ID=\"CHFJPY,CHFCNH,CHFDKK,CHFNOK,CHFSEK\"/>\n"
 			+ "	<Symbol ID=\"CNHJPY,DKKJPY,DKKNOK,DKKSEK,HKDJPY,MXNJPY,NOKJPY,NOKSEK,SEKJPY,SGDCNH,SGDJPY,NZDCHF,NZDJPY\"/>\n"
 			+ "</Symbols>";
-
+	
 	public ArrayList<String> symbolList = new ArrayList<String>();
-
+	
+	public ArrayList<String> allSymbol = new ArrayList<String>();
+	
 	TimerThread timer = new TimerThread();
 	public QuoteMgr() {
 		timer.TimerEvent = this;
@@ -42,11 +49,47 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 		} catch (Exception e) {
 		}
 	}
+	
 
 	public ArrayList<String> getSymbolList() {
 		return new ArrayList<String>(symbolList);
 	}
 
+	public void updateAllSymbol(String symbol) {
+		synchronized (allSymbol) {		
+		if (allSymbol.contains(symbol))
+			return;		
+		}
+		allSymbol.add(symbol);
+	}
+	
+	public void dumpSymbols() {
+		ArrayList<String> list = new ArrayList<String>();		
+		String[] arrSymbol = new String[allSymbol.size()];
+		
+		synchronized (allSymbol) {
+			allSymbol.toArray(arrSymbol);
+			//list.addAll(allSymbol);
+		}	
+		
+		for (String symbol : arrSymbol ) {
+			if(symbol.contains("X:F") || symbol.contains("X:O"))
+				continue;
+			
+			list.add(String.format("%s%n", symbol));
+		}
+		Collections.sort(list);
+		String path = getPath("symbol.txt");
+		IdGateway.instance.addLog(InfoString.Info, "%s", path);	
+		FileMgr.writeFile(path, list, true);
+		list.clear();
+	}
+	
+	public static String getPath(String strName) {
+		Path path = Paths.get("");
+		return String.format("%s/%s", path.toAbsolutePath().toString(), strName);		
+	}
+	
 	public void close() {
 		fini();
 		FinalizeHelper.suppressFinalize(this);

@@ -20,12 +20,17 @@ public class FileMgr implements AutoCloseable, IReqThreadCallback {
 	static FileMgr instance = new FileMgr();
 
 	public static FileMgr instance() {
+		if (instance != null && instance.isInit == false) {
+			instance.init();
+		}
+		
 		return instance;
 	}
 
 	String m_strPath = "";
 	RequestThread thread = null;
 
+	boolean isInit = false;
 	public FileMgr() {
 	}
 
@@ -38,8 +43,10 @@ public class FileMgr implements AutoCloseable, IReqThreadCallback {
 				thread.start();
 			}
 
+			isInit = true;
 			return true;
 		} catch (Exception e) {
+			isInit = false;
 			return false;
 		}
 	}
