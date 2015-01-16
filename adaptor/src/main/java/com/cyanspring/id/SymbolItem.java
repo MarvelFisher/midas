@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
@@ -214,7 +215,7 @@ public class SymbolItem implements AutoCloseable {
 	public void parseTick(Date timeRev, Date timeTick, int nDP,
 			Hashtable<Integer, String> table) {
 
-		//Date timeGmt = DateUtil.toGmt(timeTick);
+		// Date timeGmt = DateUtil.toGmt(timeTick);
 
 		dp = nDP;
 		boolean bTick = false;
@@ -229,6 +230,9 @@ public class SymbolItem implements AutoCloseable {
 		while (itr.hasNext()) {
 			int nField = itr.next();
 			String strValue = table.get(nField);
+			if (strValue.isEmpty())
+				continue;
+
 			switch (nField) {
 			case FieldID.AskPrice:
 			case FieldID.BidPrice: {
@@ -309,6 +313,31 @@ public class SymbolItem implements AutoCloseable {
 	 */
 	public void setClose() {
 		close = price;
+	}
+
+	public void updateQuote(Quote quote) {
+
+		Date timeQuoteDate = quote.getTimeStamp();
+		timeQuoteDate = DateUtil.toLocal(timeQuoteDate);
+		
+		if (tick.time.getTime() > timeQuoteDate.getTime())
+			return;
+
+		open = quote.getOpen();
+		high = quote.getHigh();
+		low = quote.getLow();
+		preclose = quote.getClose();
+		price = quote.getLast();
+		close = 0;
+
+		tick.time = timeQuoteDate; 
+		tick.bid = quote.getBid();
+		tick.ask = quote.getAsk();
+		if (price == 0 && tick.bid > 0 && tick.ask > 0) {
+			price = (tick.bid + tick.ask ) / 2;
+			price = Double.parseDouble(FixStringBuilder.getString(price, dp));
+		}
+		tick.price = price;
 	}
 
 	/**

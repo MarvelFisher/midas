@@ -160,6 +160,8 @@ public class Parser implements IReqThreadCallback {
 					String symbol = str.substring(nStartIdx + 3, nEndIdx);
 					symbol = IdSymbolUtil.toSymbol(symbol, sourceInt);		
 
+					QuoteMgr.Instance().updateAllSymbol(symbol);
+					
 					if (QuoteMgr.Instance().checkSymbol(symbol) == false) {
 						continue;
 					}

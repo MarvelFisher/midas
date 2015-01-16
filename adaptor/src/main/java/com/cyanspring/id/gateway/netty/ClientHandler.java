@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +96,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		isActive = true;
 		_ctx = ctx;
 		logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
-		setCTFOn(IdGateway.instance().getExch());
-		//setCTFOnSymbols();
+		//setCTFOn(IdGateway.instance().getExch());
+		setCTFOnSymbols();
 	}
 
 	/**
@@ -242,7 +244,20 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		for (String s : list) {
 			setCTFOn(nExch, s);
 		}
-		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", list.size());
+		
+		int size = list.size();
+		
+		Map<String, Integer> map = new Hashtable<>(IdGateway.instance.getNonFX());
+		for (String id : map.keySet()) {
+			Integer exch = map.get(id);
+			setCTFOn(exch, id);
+		}
+		//exception list 
+		//setCTFOn(691, "XAUUSD");
+		//setCTFOn(691, "XAGUSD");
+		size += map.size();
+		//setCTFOn(970, oil id);
+		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", size);
 	}
 
 	/**

@@ -15,7 +15,7 @@ public class UserClient implements AutoCloseable {
 		return list;
 	}
 
-	IMarketDataListener listener = null;
+	public IMarketDataListener listener = null;
 
 	/**
 	 * 

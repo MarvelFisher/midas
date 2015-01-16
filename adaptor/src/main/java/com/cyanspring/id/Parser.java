@@ -278,7 +278,7 @@ public class Parser implements IReqThreadCallback {
 			if (false == adaptor.getIsClose()) {
 				if (adaptor.getStatus() == MarketStatus.CLOSE) {
 					adaptor.setIsClose(true);
-					QuoteMgr.instance().writeFile(true);
+					QuoteMgr.instance().writeFile(true, true);
 				}
 			}
 			return false;
@@ -288,7 +288,7 @@ public class Parser implements IReqThreadCallback {
 			if (nStatus == MarketStatus.PREOPEN || nStatus == MarketStatus.OPEN ) {
 				adaptor.setIsClose(false);
 				QuoteMgr.instance().sunrise();
-				QuoteMgr.instance().writeFile(false);
+				QuoteMgr.instance().writeFile(false, true);
 			}
 		}
 		
