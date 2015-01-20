@@ -247,7 +247,6 @@ public class AccountPositionManager implements IPlugin {
 			timerProcessor.getThread().setName("UserAccountManager-Timer");
 
 		if(tradeDate == null){
-			log.info("Send tradeDateRequestEvent!");
 			try{
 				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
 				eventManager.sendEvent(tdrEvent);

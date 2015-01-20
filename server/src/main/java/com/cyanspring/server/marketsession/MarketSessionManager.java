@@ -77,7 +77,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 			eventManager.sendEvent(tdEvent);
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
-		}
+		} 
 	}
 	
 	public void processMarketSessionRequestEvent(MarketSessionRequestEvent event){
@@ -97,7 +97,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 		try {
 			if(sessionState.isTradeDateChange(date)){
 				TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
-				log.info("Send TradeDateEvent: " + tdEvent);
+				log.info("Send TradeDateEvent: " + tdEvent.getTradeDate());
 				eventManager.sendEvent(tdEvent);
 			}
 			if(sessionState.isStateChanged(date)){				
@@ -105,7 +105,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 				msEvent.setKey(null);
 				msEvent.setReceiver(null);
 				log.info("Send MarketSessionEvent: " + msEvent);
-				eventManager.sendRemoteEvent(msEvent);	
+				eventManager.sendGlobalEvent(msEvent);	
 			}			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
