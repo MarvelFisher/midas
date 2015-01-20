@@ -9,6 +9,8 @@
 
 	<context:annotation-config />
 
+	<import resource="info_persistence.xml" />
+	
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
@@ -20,7 +22,12 @@
 	</bean>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
-		<property name="tradeAlertSender" ref="parseAlertSender"/>
+		<property name="timeoutSecond" value="3000" />
+		<property name="createThreadCount" value="5" />
+		<property name="maxRetrytimes" value="3" />
+		<property name="killTimeoutSecond" value="60000" />
+		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
+		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
 	</bean>
 
 	<bean id="historicalInfoManager" class="com.cyanspring.info.market.HistoricalInfoManager">

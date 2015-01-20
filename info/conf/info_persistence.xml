@@ -9,29 +9,24 @@
 
 	<context:annotation-config />
 
+	<!-- bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"-->	 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-	 <!-- Embedded mode -->
-	  <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-	  <property name="url" value="jdbc:derby:database;create=true"/>
-	 <!-- Client mode -->
-	 <!--
-	  <property name="driverClassName" value="org.apache.derby.jdbc.ClientDriver"/>
-	  <property name="url" value="jdbc:derby://localhost:1527/database;create=false"/>
-	  -->
-	  <property name="username" value="user"/>
-	  <property name="password" value="pass"/>
+	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	  <property name="url" value="jdbc:mysql:10.0.0.10:3306/LTS"/>	 
+	  <property name="username" value="tqt001"/>
+	  <property name="password" value="tqt001"/>
 	</bean>
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 	  <property name="dataSource" ref="dataSource"/>
 	  <property name="mappingResources">
 	    <list>
-	      <value>info_object.hbm.xml</value>
+	      <value>conf/info_object.hbm.xml</value>
 	    </list>
 	  </property>
 	  <property name="hibernateProperties">
       	<props>
-         <prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
          <prop key="hibernate.show_sql">false</prop>
          <prop key="hibernate.format_sql">false</prop>
          <prop key="hibernate.connection.autocommit">false</prop>
@@ -39,7 +34,7 @@
        </property>
 	</bean>
 
-	<bean id="setDerbyLog" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">   
+	<!-- bean id="setDerbyLog" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">   
 		<property name="targetClass">
 			<value>java.lang.System</value>
 		</property>
@@ -52,5 +47,5 @@
 		     	<value>log/derby.log</value>     
 		     </list>   
 		</property> 
-	</bean> 
+	</bean>-->
 </beans>
