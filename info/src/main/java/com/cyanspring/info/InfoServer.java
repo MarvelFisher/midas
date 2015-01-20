@@ -63,6 +63,9 @@ public class InfoServer
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<IPlugin> plugins;
+	
+//	@Autowired
+//	private CentralDbProcessor centralDbProcessor;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 

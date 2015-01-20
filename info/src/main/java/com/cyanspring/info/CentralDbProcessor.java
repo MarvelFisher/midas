@@ -78,7 +78,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(PriceHighLowRequestEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
-//			subscribeToEvent(SymbolEvent.class, null);
+			subscribeToEvent(SymbolEvent.class, null);
 		}
 
 		@Override
@@ -222,10 +222,12 @@ public class CentralDbProcessor implements IPlugin
 	}
 	
 
-//	public void processSymbolEvent(SymbolEvent event)
-//	{
-//		
-//	}
+	public void processSymbolEvent(SymbolEvent event)
+	{
+		SymbolEvent symbol = event ;
+		String code = symbol.getCode() ;
+		listSymbolData.add(new SymbolData(code, this)) ;
+	}
 	
 	public void writeToTick(Quote quote)
 	{
@@ -234,8 +236,8 @@ public class CentralDbProcessor implements IPlugin
 		calStamp.setTime(quote.getTimeStamp()) ;
 		calSent.setTime(quote.getTimeSent()) ;
 		
-		String strFile = String.format("./DAT/%04d%02d%02d/%s.TCK", 
-				calStamp.get(Calendar.YEAR), (calStamp.get(Calendar.MONTH)+1), calStamp.get(Calendar.DATE), quote.getSymbol()) ;
+		String strFile = String.format("./DAT/%s/%s.TCK", 
+				getTradedate(), quote.getSymbol()) ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss") ;
 		double bid = quote.getBid() ;
 		double ask = quote.getAsk() ;

@@ -36,6 +36,7 @@ public class SymbolData implements Comparable<SymbolData>
 	private String strSymbol ;
 	private double d52WHigh ;
 	private double d52WLow ; 
+	private double dCurPrice ;
 	private double dCurHigh ;
 	private double dCurLow ;
 	private double dOpen ;
@@ -109,6 +110,7 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			dOpen = dPrice ;
 		}
+		dCurPrice = dPrice ;
 		dClose = dPrice ;
 	}
 	
@@ -116,8 +118,8 @@ public class SymbolData implements Comparable<SymbolData>
 	{
 		isUpdating = true ;
 		Calendar calStamp = Calendar.getInstance() ;
-		String strFile = String.format("./DAT/%04d%02d%02d/%s.TCK", 
-				calStamp.get(Calendar.YEAR), (calStamp.get(Calendar.MONTH)+1), calStamp.get(Calendar.DATE), strSymbol) ;
+		String strFile = String.format("./DAT/%s/%s.TCK", 
+				centralDB.getTradedate(), strSymbol) ;
 		String strIn = "" ;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Quote quote = new Quote(strSymbol, null, null) ;
@@ -245,10 +247,22 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
-	public ArrayList<HistoricalPrice> getPriceList(byte service, String strType, Date end, boolean fill) throws ParseException
+	public ArrayList<HistoricalPrice> getPriceList(byte service, 
+												   String strType, 
+												   Date end, 
+												   boolean fill,
+												   ArrayList<HistoricalPrice> prices) throws ParseException
 	{
-		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
-		HistoricalPrice priceEmpty = centralDB.dbhnd.getLastValue(service, strType, strSymbol, false) ;
+		HistoricalPrice priceEmpty = null ;
+		if (prices.isEmpty())
+		{
+			priceEmpty = centralDB.dbhnd.getLastValue(service, strType, strSymbol, false) ;
+			prices.add(priceEmpty) ;
+		}
+		else
+		{
+			priceEmpty = prices.get(prices.size()-1);
+		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		Calendar firsttime = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		Calendar pricetime = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
@@ -260,6 +274,8 @@ public class SymbolData implements Comparable<SymbolData>
 		int close = centralDB.getClose() ;
 		firsttime.set(Calendar.HOUR_OF_DAY, open/100);
 		firsttime.set(Calendar.MINUTE, open%100) ;
+		int priceMin = 0;
+		int emptyMin = 0;
 		if (open > close)
 		{
 			firsttime.add(Calendar.DATE, -1);
@@ -305,52 +321,54 @@ public class SymbolData implements Comparable<SymbolData>
 				}
 				pricetime.setTime(price.getTimestamp());
 				emptytime.setTime(priceEmpty.getTimestamp());
+				priceMin = pricetime.get(Calendar.HOUR_OF_DAY)*60 + pricetime.get(Calendar.MINUTE);
+				emptyMin = emptytime.get(Calendar.HOUR_OF_DAY)*60 + emptytime.get(Calendar.MINUTE);
 				if (strType.equals("R") 
-						&& (pricetime.get(Calendar.MINUTE)/5 != emptytime.get(Calendar.MINUTE)/5))
+						&& (priceMin/5 != emptyMin/5))
 				{
-					prices.add((HistoricalPrice)priceEmpty.clone()) ;
-					priceEmpty.copy(price);
+					priceEmpty = (HistoricalPrice)price.clone() ;
+					prices.add(priceEmpty) ;
 					cal.setTime(price.getTimestamp());
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 5) * 5)) ;
 					priceEmpty.setTimestamp(cal.getTime());
 				}
 				else if (strType.equals("A") 
-						&& (pricetime.get(Calendar.MINUTE)/10 != emptytime.get(Calendar.MINUTE)/10))
+						&& (priceMin/10 != emptyMin/10))
 				{
-					prices.add((HistoricalPrice)priceEmpty.clone()) ;
-					priceEmpty.copy(price);
+					priceEmpty = (HistoricalPrice)price.clone() ;
+					prices.add(priceEmpty) ;
 					cal.setTime(price.getTimestamp());
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 10) * 10)) ;
 					priceEmpty.setTimestamp(cal.getTime());
 				}
 				else if (strType.equals("Q") 
-						&& (pricetime.get(Calendar.MINUTE)/15 != emptytime.get(Calendar.MINUTE)/15))
+						&& (priceMin/15 != emptyMin/15))
 				{
-					prices.add((HistoricalPrice)priceEmpty.clone()) ;
-					priceEmpty.copy(price);
+					priceEmpty = (HistoricalPrice)price.clone() ;
+					prices.add(priceEmpty) ;
 					cal.setTime(price.getTimestamp());
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 15) * 15)) ;
 					priceEmpty.setTimestamp(cal.getTime());
 				}
 				else if (strType.equals("H") 
-						&& (pricetime.get(Calendar.MINUTE)/30 != emptytime.get(Calendar.MINUTE)/30))
+						&& (priceMin/30 != emptyMin/30))
 				{
-					prices.add((HistoricalPrice)priceEmpty.clone()) ;
-					priceEmpty.copy(price);
+					priceEmpty = (HistoricalPrice)price.clone() ;
+					prices.add(priceEmpty) ;
 					cal.setTime(price.getTimestamp());
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 30) * 30)) ;
 					priceEmpty.setTimestamp(cal.getTime());
 				}
 				else if (strType.equals("6") 
-						&& (pricetime.get(Calendar.HOUR_OF_DAY) != emptytime.get(Calendar.HOUR_OF_DAY))
-						&& (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE)))
+						&& ((pricetime.get(Calendar.HOUR_OF_DAY) != emptytime.get(Calendar.HOUR_OF_DAY))
+								|| (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE))))
 				{
-					prices.add((HistoricalPrice)priceEmpty.clone()) ;
-					priceEmpty.copy(price);
+					priceEmpty = (HistoricalPrice)price.clone() ;
+					prices.add(priceEmpty) ;
 					cal.setTime(price.getTimestamp());
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MINUTE, 0);
@@ -358,11 +376,11 @@ public class SymbolData implements Comparable<SymbolData>
 					priceEmpty.setTimestamp(cal.getTime());
 				}
 				else if (strType.equals("T") 
-						&& (pricetime.get(Calendar.HOUR_OF_DAY)/4 != emptytime.get(Calendar.HOUR_OF_DAY)/4)
-						&& (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE)))
+						&& ((pricetime.get(Calendar.HOUR_OF_DAY)/4 != emptytime.get(Calendar.HOUR_OF_DAY)/4)
+								|| (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE))))
 				{
-					prices.add((HistoricalPrice)priceEmpty.clone()) ;
-					priceEmpty.copy(price);
+					priceEmpty = (HistoricalPrice)price.clone() ;
+					prices.add(priceEmpty) ;
 					cal.setTime(price.getTimestamp());
 					cal.set(Calendar.SECOND, 0);
 					cal.set(Calendar.MINUTE, 0);
@@ -378,11 +396,91 @@ public class SymbolData implements Comparable<SymbolData>
 		return prices ;
 	}
 	
+	public void getPriceDate(String strType, ArrayList<HistoricalPrice> pricelist)
+	{
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		Date date = cal.getTime() ;
+		int day = cal.get(Calendar.DATE); 
+		int week = cal.get(Calendar.WEEK_OF_YEAR) ;
+		int month = cal.get(Calendar.MONTH) ;
+		HistoricalPrice curPrice = new HistoricalPrice(date, strSymbol, dOpen, dCurHigh, dCurLow, dClose, (int)dCurVolume) ;
+		HistoricalPrice lastPrice = null ;
+		if (pricelist.size() > 1)
+		{
+			lastPrice = pricelist.get(pricelist.size()-1) ;
+			cal.setTime(lastPrice.getTimestamp());
+		}
+		if (strType.equals("D") && lastPrice != null)
+		{
+			if (day == cal.get(Calendar.DATE))
+			{
+				if (lastPrice.getHigh() < dCurHigh)
+				{
+					lastPrice.setHigh(dCurHigh);
+				}
+				if (lastPrice.getLow() < dCurLow)
+				{
+					lastPrice.setLow(dCurLow);
+				}
+				lastPrice.setClose(dCurPrice);
+				lastPrice.setTimestamp(date);
+			}
+			else
+			{
+				pricelist.add(curPrice) ;
+			}
+		}
+		else if (strType.equals("W") && lastPrice != null)
+		{
+			if (week == cal.get(Calendar.WEEK_OF_YEAR))
+			{
+				if (lastPrice.getHigh() < dCurHigh)
+				{
+					lastPrice.setHigh(dCurHigh);
+				}
+				if (lastPrice.getLow() < dCurLow)
+				{
+					lastPrice.setLow(dCurLow);
+				}
+				lastPrice.setClose(dCurPrice);
+				lastPrice.setTimestamp(date);
+			}
+			else
+			{
+				pricelist.add(curPrice) ;
+			}
+		}
+		else if (strType.equals("M") && lastPrice != null)
+		{
+			if (month == cal.get(Calendar.MONTH))
+			{
+				if (lastPrice.getHigh() < dCurHigh)
+				{
+					lastPrice.setHigh(dCurHigh);
+				}
+				if (lastPrice.getLow() < dCurLow)
+				{
+					lastPrice.setLow(dCurLow);
+				}
+				lastPrice.setClose(dCurPrice);
+				lastPrice.setTimestamp(date);
+			}
+			else
+			{
+				pricelist.add(curPrice) ;
+			}
+		}
+		
+	}
+	
 	public void insertSQLTick(byte service, String strType)
 	{
-		ArrayList<HistoricalPrice> prices = null ;
+		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
 		try {
-			prices = getPriceList(service, strType, null, true);
+			prices = getPriceList(service, strType, null, true, prices);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			log.error(e.toString());
@@ -425,8 +523,8 @@ public class SymbolData implements Comparable<SymbolData>
 		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
-		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE TRADEDATE>='%s' AND TRADEDATE<='%s' ORDER BY TRADEDATE;", 
-				service, type, sdftime.format(start), sdftime.format(end)) ;
+		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE TRADEDATE>='%s' AND TRADEDATE<'%s' ORDER BY TRADEDATE;", 
+				service, type, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			while(rs.next())
@@ -453,8 +551,30 @@ public class SymbolData implements Comparable<SymbolData>
 		if (0 <= tradedate.compareTo(enddate))
 		{
 			try {
-				ArrayList<HistoricalPrice> listDaily = getPriceList((byte)0x40, type, end, false) ;
-				listPrice.addAll(listDaily) ;
+				switch(type)
+				{
+				case "1":
+				case "R":
+				case "A":
+				case "Q":
+				case "H":
+				case "6":
+				case "T":
+				{
+					/*ArrayList<HistoricalPrice> listDaily =*/ getPriceList((byte)0x40, type, end, false, listPrice) ;
+//					listPrice.addAll(listDaily) ;
+					break ;
+				}
+				case "D":
+				case "W":
+				case "M":
+				{
+					getPriceDate(type, listPrice) ;
+					break;
+				}
+				default:
+					return null ;
+				}
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				log.error(e.toString(), e);
