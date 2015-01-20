@@ -93,7 +93,7 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			d52WHigh = dPrice ;
 		}
-		else if (d52WLow > dPrice)
+		if (d52WLow > dPrice || d52WLow == 0)
 		{
 			d52WLow = dPrice ;
 		}
@@ -101,7 +101,7 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			dCurHigh = dPrice ;
 		}
-		else if (dCurLow > dPrice)
+		if (dCurLow > dPrice || dCurLow == 0)
 		{
 			dCurLow = dPrice ;
 		}
@@ -285,7 +285,10 @@ public class SymbolData implements Comparable<SymbolData>
 					priceEmpty = price ;
 				}
 				firsttime.add(Calendar.MINUTE, 1) ;
-				prices.add(price) ;
+				if (price.getTimestamp() != null)
+				{
+					prices.add(price) ;
+				}
 			}
 		}
 		else
@@ -395,18 +398,20 @@ public class SymbolData implements Comparable<SymbolData>
 		String strDateTime = "" ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:00") ;
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		centralDB.dbhnd.createStatement();
 		for (HistoricalPrice price : prices)
 		{
 			strDateTime = sdf.format(price.getTimestamp()) ;
-			sqlcmd += String.format(
+			sqlcmd = String.format(
 					"insert into %s (TRADEDATE,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) " + 
 	                "values ('%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY " + 
 					"Update OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;",
 					strTable, strDateTime, price.getSymbol(), price.getOpen(),
 					price.getClose(), price.getHigh(), price.getLow(), (int)price.getVolume(),
 					price.getOpen(), price.getClose(), price.getHigh(), price.getLow(), (int)price.getVolume()) ;
-			centralDB.dbhnd.updateSQL(sqlcmd);
+			centralDB.dbhnd.addBatch(sqlcmd);
 		}
+		centralDB.dbhnd.executeBatch();
 		return ;
 	}
 	
@@ -420,7 +425,7 @@ public class SymbolData implements Comparable<SymbolData>
 		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
-		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE TRADEDATE>='%s' AND TRADEDATE<='%s';", 
+		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE TRADEDATE>='%s' AND TRADEDATE<='%s' ORDER BY TRADEDATE;", 
 				service, type, sdftime.format(start), sdftime.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
@@ -434,7 +439,7 @@ public class SymbolData implements Comparable<SymbolData>
 				price.setHigh(rs.getDouble("HIGH_PRICE"));
 				price.setLow(rs.getDouble("LOW_PRICE"));
 				strtmp = rs.getString("VOLUME") ;
-				if (strtmp != null || !strtmp.toLowerCase().equals("null"))
+				if (strtmp != null && !strtmp.toLowerCase().equals("null"))
 				{
 					price.setVolume(Integer.parseInt(strtmp));
 				}
@@ -445,7 +450,7 @@ public class SymbolData implements Comparable<SymbolData>
 			log.error(e.toString(), e);
 			return null ;
 		}
-		if (0 < tradedate.compareTo(enddate))
+		if (0 <= tradedate.compareTo(enddate))
 		{
 			try {
 				ArrayList<HistoricalPrice> listDaily = getPriceList((byte)0x40, type, end, false) ;
@@ -456,7 +461,7 @@ public class SymbolData implements Comparable<SymbolData>
 				return null ;
 			}
 		}
-		return null ;
+		return listPrice ;
 	}
 	@Override
 	public int compareTo(SymbolData o) {
