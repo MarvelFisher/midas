@@ -13,6 +13,7 @@ package com.cyanspring.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.event.IAsyncEventBridge;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.transport.IObjectListener;
@@ -25,6 +26,7 @@ public class RemoteEventManager extends AsyncEventManager implements IRemoteEven
 	boolean embedBroker;
 	String channel;
 	String inbox;
+	IAsyncEventBridge bridge;
 	
 	class RemoteListener implements IObjectListener {
 		public void onMessage(Object obj) {
@@ -74,6 +76,8 @@ public class RemoteEventManager extends AsyncEventManager implements IRemoteEven
 	public void publishRemoteEvent(String channel, RemoteAsyncEvent event) throws Exception {
 		if(event.getSender() == null)
 			event.setSender(inbox);
+		if(null != bridge)
+			bridge.onBridgeEvent(event);
 		transport.publishMessage(channel, event);
 	}
 	
@@ -114,8 +118,12 @@ public class RemoteEventManager extends AsyncEventManager implements IRemoteEven
 	public void sendRemoteEvent(RemoteAsyncEvent event) throws Exception {
 		if(event.getSender() == null)
 			event.setSender(inbox);
-		if(event.getReceiver() == null)
+		if(event.getReceiver() == null) {
+			if(null != bridge)
+				bridge.onBridgeEvent(event);
 			transport.publishMessage(channel, event);
+		} else if (null != bridge && bridge.getBridgeId().equals(event.getReceiver()))
+			bridge.onBridgeEvent(event);
 		else
 			transport.sendMessage(event.getReceiver(), event);
 	}
@@ -132,6 +140,14 @@ public class RemoteEventManager extends AsyncEventManager implements IRemoteEven
 
 	public void setEmbedBroker(boolean embedBroker) {
 		this.embedBroker = embedBroker;
+	}
+
+	public IAsyncEventBridge getBridge() {
+		return bridge;
+	}
+
+	public void setBridge(IAsyncEventBridge bridge) {
+		this.bridge = bridge;
 	}
 	
 }
