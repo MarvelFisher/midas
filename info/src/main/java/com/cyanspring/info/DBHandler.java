@@ -25,6 +25,7 @@ public class DBHandler
 	private String     pass;
 	private String     database;
 	private Connection connect = null ;
+	private Statement  stat = null ;
 	DBHandler(String host, String user, String pass, String database)
 	{
 		this.host = host ;
@@ -164,6 +165,46 @@ public class DBHandler
             log.trace(sqlcmd);
         }
         return rs;
+    }
+    public void createStatement()
+    {
+    	try 
+    	{
+    		if (stat != null)
+    		{
+    			stat.close();
+    			stat = null ;
+    		}
+			stat = connect.createStatement() ;
+		} 
+    	catch (SQLException e) 
+    	{
+            log.error(e.toString(), e) ;
+		}
+    }
+    public void addBatch(String sqlcmd)
+    {
+        try
+        {
+            stat.addBatch(sqlcmd);
+        }
+        catch(SQLException se)
+        {
+        	log.error(se.toString(), se) ;
+        }
+    }
+    public void executeBatch()
+    {
+        try 
+        {
+			stat.executeBatch();
+			stat.close();
+			stat = null ;
+		} 
+        catch (SQLException e) 
+        {
+			log.error(e.toString(), e) ;
+		}
     }
     public HistoricalPrice getLastValue(byte service, String type, String symbol, boolean dir)
     {

@@ -27,6 +27,8 @@ import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.SymbolEvent;
+import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.marketdata.HistoricalPrice;
@@ -76,6 +78,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(PriceHighLowRequestEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
+//			subscribeToEvent(SymbolEvent.class, null);
 		}
 
 		@Override
@@ -218,6 +221,12 @@ public class CentralDbProcessor implements IPlugin
 		}
 	}
 	
+
+//	public void processSymbolEvent(SymbolEvent event)
+//	{
+//		
+//	}
+	
 	public void writeToTick(Quote quote)
 	{
 		Calendar calStamp = Calendar.getInstance() ;
@@ -356,6 +365,12 @@ public class CentralDbProcessor implements IPlugin
 	{
 		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
 		sendEvent(new MarketSessionRequestEvent(null, receiver)) ;
+	}
+	
+	public void requestSymbolList()
+	{
+		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
+		sendEvent(new SymbolRequestEvent(null, receiver)) ;
 	}
 
 	@Override
