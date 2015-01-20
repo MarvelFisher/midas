@@ -10,7 +10,7 @@
     <property column="PRICE" 			name="price" type="java.lang.Double"/>
     <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
     <property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
-	<property column="ORDERREASON" 			name=orderReason length="30">
+	<property column="ORDERREASON" 			name="orderReason" length="30">
    		<type name="org.hibernate.type.EnumType">
    			<param name="enumClass">com.cyanspring.common.account.OrderReason</param>   
        		<param name="type">12</param>

@@ -183,10 +183,10 @@ public class AlertManager implements IPlugin {
 			try
 			{
 				log.info("ParseDataQueue Size : " + ParseDataQueue.size());
-//				ParseDataQueue.add(PackTradeAlert(new Execution("USDJPY", OrderSide.Buy, 10000.0,
-//						123.4, "123-456-789", "111-111-111",
-//						"1", "222-222-222",
-//						"rickdev", "rickdev-FX", "abcdefg"),timeoutSecond));
+				ParseDataQueue.add(PackTradeAlert(new Execution("USDJPY", OrderSide.Buy, 10000.0,
+						123.4, "123-456-789", "111-111-111",
+						"1", "222-222-222",
+						"rickdev", "rickdev-FX", "abcdefg"),timeoutSecond));
 				ThreadStatus TS ;
 				for (ParseThread PT : ParseThreadList)
 				{
@@ -236,9 +236,9 @@ public class AlertManager implements IPlugin {
 			scheduleManager.scheduleRepeatTimerEvent(CheckThreadStatusInterval , eventProcessor, timerEvent);
 			
 			
-			if (createThreadCount > 0)
+			if (getCreateThreadCount() > 0)
 			{
-					for (int i = 0; i < createThreadCount ; i ++)
+					for (int i = 0; i < getCreateThreadCount() ; i ++)
 					{
 						strThreadId = "Thread" + String.valueOf(i);
 						ParseThread PT = new ParseThread(strThreadId,ParseDataQueue, timeoutSecond, maxRetrytimes, parseApplicationId,parseRestApiId);
@@ -249,7 +249,7 @@ public class AlertManager implements IPlugin {
 			}
 			else
 			{
-				log.warn("createThreadCount Setting error : " + String.valueOf(createThreadCount));
+				log.warn("createThreadCount Setting error : " + String.valueOf(getCreateThreadCount()));
 			}
 		}
 		catch(Exception e)
@@ -309,16 +309,6 @@ public class AlertManager implements IPlugin {
 		this.killTimeoutSecond = killTimeoutSecond;
 	}
 	
-	public int getcreateThreadCount()
-	{
-		return createThreadCount ;
-	}
-	
-	public void setcreateThreadCount(int createThreadCount)
-	{
-		this.createThreadCount = createThreadCount ;
-	}
-	
 	public String getParseApplicationId() {
 		return parseApplicationId;
 	}
@@ -333,5 +323,13 @@ public class AlertManager implements IPlugin {
 
 	public void setParseRestApiId(String parseRestApiId) {
 		this.parseRestApiId = parseRestApiId;
+	}
+
+	public int getCreateThreadCount() {
+		return createThreadCount;
+	}
+
+	public void setCreateThreadCount(int createThreadCount) {
+		this.createThreadCount = createThreadCount;
 	}
 }

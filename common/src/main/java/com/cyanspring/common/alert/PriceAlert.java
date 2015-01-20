@@ -13,16 +13,16 @@ public class PriceAlert implements Comparable<PriceAlert>{
 	public PriceAlert(String userId, String symbol, double price, String strdateTime) {
 		super();
 		this.id = "A" + IdGenerator.getInstance().getNextID();
-		this.userId = userId; //david
-		this.symbol = symbol;  //USDJPY
-		this.price = price;
-		this.dateTime = strdateTime; // yyyy-mm-dd hh:mm:ss
+		this.setUserId(userId); //david
+		this.setSymbol(symbol);  //USDJPY
+		this.setPrice(price);
+		this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 		this.content = "" ;
 	}
 	
 	@Override
 	public int compareTo(PriceAlert other) {
-		int iReturn = this.userId.compareTo(other.userId);
+		int iReturn = this.getUserId().compareTo(other.getUserId());
 		if (iReturn == 0)
 		{
 			iReturn = this.id.compareTo(other.id);
@@ -40,20 +40,35 @@ public class PriceAlert implements Comparable<PriceAlert>{
 
 	public String getUserId() {
 		return userId;
-	}	
+	}
+	
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public String getSymbol() {
 		return symbol;
 	}
 
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+	
 	public double getPrice() {
 		return price;
 	}
 	
-	public String getTime()
-	{
-		return dateTime ;
+	public void setPrice(double price) {
+		this.price = price;
 	}
+	
+	public String getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}	
 	
 	public String getContent()
 	{
@@ -64,4 +79,12 @@ public class PriceAlert implements Comparable<PriceAlert>{
 	{
 		this.content = content ;
 	}
+
+	
+
+	
+
+	
+
+	
 }

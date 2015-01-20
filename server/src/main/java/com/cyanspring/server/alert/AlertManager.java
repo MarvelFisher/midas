@@ -43,6 +43,8 @@ public class AlertManager implements IPlugin {
 	@Autowired
 	private AccountKeeper accountKeeper;
 	
+	
+	
 	private int timeoutSecond ;
 	private int createThreadCount ;
 	private int maxRetrytimes ;

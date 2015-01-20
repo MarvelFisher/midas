@@ -92,11 +92,6 @@
 		<property name="url" value="nio://localhost:61617"></property>
 	</bean>
 	
-	<bean id="parseAlertSender" class="com.cyanspring.info.alert.ParseAlertSender">
-		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D"/>
-		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx"/>
-	</bean>
-	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 	    <constructor-arg>
 	    	<ref bean="transportService"/>
