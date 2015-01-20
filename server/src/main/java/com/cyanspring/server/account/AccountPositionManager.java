@@ -247,7 +247,6 @@ public class AccountPositionManager implements IPlugin {
 			timerProcessor.getThread().setName("UserAccountManager-Timer");
 
 		if(tradeDate == null){
-			log.info("Send tradeDateRequestEvent!");
 			try{
 				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
 				eventManager.sendEvent(tdrEvent);
@@ -373,7 +372,7 @@ public class AccountPositionManager implements IPlugin {
 			try {
 				user.setId(user.getId().toLowerCase());
 				if(userKeeper.userExists(user.getId()))
-					throw new UserException("User already exists: " + user);
+					throw new UserException("User already exists: " + user.getId());
 				//Account account = new Account(generateAccountId(), event.getUser().getId(), defaultCurrency);
 				String defaultAccountId = user.getDefaultAccount();
 				if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {

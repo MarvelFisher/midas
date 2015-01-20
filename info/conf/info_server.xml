@@ -17,6 +17,7 @@
             	<ref bean="alertManager"/>
             	<ref bean="historicalInfoManager"/>
             	<ref bean="marketInfoManager"/>
+            	<ref bean="centralDbProcessor"/>
 	        </list>
 		</property>
 	</bean>
@@ -34,6 +35,30 @@
 	</bean>
 
 	<bean id="marketInfoManager" class="com.cyanspring.info.market.MarketInfoManager">
+	</bean>
+
+	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
+		<property name="host">
+			<value>10.0.0.10</value>
+		</property>
+		<property name="user">
+			<value>tqt001</value>
+		</property>
+		<property name="pass">
+			<value>tqt001</value>
+		</property>
+		<property name="database">
+			<value>TA_DS_TEST</value>
+		</property>
+		<property name="open">
+			<value>2215</value>
+		</property>
+		<property name="preopen">
+			<value>2210</value>
+		</property>
+		<property name="close">
+			<value>2200</value>
+		</property>
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">

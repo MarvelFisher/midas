@@ -32,6 +32,7 @@
             	<ref bean="downStreamManager"/>
             	<ref bean="upStreamManager"/>
             	<ref bean="accountPositionManager"/>
+            	<ref bean="apiBridgeManager"/>
             	<ref bean="alertManager"/>
             	<ref bean="autoRunner"/>
 	        </list>
@@ -65,8 +66,20 @@
 	    	<ref bean="transportService"/>
 	    </constructor-arg>
 		<property name="embedBroker" value="true"></property>
+		<property name="bridge">
+	    	<ref bean="apiBridgeManager"/>
+		</property>
 	</bean>
 	
+	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
+		<property name="socketService">
+			<ref bean="socketService"/>
+		</property>
+	</bean>
+
+	<bean id="socketService" class="com.cyanspring.transport.socket.ServerSocketService">
+	</bean>
+
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
 		<property name="embeddedSQLServer" value="true"></property>
 		<property name="embeddedHost" value="0.0.0.0"></property>

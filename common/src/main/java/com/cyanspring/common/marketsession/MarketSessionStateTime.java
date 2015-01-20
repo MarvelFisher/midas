@@ -16,7 +16,6 @@ import com.cyanspring.common.util.TimeUtil;
 public class MarketSessionStateTime extends MarketSessionState{
 //	private static final Logger log = LoggerFactory
 //			.getLogger(MarketSessionStateTime.class);
-	
 	public MarketSessionStateTime(MarketSessionTime sessionTime){
 		super(sessionTime);
 	}
@@ -28,7 +27,7 @@ public class MarketSessionStateTime extends MarketSessionState{
 		return new MarketSessionEvent(null, null, sessionData.session, start, end, tradeDate, Default.getMarket());
 	}
 
-	private void saveTradeDate(Date date) {
+	private void saveTradeDate(Date date) throws ParseException {
 		String[] times = Default.getTradeDateTime().split(":");	
 		int nHour = Integer.parseInt(times[0]);
 		int nMin = Integer.parseInt(times[1]);
@@ -36,14 +35,22 @@ public class MarketSessionStateTime extends MarketSessionState{
 		
 		Calendar cal = Default.getCalendar();
 		Date scheduledToday = TimeUtil.getScheduledDate(cal, date, nHour, nMin, nSecond);
-		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		if(tradeDate == null && nextTradeDate == null){
+			if(TimeUtil.getTimePass(date, scheduledToday) > 0){
+				tradeDate = sdf.format(date);
+				nextTradeDate = tradeDate;
+				tradeDateUpdate = true;
+				return;				
+			}else{
+				nextTradeDate = sdf.format(date);
+				return;
+			}
+		}
+		
+		if(tradeDate == null){
 			tradeDate = sdf.format(date);
-			nextTradeDate = tradeDate;
-			tradeDateUpdate = true;
-			return;
 		}
 		
 		if(TimeUtil.getTimePass(date, scheduledToday) > 0 && !tradeDate.equals(nextTradeDate)){
@@ -75,5 +82,4 @@ public class MarketSessionStateTime extends MarketSessionState{
 		}			
 		return false;
 	}
-
 }
