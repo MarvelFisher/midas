@@ -32,9 +32,8 @@ public abstract class MarketSessionState {
 		tradeDateUpdate = false;
 		Date date = Clock.getInstance().now();
 		while(tradeDate == null){
-			log.info(tradeDate);
-			date = TimeUtil.getPreviousDay(date);
 			calTradeDate(date);
+			date = TimeUtil.getPreviousDay(date);
 		}
 	}
 	
@@ -70,27 +69,25 @@ public abstract class MarketSessionState {
 	
 	protected void goSuccess(Date date) throws ParseException{
 		if(successNext != null)
-			tradeDate = successNext.calTradeDate(date);
+			successNext.calTradeDate(date);
 	}
 	
 	protected void goFail(Date date) throws ParseException{
 		if(failNext != null)
-			tradeDate = failNext.calTradeDate(date);
+			failNext.calTradeDate(date);
 	}
 	
-	private String calTradeDate(Date date) throws ParseException{
+	private void calTradeDate(Date date) throws ParseException{
 		if(sessionTime.lst != null){
 			for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
 				if(compareTime(sessionTime, sessionData, date)){
 					goSuccess(date);
-					return tradeDate;
 				}
 			}
 		}else{
 			log.error("No MarketSessionTime data set in: " + sessionTime + "[" + sessionTime.hashCode() + "]");
 		}
 		goFail(date);
-		return tradeDate;
 	}
 	
 	protected MarketSessionEvent calCurrentMarketSession(Date date) throws ParseException{

@@ -37,6 +37,7 @@ import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketdata.TradeSubEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
@@ -48,6 +49,7 @@ import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.TickDataException;
 import com.cyanspring.common.marketdata.Trade;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
@@ -87,6 +89,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	private Date initTime = Clock.getInstance().now();
 	private String tradeDate;
 	boolean isUninit = false;
+	private Map<MarketSessionType, Long> sessionMonitor;
+	private Date chkDate;
+	private long chkTime;	
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -97,6 +102,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			subscribeToEvent(PresubscribeEvent.class, null);
 			subscribeToEvent(LastTradeDateQuotesRequestEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);
+			subscribeToEvent(MarketSessionEvent.class, null);
 		}
 
 		@Override
@@ -104,16 +110,20 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			return eventManager;
 		}
 	};
+		
+	public void processMarketSessionEvent(MarketSessionEvent event){
+		chkTime = sessionMonitor.get(event.getSession());
+		log.info("Get MarketSessionEvent: " + event.getSession() + ", map size: " + sessionMonitor.size() + ", checkTime: " + chkTime);
+	}
 	
 	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
 		try {
 			if(tradeDate == null){
-				log.info("Send TradeDateRequestEvent!");
 				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
 				eventManager.sendEvent(tdrEvent);
 			}else{
 				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-				log.info("LastTradeDateQuotesRequestEvent sendinig lastTradeDateQuotes: " + lst );
+				log.info("LastTradeDateQuotesRequestEvent sending lastTradeDateQuotes: " + lst );
 				LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
 				eventManager.sendRemoteEvent(lastTDQEvent);				
 			}
@@ -130,7 +140,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
 				saveLastTradeDateQuotes();
 				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-				log.info("TradeDateEvent sending LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
+				log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
 				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -265,6 +275,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
 		
+		chkDate = Clock.getInstance().now();
+		
 		adaptor.subscribeMarketDataState(this);
 		Thread thread = new Thread(new Runnable(){
 			@Override
@@ -290,8 +302,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			eventProcessor.onEvent(new PresubscribeEvent(null));
 		
 		if(!eventProcessor.isSync())
-			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);	
-		
+			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);			
 	}
 	
 	private void saveLastQuotes() {
@@ -386,6 +397,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	
 	@Override
 	public void onQuote(Quote quote) {
+		if(TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0){
+			log.error("Quotes receive time large than excepted.");
+		}
+		chkDate = Clock.getInstance().now();
 		QuoteEvent event = new QuoteEvent(quote.getSymbol(), null, quote);
 		eventProcessor.onEvent(event);
 	}
@@ -453,4 +468,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void setQuoteChecker(IQuoteChecker quoteChecker) {
 		this.quoteChecker = quoteChecker;
 	}	
+	
+	public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
+		this.sessionMonitor = sessionMonitor;
+	}
 }

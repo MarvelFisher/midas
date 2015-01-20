@@ -10,7 +10,13 @@ public class HistoricalPriceEvent extends RemoteAsyncEvent  {
 	String historyType ;
 	String symbol ;
 	int dataCount ;
+	private boolean isSuccess ;
+	private String errorMsg ;
 
+	public HistoricalPriceEvent(String key, String receiver)
+	{
+		super(key, receiver);
+	}
 	public HistoricalPriceEvent(String key, String receiver, String symbol, String historyType, int dataCount) {
 		super(key, receiver);
 		this.symbol = symbol ;
@@ -49,6 +55,22 @@ public class HistoricalPriceEvent extends RemoteAsyncEvent  {
 
 	public void setDataCount(int dataCount) {
 		this.dataCount = dataCount;
+	}
+
+	public boolean isSuccess() {
+		return isSuccess;
+	}
+
+	public void setSuccess(boolean isSuccess) {
+		this.isSuccess = isSuccess;
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
 	}
 
 }
