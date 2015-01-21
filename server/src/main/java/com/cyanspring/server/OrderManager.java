@@ -224,24 +224,21 @@ public class OrderManager {
 
 	public void processStrategySnapshotRequestEvent(
 			StrategySnapshotRequestEvent event) throws Exception {
-		log.info("Received StrategySnapshotRequestEvent: " + event.getKey());
+		log.info("Received StrategySnapshotRequestEvent: " + event.getKey() + ", " + event.getTxId());
 		List<ParentOrder> orderList = null;
 		List<Instrument> instList = null;
 		List<MultiInstrumentStrategyData> misdList = null;
-		if(event.getKey() == null) {
-			orderList = new ArrayList<ParentOrder>(parentOrders.values());
-			instList = new ArrayList<Instrument>(instruments.values());
-			misdList = new ArrayList<MultiInstrumentStrategyData>(strategyData.values());
-		} else {
-			orderList = new ArrayList<ParentOrder>(parentOrders.getMap(event.getKey()).values());
-			instList = new ArrayList<Instrument>(instruments.getMap(event.getKey()).values());
-			misdList = new ArrayList<MultiInstrumentStrategyData>(strategyData.getMap(event.getKey()).values());
-		}
+
+		orderList = new ArrayList<ParentOrder>(parentOrders.getMap(event.getKey()).values());
+		instList = new ArrayList<Instrument>(instruments.getMap(event.getKey()).values());
+		misdList = new ArrayList<MultiInstrumentStrategyData>(strategyData.getMap(event.getKey()).values());
+		
 		StrategySnapshotEvent reply = new StrategySnapshotEvent(event.getKey(),
 					event.getSender(), 
 						orderList, 
 						instList, 
-						misdList);
+						misdList,
+						event.getTxId());
 
 		eventManager.sendRemoteEvent(reply);
 

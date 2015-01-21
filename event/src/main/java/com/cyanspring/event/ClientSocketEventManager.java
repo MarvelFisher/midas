@@ -18,7 +18,6 @@ public class ClientSocketEventManager extends AsyncEventManager implements
 	private IClientSocketListener listener = new IClientSocketListener() {
 		public void onMessage(Object obj) {
 			if (obj instanceof RemoteAsyncEvent) {
-				log.info("Received: " + obj.getClass().getName());
 				RemoteAsyncEvent event = (RemoteAsyncEvent)obj;
 				ClientSocketEventManager.super.sendEvent(event);
 			}

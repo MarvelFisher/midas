@@ -1,4 +1,4 @@
-package com.cyanspring.client;
+package com.cyanspring.soak;
 
 import java.util.HashMap;
 import java.util.List;
@@ -176,8 +176,8 @@ public class MobileAdaptor extends ClientAdaptor {
 			log.error("Enter order failed: " + event.getMessage());
 		// request for order snap shot when all orders are ack
 		if(pendingOrderCount.decrementAndGet() <= 0) {
-			sendEvent(new StrategySnapshotRequestEvent("test1"/*account name*/, server));
-			sendEvent(new AccountSnapshotRequestEvent(account, server, account));
+			sendEvent(new StrategySnapshotRequestEvent("test1"/*account name*/, server, null));
+			sendEvent(new AccountSnapshotRequestEvent(account, server, account, null));
 		}
 
 		/// amend order;

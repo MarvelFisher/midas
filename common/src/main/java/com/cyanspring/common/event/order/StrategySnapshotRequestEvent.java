@@ -13,9 +13,15 @@ package com.cyanspring.common.event.order;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class StrategySnapshotRequestEvent extends RemoteAsyncEvent {
-
-	public StrategySnapshotRequestEvent(String key, String receiver) {
+	private String txId;
+	
+	public StrategySnapshotRequestEvent(String key, String receiver, String txId) {
 		super(key, receiver);
+		this.txId = txId;
 	}
 
+	public String getTxId() {
+		return txId;
+	}
+	
 }

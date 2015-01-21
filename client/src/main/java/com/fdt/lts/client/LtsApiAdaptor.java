@@ -1,4 +1,4 @@
-package com.cyanspring.socket;
+package com.fdt.lts.client;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,14 +73,11 @@ public class LtsApiAdaptor {
 			subscribeToEvent(AmendParentOrderReplyEvent.class, getId());
 			subscribeToEvent(CancelParentOrderReplyEvent.class, getId());
 			subscribeToEvent(ParentOrderUpdateEvent.class, null);
-			subscribeToEvent(ChildOrderUpdateEvent.class, null);
 			subscribeToEvent(StrategySnapshotEvent.class, null);
 			subscribeToEvent(UserLoginReplyEvent.class, null);
 			subscribeToEvent(AccountSnapshotReplyEvent.class, null);
 			subscribeToEvent(AccountUpdateEvent.class, null);
-			subscribeToEvent(AccountDynamicUpdateEvent.class, null);
 			subscribeToEvent(OpenPositionUpdateEvent.class, null);
-			subscribeToEvent(OpenPositionDynamicUpdateEvent.class, null);
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 			subscribeToEvent(SystemErrorEvent.class, null);
 		}
@@ -115,12 +112,10 @@ public class LtsApiAdaptor {
 	}
 
 	public void processServerReadyEvent(ServerReadyEvent event) {
-		//#### Replace this block with your codes ######
 		log.debug("Received ServerReadyEvent: " + event.getSender() + ", " + event.isReady());
 		if(event.isReady()) {
 			sendEvent(new UserLoginEvent(getId(), null, user, password, IdGenerator.getInstance().getNextID()));
 		}
-		//#############################################
 	}
 
 	public void processAccountSnapshotReplyEvent(AccountSnapshotReplyEvent event) {
@@ -137,16 +132,8 @@ public class LtsApiAdaptor {
 		log.debug("Account: " + event.getAccount());
 	}
 	
-	public void processAccountDynamicUpdateEvent(AccountDynamicUpdateEvent event) {
-		//log.debug("Account: " + event.getAccount());
-	}
-	
 	public void processOpenPositionUpdateEvent(OpenPositionUpdateEvent event) {
 		log.debug("Position: " + event.getPosition());
-	}
-	
-	public void processOpenPositionDynamicUpdateEvent(OpenPositionDynamicUpdateEvent event) {
-		//log.debug("Position: " + event.getPosition());
 	}
 	
 	public void processClosedPositionUpdateEvent(ClosedPositionUpdateEvent event) {
@@ -154,9 +141,7 @@ public class LtsApiAdaptor {
 	}
 	
 	public void processQuoteEvent(QuoteEvent event) {
-		//#### Replace this block with your codes ######
 		log.debug("Received QuoteEvent: " + event.getKey() + ", " + event.getQuote());
-		//#############################################
 	}
 	
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
@@ -167,67 +152,37 @@ public class LtsApiAdaptor {
 		
 		sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
 		sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
-		sendEvent(new StrategySnapshotRequestEvent(account, null));
-/*
-		//set account settings
-		AccountSetting accountSetting = new AccountSetting(event.getUser().getDefaultAccount());
-		// only set the fields you want to change here!!!
-		accountSetting.setDefaultQty(100000.0);
-		accountSetting.setStopLossValue(1000.0);
-		ChangeAccountSettingRequestEvent request = new ChangeAccountSettingRequestEvent(getId(), null, accountSetting);
-		sendEvent(request);
-		
-		pendingOrderCount.incrementAndGet();
+		sendEvent(new StrategySnapshotRequestEvent(account, null, null));
+		sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
 		sendEvent(getEnterOrderEvent());
-		pendingOrderCount.incrementAndGet();
-		sendEvent(getEnterOrderEvent());
-		pendingOrderCount.incrementAndGet();
-		// STOP order here
-		sendEvent(getEnterStopOrderEvent());
-*/		
 	}
 
 	public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
-		//#### Replace this block with your codes ######
 		List<ParentOrder> orders = event.getOrders();
 		log.debug("### Start parent order list ###");
 		for(ParentOrder order: orders) {
 			log.debug("ParentOrder: " + order);
 		}
 		log.debug("### End parent order list ###");
-		//#############################################
 	}
 
 	public void processEnterParentOrderReplyEvent(
 			EnterParentOrderReplyEvent event) {
-		//#### Replace this block with your codes ######
-		if(!event.isOk())
-			log.error("Enter order failed: " + event.getMessage());
-		// request for order snap shot when all orders are ack
-		if(pendingOrderCount.decrementAndGet() <= 0) {
-			sendEvent(new StrategySnapshotRequestEvent("test1"/*account name*/, null));
-			sendEvent(new AccountSnapshotRequestEvent(account, null, account));
-		}
-
-		/// amend order;
-		if(null != event.getOrder()) {
-			log.debug("Received EnterParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
-			
+		if(!event.isOk()) {
+			log.debug("Received EnterParentOrderReplyEvent(NACK): " + event.getMessage());
+		} else {
+			log.debug("Received EnterParentOrderReplyEvent(ACK)");
 			Map<String, Object> fields = new HashMap<String, Object>();
 			fields.put(OrderField.PRICE.value(), 0.81);
 			fields.put(OrderField.QUANTITY.value(), 3000.0); // note: you must put xxx.0 to tell java this is a double type here!!
 			AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(), null, 
 					event.getOrder().getId(), fields, IdGenerator.getInstance().getNextID());
 			sendEvent(amendEvent);
-		} else {
-			log.debug("Received EnterParentOrderReplyEvent(NACK): " + event.isOk() + ", message: " + event.getMessage());
-		}
-		//#############################################
+		} 
 	}
 	
 	public void processAmendParentOrderReplyEvent(
 			AmendParentOrderReplyEvent event) {
-		//#### Replace this block with your codes ######
 		if(event.isOk()) {
 			log.debug("Received AmendParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
 			CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
@@ -236,37 +191,21 @@ public class LtsApiAdaptor {
 		} else {
 			log.debug("Received AmendParentOrderReplyEvent(NACK): " + event.isOk() + ", message: " + event.getMessage());
 		}
-		//#############################################
 	}
 
 	public void processCancelParentOrderReplyEvent(
 			CancelParentOrderReplyEvent event) {
-		//#### Replace this block with your codes ######
 		if(event.isOk()) {
 			log.debug("Received CancelParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
 		} else {
 			log.debug("Received CancelParentOrderReplyEvent(NACK): " + event.isOk() + ", message: " + event.getMessage());
 		}
-		//#############################################
 	}
 
 	public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
 		log.debug("Received ParentOrderUpdateEvent: " + event.getExecType() + ", order: " + event.getOrder());
 	}
 
-	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
-		//#### Replace this block with your codes ######
-		log.debug("Received ChildOrderUpdateEvent: " + event.getExecType() + 
-				", Parent order id: " + event.getOrder().getParentOrderId() + 
-				", child order: " + event.getOrder());
-		// This is how you get trade
-		if(event.getExecution() != null) {
-			log.debug("Received trade: " + event.getExecution());
-		}
-		//#############################################
-	}
-	
-	//#### Replace this block with your codes ######
 	EnterParentOrderEvent getEnterOrderEvent() {
 		// SDMA 
 		HashMap<String, Object> fields;
@@ -277,14 +216,13 @@ public class LtsApiAdaptor {
 		fields.put(OrderField.TYPE.value(), OrderType.Limit);
 		fields.put(OrderField.PRICE.value(), 0.700);
 		//fields.put(OrderField.PRICE.value(), 0.87980);
-		fields.put(OrderField.QUANTITY.value(), 2000.0); // note: you must put xxx.0 to tell java this is a double type here!!
+		fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must put xxx.0 to tell java this is a double type here!!
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
 		fields.put(OrderField.USER.value(), user);
 		fields.put(OrderField.ACCOUNT.value(), account);
 		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields, IdGenerator.getInstance().getNextID(), false);
 		return enterOrderEvent;
 	}
-	//#############################################
 	
 	//#### Replace this block with your codes ######
 	EnterParentOrderEvent getEnterStopOrderEvent() {
@@ -296,7 +234,7 @@ public class LtsApiAdaptor {
 		fields.put(OrderField.SIDE.value(), OrderSide.Buy);
 		fields.put(OrderField.TYPE.value(), OrderType.Market);
 		//fields.put(OrderField.PRICE.value(), 0.87980);
-		fields.put(OrderField.QUANTITY.value(), 2000.0); // note: you must put xxx.0 to tell java this is a double type here!!
+		fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must put xxx.0 to tell java this is a double type here!!
 		fields.put(OrderField.STRATEGY.value(), "STOP");
 		fields.put(OrderField.STOP_LOSS_PRICE.value(), 0.92);
 		fields.put(OrderField.USER.value(), user);

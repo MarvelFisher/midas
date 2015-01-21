@@ -10,7 +10,7 @@ public class PriceAlert implements Comparable<PriceAlert>{
 	private String dateTime ;
 	private String content ;
 	
-	public PriceAlert(String userId, String symbol, double price, String strdateTime) {
+	public PriceAlert(String userId, String symbol, double price, String strdateTime){
 		super();
 		this.id = "A" + IdGenerator.getInstance().getNextID();
 		this.setUserId(userId); //david

@@ -506,7 +506,7 @@ public class AccountPositionManager implements IPlugin {
 		AccountSnapshotReplyEvent reply;
 		if(null == account) {
 			reply = new AccountSnapshotReplyEvent(event.getKey(), event.getSender(), 
-					null, null, null, null, null);
+					null, null, null, null, null, event.getTxId());
 			log.warn("processAccountSnapshotRequestEvent, account doesn't exist: " + event.getAccountId());
 		} else {
 			List<OpenPosition> openPositions = positionKeeper.getOverallPosition(account);
@@ -520,7 +520,7 @@ public class AccountPositionManager implements IPlugin {
 			}
 			
 			reply = new AccountSnapshotReplyEvent(event.getKey(), event.getSender(), 
-					account, accountSetting, openPositions, closedPosition, executions);
+					account, accountSetting, openPositions, closedPosition, executions, event.getTxId());
 		}
 		
 		try {
@@ -565,7 +565,7 @@ public class AccountPositionManager implements IPlugin {
 		}
 		
 		AccountSettingSnapshotReplyEvent reply = new AccountSettingSnapshotReplyEvent(event.getKey(), 
-				event.getSender(), accountSetting, ok, message);
+				event.getSender(), accountSetting, ok, message, event.getTxId());
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
