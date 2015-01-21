@@ -41,7 +41,7 @@
 			        		<addClasspath>true</addClasspath>
 			      		</manifest>
 			     		<manifestEntries>
-			      			<Main-Class>com.cyanspring.client.MobileAdaptor</Main-Class>            
+			      			<Main-Class>com.cyanspring.client.LtsApiAdaptor</Main-Class>            
 			      			<packageName>com.cyanspring.client</packageName>            			
 			      		</manifestEntries>
 			   		</archive>
@@ -129,13 +129,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-core</artifactId>
-			<version>5.5.0</version>
-			<scope>runtime</scope>
-		</dependency>	
-	
-		<dependency>
 		    <groupId>com.thoughtworks.xstream</groupId>
 		    <artifactId>xstream</artifactId>
 		    <version>1.4.1</version>
@@ -147,6 +140,12 @@
 		    <version>2.3.0</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.24.Final</version>
+			<scope>runtime</scope>
+		</dependency>		
 
 		<!-- cyan spring dependencies -->
 		<dependency>

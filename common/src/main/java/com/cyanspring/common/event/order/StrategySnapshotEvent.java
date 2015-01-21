@@ -21,15 +21,18 @@ public class StrategySnapshotEvent extends RemoteAsyncEvent {
 	private List<ParentOrder> orders;
 	private List<Instrument> instruments;
 	private List<MultiInstrumentStrategyData> strategyData;
+	private String txId;
 
 	public StrategySnapshotEvent(String key, String receiver,
 			List<ParentOrder> orders, 
 			List<Instrument> instruments,
-			List<MultiInstrumentStrategyData> strategyData) {
+			List<MultiInstrumentStrategyData> strategyData,
+			String txId) {
 		super(key, receiver);
 		this.orders = orders;
 		this.instruments = instruments;
 		this.strategyData = strategyData;
+		this.txId = txId;
 	}
 
 	public List<ParentOrder> getOrders() {
@@ -42,6 +45,10 @@ public class StrategySnapshotEvent extends RemoteAsyncEvent {
 
 	public List<Instrument> getInstruments() {
 		return instruments;
+	}
+
+	public String getTxId() {
+		return txId;
 	}
 	
 }

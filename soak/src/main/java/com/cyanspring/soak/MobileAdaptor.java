@@ -1,4 +1,4 @@
-package com.cyanspring.socket;
+package com.cyanspring.soak;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -17,19 +16,16 @@ import com.cyanspring.common.account.User;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
+import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
-import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
+import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
@@ -45,80 +41,58 @@ import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.event.order.StrategySnapshotEvent;
 import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
-import com.cyanspring.common.event.system.SystemErrorEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.event.ClientSocketEventManager;
 
-public class LtsApiAdaptor {
-	private static Logger log = LoggerFactory.getLogger(LtsApiAdaptor.class);
+public class MobileAdaptor extends ClientAdaptor {
+	private static Logger log = LoggerFactory.getLogger(MobileAdaptor.class);
+	private String server;
 	private final String user = "test1";
-	private final String account = "test1-FX";
+	private final String account = "test1";
 	private final String password = "xxx";
 	private AtomicInteger pendingOrderCount = new AtomicInteger();
-	@Autowired
-	private IRemoteEventManager eventManager = new ClientSocketEventManager();
-	private String id = "test1";
 	
-	protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(ServerReadyEvent.class, null);
-			subscribeToEvent(QuoteEvent.class, null);
-			subscribeToEvent(EnterParentOrderReplyEvent.class, getId());
-			subscribeToEvent(AmendParentOrderReplyEvent.class, getId());
-			subscribeToEvent(CancelParentOrderReplyEvent.class, getId());
-			subscribeToEvent(ParentOrderUpdateEvent.class, null);
-			subscribeToEvent(ChildOrderUpdateEvent.class, null);
-			subscribeToEvent(StrategySnapshotEvent.class, null);
-			subscribeToEvent(UserLoginReplyEvent.class, null);
-			subscribeToEvent(AccountSnapshotReplyEvent.class, null);
-			subscribeToEvent(AccountUpdateEvent.class, null);
-			subscribeToEvent(AccountDynamicUpdateEvent.class, null);
-			subscribeToEvent(OpenPositionUpdateEvent.class, null);
-			subscribeToEvent(OpenPositionDynamicUpdateEvent.class, null);
-			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
-			subscribeToEvent(SystemErrorEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
-		
-	};
-	
-	private String getId() {
-		return id;
+	@Override
+	public void processServerStatusEvent(String server, boolean up) {
+		//#### Replace this block with your code ######
+		log.debug("Server: " + server + " is " + (up?"up":"down"));
+		//#############################################
 	}
 	
-	public void init() throws Exception {
-		eventProcessor.setHandler(this);
-		eventProcessor.init();
-		if(eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("LtsApiAdaptor");
-		
-		eventManager.init(null, null);
-	}
-
-	
-	private void sendEvent(RemoteAsyncEvent event) {
-		try {
-			eventManager.sendRemoteEvent(event);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+	@Override
+	public void subscribeToEvents() {
+		super.subscribeToEvents();
+		subscribeToEvent(NodeInfoEvent.class, null);
+		subscribeToEvent(AsyncTimerEvent.class, null);
+		subscribeToEvent(ServerReadyEvent.class, null);
+		subscribeToEvent(QuoteEvent.class, null);
+		subscribeToEvent(EnterParentOrderReplyEvent.class, getId());
+		subscribeToEvent(AmendParentOrderReplyEvent.class, getId());
+		subscribeToEvent(CancelParentOrderReplyEvent.class, getId());
+		subscribeToEvent(ParentOrderUpdateEvent.class, null);
+		subscribeToEvent(ChildOrderUpdateEvent.class, null);
+		subscribeToEvent(StrategySnapshotEvent.class, null);
+		subscribeToEvent(CreateUserReplyEvent.class, null);
+		subscribeToEvent(UserLoginReplyEvent.class, null);
+		subscribeToEvent(AccountSnapshotReplyEvent.class, null);
+		subscribeToEvent(AccountUpdateEvent.class, null);
+		subscribeToEvent(AccountDynamicUpdateEvent.class, null);
+		subscribeToEvent(OpenPositionUpdateEvent.class, null);
+		subscribeToEvent(OpenPositionDynamicUpdateEvent.class, null);
+		subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 	}
 
 	public void processServerReadyEvent(ServerReadyEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		log.debug("Received ServerReadyEvent: " + event.getSender() + ", " + event.isReady());
 		if(event.isReady()) {
-			sendEvent(new UserLoginEvent(getId(), null, user, password, IdGenerator.getInstance().getNextID()));
+			server = event.getSender();
+			sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
+			sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
+			sendEvent(new CreateUserEvent(getId(), server, new User(user, password), "", "", IdGenerator.getInstance().getNextID()));
+			//sendEvent(new UserLoginEvent(getId(), server, user, password, IdGenerator.getInstance().getNextID()));
 		}
 		//#############################################
 	}
@@ -154,27 +128,25 @@ public class LtsApiAdaptor {
 	}
 	
 	public void processQuoteEvent(QuoteEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		log.debug("Received QuoteEvent: " + event.getKey() + ", " + event.getQuote());
 		//#############################################
+	}
+	
+	public void processCreateUserReplyEvent(CreateUserReplyEvent event) {
+		log.debug("User created is " + event.isOk() + ", " + event.getMessage() + ", " + event.getUser());
+		sendEvent(new UserLoginEvent(getId(), server, user, password, IdGenerator.getInstance().getNextID()));
 	}
 	
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
 		log.debug("User login is " + event.isOk() + ", " + event.getMessage() + ", lastLogin: " + event.getUser().getLastLogin() );
 		
-		if(!event.isOk())
-			return;
-		
-		sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
-		sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
-		sendEvent(new StrategySnapshotRequestEvent(account, null));
-/*
 		//set account settings
 		AccountSetting accountSetting = new AccountSetting(event.getUser().getDefaultAccount());
 		// only set the fields you want to change here!!!
 		accountSetting.setDefaultQty(100000.0);
 		accountSetting.setStopLossValue(1000.0);
-		ChangeAccountSettingRequestEvent request = new ChangeAccountSettingRequestEvent(getId(), null, accountSetting);
+		ChangeAccountSettingRequestEvent request = new ChangeAccountSettingRequestEvent(getId(), server, accountSetting);
 		sendEvent(request);
 		
 		pendingOrderCount.incrementAndGet();
@@ -184,11 +156,10 @@ public class LtsApiAdaptor {
 		pendingOrderCount.incrementAndGet();
 		// STOP order here
 		sendEvent(getEnterStopOrderEvent());
-*/		
 	}
 
 	public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		List<ParentOrder> orders = event.getOrders();
 		log.debug("### Start parent order list ###");
 		for(ParentOrder order: orders) {
@@ -200,13 +171,13 @@ public class LtsApiAdaptor {
 
 	public void processEnterParentOrderReplyEvent(
 			EnterParentOrderReplyEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		if(!event.isOk())
 			log.error("Enter order failed: " + event.getMessage());
 		// request for order snap shot when all orders are ack
 		if(pendingOrderCount.decrementAndGet() <= 0) {
-			sendEvent(new StrategySnapshotRequestEvent("test1"/*account name*/, null));
-			sendEvent(new AccountSnapshotRequestEvent(account, null, account));
+			sendEvent(new StrategySnapshotRequestEvent("test1"/*account name*/, server, null));
+			sendEvent(new AccountSnapshotRequestEvent(account, server, account, null));
 		}
 
 		/// amend order;
@@ -216,7 +187,7 @@ public class LtsApiAdaptor {
 			Map<String, Object> fields = new HashMap<String, Object>();
 			fields.put(OrderField.PRICE.value(), 0.81);
 			fields.put(OrderField.QUANTITY.value(), 3000.0); // note: you must put xxx.0 to tell java this is a double type here!!
-			AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(), null, 
+			AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(), server, 
 					event.getOrder().getId(), fields, IdGenerator.getInstance().getNextID());
 			sendEvent(amendEvent);
 		} else {
@@ -227,10 +198,10 @@ public class LtsApiAdaptor {
 	
 	public void processAmendParentOrderReplyEvent(
 			AmendParentOrderReplyEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		if(event.isOk()) {
 			log.debug("Received AmendParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
-			CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
+			CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), server, 
 					event.getOrder().getId(), IdGenerator.getInstance().getNextID());
 			sendEvent(cancelEvent);
 		} else {
@@ -241,7 +212,7 @@ public class LtsApiAdaptor {
 
 	public void processCancelParentOrderReplyEvent(
 			CancelParentOrderReplyEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		if(event.isOk()) {
 			log.debug("Received CancelParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
 		} else {
@@ -255,7 +226,7 @@ public class LtsApiAdaptor {
 	}
 
 	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
-		//#### Replace this block with your codes ######
+		//#### Replace this block with your code ######
 		log.debug("Received ChildOrderUpdateEvent: " + event.getExecType() + 
 				", Parent order id: " + event.getOrder().getParentOrderId() + 
 				", child order: " + event.getOrder());
@@ -266,7 +237,7 @@ public class LtsApiAdaptor {
 		//#############################################
 	}
 	
-	//#### Replace this block with your codes ######
+	//#### Replace this block with your code ######
 	EnterParentOrderEvent getEnterOrderEvent() {
 		// SDMA 
 		HashMap<String, Object> fields;
@@ -281,12 +252,12 @@ public class LtsApiAdaptor {
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
 		fields.put(OrderField.USER.value(), user);
 		fields.put(OrderField.ACCOUNT.value(), account);
-		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields, IdGenerator.getInstance().getNextID(), false);
+		enterOrderEvent = new EnterParentOrderEvent(getId(), server, fields, IdGenerator.getInstance().getNextID(), false);
 		return enterOrderEvent;
 	}
 	//#############################################
 	
-	//#### Replace this block with your codes ######
+	//#### Replace this block with your code ######
 	EnterParentOrderEvent getEnterStopOrderEvent() {
 		// SDMA 
 		HashMap<String, Object> fields;
@@ -301,24 +272,20 @@ public class LtsApiAdaptor {
 		fields.put(OrderField.STOP_LOSS_PRICE.value(), 0.92);
 		fields.put(OrderField.USER.value(), user);
 		fields.put(OrderField.ACCOUNT.value(), account);
-		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields, IdGenerator.getInstance().getNextID(), false);
+		enterOrderEvent = new EnterParentOrderEvent(getId(), server, fields, IdGenerator.getInstance().getNextID(), false);
 		return enterOrderEvent;
 	}
 	//#############################################
 	
-	public void processSystemErrorEvent(SystemErrorEvent event) {
-		log.error("Error code: " + event.getErrorCode() + " - " + event.getMessage());
-	}
-	
 	public static void main(String[] args) throws Exception {
-		DOMConfigurator.configure("conf/apilog4j.xml");
-		String configFile = "conf/api.xml";
+		DOMConfigurator.configure("conf/log4j.xml");
+		String configFile = "conf/client.xml";
 		if(args.length>0)
 			configFile = args[0];
 		ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
 		
 		// start server
-		LtsApiAdaptor adaptor = (LtsApiAdaptor)context.getBean("apiAdaptor");
-		adaptor.init();
+		MobileAdaptor mobileAdaptor = (MobileAdaptor)context.getBean("mobileAdaptor");
+		mobileAdaptor.init();
 	}
 }

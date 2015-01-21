@@ -109,7 +109,7 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 				}
 				changes.put(AccountSettingType.ID.value(), id);
 				sendRemoteEvent(new ChangeAccountSettingRequestEvent(ID, Business.getInstance().getFirstServer(), changes));
-				sendRemoteEvent(new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), id));
+				sendRemoteEvent(new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), id, null));
 			}
 		} catch (DataConvertException e) {
 			log.error(e.getMessage(), e);
@@ -159,7 +159,7 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 	public void onEvent(final AsyncEvent event) {
 		if(event instanceof AccountSelectionEvent) {
 			AccountSelectionEvent evt = (AccountSelectionEvent)event;
-			AccountSettingSnapshotRequestEvent request = new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), evt.getAccount());
+			AccountSettingSnapshotRequestEvent request = new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), evt.getAccount(), null);
 			sendRemoteEvent(request);
 		} else if(event instanceof AccountSettingSnapshotReplyEvent) {
 			displayObject(((AccountSettingSnapshotReplyEvent) event).getAccountSetting().getFields());

@@ -98,7 +98,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					
 					try {
 						Business.getInstance().getEventManager().
-							sendRemoteEvent(new StrategySnapshotRequestEvent(account.getId(), Business.getInstance().getFirstServer()));
+							sendRemoteEvent(new StrategySnapshotRequestEvent(account.getId(), 
+									Business.getInstance().getFirstServer(), null));
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
 					}

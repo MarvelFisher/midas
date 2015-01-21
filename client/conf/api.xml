@@ -9,7 +9,7 @@
 
 	<context:annotation-config />
 
-	<bean id="apiAdaptor" class="com.cyanspring.socket.LtsApiAdaptor">
+	<bean id="apiAdaptor" class="com.cyanspring.client.LtsApiAdaptor">
 	</bean>
 
 	<bean id="eventManager" class="com.cyanspring.event.ClientSocketEventManager">

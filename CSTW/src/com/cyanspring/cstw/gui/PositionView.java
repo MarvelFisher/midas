@@ -514,7 +514,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		
 		AccountSnapshotRequestEvent request = 
 				new AccountSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(),
-						currentAccount);
+						currentAccount, null);
 		
 		log.debug("AccountSnapshotRequestEvent sent: " + currentAccount);
 		try {

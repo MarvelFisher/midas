@@ -15,17 +15,20 @@ public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	private List<OpenPosition> openPositions;
 	private List<ClosedPosition> closedPositions;
 	private List<Execution> executions;
+	private String txId;
 
 	public AccountSnapshotReplyEvent(String key, String receiver,
 			Account account, AccountSetting accountSetting,
 			List<OpenPosition> openPositions,
-			List<ClosedPosition> closedPositions, List<Execution> executions) {
+			List<ClosedPosition> closedPositions, List<Execution> executions,
+			String txId) {
 		super(key, receiver);
 		this.account = account;
 		this.accountSetting = accountSetting;
 		this.openPositions = openPositions;
 		this.closedPositions = closedPositions;
 		this.executions = executions;
+		this.txId = txId;
 	}
 
 	public Account getAccount() {
@@ -43,4 +46,8 @@ public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	public List<Execution> getExecutions() {
 		return executions;
 	}
+	public String getTxId() {
+		return txId;
+	}
+	
 }
