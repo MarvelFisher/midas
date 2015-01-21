@@ -1,1 +1,1 @@
-java -jar jars/cyanspring-client-2.56.jar conf/api.xml
+java -jar jars/lts-client-2.56.jar conf/api.xml
