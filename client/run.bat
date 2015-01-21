@@ -1,0 +1,1 @@
+java -jar jars/lts-client-2.56.jar conf/api.xml

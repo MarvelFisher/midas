@@ -15,18 +15,18 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		public TradeAlert(String userId, String symbol,OrderReason orderReason, long quantity, double price, String dateTime, String content) {
 			super();
 			this.id = "A" + IdGenerator.getInstance().getNextID();
-			this.userId = userId; //david
-			this.symbol = symbol;  //USDJPY
-			this.orderReason = orderReason ;
-			this.quantity = quantity; //-1000000
-			this.price = price; // 118.153
-			this.dateTime = dateTime; // yyyy-mm-dd hh:mm:ss
+			this.setUserId(userId); //david
+			this.setSymbol(symbol);  //USDJPY
+			this.setOrderReason(orderReason) ;
+			this.setQuantity(quantity); //-1000000
+			this.setPrice(price); // 118.153
+			this.setDateTime(dateTime); // yyyy-mm-dd hh:mm:ss
 			this.content = content ;
 		}
 		
 		@Override
 		public int compareTo(TradeAlert other) {
-			int iReturn = this.userId.compareTo(other.userId);
+			int iReturn = this.getUserId().compareTo(other.getUserId());
 			if (iReturn == 0)
 			{
 				iReturn = this.id.compareTo(other.id);
@@ -45,27 +45,47 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		public String getUserId() {
 			return userId;
 		}
+
+		public void setUserId(String userId) {
+			this.userId = userId;
+		}
 		
 		public String getSymbol() {
 			return symbol;
+		}
+
+		public void setSymbol(String symbol) {
+			this.symbol = symbol;
 		}
 		
 		public OrderReason getOrderReason()
 		{
 			return orderReason ;
 		}
+		
+		public void setOrderReason(OrderReason orderReason) {
+			this.orderReason = orderReason;
+		}
+		
 		public long getQuantity()
 		{
 			return quantity ;
 		}
-
+		
+		public void setQuantity(long quantity) {
+			this.quantity = quantity;
+		}
+		
 		public double getPrice() {
 			return price;
 		}
+
+		public void setPrice(double price) {
+			this.price = price;
+		}		
 		
-		public String getTime()
-		{
-			return dateTime ;
+		public void setDateTime(String dateTime) {
+			this.dateTime = dateTime;
 		}
 		
 		public String getContent()
@@ -77,4 +97,17 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		{
 			this.content = content ;
 		}
+
+		public String getDateTime() {
+			return dateTime;
+		}
+
+		
+
+
+		
+
+		
+
+
 }

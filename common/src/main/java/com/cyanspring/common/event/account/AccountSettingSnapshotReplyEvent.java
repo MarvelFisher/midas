@@ -7,13 +7,15 @@ public class AccountSettingSnapshotReplyEvent extends RemoteAsyncEvent {
 	private AccountSetting accountSetting;
 	private boolean ok;
 	private String message;
+	private String txId;
 	
 	public AccountSettingSnapshotReplyEvent(String key, String receiver,
-			AccountSetting accountSetting, boolean ok, String message) {
+			AccountSetting accountSetting, boolean ok, String message, String txId) {
 		super(key, receiver);
 		this.accountSetting = accountSetting;
 		this.ok = ok;
 		this.message = message;
+		this.txId = txId;
 	}
 
 	public AccountSetting getAccountSetting() {
@@ -26,6 +28,10 @@ public class AccountSettingSnapshotReplyEvent extends RemoteAsyncEvent {
 
 	public String getMessage() {
 		return message;
+	}
+
+	public String getTxId() {
+		return txId;
 	}
 
 }

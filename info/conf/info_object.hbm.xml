@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping> 
+  <class name="com.cyanspring.common.alert.TradeAlert" table="TRADEALERT_PAST"> 
+    <id 	  column="ID" 		name="id" type="java.lang.String"/> 
+    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
+    <property column="PRICE" 			name="price" type="java.lang.Double"/>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
+    <property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
+	<property column="ORDERREASON" 			name="orderReason" length="30">
+   		<type name="org.hibernate.type.EnumType">
+   			<param name="enumClass">com.cyanspring.common.account.OrderReason</param>   
+       		<param name="type">12</param>
+   		</type>
+	</property>
+	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
+  </class>
+  
+</hibernate-mapping> 

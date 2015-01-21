@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.cyanspring.client.ClientAdaptor;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.business.OrderField;

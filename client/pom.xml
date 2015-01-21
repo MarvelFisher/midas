@@ -2,15 +2,11 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>algo</artifactId>
-		<groupId>com.cyanspring.algo</groupId>
-		<version>2.56</version>
-	</parent>
-	<groupId>com.cyanspring.client</groupId>
-	<artifactId>cyanspring-client</artifactId>
-	<name>cyanspring-client</name>
-	<url>http://www.cyanspring.com</url>
+	<groupId>com.fdt.lts.client</groupId>
+	<artifactId>lts-client</artifactId>
+	<name>lts-client</name>
+	<version>2.56</version>
+	<url>http://www.fdt.io</url>
 
   	<build>
 	  	<resources>
@@ -28,7 +24,7 @@
 			  	<artifactId>maven-assembly-plugin</artifactId>
 			  	<version>2.3</version>
 			  	<configuration>
-			    	<descriptor>src/main/assembly/assembly.xml</descriptor>
+			    	<descriptor>assembly.xml</descriptor>
 			  	</configuration>
 			</plugin>
 			<plugin>
@@ -41,8 +37,8 @@
 			        		<addClasspath>true</addClasspath>
 			      		</manifest>
 			     		<manifestEntries>
-			      			<Main-Class>com.cyanspring.client.MobileAdaptor</Main-Class>            
-			      			<packageName>com.cyanspring.client</packageName>            			
+			      			<Main-Class>com.fdt.lts.client.LtsApiAdaptor</Main-Class>            
+			      			<packageName>com.fdt.lts.client</packageName>            			
 			      		</manifestEntries>
 			   		</archive>
 			 	</configuration>
@@ -129,13 +125,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-core</artifactId>
-			<version>5.5.0</version>
-			<scope>runtime</scope>
-		</dependency>	
-	
-		<dependency>
 		    <groupId>com.thoughtworks.xstream</groupId>
 		    <artifactId>xstream</artifactId>
 		    <version>1.4.1</version>
@@ -147,6 +136,12 @@
 		    <version>2.3.0</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.0.24.Final</version>
+			<scope>runtime</scope>
+		</dependency>		
 
 		<!-- cyan spring dependencies -->
 		<dependency>
