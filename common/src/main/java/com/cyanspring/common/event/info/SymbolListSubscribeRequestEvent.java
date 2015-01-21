@@ -9,10 +9,20 @@ public class SymbolListSubscribeRequestEvent extends RemoteAsyncEvent {
 	private String userID ;
 	private String market ;
 	private String group ;
+	private String txId ;
 	private List<String> symbolList ;
 
 	public SymbolListSubscribeRequestEvent(String key, String receiver) {
 		super(key, receiver);
+	}
+	public SymbolListSubscribeRequestEvent(String key, String receiver,
+			String userID, String market, String group, String txId, List<String> symbolList) {
+		super(key, receiver);
+		this.userID = userID;
+		this.market = market;
+		this.group = group;
+		this.txId = txId;
+		this.symbolList = symbolList;
 	}
 
 	public SymbolListSubscribeType getType() {
@@ -53,6 +63,14 @@ public class SymbolListSubscribeRequestEvent extends RemoteAsyncEvent {
 
 	public void setGroup(String group) {
 		this.group = group;
+	}
+
+	public String getTxId() {
+		return txId;
+	}
+
+	public void setTxId(String txId) {
+		this.txId = txId;
 	}
 
 }
