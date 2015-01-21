@@ -251,10 +251,20 @@ public class AlertManager implements IPlugin {
 						{
 							log.warn(Threadid + " Timeout , ReOpen Thread.");
 							ParseThreadList.remove(PT);
-							PT.destroy();
-							PT = new ParseThread(Threadid, ParseDataQueue, timeoutSecond, maxRetrytimes, parseApplicationId,parseRestApiId);
-							ParseThreadList.add(PT);
-							PT.start();
+							try
+							{
+								PT.stop();
+							}
+							catch (Exception e)
+							{
+								log.warn("[processAsyncTimerEvent] Exception : " + e.getMessage()) ;
+							}
+							finally
+							{
+								PT = new ParseThread(Threadid, ParseDataQueue, timeoutSecond, maxRetrytimes, parseApplicationId,parseRestApiId);
+								ParseThreadList.add(PT);
+								PT.start();
+							}
 						}
 					}
 				}

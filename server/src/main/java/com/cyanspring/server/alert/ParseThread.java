@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,42 +65,47 @@ public class ParseThread extends Thread{
 	{
 		try
 		{
+			boolean bReSend = false ;
 			log.info(this.strThreadId + " Start.");
 			int iRetrytimes = 0;
+			ParseData PD  = null;
 			while (startThread)
 			{
-				
-					ParseData PD = ParseDataQueue.poll();
-					if (PD == null)
+				if (!bReSend)
+				{
+					PD = ParseDataQueue.poll();
+				}
+				if (PD == null)
+				{
+					threadStatus.setThreadState(ThreadState.IDLE) ;
+					threadStatus.UpdateTime();
+					Thread.sleep(300);		
+					continue;
+				}
+				try
+				{
+					bReSend = false ;
+//					log.debug("[ParseThread "+strThreadId+"] sending"+PD.strpushMessage);
+					threadStatus.setThreadState(ThreadState.SENDDING) ;
+					threadStatus.UpdateTime();
+					sendPost(PD) ;
+				}
+				catch (Exception ec)
+				{
+					log.warn(strThreadId + " SendPost Exception : " + ec.getMessage());
+					iRetrytimes ++ ;
+					if (iRetrytimes <= retryTimes)
 					{
-						threadStatus.setThreadState(ThreadState.IDLE) ;
-						threadStatus.UpdateTime();
-						Thread.sleep(300);					
-						continue;
-					}
-					try
-					{
-//						log.debug("[ParseThread "+strThreadId+"] sending"+PD.strpushMessage);
+						log.warn("[ParseThread "+strThreadId+"] sending again "+PD.strpushMessage);
 						threadStatus.setThreadState(ThreadState.SENDDING) ;
 						threadStatus.UpdateTime();
-						sendPost(PD) ;
+						bReSend = true ;
 					}
-					catch (Exception ec)
-					{					
-						log.warn(strThreadId + " SendPost Exception : " + ec.getMessage());
-						if (iRetrytimes < retryTimes)
-						{
-							log.warn("[ParseThread "+strThreadId+"] sending again "+PD.strpushMessage);
-							threadStatus.setThreadState(ThreadState.SENDDING) ;
-							threadStatus.UpdateTime();
-							sendPost(PD) ;
-						}
-						else
-						{
-							log.warn(strThreadId + " Retrytimes out : " + PD.getMsg());
-						}
+					else
+					{
+						log.warn(strThreadId + " Retrytimes out : " + PD.getMsg());
 					}
-				
+				}
 			}
 		}
 		catch (Exception e)
