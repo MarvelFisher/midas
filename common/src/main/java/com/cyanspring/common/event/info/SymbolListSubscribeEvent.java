@@ -3,6 +3,7 @@ package com.cyanspring.common.event.info;
 import java.util.List;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.marketdata.SymbolInfo;
 
 public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 	private boolean isSuccess ;
@@ -12,13 +13,13 @@ public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 	private String market ;
 	private String group ;
 	private String txId ;
-	private List<String> symbolList ;
+	private List<SymbolInfo> symbolList ;
 
 	public SymbolListSubscribeEvent(String key, String receiver) {
 		super(key, receiver);
 	}
 	public SymbolListSubscribeEvent(String key, String receiver,
-			String userID, String market, String group, String txId, List<String> symbolList) {
+			String userID, String market, String group, String txId, List<SymbolInfo> symbolList) {
 		super(key, receiver);
 		this.userID = userID;
 		this.market = market;
@@ -51,11 +52,11 @@ public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 		this.type = type;
 	}
 
-	public List<String> getSymbolList() {
+	public List<SymbolInfo> getSymbolList() {
 		return symbolList;
 	}
 
-	public void setSymbolList(List<String> symbolList) {
+	public void setSymbolList(List<SymbolInfo> symbolList) {
 		this.symbolList = symbolList;
 	}
 

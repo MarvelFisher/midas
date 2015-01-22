@@ -47,18 +47,18 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	SymbolData(String strSymbol, CentralDbProcessor centralDB)
 	{
-		this.strSymbol = strSymbol ;
+		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
 		int tickCount = centralDB.getTickCount() ;
 		for (int ii = 0; ii < tickCount; ii++)
 		{
-			priceData.add(new HistoricalPrice(this.strSymbol)) ;
+			priceData.add(new HistoricalPrice(this.getStrSymbol())) ;
 		}
 		readFromTick() ;
 		get52WHighLow((byte)0x40) ;
 	}
 	public SymbolData(String symbol) {
-		this.strSymbol = symbol ;
+		this.setStrSymbol(symbol) ;
 	}
 	public void setPrice(Quote quote)
 	{
@@ -82,7 +82,7 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setPrice(double bid, double ask, Date date)
 	{
-		Calendar cal = Calendar.getInstance() ;
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.setTime(date) ;
 		int curTime = cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE) ;
 		int nPos = centralDB.getPosByTime(curTime) ;
@@ -119,10 +119,11 @@ public class SymbolData implements Comparable<SymbolData>
 		isUpdating = true ;
 		Calendar calStamp = Calendar.getInstance() ;
 		String strFile = String.format("./DAT/%s/%s.TCK", 
-				centralDB.getTradedate(), strSymbol) ;
+				centralDB.getTradedate(), getStrSymbol()) ;
 		String strIn = "" ;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Quote quote = new Quote(strSymbol, null, null) ;
+//		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Quote quote = new Quote(getStrSymbol(), null, null) ;
 		StringTokenizer strtok ;
 		try 
 		{
@@ -171,7 +172,7 @@ public class SymbolData implements Comparable<SymbolData>
 		strDateTime = sdf.format(cal.getTime()) ;
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			HistoricalPrice lastPrice = centralDB.dbhnd.getLastValue(service, strType, strSymbol, false) ;
+			HistoricalPrice lastPrice = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
 			Calendar cal_ = Calendar.getInstance() ;
 			cal_.setTime(lastPrice.getTimestamp());
 			boolean bDelete = false ;
@@ -185,14 +186,14 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			if (bDelete)
 			{
-				centralDB.dbhnd.deletePrice(service, strType, strSymbol, lastPrice);
+				centralDB.dbhnd.deletePrice(service, strType, getStrSymbol(), lastPrice);
 			}
 		}
 		sqlcmd = String.format(
 				"insert into %s (TRADEDATE,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) ", strTable) ;
 		sqlcmd += String.format(
                 "values ('%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY ",
-                strDateTime, strSymbol, dOpen, dClose, dCurHigh, dCurLow, (int)dCurVolume) ;
+                strDateTime, getStrSymbol(), dOpen, dClose, dCurHigh, dCurLow, (int)dCurVolume) ;
 		sqlcmd += String.format(
 				"Update OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;",
 				dOpen, dClose, dCurHigh, dCurLow, (int)dCurVolume) ;
@@ -206,14 +207,14 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			phl.setHigh(this.dCurHigh);
 			phl.setLow(this.dCurLow);
-			phl.setSymbol(this.strSymbol);
+			phl.setSymbol(this.getStrSymbol());
 			phl.setType(type) ;
 		}
 		else if (type == PriceHighLowType.W52)
 		{
 			phl.setHigh(this.d52WHigh);
 			phl.setLow(this.d52WLow);
-			phl.setSymbol(this.strSymbol);
+			phl.setSymbol(this.getStrSymbol());
 			phl.setType(type) ;
 		}
 		return phl ;
@@ -222,7 +223,7 @@ public class SymbolData implements Comparable<SymbolData>
 	public void get52WHighLow(byte service)
 	{
 		String sqlcmd = String.format("SELECT * FROM %04X_W WHERE SYMBOL='%s' ORDER BY TRADEDATE desc LIMIT 52;", 
-				service, strSymbol) ;
+				service, getStrSymbol()) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			double dHigh = 0 ; 
@@ -256,7 +257,7 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-			priceEmpty = centralDB.dbhnd.getLastValue(service, strType, strSymbol, false) ;
+			priceEmpty = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
 			prices.add(priceEmpty) ;
 		}
 		else
@@ -406,7 +407,7 @@ public class SymbolData implements Comparable<SymbolData>
 		int day = cal.get(Calendar.DATE); 
 		int week = cal.get(Calendar.WEEK_OF_YEAR) ;
 		int month = cal.get(Calendar.MONTH) ;
-		HistoricalPrice curPrice = new HistoricalPrice(date, strSymbol, dOpen, dCurHigh, dCurLow, dClose, (int)dCurVolume) ;
+		HistoricalPrice curPrice = new HistoricalPrice(date, getStrSymbol(), dOpen, dCurHigh, dCurLow, dClose, (int)dCurVolume) ;
 		HistoricalPrice lastPrice = null ;
 		if (pricelist.size() > 1)
 		{
@@ -586,7 +587,13 @@ public class SymbolData implements Comparable<SymbolData>
 	@Override
 	public int compareTo(SymbolData o) {
 		// TODO Auto-generated method stub
-		return this.strSymbol.compareTo(o.strSymbol);
+		return this.getStrSymbol().compareTo(o.getStrSymbol());
+	}
+	public String getStrSymbol() {
+		return strSymbol;
+	}
+	public void setStrSymbol(String strSymbol) {
+		this.strSymbol = strSymbol;
 	}
 	
 }

@@ -4,12 +4,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Driver ;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -26,6 +26,9 @@ import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
+import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
+import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
+import com.cyanspring.common.event.info.SymbolListSubscribeType;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.SymbolEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
@@ -49,6 +52,7 @@ public class CentralDbProcessor implements IPlugin
 	private int open ;
 	private int preopen ;
 	private int close ;
+	private HashMap<String, ArrayList<String>> userSymbolList;
 	
 	private int    nOpen ;
 	private int    nClose ;
@@ -79,6 +83,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(PriceHighLowRequestEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(SymbolEvent.class, null);
+			subscribeToEvent(SymbolListSubscribeRequestEvent.class, null);
 		}
 
 		@Override
@@ -224,9 +229,58 @@ public class CentralDbProcessor implements IPlugin
 
 	public void processSymbolEvent(SymbolEvent event)
 	{
-		SymbolEvent symbol = event ;
-		String code = symbol.getCode() ;
-		listSymbolData.add(new SymbolData(code, this)) ;
+//		String code = event.getCode() ;
+//		listSymbolData.add(new SymbolData(code, this)) ;
+	}
+	
+
+	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
+	{
+		SymbolListSubscribeEvent retEvent = new SymbolListSubscribeEvent(null, event.getSender());
+		SymbolListSubscribeType type = event.getType() ;
+		String user = event.getUserID();
+		String market = event.getMarket();
+		String group = event.getGroup();
+		ArrayList<String> symbols = (ArrayList<String>) event.getSymbolList();
+		ArrayList<String> list = userSymbolList.get(user);
+		int index ;
+		switch(type)
+		{
+		case ADD:
+			for(String symbol : symbols)
+			{
+				index = Collections.binarySearch(list, symbol);
+				if (index < 0)
+				{
+					list.add(~index, symbol);
+				}
+				else
+				{
+					retEvent.setSuccess(false);
+					retEvent.setErrorMsg("Duplicated Symbol");
+				}
+			}
+			break;
+		case ALLSYMBOL:
+			for (SymbolData symboldata : listSymbolData)
+			{
+				String symbol = symboldata.getStrSymbol();
+				index = Collections.binarySearch(list, symbol);
+				if (index < 0)
+				{
+					list.add(~index, symbol);
+				}
+			}
+			break;
+		case DELETE:
+			break;
+		case GROUPSYMBOL:
+			break;
+		case SET:
+			break;
+		default:
+			break;
+		}
 	}
 	
 	public void writeToTick(Quote quote)
@@ -263,8 +317,7 @@ public class CentralDbProcessor implements IPlugin
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.toString(), e);
         }
 	}
 	
@@ -387,6 +440,8 @@ public class CentralDbProcessor implements IPlugin
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("CentralDBProcessor");
 		requestMarketSession() ;
+		requestSymbolList() ;
+		userSymbolList = new HashMap<String, ArrayList<String>>();
 	}
 
 	@Override
