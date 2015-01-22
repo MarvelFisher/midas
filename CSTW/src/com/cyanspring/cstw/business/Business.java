@@ -169,7 +169,7 @@ public class Business {
 		try {
 			orderManager.init();
 			if(Business.getInstance().isLoginRequired())
-				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server));
+				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server, null));
 //			else
 //				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(null, server));
 			eventManager.sendEvent(new ServerStatusEvent(server, true));	

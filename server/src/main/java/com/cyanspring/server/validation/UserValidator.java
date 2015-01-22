@@ -18,10 +18,10 @@ public class UserValidator implements IFieldValidator {
 			ParentOrder order) throws OrderValidationException {
 		try {
 			if(null != userKeeper && !userKeeper.userExists((String)value)) {
-				throw new OrderValidationException("User doesn't exist");
+				throw new OrderValidationException("User doesn't exist: " + value);
 			}
 		} catch(Exception e) {
-			throw new OrderValidationException("Field " + field + " has caused exception: " + e.getMessage());
+			throw new OrderValidationException(e.getMessage());
 		}
 	}
 

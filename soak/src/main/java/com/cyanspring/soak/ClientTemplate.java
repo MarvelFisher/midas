@@ -4,7 +4,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.cyanspring.client.ClientAdaptor;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;

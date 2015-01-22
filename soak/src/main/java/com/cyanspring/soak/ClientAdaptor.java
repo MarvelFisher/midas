@@ -1,4 +1,4 @@
-package com.cyanspring.client;
+package com.cyanspring.soak;
 
 import java.net.InetAddress;
 import java.util.Date;

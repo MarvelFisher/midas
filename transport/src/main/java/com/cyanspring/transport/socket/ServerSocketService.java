@@ -241,12 +241,15 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 
 	@Override
 	synchronized public List<IUserSocketContext> getContextByUser(String key) {
-		LinkedList<IUserSocketContext> result = new LinkedList<IUserSocketContext>(userChannels.get(key));
+		List<IUserSocketContext> list = userChannels.get(key);
+		LinkedList<IUserSocketContext> result = new LinkedList<IUserSocketContext>();
+		if(null != list)
+			result.addAll(list);
 		return result;
 	}
 
 	@Override
-	public boolean addListener(IServerSocketListener listener) {
+	synchronized public boolean addListener(IServerSocketListener listener) {
 		if(listeners.contains(listener))
 			return false;
 		
@@ -255,7 +258,7 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 	}
 	
 	@Override
-	public boolean removeListener(IServerSocketListener listener) {
+	synchronized public boolean removeListener(IServerSocketListener listener) {
 		return listeners.remove(listener);
 	}
 

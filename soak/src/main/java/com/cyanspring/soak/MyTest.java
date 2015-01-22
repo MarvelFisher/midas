@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.cyanspring.client.ClientAdaptor;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
