@@ -43,8 +43,6 @@ public class AlertManager implements IPlugin {
 	@Autowired
 	private AccountKeeper accountKeeper;
 	
-	
-	
 	private int timeoutSecond ;
 	private int createThreadCount ;
 	private int maxRetrytimes ;
@@ -116,9 +114,8 @@ public class AlertManager implements IPlugin {
 	
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
 		if(null == event.getExecution())
-			return;
-		
-//		log.debug("[processUpdateChildOrderEvent] "+event.getExecution().toString());
+			return;		
+		log.debug("[processUpdateChildOrderEvent] "+event.getExecution().toString());
 		
 		if(null != ParseDataQueue)
 			ParseDataQueue.add(PackTradeAlert(event.getExecution(),timeoutSecond));
@@ -185,6 +182,7 @@ public class AlertManager implements IPlugin {
 ////			message = "Price alert has over per account limit";
 //			
 //	}
+	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == timerEvent) {
 			try
@@ -225,8 +223,6 @@ public class AlertManager implements IPlugin {
 								PT.start();
 							}
 						}
-						
-						
 					}
 				}
 			}

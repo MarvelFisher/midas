@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.alert.*;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -151,8 +152,32 @@ public class AlertManager implements IPlugin {
 		else			
 			log.error("ParseDataQueue not ready!!");
 		//to TradeAlert
+		Execution execution = event.getExecution();
+		DecimalFormat qtyFormat = new DecimalFormat("#0");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String strDate = dateFormat.format(Clock.getInstance().now());
+//		String d = execution.getFields().get("REASON");OrderField.REASON.
+//		TradeAlert TA = new TradeAlert(execution.getUser(), execution.getSymbol(),(OrderReason) ,(long)execution.getQuantity(), execution.getPrice(),strDate, "");		
+		
+		
+		
+		
 		//save to SQL
 		//save to Array
+		
+		
+//		DecimalFormat qtyFormat = new DecimalFormat("#0");
+//		String strQty = qtyFormat.format(execution.getQuantity());
+//		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
+//		String strPrice = priceFormat.format(execution.getPrice());
+//		String tradeMessage = "Trade " + execution.getSymbol() + " " + 
+//				execution.getSide().toString() + " " + strQty + "@" + strPrice;
+//		String user = execution.getUser();
+//		
+//		String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty + "," + (execution.getSide().isBuy()?"BOUGHT":"SOLD");
+//		return new ParseData(user, tradeMessage, user + IdGenerator.getInstance().getNextID(),
+//				MSG_TYPE_ORDER, strDate, keyValue);
+		
 		
 //		if(null != tradeAlertSender)
 //			tradeAlertSender.sendTradeAlert(event.getExecution(), timeoutSecond);
@@ -225,6 +250,7 @@ public class AlertManager implements IPlugin {
 	}
 
 	
+	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == timerEvent) {
 			try
