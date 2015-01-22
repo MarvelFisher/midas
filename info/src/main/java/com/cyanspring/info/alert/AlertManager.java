@@ -3,6 +3,7 @@ package com.cyanspring.info.alert;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -14,20 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.alert.*;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-//import com.cyanspring.common.event.alert.CreatePriceAlertRequestEvent;
+import com.cyanspring.common.event.alert.AlertType;
+import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncEventProcessor;
-//import com.cyanspring.server.account.AccountKeeper;
 
 public class AlertManager implements IPlugin {
 	private static final Logger log = LoggerFactory
@@ -41,8 +43,6 @@ public class AlertManager implements IPlugin {
 	
 	@Autowired
 	SessionFactory sessionFactory;
-//	CentralDbConnector centralDbConnector
-//	private AccountKeeper accountKeeper;
 	
 	private int timeoutSecond ;
 	private int createThreadCount ;
@@ -62,31 +62,59 @@ public class AlertManager implements IPlugin {
 	
 	public ConcurrentLinkedQueue<ParseData> ParseDataQueue ;
 	private ArrayList<ParseThread> ParseThreadList ;
-//	private Map<String, List<PriceAlert>> symbolPriceAlerts = new HashMap<String, List<PriceAlert>>();
-//	private Map<String, List<PriceAlert>> accountPriceAlerts = new HashMap<String, List<PriceAlert>>();
-//	private int maxNoOfAlerts = 20;
+	
+	private Map<String, ArrayList<PriceAlert>> symbolPriceAlerts = new HashMap<String, ArrayList<PriceAlert>>();
+	private Map<String, ArrayList<TradeAlert>> symbolTradeAlerts = new HashMap<String, ArrayList<TradeAlert>>();
+	private int maxNoOfAlerts = 20;
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
 	
-//	private boolean addPriceAlert(PriceAlert priceAlert) {
-//		List<PriceAlert> list;
-//		list = accountPriceAlerts.get(priceAlert.getAccount());
-//		if(null == list) {
-//			list = new LinkedList<PriceAlert>();
-//			accountPriceAlerts.put(priceAlert.getAccount(), list);
-//		} else if(list.size() >= maxNoOfAlerts)
-//			return false;
+	private boolean receiveQueryTradeAlert()
+	{
+		return true ;
+	}
+	
+	private boolean receiveAddPriceAlert(PriceAlert priceAlert) {
+		
+		ArrayList<PriceAlert> list;
+		int search;
+		
+		list = symbolPriceAlerts.get(priceAlert.getSymbol());
+		if(null == list) {
+			list = new ArrayList<PriceAlert>();
+			//do new PriceAlert
+			list.add(priceAlert);
+			symbolPriceAlerts.put(priceAlert.getSymbol(), list);
+		}
+		else
+		{
+			search = Collections.binarySearch(list, priceAlert);
+			if (search > 0)
+			{
+				log.warn("[recevieAddPriceAlert] : id already exists. -> do modify PriceAlert.");
+				domodifyPriceAlert(priceAlert) ;
+			}
+			else
+			{
+				
+			}
+		}
 //		list.add(priceAlert);
-//		
-//		list = symbolPriceAlerts.get(priceAlert.getSymbol());
-//		if(null == list) {
-//			list = new LinkedList<PriceAlert>();
-//			symbolPriceAlerts.put(priceAlert.getSymbol(), list);
-//		}
-//		list.add(priceAlert);
-//		return true;
-//	}
-//	
-//	private void removePriceAlert(PriceAlert priceAlert) {
+		return true;
+	}
+	
+	private boolean receiveModifyPriceAlert(PriceAlert priceAlert) {			
+			return true;
+		}
+	
+	private boolean receiveCancelPriceAlert(PriceAlert priceAlert) {
+		return true;
+	}
+	
+	private void domodifyPriceAlert(PriceAlert priceAlert)
+	{
+		
+	}
+	private void removePriceAlert(PriceAlert priceAlert) {
 //		List<PriceAlert> list;
 //		list = symbolPriceAlerts.get(priceAlert.getSymbol());
 //		if(null != list)
@@ -95,7 +123,7 @@ public class AlertManager implements IPlugin {
 //		list = accountPriceAlerts.get(priceAlert.getAccount());
 //		if(null != list)
 //			list.remove(priceAlert);
-//	}
+	}
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -103,7 +131,7 @@ public class AlertManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
-//			subscribeToEvent(CreatePriceAlertRequestEvent.class, null);
+			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 		}
 
@@ -121,8 +149,36 @@ public class AlertManager implements IPlugin {
 		
 		if(null != ParseDataQueue)
 			ParseDataQueue.add(PackTradeAlert(event.getExecution(),timeoutSecond));
-		else
+		else			
 			log.error("ParseDataQueue not ready!!");
+		//to TradeAlert
+		Execution execution = event.getExecution();
+		DecimalFormat qtyFormat = new DecimalFormat("#0");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String strDate = dateFormat.format(Clock.getInstance().now());
+//		String d = execution.getFields().get("REASON");OrderField.REASON.
+//		TradeAlert TA = new TradeAlert(execution.getUser(), execution.getSymbol(),(OrderReason) ,(long)execution.getQuantity(), execution.getPrice(),strDate, "");		
+		
+		
+		
+		
+		//save to SQL
+		//save to Array
+		
+		
+//		DecimalFormat qtyFormat = new DecimalFormat("#0");
+//		String strQty = qtyFormat.format(execution.getQuantity());
+//		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
+//		String strPrice = priceFormat.format(execution.getPrice());
+//		String tradeMessage = "Trade " + execution.getSymbol() + " " + 
+//				execution.getSide().toString() + " " + strQty + "@" + strPrice;
+//		String user = execution.getUser();
+//		
+//		String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty + "," + (execution.getSide().isBuy()?"BOUGHT":"SOLD");
+//		return new ParseData(user, tradeMessage, user + IdGenerator.getInstance().getNextID(),
+//				MSG_TYPE_ORDER, strDate, keyValue);
+		
+		
 //		if(null != tradeAlertSender)
 //			tradeAlertSender.sendTradeAlert(event.getExecution(), timeoutSecond);
 	}
@@ -137,6 +193,22 @@ public class AlertManager implements IPlugin {
 //			firePriceAlert(alert, quote);
 //		}
 	}
+	
+	public void processSetPriceAlertRequestEvent(SetPriceAlertRequestEvent event) {
+		AlertType type = event.getType();
+		if (type == AlertType.PRICE_SET_NEW)
+		{
+			receiveAddPriceAlert(event.getPriceAlert());
+		}
+		else if (type == AlertType.PRICE_SET_MODIFY)
+		{
+			receiveModifyPriceAlert(event.getPriceAlert());
+		}
+		else if (type == AlertType.PRICE_SET_CANCEL)
+		{
+			receiveCancelPriceAlert(event.getPriceAlert());
+		}
+	}	
 	
 	private double getAlertPrice(Quote quote) {
 		return (quote.getBid() + quote.getAsk())/2;
@@ -178,15 +250,17 @@ public class AlertManager implements IPlugin {
 	}
 
 	
+	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == timerEvent) {
 			try
 			{
 				log.info("ParseDataQueue Size : " + ParseDataQueue.size());
-				ParseDataQueue.add(PackTradeAlert(new Execution("USDJPY", OrderSide.Buy, 10000.0,
-						123.4, "123-456-789", "111-111-111",
-						"1", "222-222-222",
-						"rickdev", "rickdev-FX", "abcdefg"),timeoutSecond));
+//				ParseDataQueue.add(PackTradeAlert(new Execution("USDJPY", OrderSide.Buy, 10000.0,
+//						123.4, "123-456-789", "111-111-111",
+//						"1", "222-222-222",
+//						"rickdev", "rickdev-FX", "abcdefg"),timeoutSecond));
+//				
 				ThreadStatus TS ;
 				for (ParseThread PT : ParseThreadList)
 				{
@@ -203,10 +277,20 @@ public class AlertManager implements IPlugin {
 						{
 							log.warn(Threadid + " Timeout , ReOpen Thread.");
 							ParseThreadList.remove(PT);
-							PT.destroy();
-							PT = new ParseThread(Threadid, ParseDataQueue, timeoutSecond, maxRetrytimes, parseApplicationId,parseRestApiId);
-							ParseThreadList.add(PT);
-							PT.start();
+							try
+							{
+								PT.stop();
+							}
+							catch (Exception e)
+							{
+								log.warn("[processAsyncTimerEvent] Exception : " + e.getMessage()) ;
+							}
+							finally
+							{
+								PT = new ParseThread(Threadid, ParseDataQueue, timeoutSecond, maxRetrytimes, parseApplicationId,parseRestApiId);
+								ParseThreadList.add(PT);
+								PT.start();
+							}
 						}
 					}
 				}
