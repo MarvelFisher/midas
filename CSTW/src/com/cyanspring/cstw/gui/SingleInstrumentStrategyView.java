@@ -375,7 +375,7 @@ public class SingleInstrumentStrategyView extends ViewPart implements IAsyncEven
 						changes.put(OrderField.ID.value(), id);
 						changes.put(maTag, maValue);
 						AmendSingleInstrumentStrategyEvent event = 
-							new AmendSingleInstrumentStrategyEvent(id, server, changes);
+							new AmendSingleInstrumentStrategyEvent(id, server, changes, null);
 						Business.getInstance().getEventManager().
 							sendRemoteEvent(event);
 					}

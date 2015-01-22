@@ -35,6 +35,7 @@
 		</property>
 		<property name = "plugins">
 	        <list>
+            	<ref bean="apiBridgeManager"/>
             	<ref bean="marketSessionManager"/>
             	<ref bean="refDataManager"/>
             	<ref bean="mdManager"/>
@@ -72,8 +73,22 @@
 	    	<ref bean="transportService"/>
 	    </constructor-arg>
 		<property name="embedBroker" value="true"></property>
+		<property name="bridges">
+	        <list>
+	    		<ref bean="apiBridgeManager"/>
+	        </list>
+		</property>
 	</bean>
 	
+	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
+		<property name="socketService">
+			<ref bean="socketService"/>
+		</property>
+	</bean>
+
+	<bean id="socketService" class="com.cyanspring.transport.socket.ServerSocketService">
+	</bean>
+
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
 		<property name="embeddedSQLServer" value="true"></property>
 		<property name="embeddedHost" value="0.0.0.0"></property>

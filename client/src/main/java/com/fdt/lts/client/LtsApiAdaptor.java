@@ -3,7 +3,6 @@ package com.fdt.lts.client;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -12,23 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.cyanspring.common.account.AccountSetting;
-import com.cyanspring.common.account.User;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
-import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
-import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
-import com.cyanspring.common.event.account.CreateUserEvent;
-import com.cyanspring.common.event.account.CreateUserReplyEvent;
-import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
@@ -38,13 +29,11 @@ import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
 import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.event.order.CancelParentOrderReplyEvent;
-import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.event.order.StrategySnapshotEvent;
 import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
-import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.SystemErrorEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.type.OrderSide;
@@ -55,13 +44,11 @@ import com.cyanspring.event.ClientSocketEventManager;
 
 public class LtsApiAdaptor {
 	private static Logger log = LoggerFactory.getLogger(LtsApiAdaptor.class);
-	private final String user = "test1";
-	private final String account = "test1-FX";
-	private final String password = "xxx";
-	private AtomicInteger pendingOrderCount = new AtomicInteger();
+	private String user = "test1";
+	private String account = "test1-FX";
+	private String password = "xxx";
 	@Autowired
 	private IRemoteEventManager eventManager = new ClientSocketEventManager();
-	private String id = "test1";
 	
 	protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -90,7 +77,7 @@ public class LtsApiAdaptor {
 	};
 	
 	private String getId() {
-		return id;
+		return user;
 	}
 	
 	public void init() throws Exception {
@@ -224,7 +211,6 @@ public class LtsApiAdaptor {
 		return enterOrderEvent;
 	}
 	
-	//#### Replace this block with your codes ######
 	EnterParentOrderEvent getEnterStopOrderEvent() {
 		// SDMA 
 		HashMap<String, Object> fields;
@@ -242,12 +228,35 @@ public class LtsApiAdaptor {
 		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields, IdGenerator.getInstance().getNextID(), false);
 		return enterOrderEvent;
 	}
-	//#############################################
 	
 	public void processSystemErrorEvent(SystemErrorEvent event) {
 		log.error("Error code: " + event.getErrorCode() + " - " + event.getMessage());
 	}
 	
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public static void main(String[] args) throws Exception {
 		DOMConfigurator.configure("conf/apilog4j.xml");
 		String configFile = "conf/api.xml";

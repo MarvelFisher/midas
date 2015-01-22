@@ -31,6 +31,7 @@ import com.cyanspring.common.event.order.ManualAmendChildOrderEvent;
 import com.cyanspring.common.event.order.ManualCancelChildOrderEvent;
 import com.cyanspring.common.event.order.ManualNewChildOrderEvent;
 import com.cyanspring.common.event.strategy.AmendSingleInstrumentStrategyEvent;
+import com.cyanspring.common.event.strategy.AmendSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.strategy.CancelSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.CancelSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.strategy.ExecuteEvent;
@@ -525,8 +526,12 @@ public class SingleInstrumentStrategy extends Strategy {
 			AmendSingleInstrumentStrategyEvent event) {
 		Map<String, Object> fields = event.getFields();
 		this.instrument.update(fields);
+		AmendSingleInstrumentStrategyReplyEvent reply =
+				new AmendSingleInstrumentStrategyReplyEvent(
+						event.getKey(), event.getSender(), event.getTxId(), true, "");
+		container.sendLocalOrRemoteEvent(reply);
 		if(fields.containsKey(OrderField.START_TIME.value()) ||
-				fields.containsKey(OrderField.START_TIME.value()))
+				fields.containsKey(OrderField.END_TIME.value()))
 			setStartEndTimer();
 		execute(ExecuteTiming.NOW);
 	}

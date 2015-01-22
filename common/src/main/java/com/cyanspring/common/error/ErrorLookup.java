@@ -21,6 +21,7 @@ public class ErrorLookup {
 			addAndCheck(301, "User must login before send any events");
 			addAndCheck(302, "Event type not support");
 			addAndCheck(303, "Account & user not match");
+			addAndCheck(304, "Can't login, blocked by existing connection");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

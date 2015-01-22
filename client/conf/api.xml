@@ -10,6 +10,9 @@
 	<context:annotation-config />
 
 	<bean id="apiAdaptor" class="com.fdt.lts.client.LtsApiAdaptor">
+		<property name="user" value="test1"></property>
+		<property name="account" value="test1-FX"></property>
+		<property name="password" value="xxx"></property>
 	</bean>
 
 	<bean id="eventManager" class="com.cyanspring.event.ClientSocketEventManager">
@@ -19,6 +22,8 @@
 	</bean>
 	
 	<bean id="socketService" class="com.cyanspring.transport.socket.ClientSocketService">
+		<property name="host" value=""></property>
+		<property name="port" value="52368"></property>
 	</bean>
 	
 </beans>

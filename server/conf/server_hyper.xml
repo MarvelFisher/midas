@@ -66,8 +66,10 @@
 	    	<ref bean="transportService"/>
 	    </constructor-arg>
 		<property name="embedBroker" value="true"></property>
-		<property name="bridge">
-	    	<ref bean="apiBridgeManager"/>
+		<property name="bridges">
+	        <list>
+	    		<ref bean="apiBridgeManager"/>
+	        </list>
 		</property>
 	</bean>
 	

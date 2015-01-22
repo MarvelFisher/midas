@@ -37,8 +37,8 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
 	private XStream xstream = new XStream(new DomDriver("UTF_8"));
 	private int port = 52368;
 	private String host = "";
-	private int buffSize = 200*8192;
-	private boolean autoReconnect = true;
+	private int buffSize = 2000*8192;
+	private boolean autoReconnect = false;
 	private EventLoopGroup group;
 	Channel channel;
 	private List<IClientSocketListener> listeners = 

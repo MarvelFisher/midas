@@ -60,7 +60,7 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 	private XStream xstream = new XStream(new DomDriver("UTF_8"));
 	private int port = 52368;
 	private String host = "0.0.0.0";
-	private int buffSize = 200*8192;
+	private int buffSize = 2000*8192;
 	//private ChannelGroup channels;
 	private NioEventLoopGroup bossGroup;
 	private NioEventLoopGroup workerGroup;
@@ -88,7 +88,7 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 		if(null != id) {
 			ctx = idChannels.remove(id);
 			if(null != ctx && null != ctx.getUser()) {
-				List<IUserSocketContext> list = userChannels.remove(ctx.getUser());
+				List<IUserSocketContext> list = userChannels.get(ctx.getUser());
 				if(null != list)
 					list.remove(ctx);
 			}
