@@ -1,39 +1,26 @@
 package com.cyanspring.common.event.marketdata;
 
+import java.util.List;
+
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.marketdata.SymbolInfo;
 
 public class SymbolEvent extends RemoteAsyncEvent {
 
-	public SymbolEvent(String key, String receiver, String market, 
-			String code, String windCode, String cnName, String enName) {
+	public SymbolEvent(String key, String receiver, List<SymbolInfo> symbolInfoList) {
 		super(key, receiver);
-		this.market = market;
-		this.code = code;
-		this.windCode = windCode;
-		this.cnName = cnName;
-		this.enName = enName;
+		this.setSymbolInfoList(symbolInfoList) ;
+	}
+
+	private List<SymbolInfo> symbolInfoList;
+	
+	public List<SymbolInfo> getSymbolInfoList() {
+		return symbolInfoList;
+	}
+
+	public void setSymbolInfoList(List<SymbolInfo> symbolInfoList) {
+		this.symbolInfoList = symbolInfoList;
 	}
 	
-	private String market;
-	private String code;
-	private String windCode;
-	private String cnName;
-	private String enName;
-	
-	public String getMarket() {
-		return market;
-	}
-	public String getCode() {
-		return code;
-	}
-	public String getWindCode() {
-		return windCode;
-	}
-	public String getCnName() {
-		return cnName;
-	}
-	public String getEnName() {
-		return enName;
-	}
 	
 }
