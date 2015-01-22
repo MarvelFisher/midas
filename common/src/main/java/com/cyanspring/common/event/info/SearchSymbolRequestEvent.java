@@ -9,8 +9,9 @@ public class SearchSymbolRequestEvent extends RemoteAsyncEvent {
 		// TODO Auto-generated constructor stub
 	}
 
-	private String type;
+	private SearchSymbolType type;
 	private String keyword;
+	private String market;
 	private String txId;
 	private int page;
 	private int symbolperpage;
@@ -46,11 +47,17 @@ public class SearchSymbolRequestEvent extends RemoteAsyncEvent {
 		this.keyword = keyword;
 	}
 
-	public String getType() {
+	public SearchSymbolType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(SearchSymbolType type) {
 		this.type = type;
+	}
+	public String getMarket() {
+		return market;
+	}
+	public void setMarket(String market) {
+		this.market = market;
 	}
 }

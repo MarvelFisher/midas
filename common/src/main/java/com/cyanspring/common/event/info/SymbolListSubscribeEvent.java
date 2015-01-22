@@ -6,8 +6,8 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.marketdata.SymbolInfo;
 
 public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
-	private boolean isSuccess ;
-	private String errorMsg ;
+	private boolean ok ;
+	private String message ;
 	private SymbolListSubscribeType type ;
 	private String userID ;
 	private String market ;
@@ -26,22 +26,6 @@ public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 		this.group = group;
 		this.txId = txId;
 		this.symbolList = symbolList;
-	}
-
-	public boolean isSuccess() {
-		return isSuccess;
-	}
-
-	public void setSuccess(boolean isSuccess) {
-		this.isSuccess = isSuccess;
-	}
-
-	public String getErrorMsg() {
-		return errorMsg;
-	}
-
-	public void setErrorMsg(String errorMsg) {
-		this.errorMsg = errorMsg;
 	}
 
 	public SymbolListSubscribeType getType() {
@@ -90,6 +74,18 @@ public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 
 	public void setTxId(String txId) {
 		this.txId = txId;
+	}
+	public boolean isOk() {
+		return ok;
+	}
+	public void setOk(boolean ok) {
+		this.ok = ok;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 }

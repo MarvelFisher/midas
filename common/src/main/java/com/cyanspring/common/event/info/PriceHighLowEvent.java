@@ -7,8 +7,8 @@ import com.cyanspring.common.marketdata.PriceHighLow;
 
 public class PriceHighLowEvent extends RemoteAsyncEvent {
 	private List<PriceHighLow> listHighLow ;
-	private boolean isSuccess ;
-	private String errorMsg ;
+	private boolean ok ;
+	private String message ;
 
 	public PriceHighLowEvent(String key, String receiver) {
 		super(key, receiver);
@@ -18,22 +18,22 @@ public class PriceHighLowEvent extends RemoteAsyncEvent {
 		super(key, receiver);
 		this.listHighLow = listHighLow ;
 	}
-	public boolean isSuccess() {
-		return isSuccess;
-	}
-	public void setSuccess(boolean isSuccess) {
-		this.isSuccess = isSuccess;
-	}
-	public String getErrorMsg() {
-		return errorMsg;
-	}
-	public void setErrorMsg(String errorMsg) {
-		this.errorMsg = errorMsg;
-	}
 	public List<PriceHighLow> getListHighLow() {
 		return listHighLow;
 	}
 	public void setListHighLow(List<PriceHighLow> listHighLow) {
 		this.listHighLow = listHighLow;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public boolean isOk() {
+		return ok;
+	}
+	public void setOk(boolean ok) {
+		this.ok = ok;
 	}
 }

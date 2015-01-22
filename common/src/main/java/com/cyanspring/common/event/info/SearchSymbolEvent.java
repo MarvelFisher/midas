@@ -17,20 +17,24 @@ public class SearchSymbolEvent extends RemoteAsyncEvent {
 	}
 	public SearchSymbolEvent(String key, String receiver, SearchSymbolRequestEvent event) {
 		super(key, receiver);
-		this.setPage(event.getPage());
-		this.setSymbolPerPage(event.getSymbolPerPage());
-		this.setTxId(event.getTxId());
 		this.setType(event.getType());
 		this.setKeyword(event.getKeyword());
+		this.setMarket(event.getMarket());
+		this.setTxId(event.getTxId());
+		this.setPage(event.getPage());
+		this.setSymbolPerPage(event.getSymbolPerPage());
 	}
 
-	private String type;
+	private SearchSymbolType type;
 	private String keyword;
+	private String market;
 	private String txId;
 	private int page;
 	private int symbolperpage;
 	private int totalpage;
 	private List<SymbolInfo> symbolinfo;
+	private boolean ok;
+	private String message;
 
 	public int getPage() {
 		return page;
@@ -63,11 +67,11 @@ public class SearchSymbolEvent extends RemoteAsyncEvent {
 		this.keyword = keyword;
 	}
 
-	public String getType() {
+	public SearchSymbolType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(SearchSymbolType type) {
 		this.type = type;
 	}
 	public List<SymbolInfo> getSymbolinfo() {
@@ -81,5 +85,23 @@ public class SearchSymbolEvent extends RemoteAsyncEvent {
 	}
 	public void setTotalpage(int totalpage) {
 		this.totalpage = totalpage;
+	}
+	public boolean isOk() {
+		return ok;
+	}
+	public void setOk(boolean ok) {
+		this.ok = ok;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getMarket() {
+		return market;
+	}
+	public void setMarket(String market) {
+		this.market = market;
 	}
 }
