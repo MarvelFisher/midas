@@ -11,6 +11,7 @@
 package com.cyanspring.common.staticdata;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -25,9 +27,11 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class RefDataManager implements IPlugin, IRefDataManager {
 	private static final Logger log = LoggerFactory
 			.getLogger(RefDataManager.class);
-	String refDataFile;
+	String refDataFile;	
 	Map<String, RefData> map = new HashMap<String, RefData>();
 	
+	private String market = Default.getMarket();
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
@@ -64,5 +68,15 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 	@Override
 	public void setRefDataFile(String refDataFile) {
 		this.refDataFile = refDataFile;
+	}
+
+	@Override
+	public List<RefData> getRefDataList() {
+		return new ArrayList<RefData>(map.values());
+	}
+	
+	@Override
+	public String getMarket() {
+		return market;
 	}
 }
