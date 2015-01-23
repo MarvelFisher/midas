@@ -20,6 +20,21 @@ public class PriceAlert implements Comparable<PriceAlert>{
 		this.content = "" ;
 	}
 	
+	public void modifyPriceAlert(PriceAlert pricealert)
+	{
+		if (!this.id.equals(pricealert.getId()))
+		{
+			return ;
+		}
+		if (!this.userId.equals(pricealert.getUserId()))
+		{
+			return ;
+		}
+		this.setSymbol(pricealert.getSymbol());  //USDJPY
+		this.setPrice(pricealert.getPrice());
+		this.setDateTime(pricealert.getDateTime()); // yyyy-mm-dd hh:mm:ss
+		this.content = pricealert.getContent();
+	}
 	@Override
 	public int compareTo(PriceAlert other) {
 		int iReturn = this.getUserId().compareTo(other.getUserId());
@@ -78,13 +93,5 @@ public class PriceAlert implements Comparable<PriceAlert>{
 	public void setContent(String content)
 	{
 		this.content = content ;
-	}
-
-	
-
-	
-
-	
-
-	
+	}	
 }
