@@ -46,14 +46,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			ServerHandler.class, new Class[] { String.class, byte[].class });
 
 	public static void onAsyncSend(byte[] data) {
-		byte[] packet = SocketUtil.packData(data);
-		data = null;
-		sendData(packet);
+		//byte[] packet = SocketUtil.packData(data);
+		//data = null;
+		sendData(data);
 	}
 
 	public static void onAsyncSend(String symbol, byte[] data) {
-		byte[] packet = SocketUtil.packData(data);
-		sendData(symbol, packet);
+		//byte[] packet = SocketUtil.packData(data);
+		//data  = null;
+		sendData(symbol, data);
 	}
 
 	public static void asyncSendData(byte[] data) {
@@ -98,9 +99,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static void removeUserClient(ChannelHandlerContext ctx) {
 
-		UserClient[] arr = new UserClient[clientlist.size()];
-
-		for (UserClient client : clientlist.toArray(arr)) {
+		if (channels.size() <= 0)
+			return;
+		
+		List<UserClient> list = new ArrayList<UserClient>();
+		list.addAll(clientlist);
+		for (UserClient client : list) {
+			
 			if (client.isSameContext(ctx)) {
 				try {
 					client.close();
@@ -119,18 +124,23 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	public static void sendData(String symbol, byte[] data) {
+
+		byte[] packetData = null;
 		try {
 
 			if (channels.size() <= 0)
 				return;
 
-			UserClient[] arr = new UserClient[clientlist.size()];
-
-			for (UserClient client : clientlist.toArray(arr)) {
-				client.sendData(symbol, data);
+			packetData = SocketUtil.packData(data);
+			data = null;
+			
+			List<UserClient> list = new ArrayList<UserClient>();
+			list.addAll(clientlist);
+			for (UserClient client : list) {
+				client.sendData(symbol, packetData);
 			}
 		} finally {
-			data = null;
+			packetData = null;
 		}
 	}
 
@@ -139,11 +149,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			data = null;
 			return;
 		}
-
-		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
-
-		final ByteBuf buffer = Unpooled.copiedBuffer(data);
+		byte[] packetData = SocketUtil.packData(data);
 		data = null;
+		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, packetData.length);
+
+		final ByteBuf buffer = Unpooled.copiedBuffer(packetData);
+		packetData = null;
 		ChannelGroupFuture future = channels.writeAndFlush(buffer);
 		future.addListener(new ChannelGroupFutureListener() {
 			@Override

@@ -136,6 +136,10 @@ public class Parser implements IReqThreadCallback {
 					m_buffer.purge(iPacketDataLength);
 
 					String str = new String(data2, Charset.defaultCharset());
+					int nCmd = str.indexOf("|5001=");
+					if (nCmd >= 0) {
+						LogUtil.logInfo(log, str);
+					}
 					
 					int nStartIdx = str.indexOf("|4=");
 					if (nStartIdx < 0)
@@ -156,8 +160,14 @@ public class Parser implements IReqThreadCallback {
 					if (nEndIdx < 0)
 						continue;
 
-					
 					String symbol = str.substring(nStartIdx + 3, nEndIdx);
+/*
+ * following code is for testing 					
+					if (symbol.equals("X:SUSDJPY")) {
+						symbol = "C:PXAUUSDOZ\\SP";
+						sourceInt = 691;
+					}
+*/					
 					symbol = IdSymbolUtil.toSymbol(symbol, sourceInt);		
 
 					QuoteMgr.Instance().updateAllSymbol(symbol);
@@ -166,7 +176,8 @@ public class Parser implements IReqThreadCallback {
 						continue;
 					}
 
-					ServerHandler.asyncSendData(symbol, data);
+					//ServerHandler.asyncSendData(symbol, data);
+					ServerHandler.sendData(symbol, data);
 
 				} else {
 					break;

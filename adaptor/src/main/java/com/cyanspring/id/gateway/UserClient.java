@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.id.Library.Util.BitConverter;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
+import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.RingBuffer;
 import com.cyanspring.id.Library.Util.StringUtil;
@@ -24,7 +25,7 @@ public class UserClient implements AutoCloseable {
 	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
 	static final int MAX_COUNT = 1024 * 1024;
 	String key = createUniqKey();
-	
+
 	Date timeLast = new Date(0);
 
 	public String getKey() {
@@ -111,7 +112,7 @@ public class UserClient implements AutoCloseable {
 			return;
 
 		timeLast = DateUtil.now();
-		
+
 		ServerHandler.sendData(ctx, symbol, data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
 		// LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
@@ -123,7 +124,7 @@ public class UserClient implements AutoCloseable {
 
 			buffer.write(srcData, srcData.length);
 			srcData = null;
-			
+
 			while (true) {
 
 				byte[] data = new byte[6];
@@ -190,6 +191,7 @@ public class UserClient implements AutoCloseable {
 	public void parse(String frame) {
 		boolean isRemove = false;
 		String[] vec = StringUtil.split(frame, '|');
+		int exch = 687;
 		for (int i = 0; i < vec.length; i++) {
 
 			String[] vec2 = StringUtil.split(vec[i], '=');
@@ -204,8 +206,19 @@ public class UserClient implements AutoCloseable {
 				else if (vec2[1].equals("Unsubscribe"))
 					isRemove = true;
 				break;
+			case 4: {
+				try {
+					exch = Integer.parseInt(vec2[1]);
+				} catch (Exception e) {
+				}
+			}
+				break;
 			case 5: {
-				String symbol = vec2[1].substring(3);
+				String symbol = IdSymbolUtil.toSymbol(vec2[1], exch);
+				//if (exch == 691) {
+				//	IdGateway.instance().addLog("%s:%d", symbol, exch);
+				//}
+				// String symbol = vec2[1].substring(3);
 				if (isRemove) {
 					removeRef(symbol);
 				} else {
@@ -233,7 +246,9 @@ public class UserClient implements AutoCloseable {
 	}
 
 	public String toXml() {
-		return String.format("<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" Last=\"%s\"/>%n",
-				key, ip, gateway ? "true" : "false", DateUtil.formatDate(timeLast, "yyyy-MM-dd HH:mm:ss"));
+		return String.format(
+				"<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" Last=\"%s\"/>%n",
+				key, ip, gateway ? "true" : "false",
+				DateUtil.formatDate(timeLast, "yyyy-MM-dd HH:mm:ss"));
 	}
 }
