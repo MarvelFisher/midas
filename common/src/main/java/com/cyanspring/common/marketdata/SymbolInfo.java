@@ -1,6 +1,6 @@
 package com.cyanspring.common.marketdata;
 
-public class SymbolInfo {
+public class SymbolInfo implements Cloneable{
 	private String market;
 	private String code;
 	private String windCode;
@@ -15,6 +15,14 @@ public class SymbolInfo {
 		this.windCode = windCode;
 		this.cnName = cnName;
 		this.enName = enName;
+	}
+	public SymbolInfo(SymbolInfo symbolinfo)
+	{
+		this.market = symbolinfo.getMarket();
+		this.code = symbolinfo.getCode();
+		this.windCode = symbolinfo.getWindCode();
+		this.cnName = symbolinfo.getCnName();
+		this.enName = symbolinfo.getEnName();
 	}
 
 	public String getMarket() {

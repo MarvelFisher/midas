@@ -12,6 +12,14 @@
 	<url>http://www.fdt.io</url>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>conf/**</include>
+				</includes>
+			</resource>
+		</resources>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -55,7 +63,7 @@
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.12.1.GA</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
@@ -70,7 +78,7 @@
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>1.5.4</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>com.cyanspring.common</groupId>
 			<artifactId>cyanspring-common</artifactId>
@@ -84,6 +92,12 @@
 		<dependency>
 			<groupId>com.cyanspring.transport</groupId>
 			<artifactId>cyanspring-transport</artifactId>
+			<version>${project.parent.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.cyanspring.adaptor</groupId>
+			<artifactId>cyanspring-adaptor</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>runtime</scope>
 		</dependency>
