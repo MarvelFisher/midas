@@ -7,13 +7,13 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 
 public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 	private boolean ok ;
-	private String message ;
+	private String message = null;
 	private SymbolListSubscribeType type ;
-	private String userID ;
-	private String market ;
-	private String group ;
-	private String txId ;
-	private List<SymbolInfo> symbolList ;
+	private String userID = null;
+	private String market = null;
+	private String group = null;
+	private String txId = null;
+	private List<SymbolInfo> symbolList = null;
 
 	public SymbolListSubscribeEvent(String key, String receiver) {
 		super(key, receiver);
