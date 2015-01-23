@@ -1,0 +1,1 @@
+java -classpath "jars/*" com.cyanspring.adaptor.future.wind.test.FutureFeed

@@ -23,6 +23,7 @@ import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
+import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.Trade;
@@ -1011,6 +1012,24 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	@Override
+	public void subscirbeSymbolData(ISymbolDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unsubscribeSymbolData(ISymbolDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refreshSymbolInfo(String market) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

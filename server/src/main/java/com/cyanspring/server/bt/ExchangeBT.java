@@ -24,6 +24,7 @@ import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
+import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.ITickDataReader;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
@@ -564,5 +565,20 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 
 	public void setTickDataReader(ITickDataReader tickDataReader) {
 		this.tickDataReader = tickDataReader;
+	}
+
+	@Override
+	public void subscirbeSymbolData(ISymbolDataListener listener) {
+		
+	}
+
+	@Override
+	public void unsubscribeSymbolData(ISymbolDataListener listener) {
+		
+	}
+
+	@Override
+	public void refreshSymbolInfo(String market) {
+		
 	}
 }

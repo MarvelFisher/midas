@@ -291,7 +291,10 @@ public class IdGateway implements IFrameClose {
 
 	private void init() {
 		setSession(); 
-		QuoteMgr.Instance().addSymbols(getPreSubscriptionList());		
+		QuoteMgr.Instance().addSymbols(getPreSubscriptionList());
+		List<String> list = new ArrayList<String>();
+		list.addAll(nonFX.keySet());
+		QuoteMgr.Instance().addSymbols(list);
 	}
 	
 	public void addRefreshButton() {

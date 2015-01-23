@@ -44,6 +44,20 @@
 								<packaging>jar</packaging>
 							</configuration>
 						</execution>
+						<execution>
+							<id>install-5</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>install-file</goal>
+							</goals> 
+							<configuration>
+								<artifactId>tdf</artifactId>
+								<groupId>cn.com.wind.td.tdf</groupId>
+								<version>1.2</version>
+								<file>tdfapi.jar</file>
+								<packaging>jar</packaging>
+							</configuration>
+						</execution>
 					</executions>
 				</plugin>
 			</plugins>

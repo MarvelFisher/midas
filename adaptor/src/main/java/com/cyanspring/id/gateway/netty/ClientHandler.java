@@ -33,6 +33,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 
 /**
  * Handler implementation for the echo client. It initiates the ping-pong
@@ -40,11 +41,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * the server.
  */
 public class ClientHandler extends ChannelInboundHandlerAdapter implements TimerEventHandler, AutoCloseable{
+	public static final Integer connected = 1;
+	public static final Integer disConnected = 2;
 	private static final Logger log = LoggerFactory
 			.getLogger(IdGateway.class);
 	public static ClientHandler Instance = null;
-	public boolean isActive = false;
-	static ChannelHandlerContext _ctx; // context deal with server
+	//public boolean isActive = false;
+	static ChannelHandlerContext ctx; // context deal with server
 	TimerThread timer = null; 
 	public static Date lastRecv = new Date(0);
 	/**
@@ -55,11 +58,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	public static void sendData(byte[] data) {
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
 		data = null;
-		ChannelFuture future = _ctx.writeAndFlush(buffer);
+		ChannelFuture future = ctx.writeAndFlush(buffer);
 		future.addListener(new ChannelFutureListener() {
 			@Override
 			public void operationComplete(ChannelFuture arg0) throws Exception {
-				if (buffer.refCnt() > 0)
+				if (buffer != null && buffer.refCnt() > 0)
 					buffer.release();
 			}
 		});		
@@ -82,8 +85,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
      */
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) {
-		
-		IdGateway.instance().reconClient();
+		ClientHandler.ctx = null;
+		ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
+		//IdGateway.instance().reconClient();
 	}
 
 	/**
@@ -93,13 +97,30 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
-		isActive = true;
-		_ctx = ctx;
+		//isActive = true;
+		ClientHandler.ctx = ctx;
+		ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
+
+/*		
 		logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
 		//setCTFOn(IdGateway.instance().getExch());
 		setCTFOnSymbols();
+*/		
 	}
-
+	
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+	    super.userEventTriggered(ctx, evt);
+	    if (evt == ClientHandler.connected) {
+			logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
+			//setCTFOn(IdGateway.instance().getExch());
+			setCTFOnSymbols();
+	    }
+	    else if (evt == ClientHandler.disConnected ){
+	    	IdGateway.instance().reconClient();
+	    }
+	}
+	
 	/**
 	 * (non-Javadoc)
 	 * 
@@ -108,10 +129,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		if (!isActive) {
-			channelActive(ctx);
-		}
-
 		final ByteBuf buffer = (ByteBuf) msg;
 		byte[] data = new byte[buffer.readableBytes()];
 		buffer.readBytes(data);
@@ -239,23 +256,26 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
      */
 	public static void setCTFOnSymbols() {
 
+		Map<String, Integer> map = new Hashtable<>(IdGateway.instance.getNonFX());
+		for (String id : map.keySet()) {
+			Integer exch = map.get(id);
+			setCTFOn(exch, id);
+		}
+		int size = map.size();
+		
 		int nExch = IdGateway.instance().getExch();
 		ArrayList<String> list = QuoteMgr.Instance().getSymbolList();
 		for (String s : list) {
 			setCTFOn(nExch, s);
 		}
 		
-		int size = list.size();
+		size += list.size();
 		
-		Map<String, Integer> map = new Hashtable<>(IdGateway.instance.getNonFX());
-		for (String id : map.keySet()) {
-			Integer exch = map.get(id);
-			setCTFOn(exch, id);
-		}
+
 		//exception list 
 		//setCTFOn(691, "XAUUSD");
 		//setCTFOn(691, "XAGUSD");
-		size += map.size();
+		
 		//setCTFOn(970, oil id);
 		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", size);
 	}

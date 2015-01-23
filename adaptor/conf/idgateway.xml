@@ -9,104 +9,308 @@
 
 	<bean id="IdGateway" class="com.cyanspring.id.gateway.IdGateway">
 		<!-- global setting -->
-		<property name="gateway" value="true"></property>
+		<property name="gateway" value="false"></property>
 		<property name="showGui" value="true"></property>			
-	
+
 		<!-- trading time  -->
 		<property name="preOpen" value="610"></property>
 		<property name="open" value="615"></property>
 		<property name="close" value="600"></property>
-		
-		
+
+
 		<!-- source--> 
+<!--
 		<property name="reqIp" value="202.55.14.140"></property>
-		<property name="reqPort" value="6086"></property>		
+		<property name="reqPort" value="6086"></property>	
+-->	
 		<property name="account" value="fdtcanned"></property>
 		<property name="password" value="MFW9dC26"></property>
 		<property name="exch" value="687"></property>
-		
-		<!-- 
-		<property name="reqIp" value="198.190.11.31"></property> 
-		<property name="reqPort" value="4001"></property> 
-		-->
+ 
+		<property name="reqIp" value="198.190.11.31"></property>
+		<property name="reqPort" value="4001"></property>
+
+
 		<!-- socket server port-->
 		<property name="hostPort" value="6086"></property>
 		<!-- web server port-->
-		<property name="httpPort" value="8080"></property>
+		<property name="httpPort" value="6087"></property>
+
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>
 
 		<!-- preSubscriptionList -->
 		<property name="preSubscriptionList">
 			<list>
-				<value>USDCAD</value>
-				<value>USDCHF</value>
-				<value>USDCNH</value>
-				<value>USDCZK</value>
-				<value>USDDKK</value>
-				<value>USDHKD</value>
-				<value>USDHUF</value>
-				<value>USDILS</value>
-				<value>USDJPY</value>
-				<value>USDMXN</value>
-				<value>USDNOK</value>
-				<value>USDPLN</value>
-				<value>USDRUB</value>
-				<value>USDSEK</value>
-				<value>USDSGD</value>
-				<value>NZDUSD</value>
-				<value>EURUSD</value>
-				<value>GBPUSD</value>
+				<value>AUDCAD</value>
+				<value>AUDCHF</value>
+				<value>AUDCNH</value>
+				<value>AUDCNY</value>
+				<value>AUDHKD</value>
+				<value>AUDJPY</value>
+				<value>AUDNZD</value>
+				<value>AUDSGD</value>
 				<value>AUDUSD</value>
+				<value>CADCHF</value>
+				<value>CADCNH</value>
+				<value>CADCNY</value>
+				<value>CADHKD</value>
+				<value>CADJPY</value>
+				<value>CHFCNH</value>
+				<value>CHFCNY</value>
+				<value>CHFDKK</value>
+				<value>CHFJPY</value>
+				<value>CHFNOK</value>
+				<value>CHFSEK</value>
+				<value>CNHHKD</value>
+				<value>CNHIDR</value>
+				<value>CNHINR</value>
+				<value>CNHJPY</value>
+				<value>CNHKRW</value>
+				<value>CNHPHP</value>
+				<value>CNHTHB</value>
+				<value>CNHTWD</value>
+				<value>CNYBRL</value>
+				<value>CNYIDR</value>
+				<value>CNYINR</value>
+				<value>CNYJPY</value>
+				<value>CNYKRW</value>
+				<value>CNYMYR</value>
+				<value>CNYPHP</value>
+				<value>CNYPLN</value>
+				<value>CNYRUB</value>
+				<value>CNYTHB</value>
+				<value>CNYTWD</value>
+				<value>CNYXCU</value>
+				<value>CNYZAR</value>
+				<value>DKKJPY</value>
+				<value>DKKNOK</value>
+				<value>DKKSEK</value>
 				<value>EURAUD</value>
 				<value>EURCAD</value>
 				<value>EURCHF</value>
 				<value>EURCNH</value>
+				<value>EURCNY</value>
 				<value>EURCZK</value>
 				<value>EURDKK</value>
 				<value>EURGBP</value>
 				<value>EURHKD</value>
+				<value>EURHUF</value>
 				<value>EURILS</value>
 				<value>EURJPY</value>
 				<value>EURMXN</value>
 				<value>EURNOK</value>
 				<value>EURNZD</value>
+				<value>EURPLN</value>
 				<value>EURRUB</value>
 				<value>EURSEK</value>
 				<value>EURSGD</value>
+				<value>EURTRY</value>
+				<value>EURUSD</value>
 				<value>GBPAUD</value>
 				<value>GBPCAD</value>
 				<value>GBPCHF</value>
 				<value>GBPCNH</value>
+				<value>GBPCNY</value>
 				<value>GBPDKK</value>
 				<value>GBPHKD</value>
 				<value>GBPJPY</value>
 				<value>GBPNOK</value>
 				<value>GBPNZD</value>
 				<value>GBPSEK</value>
-				<value>AUDCHF</value>
-				<value>AUDHKD</value>
-				<value>AUDJPY</value>
-				<value>AUDCAD</value>
-				<value>AUDCNH</value>
-				<value>AUDNZD</value>
-				<value>AUDSGD</value>
-				<value>CHFJPY</value>
-				<value>CHFCNH</value>
-				<value>CHFDKK</value>
-				<value>CHFNOK</value>
-				<value>CHFSEK</value>
-				<value>CNHJPY</value>
-				<value>DKKJPY</value>
-				<value>DKKNOK</value>
-				<value>DKKSEK</value>
+				<value>GBPUSD</value>
+				<value>HKDCNY</value>
 				<value>HKDJPY</value>
+				<value>KRWAUD</value>
+				<value>KRWCAD</value>
+				<value>KRWCHF</value>
+				<value>KRWEUR</value>
+				<value>KRWGBP</value>
+				<value>KRWHKD</value>
+				<value>KRWJPY</value>
+				<value>KRWUSD</value>
 				<value>MXNJPY</value>
 				<value>NOKJPY</value>
 				<value>NOKSEK</value>
+				<value>NZDCAD</value>
+				<value>NZDCHF</value>
+				<value>NZDCNH</value>
+				<value>NZDCNY</value>
+				<value>NZDJPY</value>
+				<value>NZDUSD</value>
+				<value>NZDUSD</value>
+				<value>SEKCNY</value>
 				<value>SEKJPY</value>
 				<value>SGDCNH</value>
+				<value>SGDCNY</value>
 				<value>SGDJPY</value>
-				<value>NZDCHF</value>
-				<value>NZDJPY</value>
+				<value>USDAED</value>
+				<value>USDAFN</value>
+				<value>USDALL</value>
+				<value>USDAMD</value>
+				<value>USDANG</value>
+				<value>USDAOA</value>
+				<value>USDARS</value>
+				<value>USDAWG</value>
+				<value>USDAZN</value>
+				<value>USDBAM</value>
+				<value>USDBBD</value>
+				<value>USDBDT</value>
+				<value>USDBGN</value>
+				<value>USDBHD</value>
+				<value>USDBIF</value>
+				<value>USDBMD</value>
+				<value>USDBND</value>
+				<value>USDBOB</value>
+				<value>USDBRL</value>
+				<value>USDBSD</value>
+				<value>USDBTN</value>
+				<value>USDBWP</value>
+				<value>USDBYR</value>
+				<value>USDBZD</value>
+				<value>USDCAD</value>
+				<value>USDCDF</value>
+				<value>USDCHF</value>
+				<value>USDCLF</value>
+				<value>USDCLP</value>
+				<value>USDCNH</value>
+				<value>USDCNH</value>
+				<value>USDCNY</value>
+				<value>USDCNY</value>
+				<value>USDCOP</value>
+				<value>USDCRC</value>
+				<value>USDCUC</value>
+				<value>USDCUP</value>
+				<value>USDCVE</value>
+				<value>USDCZK</value>
+				<value>USDCZK</value>
+				<value>USDDJF</value>
+				<value>USDDKK</value>
+				<value>USDDOP</value>
+				<value>USDDZD</value>
+				<value>USDEGP</value>
+				<value>USDERN</value>
+				<value>USDETB</value>
+				<value>USDFJD</value>
+				<value>USDFKP</value>
+				<value>USDGEL</value>
+				<value>USDGHS</value>
+				<value>USDGIP</value>
+				<value>USDGMD</value>
+				<value>USDGNF</value>
+				<value>USDGTQ</value>
+				<value>USDGYD</value>
+				<value>USDHKD</value>
+				<value>USDHNL</value>
+				<value>USDHRK</value>
+				<value>USDHTG</value>
+				<value>USDHUF</value>
+				<value>USDIDR</value>
+				<value>USDILA</value>
+				<value>USDILS</value>
+				<value>USDINR</value>
+				<value>USDIQD</value>
+				<value>USDIRR</value>
+				<value>USDISK</value>
+				<value>USDJMD</value>
+				<value>USDJOD</value>
+				<value>USDJPY</value>
+				<value>USDKES</value>
+				<value>USDKGS</value>
+				<value>USDKHR</value>
+				<value>USDKMF</value>
+				<value>USDKPW</value>
+				<value>USDKRW</value>
+				<value>USDKWD</value>
+				<value>USDKYD</value>
+				<value>USDKZT</value>
+				<value>USDLAK</value>
+				<value>USDLBP</value>
+				<value>USDLKR</value>
+				<value>USDLRD</value>
+				<value>USDLSL</value>
+				<value>USDLTL</value>
+				<value>USDLVL</value>
+				<value>USDLYD</value>
+				<value>USDMAD</value>
+				<value>USDMDL</value>
+				<value>USDMGA</value>
+				<value>USDMKD</value>
+				<value>USDMMK</value>
+				<value>USDMNT</value>
+				<value>USDMOP</value>
+				<value>USDMRO</value>
+				<value>USDMUR</value>
+				<value>USDMVR</value>
+				<value>USDMWK</value>
+				<value>USDMXN</value>
+				<value>USDMYR</value>
+				<value>USDMZN</value>
+				<value>USDNAD</value>
+				<value>USDNGN</value>
+				<value>USDNIO</value>
+				<value>USDNOK</value>
+				<value>USDNPR</value>
+				<value>USDOMR</value>
+				<value>USDPAB</value>
+				<value>USDPEN</value>
+				<value>USDPGK</value>
+				<value>USDPHP</value>
+				<value>USDPKR</value>
+				<value>USDPLN</value>
+				<value>USDPYG</value>
+				<value>USDQAR</value>
+				<value>USDRON</value>
+				<value>USDRSD</value>
+				<value>USDRUB</value>
+				<value>USDRWF</value>
+				<value>USDSAR</value>
+				<value>USDSBD</value>
+				<value>USDSCR</value>
+				<value>USDSDG</value>
+				<value>USDSEK</value>
+				<value>USDSGD</value>
+				<value>USDSHP</value>
+				<value>USDSLL</value>
+				<value>USDSOS</value>
+				<value>USDSRD</value>
+				<value>USDSTD</value>
+				<value>USDSVC</value>
+				<value>USDSYP</value>
+				<value>USDSZL</value>
+				<value>USDTHB</value>
+				<value>USDTJS</value>
+				<value>USDTMT</value>
+				<value>USDTND</value>
+				<value>USDTOP</value>
+				<value>USDTRY</value>
+				<value>USDTTD</value>
+				<value>USDTWD</value>
+				<value>USDTZS</value>
+				<value>USDUAH</value>
+				<value>USDUGX</value>
+				<value>USDUYU</value>
+				<value>USDUZS</value>
+				<value>USDVEF</value>
+				<value>USDVND</value>
+				<value>USDVUV</value>
+				<value>USDWST</value>
+				<value>USDXAF</value>
+				<value>USDXCD</value>
+				<value>USDXCU</value>
+				<value>USDXDR</value>
+				<value>USDXOF</value>
+				<value>USDXPF</value>
+				<value>USDYER</value>
+				<value>USDZAC</value>
+				<value>USDZAR</value>
+				<value>USDZMW</value>
+				<value>USDZWL</value>
+				<value>ZARJPY</value>
 			</list>
 		</property>
 	</bean>

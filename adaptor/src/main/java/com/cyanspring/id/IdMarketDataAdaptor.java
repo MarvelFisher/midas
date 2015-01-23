@@ -25,6 +25,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
+import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.id.Library.Frame.InfoString;
@@ -588,5 +589,23 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	 */
 	public String getDataPath(String strSymbolID) {
 		return String.format("%s/ticks/%s", path, strSymbolID);
+	}
+
+	@Override
+	public void subscirbeSymbolData(ISymbolDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unsubscribeSymbolData(ISymbolDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void refreshSymbolInfo(String market) {
+		// TODO Auto-generated method stub
+		
 	}
 }
