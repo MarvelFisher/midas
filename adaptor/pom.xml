@@ -49,6 +49,11 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 			<version>4.0.24.Final</version>
-		</dependency>		
+		</dependency>	
+		<dependency>
+			<artifactId>tdf</artifactId>
+			<groupId>cn.com.wind.td.tdf</groupId>
+			<version>1.2</version>
+		</dependency>	
 	</dependencies>
 </project>
