@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,10 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.alert.AlertType;
+import com.cyanspring.common.event.alert.QueryPriceAlertRequestEvent;
 import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.OrderSide;
@@ -39,7 +43,7 @@ public class AlertManager implements IPlugin {
 	ScheduleManager scheduleManager;
 
 	@Autowired
-	private IRemoteEventManager eventManager;
+	private IRemoteEventManager eventManagerMD;
 	
 	@Autowired
 	SessionFactory sessionFactory;
@@ -64,106 +68,44 @@ public class AlertManager implements IPlugin {
 	private ArrayList<ParseThread> ParseThreadList ;
 	
 	private Map<String, ArrayList<PriceAlert>> symbolPriceAlerts = new HashMap<String, ArrayList<PriceAlert>>();
-	private Map<String, ArrayList<TradeAlert>> symbolTradeAlerts = new HashMap<String, ArrayList<TradeAlert>>();
+	private Map<String, ArrayList<TradeAlert>> userTradeAlerts = new HashMap<String, ArrayList<TradeAlert>>();
 	private int maxNoOfAlerts = 20;
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
-	
-	private boolean receiveQueryTradeAlert()
-	{
-		return true ;
-	}
-	
-	private boolean receiveAddPriceAlert(PriceAlert priceAlert) {
-		
-		ArrayList<PriceAlert> list;
-		int search;
-		
-		list = symbolPriceAlerts.get(priceAlert.getSymbol());
-		if(null == list) {
-			list = new ArrayList<PriceAlert>();
-			//do new PriceAlert
-			list.add(priceAlert);
-			symbolPriceAlerts.put(priceAlert.getSymbol(), list);
-		}
-		else
-		{
-			search = Collections.binarySearch(list, priceAlert);
-			if (search > 0)
-			{
-				log.warn("[recevieAddPriceAlert] : id already exists. -> do modify PriceAlert.");
-				domodifyPriceAlert(priceAlert) ;
-			}
-			else
-			{
-				
-			}
-		}
-//		list.add(priceAlert);
-		return true;
-	}
-	
-	private boolean receiveModifyPriceAlert(PriceAlert priceAlert) {			
-			return true;
-		}
-	
-	private boolean receiveCancelPriceAlert(PriceAlert priceAlert) {
-		return true;
-	}
-	
-	private void domodifyPriceAlert(PriceAlert priceAlert)
-	{
-		
-	}
-	private void removePriceAlert(PriceAlert priceAlert) {
-//		List<PriceAlert> list;
-//		list = symbolPriceAlerts.get(priceAlert.getSymbol());
-//		if(null != list)
-//			list.remove(priceAlert);
-//		
-//		list = accountPriceAlerts.get(priceAlert.getAccount());
-//		if(null != list)
-//			list.remove(priceAlert);
-	}
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(UpdateChildOrderEvent.class, null);
+			subscribeToEvent(ChildOrderUpdateEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
+			subscribeToEvent(QueryPriceAlertRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 		}
 
 		@Override
 		public IAsyncEventManager getEventManager() {
-			return eventManager;
+			return eventManagerMD;
 		}
 	};
 	
-	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
-		if(null == event.getExecution())
+	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
+		Execution execution = event.getExecution();
+		if(null == execution)
 			return;
 		
-//		log.debug("[processUpdateChildOrderEvent] "+event.getExecution().toString());
+		log.debug("[processUpdateChildOrderEvent] "+ execution.toString());
 		
 		if(null != ParseDataQueue)
-			ParseDataQueue.add(PackTradeAlert(event.getExecution(),timeoutSecond));
-		else			
+		{
+			ParseDataQueue.add(PackTradeAlert(execution,timeoutSecond));
+			receiveChildOrderUpdateEvent(execution) ;
+		}
+		else
+		{
 			log.error("ParseDataQueue not ready!!");
-		//to TradeAlert
-		Execution execution = event.getExecution();
-		DecimalFormat qtyFormat = new DecimalFormat("#0");
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String strDate = dateFormat.format(Clock.getInstance().now());
-//		String d = execution.getFields().get("REASON");OrderField.REASON.
-//		TradeAlert TA = new TradeAlert(execution.getUser(), execution.getSymbol(),(OrderReason) ,(long)execution.getQuantity(), execution.getPrice(),strDate, "");		
-		
-		
-		
-		
-		//save to SQL
-		//save to Array
+			return ;
+		}
 		
 		
 //		DecimalFormat qtyFormat = new DecimalFormat("#0");
@@ -183,32 +125,178 @@ public class AlertManager implements IPlugin {
 //			tradeAlertSender.sendTradeAlert(event.getExecution(), timeoutSecond);
 	}
 	
+	private void receiveChildOrderUpdateEvent(Execution execution)
+	{
+		DecimalFormat qtyFormat = new DecimalFormat("#0");		
+		String strQty = qtyFormat.format(execution.getQuantity());		
+		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
+		String strPrice = priceFormat.format(execution.getPrice());
+		String Datetime = execution.get(String.class, "CREATED");
+		String tradeMessage = "Trade " + execution.getSymbol() + " " + 
+							execution.getSide().toString() + " " + strQty + "@" + strPrice;
+		TradeAlert TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+		//save to Array
+		ArrayList<TradeAlert> list ;
+		int search;
+		list = userTradeAlerts.get(execution.getUser());
+		if (null == list)
+		{
+			list = new ArrayList<TradeAlert>();
+			list.add(TA);
+			userTradeAlerts.put(execution.getUser(),list) ;
+		}
+		else
+		{
+			search = Collections.binarySearch(list, TA);
+			if (search > 0)
+			{
+				log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
+				return ;
+			}
+			else
+			{
+				list.add(~search,TA);
+			}
+		}
+		//save to SQL
+		SaveTradeAlert(TA);
+	}
+	
 	public void processQuoteEvent(QuoteEvent event) {
-//		Quote quote = event.getQuote();
-//		quotes.put(quote.getSymbol(), quote);
+		
+		Quote quote = event.getQuote();
+		quotes.put(quote.getSymbol(), quote);
 //		List<PriceAlert> list = symbolPriceAlerts.get(quote.getSymbol());
 //		if(null == list)
 //			return;
 //		for(PriceAlert alert: list) {
 //			firePriceAlert(alert, quote);
 //		}
+		log.debug("Quote: " + quote);
 	}
 	
 	public void processSetPriceAlertRequestEvent(SetPriceAlertRequestEvent event) {
 		AlertType type = event.getType();
 		if (type == AlertType.PRICE_SET_NEW)
 		{
-			receiveAddPriceAlert(event.getPriceAlert());
+			receiveAddPriceAlert(event.getPriceAlert(), event.getTxId());
 		}
 		else if (type == AlertType.PRICE_SET_MODIFY)
 		{
-			receiveModifyPriceAlert(event.getPriceAlert());
+			receiveModifyPriceAlert(event.getPriceAlert(), event.getTxId());
 		}
 		else if (type == AlertType.PRICE_SET_CANCEL)
 		{
-			receiveCancelPriceAlert(event.getPriceAlert());
+			receiveCancelPriceAlert(event.getPriceAlert(), event.getTxId());
 		}
+	}
+	
+	public void processQueryPriceAlertRequestEvent(QueryPriceAlertRequestEvent event) {
+		AlertType type = event.getType();
+		if (type == AlertType.PRICE_QUERY_CUR)
+		{
+			receiveQueryPriceAlert(event.getUserId(), event.getTxId());
+		}
+		else if (type == AlertType.PRICE_QUERY_PAST)
+		{
+			receiveQueryTradeAlert(event.getUserId(), event.getTxId());
+		}
+	}
+	
+	private boolean receiveAddPriceAlert(PriceAlert priceAlert, String txId) {
+		ArrayList<PriceAlert> list;
+		int search;
+		
+		list = symbolPriceAlerts.get(priceAlert.getSymbol());
+		if(null == list) {
+			list = new ArrayList<PriceAlert>();
+			//do new PriceAlert
+			list.add(priceAlert);
+			symbolPriceAlerts.put(priceAlert.getSymbol(), list);
+			//save to SQL
+			//SendPriceAlertreplyEvent
+		}
+		else
+		{
+			search = Collections.binarySearch(list, priceAlert);
+			if (search > 0)
+			{
+				log.warn("[recevieAddPriceAlert] : id already exists. -> reject");
+				//SendPriceAlertreplyEvent
+			}
+			else
+			{
+				//do new PriceAlert
+				list.add(~search, priceAlert);
+				//save to SQL
+				//SendPriceAlertreplyEvent
+			}
+		}
+		return true;
+	}
+	
+	private boolean receiveModifyPriceAlert(PriceAlert priceAlert, String txId) {			
+		ArrayList<PriceAlert> list;
+		int search;
+		
+		list = symbolPriceAlerts.get(priceAlert.getSymbol());
+		if(null == list) {
+			log.warn("[receiveModifyPriceAlert] : id isn't exists. -> reject");			
+			//SendPriceAlertreplyEvent
+		}
+		else
+		{
+			search = Collections.binarySearch(list, priceAlert);
+			if (search > 0)
+			{
+				list.get(search).modifyPriceAlert(priceAlert);
+				//update to SQL
+				//SendPriceAlertreplyEvent
+			}
+			else
+			{				
+				log.warn("[receiveModifyPriceAlert] : id isn't exists. -> reject");				
+				//SendPriceAlertreplyEvent
+			}
+		}
+		return true;
+	}
+	
+	private boolean receiveCancelPriceAlert(PriceAlert priceAlert, String txId) {
+		ArrayList<PriceAlert> list;
+		int search;
+		
+		list = symbolPriceAlerts.get(priceAlert.getSymbol());
+		if(null == list) {
+			log.warn("[receiveCancelPriceAlert] : id isn't exists. ->reject");
+			//SendPriceAlertreplyEvent
+		}
+		else
+		{
+			search = Collections.binarySearch(list, priceAlert);
+			if (search > 0)
+			{
+				list.remove(priceAlert);
+				//update to SQL
+				//SendPriceAlertreplyEvent
+			}
+			else
+			{
+				log.warn("[receiveCancelPriceAlert] : id isn't exists. ->reject");
+				//SendPriceAlertreplyEvent
+			}
+		}
+		return true;
 	}	
+
+	private boolean receiveQueryPriceAlert(String userId, String txId)
+	{
+		return true ;
+	}
+	private boolean receiveQueryTradeAlert(String userId, String txId)
+	{
+		return true ;
+	}
 	
 	private double getAlertPrice(Quote quote) {
 		return (quote.getBid() + quote.getAsk())/2;
@@ -228,6 +316,30 @@ public class AlertManager implements IPlugin {
 //			return true;
 //		}
 		return false;
+	}
+	
+	private void NewPriceAlert(PriceAlert priceAlert,int Type)
+	{
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		session.save("", priceAlert);
+		session.save(priceAlert);
+	}
+	
+	private void SaveTradeAlert(TradeAlert tradealert)
+	{
+		try
+		{
+			Session session = sessionFactory.openSession();
+			Transaction tx = session.beginTransaction();
+			session.save(tradealert);
+			tx.commit();
+			session.close();
+		}
+		catch (Exception e)
+		{
+			log.warn("[SaveTradeAlert] : " + e.getMessage());
+		}
 	}
 	
 	public ParseData PackTradeAlert(Execution execution, int timeoutSecond) {
@@ -261,6 +373,8 @@ public class AlertManager implements IPlugin {
 //						"1", "222-222-222",
 //						"rickdev", "rickdev-FX", "abcdefg"),timeoutSecond));
 //				
+				TradeAlert TA = new TradeAlert("david", "USDJPY", null ,(long)1000000, (double)120,"2015-01-22 20:45:11", "TEST");
+				SaveTradeAlert(TA);
 				ThreadStatus TS ;
 				for (ParseThread PT : ParseThreadList)
 				{
