@@ -6,17 +6,36 @@
 <hibernate-mapping> 
   <class name="com.cyanspring.common.alert.TradeAlert" table="TRADEALERT_PAST"> 
     <id 	  column="ID" 		name="id" type="java.lang.String"/> 
+    <property column="USER_ID" 			name="userId" type="java.lang.String"/>
     <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
     <property column="PRICE" 			name="price" type="java.lang.Double"/>
-    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
     <property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
-	<property column="ORDERREASON" 			name="orderReason" length="30">
+    <property column="ORDERREASON" 			name="orderReason" length="30">
    		<type name="org.hibernate.type.EnumType">
    			<param name="enumClass">com.cyanspring.common.account.OrderReason</param>   
        		<param name="type">12</param>
    		</type>
 	</property>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
 	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
   </class>
   
+  <class name="com.cyanspring.common.alert.PriceAlert" table="PRICEALERT_PAST"> 
+    <id 	  column="ID" 		name="id" type="java.lang.String"/>
+    <property column="USER_ID" 			name="userId" type="java.lang.String"/>
+    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
+    <property column="PRICE" 			name="price" type="java.lang.Double"/>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
+	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
+  </class>
+  
+  <!--  class name="com.cyanspring.common.alert.PriceAlert" table="PRICEALERT_CUR"> 
+    <id 	  column="ID" 		name="id" type="java.lang.String"/>
+    <property column="USER_ID" 			name="userId" type="java.lang.String"/>
+    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
+    <property column="PRICE" 			name="price" type="java.lang.Double"/>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
+	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
+  </class> -->
+    
 </hibernate-mapping> 
