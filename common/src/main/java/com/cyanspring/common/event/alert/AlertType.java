@@ -6,7 +6,7 @@ public enum AlertType {
 	PRICE_SET_CANCEL(3),
 	PRICE_QUERY_CUR(4),
 	PRICE_QUERY_PAST(5),
-	TRADE_QUERY_OLD(6),
+	TRADE_QUERY_PAST(6),
 	;
 	
 	private int value;
