@@ -109,5 +109,11 @@
 	    </constructor-arg>
 		<property name="embedBroker" value="false"></property>
 	</bean>
+	
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+		<property name="refDataFile">
+			<value>refdata/refData_test.xml</value>
+		</property>
+	</bean>
 
 </beans>
