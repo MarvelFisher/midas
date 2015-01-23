@@ -26,6 +26,7 @@ import webcurve.exchange.OrderBook;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
+import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.QtyPrice;
 
@@ -156,5 +157,20 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 
 	@Override
 	public void uninit() {
+	}
+
+	@Override
+	public void subscirbeSymbolData(ISymbolDataListener listener) {
+		
+	}
+
+	@Override
+	public void unsubscribeSymbolData(ISymbolDataListener listener) {
+		
+	}
+
+	@Override
+	public void refreshSymbolInfo(String market) {
+		
 	}
 }

@@ -333,13 +333,13 @@ public class StockItem implements AutoCloseable{
 			timeLast = now;
 		}		
 	}
-
+	
+	public String windCode() {
+		return String.format("%s.%s", getMarket(), symbolId);
+	}
+	
 	public SymbolInfo getSymbolInfo() {
-		SymbolInfo info = new SymbolInfo();
-		info.addData(SymbolField.symbolId, this.symbolId);
-		info.addData(SymbolField.market, getMarket());
-		info.addData(SymbolField.cnName, getCnName());
-		info.addData(SymbolField.enName, getEnName());
+		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName());
 		return info;
 	}
 	
