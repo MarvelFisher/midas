@@ -21,7 +21,7 @@
 	  <property name="dataSource" ref="dataSource"/>
 	  <property name="mappingResources">
 	    <list>
-	      <value>info_object.hbm.xml</value>
+	      <value>conf/info_object.hbm.xml</value>
 	    </list>
 	  </property>
 	  <property name="hibernateProperties">

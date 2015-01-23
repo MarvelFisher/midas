@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,25 +20,27 @@ import com.cyanspring.common.account.UserType;
 
 public class CentralDbConnector {
 	protected Connection conn = null;
-	protected String host = "";
-	protected int port = 0;
-	protected String user = "";
-	protected String pass = "";
-	protected String database = "";
+//	protected String host = "";
+//	protected int port = 0;
+//	protected String user = "";
+//	protected String pass = "";
+//	protected String database = "";
+//	private   String openSQL = "";
 
 	private static String MARKET_FX = "FX";
-	private static SimpleDateFormat sdf = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss");
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static CentralDbConnector inst = null;
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
-	private static String openSQL = "jdbc:mysql://%s:%d/%s?useUnicode=true&autoReconnect=true&autoReconnectForPools=true";
+	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
+	private ComboPooledDataSource cpds;	
 
-	private static final Logger log = LoggerFactory
-			.getLogger(CentralDbConnector.class);
+	public void setCpds(ComboPooledDataSource cpds) {
+		this.cpds = cpds;
+	}
 
 	public static CentralDbConnector getInstance() throws CentralDbException {
 		if (inst == null)
@@ -55,13 +59,17 @@ public class CentralDbConnector {
 
 	}
 
-	public boolean connect(String sIP, int nPort, String sUser,
-			String sPassword, String sDatabase) {
+	public boolean connect() {
+//	public boolean connect(String sIP, int nPort, String sUser,
+//			String sPassword, String sDatabase) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			log.info("Getting mysql connection");
+			conn = cpds.getConnection();
 
-			String sReq = String.format(openSQL, sIP, nPort, sDatabase);
-			conn = DriverManager.getConnection(sReq, sUser, sPassword);
+//			Class.forName("com.mysql.jdbc.Driver").newInstance();
+
+//			String sReq = String.format(openSQL, sIP, nPort, sDatabase);
+//			conn = DriverManager.getConnection(sReq, sUser, sPassword);
 
 			log.info("Connected to the database");
 		} catch (Exception e) {
@@ -73,6 +81,7 @@ public class CentralDbConnector {
 	}
 
 	public boolean isClosed() {
+		log.error("Connection is close?");
 		if (conn == null)
 			return true;
 
@@ -86,9 +95,9 @@ public class CentralDbConnector {
 		return bResult;
 	}
 
-	public boolean connect() {
-		return connect(host, port, user, pass, database);
-	}
+//	public boolean connect() {
+//		return connect(host, port, user, pass, database);
+//	}
 
 	public void close() {
 		if (conn != null) {
@@ -316,45 +325,45 @@ public class CentralDbConnector {
 		return true;
 	}
 
-	public String getHost() {
-		return this.host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public int getPort() {
-		return this.port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public String getUser() {
-		return this.user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
-	public String getPass() {
-		return this.pass;
-	}
-
-	public void setPass(String pass) {
-		this.pass = pass;
-	}
-
-	public String getDatabase() {
-		return this.database;
-	}
-
-	public void setDatabase(String database) {
-		this.database = database;
-	}
+//	public String getHost() {
+//		return this.host;
+//	}
+//
+//	public void setHost(String host) {
+//		this.host = host;
+//	}
+//
+//	public int getPort() {
+//		return this.port;
+//	}
+//
+//	public void setPort(int port) {
+//		this.port = port;
+//	}
+//
+//	public String getUser() {
+//		return this.user;
+//	}
+//
+//	public void setUser(String user) {
+//		this.user = user;
+//	}
+//
+//	public String getPass() {
+//		return this.pass;
+//	}
+//
+//	public void setPass(String pass) {
+//		this.pass = pass;
+//	}
+//
+//	public String getDatabase() {
+//		return this.database;
+//	}
+//
+//	public void setDatabase(String database) {
+//		this.database = database;
+//	}
 	
 	 protected String md5(String str) 
 	 {
@@ -412,16 +421,16 @@ public class CentralDbConnector {
 	 }
 
 	public static void main(String[] argv) {
-		CentralDbConnector conn = new CentralDbConnector();
-		boolean bConnect = conn.connect("125.227.191.247", 3306, "tqt001",
-				"tqt001", "LTS");
-		if (bConnect) {
-			conn.registerUser("aaaaaaa", "aaaaaaa", "aaaaaaa", "test1@test.com", "+886-12345678", UserType.NORMAL, "TW", "ZH");
-			//boolean bExist = conn.isUserExist("test1");
-			boolean bExist = conn.isEmailExist("phoenix.su@hkfdt.com");
-			//boolean bLogin = conn.userLogin("test1011", "test101");
-			//boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
-			System.out.println(bExist);
-		}
+//		CentralDbConnector conn = new CentralDbConnector();
+//		boolean bConnect = conn.connect("125.227.191.247", 3306, "tqt001",
+//				"tqt001", "LTS");
+//		if (bConnect) {
+//			conn.registerUser("aaaaaaa", "aaaaaaa", "aaaaaaa", "test1@test.com", "+886-12345678", UserType.NORMAL, "TW", "ZH");
+//			//boolean bExist = conn.isUserExist("test1");
+//			boolean bExist = conn.isEmailExist("phoenix.su@hkfdt.com");
+//			//boolean bLogin = conn.userLogin("test1011", "test101");
+//			//boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
+//			System.out.println(bExist);
+//		}
 	}
 }

@@ -1,11 +1,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans.xsd"
->
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<context:annotation-config />
 
@@ -24,24 +22,24 @@
 		<property name="headless">
 			<value>false</value>
 		</property>
-		<property name = "plugins">
-	        <list>
-            	<ref bean="marketSessionManager"/>
-            	<ref bean="refDataManager"/>
-            	<ref bean="mdManager"/>
-            	<ref bean="downStreamManager"/>
-            	<ref bean="upStreamManager"/>
-            	<ref bean="accountPositionManager"/>
-            	<ref bean="apiBridgeManager"/>
-            	<ref bean="alertManager"/>
-            	<ref bean="autoRunner"/>
-	        </list>
+		<property name="plugins">
+			<list>
+				<ref bean="marketSessionManager" />
+				<ref bean="refDataManager" />
+				<ref bean="mdManager" />
+				<ref bean="downStreamManager" />
+				<ref bean="upStreamManager" />
+				<ref bean="accountPositionManager" />
+				<ref bean="apiBridgeManager" />
+				<ref bean="alertManager" />
+				<ref bean="autoRunner" />
+			</list>
 		</property>
 		<property name="readyMap">
-	  		<map key-type="java.lang.String" value-type="java.lang.Boolean">
-		        <entry key="DownStream" value="false" />
-		        <entry key="Recovery" value="false" />
-		    </map>
+			<map key-type="java.lang.String" value-type="java.lang.Boolean">
+				<entry key="DownStream" value="false" />
+				<entry key="Recovery" value="false" />
+			</map>
 		</property>
 	</bean>
 
@@ -55,27 +53,27 @@
 		<property name="id">
 			<value>S1</value>
 		</property>
-	</bean>	
-	
+	</bean>
+
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://localHost:61616"></property>
 	</bean>
-	
+
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
-	    <constructor-arg>
-	    	<ref bean="transportService"/>
-	    </constructor-arg>
+		<constructor-arg>
+			<ref bean="transportService" />
+		</constructor-arg>
 		<property name="embedBroker" value="true"></property>
 		<property name="bridges">
-	        <list>
-	    		<ref bean="apiBridgeManager"/>
-	        </list>
+			<list>
+				<ref bean="apiBridgeManager" />
+			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
 		<property name="socketService">
-			<ref bean="socketService"/>
+			<ref bean="socketService" />
 		</property>
 	</bean>
 
@@ -94,43 +92,126 @@
 	</bean>
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
-	    <constructor-arg>
-	    	<ref bean="simMarketDataAdaptor"/>
-	    </constructor-arg>
+		<constructor-arg>
+			<ref bean="simMarketDataAdaptor" />
+		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
-	            <value>AUDUSD</value>
-	            <value>USDJPY</value>
-	            <value>USDCHF</value>
-	            <value>USDCAD</value>
-	            <value>EURUSD</value>
-	            <value>EURJPY</value>
-	            <value>GBPUSD</value>
-	            <value>NZDUSD</value>
-	            <value>GBPJPY</value>
-	        </list>    
+				<value>AUDCAD</value>
+				<value>AUDCHF</value>
+				<value>AUDCNH</value>
+				<value>AUDHKD</value>
+				<value>AUDJPY</value>
+				<value>AUDNZD</value>
+				<value>AUDSGD</value>
+				<value>AUDUSD</value>
+				<value>GBPAUD</value>
+				<value>GBPCAD</value>
+				<value>GBPCHF</value>
+				<value>GBPCNH</value>
+				<value>GBPDKK</value>
+				<value>GBPHKD</value>
+				<value>GBPJPY</value>
+				<value>GBPNOK</value>
+				<value>GBPNZD</value>
+				<value>GBPSEK</value>
+				<value>GBPUSD</value>
+				<value>CADCHF</value>
+				<value>CADCNH</value>
+				<value>CADHKD</value>
+				<value>CADJPY</value>
+				<value>CNHHKD</value>
+				<value>CNHJPY</value>
+				<value>DKKJPY</value>
+				<value>DKKNOK</value>
+				<value>DKKSEK</value>
+				<value>EURAUD</value>
+				<value>EURCAD</value>
+				<value>EURCHF</value>
+				<value>EURCNH</value>
+				<value>EURCZK</value>
+				<value>EURDKK</value>
+				<value>EURGBP</value>
+				<value>EURHKD</value>
+				<value>EURHUF</value>
+				<value>EURILS</value>
+				<value>EURJPY</value>
+				<value>EURMXN</value>
+				<value>EURNOK</value>
+				<value>EURNZD</value>
+				<value>EURRUB</value>
+				<value>EURSEK</value>
+				<value>EURSGD</value>
+				<value>EURUSD</value>
+				<value>HKDJPY</value>
+				<value>KRWAUD</value>
+				<value>KRWCAD</value>
+				<value>KRWCHF</value>
+				<value>KRWEUR</value>
+				<value>KRWGBP</value>
+				<value>KRWHKD</value>
+				<value>KRWJPY</value>
+				<value>KRWUSD</value>
+				<value>MXNJPY</value>
+				<value>NZDCHF</value>
+				<value>NZDJPY</value>
+				<value>NZDUSD</value>
+				<value>NOKJPY</value>
+				<value>NOKSEK</value>
+				<value>SGDCNH</value>
+				<value>SGDJPY</value>
+				<value>SEKJPY</value>
+				<value>CHFCNH</value>
+				<value>CHFDKK</value>
+				<value>CHFJPY</value>
+				<value>CHFNOK</value>
+				<value>CHFSEK</value>
+				<value>USDCAD</value>
+				<value>USDCHF</value>
+				<value>USDCNH</value>
+				<value>USDCZK</value>
+				<value>USDHKD</value>
+				<value>USDHUF</value>
+				<value>USDILS</value>
+				<value>USDJPY</value>
+				<value>USDMXN</value>
+				<value>USDNOK</value>
+				<value>USDRUB</value>
+				<value>USDSEK</value>
+				<value>USDSGD</value>
+				<value>XAUUSD</value>
+				<value>XAGUSD</value>
+			</list>
+		</property>
+		<property name="sessionMonitor">
+			<map>
+				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+				<entry key="PREOPEN" value="0" />
+				<entry key="CLOSE" value="0" />
+			</map>
 		</property>
 	</bean>
 
 	<bean id="simMarketDataAdaptor" class="com.cyanspring.server.sim.SimMarketDataAdaptor">
-		    <constructor-arg>
-		    	<ref bean="simExchange"/>
-		    </constructor-arg>
+		<constructor-arg>
+			<ref bean="simExchange" />
+		</constructor-arg>
 	</bean>
 
 	<bean id="simExchange" class="webcurve.exchange.Exchange">
 	</bean>
 
-	<bean id="strategyContainer" class="com.cyanspring.strategy.AsyncStrategyContainer" scope="prototype">
+	<bean id="strategyContainer" class="com.cyanspring.strategy.AsyncStrategyContainer"
+		scope="prototype">
 	</bean>
-	
+
 	<bean id="orderManager" class="com.cyanspring.server.OrderManager">
 		<property name="publishChildOrder" value="true"></property>
 	</bean>
-	
+
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
 	</bean>
-	
+
 	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
 	</bean>
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
@@ -138,13 +219,13 @@
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
-	  		<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
-		        <entry key="DEFAULT" value-ref="hkexTickTable" />
-		        <entry key="FX" value-ref="forexTickTable" />
-		    </map>
+			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
+				<entry key="DEFAULT" value-ref="hkexTickTable" />
+				<entry key="FX" value-ref="forexTickTable" />
+			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="businessManager" class="com.cyanspring.server.BusinessManager">
 		<property name="noOfContainers">
 			<value>10</value>
@@ -155,23 +236,98 @@
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
-	    <property name="quoteChecker">
-	    	<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"></bean>	
-	    </property>
+		<property name="quoteChecker">
+			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"></bean>
+		</property>
 		<property name="fxSymbols">
 			<list>
-	            <value>AUDUSD</value>
-	            <value>USDJPY</value>
-	            <value>USDCHF</value>
-	            <value>USDCAD</value>
-	            <value>EURUSD</value>
-	            <value>EURJPY</value>
-	            <value>GBPUSD</value>
-	            <value>NZDUSD</value>
-	            <value>GBPJPY</value>
-	        </list>    
+				<value>AUDCAD</value>
+				<value>AUDCHF</value>
+				<value>AUDCNH</value>
+				<value>AUDHKD</value>
+				<value>AUDJPY</value>
+				<value>AUDNZD</value>
+				<value>AUDSGD</value>
+				<value>AUDUSD</value>
+				<value>GBPAUD</value>
+				<value>GBPCAD</value>
+				<value>GBPCHF</value>
+				<value>GBPCNH</value>
+				<value>GBPDKK</value>
+				<value>GBPHKD</value>
+				<value>GBPJPY</value>
+				<value>GBPNOK</value>
+				<value>GBPNZD</value>
+				<value>GBPSEK</value>
+				<value>GBPUSD</value>
+				<value>CADCHF</value>
+				<value>CADCNH</value>
+				<value>CADHKD</value>
+				<value>CADJPY</value>
+				<value>CNHHKD</value>
+				<value>CNHJPY</value>
+				<value>DKKJPY</value>
+				<value>DKKNOK</value>
+				<value>DKKSEK</value>
+				<value>EURAUD</value>
+				<value>EURCAD</value>
+				<value>EURCHF</value>
+				<value>EURCNH</value>
+				<value>EURCZK</value>
+				<value>EURDKK</value>
+				<value>EURGBP</value>
+				<value>EURHKD</value>
+				<value>EURHUF</value>
+				<value>EURILS</value>
+				<value>EURJPY</value>
+				<value>EURMXN</value>
+				<value>EURNOK</value>
+				<value>EURNZD</value>
+				<value>EURRUB</value>
+				<value>EURSEK</value>
+				<value>EURSGD</value>
+				<value>EURUSD</value>
+				<value>HKDJPY</value>
+				<value>KRWAUD</value>
+				<value>KRWCAD</value>
+				<value>KRWCHF</value>
+				<value>KRWEUR</value>
+				<value>KRWGBP</value>
+				<value>KRWHKD</value>
+				<value>KRWJPY</value>
+				<value>KRWUSD</value>
+				<value>MXNJPY</value>
+				<value>NZDCHF</value>
+				<value>NZDJPY</value>
+				<value>NZDUSD</value>
+				<value>NOKJPY</value>
+				<value>NOKSEK</value>
+				<value>SGDCNH</value>
+				<value>SGDJPY</value>
+				<value>SEKJPY</value>
+				<value>CHFCNH</value>
+				<value>CHFDKK</value>
+				<value>CHFJPY</value>
+				<value>CHFNOK</value>
+				<value>CHFSEK</value>
+				<value>USDCAD</value>
+				<value>USDCHF</value>
+				<value>USDCNH</value>
+				<value>USDCZK</value>
+				<value>USDHKD</value>
+				<value>USDHUF</value>
+				<value>USDILS</value>
+				<value>USDJPY</value>
+				<value>USDMXN</value>
+				<value>USDNOK</value>
+				<value>USDRUB</value>
+				<value>USDSEK</value>
+				<value>USDSGD</value>
+				<value>XAUUSD</value>
+				<value>XAGUSD</value>
+			</list>
 		</property>
-		<property name="dailyExecTime" value="05:45:00"/> <!-- format=[HH:mm:ss] 24hr -->
+		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
@@ -183,50 +339,50 @@
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
 	</bean>
-	
+
 	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
 	</bean>
 
 	<bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
 	</bean>
-	
+
 	<bean id="tickDataManager" class="com.cyanspring.server.marketdata.TickDataManager">
 		<property name="directory">
 			<value>ticks</value>
 		</property>
 		<property name="tickDataWriter">
-			<ref bean="tickDataWriter"/>
+			<ref bean="tickDataWriter" />
 		</property>
 		<property name="newFile">
 			<value>true</value>
 		</property>
 		<property name="symbolList">
 			<list>
-	        </list>    
+			</list>
 		</property>
 	</bean>
-		
+
 	<bean id="tickDataWriter" class="com.cyanspring.common.marketdata.QuoteDataWriter">
 	</bean>
-		
+
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
 			<value>refdata/refData_test.xml</value>
 		</property>
 	</bean>
-	
+
 	<bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">
 	</bean>
-	
+
 	<bean id="accountRecoveryProcessor" class="com.cyanspring.server.AccountRecoveryProcessor">
 	</bean>
-	
+
 	<bean id="accountSettingRecoveryProcessor" class="com.cyanspring.server.AccountSettingRecoveryProcessor">
 	</bean>
-	
+
 	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
 	</bean>
-	
+
 	<bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
 	</bean>
 
@@ -241,43 +397,35 @@
 		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073" />
 		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z" />
 	</bean>
-	
+
 	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
-		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073"/>
-		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z"/>
+		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073" />
+		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z" />
 	</bean>
-	
+
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
-	    <constructor-arg>
-	        <list>
-		    	<ref bean="hyperDownStreamAdaptor"/>
-	        </list>
-	    </constructor-arg>
-	    <constructor-arg>
-	        <list>
-	        </list>
-	    </constructor-arg>
+		<constructor-arg>
+			<list>
+				<ref bean="hyperDownStreamAdaptor" />
+			</list>
+		</constructor-arg>
+		<constructor-arg>
+			<list>
+			</list>
+		</constructor-arg>
 	</bean>
 
 	<bean id="hyperDownStreamAdaptor" class="com.cyanspring.server.sim.HyperDownStreamAdaptor">
 	</bean>
-	
+
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
 
 	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
-	    <constructor-arg>
-	        <list>
-	        </list>
-	    </constructor-arg>
-	</bean>
-	
-	<bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
-		<property name="host" value="125.227.191.247"/>
-		<property name="port" value="3306"/>
-		<property name="user" value="tqt001"/>
-		<property name="pass" value="tqt001"/>
-		<property name="database" value="LTS"/>
+		<constructor-arg>
+			<list>
+			</list>
+		</constructor-arg>
 	</bean>
 
 </beans>

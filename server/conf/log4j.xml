@@ -41,11 +41,15 @@
  	<category name="quickfix.mina.message">
         <priority value="INFO"/>
     </category>
+    
+    <category name="com.mchange">
+    	<priority value="INFO"/>
+    </category>
 
   	<root>
 		<priority value="DEBUG" />
 		<appender-ref ref="FILE" />
-		<!-- appender-ref ref="CONSOLE" /-->
+		<appender-ref ref="CONSOLE"/>
 	</root>
 
 </log4j:configuration>
