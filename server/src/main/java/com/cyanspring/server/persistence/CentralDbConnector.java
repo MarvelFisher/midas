@@ -34,7 +34,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
-	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
+	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s' AND `PASSWORD` = '%s'";
 	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
 	private ComboPooledDataSource cpds;	
 
@@ -284,7 +284,6 @@ public class CentralDbConnector {
 		String salt = null;
 
 		try {
-			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sQuery);
 
@@ -303,12 +302,11 @@ public class CentralDbConnector {
 				return false;
 			
 			String newMd5Password = md5(newPass + salt);
-			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser);
+			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser, md5Password);
 			
 			int nResult = stmt.executeUpdate(sQuerySet);
 			if(1 != nResult)
 				return false;
-			conn.commit();
 
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
@@ -428,9 +426,9 @@ public class CentralDbConnector {
 //			conn.registerUser("aaaaaaa", "aaaaaaa", "aaaaaaa", "test1@test.com", "+886-12345678", UserType.NORMAL, "TW", "ZH");
 //			//boolean bExist = conn.isUserExist("test1");
 //			boolean bExist = conn.isEmailExist("phoenix.su@hkfdt.com");
-//			//boolean bLogin = conn.userLogin("test1011", "test101");
-//			//boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
-//			System.out.println(bExist);
+//			boolean bLogin = conn.userLogin("seemo1", "1234");
+//			//boolean bChangePassword = conn.changePassword("seemo1", "1111", "1234");
+//			System.out.println("");
 //		}
 	}
 }
