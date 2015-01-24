@@ -34,7 +34,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
-	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s' AND `PASSWORD` = '%s'";
+	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
 	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
 	private ComboPooledDataSource cpds;	
 
@@ -298,7 +298,7 @@ public class CentralDbConnector {
 				return false;
 			
 			String newMd5Password = md5(newPass + salt);
-			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser, md5Password);
+			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser);
 			
 			int nResult = stmt.executeUpdate(sQuerySet);
 			if(1 != nResult)
