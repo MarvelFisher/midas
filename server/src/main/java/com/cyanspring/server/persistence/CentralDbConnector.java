@@ -146,12 +146,8 @@ public class CentralDbConnector {
 		Statement stmt = null;
 
 		try {
-			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
-
 			stmt.executeUpdate(sUserSQL);
-
-			conn.commit();
 			bIsSuccess = true;
 		} catch (SQLException e) {
 			bIsSuccess = false;
