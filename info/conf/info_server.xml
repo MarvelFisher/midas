@@ -27,6 +27,7 @@
 		<property name="createThreadCount" value="5" />
 		<property name="maxRetrytimes" value="3" />
 		<property name="killTimeoutSecond" value="60000" />
+		<property name="maxNoOfAlerts" value="20" />
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
 	</bean>
@@ -90,6 +91,7 @@
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://0.0.0.0:61617"></property>
+<!-- 		<property name="url" value="nio://localhost:61617"></property> -->
 	</bean>
 	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
@@ -101,6 +103,7 @@
 
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://10.0.0.51:61616"></property>
+<!-- 		<property name="url" value="nio://localhost:61616"></property> -->
 	</bean>
 	
 	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">

@@ -20,6 +20,11 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		this.setContent(content);
 	}
 	
+	public BasePriceAlert()
+	{
+		super();
+	}
+	
 	public void modifyPriceAlert(BasePriceAlert basePriceAlert)
 	{
 		if (!this.id.equals(basePriceAlert.getId()))

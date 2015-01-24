@@ -12,4 +12,9 @@ public class CurPriceAlert extends BasePriceAlert{
 			String strdateTime,String content) {
 		super(userId, symbol, price, strdateTime, content);
 	}
+	
+	public CurPriceAlert()
+	{
+		super() ;
+	}
 }

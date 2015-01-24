@@ -12,4 +12,8 @@ public class PastPriceAlert extends BasePriceAlert{
 			String strdateTime,String content) {
 		super(userId, symbol, price, strdateTime, content);
 	}
+	public PastPriceAlert()
+	{
+		super();
+	}
 }
