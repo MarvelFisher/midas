@@ -31,7 +31,7 @@
 				<ref bean="upStreamManager" />
 				<ref bean="accountPositionManager" />
 				<ref bean="apiBridgeManager" />
-				<ref bean="alertManager" />
+<!-- 				<ref bean="alertManager" /> -->
 				<ref bean="autoRunner" />
 			</list>
 		</property>
