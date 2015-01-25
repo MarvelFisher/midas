@@ -45,6 +45,9 @@ public class AlertManager implements IPlugin {
 			.getLogger(AlertManager.class);
 
 	@Autowired
+	private IRemoteEventManager eventManager;
+	
+	@Autowired
 	ScheduleManager scheduleManager;
 
 	@Autowired
@@ -83,11 +86,23 @@ public class AlertManager implements IPlugin {
 
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(ChildOrderUpdateEvent.class, null);
-			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
 			subscribeToEvent(QueryPriceAlertRequestEvent.class, null);
 			subscribeToEvent(QueryOrderAlertRequestEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+	};
+
+	private AsyncEventProcessor eventProcessorMD = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(ChildOrderUpdateEvent.class, null);
+			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 		}
 
@@ -96,6 +111,7 @@ public class AlertManager implements IPlugin {
 			return eventManagerMD;
 		}
 	};
+	
 	
 	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
 		Execution execution = event.getExecution();
@@ -186,7 +202,7 @@ public class AlertManager implements IPlugin {
 				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),true,"");
 			}
 			try {
-				eventManagerMD.sendRemoteEvent(queryorderalertreplyevent);
+				eventManager.sendRemoteEvent(queryorderalertreplyevent);
 			} catch (Exception e) {
 				log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
 			}
@@ -363,7 +379,7 @@ public class AlertManager implements IPlugin {
 			}
 		}
 		try {
-			eventManagerMD.sendRemoteEvent(pricealertreplyevent);
+			eventManager.sendRemoteEvent(pricealertreplyevent);
 		} catch (Exception e) {					
 			log.debug("[recevieAddPriceAlert] : " + e.getMessage());
 		}
@@ -414,7 +430,7 @@ public class AlertManager implements IPlugin {
 			list.get(search).modifyPriceAlert(priceAlert);
 		}
 		try {
-			eventManagerMD.sendRemoteEvent(pricealertreplyevent);
+			eventManager.sendRemoteEvent(pricealertreplyevent);
 		} catch (Exception e) {					
 			log.debug("[receiveModifyPriceAlert] : " + e.getMessage());
 		}
@@ -459,7 +475,7 @@ public class AlertManager implements IPlugin {
 			list.remove(priceAlert);
 		}
 		try {
-			eventManagerMD.sendRemoteEvent(pricealertreplyevent);
+			eventManager.sendRemoteEvent(pricealertreplyevent);
 		} catch (Exception e) {					
 			log.debug("[receiveCancelPriceAlert] : " + e.getMessage());
 		}
@@ -481,7 +497,7 @@ public class AlertManager implements IPlugin {
 				//Send event reply
 				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,null);
 			}
-			eventManagerMD.sendRemoteEvent(priceAlertReplyEvent);
+			eventManager.sendRemoteEvent(priceAlertReplyEvent);
 		} catch (Exception e) {
 			log.debug("[receiveQueryCurPriceAlert] : " + e.getMessage());
 		}
@@ -514,7 +530,7 @@ public class AlertManager implements IPlugin {
 				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,null);
 			}
 			session.close();
-			eventManagerMD.sendRemoteEvent(priceAlertReplyEvent);
+			eventManager.sendRemoteEvent(priceAlertReplyEvent);
 		} catch (Exception e) {
 			log.debug("[receiveQueryPastPriceAlert] : " + e.getMessage());
 		}
@@ -700,7 +716,13 @@ public class AlertManager implements IPlugin {
 			eventProcessor.init();
 			if(eventProcessor.getThread() != null)
 				eventProcessor.getThread().setName("AlertManager");
-			scheduleManager.scheduleRepeatTimerEvent(CheckThreadStatusInterval , eventProcessor, timerEvent);
+			
+			// subscribe to events
+			eventProcessorMD.setHandler(this);
+			eventProcessorMD.init();
+			if(eventProcessorMD.getThread() != null)
+				eventProcessorMD.getThread().setName("AlertManager-MD");
+			scheduleManager.scheduleRepeatTimerEvent(CheckThreadStatusInterval , eventProcessorMD, timerEvent);
 			
 			
 			if (getCreateThreadCount() > 0)
@@ -729,6 +751,7 @@ public class AlertManager implements IPlugin {
 	public void uninit() {
 		log.info("Uninitialising...");
 		eventProcessor.uninit();
+		eventProcessorMD.uninit();
 		for (ParseThread PT : ParseThreadList)
 		{
 			PT.setstartThread(false) ;

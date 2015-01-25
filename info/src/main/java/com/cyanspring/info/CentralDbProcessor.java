@@ -87,17 +87,31 @@ public class CentralDbProcessor implements IPlugin
 	@Autowired
 	private RefDataManager refDataManager;
 	
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+	
+	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor(){
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(PriceHighLowRequestEvent.class, null);
+			subscribeToEvent(SearchSymbolRequestEvent.class, null);
+			subscribeToEvent(SymbolListSubscribeRequestEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}		
+	};
+	
+	
+	private AsyncEventProcessor eventProcessorMD = new AsyncEventProcessor() {
 
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
-			subscribeToEvent(PriceHighLowRequestEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(SymbolEvent.class, null);
-			subscribeToEvent(SymbolListSubscribeRequestEvent.class, null);
-			subscribeToEvent(SearchSymbolRequestEvent.class, null);
 		}
 
 		@Override
@@ -272,6 +286,7 @@ public class CentralDbProcessor implements IPlugin
 		retEvent.setGroup(event.getGroup());
 		retEvent.setMarket(event.getMarket());
 		retEvent.setTxId(event.getTxId());
+		retEvent.setType(event.getType());
 		String user = event.getUserID();
 		String market = event.getMarket();
 		String group = event.getGroup();
@@ -755,10 +770,18 @@ public class CentralDbProcessor implements IPlugin
 		this.sessionType = sessionType;
 	}
 	
-	public void sendEvent(RemoteAsyncEvent event) {
+	public void sendMDEvent(RemoteAsyncEvent event) {
 		RemoteAsyncEvent remoteEvent = (RemoteAsyncEvent)event;
 		try {
 			eventManagerMD.sendRemoteEvent(remoteEvent);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	public void sendEvent(RemoteAsyncEvent event) {
+		RemoteAsyncEvent remoteEvent = (RemoteAsyncEvent)event;
+		try {
+			eventManager.sendRemoteEvent(remoteEvent);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -788,21 +811,21 @@ public class CentralDbProcessor implements IPlugin
 	public void setDatabase(String database) {
 		this.database = database;
 	}
-	public AsyncEventProcessor getEventProcessor() {
-		return eventProcessor;
+	public AsyncEventProcessor getEventProcessorMD() {
+		return eventProcessorMD;
 	}
-	public void setEventProcessor(AsyncEventProcessor eventProcessor) {
-		this.eventProcessor = eventProcessor;
+	public void setEventProcessorMD(AsyncEventProcessor eventProcessor) {
+		this.eventProcessorMD = eventProcessor;
 	}	
 	public void requestMarketSession()
 	{
 		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
-		sendEvent(new MarketSessionRequestEvent(null, receiver)) ;
+		sendMDEvent(new MarketSessionRequestEvent(null, receiver)) ;
 	}	
 	public void requestSymbolList()
 	{
 		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
-		sendEvent(new SymbolRequestEvent(null, receiver)) ;
+		sendMDEvent(new SymbolRequestEvent(null, receiver)) ;
 	}
 	@Override
 	public void init() throws Exception {
@@ -810,11 +833,18 @@ public class CentralDbProcessor implements IPlugin
 		Class.forName("com.mysql.jdbc.Driver");
 		dbhnd = new DBHandler(host, user, pass, database) ;
 		resetStatement() ;
+		
 		// subscribe to events
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("CentralDBProcessor");
+				
+		// subscribe to events
+		eventProcessorMD.setHandler(this);
+		eventProcessorMD.init();
+		if(eventProcessorMD.getThread() != null)
+			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
 		refDataManager.init();
 		requestMarketSession() ;
 //		requestSymbolList() ;
@@ -824,6 +854,7 @@ public class CentralDbProcessor implements IPlugin
 	@Override
 	public void uninit() {
 		log.info("Uninitialising...");
+		eventProcessorMD.uninit();
 		eventProcessor.uninit();
 	}
 
