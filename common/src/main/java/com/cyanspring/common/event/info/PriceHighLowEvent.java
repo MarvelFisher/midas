@@ -9,14 +9,24 @@ public class PriceHighLowEvent extends RemoteAsyncEvent {
 	private List<PriceHighLow> listHighLow ;
 	private boolean ok ;
 	private String message ;
+	private PriceHighLowType m_type;
 
 	public PriceHighLowEvent(String key, String receiver) {
 		super(key, receiver);
 	}
 	public PriceHighLowEvent(String key, String receiver,
-			List<PriceHighLow> listHighLow) {
+			PriceHighLowType type, List<PriceHighLow> listHighLow) {
 		super(key, receiver);
+		this.m_type = type;
 		this.listHighLow = listHighLow ;
+	}
+	public PriceHighLowType getType()
+	{
+		return m_type;
+	}
+	public void setType(PriceHighLowType type)
+	{
+		m_type = type;
 	}
 	public List<PriceHighLow> getListHighLow() {
 		return listHighLow;

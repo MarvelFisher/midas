@@ -95,6 +95,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(PriceHighLowRequestEvent.class, null);
 			subscribeToEvent(SearchSymbolRequestEvent.class, null);
 			subscribeToEvent(SymbolListSubscribeRequestEvent.class, null);
+			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 		}
 
 		@Override
@@ -110,7 +111,6 @@ public class CentralDbProcessor implements IPlugin
 		public void subscribeToEvents() {
 			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
-			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(SymbolEvent.class, null);
 		}
 
@@ -208,6 +208,7 @@ public class CentralDbProcessor implements IPlugin
 			phlList.add(listSymbolData.get(index).getPriceHighLow(event.getType())) ;
 		}
 		PriceHighLowEvent retEvent = new PriceHighLowEvent(null, sender) ;
+		retEvent.setType(event.getType());
 		if (phlList.isEmpty())
 		{
 			retEvent.setOk(false);
