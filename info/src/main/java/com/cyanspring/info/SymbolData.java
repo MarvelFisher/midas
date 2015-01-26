@@ -530,7 +530,7 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
-	public List<HistoricalPrice> getHistoricalPrice(byte service, String type, Date start, Date end)
+	public List<HistoricalPrice> getHistoricalPrice(byte service, String type, String symbol, Date start, Date end)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
 		SimpleDateFormat sdftime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
@@ -540,8 +540,8 @@ public class SymbolData implements Comparable<SymbolData>
 		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
-		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE TRADEDATE>='%s' AND TRADEDATE<'%s' ORDER BY TRADEDATE;", 
-				service, type, sdfprice.format(start), sdfprice.format(end)) ;
+		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE `SYMBOL`='%s' AND `TRADEDATE`>='%s' AND `TRADEDATE`<'%s' ORDER BY `TRADEDATE`;", 
+				service, type, symbol, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			while(rs.next())

@@ -15,8 +15,8 @@
 		<property name = "plugins">
 	        <list>
             	<ref bean="alertManager"/>
-            	<ref bean="historicalInfoManager"/>
-            	<ref bean="marketInfoManager"/>
+<!--             	<ref bean="historicalInfoManager"/> -->
+<!--             	<ref bean="marketInfoManager"/> -->
             	<ref bean="centralDbProcessor"/>
 	        </list>
 		</property>
