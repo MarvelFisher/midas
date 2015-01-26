@@ -453,4 +453,36 @@ public class DefaultExecutionAnalyzerTest {
 		assertTrue(ei.getOrder().getQuantity() == pa.getQty());
 		assertTrue(ei.getOrder().getType() == pa.getOrderType());
 	}
+	
+	@Test
+	public void testMarketTypeOrder() {
+		TestStrategy strategy = new TestStrategy();
+		ChildOrder child = strategy.createChildOrder("001P", "0005.HK", OrderSide.Buy, 
+				8000, 68.3, ExchangeOrderType.MARKET);
+		strategy.addChildOrder(child);
+
+		DefaultExecutionAnalyzer analyzer = new DefaultExecutionAnalyzer();
+		PriceInstruction pi = new PriceInstruction();
+		PriceAllocation pa = new PriceAllocation("0005.HK", OrderSide.Buy, 68.4, 8000, ExchangeOrderType.MARKET, "001P");
+		pi.add(pa);
+		List<ExecutionInstruction> eis = analyzer.analyze(pi, strategy);
+		assertTrue(eis.size() == 0);
+	}
+	
+	@Test
+	public void testMarketTypeOrderPartialFilled() {
+		TestStrategy strategy = new TestStrategy();
+		ChildOrder child = strategy.createChildOrder("001P", "0005.HK", OrderSide.Buy, 
+				8000, 68.3, ExchangeOrderType.MARKET);
+		child.setCumQty(2000);
+		strategy.addChildOrder(child);
+
+		DefaultExecutionAnalyzer analyzer = new DefaultExecutionAnalyzer();
+		PriceInstruction pi = new PriceInstruction();
+		PriceAllocation pa = new PriceAllocation("0005.HK", OrderSide.Buy, 68.4, 6000, ExchangeOrderType.MARKET, "001P");
+		pi.add(pa);
+		List<ExecutionInstruction> eis = analyzer.analyze(pi, strategy);
+		assertTrue(eis.size() == 0);
+	}
+
 }
