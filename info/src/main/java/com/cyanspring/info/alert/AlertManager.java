@@ -36,6 +36,7 @@ import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.AsyncEventProcessor;
@@ -215,13 +216,13 @@ public class AlertManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
+		log.debug("Quote: " + quote);
 		if (quotes.get(quote.getSymbol()) == null)
 		{
-			quotes.put(quote.getSymbol(), quote);//���洵銝����
+			quotes.put(quote.getSymbol(), quote);
 			return ;
 		}
-		//頝istPrice��撠�
-		log.debug("Quote: " + quote);
+		
 		ArrayList<BasePriceAlert> list = symbolPriceAlerts.get(quote.getSymbol());
 		if(null == list)
 			return;
@@ -285,8 +286,9 @@ public class AlertManager implements IPlugin {
 
 	public void processSetPriceAlertRequestEvent(SetPriceAlertRequestEvent event) {
 		AlertType type = event.getType();
+		log.debug("[processSetPriceAlertRequestEvent] "+ event.toString());	
 		if (type == AlertType.PRICE_SET_NEW)
-		{
+		{			
 			receiveAddPriceAlert(event);
 		}
 		else if (type == AlertType.PRICE_SET_MODIFY)
@@ -301,6 +303,7 @@ public class AlertManager implements IPlugin {
 	
 	public void processQueryPriceAlertRequestEvent(QueryPriceAlertRequestEvent event) {
 		AlertType type = event.getType();
+		log.debug("[processQueryPriceAlertRequestEvent] "+ event.toString());	
 		if (type == AlertType.PRICE_QUERY_CUR)
 		{
 			receiveQueryCurPriceAlert(event);
@@ -628,17 +631,17 @@ public class AlertManager implements IPlugin {
 //				ParseDataQueue.add(PackTradeAlert(new Execution("USDJPY", OrderSide.Buy, 10000.0,
 //						123.4, "123-456-789", "111-111-111",
 //						"1", "222-222-222",
-//						"rickdev", "rickdev-FX", "abcdefg"),timeoutSecond));
-//				
-				TradeAlert TA = new TradeAlert("davidddd", "USDJPY", null ,(long)1000000, (double)120,"2015-01-22 20:45:11", "TEST");
-				SQLSave(TA);
+//						"rickdev", "rickdev-FX", "abcdefg")));
+////				
+//				TradeAlert TA = new TradeAlert("davidddd", "USDJPY", null ,(long)1000000, (double)120,"2015-01-22 20:45:11", "TEST");
+//				SQLSave(TA);
 //				CurPriceAlert CP = new CurPriceAlert("d22222222","NZDUSD",(double)888,"2015-01-24 20:45:11","TESTCP");
 //				PastPriceAlert PA = new PastPriceAlert("davidddd","USDJPY",(double)120,"2015-01-22 20:45:11","TESTPA");
 //				SQLSave(PA);
 //				SQLSave(CP);
 //				PA.setPrice((double)150);
 //				SQLUpdate(PA);
-				
+//				ParseDataQueue.add(PackPriceAlert(new BasePriceAlert("David","USDJPT",(double)120,"2015-01-26 11:05:18","")));
 //				ArrayList<TradeAlert> list = new ArrayList<TradeAlert>();
 //				session = sessionFactory.openSession();
 ////				Transaction tx = session.beginTransaction();
@@ -700,6 +703,92 @@ public class AlertManager implements IPlugin {
 			}
 		}
 	}
+	
+	private void loadSQLdata()
+	{
+		log.info("LoadSQLdata...");
+		Session session = sessionFactory.openSession();
+		try
+		{
+			ArrayList<TradeAlert> list ;			
+			Query query = session.getNamedQuery("LoadAllPastTradeAlert");
+			Iterator iterator = query.list().iterator();
+			
+			while(iterator.hasNext()) {
+				TradeAlert  pastTradeAlert= (TradeAlert) iterator.next();
+				list = userTradeAlerts.get(pastTradeAlert.getUserId());
+				if (null == list)
+				{
+					list = new ArrayList<TradeAlert>() ;
+					list.add(pastTradeAlert);
+					userTradeAlerts.put(pastTradeAlert.getUserId(), list);					
+				}
+				else
+				{
+					if (list.size() > maxNoOfAlerts)
+					{
+						SQLDelete(pastTradeAlert);
+						continue;
+					}
+					else
+					{
+						list.add(pastTradeAlert);
+					}
+				}
+			}
+			
+			ArrayList<BasePriceAlert> BasePriceAlertlist ;
+			query = session.getNamedQuery("LoadAllCurPriceAlert");
+			iterator = query.list().iterator();
+			int search ;
+			while(iterator.hasNext()) {
+				CurPriceAlert  curPriceAlert= (CurPriceAlert) iterator.next();
+				BasePriceAlertlist = userPriceAlerts.get(curPriceAlert.getUserId());
+				if (null == BasePriceAlertlist)
+				{
+					BasePriceAlertlist = new ArrayList<BasePriceAlert>() ;
+					BasePriceAlertlist.add(curPriceAlert);
+					userPriceAlerts.put(curPriceAlert.getUserId(), BasePriceAlertlist);					
+				}
+				else
+				{
+					BasePriceAlertlist.add(curPriceAlert);
+				}
+				
+				BasePriceAlertlist = symbolPriceAlerts.get(curPriceAlert.getSymbol());
+				if (null == BasePriceAlertlist)
+				{
+					BasePriceAlertlist = new ArrayList<BasePriceAlert>() ;
+					BasePriceAlertlist.add(curPriceAlert);
+					symbolPriceAlerts.put(curPriceAlert.getSymbol(), BasePriceAlertlist);			
+				}
+				else
+				{
+					search = Collections.binarySearch(BasePriceAlertlist, curPriceAlert);
+					if (search > 0)
+					{
+						log.warn("[loadSQLdata] : PriceAlert id repeat warning.");
+					}
+					else
+					{
+						BasePriceAlertlist.add(~search, curPriceAlert);
+					}					
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			log.warn("[loadSQLdata] : " + e.getMessage());
+		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
+		return ;
+	}
 
 	@Override
 	public void init() throws Exception {
@@ -710,7 +799,7 @@ public class AlertManager implements IPlugin {
 
 			ParseDataQueue = new ConcurrentLinkedQueue<ParseData>() ;
 			ParseThreadList = new ArrayList<ParseThread>() ;
-			
+
 			// subscribe to events
 			eventProcessor.setHandler(this);
 			eventProcessor.init();
@@ -722,9 +811,11 @@ public class AlertManager implements IPlugin {
 			eventProcessorMD.init();
 			if(eventProcessorMD.getThread() != null)
 				eventProcessorMD.getThread().setName("AlertManager-MD");
+			
 			scheduleManager.scheduleRepeatTimerEvent(CheckThreadStatusInterval , eventProcessorMD, timerEvent);
 			
-			
+
+			loadSQLdata();
 			if (getCreateThreadCount() > 0)
 			{
 					for (int i = 0; i < getCreateThreadCount() ; i ++)

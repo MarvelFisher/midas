@@ -25,6 +25,17 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		super();
 	}
 	
+	protected String fieldtoString()
+	{
+		return new String("userId='" + userId + "',symbol='" + symbol + "',price=" + String.valueOf(price) +
+				",datetime='" + dateTime + "'");
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "[" + fieldtoString() + "]" ;
+	}
 	public void modifyPriceAlert(BasePriceAlert basePriceAlert)
 	{
 		if (!this.id.equals(basePriceAlert.getId()))

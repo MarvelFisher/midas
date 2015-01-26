@@ -28,4 +28,9 @@ public class QueryPriceAlertRequestEvent extends RemoteAsyncEvent{
 	public String getUserId() {
 		return userId;
 	}
+	@Override
+	public String toString()
+	{
+		return "Type : " + type.toString() + ",userId : " + userId ;
+	}
 }
