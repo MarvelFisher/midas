@@ -29,4 +29,10 @@ public class QueryOrderAlertRequestEvent extends RemoteAsyncEvent{
 	public String getuserId() {
 		return userId;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Type : " + type.toString() + ",userId : " + userId ;
+	}
 }

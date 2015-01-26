@@ -52,4 +52,34 @@
     ]]>
     <return alias="PastPriceAlert" class="com.cyanspring.common.alert.PastPriceAlert"/>
   </sql-query>
+  
+  <sql-query name="LoadCurPriceAlert">
+    <![CDATA[
+    SELECT {CurPriceAlert.*} from PRICEALERT_CUR CurPriceAlert where CurPriceAlert.USER_ID=? order by CurPriceAlert.DATE_TIME DESC limit 0,:maxNoOfAlerts ;
+    ]]>
+    <return alias="CurPriceAlert" class="com.cyanspring.common.alert.CurPriceAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadAllPastTradeAlert">
+    <![CDATA[
+    SELECT {PastTradeAlert.*} from TRADEALERT_PAST PastTradeAlert order by PastTradeAlert.DATE_TIME DESC;
+    ]]>
+    <return alias="PastTradeAlert" class="com.cyanspring.common.alert.TradeAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadAllCurPriceAlert">
+    <![CDATA[
+    SELECT {CurPriceAlert.*} from PRICEALERT_CUR CurPriceAlert order by CurPriceAlert.DATE_TIME DESC;
+    ]]>
+    <return alias="CurPriceAlert" class="com.cyanspring.common.alert.CurPriceAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadAllPastPriceAlert">
+    <![CDATA[
+    SELECT {PastPriceAlert.*} from PRICEALERT_PAST PastPriceAlert order by PastPriceAlert.DATE_TIME DESC;
+    ]]>
+    <return alias="PastPriceAlert" class="com.cyanspring.common.alert.PastPriceAlert"/>
+  </sql-query>
+  
+  
 </hibernate-mapping> 

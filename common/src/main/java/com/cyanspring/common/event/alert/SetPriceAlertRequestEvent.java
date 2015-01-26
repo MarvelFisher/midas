@@ -30,4 +30,10 @@ public class SetPriceAlertRequestEvent extends RemoteAsyncEvent {
 	{
 		return type ;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Type : " + type.toString() + "," + priceAlert.toString() ;
+	}
 }
