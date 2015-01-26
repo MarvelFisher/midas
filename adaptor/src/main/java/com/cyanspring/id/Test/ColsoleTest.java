@@ -53,7 +53,7 @@ public class ColsoleTest {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		DOMConfigurator.configure("conf/log4j.xml");
+		DOMConfigurator.configure("conf/idlog4j.xml");
 
 		String configFile = "conf/idtest.xml";
 		ApplicationContext context = new FileSystemXmlApplicationContext(

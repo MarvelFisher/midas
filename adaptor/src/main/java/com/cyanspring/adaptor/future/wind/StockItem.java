@@ -118,6 +118,7 @@ public class StockItem implements AutoCloseable{
 	String market;
 	String cnName;
 	String enName;
+	String twName;
 	public String getEnName() {
 		return enName;
 	}
@@ -140,6 +141,14 @@ public class StockItem implements AutoCloseable{
 
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
+	}
+
+	public String getTwName() {
+		return twName;
+	}
+
+	public void setTwName(String twName) {
+		this.twName = twName;
 	}
 
 	/************************************* Market Data ***************************************/
@@ -339,7 +348,7 @@ public class StockItem implements AutoCloseable{
 	}
 	
 	public SymbolInfo getSymbolInfo() {
-		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName());
+		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName(), getTwName());
 		return info;
 	}
 	

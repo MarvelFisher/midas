@@ -2,11 +2,11 @@ package com.cyanspring.common.event.alert;
 
 import java.util.List;
 
-import com.cyanspring.common.alert.PriceAlert;
+import com.cyanspring.common.alert.BasePriceAlert;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class PriceAlertReplyEvent extends RemoteAsyncEvent {
-	private List<PriceAlert> PriceAlertList;
+	private List<BasePriceAlert> PriceAlertList;
 	private String id;
 	private String txId;
 	private String userId;
@@ -25,7 +25,7 @@ public class PriceAlertReplyEvent extends RemoteAsyncEvent {
 	 * if reject , ok = false ,message = error msg ;
 	 * */
 	public PriceAlertReplyEvent(String key, String receiver,
-			String id, String txId,String userId, AlertType type, List<PriceAlert> PriceAlertList, boolean ok, String message) {
+			String id, String txId,String userId, AlertType type, List<BasePriceAlert> PriceAlertList, boolean ok, String message) {
 		super(key, receiver);
 		this.setId(id);
 		this.setTxId(txId);
@@ -53,10 +53,10 @@ public class PriceAlertReplyEvent extends RemoteAsyncEvent {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public List<PriceAlert> getPriceAlert() {
+	public List<BasePriceAlert> getPriceAlert() {
 		return PriceAlertList;
 	}
-	public void setPriceAlert(List<PriceAlert> priceAlert) {
+	public void setPriceAlert(List<BasePriceAlert> priceAlert) {
 		PriceAlertList = priceAlert;
 	}
 	public boolean isOk() {

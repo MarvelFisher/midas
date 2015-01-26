@@ -73,7 +73,7 @@ public class Program implements IFrameClose, TimerEventHandler {
 				String.format("%s:%s", "IDForexFeed", Program.version), true);
 		Program.instance().addRefreshButton();
 
-		DOMConfigurator.configure("conf/log4j.xml");
+		DOMConfigurator.configure("conf/idlog4j.xml");
 
 		String configFile = "conf/idtest.xml";
 		try {

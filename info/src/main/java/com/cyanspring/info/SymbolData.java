@@ -1,6 +1,7 @@
 package com.cyanspring.info;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -49,16 +50,20 @@ public class SymbolData implements Comparable<SymbolData>
 	{
 		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
-		int tickCount = centralDB.getTickCount() ;
-		for (int ii = 0; ii < tickCount; ii++)
-		{
-			priceData.add(new HistoricalPrice(this.getStrSymbol())) ;
-		}
 		readFromTick() ;
 		get52WHighLow((byte)0x40) ;
 	}
 	public SymbolData(String symbol) {
 		this.setStrSymbol(symbol) ;
+	}
+	public void resetPriceData()
+	{
+		int tickCount = centralDB.getTickCount() ;
+		priceData.clear();
+		for (int ii = 0; ii < tickCount; ii++)
+		{
+			priceData.add(new HistoricalPrice(this.getStrSymbol())) ;
+		}
 	}
 	public void setPrice(Quote quote)
 	{
@@ -116,10 +121,21 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void readFromTick()
 	{
+		resetPriceData();
 		isUpdating = true ;
 		Calendar calStamp = Calendar.getInstance() ;
+		String tradedate = centralDB.getTradedate();
+		if (tradedate == null)
+		{
+			return;
+		}
 		String strFile = String.format("./DAT/%s/%s.TCK", 
 				centralDB.getTradedate(), getStrSymbol()) ;
+		File file = new File(strFile);
+		if (file.exists() == false)
+		{
+			return;
+		}
 		String strIn = "" ;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -514,7 +530,7 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
-	public List<HistoricalPrice> getHistoricalPrice(byte service, String type, Date start, Date end)
+	public List<HistoricalPrice> getHistoricalPrice(byte service, String type, String symbol, Date start, Date end)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
 		SimpleDateFormat sdftime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
@@ -524,8 +540,8 @@ public class SymbolData implements Comparable<SymbolData>
 		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
-		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE TRADEDATE>='%s' AND TRADEDATE<'%s' ORDER BY TRADEDATE;", 
-				service, type, sdfprice.format(start), sdfprice.format(end)) ;
+		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE `SYMBOL`='%s' AND `TRADEDATE`>='%s' AND `TRADEDATE`<'%s' ORDER BY `TRADEDATE`;", 
+				service, type, symbol, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			while(rs.next())

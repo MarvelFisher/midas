@@ -6,17 +6,80 @@
 <hibernate-mapping> 
   <class name="com.cyanspring.common.alert.TradeAlert" table="TRADEALERT_PAST"> 
     <id 	  column="ID" 		name="id" type="java.lang.String"/> 
+    <property column="USER_ID" 			name="userId" type="java.lang.String"/>
     <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
     <property column="PRICE" 			name="price" type="java.lang.Double"/>
-    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
     <property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
-	<property column="ORDERREASON" 			name="orderReason" length="30">
+    <property column="ORDERREASON" 			name="orderReason" length="30">
    		<type name="org.hibernate.type.EnumType">
    			<param name="enumClass">com.cyanspring.common.account.OrderReason</param>   
        		<param name="type">12</param>
    		</type>
 	</property>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
 	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
   </class>
+  
+  <class name="com.cyanspring.common.alert.PastPriceAlert" table="PRICEALERT_PAST"> 
+    <id 	  column="ID" 		name="id" type="java.lang.String"/>
+    <property column="USER_ID" 			name="userId" type="java.lang.String"/>
+    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
+    <property column="PRICE" 			name="price" type="java.lang.Double"/>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
+	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
+  </class>
+  
+  <class name="com.cyanspring.common.alert.CurPriceAlert" table="PRICEALERT_CUR">
+    <id 	  column="ID" 		name="id" type="java.lang.String"/>
+    <property column="USER_ID" 			name="userId" type="java.lang.String"/>
+    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
+    <property column="PRICE" 			name="price" type="java.lang.Double"/>
+    <property column="DATE_TIME" 			name="dateTime" type="java.lang.String"/>
+	<property column="CONTENT" 			name="content" type="java.lang.String"/>		
+  </class>
+  
+  
+  <sql-query name="LoadPastTradeAlert">
+    <![CDATA[
+    SELECT {TradeAlert.*} from TRADEALERT_PAST TradeAlert  where TradeAlert.USER_ID=? order by TradeAlert.DATE_TIME DESC limit 0,:maxNoOfAlerts ;
+    ]]>
+    <return alias="TradeAlert" class="com.cyanspring.common.alert.TradeAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadPastPriceAlert">
+    <![CDATA[
+    SELECT {PastPriceAlert.*} from PRICEALERT_PAST PastPriceAlert where PastPriceAlert.USER_ID=? order by PastPriceAlert.DATE_TIME DESC limit 0,:maxNoOfAlerts ;
+    ]]>
+    <return alias="PastPriceAlert" class="com.cyanspring.common.alert.PastPriceAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadCurPriceAlert">
+    <![CDATA[
+    SELECT {CurPriceAlert.*} from PRICEALERT_CUR CurPriceAlert where CurPriceAlert.USER_ID=? order by CurPriceAlert.DATE_TIME DESC limit 0,:maxNoOfAlerts ;
+    ]]>
+    <return alias="CurPriceAlert" class="com.cyanspring.common.alert.CurPriceAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadAllPastTradeAlert">
+    <![CDATA[
+    SELECT {PastTradeAlert.*} from TRADEALERT_PAST PastTradeAlert order by PastTradeAlert.DATE_TIME DESC;
+    ]]>
+    <return alias="PastTradeAlert" class="com.cyanspring.common.alert.TradeAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadAllCurPriceAlert">
+    <![CDATA[
+    SELECT {CurPriceAlert.*} from PRICEALERT_CUR CurPriceAlert order by CurPriceAlert.DATE_TIME DESC;
+    ]]>
+    <return alias="CurPriceAlert" class="com.cyanspring.common.alert.CurPriceAlert"/>
+  </sql-query>
+  
+  <sql-query name="LoadAllPastPriceAlert">
+    <![CDATA[
+    SELECT {PastPriceAlert.*} from PRICEALERT_PAST PastPriceAlert order by PastPriceAlert.DATE_TIME DESC;
+    ]]>
+    <return alias="PastPriceAlert" class="com.cyanspring.common.alert.PastPriceAlert"/>
+  </sql-query>
+  
   
 </hibernate-mapping> 

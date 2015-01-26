@@ -146,12 +146,8 @@ public class CentralDbConnector {
 		Statement stmt = null;
 
 		try {
-			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
-
 			stmt.executeUpdate(sUserSQL);
-
-			conn.commit();
 			bIsSuccess = true;
 		} catch (SQLException e) {
 			bIsSuccess = false;
@@ -284,7 +280,6 @@ public class CentralDbConnector {
 		String salt = null;
 
 		try {
-			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sQuery);
 
@@ -308,7 +303,6 @@ public class CentralDbConnector {
 			int nResult = stmt.executeUpdate(sQuerySet);
 			if(1 != nResult)
 				return false;
-			conn.commit();
 
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
@@ -428,9 +422,9 @@ public class CentralDbConnector {
 //			conn.registerUser("aaaaaaa", "aaaaaaa", "aaaaaaa", "test1@test.com", "+886-12345678", UserType.NORMAL, "TW", "ZH");
 //			//boolean bExist = conn.isUserExist("test1");
 //			boolean bExist = conn.isEmailExist("phoenix.su@hkfdt.com");
-//			//boolean bLogin = conn.userLogin("test1011", "test101");
-//			//boolean bChangePassword = conn.changePassword("Test1", "1234", "12345");
-//			System.out.println(bExist);
+//			boolean bLogin = conn.userLogin("seemo1", "1234");
+//			//boolean bChangePassword = conn.changePassword("seemo1", "1111", "1234");
+//			System.out.println("");
 //		}
 	}
 }

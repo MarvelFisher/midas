@@ -24,6 +24,11 @@ public class TradeAlert implements Comparable<TradeAlert>{
 			this.content = content ;
 		}
 		
+		public TradeAlert()
+		{
+			super();
+		}
+		
 		@Override
 		public int compareTo(TradeAlert other) {
 			int iReturn = this.getUserId().compareTo(other.getUserId());

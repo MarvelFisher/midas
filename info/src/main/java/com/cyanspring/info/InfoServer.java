@@ -127,7 +127,7 @@ public class InfoServer
 		// setting ready List
 		readyList = new ReadyList(readyMap);
 		
-		// create eventManager
+		// create eventManager as server
 		log.info("SystemInfo: " + systemInfo);
 		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "channel"; 
 		this.nodeInfoChannel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "node";
@@ -140,7 +140,7 @@ public class InfoServer
 		eventManager.init(channel, inbox);
 		eventManager.addEventChannel(nodeInfoChannel);
 		
-		// create MD eventManager
+		// create MD eventManager as client
 		log.info("SystemInfo: " + systemInfoMD);		
 		String channelMD = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "channel"; 
 		String nodeInfoChannelMD = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "node";
