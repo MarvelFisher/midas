@@ -30,7 +30,7 @@ public class MarketSessionStateWeekDay extends MarketSessionState{
 		cal.set(Calendar.SECOND, 59);
 		Date end = cal.getTime();
 		
-		return new MarketSessionEvent(null, null, sessionData.session, start, end, null, Default.getMarket());
+		return new MarketSessionEvent(null, null, sessionData.session, start, end, tradeDate, Default.getMarket());
 	}
 	
 	@Override
