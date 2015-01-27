@@ -725,7 +725,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 			return;
 		} else if(status.equals("Submitted")) {
 			if(order.getOrdStatus().isPending() && oldFilled == filled) {
-				execType = ExecType.pendingToReady(order.getOrdStatus());
+				execType = ExecType.pendingChangeToReady(order.getOrdStatus());
 				order.setOrdStatus(OrdStatus.pendingToReady(order.getOrdStatus()));
 				downStreamListener.onOrder(execType, order, execution, "");
 				return;

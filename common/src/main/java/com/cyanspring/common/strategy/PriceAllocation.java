@@ -13,6 +13,7 @@ package com.cyanspring.common.strategy;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.PriceUtils;
 
 public class PriceAllocation {
@@ -75,8 +76,12 @@ public class PriceAllocation {
 		return 	this.getParentId().equals(order.getParentOrderId()) &&
 				this.getSymbol().equals(order.getSymbol()) &&
 				this.getSide().equals(order.getSide()) &&
+				(
+				this.getOrderType() == ExchangeOrderType.MARKET &&
+				order.getType() == ExchangeOrderType.MARKET ||
 				this.getOrderType().equals(order.getType()) &&
-				PriceUtils.Equal(this.getPrice(), order.getPrice());
+				PriceUtils.Equal(this.getPrice(), order.getPrice())
+				);
 	}
 	
 	@Override

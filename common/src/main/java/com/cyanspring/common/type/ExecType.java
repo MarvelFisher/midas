@@ -96,6 +96,16 @@ public enum ExecType {
     	else
     		return RESTATED;
     }
+
+    static public ExecType pendingChangeToReady(OrdStatus status) {
+    	if(status.equals(OrdStatus.PENDING_NEW))
+    		return NEW;
+    	else if(status.equals(OrdStatus.PENDING_REPLACE))
+    		return REPLACE;
+    	else
+    		return RESTATED;
+    }
+    
     public boolean isCompleted() {
     	return completeSet.contains(this);
     }
