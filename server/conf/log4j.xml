@@ -44,12 +44,12 @@
     
     <category name="com.mchange">
     	<priority value="INFO"/>
-    </category>
+    </category> 
 
   	<root>
 		<priority value="DEBUG" />
 		<appender-ref ref="FILE" />
-		<appender-ref ref="CONSOLE"/>
-	</root>
+		<!-- <appender-ref ref="CONSOLE"/> -->	
+ 	</root>
 
 </log4j:configuration>
