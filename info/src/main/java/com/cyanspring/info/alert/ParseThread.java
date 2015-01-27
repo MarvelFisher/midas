@@ -119,9 +119,9 @@ public class ParseThread extends Thread{
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 		
 		String strPoststring = "{ \"where\": {\"userId\": \"" + PD.strUserId + "\" , \"deviceType\": { \"$in\": [ \"ios\", \"android\", \"winphone\", \"js\" ] }}, " +
-                "\"data\": {\"alert\": \"" + PD.strpushMessage + "\",\"8004\":\"" + PD.strMsgId + "\",\"8006\":\"" + PD.strMsgType +
-                "\",\"action\":\"" + "com.hkfdt.activity.UPDATE_STATUS" + ((PD.strLocalTime.length() > 0) ? ("\",\"1014\":\"" + PD.strLocalTime) : "") + 
-                ((PD.strKeyValue.length() > 0) ? ("\",\"8007\":\"" + PD.strKeyValue) : "") + "\"" +
+                "\"data\": {\"alert\": \"" + PD.strpushMessage + "\",\"msgid\":\"" + PD.strMsgId + "\",\"msgType\":\"" + PD.strMsgType +
+                "\",\"action\":\"" + "com.hkfdt.activity.UPDATE_STATUS" + ((PD.strLocalTime.length() > 0) ? ("\",\"datetime\":\"" + PD.strLocalTime) : "") + 
+                ((PD.strKeyValue.length() > 0) ? ("\",\"KeyValue\":\"" + PD.strKeyValue) : "") + "\"" +
                 ", \"badge\": \"Increment\"}}";
  
 		log.debug("Parse message: " + strPoststring);

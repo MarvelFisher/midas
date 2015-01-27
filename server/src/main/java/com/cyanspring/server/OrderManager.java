@@ -182,9 +182,10 @@ public class OrderManager {
 			Map<String, ChildOrder> children = activeChildOrders.get(child
 					.getStrategyId());
 			if (null == children) {
-				log.error("Cant find child order group: " + child + "; "
+				log.warn("Cant find child order group: " + child + "; "
 						+ child.getStrategyId());
 				children = new HashMap<String, ChildOrder>();
+				activeChildOrders.put(child.getStrategyId(), children);
 			}
 			children.put(child.getId(), child);
 		}

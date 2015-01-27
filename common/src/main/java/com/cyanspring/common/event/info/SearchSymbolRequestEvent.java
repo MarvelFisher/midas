@@ -6,7 +6,20 @@ public class SearchSymbolRequestEvent extends RemoteAsyncEvent {
 
 	public SearchSymbolRequestEvent(String key, String receiver) {
 		super(key, receiver);
-		// TODO Auto-generated constructor stub
+	}
+	public SearchSymbolRequestEvent(String key, String receiver, 
+									SearchSymbolType type,
+									String keyword,
+									String market,
+									String txId,
+									int page,
+									int symbolperpage) {
+		super(key, receiver);
+		this.type = type;
+		this.keyword = keyword;
+		this.txId = txId;
+		this.page = page;
+		this.symbolperpage = symbolperpage;
 	}
 
 	private SearchSymbolType type;

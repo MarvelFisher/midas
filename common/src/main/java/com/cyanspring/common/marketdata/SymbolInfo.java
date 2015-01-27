@@ -5,16 +5,18 @@ public class SymbolInfo implements Cloneable{
 	private String code;
 	private String windCode;
 	private String cnName;
+	private String twName;
 	private String enName;
 	
 	public SymbolInfo(String market, 
-			String code, String windCode, String cnName, String enName) 
+			String code, String windCode, String cnName, String enName, String twName) 
 	{
 		this.market = market;
 		this.code = code;
 		this.windCode = windCode;
 		this.cnName = cnName;
 		this.enName = enName;
+		this.twName = twName;
 	}
 	public SymbolInfo(SymbolInfo symbolinfo)
 	{
@@ -39,5 +41,11 @@ public class SymbolInfo implements Cloneable{
 	}
 	public String getEnName() {
 		return enName;
+	}
+	public String getTwName() {
+		return twName;
+	}
+	public void setTwName(String twName) {
+		this.twName = twName;
 	}
 }

@@ -472,7 +472,7 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 		} else {
 			ChildOrder prev = addChildOrder(child);
 			if(prev == null) {
-				log.error("Received child order update but cant find in active orders: " + child);
+				log.warn("Received child order update but cant find in active orders: " + child);
 			}
 		}
 	}
