@@ -20,11 +20,10 @@ import com.cyanspring.id.gateway.IdGateway;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
-	
-	private static final Logger log = LoggerFactory
-			.getLogger(IdGateway.class);
-	
-	//private FullHttpRequest fullHttpRequest;
+
+	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
+
+	// private FullHttpRequest fullHttpRequest;
 
 	private HttpPostRequestDecoder decoder;
 
@@ -35,83 +34,103 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 		}
 	}
 
-	public void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+	public void messageReceived(ChannelHandlerContext ctx, HttpObject msg)
+			throws Exception {
 
 		FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
 
 		if (IdGateway.isSSL) {
-			System.out.println("Your session is protected by "
-					+ ctx.pipeline().get(SslHandler.class).engine().getSession().getCipherSuite() + " cipher suite.\n");
+			System.out
+					.println("Your session is protected by "
+							+ ctx.pipeline().get(SslHandler.class).engine()
+									.getSession().getCipherSuite()
+							+ " cipher suite.\n");
 		}
 
 		HttpUrlParam params = HttpUrlParam.parse(fullHttpRequest.getUri());
-		
+
 		WebTask.onTask(ctx, params);
 
 		params.close();
-	}
-/*
-	private void reset() {
+		fullHttpRequest.release();
 		fullHttpRequest = null;
-		// destroy the decoder to release all resources
-		decoder.destroy();
-		decoder = null;
 	}
-*/
-	
+
+	/*
+	 * private void reset() { fullHttpRequest = null; // destroy the decoder to
+	 * release all resources decoder.destroy(); decoder = null; }
+	 */
+
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		LogUtil.logException(log, (Exception)cause);
-		sendData(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR,
-				String.format("Error: %s%n", HttpResponseStatus.INTERNAL_SERVER_ERROR)); // ,
-																									// Charset.forName("big5"));;
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+			throws Exception {
+		LogUtil.logException(log, (Exception) cause);
+		sendData(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR, String.format(
+				"Error: %s%n", HttpResponseStatus.INTERNAL_SERVER_ERROR));
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg)
+			throws Exception {
 		messageReceived(ctx, msg);
 	}
 
-	public static void sendData(ChannelHandlerContext ctx, HttpResponseStatus status, String strContent) {
+	public static void sendData(ChannelHandlerContext ctx,
+			HttpResponseStatus status, String strContent) {
 		sendData(ctx, status, strContent, CharsetUtil.UTF_8);
 	}
 
-	public static void sendData(ChannelHandlerContext ctx, HttpResponseStatus status, String strContent, Charset enc) {
+	public static void sendData(ChannelHandlerContext ctx,
+			HttpResponseStatus status, String strContent, Charset enc) {
 
 		ByteBuf buffer = Unpooled.copiedBuffer(strContent.getBytes(enc));
-		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, buffer);
+		final FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
+				status, buffer);
 		response.setStatus(status);
-		response.headers().set(CONTENT_TYPE, String.format("text/html; charset=%s", enc.toString()));
+		response.headers().set(CONTENT_TYPE,
+				String.format("text/html; charset=%s", enc.toString()));
 		response.headers().set(CONTENT_LENGTH, buffer.readableBytes());
-
+		buffer.release();
+		buffer = null;
+		
 		// Close the connection as soon as the error message is sent.
-		ctx.channel().writeAndFlush(response).addListener(new ChannelFutureListener() {
+		ctx.channel().writeAndFlush(response)
+				.addListener(new ChannelFutureListener() {
 
-			@Override
-			public void operationComplete(ChannelFuture future) throws Exception {
-				future.channel().flush();
-				future.channel().close();
-			}
-		});
+					@Override
+					public void operationComplete(ChannelFuture future)
+							throws Exception {
+						future.channel().flush();
+						future.channel().close();
+						response.release();
+					}
+				});
 	}
 
-	public static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+	public static void sendError(ChannelHandlerContext ctx,
+			HttpResponseStatus status) {
 
-		ByteBuf buffer = Unpooled.copiedBuffer(String.format("Failure: %s%n", status.toString()).getBytes(
-				CharsetUtil.UTF_8));
-		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, buffer);
+		ByteBuf buffer = Unpooled.copiedBuffer(String.format("Failure: %s%n",
+				status.toString()).getBytes(CharsetUtil.UTF_8));
+		final FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
+				status, buffer);
 		response.setStatus(status);
 		response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
 		response.headers().set(CONTENT_LENGTH, buffer.readableBytes());
+		buffer.release();
+		buffer = null;
 
 		// Close the connection as soon as the error message is sent.
-		ctx.channel().writeAndFlush(response).addListener(new ChannelFutureListener() {
+		ctx.channel().writeAndFlush(response)
+				.addListener(new ChannelFutureListener() {
 
-			@Override
-			public void operationComplete(ChannelFuture future) throws Exception {
-				future.channel().close();
-			}
-		});
+					@Override
+					public void operationComplete(ChannelFuture future)
+							throws Exception {
+						future.channel().close();
+						response.release();
+					}
+				});
 	}
 
 }

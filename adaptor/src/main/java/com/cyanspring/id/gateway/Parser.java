@@ -23,6 +23,7 @@ public class Parser implements IReqThreadCallback {
 	static Parser _Instance = new Parser();
 	RequestThread reqThread = new RequestThread(this, "Parser");
 
+	boolean isXAU = false;
 	public static Parser Instance() {
 		return _Instance;
 	}
@@ -56,11 +57,13 @@ public class Parser implements IReqThreadCallback {
 		} else {
 			addData(data);
 		}
+		data = null;
 	}
 
 	public void Partse(byte[] srcData) {
 
 		m_buffer.write(srcData, srcData.length);
+		srcData = null;
 		try {
 
 			while (true) {
@@ -161,13 +164,6 @@ public class Parser implements IReqThreadCallback {
 						continue;
 
 					String symbol = str.substring(nStartIdx + 3, nEndIdx);
-/*
- * following code is for testing 					
-					if (symbol.equals("X:SUSDJPY")) {
-						symbol = "C:PXAUUSDOZ\\SP";
-						sourceInt = 691;
-					}
-*/					
 					symbol = IdSymbolUtil.toSymbol(symbol, sourceInt);		
 
 					QuoteMgr.Instance().updateAllSymbol(symbol);
@@ -203,6 +199,8 @@ public class Parser implements IReqThreadCallback {
 		} catch (Exception ex) {
 			LogUtil.logException(log, ex);
 		}
+		data = null;
+		reqObj = null;
 		
 	}
 
