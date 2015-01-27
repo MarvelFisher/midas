@@ -428,6 +428,12 @@
 		<property name="preOpen" value="610"></property>
 		<property name="open" value="615"></property>
 		<property name="close" value="600"></property>
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>	
 	</bean>
 
 	<!-- <bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
