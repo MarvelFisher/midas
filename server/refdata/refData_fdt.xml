@@ -3419,7 +3419,7 @@
 			</entry>
 			<entry>
 				<string>Exchange</string>
-				<string>COM</string>
+				<string>FX</string>
 			</entry>
 			<entry>
 				<string>Contract</string>
@@ -3501,7 +3501,7 @@
 			</entry>
 			<entry>
 				<string>Exchange</string>
-				<string>FX</string>
+				<string>COM</string>
 			</entry>
 			<entry>
 				<string>Contract</string>
