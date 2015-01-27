@@ -52,8 +52,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 		WebTask.onTask(ctx, params);
 
 		params.close();
-		fullHttpRequest.release();
-		fullHttpRequest = null;
 	}
 
 	/*
@@ -84,14 +82,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 			HttpResponseStatus status, String strContent, Charset enc) {
 
 		ByteBuf buffer = Unpooled.copiedBuffer(strContent.getBytes(enc));
-		final FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
+		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
 				status, buffer);
 		response.setStatus(status);
 		response.headers().set(CONTENT_TYPE,
 				String.format("text/html; charset=%s", enc.toString()));
 		response.headers().set(CONTENT_LENGTH, buffer.readableBytes());
-		buffer.release();
-		buffer = null;
 		
 		// Close the connection as soon as the error message is sent.
 		ctx.channel().writeAndFlush(response)
@@ -102,7 +98,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 							throws Exception {
 						future.channel().flush();
 						future.channel().close();
-						response.release();
+
 					}
 				});
 	}
@@ -112,13 +108,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 		ByteBuf buffer = Unpooled.copiedBuffer(String.format("Failure: %s%n",
 				status.toString()).getBytes(CharsetUtil.UTF_8));
-		final FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
+		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
 				status, buffer);
 		response.setStatus(status);
 		response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
 		response.headers().set(CONTENT_LENGTH, buffer.readableBytes());
-		buffer.release();
-		buffer = null;
 
 		// Close the connection as soon as the error message is sent.
 		ctx.channel().writeAndFlush(response)
@@ -128,7 +122,6 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 					public void operationComplete(ChannelFuture future)
 							throws Exception {
 						future.channel().close();
-						response.release();
 					}
 				});
 	}
