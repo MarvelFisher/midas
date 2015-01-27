@@ -3,6 +3,7 @@ package com.cyanspring.common.marketdata;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class HistoricalPrice  implements Serializable, Comparable<HistoricalPrice>, Cloneable {
 	Date   timestamp = null ;
@@ -16,9 +17,18 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	public HistoricalPrice()
 	{
 	}
-	public HistoricalPrice(String symbol)
+	public HistoricalPrice(String symbol, boolean defaultTime)
 	{
 		this.symbol = symbol ;
+		if (defaultTime)
+		{
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.add(Calendar.DATE, -1);
+			this.timestamp = cal.getTime();
+		}
 	}
 	public HistoricalPrice(Date   timestamp, 
 					String symbol, 
@@ -84,6 +94,8 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		return timestamp;
 	}
 	public void setTimestamp(Date timestamp) {
+		if (timestamp == null)
+			return;
 		this.timestamp = (Date)timestamp.clone();
 	}
 	public String getSymbol() {

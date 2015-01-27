@@ -39,18 +39,9 @@
 	</bean>
 
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
-		<property name="host">
-			<value>10.0.0.10</value>
-		</property>
-		<property name="user">
-			<value>tqt001</value>
-		</property>
-		<property name="pass">
-			<value>tqt001</value>
-		</property>
-		<property name="database">
-			<value>TA_DS_TEST</value>
-		</property>
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+<!-- 		<property name="jdbcUrl" value="jdbc:mysql://10.0.0.10:3306/TA_DS_TEST?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" /> -->
+		<property name="jdbcUrl" value="jdbc:mysql://10.0.0.10/TA_DS_TEST?jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;user=tqt001&amp;password=tqt001" />
 		<property name="open">
 			<value>2215</value>
 		</property>
@@ -61,7 +52,7 @@
 			<value>2200</value>
 		</property>
 	</bean>
-
+	
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
 			<value>Test</value>

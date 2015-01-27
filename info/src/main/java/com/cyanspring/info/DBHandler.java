@@ -20,29 +20,20 @@ public class DBHandler
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(DBHandler.class);
-	private String     host;
-	private String     user;
+	private String     jdbcUrl;
+	private String     driverClass;
 	private String     pass;
 	private String     database;
 	private Connection connect = null ;
 	private Statement  stat = null ;
-	DBHandler(String host, String user, String pass, String database)
+	DBHandler(String jdbcUrl, String driverClass) throws Exception
 	{
-		this.host = host ;
-		this.user = user ;
-		this.pass = pass ;
-		this.database = database ;
-		if (host.equals("") || user.equals("") || pass.equals("")
-                || database.equals("") )
-        {
-            return ;
-        }
+		this.jdbcUrl = jdbcUrl ;
+		this.driverClass = driverClass ;
+		Class.forName(driverClass);
 		try 
 		{
-			connect = DriverManager.getConnection("jdbc:mysql://"
-			        + this.host + "/" + this.database
-			        + "?jdbcCompliantTruncation=false&" + "user="
-			        + this.user + "&password=" + this.pass);
+			connect = DriverManager.getConnection(jdbcUrl);
 		} 
 		catch (SQLException e) 
 		{
@@ -73,10 +64,7 @@ public class DBHandler
         	{
         		connect.close();
         	}
-        	connect = DriverManager.getConnection("jdbc:mysql://"
-			        + this.host + "/" + this.database
-			        + "?jdbcCompliantTruncation=false&" + "user="
-			        + this.user + "&password=" + this.pass);
+        	connect = DriverManager.getConnection(jdbcUrl);
         }
         catch (SQLException e)
         {
@@ -208,7 +196,7 @@ public class DBHandler
     }
     public HistoricalPrice getLastValue(byte service, String type, String symbol, boolean dir)
     {
-    	HistoricalPrice price = new HistoricalPrice() ;
+    	HistoricalPrice price = new HistoricalPrice(symbol, true) ;
     	String strTable = String.format("%04X_%s", service, type) ;
     	String sqlcmd = "" ;
     	if (dir)
@@ -234,25 +222,25 @@ public class DBHandler
 				price.setHigh(rs.getDouble("HIGH_PRICE"));
 				price.setLow(rs.getDouble("LOW_PRICE"));
 				price.setVolume(rs.getInt("VOLUME"));
-				return price ;
 			}
-			else
-			{
-				return null ;
-			}
+			return price ;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
             log.error(e.toString(), e) ;
             log.trace(sqlcmd);
-			return null ;
+			return price ;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
             log.error(e.toString(), e) ;
-			return null ;
+			return price ;
 		}
     }
     public void deletePrice(byte service, String type, String symbol, HistoricalPrice price)
     {
+    	if (price == null)
+    	{
+    		return;
+    	}
     	String strTable = String.format("%04X_%s", service, type) ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00") ;
 		String sqlcmd = String.format("DELETE FROM %s WHERE SYMBOL='%s' AND TRADEDATE='%s';", 
