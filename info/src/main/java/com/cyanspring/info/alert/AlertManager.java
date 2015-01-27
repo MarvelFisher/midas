@@ -230,17 +230,17 @@ public class AlertManager implements IPlugin {
 					userTradeAlerts.put(event.getuserId(),list) ;
 					log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.") ;
 					//Send orderalert event reply
-					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),null,event.getTxId(),false,"userOrderAlert list isn't exists");
+					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getuserId(),false,"userOrderAlert list isn't exists");
 				}
 				else 
 				{
-					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),true,"");
+					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"");
 				}
 			}
 			else
 			{
 				//Send orderalert event reply
-				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),true,"");
+				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"");
 			}
 			try {
 				eventManager.sendRemoteEvent(queryorderalertreplyevent);
