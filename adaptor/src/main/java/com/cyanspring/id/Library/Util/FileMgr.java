@@ -115,6 +115,8 @@ public class FileMgr implements AutoCloseable, IReqThreadCallback {
 		ArrayList<String> listFile = new ArrayList<String>(item.popData());
 		writeFile(item.key(), listFile, item.isOverride());
 		item.close();
+		item = null;
+		reqObj = null;
 		
 	}
 

@@ -144,7 +144,8 @@ public class ZipUtil {
 		baos.close();
 		bais.close();
 
-		log.info(String.format("compress original length = %d, zipped length = %d", data.length, output.length));
+		log.debug(String.format("compress original length = %d, zipped length = %d", data.length, output.length));
+		data = null;
 		return output;
 	}
 

@@ -38,7 +38,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	private static final Logger log = LoggerFactory
 			.getLogger(IdMarketDataAdaptor.class);
 
-	Date lastRecv = new Date(0);
+	Date lastRecv = DateUtil.now();
 	TimerThread timer = null;
  	static ChannelHandlerContext context; // context deal with server
 

@@ -253,6 +253,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 		for (SymbolItem item : list) {
 			item.sunrise();
 		}
+		list.clear();
 	}
 
 	private XStream xstream = new XStream(new DomDriver());

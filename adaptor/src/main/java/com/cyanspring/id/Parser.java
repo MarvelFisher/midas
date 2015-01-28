@@ -153,6 +153,9 @@ public class Parser implements IReqThreadCallback {
 					buffer.purge(iPacketDataLength);
 
 					String str = new String(data2, Charset.defaultCharset());
+					//if (str.contains("C:P")) {
+					//	LogUtil.logInfo(log, "%s", str);
+					//}
 
 					boolean bOk = parseLine(time, str);
 
@@ -203,9 +206,9 @@ public class Parser implements IReqThreadCallback {
 			switch (nField) {
 			case FieldID.SourceID: {
 				nSource = Integer.parseInt(vec2[1]);
-				if (nSource != 687) {
-					return false;
-				}
+				//if (nSource != 687) {
+				//	return false;
+				//}
 			}
 				break;
 			case FieldID.Symbol: {
@@ -345,8 +348,11 @@ public class Parser implements IReqThreadCallback {
 	@Override
 	public void onRequestEvent(RequestThread sender, Object reqObj) {
 		Object[] arrObjects = (Object[]) reqObj;
-		if (arrObjects.length != 2)
+		if (arrObjects.length != 2) {
+			reqObj = null;
+			arrObjects = null;
 			return;
+		}
 
 		Date time = (Date) arrObjects[0];
 		byte[] data = (byte[]) arrObjects[1];
@@ -356,6 +362,8 @@ public class Parser implements IReqThreadCallback {
 			LogUtil.logException(log, ex);
 		}
 		data = null;
+		reqObj = null;
+		arrObjects = null;
 	}
 
 	/*

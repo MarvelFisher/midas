@@ -1,6 +1,7 @@
 package com.cyanspring.id.gateway.netty;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.gateway.IdGateway;
@@ -57,14 +58,15 @@ public class WebTask {
 
 	static String getClientInfo() {
 		StringBuilder sb = new StringBuilder();
-		UserClient[] arr = ServerHandler.getClients();
-		if (arr.length > 0) {
+		List<UserClient> list = ServerHandler.getClients();
+		if (list.size() > 0) {
 			sb.append("<Clients>");
-			for (UserClient client : arr) {
+			for (UserClient client : list) {
 				sb.append(client.toXml());
 			}
 			sb.append("</Clients>");
 		}
+		list.clear();
 		return sb.toString();
 	}
 
@@ -116,6 +118,8 @@ public class WebTask {
 
 		// send
 		HttpServerHandler.sendData(ctx, HttpResponseStatus.OK, sb.toString());
+		sb.setLength(0);
+		sb = null;
 	}
 
 	public static void error(ChannelHandlerContext ctx, String strUrl) {
