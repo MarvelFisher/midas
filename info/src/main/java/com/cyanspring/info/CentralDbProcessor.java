@@ -64,6 +64,7 @@ public class CentralDbProcessor implements IPlugin
 	private int    nOpen ;
 	private int    nClose ;
 	private int    nPreOpen ;
+	private ArrayList<String> preSubscriptionList;
 	
 	private int    nTickCount ;
 	private MarketSessionType sessionType ;
@@ -434,7 +435,7 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd;
 		sqlcmd = String.format("SELECT * FROM `Symbol_Info` WHERE `MARKET`='%s';", market) ;
 		ResultSet rs = dbhnd.querySQL(sqlcmd);
-		ArrayList<String> defaultSymbol = mapDefaultSymbol.get(market);
+		ArrayList<String> defaultSymbol = /*mapDefaultSymbol.get(market)*/preSubscriptionList;
 		if (defaultSymbol == null || defaultSymbol.isEmpty())
 		{
 			retEvent.setOk(false);
@@ -487,18 +488,49 @@ public class CentralDbProcessor implements IPlugin
 			   String group, 
 			   ArrayList<String> symbols)
 	{
-		String sqlcmd;
+		String sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`) VALUES");
+		String sqlselect;
+		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
+		boolean first = true;
 		for (String symbol : symbols)
 		{
-			sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
+			sqlselect = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 					" AND `GROUP`='%s' AND `MARKET`='%s' AND `CODE`='%s';", user, group, market, symbol) ;
-			ResultSet rs = dbhnd.querySQL(sqlcmd);
+			ResultSet rs = dbhnd.querySQL(sqlselect);
 			try 
 			{
-				if (rs.isLast() == false)
+				if (rs.next())
 				{
 					retEvent.setOk(false);
 					retEvent.setMessage(String.format("Duplicate symbol %s", symbol));
+					sendEvent(retEvent);
+					return;
+				}
+				else
+				{
+					sqlselect = String.format("SELECT * FROM `Symbol_Info` WHERE `MARKET`='%s' AND `CODE`='%s';", market, symbol) ;
+					rs = dbhnd.querySQL(sqlselect);
+					if (rs.next())
+					{
+						retsymbollist.add(new SymbolInfo(rs.getString("MARKET"), 
+								   rs.getString("CODE"), 
+								   rs.getString("WINDCODE"), 
+								   rs.getString("CN_NAME"),
+								   rs.getString("EN_NAME"),
+								   rs.getString("TW_NAME")));
+						if (first == false)
+						{
+							sqlcmd += "," ;
+						}
+						sqlcmd += String.format("('%s','%s','%s',", user, group, market);
+						sqlcmd += (rs.getString("CODE") == null) ? "null," : String.format("'%s',", rs.getString("CODE"));
+						sqlcmd += (rs.getString("WINDCODE") == null) ? "null," : String.format("'%s',", rs.getString("WINDCODE"));
+						sqlcmd += (rs.getString("EN_NAME")  == null) ? "null," : String.format("'%s',", rs.getString("EN_NAME"));
+						sqlcmd += (rs.getString("CN_NAME") == null) ? "null," : String.format("'%s',", rs.getString("CN_NAME"));
+						sqlcmd += (rs.getString("TW_NAME") == null) ? "null" : String.format("'%s'", rs.getString("TW_NAME"));
+						sqlcmd += ")";
+						first = false;
+					}
 				}
 			} 
 			catch (SQLException e) 
@@ -506,6 +538,10 @@ public class CentralDbProcessor implements IPlugin
 				continue;
 			}
 		}
+		dbhnd.updateSQL(sqlcmd);
+		retEvent.setSymbolList(retsymbollist);
+		retEvent.setOk(true);
+		sendEvent(retEvent);
 	}
 	
 	public void userDelSubscribeSymbol(SymbolListSubscribeEvent retEvent, 
@@ -517,10 +553,13 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd;
 		for (String symbol : symbols)
 		{
-			sqlcmd = String.format("DELECT FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
+			sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 					" AND `GROUP`='%s' AND `MARKET`='%s' AND `CODE`='%s';", user, group, market, symbol) ;
 			dbhnd.updateSQL(sqlcmd);
 		}
+		retEvent.setOk(true);
+		sendEvent(retEvent);
+		
 	}
 	
 	public void userRequestAllSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -572,6 +611,11 @@ public class CentralDbProcessor implements IPlugin
 											   rs.getString("EN_NAME"),
 											   rs.getString("TW_NAME")));
 			}
+			if (symbolinfos.isEmpty())
+			{
+				requestDefaultSymbol(retEvent, market);
+				return;
+			}
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(true);
 		} 
@@ -594,6 +638,10 @@ public class CentralDbProcessor implements IPlugin
 			   String group, 
 			   ArrayList<String> symbols)
 	{
+		if (symbols == null || symbols.isEmpty())
+		{
+			symbols = preSubscriptionList;
+		}
 		if (user == null || market == null || group == null)
 		{
 			retEvent.setOk(false);
@@ -768,8 +816,9 @@ public class CentralDbProcessor implements IPlugin
 		{
 			return ;
 		}
-
-		String sqlcmd = "INSERT IGNORE INTO Symbol_Info (MARKET,CODE,EN_NAME,CN_NAME) VALUES";
+		String sqlcmd = "DELETE FROM `Symbol_Info`;";
+		dbhnd.updateSQL(sqlcmd);
+		sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
 		boolean first = true;
 		synchronized(this)
 		{
@@ -960,6 +1009,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setJdbcUrl(String jdbcUrl) {
 		this.jdbcUrl = jdbcUrl;
+	}
+
+	public ArrayList<String> getPreSubscriptionList() {
+		return preSubscriptionList;
+	}
+
+	public void setPreSubscriptionList(ArrayList<String> preSubscriptionList) {
+		this.preSubscriptionList = preSubscriptionList;
 	}
 	
 }
