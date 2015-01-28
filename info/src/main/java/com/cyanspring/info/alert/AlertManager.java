@@ -179,7 +179,7 @@ public class AlertManager implements IPlugin {
 			}
 			else
 			{
-				if (list.contains(TA))
+				if (list.indexOf(TA) != -1)
 				{
 					log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
 					return ;
@@ -257,7 +257,7 @@ public class AlertManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
-		log.debug("Quote: " + quote);
+//		log.debug("Quote: " + quote);
 		if (quotes.get(quote.getSymbol()) == null)
 		{
 			quotes.put(quote.getSymbol(), quote);
@@ -419,6 +419,7 @@ public class AlertManager implements IPlugin {
 			userPriceAlerts.put(priceAlert.getUserId(), list);
 			//save to SQL
 			CurPriceAlert curPriceAlert = new CurPriceAlert(priceAlert.getUserId(),priceAlert.getSymbol(),priceAlert.getPrice(),priceAlert.getDateTime(),priceAlert.getContent());
+			curPriceAlert.setId(priceAlert.getId());
 			SQLSave(curPriceAlert);
 			//SendPriceAlertreplyEvent
 			pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),list,true,null);
@@ -440,7 +441,7 @@ public class AlertManager implements IPlugin {
 			}
 			else
 			{
-				if (list.contains(priceAlert))
+				if (list.indexOf(priceAlert) != -1)
 				{
 					log.debug("[recevieAddPriceAlert] : id already exists. -> reject");
 					//SendPriceAlertreplyEvent
@@ -458,6 +459,7 @@ public class AlertManager implements IPlugin {
 					list.add(priceAlert);
 					//save to SQL
 					CurPriceAlert curPriceAlert = new CurPriceAlert(priceAlert.getUserId(),priceAlert.getSymbol(),priceAlert.getPrice(),priceAlert.getDateTime(),priceAlert.getContent());
+					curPriceAlert.setId(priceAlert.getId());
 					SQLSave(curPriceAlert);
 					//SendPriceAlertreplyEvent
 					pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),list,true,null);
@@ -513,7 +515,7 @@ public class AlertManager implements IPlugin {
 		}
 		else
 		{			
-			if (list.contains(priceAlert))
+			if (list.indexOf(priceAlert) != -1)
 			{
 				for(BasePriceAlert basePriceAlert : list)
 				{
@@ -521,7 +523,9 @@ public class AlertManager implements IPlugin {
 					{
 						basePriceAlert.modifyPriceAlert(priceAlert);
 						//update to SQL
-						SQLUpdate(priceAlert);
+						CurPriceAlert curPriceAlert = new CurPriceAlert(priceAlert.getUserId(),priceAlert.getSymbol(),priceAlert.getPrice(),priceAlert.getDateTime(),priceAlert.getContent());
+						curPriceAlert.setId(priceAlert.getId());
+						SQLUpdate(curPriceAlert);
 						//SendPriceAlertreplyEvent
 						pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),list,true,null);
 					}
@@ -577,11 +581,13 @@ public class AlertManager implements IPlugin {
 		}
 		else
 		{			
-			if (list.contains(priceAlert))
+			if (list.indexOf(priceAlert) != -1)
 			{
 				list.remove(priceAlert);				
 				//update to SQL
-				SQLDelete(priceAlert);
+				CurPriceAlert curPriceAlert = new CurPriceAlert(priceAlert.getUserId(),priceAlert.getSymbol(),priceAlert.getPrice(),priceAlert.getDateTime(),priceAlert.getContent());
+				curPriceAlert.setId(priceAlert.getId());
+				SQLDelete(curPriceAlert);
 				//SendPriceAlertreplyEvent
 				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),list,true,null);
 			}

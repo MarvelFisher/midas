@@ -16,6 +16,9 @@ echo "Starting LTS "`date` | tee -a ./log/console.log
 java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar conf/server_fdt_ib.xml >> ./log/console.log &
 
 sleep 15
+./runinfo.sh start
+
+sleep 15
 echo "Starting AppServer "`date` | tee -a ./log/console.log
 cd ../appServer
 ./run.sh start
