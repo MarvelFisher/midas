@@ -323,8 +323,6 @@
 				<value>USDRUB</value>
 				<value>USDSEK</value>
 				<value>USDSGD</value>
-				<value>XAUUSD</value>
-				<value>XAGUSD</value>
 			</list>
 		</property>
 		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->

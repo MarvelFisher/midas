@@ -13,6 +13,7 @@ public class AccountSetting extends DataObject {
 		setDefaultQty(Default.getOrderQuantity());
 		setStopLossValue(Default.getPositionStopLoss());
 		setCompanySLValue(0.0);
+		setMargin(0.0);
 		setRoute("");
 	}	
 	public String getId() {
@@ -38,6 +39,12 @@ public class AccountSetting extends DataObject {
 	}	  
 	public void setCompanySLValue(Double companySLValue){
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
+	}
+	public Double getMargin(){
+		return get(Double.class, AccountSettingType.MARGIN.value());
+	}
+	public void setMargin(Double margin){
+		put(AccountSettingType.MARGIN.value(), margin);
 	}
 	public String getRoute() {
 		return get(String.class, AccountSettingType.ROUTE.value());

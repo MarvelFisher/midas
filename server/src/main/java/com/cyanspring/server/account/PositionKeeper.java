@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
@@ -51,6 +53,9 @@ public class PositionKeeper {
 	
 	@Autowired
 	IFxConverter fxConverter;
+	
+	@Autowired
+	AccountKeeper accountKeeper;
 	
 	public IPositionListener setListener(IPositionListener listener) {
 		IPositionListener result = this.listener;
@@ -422,8 +427,18 @@ public class PositionKeeper {
 				marginValue += getMarginValueByAccountAndSymbol(account, symbol, quote);
 			}
 			account.setUrPnL(accountUrPnL);
-
+			
+			AccountSetting accountSetting;
+			try {
+				accountSetting = accountKeeper.getAccountSetting(account.getId());
+			} catch (AccountException e) {
+				log.error(e.getMessage(), e);
+				return;
+			}
+			
 			double accountMargin = (account.getCash() +  account.getUrPnL()) * Default.getMarginTimes();
+			if(PriceUtils.GreaterThan(accountSetting.getMargin(), 0))
+				accountMargin = (account.getCash() +  account.getUrPnL()) * accountSetting.getMargin();
 			account.setMargin(accountMargin - marginValue);
 		}
 	}

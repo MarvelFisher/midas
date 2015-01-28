@@ -217,6 +217,7 @@
   	<property column="DEFAULT_QTY"		name="defaultQty"	type="java.lang.Double"/>
   	<property column="STOP_LOSS_VALUE"	name="stopLossValue"	type="java.lang.Double"/>
   	<property column="COMPANY_SL_VALUE"	name="companySLValue"	type="java.lang.Double"/>
+  	<property column="MARGIN"			name="margin"	type="java.lang.Double"/>
 	<property column="ROUTE" 			name="route" 		type="java.lang.String"/>
   </class>
 
