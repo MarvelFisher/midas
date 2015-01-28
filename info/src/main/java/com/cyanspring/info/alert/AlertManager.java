@@ -230,17 +230,17 @@ public class AlertManager implements IPlugin {
 					userTradeAlerts.put(event.getuserId(),list) ;
 					log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.") ;
 					//Send orderalert event reply
-					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),null,event.getTxId(),false,"userOrderAlert list isn't exists");
+					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"userOrderAlert list isn't exists");
 				}
 				else 
 				{
-					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),true,"");
+					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"");
 				}
 			}
 			else
 			{
 				//Send orderalert event reply
-				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),true,"");
+				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"");
 			}
 			try {
 				eventManager.sendRemoteEvent(queryorderalertreplyevent);
@@ -257,7 +257,7 @@ public class AlertManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
-//		log.debug("Quote: " + quote);
+		log.debug("Quote: " + quote);
 		if (quotes.get(quote.getSymbol()) == null)
 		{
 			quotes.put(quote.getSymbol(), quote);
@@ -623,7 +623,8 @@ public class AlertManager implements IPlugin {
 			{
 				log.debug("[receiveQueryCurPriceAlert] : User CurPriceAlert list isn't exists.") ;
 				//Send event reply
-				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),null,false,"User CurPriceAlert list isn't exists.");
+				list = new ArrayList<BasePriceAlert>() ;
+				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,"User CurPriceAlert list isn't exists.");
 			}
 			else
 			{
@@ -650,7 +651,7 @@ public class AlertManager implements IPlugin {
 				{
 					log.debug("[receiveQueryPastPriceAlert] : User PastPriceAlert list isn't exists.") ;
 					//Send orderalert event reply
-					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),null,false,"User PastPriceAlert list isn't exists.");
+					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,"User PastPriceAlert list isn't exists.");
 				}
 				else
 				{
@@ -663,7 +664,7 @@ public class AlertManager implements IPlugin {
 				{
 					log.debug("[receiveQueryPastPriceAlert] : User PastPriceAlert list isn't exists.") ;
 					//Send orderalert event reply
-					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),null,false,"User PastPriceAlert list isn't exists.");
+					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,"User PastPriceAlert list isn't exists.");
 				}
 				else
 				{

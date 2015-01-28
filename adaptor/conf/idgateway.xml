@@ -10,7 +10,7 @@
 	<bean id="IdGateway" class="com.cyanspring.id.gateway.IdGateway">
 		<!-- global setting -->
 		<property name="gateway" value="true"></property>
-		<property name="showGui" value="true"></property>			
+		<property name="showGui" value="false"></property>			
 
 		<!-- trading time  -->
 		<property name="preOpen" value="610"></property>

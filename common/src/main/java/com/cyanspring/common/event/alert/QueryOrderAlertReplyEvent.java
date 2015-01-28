@@ -16,10 +16,11 @@ public class QueryOrderAlertReplyEvent extends RemoteAsyncEvent{
 	 * if reject , ok = false ,message = error msg ;
 	 * */
 	public QueryOrderAlertReplyEvent(String key, String receiver,
-			List<TradeAlert> trades, String txId, boolean ok, String message) {
+			List<TradeAlert> trades, String txId, String userId, boolean ok, String message) {
 		super(key, receiver);
 		this.trades = trades;
 		this.txId = txId;
+		this.userId = userId ;
 		this.ok = ok;
 		this.message = message;
 	}
