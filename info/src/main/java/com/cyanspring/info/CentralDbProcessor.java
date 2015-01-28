@@ -74,6 +74,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
+	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	DBHandler dbhnd ;
 	
 	@Autowired
@@ -447,26 +448,37 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		try
 		{
-			while(rs.next())
+			if (defaultSymbolInfo == null || defaultSymbolInfo.isEmpty())
 			{
-				symbolinfos.add(new SymbolInfo(rs.getString("MARKET"), 
-											   rs.getString("CODE"), 
-											   rs.getString("WINDCODE"), 
-											   rs.getString("CN_NAME"),
-											   rs.getString("EN_NAME"),
-											   rs.getString("TW_NAME")));
-			}
-			for (SymbolInfo symbolinfo : symbolinfos)
-			{
-				if (defaultSymbol.contains(symbolinfo.getCode()))
+				while(rs.next())
 				{
-					retsymbollist.add(symbolinfo);
+					symbolinfos.add(new SymbolInfo(rs.getString("MARKET"), 
+												   rs.getString("CODE"), 
+												   rs.getString("WINDCODE"), 
+												   rs.getString("CN_NAME"),
+												   rs.getString("EN_NAME"),
+												   rs.getString("TW_NAME")));
 				}
+				for (SymbolInfo symbolinfo : symbolinfos)
+				{
+					if (defaultSymbol.contains(symbolinfo.getCode()))
+					{
+						retsymbollist.add(symbolinfo);
+					}
+				}
+			}
+			else
+			{
+				retsymbollist.addAll(defaultSymbolInfo);
 			}
 			if (retsymbollist.isEmpty())
 			{
 				retEvent.setOk(false);
 				retEvent.setMessage("Can't find requested symbol");
+			}
+			else
+			{
+				retEvent.setOk(true);
 			}
 			retEvent.setSymbolList(retsymbollist);
 		} 
@@ -844,6 +856,11 @@ public class CentralDbProcessor implements IPlugin
 				if (first == true)
 				{
 					first = false ;
+				}
+				if (preSubscriptionList.contains(refdata.getSymbol()))
+				{
+					defaultSymbolInfo.add(new SymbolInfo(refdata.getExchange(), 
+							refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), null));
 				}
 			}
 		}
