@@ -49,7 +49,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	//public boolean isActive = false;
 	static ChannelHandlerContext ctx; // context deal with server
 	TimerThread timer = null; 
-	public static Date lastRecv = new Date(0);
+	public static Date lastRecv = DateUtil.now();
 	/**
 	 * sendData to server
 	 * 
@@ -72,7 +72,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		if (IdGateway.instance().isGateway() == false) 
+		//if (IdGateway.instance().isGateway() == false) 
 		{
 			timer = new TimerThread();
 			timer.TimerEvent = this;
@@ -129,13 +129,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		final ByteBuf buffer = (ByteBuf) msg;
+		ByteBuf buffer = (ByteBuf) msg;
 		byte[] data = new byte[buffer.readableBytes()];
 		buffer.readBytes(data);
 		Parser.Instance().processData(data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_InSize, data.length);
 		buffer.release();
 		data = null;
+		buffer = null;
 		lastRecv = DateUtil.now();
 	}
 

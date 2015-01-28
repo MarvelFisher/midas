@@ -46,15 +46,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			ServerHandler.class, new Class[] { String.class, byte[].class });
 
 	public static void onAsyncSend(byte[] data) {
-		//byte[] packet = SocketUtil.packData(data);
-		//data = null;
 		sendData(data);
+		data = null;
 	}
 
 	public static void onAsyncSend(String symbol, byte[] data) {
-		//byte[] packet = SocketUtil.packData(data);
-		//data  = null;
 		sendData(symbol, data);
+		data = null;
 	}
 
 	public static void asyncSendData(byte[] data) {
@@ -74,15 +72,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static Object clLock = new Object();
 
-	public static UserClient[] getClients() {
-		UserClient[] arr = new UserClient[clientlist.size()];
-		return clientlist.toArray(arr);
+	public static List<UserClient> getClients() {
+		return new ArrayList<UserClient>(clientlist);
 	}
 
 	public static UserClient getUserClient(ChannelHandlerContext ctx) {
 
 		UserClient[] arr = new UserClient[clientlist.size()];
-
 		for (UserClient client : clientlist.toArray(arr)) {
 			if (client.isSameContext(ctx)) {
 				return client;
@@ -99,8 +95,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static void removeUserClient(ChannelHandlerContext ctx) {
 
-		if (channels.size() <= 0)
-			return;
+		//if (channels.size() <= 0)
+		//	return;
 		
 		List<UserClient> list = new ArrayList<UserClient>();
 		list.addAll(clientlist);
@@ -112,6 +108,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 				} catch (Exception e) {
 					LogUtil.logException(log, e);
 				}
+				
 				synchronized (clLock) {
 					clientlist.remove(client);
 				}
@@ -128,9 +125,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		byte[] packetData = null;
 		try {
 
-			if (channels.size() <= 0)
+			if (channels.size() <= 0) {				
+				data = null;
 				return;
-
+			}
 			packetData = SocketUtil.packData(data);
 			data = null;
 			
@@ -227,9 +225,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) {
 		String strIP = getRemotIP(ctx.channel());
-		updateContext();
-
 		removeUserClient(ctx);
+		ctx.close();
+		updateContext();
 		IdGateway.instance().addLog("remove Client : [%s]", strIP);
 
 	}
@@ -257,6 +255,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		String strIP = getRemotIP(ctx.channel());
 		LogUtil.logError(log, "[%s] Exception : %s", strIP, cause.getMessage());
 		LogUtil.logException(log, (Exception) cause);
+		removeUserClient(ctx);
 		ctx.close();
 	}
 }

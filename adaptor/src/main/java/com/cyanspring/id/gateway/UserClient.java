@@ -105,17 +105,20 @@ public class UserClient implements AutoCloseable {
 
 	public void sendData(String symbol, byte[] data) {
 
-		if (!gateway && refList.contains(symbol) == false)
+		if (!gateway && refList.contains(symbol) == false) {
+			data = null;
 			return;
+		}
 
-		if (ctx == null)
+		if (ctx == null) {
+			data = null;
 			return;
+		}
 
 		timeLast = DateUtil.now();
-
 		ServerHandler.sendData(ctx, symbol, data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, data.length);
-		// LogUtil.logDebug(log, "Async Send Data %d byte", data.length);
+		data = null;
 	}
 
 	public void onReceive(byte[] srcData) {
@@ -215,10 +218,6 @@ public class UserClient implements AutoCloseable {
 				break;
 			case 5: {
 				String symbol = IdSymbolUtil.toSymbol(vec2[1], exch);
-				//if (exch == 691) {
-				//	IdGateway.instance().addLog("%s:%d", symbol, exch);
-				//}
-				// String symbol = vec2[1].substring(3);
 				if (isRemove) {
 					removeRef(symbol);
 				} else {

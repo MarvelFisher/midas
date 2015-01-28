@@ -11,7 +11,6 @@ import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Util.DateUtil;
@@ -118,7 +117,6 @@ public class FutureItem implements AutoCloseable{
 	String market;
 	String cnName;
 	String enName;
-	String twName;
 	public String getEnName() {
 		return enName;
 	}
@@ -141,14 +139,6 @@ public class FutureItem implements AutoCloseable{
 
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
-	}
-	
-	public String getTwName() {
-		return twName;
-	}
-
-	public void setTwName(String twName) {
-		this.twName = twName;
 	}
 
 	
@@ -299,7 +289,7 @@ public class FutureItem implements AutoCloseable{
 	}
 	
 	public SymbolInfo getSymbolInfo() {
-		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName(), getTwName());
+		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName(), "");
 		return info;
 	}
 	
