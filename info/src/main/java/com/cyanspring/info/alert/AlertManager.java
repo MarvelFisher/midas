@@ -279,7 +279,10 @@ public class AlertManager implements IPlugin {
 			return;
 		else
 		{
-			for(BasePriceAlert alert: list) {
+			BasePriceAlert alert ;
+			for (int i = list.size(); i > 0; i --)
+			{
+				alert = list.get(i - 1);
 				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote))
 				{
 					//Add Alert to ParseQueue
@@ -332,7 +335,7 @@ public class AlertManager implements IPlugin {
 					}
 					//Delete Alert from List
 					list.remove(alert);					
-				}
+				}			
 			}
 		}
 		quotes.put(quote.getSymbol(), quote);		
@@ -807,9 +810,11 @@ public class AlertManager implements IPlugin {
 //					TradeAlert  pastTradeAlert= (TradeAlert) iterator.next();
 //					list.add(0, pastTradeAlert);
 //				}
-				ThreadStatus TS ;				
-				for (ParseThread PT : ParseThreadList)
+				ThreadStatus TS ;
+				ParseThread PT;
+				for (int i = ParseThreadList.size(); i >0 ; i --)
 				{
+					PT = ParseThreadList.get(i - 1);
 					TS = PT.getThreadStatus() ;		
 					if (TS.getThreadState() == ThreadState.IDLE.getState())
 					{
@@ -839,7 +844,7 @@ public class AlertManager implements IPlugin {
 							}
 						}
 					}
-				}
+				}				
 			}
 			catch (Exception e)
 			{
