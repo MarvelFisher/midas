@@ -145,7 +145,16 @@ public class AlertManager implements IPlugin {
 			String Datetime = dateFormat.format(execution.get(Date.class, "Created"));
 			String tradeMessage = "Trade " + execution.getSymbol() + " " + 
 								execution.getSide().toString() + " " + strQty + "@" + strPrice;
-			TradeAlert TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+			TradeAlert TA ;
+			if (execution.getSide().toString().toLowerCase().equals("sell"))
+			{
+				TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,0 - execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+			}
+			else
+			{
+				TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+			}
+			
 			//save to Array
 			ArrayList<TradeAlert> list ;
 			int search;
@@ -159,7 +168,7 @@ public class AlertManager implements IPlugin {
 				Iterator iterator = query.list().iterator();
 				list = new ArrayList<TradeAlert>();
 				while(iterator.hasNext()) {
-					TradeAlert  pastTradeAlert = (TradeAlert) iterator.next();
+					TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
 					list.add(pastTradeAlert);
 				}
 				if (list.size() == 0)
