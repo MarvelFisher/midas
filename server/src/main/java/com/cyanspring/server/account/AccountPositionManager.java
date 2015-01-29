@@ -892,4 +892,22 @@ public class AccountPositionManager implements IPlugin {
 	public void setPerfRmInterval(long perfRmInterval) {
 		this.perfRmInterval = perfRmInterval;
 	}
+
+	public int getAsyncSendBatch() {
+		return asyncSendBatch;
+	}
+
+	public void setAsyncSendBatch(int asyncSendBatch) {
+		this.asyncSendBatch = asyncSendBatch;
+	}
+
+	public long getAsyncSendInterval() {
+		return asyncSendInterval;
+	}
+
+	public void setAsyncSendInterval(long asyncSendInterval) {
+		this.asyncSendInterval = asyncSendInterval;
+	}
+	
+	
 }
