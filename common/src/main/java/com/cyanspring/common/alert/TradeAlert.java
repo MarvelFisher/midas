@@ -31,12 +31,17 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		
 		@Override
 		public int compareTo(TradeAlert other) {
-			int iReturn = this.getUserId().compareTo(other.getUserId());
+			int iReturn = this.getId().compareTo(other.getId());
 			if (iReturn == 0)
 			{
-				iReturn = this.id.compareTo(other.id);
+				iReturn = this.getUserId().compareTo(other.getUserId());
 			}
 			return iReturn;
+		}
+		
+		@Override
+		public boolean equals(Object obj){		
+			return this.getId().equals(((TradeAlert)obj).getId());
 		}
 		
 		public String getId() {
