@@ -34,6 +34,7 @@ import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
@@ -112,6 +113,8 @@ public class AccountPositionManager implements IPlugin {
 	private PerfFrequencyCounter perfFqyAccountUpdate;
 	private PerfFrequencyCounter perfFqyPositionUpdate;
 	private String tradeDate;
+	private int asyncSendBatch = 3000;
+	private long asyncSendInterval = 3000;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -535,13 +538,36 @@ public class AccountPositionManager implements IPlugin {
 			return;
 		
 		List<Account> allAccounts = accountKeeper.getAllAccounts();
-		AllAccountSnapshotReplyEvent reply = new AllAccountSnapshotReplyEvent(event.getKey(), event.getSender(), allAccounts);
-		try {
-			eventManager.sendRemoteEvent(reply);
-			log.info("AllAccountSnapshotReplyEvent sent: " + allAccounts.size());
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+		asyncSendAccountSnapshot(event, allAccounts);
+	}
+	
+	private void asyncSendAccountSnapshot(final AllAccountSnapshotRequestEvent event, final List<Account> allAccounts) {
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int i = 0;
+				List<Account> batch = new ArrayList<Account>();
+				for(i=1; i<=allAccounts.size(); i++) {
+					batch.add(allAccounts.get(i-1));
+					if(i%asyncSendBatch == 0 || i == allAccounts.size()) {
+						AllAccountSnapshotReplyEvent reply = new AllAccountSnapshotReplyEvent(
+								event.getKey(), event.getSender(), batch);
+						try {
+							eventManager.sendRemoteEvent(reply);
+							log.info("AllAccountSnapshotReplyEvent sent: " + batch.size());
+							Thread.sleep(asyncSendInterval);
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+						batch.clear();
+					}
+				}
+				
+			}
+			
+		});
+		thread.start();
 	}
 	
 	public void processMarketDataReadyEvent(MarketDataReadyEvent event) {
