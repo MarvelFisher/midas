@@ -39,18 +39,9 @@
 	</bean>
 
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
-		<property name="host">
-			<value>10.0.0.10</value>
-		</property>
-		<property name="user">
-			<value>tqt001</value>
-		</property>
-		<property name="pass">
-			<value>tqt001</value>
-		</property>
-		<property name="database">
-			<value>TA_DS_TEST</value>
-		</property>
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+<!-- 		<property name="jdbcUrl" value="jdbc:mysql://10.0.0.10:3306/TA_DS_TEST?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" /> -->
+		<property name="jdbcUrl" value="jdbc:mysql://10.0.0.10/TA_DS_TEST?jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;user=tqt001&amp;password=tqt001" />
 		<property name="open">
 			<value>2215</value>
 		</property>
@@ -60,8 +51,21 @@
 		<property name="close">
 			<value>2200</value>
 		</property>
+		<property name="preSubscriptionList">
+			<list>
+	            <value>AUDUSD</value>
+	            <value>USDJPY</value>
+	            <value>USDCHF</value>
+	            <value>USDCAD</value>
+	            <value>EURUSD</value>
+	            <value>EURJPY</value>
+	            <value>GBPUSD</value>
+	            <value>NZDUSD</value>
+	            <value>GBPJPY</value>
+	        </list>    
+		</property>
 	</bean>
-
+	
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
 			<value>Test</value>
@@ -102,8 +106,8 @@
 	</bean>
 
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://10.0.0.51:61616"></property>
-<!-- 		<property name="url" value="nio://localhost:61616"></property> -->
+<!-- 		<property name="url" value="nio://10.0.0.51:61616?wireFormat.maxInactivityDurationInitalDelay=30000"></property> -->
+		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000"></property>
 	</bean>
 	
 	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">
@@ -115,7 +119,7 @@
 	
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>refdata/refData_test.xml</value>
+			<value>refdata/refData_fdt.xml</value>
 		</property>
 	</bean>
 

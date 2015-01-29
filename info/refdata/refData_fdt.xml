@@ -1,139 +1,80 @@
 <list>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1000</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>0001.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1000</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>0004.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>400</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>0005.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1000</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>0016.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1000</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>0017.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1000</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>1398.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1000</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>27130.HK</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>WBC.AX</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>ANZ.AX</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>BHP.AX</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>RIO.AX</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-
-  <!-- FX symbols -->
-<com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Lot size</string>
+				<int>1</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>C</string>
+			</entry>
+			<entry>
+				<string>Contract</string>
+				<com.ib.client.Contract>
+					<m__conId>0</m__conId>
+					<m__symbol>C</m__symbol>
+					<m__secType>STK</m__secType>
+					<m__strike>0.0</m__strike>
+					<m__exchange>SMART</m__exchange>
+					<m__currency>USD</m__currency>
+					<m__includeExpired>false</m__includeExpired>
+					<m__comboLegs />
+				</com.ib.client.Contract>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Lot size</string>
+				<int>1</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>CCH</string>
+			</entry>
+			<entry>
+				<string>Contract</string>
+				<com.ib.client.Contract>
+					<m__conId>0</m__conId>
+					<m__symbol>CCH</m__symbol>
+					<m__secType>STK</m__secType>
+					<m__strike>0.0</m__strike>
+					<m__exchange>SMART</m__exchange>
+					<m__currency>USD</m__currency>
+					<m__includeExpired>false</m__includeExpired>
+					<m__comboLegs />
+				</com.ib.client.Contract>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Lot size</string>
+				<int>1</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>MSFT</string>
+			</entry>
+			<entry>
+				<string>Contract</string>
+				<com.ib.client.Contract>
+					<m__conId>0</m__conId>
+					<m__symbol>MSFT</m__symbol>
+					<m__secType>STK</m__secType>
+					<m__strike>0.0</m__strike>
+					<m__exchange>SMART</m__exchange>
+					<m__currency>USD</m__currency>
+					<m__includeExpired>false</m__includeExpired>
+					<m__comboLegs />
+				</com.ib.client.Contract>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
 		<fields>
 			<entry>
 				<string>Lot size</string>
@@ -169,7 +110,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CAD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -210,7 +151,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -251,7 +192,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -292,7 +233,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -333,7 +274,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -374,7 +315,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NZD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -415,7 +356,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SGD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -456,7 +397,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -497,7 +438,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>AUD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -538,7 +479,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CAD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -579,7 +520,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -620,7 +561,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -661,7 +602,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>DKK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -702,7 +643,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -743,7 +684,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -784,7 +725,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NOK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -825,7 +766,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NZD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -866,7 +807,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SEK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -907,7 +848,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -948,7 +889,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -989,7 +930,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1030,7 +971,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1071,7 +1012,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1112,7 +1053,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1153,7 +1094,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1194,7 +1135,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1235,7 +1176,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NOK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1276,7 +1217,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SEK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1317,7 +1258,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>AUD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1358,7 +1299,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CAD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1399,7 +1340,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1440,7 +1381,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1481,7 +1422,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CZK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1522,7 +1463,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>DKK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1563,7 +1504,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>GBP</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1604,7 +1545,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1645,7 +1586,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HUF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1686,7 +1627,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>ILS</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1727,7 +1668,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1768,7 +1709,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>MXN</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1809,7 +1750,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NOK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1850,7 +1791,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NZD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1891,7 +1832,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>RUB</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1932,7 +1873,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SEK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -1973,7 +1914,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SGD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2014,7 +1955,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2055,7 +1996,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2096,7 +2037,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>AUD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2137,7 +2078,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CAD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2178,7 +2119,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2219,7 +2160,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>EUR</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2260,7 +2201,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>GBP</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2301,7 +2242,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2342,7 +2283,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2383,7 +2324,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2424,7 +2365,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2465,7 +2406,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2506,7 +2447,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2547,7 +2488,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2588,7 +2529,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2629,7 +2570,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SEK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2670,7 +2611,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2711,7 +2652,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2752,7 +2693,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2793,7 +2734,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2834,7 +2775,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>DKK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2875,7 +2816,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2916,7 +2857,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NOK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2957,7 +2898,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SEK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -2998,7 +2939,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CAD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3039,7 +2980,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CHF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3080,7 +3021,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CNH</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3121,7 +3062,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>CZK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3162,7 +3103,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HKD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3203,7 +3144,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>HUF</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3244,7 +3185,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>ILS</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3285,7 +3226,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>JPY</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3326,7 +3267,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>MXN</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3367,7 +3308,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>NOK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3408,7 +3349,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>RUB</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3449,7 +3390,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SEK</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3490,7 +3431,7 @@
 					<m__exchange>IDEALPRO</m__exchange>
 					<m__currency>SGD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3520,7 +3461,7 @@
 			<entry>
 				<string>Exchange</string>
 				<string>COM</string>
-			</entry>			
+			</entry>
 			<entry>
 				<string>Contract</string>
 				<com.ib.client.Contract>
@@ -3531,7 +3472,7 @@
 					<m__exchange>SMART</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
@@ -3572,7 +3513,7 @@
 					<m__exchange>SMART</m__exchange>
 					<m__currency>USD</m__currency>
 					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs/>
+					<m__comboLegs />
 				</com.ib.client.Contract>
 			</entry>
 		</fields>

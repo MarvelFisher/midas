@@ -99,7 +99,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	// private final boolean outputToScreen = true;
 	/*********************** configuration ***************************************/
-	private final String openMarket = "CF"; //;SH;SZ"; // "CF;SH;SZ;SHF;DCE";
+	private final String openMarket = "CZC;SHF;DCE"; //"CF;SH;SZ"; // "CF;SH;SZ;SHF;DCE";
 	private final int openData = 0;
 	private final int openTime = 0;
 	private final String subscription = ""; // 000001.SZ;000002.SZ";
@@ -725,6 +725,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 		int type = (int) arr[0];
 		process(type, arr[1]);
+		arr = null;
+		reqObj = null;
 	}
 
 	@Override

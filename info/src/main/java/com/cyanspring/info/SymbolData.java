@@ -43,13 +43,15 @@ public class SymbolData implements Comparable<SymbolData>
 	private double dOpen ;
 	private double dClose ;
 	private double dCurVolume ;
+	private String market;
 	private ArrayList<HistoricalPrice> priceData = new ArrayList<HistoricalPrice>() ;
 	private ArrayList<Quote> quoteTmp = new ArrayList<Quote>() ;
 	
-	SymbolData(String strSymbol, CentralDbProcessor centralDB)
+	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
 	{
 		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
+		this.market = market;
 		readFromTick() ;
 		get52WHighLow((byte)0x40) ;
 	}
@@ -62,7 +64,7 @@ public class SymbolData implements Comparable<SymbolData>
 		priceData.clear();
 		for (int ii = 0; ii < tickCount; ii++)
 		{
-			priceData.add(new HistoricalPrice(this.getStrSymbol())) ;
+			priceData.add(new HistoricalPrice(this.getStrSymbol(), false)) ;
 		}
 	}
 	public void setPrice(Quote quote)
@@ -123,10 +125,10 @@ public class SymbolData implements Comparable<SymbolData>
 	{
 		resetPriceData();
 		isUpdating = true ;
-		Calendar calStamp = Calendar.getInstance() ;
 		String tradedate = centralDB.getTradedate();
 		if (tradedate == null)
 		{
+			isUpdating = false ;
 			return;
 		}
 		String strFile = String.format("./DAT/%s/%s.TCK", 
@@ -134,6 +136,7 @@ public class SymbolData implements Comparable<SymbolData>
 		File file = new File(strFile);
 		if (file.exists() == false)
 		{
+			isUpdating = false ;
 			return;
 		}
 		String strIn = "" ;
@@ -165,14 +168,13 @@ public class SymbolData implements Comparable<SymbolData>
 				setPrice(quote.getBid(), quote.getAsk(), quote.getTimeStamp());
 			}
 			fileIn.close();
+			isUpdating = false ;
 		} 
 		catch (IOException | ParseException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			isUpdating = false ;
 		}
-		isUpdating = false ;
 	}
 	
 	public void insertSQLDate(byte service, String strType)
@@ -190,7 +192,10 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			HistoricalPrice lastPrice = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
 			Calendar cal_ = Calendar.getInstance() ;
-			cal_.setTime(lastPrice.getTimestamp());
+			if (lastPrice != null)
+			{
+				cal_.setTime(lastPrice.getTimestamp());
+			}
 			boolean bDelete = false ;
 			if (strType.equals("W"))
 			{
@@ -258,7 +263,6 @@ public class SymbolData implements Comparable<SymbolData>
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ;
@@ -499,7 +503,6 @@ public class SymbolData implements Comparable<SymbolData>
 		try {
 			prices = getPriceList(service, strType, null, true, prices);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			log.error(e.toString());
 			return ;
 		}
@@ -533,7 +536,6 @@ public class SymbolData implements Comparable<SymbolData>
 	public List<HistoricalPrice> getHistoricalPrice(byte service, String type, String symbol, Date start, Date end)
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
-		SimpleDateFormat sdftime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 		SimpleDateFormat sdfprice = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 		sdfprice.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String tradedate = centralDB.getTradedate() ;
@@ -561,7 +563,6 @@ public class SymbolData implements Comparable<SymbolData>
 				listPrice.add(price) ;
 			}
 		} catch (SQLException | ParseException e) {
-			// TODO Auto-generated catch block
 			log.error(e.toString(), e);
 			return null ;
 		}
@@ -593,7 +594,6 @@ public class SymbolData implements Comparable<SymbolData>
 					return null ;
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				log.error(e.toString(), e);
 				return null ;
 			}
@@ -610,6 +610,12 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setStrSymbol(String strSymbol) {
 		this.strSymbol = strSymbol;
+	}
+	public String getMarket() {
+		return market;
+	}
+	public void setMarket(String market) {
+		this.market = market;
 	}
 	
 }

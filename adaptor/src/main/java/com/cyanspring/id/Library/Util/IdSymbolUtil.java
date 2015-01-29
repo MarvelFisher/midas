@@ -14,7 +14,7 @@ public class IdSymbolUtil {
 			return String.format("X:S%s", symbol);
 		}
 		case IdSymbolUtil.PreciousMetal: {
-			return String.format("C:P%sOZSP", symbol);
+			return String.format("C:P%sOZ\\SP", symbol);
 		}	
 		default:
 			return symbol;

@@ -12,7 +12,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -54,25 +56,25 @@ public class CentralDbProcessor implements IPlugin
 	private static final Logger log = LoggerFactory
 			.getLogger(CentralDbProcessor.class);
 
-	private String host;
-	private String user;
-	private String pass;
-	private String database;
+	private String driverClass;
+	private String jdbcUrl;
 	private int open ;
 	private int preopen ;
 	private int close ;
-	private HashMap<String, ArrayList<String>> userSymbolList;
-	
 	private int    nOpen ;
 	private int    nClose ;
 	private int    nPreOpen ;
+	private ArrayList<String> preSubscriptionList;
 	
 	private int    nTickCount ;
 	private MarketSessionType sessionType ;
 	private String tradedate ;
+	private boolean isStartup = true;
+	private Queue<QuoteEvent> quoteBuffer;
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
+	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	DBHandler dbhnd ;
 	
 	@Autowired
@@ -173,15 +175,38 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processQuoteEvent(QuoteEvent event)
 	{
-		Quote quote = event.getQuote() ;
+		if (isStartup)
+		{
+			quoteBuffer.offer(event);
+			return;
+		}
+		Quote quote;
+		while(quoteBuffer.isEmpty() == false)
+		{
+			quote = quoteBuffer.poll().getQuote() ;
+			writeToTick(quote) ;
+			SymbolData symbolData = new SymbolData(quote.getSymbol()) ;
+			synchronized(this)
+			{
+				int index = Collections.binarySearch(listSymbolData, symbolData) ;
+				if (index < 0)
+				{
+					listSymbolData.add(~index, new SymbolData(quote.getSymbol(), "FX", this)) ;
+					index = ~index ;
+				}
+				listSymbolData.get(index).setPrice(quote);
+			}
+			log.debug("Quote: " + quote);
+		}
+		quote = event.getQuote() ;
 		writeToTick(quote) ;
-		SymbolData symbolData = new SymbolData(quote.getSymbol(), this) ;
+		SymbolData symbolData = new SymbolData(quote.getSymbol()) ;
 		synchronized(this)
 		{
 			int index = Collections.binarySearch(listSymbolData, symbolData) ;
 			if (index < 0)
 			{
-				listSymbolData.add(~index, symbolData) ;
+				listSymbolData.add(~index, new SymbolData(quote.getSymbol(), "FX", this)) ;
 				index = ~index ;
 			}
 			listSymbolData.get(index).setPrice(quote);
@@ -191,8 +216,9 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
-		setSessionType(event.getSession()) ;
 		this.tradedate = event.getTradeDate() ;
+		setSessionType(event.getSession(), event.getMarket()) ;
+		isStartup = false;
 	}
 	
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
@@ -410,7 +436,7 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd;
 		sqlcmd = String.format("SELECT * FROM `Symbol_Info` WHERE `MARKET`='%s';", market) ;
 		ResultSet rs = dbhnd.querySQL(sqlcmd);
-		ArrayList<String> defaultSymbol = mapDefaultSymbol.get(market);
+		ArrayList<String> defaultSymbol = /*mapDefaultSymbol.get(market)*/preSubscriptionList;
 		if (defaultSymbol == null || defaultSymbol.isEmpty())
 		{
 			retEvent.setOk(false);
@@ -422,26 +448,37 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		try
 		{
-			while(rs.next())
+			if (defaultSymbolInfo == null || defaultSymbolInfo.isEmpty())
 			{
-				symbolinfos.add(new SymbolInfo(rs.getString("MARKET"), 
-											   rs.getString("CODE"), 
-											   rs.getString("WINDCODE"), 
-											   rs.getString("CN_NAME"),
-											   rs.getString("EN_NAME"),
-											   rs.getString("TW_NAME")));
-			}
-			for (SymbolInfo symbolinfo : symbolinfos)
-			{
-				if (defaultSymbol.contains(symbolinfo.getCode()))
+				while(rs.next())
 				{
-					retsymbollist.add(symbolinfo);
+					symbolinfos.add(new SymbolInfo(rs.getString("MARKET"), 
+												   rs.getString("CODE"), 
+												   rs.getString("WINDCODE"), 
+												   rs.getString("CN_NAME"),
+												   rs.getString("EN_NAME"),
+												   rs.getString("TW_NAME")));
 				}
+				for (SymbolInfo symbolinfo : symbolinfos)
+				{
+					if (defaultSymbol.contains(symbolinfo.getCode()))
+					{
+						retsymbollist.add(symbolinfo);
+					}
+				}
+			}
+			else
+			{
+				retsymbollist.addAll(defaultSymbolInfo);
 			}
 			if (retsymbollist.isEmpty())
 			{
 				retEvent.setOk(false);
 				retEvent.setMessage("Can't find requested symbol");
+			}
+			else
+			{
+				retEvent.setOk(true);
 			}
 			retEvent.setSymbolList(retsymbollist);
 		} 
@@ -463,18 +500,49 @@ public class CentralDbProcessor implements IPlugin
 			   String group, 
 			   ArrayList<String> symbols)
 	{
-		String sqlcmd;
+		String sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`) VALUES");
+		String sqlselect;
+		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
+		boolean first = true;
 		for (String symbol : symbols)
 		{
-			sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
+			sqlselect = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 					" AND `GROUP`='%s' AND `MARKET`='%s' AND `CODE`='%s';", user, group, market, symbol) ;
-			ResultSet rs = dbhnd.querySQL(sqlcmd);
+			ResultSet rs = dbhnd.querySQL(sqlselect);
 			try 
 			{
-				if (rs.isLast() == false)
+				if (rs.next())
 				{
 					retEvent.setOk(false);
 					retEvent.setMessage(String.format("Duplicate symbol %s", symbol));
+					sendEvent(retEvent);
+					return;
+				}
+				else
+				{
+					sqlselect = String.format("SELECT * FROM `Symbol_Info` WHERE `MARKET`='%s' AND `CODE`='%s';", market, symbol) ;
+					rs = dbhnd.querySQL(sqlselect);
+					if (rs.next())
+					{
+						retsymbollist.add(new SymbolInfo(rs.getString("MARKET"), 
+								   rs.getString("CODE"), 
+								   rs.getString("WINDCODE"), 
+								   rs.getString("CN_NAME"),
+								   rs.getString("EN_NAME"),
+								   rs.getString("TW_NAME")));
+						if (first == false)
+						{
+							sqlcmd += "," ;
+						}
+						sqlcmd += String.format("('%s','%s','%s',", user, group, market);
+						sqlcmd += (rs.getString("CODE") == null) ? "null," : String.format("'%s',", rs.getString("CODE"));
+						sqlcmd += (rs.getString("WINDCODE") == null) ? "null," : String.format("'%s',", rs.getString("WINDCODE"));
+						sqlcmd += (rs.getString("EN_NAME")  == null) ? "null," : String.format("'%s',", rs.getString("EN_NAME"));
+						sqlcmd += (rs.getString("CN_NAME") == null) ? "null," : String.format("'%s',", rs.getString("CN_NAME"));
+						sqlcmd += (rs.getString("TW_NAME") == null) ? "null" : String.format("'%s'", rs.getString("TW_NAME"));
+						sqlcmd += ")";
+						first = false;
+					}
 				}
 			} 
 			catch (SQLException e) 
@@ -482,6 +550,10 @@ public class CentralDbProcessor implements IPlugin
 				continue;
 			}
 		}
+		dbhnd.updateSQL(sqlcmd);
+		retEvent.setSymbolList(retsymbollist);
+		retEvent.setOk(true);
+		sendEvent(retEvent);
 	}
 	
 	public void userDelSubscribeSymbol(SymbolListSubscribeEvent retEvent, 
@@ -493,10 +565,13 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd;
 		for (String symbol : symbols)
 		{
-			sqlcmd = String.format("DELECT FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
+			sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 					" AND `GROUP`='%s' AND `MARKET`='%s' AND `CODE`='%s';", user, group, market, symbol) ;
 			dbhnd.updateSQL(sqlcmd);
 		}
+		retEvent.setOk(true);
+		sendEvent(retEvent);
+		
 	}
 	
 	public void userRequestAllSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -548,6 +623,11 @@ public class CentralDbProcessor implements IPlugin
 											   rs.getString("EN_NAME"),
 											   rs.getString("TW_NAME")));
 			}
+			if (symbolinfos.isEmpty())
+			{
+				requestDefaultSymbol(retEvent, market);
+				return;
+			}
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(true);
 		} 
@@ -570,6 +650,10 @@ public class CentralDbProcessor implements IPlugin
 			   String group, 
 			   ArrayList<String> symbols)
 	{
+		if (symbols == null || symbols.isEmpty())
+		{
+			symbols = preSubscriptionList;
+		}
 		if (user == null || market == null || group == null)
 		{
 			retEvent.setOk(false);
@@ -643,6 +727,10 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void writeToTick(Quote quote)
 	{
+		if (this.tradedate == null)
+		{
+			return;
+		}
 		Calendar calStamp = Calendar.getInstance() ;
 		Calendar calSent = Calendar.getInstance() ;
 		calStamp.setTime(quote.getTimeStamp()) ;
@@ -740,18 +828,19 @@ public class CentralDbProcessor implements IPlugin
 		{
 			return ;
 		}
-
-		String sqlcmd = "INSERT IGNORE INTO Symbol_Info (MARKET,CODE,EN_NAME,CN_NAME) VALUES";
+		String sqlcmd = "DELETE FROM `Symbol_Info`;";
+		dbhnd.updateSQL(sqlcmd);
+		sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
 		boolean first = true;
 		synchronized(this)
 		{
 			for(RefData refdata : refList)
 			{
-				SymbolData symbolData = new SymbolData(refdata.getSymbol(), this) ;
+				SymbolData symbolData = new SymbolData(refdata.getSymbol()) ;
 				int index = Collections.binarySearch(listSymbolData, symbolData) ;
 				if (index < 0)
 				{
-					listSymbolData.add(~index, symbolData) ;
+					listSymbolData.add(~index, new SymbolData(refdata.getSymbol(), refdata.getExchange(), this)) ;
 					index = ~index ;
 				}
 				if (first == false)
@@ -768,6 +857,11 @@ public class CentralDbProcessor implements IPlugin
 				{
 					first = false ;
 				}
+				if (preSubscriptionList.contains(refdata.getSymbol()))
+				{
+					defaultSymbolInfo.add(new SymbolInfo(refdata.getExchange(), 
+							refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), null));
+				}
 			}
 		}
 		sqlcmd += ";" ;
@@ -779,6 +873,7 @@ public class CentralDbProcessor implements IPlugin
 		synchronized(this)
 		{
 			this.listSymbolData.clear();
+			this.quoteBuffer.clear();
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);
@@ -788,7 +883,7 @@ public class CentralDbProcessor implements IPlugin
 		nClose = (close/100) * 60 + (close%100) ;
 	}
 	
-	public void setSessionType(MarketSessionType sessionType) {
+	public void setSessionType(MarketSessionType sessionType, String market) {
 		synchronized(this)
 		{
 			if (this.sessionType == MarketSessionType.OPEN)
@@ -797,6 +892,10 @@ public class CentralDbProcessor implements IPlugin
 				{
 					for (SymbolData symbol : listSymbolData)
 					{
+						if (symbol.getMarket() == null || symbol.getMarket().equals(market) == false)
+						{
+							continue;
+						}
 						symbol.insertSQLDate((byte)0x40, "D");
 						symbol.insertSQLDate((byte)0x40, "W");
 						symbol.insertSQLDate((byte)0x40, "M");
@@ -822,6 +921,10 @@ public class CentralDbProcessor implements IPlugin
 					resetStatement() ;
 				}
 			}
+			if (sessionType == MarketSessionType.OPEN)
+			{
+				onCallRefData();
+			}
 			this.sessionType = sessionType;
 		}
 	}
@@ -842,31 +945,6 @@ public class CentralDbProcessor implements IPlugin
 			log.error(e.getMessage(), e);
 		}
 	}
-
-	public String getHost() {
-		return host;
-	}
-	public void setHost(String host) {
-		this.host = host;
-	}
-	public String getUser() {
-		return user;
-	}
-	public void setUser(String user) {
-		this.user = user;
-	}
-	public String getPass() {
-		return pass;
-	}
-	public void setPass(String pass) {
-		this.pass = pass;
-	}
-	public String getDatabase() {
-		return database;
-	}
-	public void setDatabase(String database) {
-		this.database = database;
-	}
 	public AsyncEventProcessor getEventProcessorMD() {
 		return eventProcessorMD;
 	}
@@ -886,8 +964,8 @@ public class CentralDbProcessor implements IPlugin
 	@Override
 	public void init() throws Exception {
 		log.info("Initialising...");
-		Class.forName("com.mysql.jdbc.Driver");
-		dbhnd = new DBHandler(host, user, pass, database) ;
+		dbhnd = new DBHandler(jdbcUrl, driverClass) ;
+		quoteBuffer = new LinkedList<QuoteEvent>();
 		resetStatement() ;
 		
 		// subscribe to events
@@ -904,8 +982,6 @@ public class CentralDbProcessor implements IPlugin
 		refDataManager.init();
 		requestMarketSession() ;
 //		requestSymbolList() ;
-		onCallRefData();
-		userSymbolList = new HashMap<String, ArrayList<String>>();
 	}
 	@Override
 	public void uninit() {
@@ -934,6 +1010,30 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public String getTradedate() {
 		return tradedate;
+	}
+
+	public String getDriverClass() {
+		return driverClass;
+	}
+
+	public void setDriverClass(String driverClass) {
+		this.driverClass = driverClass;
+	}
+
+	public String getJdbcUrl() {
+		return jdbcUrl;
+	}
+
+	public void setJdbcUrl(String jdbcUrl) {
+		this.jdbcUrl = jdbcUrl;
+	}
+
+	public ArrayList<String> getPreSubscriptionList() {
+		return preSubscriptionList;
+	}
+
+	public void setPreSubscriptionList(ArrayList<String> preSubscriptionList) {
+		this.preSubscriptionList = preSubscriptionList;
 	}
 	
 }

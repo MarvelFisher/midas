@@ -30,7 +30,7 @@ public class MarketSessionEvent extends RemoteAsyncEvent {
 		this.start = start;
 		this.end = end;
 		this.tradeDate = tradeDate;
-		this.market = market;
+		this.setMarket(market);
 	}
 
 	public MarketSessionType getSession() {
@@ -47,5 +47,13 @@ public class MarketSessionEvent extends RemoteAsyncEvent {
 	
 	public String getTradeDate(){
 		return tradeDate;
+	}
+
+	public String getMarket() {
+		return market;
+	}
+
+	public void setMarket(String market) {
+		this.market = market;
 	}
 }

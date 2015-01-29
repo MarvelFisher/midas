@@ -18,12 +18,19 @@
 		<property name="port" value="4001"></property>	
 	-->    
 		<property name="gateway" value="true"></property>		
-		<property name="reqIp" value="10.0.0.32"></property>		
+		<property name="reqIp" value="10.0.0.51"></property>		
 		<property name="reqPort" value="6086"></property>
 	
 		<property name="exch" value="687"></property>
 		<property name="preOpen" value="610"></property>
 		<property name="open" value="615"></property>
 		<property name="close" value="600"></property>
+		
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>	
 	</bean>
 </beans>

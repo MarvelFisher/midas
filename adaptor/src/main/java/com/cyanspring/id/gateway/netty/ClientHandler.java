@@ -33,7 +33,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 
 /**
  * Handler implementation for the echo client. It initiates the ping-pong
@@ -49,7 +48,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	//public boolean isActive = false;
 	static ChannelHandlerContext ctx; // context deal with server
 	TimerThread timer = null; 
-	public static Date lastRecv = new Date(0);
+	public static Date lastRecv = DateUtil.now();
 	/**
 	 * sendData to server
 	 * 
@@ -72,7 +71,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		if (IdGateway.instance().isGateway() == false) 
+		//if (IdGateway.instance().isGateway() == false) 
 		{
 			timer = new TimerThread();
 			timer.TimerEvent = this;
@@ -112,9 +111,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 	    super.userEventTriggered(ctx, evt);
 	    if (evt == ClientHandler.connected) {
-			logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
-			//setCTFOn(IdGateway.instance().getExch());
-			setCTFOnSymbols();
+	    	logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
+	    	if (IdGateway.instance().isGateway() == true) {
+	    		setCTFOn(IdGateway.instance().getExch());
+	    	}
+	    	else {			
+	    		setCTFOnSymbols();
+	    	}
 	    }
 	    else if (evt == ClientHandler.disConnected ){
 	    	IdGateway.instance().reconClient();
@@ -129,13 +132,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		final ByteBuf buffer = (ByteBuf) msg;
+		ByteBuf buffer = (ByteBuf) msg;
 		byte[] data = new byte[buffer.readableBytes()];
 		buffer.readBytes(data);
 		Parser.Instance().processData(data);
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_InSize, data.length);
 		buffer.release();
 		data = null;
+		buffer = null;
 		lastRecv = DateUtil.now();
 	}
 

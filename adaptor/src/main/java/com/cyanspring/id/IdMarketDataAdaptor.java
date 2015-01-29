@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,16 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 
 	List<UserClient> clientsList = new ArrayList<UserClient>();
 	Hashtable<String, Integer> refTable = new Hashtable<String, Integer>();
+	private Map<String, Integer> nonFX;
+	
+	public Map<String, Integer> getNonFX() {
+		return nonFX;
+	}
 
+
+	public void setNonFX(Map<String, Integer> nonFX) {
+		this.nonFX = nonFX;
+	}
 	public Date getTime() {
 		return time;
 	}
@@ -199,12 +209,17 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	void config() {
 
 		QuoteMgr.instance().initSymbols(getPreSubscriptionList());
-
+		List<String> list = new ArrayList<String>();
+		list.addAll(nonFX.keySet());
+		QuoteMgr.instance().initSymbols(list);
+		
 		setSession(getPreOpen(), getOpen(), getClose());
 
 		Path path1 = Paths.get("");
 
 		this.path = path1.toAbsolutePath().toString();
+		list.clear();
+		list = null;
 	}
 
 	/*
@@ -373,8 +388,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 			return;
 
 		if (addSymbol(instrument) == true) {
-			
-			ClientHandler.subscribe(exch, instrument);
+			int exchId = getExch(instrument);
+			ClientHandler.subscribe(exchId, instrument);
 			QuoteMgr.instance().addSymbol(instrument);
 		}
 
@@ -393,6 +408,14 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 		}
 	}
 
+	int getExch(String symbol){
+		if (nonFX.containsKey(symbol)) {
+			return nonFX.get(symbol);
+		}
+		return exch;
+			
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -405,7 +428,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 			IMarketDataListener listener) {
 
 		if (removeSymbol(instrument) == true) {
-			ClientHandler.unSubscribe(exch, instrument);
+			int exchId = getExch(instrument);
+			ClientHandler.unSubscribe(exchId, instrument);
 			QuoteMgr.instance().addSymbol(instrument);
 		}
 
@@ -458,6 +482,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 		
 		String[] arr = new String[list.size()];
 		list.toArray(arr);
+		list.clear();
 		return arr;
 	}
 
