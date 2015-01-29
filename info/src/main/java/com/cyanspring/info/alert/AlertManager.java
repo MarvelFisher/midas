@@ -257,7 +257,7 @@ public class AlertManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
-//		log.debug("Quote: " + quote);
+		log.debug("Quote: " + quote);
 		if (quotes.get(quote.getSymbol()) == null)
 		{
 			quotes.put(quote.getSymbol(), quote);
@@ -514,7 +514,7 @@ public class AlertManager implements IPlugin {
 			return ;
 		}
 		else
-		{			
+		{
 			if (list.indexOf(priceAlert) != -1)
 			{
 				for(BasePriceAlert basePriceAlert : list)
@@ -682,7 +682,6 @@ public class AlertManager implements IPlugin {
 		} catch (Exception e) {
 			log.debug("[receiveQueryPastPriceAlert] : " + e.getMessage());
 		}
-		
 	}
 	
 	public <T> void SQLSave(T object)

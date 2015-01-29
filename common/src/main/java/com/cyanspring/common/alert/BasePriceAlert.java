@@ -61,6 +61,16 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		return iReturn;
 	}
 	
+	@Override
+	public boolean equals(Object obj){		
+		return this.getId().equals(((BasePriceAlert)obj).getId());
+	}
+	
+//	@Override
+//	public int hashCode(){
+//		return 0;
+//	}
+	
 	public String getId() {
 		return id;
 	}
