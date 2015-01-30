@@ -218,11 +218,13 @@ public class CentralDbProcessor implements IPlugin
 	{
 		this.tradedate = event.getTradeDate() ;
 		setSessionType(event.getSession(), event.getMarket()) ;
+		log.debug("Process MarketSession: " + event.getSession());
 		isStartup = false;
 	}
 	
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
+		log.debug("Process Price High Low Request");
 		int index;
 		String sender = event.getSender() ;
 		List<String> symbolList = event.getSymbolList() ;
@@ -246,11 +248,13 @@ public class CentralDbProcessor implements IPlugin
 		{
 			retEvent.setOk(false);
 			retEvent.setMessage("No requested symbol is find");
+			log.debug("Process Price High Low Request fail: No requested symbol is find");
 		}
 		else
 		{
 			retEvent.setOk(true);
 			retEvent.setListHighLow(phlList);
+			log.debug("Process Price High Low Request success Symbol: " + phlList.size());
 		}
 		sendEvent(retEvent) ;
 	}
@@ -261,7 +265,7 @@ public class CentralDbProcessor implements IPlugin
 		String symbol = event.getSymbol() ;
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
 		retEvent.setSymbol(symbol);
-//		Collections.sort(listSymbolData) ;
+		log.debug("Process Historical Price Request");
 		synchronized(this)
 		{
 			index = Collections.binarySearch(listSymbolData, new SymbolData(symbol)) ;
@@ -270,18 +274,21 @@ public class CentralDbProcessor implements IPlugin
 				retEvent.setOk(false) ;
 				retEvent.setMessage("Can't find requested symbol");
 				sendEvent(retEvent) ;
+				log.debug("Process Historical Price Request fail: Can't find requested symbol");
 				return ;
 			}
 		}
 		String type   = event.getHistoryType() ;
 		Date   start  = event.getStartDate() ;
 		Date   end    = event.getEndDate() ;
+		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
 		List<HistoricalPrice> listPrice = listSymbolData.get(index).getHistoricalPrice((byte)0x40, type, symbol, start, end) ;
 		if (listPrice == null || listPrice.isEmpty())
 		{
 			retEvent.setOk(false) ;
 			retEvent.setMessage("Get price list fail");
 			sendEvent(retEvent) ;
+			log.debug("Process Historical Price Request fail: Get price list fail");
 			return ;
 		}
 		else
@@ -291,6 +298,7 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setDataCount(listPrice.size());
 			retEvent.setPriceList(listPrice);
 			sendEvent(retEvent) ;
+			log.debug("Process Historical Price Request success Symbol: " + listPrice.size());
 			return ;
 		}
 	}
@@ -335,21 +343,27 @@ public class CentralDbProcessor implements IPlugin
 		switch(type)
 		{
 		case DEFAULT:
+			log.debug("Process Symbol List Subscribe Type: DEFAULT Market: " + market);
 			requestDefaultSymbol(retEvent, market);
 			break;
 		case ADD:
+			log.debug("Process Symbol List Subscribe Type: ADD User: " + user + " Market: " + market + " Group: " + group);
 			userAddSubscribeSymbol(retEvent, user, market, group, symbols);
 			break;
 		case ALLSYMBOL:
+			log.debug("Process Symbol List Subscribe Type: ALLSYMBOL Market: " + market);
 			userRequestAllSymbol(retEvent, market);
 			break;
 		case DELETE:
+			log.debug("Process Symbol List Subscribe Type: DELETE User: " + user + " Market: " + market + " Group: " + group);
 			userDelSubscribeSymbol(retEvent, user, market, group, symbols);
 			break;
 		case GROUPSYMBOL:
+			log.debug("Process Symbol List Subscribe Type: GROUPSYMBOL User: " + user + " Market: " + market + " Group: " + group);
 			userRequestGroupSymbol(retEvent, user, market, group);
 			break;
 		case SET:
+			log.debug("Process Symbol List Subscribe Type: SET User: " + user + " Market: " + market + " Group: " + group);
 			userSetGroupSymbol(retEvent, user, market, group, symbols);
 			break;
 		default:
@@ -368,11 +382,13 @@ public class CentralDbProcessor implements IPlugin
 		int perpage = event.getSymbolPerPage();
 		int totalpage = 0;
 		int index;
+		log.debug("Process Search Symbol Request Type: " + type + " Keyword: " + searchkey);
 		if (type == null)
 		{
 			retEvent.setOk(false);
 			retEvent.setMessage("Recieved null type");
 			sendEvent(retEvent);
+			log.debug("Process Search Symbol Request fail: Recieved null type");
 			return;
 		}
 		switch(type)
@@ -419,11 +435,13 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setSymbolinfo(retsymbollist);
 			retEvent.setTotalpage(totalpage);
 			retEvent.setOk(true);
+			log.debug("Process Search Symbol Request success Symbol: " + retsymbollist.size());
 		} catch (SQLException e) {
 
 			retEvent.setSymbolinfo(null);
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
+			log.debug("Process Search Symbol Request fail: " + e.toString());
 		}
 		finally
 		{
@@ -441,6 +459,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			retEvent.setOk(false);
 			retEvent.setMessage("Can't find requested Market in default map");
+			log.debug("Process Request Default Symbol fail: Can't find requested Market in default map");
 			sendEvent(retEvent);
 			return ;
 		}
@@ -481,12 +500,14 @@ public class CentralDbProcessor implements IPlugin
 				retEvent.setOk(true);
 			}
 			retEvent.setSymbolList(retsymbollist);
+			log.debug("Process Request Default Symbol success Symbol: " + retsymbollist.size());
 		} 
 		catch (SQLException e) 
 		{
 			retEvent.setSymbolList(null);
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
+			log.debug("Process Request Default Symbol fail " + e.toString());
 		}
 		finally
 		{
@@ -515,6 +536,7 @@ public class CentralDbProcessor implements IPlugin
 				{
 					retEvent.setOk(false);
 					retEvent.setMessage(String.format("Duplicate symbol %s", symbol));
+					log.debug("Process Add Symbol fail Duplicated symbol: " + symbol);
 					sendEvent(retEvent);
 					return;
 				}
@@ -553,6 +575,7 @@ public class CentralDbProcessor implements IPlugin
 		dbhnd.updateSQL(sqlcmd);
 		retEvent.setSymbolList(retsymbollist);
 		retEvent.setOk(true);
+		log.debug("Process Add Symbol success added Symbol: " + retsymbollist.size());
 		sendEvent(retEvent);
 	}
 	
@@ -570,6 +593,7 @@ public class CentralDbProcessor implements IPlugin
 			dbhnd.updateSQL(sqlcmd);
 		}
 		retEvent.setOk(true);
+		log.debug("Process Delete Symbol success dleleted Symbol: " + symbols.size());
 		sendEvent(retEvent);
 		
 	}
@@ -592,6 +616,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(true);
+			log.debug("Process Request All Symbol success Symbol: " + symbolinfos.size());
 		} 
 		catch (SQLException e) 
 		{
@@ -599,6 +624,7 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
+			log.debug("Process Request All Symbol fail: " + e.toString());
 		}
 		finally
 		{
@@ -630,12 +656,14 @@ public class CentralDbProcessor implements IPlugin
 			}
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(true);
+			log.debug("Process Request Group Symbol success Symbol: " + symbolinfos.size());
 		} 
 		catch (SQLException e) 
 		{
 			retEvent.setSymbolList(null);
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
+			log.debug("Process Request Group Symbol fail: " + e.toString());
 		}
 		finally
 		{
@@ -658,6 +686,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			retEvent.setOk(false);
 			retEvent.setMessage("Recieved null argument");
+			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
@@ -705,11 +734,13 @@ public class CentralDbProcessor implements IPlugin
 				retsymbollist.clear();
 				retEvent.setOk(false);
 				retEvent.setMessage("Can't find requested symbol");
+				log.debug("Process Request Group Symbol fail: Can't find requested symbol");
 			}
 			else
 			{
 				dbhnd.updateSQL(sqlcmd);
 				retEvent.setOk(true);
+				log.debug("Process Request Group Symbol success Symbol: " + retsymbollist.size());
 			}
 			retEvent.setSymbolList(retsymbollist);
 		} 
@@ -718,6 +749,7 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setSymbolList(null);
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
+			log.debug("Process Request Group Symbol fail: " + e.toString());
 		}
 		finally
 		{
@@ -828,12 +860,13 @@ public class CentralDbProcessor implements IPlugin
 		{
 			return ;
 		}
-		String sqlcmd = "DELETE FROM `Symbol_Info`;";
-		dbhnd.updateSQL(sqlcmd);
-		sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
-		boolean first = true;
+		String sqlcmd;
 		synchronized(this)
 		{
+			sqlcmd = "DELETE FROM `Symbol_Info`;";
+			dbhnd.updateSQL(sqlcmd);
+			sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
+			boolean first = true;
 			for(RefData refdata : refList)
 			{
 				SymbolData symbolData = new SymbolData(refdata.getSymbol()) ;
@@ -863,9 +896,9 @@ public class CentralDbProcessor implements IPlugin
 							refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), null));
 				}
 			}
+			sqlcmd += ";" ;
+			dbhnd.updateSQL(sqlcmd);
 		}
-		sqlcmd += ";" ;
-		dbhnd.updateSQL(sqlcmd);
 	}
 	
 	public void resetStatement()
@@ -884,49 +917,46 @@ public class CentralDbProcessor implements IPlugin
 	}
 	
 	public void setSessionType(MarketSessionType sessionType, String market) {
-		synchronized(this)
+		if (this.sessionType == MarketSessionType.OPEN)
 		{
-			if (this.sessionType == MarketSessionType.OPEN)
+			if (sessionType == MarketSessionType.CLOSE)
 			{
-				if (sessionType == MarketSessionType.CLOSE)
+				for (SymbolData symbol : listSymbolData)
 				{
-					for (SymbolData symbol : listSymbolData)
+					if (symbol.getMarket() == null || symbol.getMarket().equals(market) == false)
 					{
-						if (symbol.getMarket() == null || symbol.getMarket().equals(market) == false)
-						{
-							continue;
-						}
-						symbol.insertSQLDate((byte)0x40, "D");
-						symbol.insertSQLDate((byte)0x40, "W");
-						symbol.insertSQLDate((byte)0x40, "M");
-						symbol.insertSQLTick((byte)0x40, "1");
-						symbol.insertSQLTick((byte)0x40, "R");
-						symbol.insertSQLTick((byte)0x40, "A");
-						symbol.insertSQLTick((byte)0x40, "Q");
-						symbol.insertSQLTick((byte)0x40, "H");
-						symbol.insertSQLTick((byte)0x40, "6");
-						symbol.insertSQLTick((byte)0x40, "T");
+						continue;
 					}
-				}
-				else if (sessionType == MarketSessionType.PREOPEN)
-				{
-					resetStatement() ;
+					symbol.insertSQLDate((byte)0x40, "D");
+					symbol.insertSQLDate((byte)0x40, "W");
+					symbol.insertSQLDate((byte)0x40, "M");
+					symbol.insertSQLTick((byte)0x40, "1");
+					symbol.insertSQLTick((byte)0x40, "R");
+					symbol.insertSQLTick((byte)0x40, "A");
+					symbol.insertSQLTick((byte)0x40, "Q");
+					symbol.insertSQLTick((byte)0x40, "H");
+					symbol.insertSQLTick((byte)0x40, "6");
+					symbol.insertSQLTick((byte)0x40, "T");
 				}
 			}
-			else if (this.sessionType == MarketSessionType.CLOSE)
+			else if (sessionType == MarketSessionType.PREOPEN)
 			{
-				if (sessionType == MarketSessionType.OPEN 
-						|| sessionType == MarketSessionType.PREOPEN)
-				{
-					resetStatement() ;
-				}
+				resetStatement() ;
 			}
-			if (sessionType == MarketSessionType.OPEN)
-			{
-				onCallRefData();
-			}
-			this.sessionType = sessionType;
 		}
+		else if (this.sessionType == MarketSessionType.CLOSE)
+		{
+			if (sessionType == MarketSessionType.OPEN 
+					|| sessionType == MarketSessionType.PREOPEN)
+			{
+				resetStatement() ;
+			}
+		}
+		if (sessionType == MarketSessionType.OPEN)
+		{
+			onCallRefData();
+		}
+		this.sessionType = sessionType;
 	}
 	
 	public void sendMDEvent(RemoteAsyncEvent event) {
