@@ -732,9 +732,9 @@ public class CentralDbProcessor implements IPlugin
 				}
 			}
 			sqlcmd += ";" ;
-			if (retsymbollist.isEmpty())
+			if (retsymbollist.size() != symbols.size())
 			{
-				retsymbollist.clear();
+				retEvent.setSymbolList(null);
 				retEvent.setOk(false);
 				retEvent.setMessage("Can't find requested symbol");
 				log.debug("Process Request Group Symbol fail: Can't find requested symbol");
@@ -742,10 +742,28 @@ public class CentralDbProcessor implements IPlugin
 			else
 			{
 				dbhnd.updateSQL(sqlcmd);
+				retsymbollist.clear();
+				sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
+						user, group, market) ;
+				rs = dbhnd.querySQL(sqlcmd);
+				while(rs.next())
+				{
+					retsymbollist.add(new SymbolInfo(rs.getString("MARKET"), 
+												   rs.getString("CODE"), 
+												   rs.getString("WINDCODE"), 
+												   rs.getString("CN_NAME"),
+												   rs.getString("EN_NAME"),
+												   rs.getString("TW_NAME")));
+				}
+				if (symbolinfos.isEmpty())
+				{
+					requestDefaultSymbol(retEvent, market);
+					return;
+				}
+				retEvent.setSymbolList(retsymbollist);
 				retEvent.setOk(true);
-				log.debug("Process Request Group Symbol success Symbol: " + retsymbollist.size());
+				log.debug("Process Request Group Symbol success Symbol: " + symbolinfos.size());
 			}
-			retEvent.setSymbolList(retsymbollist);
 		} 
 		catch (SQLException e) 
 		{
