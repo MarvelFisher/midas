@@ -1,11 +1,14 @@
 package com.cyanspring.id.gateway.netty;
 
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.gateway.IdGateway;
 import com.cyanspring.id.gateway.UserClient;
+import com.thoughtworks.xstream.io.path.Path;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -34,6 +37,18 @@ public class WebTask {
 		return strRet;
 	}
 
+	public static String getLastModified() {
+		java.nio.file.Path path = Paths.get("");
+		String sFile = String.format("%s/jars/cyanspring-adaptor-2.56.jar", path.toAbsolutePath().toString());
+		java.io.File file = new java.io.File(sFile);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if (file == null) {
+			return sdf.format(DateUtil.now());
+		}
+		long lastModified = file.lastModified();
+		return sdf.format(lastModified);
+	}
+	
 	public static void onTask(ChannelHandlerContext ctx, HttpUrlParam params) {
 		String cmd = params.getCmd();
 		switch (cmd.toLowerCase()) {
@@ -101,6 +116,7 @@ public class WebTask {
 		sb.append(String.format(strXmlFmt, cmd));
 		String sIp = IdGateway.instance().getReqIp();
 		int nPort = IdGateway.instance().getReqPort();
+		sb.append(String.format("<JarFile>%s</JarFile>", getLastModified()));
 		sb.append(String.format("<Source>%s:%d</Source>", sIp, nPort));
 		Date dt = ClientHandler.lastRecv;
 		sb.append(String.format("<LastReceive>%s</LastReceive>",

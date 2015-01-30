@@ -25,6 +25,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * Handler implementation for Forex data message, by using command
@@ -33,14 +34,15 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * @author Hudson Chen
  * 
  */
-public class ClientHandler extends ChannelInboundHandlerAdapter implements TimerEventHandler, AutoCloseable {
+public class ClientHandler extends ChannelInboundHandlerAdapter implements
+		TimerEventHandler, AutoCloseable {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(IdMarketDataAdaptor.class);
 
-	Date lastRecv = DateUtil.now();
+	public static Date lastRecv = DateUtil.now();
 	TimerThread timer = null;
- 	static ChannelHandlerContext context; // context deal with server
+	static ChannelHandlerContext context; // context deal with server
 
 	/**
 	 * sendData to server
@@ -49,9 +51,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	public static void sendData(byte[] data) {
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
-
+		data = null;
 		ChannelFuture future = context.writeAndFlush(buffer);
+
 		future.addListener(new ChannelFutureListener() {
+
 			@Override
 			public void operationComplete(ChannelFuture arg0) throws Exception {
 				if (buffer.refCnt() > 0)
@@ -114,14 +118,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		lastRecv = DateUtil.now();
-		final ByteBuf buffer = (ByteBuf) msg;
-		byte[] data = new byte[buffer.readableBytes()];
-		buffer.readBytes(data);
-
-		Parser.instance().processData(new Date(), data);
-		buffer.release();
-		data = null;
+		try {
+			lastRecv = DateUtil.now();
+			final ByteBuf buffer = (ByteBuf) msg;
+			byte[] data = new byte[buffer.readableBytes()];
+			buffer.readBytes(data);
+			Parser.instance().processData(new Date(), data);
+			// buffer.release();
+			data = null;
+		} finally {
+			ReferenceCountUtil.release(msg);
+		}
 	}
 
 	/*
@@ -146,7 +153,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// Close the connection when an exception is raised.
-		LogUtil.logException(log, (Exception)cause);
+		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
 	}
 
@@ -238,7 +245,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 
 	/**
 	 * Send Subscription frame
-	 * @param arrSymbol symbol list to subscribe
+	 * 
+	 * @param arrSymbol
+	 *            symbol list to subscribe
 	 */
 	public static void subscribe(String[] arrSymbol) {
 
@@ -296,7 +305,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		sbSymbol.append(5);
 		String idSymbol = IdSymbolUtil.toIdSymbol(strSymbol, nSourceID);
 		sbSymbol.append(idSymbol);
-		
+
 		sbSymbol.append(5026);
 		sbSymbol.append(1);
 
@@ -309,23 +318,21 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	}
 
 	@Override
-	protected void finalize () throws Throwable {
+	protected void finalize() throws Throwable {
 		fini();
 	}
-	
+
 	@Override
 	public void onTimer(TimerThread objSender) {
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
-		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 10)
-		{
+		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 30) {
 			lastRecv = now;
 			if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
 				IdMarketDataAdaptor.instance.closeClient();
 			}
 		}
-		
-		
+
 	}
 
 	void fini() throws Exception {
@@ -334,10 +341,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 			timer = null;
 		}
 	}
-	
+
 	@Override
 	public void close() throws Exception {
 		fini();
-		FinalizeHelper.suppressFinalize(this);		
+		FinalizeHelper.suppressFinalize(this);
 	}
 }

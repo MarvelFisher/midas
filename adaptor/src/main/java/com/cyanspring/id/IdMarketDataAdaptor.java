@@ -9,13 +9,13 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -35,6 +35,7 @@ import com.cyanspring.id.Library.Threading.Delegate;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FileMgr;
 import com.cyanspring.id.Library.Util.LogUtil;
+import com.cyanspring.id.gateway.IdGateway;
 
 /**
  * implement IMarketDataAdaptor
@@ -256,6 +257,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 		}
 	}
 
+	static boolean isConnecting = false;
+	static NioEventLoopGroup clientGroup = null;
 	/**
 	 * initClient
 	 * 
@@ -271,10 +274,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 		LogUtil.logInfo(log, "initClient enter%s:%d", HOST, PORT);
 
 		// Configure the client.
-		NioEventLoopGroup group = new NioEventLoopGroup();
+		clientGroup = new NioEventLoopGroup();
 		try {
 			Bootstrap _clientBootstrap = new Bootstrap();
-			_clientBootstrap.group(group).channel(NioSocketChannel.class)
+			_clientBootstrap.group(clientGroup).channel(NioSocketChannel.class)
 					.option(ChannelOption.TCP_NODELAY, true)
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
@@ -286,7 +289,32 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 					});
 
 			// connect
-			fClient = _clientBootstrap.connect(HOST, PORT);
+			ClientHandler.lastRecv = DateUtil.now();
+			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
+			if (fClient.isSuccess()) {
+				LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
+				Util.addLog("client socket connected : %s:%d", HOST, PORT);
+				isConnecting = false;
+			} else {
+				LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
+				Util.addLog(InfoString.ALert, "Connect to %s:%d fail.",	HOST, PORT);
+				isConnecting = true;
+				io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+				f.await();  			    
+				clientGroup = null;
+				fClient.channel().eventLoop().schedule(new Runnable() {							
+					@Override
+					public void run() {
+						IdGateway gw = IdGateway.instance();
+						try {
+							initClient(gw.getReqIp(), gw.getReqPort());
+						} catch (Exception e) {									
+							LogUtil.logException(log, e);
+						}
+					}
+				}, 10, TimeUnit.SECONDS);
+			}
+/*		
 			fClient.addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture f) throws Exception {
@@ -303,10 +331,13 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 					}
 				}
 			});
+*/			
 
 		} catch (Exception e) {
 			// Shut down the event loop to terminate all threads.
-			group.shutdownGracefully();
+			io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+			f.await();  			    
+			clientGroup = null;
 			LogUtil.logException(log, e);
 			Util.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", HOST,
 					PORT, e.getMessage());
@@ -318,10 +349,20 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	 * 
 	 */
 	public void closeClient() {
-		if (fClient != null) {
-			fClient.channel().close();
-			fClient = null;
+		if (clientGroup != null) {
+			io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+			try {
+				f.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}  			    
+			clientGroup = null;
 		}
+		
+		//if (fClient != null) {
+		//	fClient.channel().close();
+		//	fClient = null;
+		//}
 		Parser.instance().clearRingbuffer();
 		LogUtil.logInfo(log, "initClient exit");
 		Util.addLog(InfoString.ALert, "initClient exit");
@@ -332,7 +373,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	 */
 	public void reconClient() {
 
-		if (isClose)
+		if (isClose || isConnecting)
 			return;
 
 		try {

@@ -33,22 +33,24 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * Handler implementation for the echo client. It initiates the ping-pong
  * traffic between the echo client and server by sending the first message to
  * the server.
  */
-public class ClientHandler extends ChannelInboundHandlerAdapter implements TimerEventHandler, AutoCloseable{
+public class ClientHandler extends ChannelInboundHandlerAdapter implements
+		TimerEventHandler, AutoCloseable {
 	public static final Integer connected = 1;
 	public static final Integer disConnected = 2;
-	private static final Logger log = LoggerFactory
-			.getLogger(IdGateway.class);
+	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
 	public static ClientHandler Instance = null;
-	//public boolean isActive = false;
+	// public boolean isActive = false;
 	static ChannelHandlerContext ctx; // context deal with server
-	TimerThread timer = null; 
+	TimerThread timer = null;
 	public static Date lastRecv = DateUtil.now();
+
 	/**
 	 * sendData to server
 	 * 
@@ -58,20 +60,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
 		data = null;
 		ChannelFuture future = ctx.writeAndFlush(buffer);
+
 		future.addListener(new ChannelFutureListener() {
+
 			@Override
 			public void operationComplete(ChannelFuture arg0) throws Exception {
 				if (buffer != null && buffer.refCnt() > 0)
 					buffer.release();
 			}
-		});		
+		});
+
 	}
 
 	/**
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		//if (IdGateway.instance().isGateway() == false) 
+		// if (IdGateway.instance().isGateway() == false)
 		{
 			timer = new TimerThread();
 			timer.TimerEvent = this;
@@ -86,7 +91,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	public void channelUnregistered(ChannelHandlerContext ctx) {
 		ClientHandler.ctx = null;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
-		//IdGateway.instance().reconClient();
+		// IdGateway.instance().reconClient();
 	}
 
 	/**
@@ -96,34 +101,34 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
-		//isActive = true;
+		// isActive = true;
 		ClientHandler.ctx = ctx;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
 
-/*		
-		logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
-		//setCTFOn(IdGateway.instance().getExch());
-		setCTFOnSymbols();
-*/		
+		/*
+		 * logOn(IdGateway.instance().getAccount(),
+		 * IdGateway.instance().getPassword());
+		 * //setCTFOn(IdGateway.instance().getExch()); setCTFOnSymbols();
+		 */
 	}
-	
+
 	@Override
-	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-	    super.userEventTriggered(ctx, evt);
-	    if (evt == ClientHandler.connected) {
-	    	logOn(IdGateway.instance().getAccount(), IdGateway.instance().getPassword());
-	    	if (IdGateway.instance().isGateway() == true) {
-	    		setCTFOn(IdGateway.instance().getExch());
-	    	}
-	    	else {			
-	    		setCTFOnSymbols();
-	    	}
-	    }
-	    else if (evt == ClientHandler.disConnected ){
-	    	IdGateway.instance().reconClient();
-	    }
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
+			throws Exception {
+		super.userEventTriggered(ctx, evt);
+		if (evt == ClientHandler.connected) {
+			logOn(IdGateway.instance().getAccount(), IdGateway.instance()
+					.getPassword());
+			if (IdGateway.instance().isGateway() == true) {
+				setCTFOn(IdGateway.instance().getExch());
+			} else {
+				setCTFOnSymbols();
+			}
+		} else if (evt == ClientHandler.disConnected) {
+			IdGateway.instance().reconClient();
+		}
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * 
@@ -132,15 +137,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-		ByteBuf buffer = (ByteBuf) msg;
-		byte[] data = new byte[buffer.readableBytes()];
-		buffer.readBytes(data);
-		Parser.Instance().processData(data);
-		IdGateway.instance().addSize(IDGateWayDialog.TXT_InSize, data.length);
-		buffer.release();
-		data = null;
-		buffer = null;
-		lastRecv = DateUtil.now();
+		try {
+			ByteBuf buffer = (ByteBuf) msg;
+			byte[] data = new byte[buffer.readableBytes()];
+			buffer.readBytes(data);
+			Parser.Instance().processData(data);
+			IdGateway.instance().addSize(IDGateWayDialog.TXT_InSize,
+					data.length);
+			data = null;
+			lastRecv = DateUtil.now();
+		} finally {
+			ReferenceCountUtil.release(msg);
+		}
 	}
 
 	/**
@@ -152,14 +160,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	public void channelReadComplete(ChannelHandlerContext ctx) {
 		ctx.flush();
 	}
-	
+
 	static String getRemotIP(Channel ch) {
-		InetSocketAddress socketAddress = (InetSocketAddress) ch.remoteAddress();
+		InetSocketAddress socketAddress = (InetSocketAddress) ch
+				.remoteAddress();
 		InetAddress inetaddress = socketAddress.getAddress();
 		return inetaddress.getHostAddress(); // IP address of
 												// client
 	}
-	
+
 	/**
 	 * (non-Javadoc)
 	 * 
@@ -169,9 +178,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// Close the connection when an exception is raised.
-		String strIP = getRemotIP(ctx.channel());		
+		String strIP = getRemotIP(ctx.channel());
 		LogUtil.logError(log, "[%s] Exception : %s", strIP, cause.getMessage());
-		LogUtil.logException(log, (Exception)cause);
+		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
 	}
 
@@ -260,27 +269,27 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
      */
 	public static void setCTFOnSymbols() {
 
-		Map<String, Integer> map = new Hashtable<>(IdGateway.instance.getNonFX());
+		Map<String, Integer> map = new Hashtable<>(
+				IdGateway.instance.getNonFX());
 		for (String id : map.keySet()) {
 			Integer exch = map.get(id);
 			setCTFOn(exch, id);
 		}
 		int size = map.size();
-		
+
 		int nExch = IdGateway.instance().getExch();
 		ArrayList<String> list = QuoteMgr.Instance().getSymbolList();
 		for (String s : list) {
 			setCTFOn(nExch, s);
 		}
-		
-		size += list.size();
-		
 
-		//exception list 
-		//setCTFOn(691, "XAUUSD");
-		//setCTFOn(691, "XAGUSD");
-		
-		//setCTFOn(970, oil id);
+		size += list.size();
+
+		// exception list
+		// setCTFOn(691, "XAUUSD");
+		// setCTFOn(691, "XAGUSD");
+
+		// setCTFOn(970, oil id);
 		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", size);
 	}
 
@@ -312,23 +321,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 
 		sendData(arrData);
 	}
-	
+
 	@Override
-	protected void finalize () throws Throwable {
+	protected void finalize() throws Throwable {
 		fini();
 
-	}	
+	}
+
 	@Override
 	public void onTimer(TimerThread objSender) {
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
-		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 10)
-		{
+		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 30) {
 			lastRecv = now;
 			if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
 				IdGateway.instance().closeClient();
 			}
-		}		
+		}
 	}
 
 	void fini() throws Exception {
@@ -337,10 +346,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements Timer
 			timer = null;
 		}
 	}
-	
+
 	@Override
 	public void close() throws Exception {
 		fini();
-		FinalizeHelper.suppressFinalize(this);		
+		FinalizeHelper.suppressFinalize(this);
 	}
 }
