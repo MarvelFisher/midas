@@ -135,6 +135,7 @@ public class AlertManager implements IPlugin {
 	
 	private void receiveChildOrderUpdateEvent(Execution execution)
 	{
+		Session session =null;
 		try
 		{
 			DecimalFormat qtyFormat = new DecimalFormat("#0");		
@@ -161,7 +162,7 @@ public class AlertManager implements IPlugin {
 			list = userTradeAlerts.get(execution.getUser());
 			if (null == list)
 			{			
-				Session session = sessionFactory.openSession();
+				session = sessionFactory.openSession();
 				Query query = session.getNamedQuery("LoadPastTradeAlert");
 				query.setString(0, execution.getUser());
 				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
@@ -213,6 +214,13 @@ public class AlertManager implements IPlugin {
 		{
 			log.warn("[receiveChildOrderUpdateEvent] : " + e.getMessage());
 		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close() ;
+			}
+		}
 	}
 	
 	public void processQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event)
@@ -228,10 +236,11 @@ public class AlertManager implements IPlugin {
 				ArrayList<TradeAlert> list = userTradeAlerts.get(event.getuserId());
 				if (null == list)
 				{
+					Session session =null;
 //					log.info("List Null " + event.getuserId());
 					try
 					{
-						Session session = sessionFactory.openSession();
+						session = sessionFactory.openSession();
 						
 						Query query = session.getNamedQuery("LoadPastTradeAlert");
 						query.setString(0, event.getuserId());
@@ -257,8 +266,15 @@ public class AlertManager implements IPlugin {
 						}
 					}
 					catch (Throwable t)
-					{
+					{						
 						log.warn("[processQueryOrderAlertRequestEvent] Exceptions : ", t);
+					}
+					finally
+					{
+						if (null != session)
+						{
+							session.close();
+						}
 					}
 					userTradeAlerts.put(event.getuserId(), list);
 				}
@@ -471,18 +487,32 @@ public class AlertManager implements IPlugin {
 	
 	private void loadPastPriceAlert(String userId)
 	{
-		Session session = sessionFactory.openSession();
-		ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
-		Query query = session.getNamedQuery("LoadPastPriceAlert");
-		query.setString(0, userId);
-		query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-		Iterator iterator = query.list().iterator();
-		while(iterator.hasNext()) {
-			PastPriceAlert  pastPriceAlert= (PastPriceAlert) iterator.next();
-			BasePriceAlertlist.add(pastPriceAlert);
+		Session session =null;
+		try
+		{
+			session= sessionFactory.openSession();
+			ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
+			Query query = session.getNamedQuery("LoadPastPriceAlert");
+			query.setString(0, userId);
+			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+			Iterator iterator = query.list().iterator();
+			while(iterator.hasNext()) {
+				PastPriceAlert  pastPriceAlert= (PastPriceAlert) iterator.next();
+				BasePriceAlertlist.add(pastPriceAlert);
+			}
+			userPastPriceAlerts.put(userId, BasePriceAlertlist);
 		}
-		userPastPriceAlerts.put(userId, BasePriceAlertlist);
-		session.close();
+		catch (Exception e)
+		{
+			log.warn("Exception : " + e.getMessage());
+		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
 	}
 	
 	private void receiveAddPriceAlert(SetPriceAlertRequestEvent event) {
@@ -743,7 +773,7 @@ public class AlertManager implements IPlugin {
 			ArrayList<BasePriceAlert> list =  userPastPriceAlerts.get(event.getUserId());
 			if (null == list)
 			{
-				loadPastPriceAlert(event.getUserId());
+				loadPastPriceAlert(event.getUserId());				
 				list =  userPastPriceAlerts.get(event.getUserId());
 				if (list.size() == 0)
 				{
