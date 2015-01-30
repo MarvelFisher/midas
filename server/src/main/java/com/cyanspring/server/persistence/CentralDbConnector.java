@@ -63,7 +63,6 @@ public class CentralDbConnector {
 //	public boolean connect(String sIP, int nPort, String sUser,
 //			String sPassword, String sDatabase) {
 		try {
-			log.info("Getting mysql connection");
 			conn = cpds.getConnection();
 
 //			Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -81,7 +80,7 @@ public class CentralDbConnector {
 	}
 
 	public boolean isClosed() {
-		log.error("Connection is close?");
+		log.error("Checking connection: " + conn);
 		if (conn == null)
 			return true;
 
