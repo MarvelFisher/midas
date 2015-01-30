@@ -317,13 +317,13 @@ public class AlertManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
-		log.debug("Quote: " + quote);
+		
 		if (quotes.get(quote.getSymbol()) == null)
 		{
 			quotes.put(quote.getSymbol(), quote);
 			return ;
 		}
-		
+		log.debug("Quote: " + quote);
 		ArrayList<BasePriceAlert> list = symbolPriceAlerts.get(quote.getSymbol());
 		ArrayList<BasePriceAlert> UserPriceList;
 		if(null == list)

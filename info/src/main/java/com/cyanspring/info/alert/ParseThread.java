@@ -124,7 +124,7 @@ public class ParseThread extends Thread{
                 ((PD.strKeyValue.length() > 0) ? ("\",\"KeyValue\":\"" + PD.strKeyValue) : "") + "\"" +
                 ", \"badge\": \"Increment\"}}";
  
-		log.debug("Parse message: " + strPoststring);
+		log.info("Parse message: " + strPoststring);
 		//add reuqest header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("X-Parse-Application-Id", strParseApplicationId);
@@ -143,7 +143,7 @@ public class ParseThread extends Thread{
 		int responseCode = con.getResponseCode();
 		con.disconnect();
 		
-		log.debug("Return code: " + responseCode);
+		log.info("Return code: " + responseCode);
 	}
 	
 	public String getThreadId()
