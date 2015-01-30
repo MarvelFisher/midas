@@ -360,7 +360,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 	
 	public void processUserLoginEvent(UserLoginEvent event) {
-		log.debug("Received UserLoginEvent: " + event.getUserId());
+		log.debug("Received UserLoginEvent: " + event.getUserId() + ", receiver: " + event.getReceiver() + ", PManagerID: " + PersistenceManager.ID);
 		eventManager.sendEvent(new PmUserLoginEvent(PersistenceManager.ID, event.getReceiver(), userKeeper, accountKeeper, event));
 	}
 	
