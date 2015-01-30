@@ -245,7 +245,7 @@ public class AlertManager implements IPlugin {
 						if (list.size() == 0)
 						{
 	//						log.info("List Null  Size 0"  + event.getuserId());
-							userTradeAlerts.put(event.getuserId(),list) ;
+//							userTradeAlerts.put(event.getuserId(),list) ;
 							log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.") ;
 							//Send orderalert event reply
 							Msg = "userOrderAlert list isn't exists";
@@ -277,18 +277,20 @@ public class AlertManager implements IPlugin {
 						//Send orderalert event reply
 						queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,null);
 					}
-				}
-				try {	
-					log.info("Before sendRemoteEvent" + event.getuserId());
-					eventManager.sendRemoteEvent(queryorderalertreplyevent);					
-					log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "+ queryorderalertreplyevent.getUserId() + " : " + Msg);		
-				} catch (Exception e) {
-					log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
-				}
+				}				
 			}
 			else
 			{
-				log.warn("[processQueryOrderAlertRequestEvent] AlertType error." + type.toString());
+				Msg = "Event AlertTypeError.";
+				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getuserId(),false,Msg);
+				log.warn("[processQueryOrderAlertRequestEvent][AlertTypeError]: "  + event.toString());
+			}
+			try {	
+//				log.info("Before sendRemoteEvent" + event.getuserId());
+				eventManager.sendRemoteEvent(queryorderalertreplyevent);					
+				log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "+ queryorderalertreplyevent.getUserId() + " : " + Msg);		
+			} catch (Exception e) {
+				log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
 			}
 		}
 		catch(Exception e)
@@ -405,33 +407,66 @@ public class AlertManager implements IPlugin {
 	}
 
 	public void processSetPriceAlertRequestEvent(SetPriceAlertRequestEvent event) {
-		AlertType type = event.getType();
-		log.info("[processSetPriceAlertRequestEvent] "+ event.toString());	
-		if (type == AlertType.PRICE_SET_NEW)
-		{			
-			receiveAddPriceAlert(event);
-		}
-		else if (type == AlertType.PRICE_SET_MODIFY)
+		try
 		{
-			receiveModifyPriceAlert(event);
+			AlertType type = event.getType();
+			log.info("[processSetPriceAlertRequestEvent] "+ event.toString());	
+			if (type == AlertType.PRICE_SET_NEW)
+			{			
+				receiveAddPriceAlert(event);
+			}
+			else if (type == AlertType.PRICE_SET_MODIFY)
+			{
+				receiveModifyPriceAlert(event);
+			}
+			else if (type == AlertType.PRICE_SET_CANCEL)
+			{
+				receiveCancelPriceAlert(event);
+			}
+			else
+			{
+				log.warn("[processSetPriceAlertRequestEvent][AlertTypeError]: " + event.toString());
+				PriceAlertReplyEvent pricealertreplyevent = null;			
+				//Send event reply
+				String Msg = "Event AlertTypeError." ;
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getPriceAlert().getUserId(),event.getType(),null,false,Msg);
+				eventManager.sendRemoteEvent(pricealertreplyevent);
+			}
 		}
-		else if (type == AlertType.PRICE_SET_CANCEL)
+		catch (Exception e)
 		{
-			receiveCancelPriceAlert(event);
+			log.warn("Exception : " + e.getMessage());
 		}
 	}
 	
 	public void processQueryPriceAlertRequestEvent(QueryPriceAlertRequestEvent event) {
-		AlertType type = event.getType();
-		log.info("[processQueryPriceAlertRequestEvent] "+ event.toString());	
-		if (type == AlertType.PRICE_QUERY_CUR)
+		try
 		{
-			receiveQueryCurPriceAlert(event);
+			AlertType type = event.getType();
+			log.info("[processQueryPriceAlertRequestEvent] "+ event.toString());	
+			if (type == AlertType.PRICE_QUERY_CUR)
+			{
+				receiveQueryCurPriceAlert(event);
+			}
+			else if (type == AlertType.PRICE_QUERY_PAST)
+			{
+				receiveQueryPastPriceAlert(event);
+			}
+			else
+			{
+				log.warn("[processQueryPriceAlertRequestEvent][AlertTypeError]: " + event.toString());	
+				PriceAlertReplyEvent pricealertreplyevent = null;			
+				//Send event reply
+				String Msg = "Event AlertTypeError." ;
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),null,false,Msg);
+				eventManager.sendRemoteEvent(pricealertreplyevent);
+			}
 		}
-		else if (type == AlertType.PRICE_QUERY_PAST)
+		catch (Exception e)
 		{
-			receiveQueryPastPriceAlert(event);
+			log.warn("Exception : " + e.getMessage());
 		}
+		
 	}
 	
 	private void loadPastPriceAlert(String userId)
@@ -721,6 +756,7 @@ public class AlertManager implements IPlugin {
 				{
 					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,null);
 				}
+				
 			}
 			else
 			{
@@ -745,49 +781,70 @@ public class AlertManager implements IPlugin {
 	
 	public <T> void SQLSave(T object)
 	{
+		Session session = null;
 		try
 		{
-			Session session = sessionFactory.openSession();
+			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.save(object);
 			tx.commit();
-			session.close();
 		}
 		catch (Exception e)
 		{
 			log.warn("[SQLSave] : " + e.getMessage());
 		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
 	}
 	
 	private <T> void SQLUpdate(T object)
 	{
+		Session session = null;
 		try
 		{
-			Session session = sessionFactory.openSession();
+			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.update(object);
 			tx.commit();
-			session.close();
 		}
 		catch (Exception e)
 		{
 			log.warn("[SQLUpdate] : " + e.getMessage());
 		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
 	}
 	
 	private <T> void SQLDelete(T object)
 	{
+		Session session = null;
 		try
 		{
-			Session session = sessionFactory.openSession();
+			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.delete(object);
 			tx.commit();
-			session.close();
 		}
 		catch (Exception e)
 		{
 			log.warn("[SQLDelete] : " + e.getMessage());
+		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
 		}
 	}
 	
@@ -825,7 +882,7 @@ public class AlertManager implements IPlugin {
 	
 	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		log.info("ParseDataQueue Size : " + ParseDataQueue.size());
+//		log.info("ParseDataQueue Size : " + ParseDataQueue.size());
 		if(event == timerEvent) {		
 			try
 			{
