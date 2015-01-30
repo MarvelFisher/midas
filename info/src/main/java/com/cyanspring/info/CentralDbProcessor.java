@@ -635,7 +635,7 @@ public class CentralDbProcessor implements IPlugin
 	public void userRequestGroupSymbol(SymbolListSubscribeEvent retEvent, String user, String market, String group)
 	{
 		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
-		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s';", 
+		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, group, market) ;
 		ResultSet rs = dbhnd.querySQL(sqlcmd);
 		try 
@@ -707,11 +707,13 @@ public class CentralDbProcessor implements IPlugin
 											   rs.getString("EN_NAME"),
 											   rs.getString("TW_NAME")));
 			}
-			sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`) VALUES");
+			sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`, `NO`) VALUES");
 			boolean first = true;
+			int No = 0;
 			for (SymbolInfo symbolinfo : symbolinfos)
 			{
-				if (symbols.contains(symbolinfo.getCode()))
+				No = symbols.indexOf(symbolinfo.getCode());
+				if (No >= 0)
 				{
 					if (first == false)
 					{
@@ -723,7 +725,8 @@ public class CentralDbProcessor implements IPlugin
 					sqlcmd += (symbolinfo.getWindCode() == null) ? "null," : String.format("'%s',", symbolinfo.getWindCode());
 					sqlcmd += (symbolinfo.getEnName() == null) ? "null," : String.format("'%s',", symbolinfo.getEnName());
 					sqlcmd += (symbolinfo.getCnName() == null) ? "null," : String.format("'%s',", symbolinfo.getCnName());
-					sqlcmd += (symbolinfo.getTwName() == null) ? "null" : String.format("'%s'", symbolinfo.getTwName());
+					sqlcmd += (symbolinfo.getTwName() == null) ? "null," : String.format("'%s',", symbolinfo.getTwName());
+					sqlcmd += No;
 					sqlcmd += ")";
 					first = false;
 				}
@@ -864,6 +867,7 @@ public class CentralDbProcessor implements IPlugin
 		synchronized(this)
 		{
 			sqlcmd = "DELETE FROM `Symbol_Info`;";
+			defaultSymbolInfo.clear();
 			dbhnd.updateSQL(sqlcmd);
 			sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
 			boolean first = true;
@@ -954,7 +958,8 @@ public class CentralDbProcessor implements IPlugin
 		}
 		if (sessionType == MarketSessionType.OPEN)
 		{
-			onCallRefData();
+			if (this.sessionType != null && this.sessionType != MarketSessionType.OPEN)
+				onCallRefData();
 		}
 		this.sessionType = sessionType;
 	}
