@@ -54,9 +54,7 @@
 		<constructor-arg><value>OPEN</value></constructor-arg>
 		<constructor-arg>
 			<list>
-				<value>2015-01-01</value>
-				<value>2015-01-02</value>
-				<value>2015-01-06</value>
+				<value>2015-01-10</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -65,8 +63,8 @@
 		<constructor-arg><value>CLOSE</value></constructor-arg>
 		<constructor-arg>
 			<list>
-				<value>2015-01-04</value>
-				<value>2015-01-09</value>
+				<value>2016-01-01</value>
+				<value>2015-12-25</value>
 			</list>
 		</constructor-arg>
 	</bean>
