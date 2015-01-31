@@ -17,8 +17,11 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
 import com.cyanspring.common.marketdata.MarketDataException;
+import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Frame.InfoString;
+import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.Logger;
 
 
@@ -36,12 +39,46 @@ public class FutureFeed implements IFrameClose {
 	public static FutureFeed instance = new FutureFeed();
 	public WindFutureDataAdaptor adaptor = null;
 
-	public void showQuote(String quote) {
+	public void showQuote(Quote quote) {
 		if (mainframe != null) {
-			mainframe.setQuoteText(quote);
+			mainframe.setQuoteText(getDetail(quote));
 		}
 	}
-
+	public static String getDetail(Quote q)
+	{
+		FixStringBuilder sb = new FixStringBuilder();		
+		sb.appendFormat("                 %s                      %n", q.getSymbol());
+		//sb.appendFormat("--------------------------------------------%n");
+		sb.appendFormat("         Buy                  Sell          %n");
+		sb.appendFormat("--------------------------------------------%n");
+		sb.appendFormat("Bid\t[%10.4f, %10.0f]%nAsk\t[%10.4f, %10.0f]%nMatch\t[%10.4f, %10.0f]TV       \t%.0f%n", 
+				q.getBid(), q.getBidVol(), 
+				q.getAsk(), q.getAskVol(),  
+				q.getLast(), q.getLastVol(), q.getTotalVolume());
+		//sb.appendFormat("--------------------------------------------%n");
+		
+		for(int i=0; i<Math.max(q.getBids().size(), q.getAsks().size()); i++)
+		{
+			if (i < q.getBids().size())
+			{
+				QtyPrice qp = q.getBids().get(i);
+				sb.appendFormat("%-6.0f\t%10.4f", qp.getQuantity(), qp.getPrice());
+			}
+			else
+				sb.appendFormat("                    ");
+			
+			sb.appendFormat(" | ");
+			if (i < q.getAsks().size())
+			{
+				QtyPrice qp = q.getAsks().get(i);
+				sb.appendFormat("%10.4f\t%6.0f", qp.getPrice(), qp.getQuantity());
+			}
+			sb.appendFormat("%n");
+		}
+		//sb.appendFormat("--------------------------------------------%n%n");		
+		return sb.toString();
+	}
+	
 	public static void info(String f,  Object... args) {
 		if (FutureFeed.instance.mainframe != null) {
 			FutureFeed.instance.mainframe.addLog(InfoString.Info, f, args);

@@ -18,7 +18,7 @@ java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar con
 sleep 15
 ./runinfo.sh start
 
-sleep 15
+sleep 30
 echo "Starting AppServer "`date` | tee -a ./log/console.log
 cd ../appServer
 ./run.sh start

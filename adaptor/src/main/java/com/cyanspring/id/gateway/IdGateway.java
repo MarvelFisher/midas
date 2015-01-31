@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 
@@ -283,7 +284,7 @@ public class IdGateway implements IFrameClose {
 
 	public IDGateWayDialog mainFrame = null;
 	boolean isClose = false;
-	static ChannelFuture fClient = null;
+	//static ChannelFuture fClient = null;
 	static ChannelFuture fServer = null;
 	static ChannelFuture fHttpServer = null;
 	
@@ -421,6 +422,8 @@ public class IdGateway implements IFrameClose {
 		}
 	}
 
+	static NioEventLoopGroup clientGroup = null;
+	public static boolean isConnecting = false; 
 	/**
 	 * 
 	 * @param HOST
@@ -432,10 +435,10 @@ public class IdGateway implements IFrameClose {
 		IdGateway.instance().addLog(InfoString.ALert, "initClient enter");
 		LogUtil.logInfo(log, "initClient enter");
 		// Configure the client.
-		NioEventLoopGroup group = new NioEventLoopGroup();
+		clientGroup = new NioEventLoopGroup();
 		try {
 			Bootstrap _clientBootstrap = new Bootstrap();
-			_clientBootstrap.group(group).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)
+			_clientBootstrap.group(clientGroup).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)
 					.handler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
@@ -445,7 +448,32 @@ public class IdGateway implements IFrameClose {
 					});
 
 			// Start the client.
-			fClient = _clientBootstrap.connect(HOST, PORT);
+			ClientHandler.lastRecv = DateUtil.now();
+			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
+			if (fClient.isSuccess()) {
+				LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
+				IdGateway.instance().addLog("%s:%d connected", HOST, PORT);
+				isConnecting = false;
+			} else {
+				LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
+				instance.addLog(InfoString.ALert, "Connect to %s:%d fail.", HOST, PORT);
+				isConnecting = true;
+				io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+				f.await();  			    
+				clientGroup = null;
+				fClient.channel().eventLoop().schedule(new Runnable() {							
+					@Override
+					public void run() {
+						IdGateway gw = IdGateway.instance();
+						try {
+							initClient(gw.getReqIp(), gw.getReqPort());
+						} catch (Exception e) {									
+							LogUtil.logException(log, e);
+						}
+					}
+				}, 10, TimeUnit.SECONDS);
+			}
+/*
 			fClient.addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture f) throws Exception {
@@ -453,16 +481,34 @@ public class IdGateway implements IFrameClose {
 					if (f.isSuccess()) {
 						LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
 						IdGateway.instance().addLog("%s:%d connected", HOST, PORT);
+						isConnecting = false;
 					} else {
 						LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
 						instance.addLog(InfoString.ALert, "Connect to %s:%d fail.", HOST, PORT);
-
+						isConnecting = true;
+						//clientGroup.shutdownGracefully();
+						//clientGroup = null;
+						f.channel().eventLoop().schedule(new Runnable() {							
+							@Override
+							public void run() {
+								IdGateway gw = IdGateway.instance();
+								try {
+									initClient(gw.getReqIp(), gw.getReqPort());
+								} catch (Exception e) {									
+									LogUtil.logException(log, e);
+								}
+							}
+						}, 10, TimeUnit.SECONDS);
 					}
 				}
 			});
+*/			
 		} catch (Exception e) {
+			isConnecting = false;
 			// Shut down the event loop to terminate all threads.
-			group.shutdownGracefully();
+			io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+			f.await();
+			clientGroup = null;
 			instance.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", HOST, PORT, e.getMessage());
 			LogUtil.logException(log, e);
 		}
@@ -480,18 +526,28 @@ public class IdGateway implements IFrameClose {
 	}
 
 	public void closeClient() {
-		if (fClient != null) {
-			fClient.channel().close();
-			fClient = null;
+		if (clientGroup != null) {
+			io.netty.util.concurrent.Future<?> f  = clientGroup.shutdownGracefully();
+			try {
+				f.await();
+			} catch (InterruptedException e) {
+
+			}
+			clientGroup = null;
 		}
+			
+		//if (fClient != null) {
+		//	fClient.channel().close();
+		//	fClient = null;
+		//}
 		
 		Parser.Instance().clearRingbuffer();
 		LogUtil.logInfo(log, "initClient exit");
 		IdGateway.instance().addLog(InfoString.ALert, "initClient exit");
 	}
 
-	public void reconClient() {
-		if (isClose)
+	public void reconClient() {		
+		if (isClose || isConnecting)
 			return;
 	
 		try {

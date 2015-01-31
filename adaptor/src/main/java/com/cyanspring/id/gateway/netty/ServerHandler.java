@@ -29,6 +29,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.ChannelGroupFutureListener;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
@@ -95,20 +96,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static void removeUserClient(ChannelHandlerContext ctx) {
 
-		//if (channels.size() <= 0)
-		//	return;
-		
+		// if (channels.size() <= 0)
+		// return;
+
 		List<UserClient> list = new ArrayList<UserClient>();
 		list.addAll(clientlist);
 		for (UserClient client : list) {
-			
+
 			if (client.isSameContext(ctx)) {
 				try {
 					client.close();
 				} catch (Exception e) {
 					LogUtil.logException(log, e);
 				}
-				
+
 				synchronized (clLock) {
 					clientlist.remove(client);
 				}
@@ -125,13 +126,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		byte[] packetData = null;
 		try {
 
-			if (channels.size() <= 0) {				
+			if (channels.size() <= 0) {
 				data = null;
 				return;
 			}
 			packetData = SocketUtil.packData(data);
 			data = null;
-			
+
 			List<UserClient> list = new ArrayList<UserClient>();
 			list.addAll(clientlist);
 			for (UserClient client : list) {
@@ -149,16 +150,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		}
 		byte[] packetData = SocketUtil.packData(data);
 		data = null;
-		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize, packetData.length);
+		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize,
+				packetData.length);
 
 		final ByteBuf buffer = Unpooled.copiedBuffer(packetData);
 		packetData = null;
 		ChannelGroupFuture future = channels.writeAndFlush(buffer);
+
 		future.addListener(new ChannelGroupFutureListener() {
 			@Override
 			public void operationComplete(ChannelGroupFuture arg0)
 					throws Exception {
-				if (buffer.refCnt() > 0)
+				if (buffer != null && buffer.refCnt() > 0)
 					buffer.release();
 			}
 		});
@@ -183,7 +186,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		future.addListener(new ChannelFutureListener() {
 			@Override
 			public void operationComplete(ChannelFuture arg0) throws Exception {
-				if (buffer.refCnt() > 0)
+				if (buffer != null && buffer.refCnt() > 0)
 					buffer.release();
 			}
 		});
@@ -234,14 +237,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
-
-		final ByteBuf buffer = (ByteBuf) msg;
-		byte[] data = new byte[buffer.readableBytes()];
-		buffer.readBytes(data);
-		buffer.release();
-		UserClient client = getUserClient(ctx);
-		client.onReceive(data);
-		data = null;
+		try {
+			final ByteBuf buffer = (ByteBuf) msg;
+			byte[] data = new byte[buffer.readableBytes()];
+			buffer.readBytes(data);
+			// buffer.release();
+			UserClient client = getUserClient(ctx);
+			client.onReceive(data);
+			data = null;
+		} finally {
+			ReferenceCountUtil.release(msg);
+		}
 	}
 
 	@Override

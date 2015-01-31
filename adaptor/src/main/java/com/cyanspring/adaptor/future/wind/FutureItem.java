@@ -272,7 +272,7 @@ public class FutureItem implements AutoCloseable{
 		FutureFeed future = FutureFeed.instance;
 		if (future.isSelectAll || future.isWatchSymbol(symbolId)) {
 			if (timestamp != lastShow) {
-				FutureFeed.instance.showQuote(s);				
+				FutureFeed.instance.showQuote(quote);				
 			}
 		}
 		
