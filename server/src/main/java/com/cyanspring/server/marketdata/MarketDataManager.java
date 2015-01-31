@@ -155,9 +155,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
 		log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
 		Quote quote = quotes.get(event.getSymbol());
-		if (quote == null || quote.isStale()) {
+		if (quote == null) {
 			adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
 		} else {
+			if(quote.isStale())
+				adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
 		}
 	}
