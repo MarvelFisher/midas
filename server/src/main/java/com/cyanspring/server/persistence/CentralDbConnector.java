@@ -80,7 +80,6 @@ public class CentralDbConnector {
 	}
 
 	public boolean isClosed() {
-		log.error("Checking connection: " + conn);
 		if (conn == null)
 			return true;
 
@@ -158,11 +157,7 @@ public class CentralDbConnector {
 			}
 		} finally {
 			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					log.error(e.getMessage(), e);
-				}
+				closeStmt(stmt);
 			}
 		}
 		return bIsSuccess;
@@ -187,11 +182,7 @@ public class CentralDbConnector {
 			log.error(e.getMessage(), e);
 		} finally {
 			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					log.error(e.getMessage(), e);
-				}
+				closeStmt(stmt);
 			}
 		}
 		return (nCount > 0);
@@ -216,11 +207,7 @@ public class CentralDbConnector {
 			log.error(e.getMessage(), e);
 		} finally {
 			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					log.error(e.getMessage(), e);
-				}
+				closeStmt(stmt);
 			}
 		}
 		return (nCount > 0);
@@ -246,23 +233,23 @@ public class CentralDbConnector {
 				salt = rs.getString("SALT");
 			}
 			
-			if(md5Password == null)
+			if(md5Password == null){
+				closeStmt(stmt);
 				return false;
+			}
 
 			String fullPassword = (salt == null)? sPassword : sPassword + salt;
 			
-			if(md5Password.equals(md5(fullPassword)))
+			if(md5Password.equals(md5(fullPassword))){
+				closeStmt(stmt);
 				return true;
+			}
 
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
 		} finally {
 			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					log.error(e.getMessage(), e);
-				}
+				closeStmt(stmt);
 			}
 		}
 		return false;
@@ -288,34 +275,43 @@ public class CentralDbConnector {
 				salt = rs.getString("SALT");
 			}
 			
-			if(md5Password == null)
+			if(md5Password == null){
+				closeStmt(stmt);				
 				return false;
+			}
 
 			String fullPassword = (salt == null)? originalPass : originalPass + salt;
 			
-			if(!md5Password.equals(md5(fullPassword)))
+			if(!md5Password.equals(md5(fullPassword))){
+				closeStmt(stmt);				
 				return false;
+			}
 			
 			String newMd5Password = md5(newPass + salt);
 			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser);
 			
 			int nResult = stmt.executeUpdate(sQuerySet);
-			if(1 != nResult)
+			if(1 != nResult){
+				closeStmt(stmt);
 				return false;
-
+			}
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
 			return false;
 		} finally {
 			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					log.error(e.getMessage(), e);
-				}
+				closeStmt(stmt);
 			}
 		}
 		return true;
+	}
+
+	private void closeStmt(Statement stmt) {
+		try {
+			stmt.close();
+		} catch (SQLException e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 //	public String getHost() {
