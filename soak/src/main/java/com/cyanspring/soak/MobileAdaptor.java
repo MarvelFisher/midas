@@ -202,7 +202,7 @@ public class MobileAdaptor extends ClientAdaptor {
 		if(event.isOk()) {
 			log.debug("Received AmendParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
 			CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), server, 
-					event.getOrder().getId(), IdGenerator.getInstance().getNextID());
+					event.getOrder().getId(), false, IdGenerator.getInstance().getNextID());
 			sendEvent(cancelEvent);
 		} else {
 			log.debug("Received AmendParentOrderReplyEvent(NACK): " + event.isOk() + ", message: " + event.getMessage());

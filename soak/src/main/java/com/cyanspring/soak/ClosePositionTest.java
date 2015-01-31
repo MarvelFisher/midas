@@ -95,7 +95,7 @@ public class ClosePositionTest extends ClientAdaptor {
 				symbol, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
 
 		CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
-				tobeAmended, IdGenerator.getInstance().getNextID());
+				tobeAmended, false, IdGenerator.getInstance().getNextID());
 		//this should be ok
 		sendEvent(cancelEvent);
 		

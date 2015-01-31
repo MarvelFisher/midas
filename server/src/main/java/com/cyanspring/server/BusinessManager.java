@@ -413,7 +413,8 @@ public class BusinessManager implements ApplicationContextAware {
 			return;
 		}
 
-		CancelStrategyOrderEvent cancel = new CancelStrategyOrderEvent(order.getId(), event.getSender(), event.getTxId(), event.getKey());
+		CancelStrategyOrderEvent cancel = new CancelStrategyOrderEvent(order.getId(), 
+				event.getSender(), event.getTxId(), event.getKey(), event.isForce());
 		eventManager.sendEvent(cancel);
 	}
 	
@@ -516,7 +517,8 @@ public class BusinessManager implements ApplicationContextAware {
 						log.debug("Close position action timeout, trying to cancel: " + entry.getValue() + ", " + order.getId());
 						String source = order.get(String.class, OrderField.SOURCE.value());
 						String txId = order.get(String.class, OrderField.CLORDERID.value());
-						CancelStrategyOrderEvent cancel = new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source);
+						CancelStrategyOrderEvent cancel = 
+								new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, false);
 						eventManager.sendEvent(cancel);
 					} else {
 						log.debug("Close position action completed, remove stale record: " + entry.getValue() + ", " + order.getId());
