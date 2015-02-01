@@ -67,7 +67,7 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<String> preSubscriptionList;
 	
 	private int    nTickCount ;
-	private MarketSessionType sessionType ;
+	private MarketSessionType sessionType = null ;
 	private String tradedate ;
 	private boolean isStartup = true;
 	private Queue<QuoteEvent> quoteBuffer;
@@ -877,7 +877,7 @@ public class CentralDbProcessor implements IPlugin
 	public void onCallRefData()
 	{
 		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
-		if (refList.isEmpty())
+		if (refList.isEmpty() || this.listSymbolData.isEmpty() == false)
 		{
 			return ;
 		}
@@ -976,7 +976,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		if (sessionType == MarketSessionType.OPEN)
 		{
-			if (this.sessionType != null && this.sessionType != MarketSessionType.OPEN)
+			if (this.sessionType != MarketSessionType.OPEN)
 				onCallRefData();
 		}
 		this.sessionType = sessionType;
@@ -1033,6 +1033,7 @@ public class CentralDbProcessor implements IPlugin
 		if(eventProcessorMD.getThread() != null)
 			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
 		refDataManager.init();
+		onCallRefData();
 		requestMarketSession() ;
 //		requestSymbolList() ;
 	}
