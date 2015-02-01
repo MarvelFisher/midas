@@ -11,6 +11,7 @@ public class Default {
 	private static String accountPrefix = "A";
 	private static double accountCash = 100000.0;
 	private static double marginTimes = 40.0;
+	private static double marginCut = 100000;
 	private static double commision = 0.0;
 	private static double commisionMin = 0.0;
 	private static TimeZone timeZone;
@@ -27,6 +28,7 @@ public class Default {
 		String accountPrefix,
 		double accountCash,
 		double marginTimes,
+		double marginCut,
 		double commision,
 		double commisionMin,
 		TimeZone timeZone,
@@ -42,6 +44,7 @@ public class Default {
 		Default.accountPrefix = accountPrefix;
 		Default.accountCash = accountCash;
 		Default.marginTimes = marginTimes;
+		Default.marginCut = marginCut;
 		Default.commision = commision;
 		Default.commisionMin = commisionMin;
 		Default.timeZone = timeZone;
@@ -117,6 +120,10 @@ public class Default {
 
 	public static String getTradeDateTime() {
 		return tradeDateTime;
+	}
+
+	public static double getMarginCut() {
+		return marginCut;
 	}
 	
 	

@@ -341,7 +341,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 							
 							ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
 									server, position.getAccount(), 
-									position.getSymbol(), OrderReason.ManualClose, 
+									position.getSymbol(), 0.0, OrderReason.ManualClose, 
 									IdGenerator.getInstance().getNextID());
 							Business.getInstance().getEventManager().sendRemoteEvent(request);
 						}

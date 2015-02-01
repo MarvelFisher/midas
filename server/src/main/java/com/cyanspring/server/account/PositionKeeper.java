@@ -29,6 +29,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.type.StrategyState;
+import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 
@@ -44,7 +45,8 @@ public class PositionKeeper {
 	private ConcurrentHashMap<String, List<Execution>> executions = new ConcurrentHashMap<String, List<Execution>>();
 	private ConcurrentHashMap<String, Map<String, Map<String, ParentOrder>>> parentOrders = // keys: account/symbol/orderId
 				new ConcurrentHashMap<String, Map<String, Map<String, ParentOrder>>>();
-	
+	private DualMap<String, String> closePositionActionMap = new DualMap<String, String>();
+
 	private IPositionListener listener;
 	private IQuoteFeeder quoteFeeder;
 
@@ -573,6 +575,36 @@ public class PositionKeeper {
 		synchronized(getSyncAccount(account.getId())) {
 			account.updateEndOfDay();
 		}
+	}
+	
+	private String getClosePositionKey(String account, String symbol) {
+		return account + "-" + symbol;
+	}
+	
+
+	public void lockAccountPosition(String account, String symbol, String orderId) {
+		log.info("Lock postion: " + account + ", " + symbol + ", " + orderId);
+		closePositionActionMap.put(orderId, getClosePositionKey(account, symbol));
+	}
+	
+	public String unlockAccountPosition(String account, String symbol) {
+		String result = closePositionActionMap.removeKeyByValue(getClosePositionKey(account, symbol));
+		log.info("Unlock postion: " + account + ", " + symbol + ", " + result);
+		return result;
+	}
+	
+	public String unlockAccountPosition(String orderId) {
+		String result = closePositionActionMap.remove(orderId);
+		log.info("Unlock postion: " + result + ", " + orderId);
+		return result;
+	}
+	
+	public boolean checkAccountPositionLock(String account, String symbol) {
+		return closePositionActionMap.containsValue(getClosePositionKey(account, symbol));
+	}
+	
+	public Iterator<Map.Entry<String,String>> getPendingClosePositionIterator() {
+		return closePositionActionMap.entrySet().iterator();
 	}
 	
 }

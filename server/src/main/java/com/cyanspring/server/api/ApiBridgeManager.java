@@ -436,7 +436,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 		pendingRecords.put(record.txId, record);
 
 		CancelParentOrderEvent request = new CancelParentOrderEvent(event.getKey(), 
-				event.getReceiver(), event.getOrderId(), txId);
+				event.getReceiver(), event.getOrderId(), false, txId);
 		sendEventToManager(request);
 	}
 
