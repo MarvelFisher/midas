@@ -115,12 +115,12 @@ public class AlertManager implements IPlugin {
 	};
 	
 	
-	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
+	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {		
 		Execution execution = event.getExecution();
 		if(null == execution)
 			return;
 		
-		log.debug("[processUpdateChildOrderEvent] "+ execution.toString());		
+		log.info("[processUpdateChildOrderEvent] " + execution.toString());
 		if(null != ParseDataQueue)
 		{
 			ParseDataQueue.add(PackTradeAlert(execution));
@@ -135,6 +135,7 @@ public class AlertManager implements IPlugin {
 	
 	private void receiveChildOrderUpdateEvent(Execution execution)
 	{
+		Session session =null;
 		try
 		{
 			DecimalFormat qtyFormat = new DecimalFormat("#0");		
@@ -145,21 +146,30 @@ public class AlertManager implements IPlugin {
 			String Datetime = dateFormat.format(execution.get(Date.class, "Created"));
 			String tradeMessage = "Trade " + execution.getSymbol() + " " + 
 								execution.getSide().toString() + " " + strQty + "@" + strPrice;
-			TradeAlert TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+			TradeAlert TA ;
+			if (execution.getSide().toString().toLowerCase().equals("sell"))
+			{
+				TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,0 - execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+			}
+			else
+			{
+				TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
+			}
+			
 			//save to Array
 			ArrayList<TradeAlert> list ;
 			int search;
 			list = userTradeAlerts.get(execution.getUser());
 			if (null == list)
 			{			
-				Session session = sessionFactory.openSession();
+				session = sessionFactory.openSession();
 				Query query = session.getNamedQuery("LoadPastTradeAlert");
 				query.setString(0, execution.getUser());
 				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
 				Iterator iterator = query.list().iterator();
 				list = new ArrayList<TradeAlert>();
 				while(iterator.hasNext()) {
-					TradeAlert  pastTradeAlert = (TradeAlert) iterator.next();
+					TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
 					list.add(pastTradeAlert);
 				}
 				if (list.size() == 0)
@@ -204,73 +214,126 @@ public class AlertManager implements IPlugin {
 		{
 			log.warn("[receiveChildOrderUpdateEvent] : " + e.getMessage());
 		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close() ;
+			}
+		}
 	}
 	
 	public void processQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event)
 	{
-		AlertType type = event.getType();
-		QueryOrderAlertReplyEvent queryorderalertreplyevent = null;
-		if (type == AlertType.TRADE_QUERY_PAST)
+		try
 		{
-			ArrayList<TradeAlert> list = userTradeAlerts.get(event.getuserId());
-			if (null == list)
+			log.info("[receiveQueryOrderAlertRequestEvent]");
+			AlertType type = event.getType();
+			String Msg ="";
+			QueryOrderAlertReplyEvent queryorderalertreplyevent = null;
+			if (type == AlertType.TRADE_QUERY_PAST)
 			{
-				Session session = sessionFactory.openSession();
-				Query query = session.getNamedQuery("LoadPastTradeAlert");
-				query.setString(0, event.getuserId());
-				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-				Iterator iterator = query.list().iterator();
-				list = new ArrayList<TradeAlert>();
-				while(iterator.hasNext()) {
-					TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
-					list.add(pastTradeAlert);
-				}
-				if (list.size() == 0)
+				ArrayList<TradeAlert> list = userTradeAlerts.get(event.getuserId());
+				if (null == list)
 				{
-					userTradeAlerts.put(event.getuserId(),list) ;
-					log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.") ;
-					//Send orderalert event reply
-					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"userOrderAlert list isn't exists");
+					Session session =null;
+//					log.info("List Null " + event.getuserId());
+					try
+					{
+						session = sessionFactory.openSession();
+						
+						Query query = session.getNamedQuery("LoadPastTradeAlert");
+						query.setString(0, event.getuserId());
+						query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+						Iterator iterator = query.list().iterator();
+						list = new ArrayList<TradeAlert>();
+						while(iterator.hasNext()) {
+							TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
+							list.add(pastTradeAlert);
+						}
+						if (list.size() == 0)
+						{
+	//						log.info("List Null  Size 0"  + event.getuserId());
+//							userTradeAlerts.put(event.getuserId(),list) ;
+							log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.") ;
+							//Send orderalert event reply
+							Msg = "userOrderAlert list isn't exists";
+							queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,Msg);
+						}
+						else 
+						{
+							queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,null);
+						}
+					}
+					catch (Throwable t)
+					{						
+						log.warn("[processQueryOrderAlertRequestEvent] Exceptions : ", t);
+					}
+					finally
+					{
+						if (null != session)
+						{
+							session.close();
+						}
+					}
+					userTradeAlerts.put(event.getuserId(), list);
 				}
-				else 
+				else
 				{
-					queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"");
-				}
+					if (list.size() == 0)
+					{
+//						log.info("List Not Null  Size 0" + event.getuserId());
+						log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.") ;
+						Msg = "userOrderAlert list isn't exists";
+						queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,Msg);
+					}
+					else
+					{
+//						log.info("List Not Null  Size Not 0" + event.getuserId());
+						//Send orderalert event reply
+						queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,null);
+					}
+				}				
 			}
 			else
 			{
-				//Send orderalert event reply
-				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),list,event.getTxId(),event.getuserId(),true,"");
+				Msg = "Event AlertTypeError.";
+				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getuserId(),false,Msg);
+				log.warn("[processQueryOrderAlertRequestEvent][AlertTypeError]: "  + event.toString());
 			}
-			try {
-				eventManager.sendRemoteEvent(queryorderalertreplyevent);
-				log.debug("[processQueryOrderAlertRequestEvent] Send Reply User : "+ queryorderalertreplyevent.getUserId());		
+			try {	
+//				log.info("Before sendRemoteEvent" + event.getuserId());
+				eventManager.sendRemoteEvent(queryorderalertreplyevent);					
+				log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "+ queryorderalertreplyevent.getUserId() + " : " + Msg);		
 			} catch (Exception e) {
 				log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
 			}
 		}
-		else
+		catch(Exception e)
 		{
-			log.warn("[receiveQueryOrderAlertRequestEvent] AlertType error." + type.toString());
+			log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
 		}
 	}
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
-//		log.debug("Quote: " + quote);
+		
 		if (quotes.get(quote.getSymbol()) == null)
 		{
 			quotes.put(quote.getSymbol(), quote);
 			return ;
 		}
-		
+		log.debug("Quote: " + quote);
 		ArrayList<BasePriceAlert> list = symbolPriceAlerts.get(quote.getSymbol());
 		ArrayList<BasePriceAlert> UserPriceList;
 		if(null == list)
 			return;
 		else
 		{
-			for(BasePriceAlert alert: list) {
+			BasePriceAlert alert ;
+			for (int i = list.size(); i > 0; i --)
+			{
+				alert = list.get(i - 1);
 				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote))
 				{
 					//Add Alert to ParseQueue
@@ -323,7 +386,7 @@ public class AlertManager implements IPlugin {
 					}
 					//Delete Alert from List
 					list.remove(alert);					
-				}
+				}			
 			}
 		}
 		quotes.put(quote.getSymbol(), quote);		
@@ -360,55 +423,103 @@ public class AlertManager implements IPlugin {
 	}
 
 	public void processSetPriceAlertRequestEvent(SetPriceAlertRequestEvent event) {
-		AlertType type = event.getType();
-		log.info("[processSetPriceAlertRequestEvent] "+ event.toString());	
-		if (type == AlertType.PRICE_SET_NEW)
-		{			
-			receiveAddPriceAlert(event);
-		}
-		else if (type == AlertType.PRICE_SET_MODIFY)
+		try
 		{
-			receiveModifyPriceAlert(event);
+			AlertType type = event.getType();
+			log.info("[processSetPriceAlertRequestEvent] "+ event.toString());	
+			if (type == AlertType.PRICE_SET_NEW)
+			{			
+				receiveAddPriceAlert(event);
+			}
+			else if (type == AlertType.PRICE_SET_MODIFY)
+			{
+				receiveModifyPriceAlert(event);
+			}
+			else if (type == AlertType.PRICE_SET_CANCEL)
+			{
+				receiveCancelPriceAlert(event);
+			}
+			else
+			{
+				log.warn("[processSetPriceAlertRequestEvent][AlertTypeError]: " + event.toString());
+				PriceAlertReplyEvent pricealertreplyevent = null;			
+				//Send event reply
+				String Msg = "Event AlertTypeError." ;
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getPriceAlert().getUserId(),event.getType(),null,false,Msg);
+				eventManager.sendRemoteEvent(pricealertreplyevent);
+			}
 		}
-		else if (type == AlertType.PRICE_SET_CANCEL)
+		catch (Exception e)
 		{
-			receiveCancelPriceAlert(event);
+			log.warn("Exception : " + e.getMessage());
 		}
 	}
 	
 	public void processQueryPriceAlertRequestEvent(QueryPriceAlertRequestEvent event) {
-		AlertType type = event.getType();
-		log.info("[processQueryPriceAlertRequestEvent] "+ event.toString());	
-		if (type == AlertType.PRICE_QUERY_CUR)
+		try
 		{
-			receiveQueryCurPriceAlert(event);
+			AlertType type = event.getType();
+			log.info("[processQueryPriceAlertRequestEvent] "+ event.toString());	
+			if (type == AlertType.PRICE_QUERY_CUR)
+			{
+				receiveQueryCurPriceAlert(event);
+			}
+			else if (type == AlertType.PRICE_QUERY_PAST)
+			{
+				receiveQueryPastPriceAlert(event);
+			}
+			else
+			{
+				log.warn("[processQueryPriceAlertRequestEvent][AlertTypeError]: " + event.toString());	
+				PriceAlertReplyEvent pricealertreplyevent = null;			
+				//Send event reply
+				String Msg = "Event AlertTypeError." ;
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),null,false,Msg);
+				eventManager.sendRemoteEvent(pricealertreplyevent);
+			}
 		}
-		else if (type == AlertType.PRICE_QUERY_PAST)
+		catch (Exception e)
 		{
-			receiveQueryPastPriceAlert(event);
+			log.warn("Exception : " + e.getMessage());
 		}
+		
 	}
 	
 	private void loadPastPriceAlert(String userId)
 	{
-		Session session = sessionFactory.openSession();
-		ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
-		Query query = session.getNamedQuery("LoadPastPriceAlert");
-		query.setString(0, userId);
-		query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-		Iterator iterator = query.list().iterator();
-		while(iterator.hasNext()) {
-			PastPriceAlert  pastPriceAlert= (PastPriceAlert) iterator.next();
-			BasePriceAlertlist.add(pastPriceAlert);			
+		Session session =null;
+		try
+		{
+			session= sessionFactory.openSession();
+			ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
+			Query query = session.getNamedQuery("LoadPastPriceAlert");
+			query.setString(0, userId);
+			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+			Iterator iterator = query.list().iterator();
+			while(iterator.hasNext()) {
+				PastPriceAlert  pastPriceAlert= (PastPriceAlert) iterator.next();
+				BasePriceAlertlist.add(pastPriceAlert);
+			}
+			userPastPriceAlerts.put(userId, BasePriceAlertlist);
 		}
-		userPastPriceAlerts.put(userId, BasePriceAlertlist);
-		session.close();
+		catch (Exception e)
+		{
+			log.warn("Exception : " + e.getMessage());
+		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
 	}
 	
 	private void receiveAddPriceAlert(SetPriceAlertRequestEvent event) {
 		ArrayList<BasePriceAlert> list;
 		BasePriceAlert priceAlert = event.getPriceAlert();
 		int search;
+		String Msg = "";
 		PriceAlertReplyEvent pricealertreplyevent = null;
 		//Add Alert to List
 		list = userPriceAlerts.get(priceAlert.getUserId());
@@ -430,10 +541,11 @@ public class AlertManager implements IPlugin {
 			{
 				//reject
 				log.debug("[recevieAddPriceAlert] : UserAlert is Greater than maxNoOfAlerts -> reject");
-				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,"UserAlert is Greater than maxNoOfAlerts");
+				Msg = "UserAlert is Greater than maxNoOfAlerts";
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,Msg);
 				try {
 					eventManager.sendRemoteEvent(pricealertreplyevent);
-					log.info("[receiveAddPriceAlert] : send reject User : " + pricealertreplyevent.getUserId());
+					log.info("[receiveAddPriceAlert] : send reject User : " + pricealertreplyevent.getUserId()+ " : "+ Msg);
 				} catch (Exception e) {					
 					log.debug("[recevieAddPriceAlert] : " + e.getMessage());
 				}
@@ -445,10 +557,11 @@ public class AlertManager implements IPlugin {
 				{
 					log.debug("[recevieAddPriceAlert] : id already exists. -> reject");
 					//SendPriceAlertreplyEvent
-					pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,"id already exists.");
+					Msg = "id already exists.";
+					pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,Msg);
 					try {
 						eventManager.sendRemoteEvent(pricealertreplyevent);
-						log.info("[receiveAddPriceAlert] : send reject User : " + pricealertreplyevent.getUserId());
+						log.info("[receiveAddPriceAlert] : send reject User : " + pricealertreplyevent.getUserId()+ " : "+ Msg);
 					} catch (Exception e) {					
 						log.debug("[recevieAddPriceAlert] : " + e.getMessage());
 					}
@@ -488,7 +601,7 @@ public class AlertManager implements IPlugin {
 		}
 		try {
 			eventManager.sendRemoteEvent(pricealertreplyevent);
-			log.info("[receiveAddPriceAlert] : send reply User : " + pricealertreplyevent.getUserId());
+			log.info("[receiveAddPriceAlert] : send reply User : " + pricealertreplyevent.getUserId()+ " : "+ Msg);
 		} catch (Exception e) {					
 			log.debug("[recevieAddPriceAlert] : " + e.getMessage());
 		}
@@ -497,6 +610,7 @@ public class AlertManager implements IPlugin {
 	private void receiveModifyPriceAlert(SetPriceAlertRequestEvent event) {			
 		ArrayList<BasePriceAlert> list;
 		int search;
+		String Msg = "";
 		BasePriceAlert priceAlert = event.getPriceAlert();
 		PriceAlertReplyEvent pricealertreplyevent = null;
 		//Add Alert to List
@@ -504,17 +618,18 @@ public class AlertManager implements IPlugin {
 		if(null == list) {
 			log.debug("[receiveModifyPriceAlert] : id isn't exists. -> reject");
 			//SendPriceAlertreplyEvent
-			pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,"id isn't exists.");
+			Msg = "id isn't exists." ;
+			pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,Msg);
 			try {
 				eventManager.sendRemoteEvent(pricealertreplyevent);
-				log.info("[receiveModifyPriceAlert] : send reject User : " + pricealertreplyevent.getUserId());
+				log.info("[receiveModifyPriceAlert] : send reject User : " + pricealertreplyevent.getUserId()+ " : "+ Msg);
 			} catch (Exception e) {					
 				log.debug("[receiveModifyPriceAlert] : " + e.getMessage());
 			}
 			return ;
 		}
 		else
-		{			
+		{
 			if (list.indexOf(priceAlert) != -1)
 			{
 				for(BasePriceAlert basePriceAlert : list)
@@ -535,10 +650,11 @@ public class AlertManager implements IPlugin {
 			{
 				log.debug("[receiveModifyPriceAlert] : id isn't exists. -> reject");				
 				//SendPriceAlertreplyEvent
-				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,"id isn't exists.");
+				Msg = "id isn't exists.";
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,Msg);
 				try {
 					eventManager.sendRemoteEvent(pricealertreplyevent);
-					log.info("[receiveModifyPriceAlert] : send reject User : " + pricealertreplyevent.getUserId());
+					log.info("[receiveModifyPriceAlert] : send reject User : " + pricealertreplyevent.getUserId() + " : "+ Msg);
 				} catch (Exception e) {					
 					log.debug("[receiveModifyPriceAlert] : " + e.getMessage());
 				}
@@ -554,7 +670,7 @@ public class AlertManager implements IPlugin {
 		}
 		try {
 			eventManager.sendRemoteEvent(pricealertreplyevent);
-			log.info("[receiveModifyPriceAlert] : send reply User : " + pricealertreplyevent.getUserId());
+			log.info("[receiveModifyPriceAlert] : send reply User : " + pricealertreplyevent.getUserId() + " : "+ Msg);
 		} catch (Exception e) {					
 			log.debug("[receiveModifyPriceAlert] : " + e.getMessage());
 		}
@@ -565,12 +681,14 @@ public class AlertManager implements IPlugin {
 		int search;
 		BasePriceAlert priceAlert = event.getPriceAlert();
 		PriceAlertReplyEvent pricealertreplyevent = null;
+		String Msg = "";
 		//Add Alert to List
 		list = userPriceAlerts.get(priceAlert.getUserId());
 		if(null == list) {
 			log.debug("[receiveCancelPriceAlert] : id isn't exists. ->reject");
 			//SendPriceAlertreplyEvent
-			pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,"id isn't exists.");
+			Msg = "id isn't exists." ;
+			pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,Msg);
 			try {
 				eventManager.sendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveCancelPriceAlert] : send reject User : " + pricealertreplyevent.getUserId());
@@ -595,10 +713,11 @@ public class AlertManager implements IPlugin {
 			{
 				log.debug("[receiveCancelPriceAlert] : id isn't exists. ->reject");
 				//SendPriceAlertreplyEvent
-				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,"id isn't exists.");
+				Msg = "id isn't exists.";
+				pricealertreplyevent = new PriceAlertReplyEvent(null, event.getSender(),priceAlert.getId(),event.getTxId(),priceAlert.getUserId(),event.getType(),null,false,Msg);
 				try {
 					eventManager.sendRemoteEvent(pricealertreplyevent);
-					log.info("[receiveCancelPriceAlert] : send reject User : " + pricealertreplyevent.getUserId());
+					log.info("[receiveCancelPriceAlert] : send reject User : " + pricealertreplyevent.getUserId() + " : " + Msg);
 				} catch (Exception e) {					
 					log.debug("[receiveCancelPriceAlert] : " + e.getMessage());
 				}
@@ -614,7 +733,7 @@ public class AlertManager implements IPlugin {
 		}
 		try {
 			eventManager.sendRemoteEvent(pricealertreplyevent);
-			log.info("[receiveCancelPriceAlert] : send reply User : " + pricealertreplyevent.getUserId());
+			log.info("[receiveCancelPriceAlert] : send reply User : " + pricealertreplyevent.getUserId() + " : "+ Msg);
 		} catch (Exception e) {					
 			log.debug("[receiveCancelPriceAlert] : " + e.getMessage());
 		}
@@ -623,6 +742,7 @@ public class AlertManager implements IPlugin {
 	private void receiveQueryCurPriceAlert(QueryPriceAlertRequestEvent event)
 	{
 		try {
+			String Msg = "";
 			PriceAlertReplyEvent priceAlertReplyEvent;
 			ArrayList<BasePriceAlert> list = userPriceAlerts.get(event.getUserId());
 			if (null == list)
@@ -630,7 +750,8 @@ public class AlertManager implements IPlugin {
 				log.debug("[receiveQueryCurPriceAlert] : User CurPriceAlert list isn't exists.") ;
 				//Send event reply
 				list = new ArrayList<BasePriceAlert>() ;
-				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,"User CurPriceAlert list isn't exists.");
+				Msg = "User CurPriceAlert list isn't exists." ;
+				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,Msg);
 			}
 			else
 			{
@@ -638,7 +759,7 @@ public class AlertManager implements IPlugin {
 				priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,null);
 			}
 			eventManager.sendRemoteEvent(priceAlertReplyEvent);
-			log.info("[receiveQueryCurPriceAlert] : send reply User : " + priceAlertReplyEvent.getUserId());
+			log.info("[receiveQueryCurPriceAlert] : send reply User : " + priceAlertReplyEvent.getUserId() + " : "+ Msg);
 		} catch (Exception e) {
 			log.debug("[receiveQueryCurPriceAlert] : " + e.getMessage());
 		}
@@ -647,22 +768,25 @@ public class AlertManager implements IPlugin {
 	private void receiveQueryPastPriceAlert(QueryPriceAlertRequestEvent event)
 	{
 		try {
+			String Msg = "";
 			PriceAlertReplyEvent priceAlertReplyEvent;
 			ArrayList<BasePriceAlert> list =  userPastPriceAlerts.get(event.getUserId());
 			if (null == list)
 			{
-				loadPastPriceAlert(event.getUserId());
+				loadPastPriceAlert(event.getUserId());				
 				list =  userPastPriceAlerts.get(event.getUserId());
 				if (list.size() == 0)
 				{
 					log.debug("[receiveQueryPastPriceAlert] : User PastPriceAlert list isn't exists.") ;
 					//Send orderalert event reply
-					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,"User PastPriceAlert list isn't exists.");
+					Msg = "User PastPriceAlert list isn't exists.";
+					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,Msg);
 				}
 				else
 				{
 					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,null);
 				}
+				
 			}
 			else
 			{
@@ -670,7 +794,8 @@ public class AlertManager implements IPlugin {
 				{
 					log.debug("[receiveQueryPastPriceAlert] : User PastPriceAlert list isn't exists.") ;
 					//Send orderalert event reply
-					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,"User PastPriceAlert list isn't exists.");
+					Msg = "User PastPriceAlert list isn't exists.";
+					priceAlertReplyEvent = new PriceAlertReplyEvent(null, event.getSender(),null,event.getTxId(),event.getUserId(),event.getType(),list,true,Msg);
 				}
 				else
 				{
@@ -678,58 +803,78 @@ public class AlertManager implements IPlugin {
 				}
 			}
 			eventManager.sendRemoteEvent(priceAlertReplyEvent);
-			log.info("[receiveQueryPastPriceAlert] : send reply User : " + priceAlertReplyEvent.getUserId());
+			log.info("[receiveQueryPastPriceAlert] : send reply User : " + priceAlertReplyEvent.getUserId() + " : "+ Msg);
 		} catch (Exception e) {
 			log.debug("[receiveQueryPastPriceAlert] : " + e.getMessage());
 		}
-		
 	}
 	
 	public <T> void SQLSave(T object)
 	{
+		Session session = null;
 		try
 		{
-			Session session = sessionFactory.openSession();
+			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.save(object);
 			tx.commit();
-			session.close();
 		}
 		catch (Exception e)
 		{
 			log.warn("[SQLSave] : " + e.getMessage());
 		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
 	}
 	
 	private <T> void SQLUpdate(T object)
 	{
+		Session session = null;
 		try
 		{
-			Session session = sessionFactory.openSession();
+			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.update(object);
 			tx.commit();
-			session.close();
 		}
 		catch (Exception e)
 		{
 			log.warn("[SQLUpdate] : " + e.getMessage());
 		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
+		}
 	}
 	
 	private <T> void SQLDelete(T object)
 	{
+		Session session = null;
 		try
 		{
-			Session session = sessionFactory.openSession();
+			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.delete(object);
 			tx.commit();
-			session.close();
 		}
 		catch (Exception e)
 		{
 			log.warn("[SQLDelete] : " + e.getMessage());
+		}
+		finally
+		{
+			if (null != session)
+			{
+				session.close();
+			}
 		}
 	}
 	
@@ -767,41 +912,16 @@ public class AlertManager implements IPlugin {
 	
 	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		Session session = null;
-		if(event == timerEvent) {
-			
+//		log.info("ParseDataQueue Size : " + ParseDataQueue.size());
+		if(event == timerEvent) {		
 			try
 			{
 				log.info("ParseDataQueue Size : " + ParseDataQueue.size());
-//				ParseDataQueue.add(PackTradeAlert(new Execution("USDJPY", OrderSide.Buy, 10000.0,
-//						123.4, "123-456-789", "111-111-111",
-//						"1", "222-222-222",
-//						"rickdev", "rickdev-FX", "abcdefg")));
-////				
-//				TradeAlert TA = new TradeAlert("davidddd", "USDJPY", null ,(long)1000000, (double)120,"2015-01-22 20:45:11", "TEST");
-//				SQLSave(TA);
-//				CurPriceAlert CP = new CurPriceAlert("d22222222","NZDUSD",(double)888,"2015-01-24 20:45:11","TESTCP");
-//				PastPriceAlert PA = new PastPriceAlert("davidddd","USDJPY",(double)120,"2015-01-22 20:45:11","TESTPA");
-//				SQLSave(PA);
-//				SQLSave(CP);
-//				PA.setPrice((double)150);
-//				SQLUpdate(PA);
-//				ParseDataQueue.add(PackPriceAlert(new BasePriceAlert("David","USDJPT",(double)120,"2015-01-26 11:05:18","")));
-//				ArrayList<TradeAlert> list = new ArrayList<TradeAlert>();
-//				session = sessionFactory.openSession();
-////				Transaction tx = session.beginTransaction();
-//				Query query = session.getNamedQuery("LoadPastTradeAlert");
-//				query.setString(0, "davidddd");
-//				query.setInteger("maxNoOfAlerts", getMaxNoOfAlerts());
-//				Iterator iterator = query.list().iterator();
-//				
-//				while(iterator.hasNext()) {
-//					TradeAlert  pastTradeAlert= (TradeAlert) iterator.next();
-//					list.add(0, pastTradeAlert);
-//				}
-				ThreadStatus TS ;				
-				for (ParseThread PT : ParseThreadList)
+				ThreadStatus TS ;
+				ParseThread PT;
+				for (int i = ParseThreadList.size(); i >0 ; i --)
 				{
+					PT = ParseThreadList.get(i - 1);
 					TS = PT.getThreadStatus() ;		
 					if (TS.getThreadState() == ThreadState.IDLE.getState())
 					{
@@ -831,18 +951,11 @@ public class AlertManager implements IPlugin {
 							}
 						}
 					}
-				}
+				}				
 			}
 			catch (Exception e)
 			{
 				log.warn("[processAsyncTimerEvent] Exception : " + e.getMessage()) ;
-			}
-			finally
-			{
-				if (null != session)
-				{
-					session.close();
-				}
 			}
 		}
 	}
