@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -884,42 +885,56 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd;
 		synchronized(this)
 		{
-			sqlcmd = "DELETE FROM `Symbol_Info`;";
-			defaultSymbolInfo.clear();
-			dbhnd.updateSQL(sqlcmd);
-			sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
-			boolean first = true;
-			for(RefData refdata : refList)
+			PrintWriter outSymbol;
+			try 
 			{
-				SymbolData symbolData = new SymbolData(refdata.getSymbol()) ;
-				int index = Collections.binarySearch(listSymbolData, symbolData) ;
-				if (index < 0)
+				outSymbol = new PrintWriter(new BufferedWriter(new FileWriter("Symbol")));
+				sqlcmd = "DELETE FROM `Symbol_Info`;";
+				defaultSymbolInfo.clear();
+				dbhnd.updateSQL(sqlcmd);
+				sqlcmd = "INSERT IGNORE INTO `Symbol_Info` (`MARKET`,`CODE`,`EN_NAME`,`CN_NAME`) VALUES";
+				boolean first = true;
+				for(RefData refdata : refList)
 				{
-					listSymbolData.add(~index, new SymbolData(refdata.getSymbol(), refdata.getExchange(), this)) ;
-					index = ~index ;
+					SymbolData symbolData = new SymbolData(refdata.getSymbol()) ;
+					if (refdata.getExchange() != null)
+					{
+						outSymbol.println(refdata.getSymbol());
+					}
+					int index = Collections.binarySearch(listSymbolData, symbolData) ;
+					if (index < 0)
+					{
+						listSymbolData.add(~index, new SymbolData(refdata.getSymbol(), refdata.getExchange(), this)) ;
+						index = ~index ;
+					}
+					if (first == false)
+					{
+						sqlcmd += "," ;
+					}
+					sqlcmd += "(";
+					sqlcmd += (refdata.getExchange() == null) ? "null," : String.format("'%s',", refdata.getExchange());
+					sqlcmd += (refdata.getSymbol() == null) ? "null," : String.format("'%s',", refdata.getSymbol());
+					sqlcmd += (refdata.getENDisplayName() == null) ? "null," : String.format("'%s',", refdata.getENDisplayName());
+					sqlcmd += (refdata.getCNDisplayName() == null) ? "null" : String.format("'%s'", refdata.getCNDisplayName());
+					sqlcmd += ")";
+					if (first == true)
+					{
+						first = false ;
+					}
+					if (preSubscriptionList.contains(refdata.getSymbol()))
+					{
+						defaultSymbolInfo.add(new SymbolInfo(refdata.getExchange(), 
+								refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), null));
+					}
 				}
-				if (first == false)
-				{
-					sqlcmd += "," ;
-				}
-				sqlcmd += "(";
-				sqlcmd += (refdata.getExchange() == null) ? "null," : String.format("'%s',", refdata.getExchange());
-				sqlcmd += (refdata.getSymbol() == null) ? "null," : String.format("'%s',", refdata.getSymbol());
-				sqlcmd += (refdata.getENDisplayName() == null) ? "null," : String.format("'%s',", refdata.getENDisplayName());
-				sqlcmd += (refdata.getCNDisplayName() == null) ? "null" : String.format("'%s'", refdata.getCNDisplayName());
-				sqlcmd += ")";
-				if (first == true)
-				{
-					first = false ;
-				}
-				if (preSubscriptionList.contains(refdata.getSymbol()))
-				{
-					defaultSymbolInfo.add(new SymbolInfo(refdata.getExchange(), 
-							refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), null));
-				}
+				sqlcmd += ";" ;
+				dbhnd.updateSQL(sqlcmd);
+				outSymbol.close();
+			} 
+			catch (IOException e) 
+			{
+				log.error(e.toString(), e);;
 			}
-			sqlcmd += ";" ;
-			dbhnd.updateSQL(sqlcmd);
 		}
 	}
 	
