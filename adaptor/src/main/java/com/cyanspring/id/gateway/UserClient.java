@@ -246,8 +246,9 @@ public class UserClient implements AutoCloseable {
 
 	public String toXml() {
 		return String.format(
-				"<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" Last=\"%s\"/>%n",
+				"<Client ID=\"%s\" IP=\"%s\" Gateway=\"%s\" RefCount=\"%d\" Last=\"%s\"/>%n",
 				key, ip, gateway ? "true" : "false",
+				refList.size(),
 				DateUtil.formatDate(timeLast, "yyyy-MM-dd HH:mm:ss"));
 	}
 }

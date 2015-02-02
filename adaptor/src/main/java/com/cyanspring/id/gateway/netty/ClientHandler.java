@@ -48,7 +48,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public static ClientHandler Instance = null;
 	// public boolean isActive = false;
 	static ChannelHandlerContext ctx; // context deal with server
-	TimerThread timer = null;
+	static TimerThread timer = null;
 	public static Date lastRecv = DateUtil.now();
 
 	/**
@@ -78,9 +78,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public ClientHandler() {
 		// if (IdGateway.instance().isGateway() == false)
 		{
-			timer = new TimerThread();
-			timer.TimerEvent = this;
-			timer.start();
+			if (timer == null) {
+				timer = new TimerThread();
+				timer.TimerEvent = this;
+				timer.start();
+			}
 		}
 	}
 
@@ -332,7 +334,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void onTimer(TimerThread objSender) {
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
-		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 30) {
+		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 10) {
 			lastRecv = now;
 			if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
 				IdGateway.instance().closeClient();
