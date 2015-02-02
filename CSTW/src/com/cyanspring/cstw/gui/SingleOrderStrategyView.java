@@ -131,7 +131,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private String maValue;
 
 	
-	private enum StrategyAction { Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, Save };
+	private enum StrategyAction { Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save };
 	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -427,7 +427,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	}
 	
 	private void quickCancelOrder() {
-		cancelOrders();
+		cancelOrders(false);
 	}
 
 	private void createBodyMenu(final Composite parent) {
@@ -500,6 +500,14 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		});
 		
 		item = new MenuItem(menu, SWT.PUSH);
+		item.setText("Force cancel");
+		item.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				strategyAction(StrategyAction.ForceCancel);
+			}
+		});
+		
+		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Save");
 		item.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -533,7 +541,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		// create local toolbars
 		cancelOrderAction = new Action() {
 			public void run() {
-				cancelOrders();
+				cancelOrders(false);
 			}
 		};
 		cancelOrderAction.setText("Cancel Order");
@@ -613,7 +621,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		}
 	}
 	
-	protected void cancelOrders() {
+	protected void cancelOrders(boolean force) {
 		Table table = SingleOrderStrategyView.this.viewer.getTable();
 
 		TableItem items[] = table.getSelection();
@@ -626,7 +634,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 					String id = (String)map.get(OrderField.ID.value());
 					String server = (String)map.get(OrderField.SERVER_ID.value());
 						Business.getInstance().getEventManager().sendRemoteEvent(
-								new CancelParentOrderEvent(id, server, id, null));
+								new CancelParentOrderEvent(id, server, id, force, null));
 				}
 			}
 		} catch (Exception e) {
@@ -676,7 +684,10 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 						orderDialog.open();
 						break;
 					case Cancel:
-						cancelOrders();
+						cancelOrders(false);
+						break;
+					case ForceCancel:
+						cancelOrders(true);
 						break;
 					case Save:
 						saveOrders();

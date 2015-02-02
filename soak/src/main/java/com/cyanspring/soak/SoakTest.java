@@ -153,7 +153,7 @@ public class SoakTest extends ClientAdaptor {
 				
 				String txId = IdGenerator.getInstance().getNextID();
 				CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
-						order.getId(), txId);
+						order.getId(), false, txId);
 				tranPerf.tranStart(txId, Clock.getInstance().now());
 				sendEvent(cancelEvent);
 			}

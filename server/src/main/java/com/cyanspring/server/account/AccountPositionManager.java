@@ -642,11 +642,13 @@ public class AccountPositionManager implements IPlugin {
 		if(!allFxRatesReceived) {
 			for(String symbol: fxSymbols) {
 				Double rate = fxConverter.getFxRate(symbol);
-				if(null == rate || PriceUtils.isZero(rate))
+				if(null == rate || PriceUtils.isZero(rate)) {
+					log.debug("Waiting on FX rate: " + symbol);
 					return;
+				}
 			}
 			allFxRatesReceived = true;
-			log.info("FX rates: " + fxConverter.toString());
+			log.info("FX rates ready: " + fxConverter.toString());
 		}
 		
 		if(rmUpdateThrottler.check()) {
@@ -721,11 +723,16 @@ public class AccountPositionManager implements IPlugin {
 			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && 
 					null != quote &&
 					quoteIsValid(quote)) {
+						if(positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
+							log.debug("Position stop loss over threshold but account is locked: " + 
+								account.getId() + ", " + position.getSymbol());
+							return;
+						}
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + 
 						positionStopLoss + ", " + quote);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), OrderReason.StopLoss,
+						null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.StopLoss,
 						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);
@@ -764,10 +771,18 @@ public class AccountPositionManager implements IPlugin {
 				if(!quoteIsValid(quote))
 					continue;
 
+				if(positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
+					log.debug("Margin call but account is locked: " + 
+						account.getId() + ", " + position.getSymbol());
+					return true;
+				}
+
 				log.info("Margin cut: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + account.getMargin() + ", " + quote);
+				
+				double qty = Math.min(Math.abs(position.getQty()), Default.getMarginCut());
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), OrderReason.MarginCall,
+						null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
 						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);

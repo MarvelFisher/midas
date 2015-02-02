@@ -42,6 +42,10 @@
         <priority value="INFO"/>
     </category>
 
+    <category name="com.mchange">
+    	<priority value="INFO"/>
+    </category>
+
   	<root>
 		<priority value="DEBUG" />
 		<appender-ref ref="FILE" />

@@ -108,7 +108,7 @@ public class UpStreamManager implements IPlugin {
 
 		@Override
 		public void onCancelOrder(String txId, String orderId) {
-			CancelParentOrderEvent event = new CancelParentOrderEvent(connection.getId(), null, orderId, txId);
+			CancelParentOrderEvent event = new CancelParentOrderEvent(connection.getId(), null, orderId, false, txId);
 			eventManager.sendEvent(event);
 		}
 

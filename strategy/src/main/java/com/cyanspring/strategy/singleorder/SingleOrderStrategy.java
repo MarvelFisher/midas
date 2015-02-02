@@ -667,14 +667,8 @@ public abstract class SingleOrderStrategy extends Strategy {
 	protected void processCancelStrategyOrderEvent(CancelStrategyOrderEvent event) {
 		logDebug("processCancelStrategyOrderEvent received: " + event.getSourceId());
 		CancelParentOrderReplyEvent reply = null;
-		if( pendingAckHandler != null || pendingExecInstrEvent != null) {
-			reply = new CancelParentOrderReplyEvent(
-					event.getSourceId(), event.getSender(), false, "Order has pending amendment/cancellation", event.getTxId(), parentOrder);
-			container.sendLocalOrRemoteEvent(reply);
-			return;
-		} 
 		
-		if(pendingExecInstrEvent == null && childOrderCount() == 0) {
+		if(event.isForce() || pendingExecInstrEvent == null && childOrderCount() == 0) {
 			cancelParentOrder(event);
 			reply = new CancelParentOrderReplyEvent(
 					event.getSourceId(), event.getSender(), true, null, event.getTxId(), parentOrder);
@@ -682,6 +676,14 @@ public abstract class SingleOrderStrategy extends Strategy {
 			container.sendEvent(new UpdateParentOrderEvent(parentOrder.getId(), ExecType.CANCELED, event.getTxId(), parentOrder, null));
 			return;
 		}
+		
+		if( pendingAckHandler != null || pendingExecInstrEvent != null) {
+			reply = new CancelParentOrderReplyEvent(
+					event.getSourceId(), event.getSender(), false, "Order has pending amendment/cancellation", event.getTxId(), parentOrder);
+			container.sendLocalOrRemoteEvent(reply);
+			log.debug("Cancelling order with pending amendment/cancellation: " + event.getKey());
+			return;
+		} 
 		
 		pendingAckHandler = new CancelPendingHandler(event);
 		execute(ExecuteTiming.NOW);

@@ -15,14 +15,16 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class CancelStrategyOrderEvent extends RemoteAsyncEvent {
 	private String txId;
-	String sourceId;
+	private String sourceId;
+	private boolean force;
 
 	public CancelStrategyOrderEvent(String key, String receiver, String txId,
-			String sourceId) {
+			String sourceId, boolean force) {
 		super(key, receiver);
 		setPriority(EventPriority.HIGH);
 		this.txId = txId;
 		this.sourceId = sourceId;
+		this.force = force;
 	}
 
 	public String getSourceId() {
@@ -31,6 +33,10 @@ public class CancelStrategyOrderEvent extends RemoteAsyncEvent {
 
 	public String getTxId() {
 		return txId;
+	}
+
+	public boolean isForce() {
+		return force;
 	}
 	
 }

@@ -77,7 +77,7 @@ public class ClosePositionTest extends ClientAdaptor {
 	
 	private void action2() {
 		sendEvent(new ClosePositionRequestEvent(account, null, account, 
-				symbol, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
+				symbol, 0.0, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
 		//this should get rejected
 		sendEvent(getEnterOrderEvent(0.9));
 		
@@ -92,10 +92,10 @@ public class ClosePositionTest extends ClientAdaptor {
 
 		//this should be rejected
 		sendEvent(new ClosePositionRequestEvent(account, null, account, 
-				symbol, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
+				symbol, 0.0, OrderReason.ManualClose, IdGenerator.getInstance().getNextID()));
 
 		CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
-				tobeAmended, IdGenerator.getInstance().getNextID());
+				tobeAmended, false, IdGenerator.getInstance().getNextID());
 		//this should be ok
 		sendEvent(cancelEvent);
 		
