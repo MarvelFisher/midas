@@ -437,15 +437,13 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setTotalpage(totalpage);
 			retEvent.setOk(true);
 			log.debug("Process Search Symbol Request success Symbol: " + retsymbollist.size());
+			sendEvent(retEvent);
 		} catch (SQLException e) {
 
 			retEvent.setSymbolinfo(null);
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
 			log.debug("Process Search Symbol Request fail: " + e.toString());
-		}
-		finally
-		{
 			sendEvent(retEvent);
 		}
 	}
@@ -502,6 +500,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 			retEvent.setSymbolList(retsymbollist);
 			log.debug("Process Request Default Symbol success Symbol: " + retsymbollist.size());
+			sendEvent(retEvent);
 		} 
 		catch (SQLException e) 
 		{
@@ -509,9 +508,6 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
 			log.debug("Process Request Default Symbol fail " + e.toString());
-		}
-		finally
-		{
 			sendEvent(retEvent);
 		}
 	}
@@ -618,6 +614,7 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(true);
 			log.debug("Process Request All Symbol success Symbol: " + symbolinfos.size());
+			sendEvent(retEvent);
 		} 
 		catch (SQLException e) 
 		{
@@ -626,9 +623,6 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
 			log.debug("Process Request All Symbol fail: " + e.toString());
-		}
-		finally
-		{
 			sendEvent(retEvent);
 		}
 	}
@@ -658,6 +652,7 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setSymbolList(symbolinfos);
 			retEvent.setOk(true);
 			log.debug("Process Request Group Symbol success Symbol: " + symbolinfos.size());
+			sendEvent(retEvent);
 		} 
 		catch (SQLException e) 
 		{
@@ -665,9 +660,6 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
 			log.debug("Process Request Group Symbol fail: " + e.toString());
-		}
-		finally
-		{
 			sendEvent(retEvent);
 		}
 	}
@@ -765,6 +757,7 @@ public class CentralDbProcessor implements IPlugin
 				retEvent.setOk(true);
 				log.debug("Process Request Group Symbol success Symbol: " + symbolinfos.size());
 			}
+			sendEvent(retEvent);
 		} 
 		catch (SQLException e) 
 		{
@@ -772,9 +765,6 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(false);
 			retEvent.setMessage(e.toString());
 			log.debug("Process Request Group Symbol fail: " + e.toString());
-		}
-		finally
-		{
 			sendEvent(retEvent);
 		}
 	}
