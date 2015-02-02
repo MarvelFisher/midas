@@ -227,8 +227,7 @@ public class CentralDbConnector {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sQuery);
 
-			if (rs.next())
-			{
+			if (rs.next()){
 				md5Password = rs.getString("PASSWORD");
 				salt = rs.getString("SALT");
 			}
@@ -296,6 +295,7 @@ public class CentralDbConnector {
 				return false;
 			}
 		} catch (SQLException e) {
+			closeStmt(stmt);
 			log.error(e.getMessage(), e);
 			return false;
 		} finally {
