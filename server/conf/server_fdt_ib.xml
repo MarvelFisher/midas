@@ -103,7 +103,7 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="IdMarketDataAdaptor" />
+			<ref bean="ibAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -119,7 +119,7 @@
 				<value>GBPCAD</value>
 				<value>GBPCHF</value>
 				<value>GBPCNH</value>
-				<value>GBPDKK</value>
+				<!-- <value>GBPDKK</value> -->
 				<value>GBPHKD</value>
 				<value>GBPJPY</value>
 				<value>GBPNOK</value>
@@ -132,15 +132,15 @@
 				<value>CADJPY</value>
 				<value>CNHHKD</value>
 				<value>CNHJPY</value>
-				<value>DKKJPY</value>
-				<value>DKKNOK</value>
-				<value>DKKSEK</value>
+				<!-- <value>DKKJPY</value> -->
+				<!-- <value>DKKNOK</value> -->
+				<!-- <value>DKKSEK</value> -->
 				<value>EURAUD</value>
 				<value>EURCAD</value>
 				<value>EURCHF</value>
 				<value>EURCNH</value>
 				<value>EURCZK</value>
-				<value>EURDKK</value>
+				<!-- <value>EURDKK</value> -->
 				<value>EURGBP</value>
 				<value>EURHKD</value>
 				<value>EURHUF</value>
@@ -172,7 +172,7 @@
 				<value>SGDJPY</value>
 				<value>SEKJPY</value>
 				<value>CHFCNH</value>
-				<value>CHFDKK</value>
+				<!-- <value>CHFDKK</value> -->
 				<value>CHFJPY</value>
 				<value>CHFNOK</value>
 				<value>CHFSEK</value>
@@ -254,7 +254,7 @@
 				<value>GBPCAD</value>
 				<value>GBPCHF</value>
 				<value>GBPCNH</value>
-				<value>GBPDKK</value>
+				<!-- <value>GBPDKK</value> -->
 				<value>GBPHKD</value>
 				<value>GBPJPY</value>
 				<value>GBPNOK</value>
@@ -267,15 +267,15 @@
 				<value>CADJPY</value>
 				<value>CNHHKD</value>
 				<value>CNHJPY</value>
-				<value>DKKJPY</value>
-				<value>DKKNOK</value>
-				<value>DKKSEK</value>
+				<!-- <value>DKKJPY</value> -->
+				<!-- <value>DKKNOK</value> -->
+				<!-- <value>DKKSEK</value> -->
 				<value>EURAUD</value>
 				<value>EURCAD</value>
 				<value>EURCHF</value>
 				<value>EURCNH</value>
 				<value>EURCZK</value>
-				<value>EURDKK</value>
+				<!-- <value>EURDKK</value> -->
 				<value>EURGBP</value>
 				<value>EURHKD</value>
 				<value>EURHUF</value>
@@ -307,7 +307,7 @@
 				<value>SGDJPY</value>
 				<value>SEKJPY</value>
 				<value>CHFCNH</value>
-				<value>CHFDKK</value>
+				<!-- <value>CHFDKK</value> -->
 				<value>CHFJPY</value>
 				<value>CHFNOK</value>
 				<value>CHFSEK</value>
@@ -404,10 +404,10 @@
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
-		<property name="host" value="125.227.191.250" />
+		<property name="host" value="10.0.0.20" />
 		<!-- property name="host" value=""/ -->
 		<property name="port" value="4001" />
-		<property name="clientId" value="101" />
+		<property name="clientId" value="110" />
 		<property name="reqMarketDepth" value="false" />
 		<property name="logMarketData" value="false" />
 		<property name="refDataManager">
