@@ -103,7 +103,7 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="IdMarketDataAdaptor" />
+			<ref bean="ibAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
