@@ -36,13 +36,15 @@ import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.CustomThreadPool;
 import com.cyanspring.id.Library.Threading.Delegate;
+import com.cyanspring.id.Library.Threading.IReqThreadCallback;
+import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.gateway.netty.ClientHandler;
 import com.cyanspring.id.gateway.netty.HttpServerInitializer;
 import com.cyanspring.id.gateway.netty.ServerHandler;
 
-public class IdGateway implements IFrameClose {
+public class IdGateway implements IFrameClose, IReqThreadCallback {
 	private static final Logger log = LoggerFactory
 			.getLogger(IdGateway.class);
 	
@@ -56,7 +58,7 @@ public class IdGateway implements IFrameClose {
 	public static String lastUpdated = "2014-12-26";
 	public long inNo = 0, outNo = 0;
 	public double inSize = 0, outSize = 0;
-	
+	static RequestThread thread = null;
 	
 	boolean showGui = false;
 	boolean gateway = false;
@@ -279,8 +281,8 @@ public class IdGateway implements IFrameClose {
 
 	static final Method methodHttpServer = Delegate.getMethod("initHttpServer", IdGateway.class, new Class[] { int.class });
 
-	static final Method methodClient = Delegate.getMethod("initClient", IdGateway.class, new Class[] { String.class,
-			int.class });
+	//static final Method methodClient = Delegate.getMethod("initClient", IdGateway.class, new Class[] { String.class,
+	//		int.class });
 
 	public IDGateWayDialog mainFrame = null;
 	boolean isClose = false;
@@ -291,11 +293,18 @@ public class IdGateway implements IFrameClose {
 	public static boolean isSSL = false;
 
 	private void init() {
+		
+		if (thread == null) {
+			thread = new RequestThread(this, "initClient");
+		}
+		thread.start();
 		setSession(); 
 		QuoteMgr.Instance().addSymbols(getPreSubscriptionList());
 		List<String> list = new ArrayList<String>();
 		list.addAll(nonFX.keySet());
+		
 		QuoteMgr.Instance().addSymbols(list);
+
 	}
 	
 	public void addRefreshButton() {
@@ -324,6 +333,11 @@ public class IdGateway implements IFrameClose {
 
 	public void onCloseAction() {
 
+		if (thread != null) {			
+			thread.close();
+			thread = null;
+		}
+		
 		closeHttpServer();
 		
 		closeServer();
@@ -422,7 +436,21 @@ public class IdGateway implements IFrameClose {
 		}
 	}
 
-	static NioEventLoopGroup clientGroup = null;
+	public void onConnected() {
+		ClientHandler.lastRecv = DateUtil.now();
+		//thread.removeAllRequest();
+	}
+	
+	void connect() {
+		if (isConnected == true)
+			return;
+		
+		thread.addRequest(new Object());
+	}
+	
+	public static boolean isConnected = false; 
+	//static Bootstrap _clientBootstrap =  new Bootstrap(); 	
+	static NioEventLoopGroup clientGroup = null;//new NioEventLoopGroup();
 	public static boolean isConnecting = false; 
 	/**
 	 * 
@@ -431,7 +459,8 @@ public class IdGateway implements IFrameClose {
 	 * @param SSL
 	 * @throws Exception
 	 */
-	public static void initClient(final String HOST, final int PORT) throws Exception {
+	public static void onInitClient(final String HOST, final int PORT) throws Exception {
+		IdGateway.instance().closeClient();
 		IdGateway.instance().addLog(InfoString.ALert, "initClient enter");
 		LogUtil.logInfo(log, "initClient enter");
 		// Configure the client.
@@ -447,13 +476,15 @@ public class IdGateway implements IFrameClose {
 						}
 					});
 
+			isConnected = false;
 			// Start the client.
-			ClientHandler.lastRecv = DateUtil.now();
 			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
 			if (fClient.isSuccess()) {
 				LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
 				IdGateway.instance().addLog("%s:%d connected", HOST, PORT);
+				IdGateway.instance().onConnected();
 				isConnecting = false;
+				isConnected = true;
 			} else {
 				LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
 				instance.addLog(InfoString.ALert, "Connect to %s:%d fail.", HOST, PORT);
@@ -461,19 +492,25 @@ public class IdGateway implements IFrameClose {
 				io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
 				f.await();  			    
 				clientGroup = null;
+			
+				
 				fClient.channel().eventLoop().schedule(new Runnable() {							
 					@Override
 					public void run() {
-						IdGateway gw = IdGateway.instance();
+						//IdGateway gw = IdGateway.instance();
 						try {
-							initClient(gw.getReqIp(), gw.getReqPort());
+							//initClient(gw.getReqIp(), gw.getReqPort());
+							IdGateway.instance().connect();
 						} catch (Exception e) {									
 							LogUtil.logException(log, e);
 						}
 					}
 				}, 10, TimeUnit.SECONDS);
+				
 			}
-/*
+		
+/*			
+			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT);
 			fClient.addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture f) throws Exception {
@@ -481,6 +518,7 @@ public class IdGateway implements IFrameClose {
 					if (f.isSuccess()) {
 						LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
 						IdGateway.instance().addLog("%s:%d connected", HOST, PORT);
+						IdGateway.instance().onConnected();
 						isConnecting = false;
 					} else {
 						LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
@@ -493,7 +531,8 @@ public class IdGateway implements IFrameClose {
 							public void run() {
 								IdGateway gw = IdGateway.instance();
 								try {
-									initClient(gw.getReqIp(), gw.getReqPort());
+									//onInitClient(gw.getReqIp(), gw.getReqPort());
+									IdGateway.instance().connect();
 								} catch (Exception e) {									
 									LogUtil.logException(log, e);
 								}
@@ -501,18 +540,15 @@ public class IdGateway implements IFrameClose {
 						}, 10, TimeUnit.SECONDS);
 					}
 				}
-			});
-*/			
+			});	
+*/				
 		} catch (Exception e) {
 			isConnecting = false;
 			// Shut down the event loop to terminate all threads.
-			io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
-			f.await();
-			clientGroup = null;
+			IdGateway.instance().closeClient();
 			instance.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", HOST, PORT, e.getMessage());
 			LogUtil.logException(log, e);
 		}
-
 	}
 
 	public void closeServer() {
@@ -526,6 +562,7 @@ public class IdGateway implements IFrameClose {
 	}
 
 	public void closeClient() {
+		
 		if (clientGroup != null) {
 			io.netty.util.concurrent.Future<?> f  = clientGroup.shutdownGracefully();
 			try {
@@ -533,7 +570,7 @@ public class IdGateway implements IFrameClose {
 			} catch (InterruptedException e) {
 
 			}
-			clientGroup = null;
+			//clientGroup = null;
 		}
 			
 		//if (fClient != null) {
@@ -552,7 +589,8 @@ public class IdGateway implements IFrameClose {
 	
 		try {
 			Thread.sleep(1000);
-			CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
+			//CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
+			connect();
 		} catch (Exception e) {
 			LogUtil.logError(log, e.getMessage());
 			LogUtil.logException(log, e);
@@ -657,7 +695,32 @@ public class IdGateway implements IFrameClose {
 		}
 
 		CustomThreadPool.asyncMethod(methodServer, bean.getHostPort());
-		CustomThreadPool.asyncMethod(methodClient, bean.getReqIp(), bean.getReqPort());
+		//CustomThreadPool.asyncMethod(methodClient, bean.getReqIp(), bean.getReqPort());
+		IdGateway.instance().connect();
 		CustomThreadPool.asyncMethod(methodHttpServer, bean.getHttpPort());
+	}
+
+
+	@Override
+	public void onStartEvent(RequestThread sender) {
+		
+	}
+
+
+	@Override
+	public void onRequestEvent(RequestThread sender, Object reqObj) {
+		reqObj = null;
+		try {
+			thread.removeAllRequest();
+			onInitClient(getReqIp(), getReqPort());
+		} catch (Exception e) {
+			LogUtil.logException(log, e);
+		}
+	}
+
+
+	@Override
+	public void onStopEvent(RequestThread sender) {
+		
 	}
 }

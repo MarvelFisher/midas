@@ -30,12 +30,11 @@ import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.id.Library.Frame.InfoString;
-import com.cyanspring.id.Library.Threading.CustomThreadPool;
-import com.cyanspring.id.Library.Threading.Delegate;
+import com.cyanspring.id.Library.Threading.IReqThreadCallback;
+import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FileMgr;
 import com.cyanspring.id.Library.Util.LogUtil;
-import com.cyanspring.id.gateway.IdGateway;
 
 /**
  * implement IMarketDataAdaptor
@@ -43,16 +42,17 @@ import com.cyanspring.id.gateway.IdGateway;
  * @author Hudson Chen
  * 
  */
-public class IdMarketDataAdaptor implements IMarketDataAdaptor {
+public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallback {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(IdMarketDataAdaptor.class);
 
 	public static boolean isConnected = false;
 	static ChannelFuture fClient = null;
-	static final Method methodClient = Delegate.getMethod("initClient",
-			IdMarketDataAdaptor.class, new Class[] { String.class, int.class });
-
+	//static final Method methodClient = Delegate.getMethod("initClient",
+	//		IdMarketDataAdaptor.class, new Class[] { String.class, int.class });
+	static RequestThread thread = null;
+	
 	public static IdMarketDataAdaptor instance = null;
 
 	Date time = new Date(0);
@@ -196,6 +196,11 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	@Override
 	public void init() throws Exception {
 
+		if (thread == null) {
+			thread = new RequestThread(this, "initClient");
+		}
+		thread.start();
+		
 		instance = this;
 		config();
 
@@ -203,7 +208,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 
 		FileMgr.instance().init();
 
-		CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
+		//CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
+		connect();
 
 	}
 
@@ -231,6 +237,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	@Override
 	public void uninit() {
 		isClose = true;
+		if (thread != null) {			
+			thread.close();
+			thread = null;
+		}
 		LogUtil.logInfo(log, "IdMarketDataAdaptor exit");
 		closeClient();
 
@@ -257,6 +267,18 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 		}
 	}
 
+	public void onConnected() {
+		ClientHandler.lastRecv = DateUtil.now();
+		//thread.removeAllRequest();
+	}
+	
+	void connect() {
+		if (isConnected == true)
+			return;
+		
+		thread.addRequest(new Object());
+	}	
+	
 	static boolean isConnecting = false;
 	static NioEventLoopGroup clientGroup = null;
 	/**
@@ -268,10 +290,11 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	 *            connect Host Port
 	 * @throws Exception
 	 */
-	public static void initClient(final String HOST, final int PORT) throws Exception {
+	public static void onInitClient(final String HOST, final int PORT) throws Exception {
 
+		IdMarketDataAdaptor.instance.closeClient();
 		Util.addLog(InfoString.ALert, "initClient enter %s:%d", HOST, PORT);
-		LogUtil.logInfo(log, "initClient enter%s:%d", HOST, PORT);
+		LogUtil.logInfo(log, "initClient enter %s:%d", HOST, PORT);
 
 		// Configure the client.
 		clientGroup = new NioEventLoopGroup();
@@ -289,25 +312,28 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 					});
 
 			// connect
-			ClientHandler.lastRecv = DateUtil.now();
+			//ClientHandler.lastRecv = DateUtil.now();
 			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
 			if (fClient.isSuccess()) {
 				LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
 				Util.addLog("client socket connected : %s:%d", HOST, PORT);
+				IdMarketDataAdaptor.instance.onConnected();
 				isConnecting = false;
+				isConnected = true;
 			} else {
 				LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
 				Util.addLog(InfoString.ALert, "Connect to %s:%d fail.",	HOST, PORT);
-				isConnecting = true;
+				isConnecting = true;				
 				io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
 				f.await();  			    
 				clientGroup = null;
+				
 				fClient.channel().eventLoop().schedule(new Runnable() {							
 					@Override
 					public void run() {
-						IdGateway gw = IdGateway.instance();
 						try {
-							initClient(gw.getReqIp(), gw.getReqPort());
+							//initClient(gw.getReqIp(), gw.getReqPort());
+							IdMarketDataAdaptor.instance.connect();
 						} catch (Exception e) {									
 							LogUtil.logException(log, e);
 						}
@@ -334,10 +360,12 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 */			
 
 		} catch (Exception e) {
+			isConnecting = false;
 			// Shut down the event loop to terminate all threads.
-			io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
-			f.await();  			    
-			clientGroup = null;
+			//io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+			//f.await();  			    
+			//clientGroup = null;
+			IdMarketDataAdaptor.instance.closeClient();
 			LogUtil.logException(log, e);
 			Util.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", HOST,
 					PORT, e.getMessage());
@@ -379,7 +407,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 		try {
 			Thread.sleep(1000);
 			LogUtil.logInfo(log, "reconnect %s:%d", getReqIp(), getReqPort());
-			CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
+			//CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
+			connect();
 		} catch (Exception e) {
 			LogUtil.logException(log, e);
 		}
@@ -672,6 +701,27 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor {
 	@Override
 	public void refreshSymbolInfo(String market) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStartEvent(RequestThread sender) {
+		
+	}
+
+	@Override
+	public void onRequestEvent(RequestThread sender, Object reqObj) {
+		reqObj = null;
+		try {
+			thread.removeAllRequest();
+			onInitClient(getReqIp(), getReqPort());
+		} catch (Exception e) {
+			LogUtil.logException(log, e);
+		}		
+	}
+
+	@Override
+	public void onStopEvent(RequestThread sender) {
 		
 	}
 }

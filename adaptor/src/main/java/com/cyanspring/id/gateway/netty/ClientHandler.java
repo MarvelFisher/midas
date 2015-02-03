@@ -49,7 +49,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	// public boolean isActive = false;
 	static ChannelHandlerContext ctx; // context deal with server
 	static TimerThread timer = null;
-	public static Date lastRecv = DateUtil.now();
+	public static Date lastRecv = new Date(0);
 
 	/**
 	 * sendData to server
@@ -76,7 +76,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		// if (IdGateway.instance().isGateway() == false)
+		if (IdGateway.instance().isGateway() == false)
 		{
 			if (timer == null) {
 				timer = new TimerThread();
@@ -127,6 +127,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 				setCTFOnSymbols();
 			}
 		} else if (evt == ClientHandler.disConnected) {
+			IdGateway.isConnected = false;
 			IdGateway.instance().reconClient();
 		}
 	}
@@ -184,6 +185,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		LogUtil.logError(log, "[%s] Exception : %s", strIP, cause.getMessage());
 		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
+		IdGateway.isConnected = false;
+		IdGateway.instance().reconClient(); //.closeClient();
 	}
 
 	/**
@@ -334,10 +337,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void onTimer(TimerThread objSender) {
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
-		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 10) {
-			lastRecv = now;
+		IdGateway.instance();
+		if (IdGateway.isConnecting == false && lastRecv.getTime() != 0 && ts.getTotalSeconds() > 30) {
+			//lastRecv = now;
 			if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
-				IdGateway.instance().closeClient();
+				IdGateway.instance().reconClient(); //.closeClient();
 			}
 		}
 	}

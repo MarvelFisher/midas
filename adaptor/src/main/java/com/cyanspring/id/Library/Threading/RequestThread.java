@@ -219,6 +219,10 @@ public class RequestThread implements AutoCloseable {
 		return m_queue.removeRequest(objRequest);
 	}
 
+	public final void removeAllRequest() {
+		m_queue.clearRequest();
+	}
+	
 	public final Object RemoveFirstRequest() {
 		return m_queue.dequeueRequest();
 	}
