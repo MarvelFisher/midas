@@ -106,8 +106,8 @@
 	</bean>
 
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
-<!-- 		<property name="url" value="nio://10.0.0.51:61616?wireFormat.maxInactivityDurationInitalDelay=30000"></property> -->
-		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000"></property>
+<!-- 		<property name="url" value="nio://10.0.0.51:61616?wireFormat.maxInactivityDuration=86400000"></property> Solve channel is inactive problem -->
+		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDuration=86400000"></property>
 	</bean>
 	
 	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">
