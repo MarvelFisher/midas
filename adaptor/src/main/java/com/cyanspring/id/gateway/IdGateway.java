@@ -460,6 +460,10 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 	 * @throws Exception
 	 */
 	public static void onInitClient(final String HOST, final int PORT) throws Exception {
+		
+		if (IdGateway.isConnected)
+			return;
+		
 		IdGateway.instance().closeClient();
 		IdGateway.instance().addLog(InfoString.ALert, "initClient enter");
 		LogUtil.logInfo(log, "initClient enter");

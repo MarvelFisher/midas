@@ -292,6 +292,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	 */
 	public static void onInitClient(final String HOST, final int PORT) throws Exception {
 
+		if (IdMarketDataAdaptor.isConnected)
+			return;
+		
 		IdMarketDataAdaptor.instance.closeClient();
 		Util.addLog(InfoString.ALert, "initClient enter %s:%d", HOST, PORT);
 		LogUtil.logInfo(log, "initClient enter %s:%d", HOST, PORT);
