@@ -122,8 +122,7 @@ public class AlertManager implements IPlugin {
 		
 		log.info("[processUpdateChildOrderEvent] " + execution.toString());
 		if(null != ParseDataQueue)
-		{
-			ParseDataQueue.add(PackTradeAlert(execution));
+		{			
 			receiveChildOrderUpdateEvent(execution) ;
 		}
 		else
@@ -155,7 +154,10 @@ public class AlertManager implements IPlugin {
 			{
 				TA = new TradeAlert(execution.getUser(), execution.getSymbol(), null ,execution.getQuantity(), execution.getPrice(),Datetime, tradeMessage);
 			}
-			
+			String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty + "," + (execution.getSide().isBuy()?"BOUGHT":"SOLD");
+			ParseDataQueue.add(new ParseData(execution.getUser(), tradeMessage, TA.getId(),
+					MSG_TYPE_ORDER, Datetime, keyValue));
+		
 			//save to Array
 			ArrayList<TradeAlert> list ;
 			int search;
@@ -192,6 +194,10 @@ public class AlertManager implements IPlugin {
 				if (list.indexOf(TA) != -1)
 				{
 					log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
+					if (null != session)
+					{
+						session.close() ;
+					}
 					return ;
 				}
 				else
@@ -317,7 +323,7 @@ public class AlertManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {		
 		Quote quote = event.getQuote();
-		
+
 		if (quotes.get(quote.getSymbol()) == null)
 		{
 			quotes.put(quote.getSymbol(), quote);
@@ -336,6 +342,7 @@ public class AlertManager implements IPlugin {
 				alert = list.get(i - 1);
 				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote))
 				{
+					String setDateTime = alert.getDateTime();
 					//Add Alert to ParseQueue
 					ParseDataQueue.add(PackPriceAlert(alert));
 					//Add Alert to PastSQL
@@ -371,7 +378,7 @@ public class AlertManager implements IPlugin {
 						}
 					}					
 					//Delete Alert from CurSQL
-					CurPriceAlert curPriceAlert = new CurPriceAlert(alert.getUserId(),alert.getSymbol(),alert.getPrice(),alert.getDateTime(),alert.getContent());
+					CurPriceAlert curPriceAlert = new CurPriceAlert(alert.getUserId(),alert.getSymbol(),alert.getPrice(), setDateTime, alert.getContent());
 					curPriceAlert.setId(alert.getId());
 					SQLDelete(curPriceAlert);
 					//Delete Alert from CurUserPriceAlertList
@@ -882,7 +889,7 @@ public class AlertManager implements IPlugin {
 		return (quote.getBid() + quote.getAsk())/2;
 	}
 	
-	public ParseData PackTradeAlert(Execution execution) {
+	public ParseData PackTradeAlert(Execution execution, String MsgId) {
 		DecimalFormat qtyFormat = new DecimalFormat("#0");
 		String strQty = qtyFormat.format(execution.getQuantity());
 		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
@@ -893,7 +900,7 @@ public class AlertManager implements IPlugin {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String strDate = dateFormat.format(Clock.getInstance().now());
 		String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty + "," + (execution.getSide().isBuy()?"BOUGHT":"SOLD");
-		return new ParseData(user, tradeMessage, user + IdGenerator.getInstance().getNextID(),
+		return new ParseData(user, tradeMessage, MsgId,
 				MSG_TYPE_ORDER, strDate, keyValue);
 	}
 
@@ -905,6 +912,7 @@ public class AlertManager implements IPlugin {
 		String strDate = dateFormat.format(Clock.getInstance().now());	
 		String keyValue = priceAlert.getSymbol() + "," + strPrice;
 		priceAlert.setContent(PriceAlertMessage);
+		priceAlert.setDateTime(strDate);
 		return new ParseData(priceAlert.getUserId(), PriceAlertMessage, priceAlert.getId(),
 				MSG_TYPE_PRICE, strDate, keyValue);
 	}
