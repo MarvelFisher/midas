@@ -1,6 +1,5 @@
 package com.cyanspring.id;
 
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -269,13 +268,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
 	public void onConnected() {
 		ClientHandler.lastRecv = DateUtil.now();
-		//thread.removeAllRequest();
 	}
 	
-	void connect() {
-		if (isConnected == true)
-			return;
-		
+	void connect() {	
 		thread.addRequest(new Object());
 	}	
 	
@@ -291,10 +286,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	 * @throws Exception
 	 */
 	public static void onInitClient(final String HOST, final int PORT) throws Exception {
-
-		if (IdMarketDataAdaptor.isConnected)
-			return;
-		
+	
 		IdMarketDataAdaptor.instance.closeClient();
 		Util.addLog(InfoString.ALert, "initClient enter %s:%d", HOST, PORT);
 		LogUtil.logInfo(log, "initClient enter %s:%d", HOST, PORT);
@@ -318,9 +310,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 			//ClientHandler.lastRecv = DateUtil.now();
 			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
 			if (fClient.isSuccess()) {
+				IdMarketDataAdaptor.instance.onConnected();
 				LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
 				Util.addLog("client socket connected : %s:%d", HOST, PORT);
-				IdMarketDataAdaptor.instance.onConnected();
+				
 				isConnecting = false;
 				isConnected = true;
 			} else {
@@ -717,6 +710,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 		reqObj = null;
 		try {
 			thread.removeAllRequest();
+			if (isConnected == true)
+				return;
+			
 			onInitClient(getReqIp(), getReqPort());
 		} catch (Exception e) {
 			LogUtil.logException(log, e);

@@ -438,7 +438,6 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 
 	public void onConnected() {
 		ClientHandler.lastRecv = DateUtil.now();
-		//thread.removeAllRequest();
 	}
 	
 	void connect() {
@@ -459,11 +458,7 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 	 * @param SSL
 	 * @throws Exception
 	 */
-	public static void onInitClient(final String HOST, final int PORT) throws Exception {
-		
-		if (IdGateway.isConnected)
-			return;
-		
+	public static void onInitClient(final String HOST, final int PORT) throws Exception {		
 		IdGateway.instance().closeClient();
 		IdGateway.instance().addLog(InfoString.ALert, "initClient enter");
 		LogUtil.logInfo(log, "initClient enter");
@@ -484,9 +479,9 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 			// Start the client.
 			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
 			if (fClient.isSuccess()) {
+				IdGateway.instance().onConnected();
 				LogUtil.logInfo(log, "client socket connected : %s:%d", HOST, PORT);
 				IdGateway.instance().addLog("%s:%d connected", HOST, PORT);
-				IdGateway.instance().onConnected();
 				isConnecting = false;
 				isConnected = true;
 			} else {
@@ -716,6 +711,9 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 		reqObj = null;
 		try {
 			thread.removeAllRequest();
+			if (IdGateway.isConnected)
+				return;
+			
 			onInitClient(getReqIp(), getReqPort());
 		} catch (Exception e) {
 			LogUtil.logException(log, e);
