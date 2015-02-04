@@ -41,7 +41,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			.getLogger(IdMarketDataAdaptor.class);
 
 	public static Date lastRecv = DateUtil.now();
-	static TimerThread timer = new TimerThread();
+	public static Date lastCheck = DateUtil.now();
+	static TimerThread timer = null;
 	static ChannelHandlerContext context; // context deal with server
 
 	/**
@@ -68,12 +69,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		if (IdMarketDataAdaptor.instance.isGateway() == false) {
-			if (timer == null) {
-				timer = new TimerThread();
-				timer.TimerEvent = this;
-				timer.start();
-			}
+		if (timer == null) {
+			timer = new TimerThread();
+			timer.TimerEvent = this;
+			timer.start();
 		}
 	}
 
@@ -329,21 +328,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	@Override
 	public void onTimer(TimerThread objSender) {
+		if (lastCheck.getTime() < lastRecv.getTime()) {
+			lastCheck = lastRecv;
+		}
+			
 		Date now = DateUtil.now();
-		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
-		if (IdMarketDataAdaptor.isConnecting == false && lastRecv.getTime() != 0 && ts.getTotalSeconds() > 20) {
-			//lastRecv = now;
+		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
+		if (IdMarketDataAdaptor.isConnecting == false && lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
+			IdMarketDataAdaptor.isConnected = false;
+			IdMarketDataAdaptor.instance.sendState(false);
+			lastCheck = now;
 			if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
-				IdMarketDataAdaptor.instance.reconClient(); //.closeClient();
+				IdMarketDataAdaptor.instance.reconClient();
 			}
 		}
 	}
 
 	void fini() throws Exception {
-		if (timer != null) {
-			timer.close();
-			timer = null;
-		}
 	}
 
 	@Override

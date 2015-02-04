@@ -4,9 +4,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +43,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public static final Integer disConnected = 2;
 	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
 	public static ClientHandler Instance = null;
-	// public boolean isActive = false;
 	static ChannelHandlerContext ctx; // context deal with server
 	static TimerThread timer = null;
 	public static Date lastRecv = new Date(0);
+	public static Date lastCheck = new Date(0);
+
 
 	/**
 	 * sendData to server
@@ -76,13 +74,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		if (IdGateway.instance().isGateway() == false)
-		{
-			if (timer == null) {
-				timer = new TimerThread();
-				timer.TimerEvent = this;
-				timer.start();
-			}
+		if (timer == null) {
+			timer = new TimerThread();
+			timer.TimerEvent = this;
+			timer.start();
 		}
 	}
 
@@ -93,7 +88,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void channelUnregistered(ChannelHandlerContext ctx) {
 		ClientHandler.ctx = null;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
-		// IdGateway.instance().reconClient();
 	}
 
 	/**
@@ -103,15 +97,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 */
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
-		// isActive = true;
 		ClientHandler.ctx = ctx;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
-
-		/*
-		 * logOn(IdGateway.instance().getAccount(),
-		 * IdGateway.instance().getPassword());
-		 * //setCTFOn(IdGateway.instance().getExch()); setCTFOnSymbols();
-		 */
 	}
 
 	@Override
@@ -273,29 +260,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
      * 
      */
 	public static void setCTFOnSymbols() {
-
-		/*
-		Map<String, Integer> map = new Hashtable<>(
-				IdGateway.instance.getNonFX());
-		for (String id : map.keySet()) {
-			Integer exch = map.get(id);
-			setCTFOn(exch, id);
-		}
-		int size = map.size();
-		 */
 		
-		//int nExch = IdGateway.instance().getExch();
 		ArrayList<String> list = QuoteMgr.Instance().getSymbolList();
 		for (String s : list) {
 			int exch = IdGateway.instance().getExch(s);
 			setCTFOn(exch, s);
 		}
 
-		// exception list
-		// setCTFOn(691, "XAUUSD");
-		// setCTFOn(691, "XAGUSD");
-
-		// setCTFOn(970, oil id);
 		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", list.size());
 	}
 
@@ -336,22 +307,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	@Override
 	public void onTimer(TimerThread objSender) {
+		if (lastCheck.getTime() < lastRecv.getTime()) {
+			lastCheck = lastRecv;
+		}
+			
 		Date now = DateUtil.now();
-		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
+		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
 		IdGateway.instance();
-		if (IdGateway.isConnecting == false && lastRecv.getTime() != 0 && ts.getTotalSeconds() > 30) {
-			//lastRecv = now;
+		if (IdGateway.isConnecting == false && lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
+			IdGateway.isConnected = false;
+			lastCheck = now;
 			if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
-				IdGateway.instance().reconClient(); //.closeClient();
+				IdGateway.instance().reconClient();
 			}
 		}
 	}
 
 	void fini() throws Exception {
-		if (timer != null) {
-			timer.close();
-			timer = null;
-		}
 	}
 
 	@Override

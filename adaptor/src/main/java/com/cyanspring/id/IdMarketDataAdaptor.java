@@ -262,12 +262,12 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	public void updateState(boolean connected) {
 		if (isConnected != connected) {
 			isConnected = connected;
-			SendState(connected);
+			sendState(connected);
 		}
 	}
 
 	public void onConnected() {
-		ClientHandler.lastRecv = DateUtil.now();
+		ClientHandler.lastCheck = DateUtil.now();
 	}
 	
 	void connect() {	
@@ -518,7 +518,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	 * Send connection State
 	 * @param on
 	 */
-	public void SendState(boolean on) {
+	public void sendState(boolean on) {
 		for (IMarketDataStateListener listener : stateList) {
 			listener.onState(on);
 		}
@@ -684,19 +684,16 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
 	@Override
 	public void subscirbeSymbolData(ISymbolDataListener listener) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void unsubscribeSymbolData(ISymbolDataListener listener) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void refreshSymbolInfo(String market) {
-		// TODO Auto-generated method stub
 		
 	}
 
