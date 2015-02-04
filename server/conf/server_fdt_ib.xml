@@ -103,7 +103,7 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="IdMarketDataAdaptor" />
+			<ref bean="ibAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -391,7 +391,7 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
-				<ref bean="ibAdaptor" />
+				<!-- <ref bean="ibAdaptor" /> -->
 			</list>
 		</constructor-arg>
 	</bean>
@@ -404,10 +404,10 @@
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
-		<property name="host" value="125.227.191.250" />
+		<property name="host" value="10.0.0.20" />
 		<!-- property name="host" value=""/ -->
 		<property name="port" value="4001" />
-		<property name="clientId" value="101" />
+		<property name="clientId" value="110" />
 		<property name="reqMarketDepth" value="false" />
 		<property name="logMarketData" value="false" />
 		<property name="refDataManager">
