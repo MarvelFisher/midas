@@ -257,7 +257,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public static void subscribe(String[] arrSymbol) {
 
 		for (String symbol : arrSymbol) {
-			subscribe(IdMarketDataAdaptor.instance.getExch(), symbol);
+			subscribe(IdMarketDataAdaptor.instance.getExch(symbol), symbol);
 		}
 	}
 

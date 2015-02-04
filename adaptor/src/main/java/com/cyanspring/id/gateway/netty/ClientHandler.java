@@ -274,6 +274,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
      */
 	public static void setCTFOnSymbols() {
 
+		/*
 		Map<String, Integer> map = new Hashtable<>(
 				IdGateway.instance.getNonFX());
 		for (String id : map.keySet()) {
@@ -281,21 +282,21 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			setCTFOn(exch, id);
 		}
 		int size = map.size();
-
-		int nExch = IdGateway.instance().getExch();
+		 */
+		
+		//int nExch = IdGateway.instance().getExch();
 		ArrayList<String> list = QuoteMgr.Instance().getSymbolList();
 		for (String s : list) {
-			setCTFOn(nExch, s);
+			int exch = IdGateway.instance().getExch(s);
+			setCTFOn(exch, s);
 		}
-
-		size += list.size();
 
 		// exception list
 		// setCTFOn(691, "XAUUSD");
 		// setCTFOn(691, "XAGUSD");
 
 		// setCTFOn(970, oil id);
-		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", size);
+		IdGateway.instance().addLog("[setCTFOnSymbols] count : %d", list.size());
 	}
 
 	/**

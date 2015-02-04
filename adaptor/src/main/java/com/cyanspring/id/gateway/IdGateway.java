@@ -331,6 +331,14 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 		mainFrame.addButton(buttonSymbol);	
 	}
 
+	public int getExch(String symbol){
+		if (nonFX.containsKey(symbol)) {
+			return nonFX.get(symbol);
+		}
+		return exch;
+			
+	}
+	
 	public void onCloseAction() {
 
 		if (thread != null) {			
