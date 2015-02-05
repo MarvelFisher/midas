@@ -306,6 +306,24 @@ public class CentralDbConnector {
 		return true;
 	}
 
+	public boolean updateConnection(){
+		if (!checkConnected())
+			return false;
+		Statement stmt = null;
+		boolean state = true;
+		try{
+			stmt = conn.createStatement();
+			stmt.executeQuery("SELECT 1;");
+		}catch(SQLException e){
+			state = false;
+			log.warn(e.getMessage(), e);
+		}finally{
+			if(stmt != null)
+				closeStmt(stmt);			
+		}
+		return state;
+	}
+	
 	private void closeStmt(Statement stmt) {
 		try {
 			stmt.close();
