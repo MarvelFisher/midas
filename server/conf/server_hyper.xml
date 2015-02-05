@@ -93,7 +93,7 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="simMarketDataAdaptor" />
+			<ref bean="ibAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -109,7 +109,7 @@
 				<value>GBPCAD</value>
 				<value>GBPCHF</value>
 				<value>GBPCNH</value>
-				<value>GBPDKK</value>
+				<!-- <value>GBPDKK</value> -->
 				<value>GBPHKD</value>
 				<value>GBPJPY</value>
 				<value>GBPNOK</value>
@@ -122,15 +122,15 @@
 				<value>CADJPY</value>
 				<value>CNHHKD</value>
 				<value>CNHJPY</value>
-				<value>DKKJPY</value>
-				<value>DKKNOK</value>
-				<value>DKKSEK</value>
+				<!-- <value>DKKJPY</value> -->
+				<!-- <value>DKKNOK</value> -->
+				<!-- <value>DKKSEK</value> -->
 				<value>EURAUD</value>
 				<value>EURCAD</value>
 				<value>EURCHF</value>
 				<value>EURCNH</value>
 				<value>EURCZK</value>
-				<value>EURDKK</value>
+				<!-- <value>EURDKK</value> -->
 				<value>EURGBP</value>
 				<value>EURHKD</value>
 				<value>EURHUF</value>
@@ -144,8 +144,8 @@
 				<value>EURSGD</value>
 				<value>EURUSD</value>
 				<value>HKDJPY</value>
-				<value>KRWAUD</value>
-				<value>KRWCAD</value>
+				<!-- <value>KRWAUD</value> -->
+				<!-- <value>KRWCAD</value>
 				<value>KRWCHF</value>
 				<value>KRWEUR</value>
 				<value>KRWGBP</value>
@@ -180,7 +180,7 @@
 				<value>USDSEK</value>
 				<value>USDSGD</value>
 				<value>XAUUSD</value>
-				<value>XAGUSD</value>
+				<value>XAGUSD</value> -->
 			</list>
 		</property>
 		<property name="sessionMonitor">
@@ -253,7 +253,7 @@
 				<value>GBPCAD</value>
 				<value>GBPCHF</value>
 				<value>GBPCNH</value>
-				<value>GBPDKK</value>
+				<!-- <value>GBPDKK</value> -->
 				<value>GBPHKD</value>
 				<value>GBPJPY</value>
 				<value>GBPNOK</value>
@@ -266,15 +266,15 @@
 				<value>CADJPY</value>
 				<value>CNHHKD</value>
 				<value>CNHJPY</value>
-				<value>DKKJPY</value>
-				<value>DKKNOK</value>
-				<value>DKKSEK</value>
+				<!-- <value>DKKJPY</value> -->
+				<!-- <value>DKKNOK</value> -->
+				<!-- <value>DKKSEK</value> -->
 				<value>EURAUD</value>
 				<value>EURCAD</value>
 				<value>EURCHF</value>
 				<value>EURCNH</value>
 				<value>EURCZK</value>
-				<value>EURDKK</value>
+				<!-- <value>EURDKK</value> -->
 				<value>EURGBP</value>
 				<value>EURHKD</value>
 				<value>EURHUF</value>
@@ -288,8 +288,8 @@
 				<value>EURSGD</value>
 				<value>EURUSD</value>
 				<value>HKDJPY</value>
-				<value>KRWAUD</value>
-				<value>KRWCAD</value>
+				<!-- <value>KRWAUD</value> -->
+				<!-- <value>KRWCAD</value>
 				<value>KRWCHF</value>
 				<value>KRWEUR</value>
 				<value>KRWGBP</value>
@@ -322,7 +322,7 @@
 				<value>USDNOK</value>
 				<value>USDRUB</value>
 				<value>USDSEK</value>
-				<value>USDSGD</value>
+				<value>USDSGD</value> -->
 			</list>
 		</property>
 		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->
@@ -400,6 +400,9 @@
 		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073" />
 		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z" />
 	</bean>
+	
+	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
+	</bean>
 
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
@@ -409,6 +412,7 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
+				<ref bean="ibAdaptor" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -424,6 +428,20 @@
 			<list>
 			</list>
 		</constructor-arg>
+	</bean>
+	
+	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+		<property name="id" value="IB01" />
+		<property name="host" value="localhost" />
+		<!-- property name="host" value=""/ -->
+		<property name="port" value="4001" />
+		<property name="clientId" value="110" />
+		<property name="reqMarketDepth" value="false" />
+		<property name="logMarketData" value="false" />
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>
+		<property name="cancelOpenOrders" value="true" />
 	</bean>
 
 </beans>

@@ -108,6 +108,13 @@ public class DownStreamManager implements IPlugin {
 				}
 			}
 		}
+		for(IStreamAdaptor<IDownStreamConnection> adaptor: specialAdaptors) {
+			for(IDownStreamConnection connection: adaptor.getConnections()) {
+				if(!connection.getState()) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 	
