@@ -122,7 +122,7 @@ public class ParseThread extends Thread{
                 "\"data\": {\"alert\": \"" + PD.strpushMessage + "\",\"msgid\":\"" + PD.strMsgId + "\",\"msgType\":\"" + PD.strMsgType +
                 "\",\"action\":\"" + "com.hkfdt.activity.UPDATE_STATUS" + ((PD.strLocalTime.length() > 0) ? ("\",\"datetime\":\"" + PD.strLocalTime) : "") + 
                 ((PD.strKeyValue.length() > 0) ? ("\",\"KeyValue\":\"" + PD.strKeyValue) : "") + "\"" +
-                ", \"badge\": \"Increment\"}}";
+                ", \"badge\": \"Increment\", \"sound\": \"default\"}}";
  
 		log.info("Parse message: " + strPoststring);
 		//add reuqest header
