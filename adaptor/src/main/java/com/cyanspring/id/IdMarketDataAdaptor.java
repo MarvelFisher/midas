@@ -48,8 +48,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
 	public static boolean isConnected = false;
 	static ChannelFuture fClient = null;
-	//static final Method methodClient = Delegate.getMethod("initClient",
-	//		IdMarketDataAdaptor.class, new Class[] { String.class, int.class });
 	static RequestThread thread = null;
 	
 	public static IdMarketDataAdaptor instance = null;
@@ -207,7 +205,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
 		FileMgr.instance().init();
 
-		//CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
 		connect();
 
 	}
@@ -215,8 +212,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	void config() {
 
 		QuoteMgr.instance().initSymbols(getPreSubscriptionList());
-		List<String> list = new ArrayList<String>();
-		list.addAll(nonFX.keySet());
+		List<String> list = new ArrayList<String>(nonFX.keySet());
+		//list.addAll(nonFX.keySet());
 		QuoteMgr.instance().initSymbols(list);
 		
 		setSession(getPreOpen(), getOpen(), getClose());
@@ -307,7 +304,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 					});
 
 			// connect
-			//ClientHandler.lastRecv = DateUtil.now();
 			ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
 			if (fClient.isSuccess()) {
 				IdMarketDataAdaptor.instance.onConnected();
@@ -328,7 +324,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 					@Override
 					public void run() {
 						try {
-							//initClient(gw.getReqIp(), gw.getReqPort());
 							IdMarketDataAdaptor.instance.connect();
 						} catch (Exception e) {									
 							LogUtil.logException(log, e);
@@ -336,37 +331,14 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 					}
 				}, 10, TimeUnit.SECONDS);
 			}
-/*		
-			fClient.addListener(new ChannelFutureListener() {
-				@Override
-				public void operationComplete(ChannelFuture f) throws Exception {
-
-					if (f.isSuccess()) {
-						LogUtil.logInfo(log, 
-								"client socket connected : %s:%d",
-								HOST, PORT);
-						Util.addLog("client socket connected : %s:%d",
-								HOST, PORT);
-					} else {
-						Util.addLog(InfoString.ALert, "Connect to %s:%d fail.",
-								HOST, PORT);
-					}
-				}
-			});
-*/			
-
 		} catch (Exception e) {
 			isConnecting = false;
 			// Shut down the event loop to terminate all threads.
-			//io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
-			//f.await();  			    
-			//clientGroup = null;
 			IdMarketDataAdaptor.instance.closeClient();
 			LogUtil.logException(log, e);
 			Util.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", HOST,
 					PORT, e.getMessage());
 		}
-
 	}
 
 	/**
@@ -383,10 +355,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 			clientGroup = null;
 		}
 		
-		//if (fClient != null) {
-		//	fClient.channel().close();
-		//	fClient = null;
-		//}
 		Parser.instance().clearRingbuffer();
 		LogUtil.logInfo(log, "initClient exit");
 		Util.addLog(InfoString.ALert, "initClient exit");
@@ -403,7 +371,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 		try {
 			Thread.sleep(1000);
 			LogUtil.logInfo(log, "reconnect %s:%d", getReqIp(), getReqPort());
-			//CustomThreadPool.asyncMethod(methodClient, getReqIp(), getReqPort());
 			connect();
 		} catch (Exception e) {
 			LogUtil.logException(log, e);
@@ -460,7 +427,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 		}
 
 		boolean bFound = false;
-		for (UserClient client : clientsList.toArray(new UserClient[] {}))
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+		for (UserClient client : clients)
 			if (client.listener == listener) {
 				client.addSymbol(instrument);
 				bFound = true;
@@ -500,7 +468,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 		}
 
 		boolean bFound = false;
-		for (UserClient client : clientsList.toArray(new UserClient[] {}))
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+		for (UserClient client : clients)
 			if (client.listener == listener) {
 				client.removeSymbol(instrument);
 				bFound = true;
@@ -529,8 +498,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	 * @param quote
 	 */
 	public void sendQuote(Quote quote) {
-		UserClient[] clients = new UserClient[clientsList.size()];
-		clients = clientsList.toArray(clients);
+		//UserClient[] clients = new UserClient[clientsList.size()];
+		//clients = clientsList.toArray(clients);
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
 		for (UserClient client : clients) {
 			client.sendQuote(quote);
 		}
@@ -539,8 +509,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	public String[] getRefSymbol() {
 		List<String> list = new ArrayList<String>();
 		
-		UserClient[] clients = new UserClient[clientsList.size()];
-		clients = clientsList.toArray(clients);
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+		//clients = clientsList.toArray(clients);
 		for (UserClient client : clients) {
 			List<String> listClient = client.getList();
 			list.addAll(listClient);

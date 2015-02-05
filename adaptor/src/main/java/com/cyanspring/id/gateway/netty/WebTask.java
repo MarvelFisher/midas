@@ -8,8 +8,6 @@ import java.util.List;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.gateway.IdGateway;
 import com.cyanspring.id.gateway.UserClient;
-import com.thoughtworks.xstream.io.path.Path;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
@@ -42,9 +40,6 @@ public class WebTask {
 		String sFile = String.format("%s/jars/cyanspring-adaptor-2.56.jar", path.toAbsolutePath().toString());
 		java.io.File file = new java.io.File(sFile);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		if (file == null) {
-			return sdf.format(DateUtil.now());
-		}
 		long lastModified = file.lastModified();
 		return sdf.format(lastModified);
 	}

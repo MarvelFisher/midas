@@ -1,7 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -34,8 +33,7 @@ import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
-import com.cyanspring.id.Library.Threading.CustomThreadPool;
-import com.cyanspring.id.Library.Threading.Delegate;
+import com.cyanspring.id.UserClient;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
@@ -93,18 +91,20 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			.getLogger(WindFutureDataAdaptor.class);
 
 	public static WindFutureDataAdaptor instance = null;
-	static final Method methodFuture = Delegate.getMethod("initFuture",
-			WindFutureDataAdaptor.class, new Class[] { String.class, int.class,
-					String.class, String.class });
+	//static final Method methodFuture = Delegate.getMethod("initFuture",
+	//		WindFutureDataAdaptor.class, new Class[] { String.class, int.class,
+	//				String.class, String.class });
 
 	// private final boolean outputToScreen = true;
 	/*********************** configuration ***************************************/
-	//private final String openMarket = "CZC;SHF;DCE";
-	private final String openMarket = "CF;SH;SZ";
+	private final String openMarket = "CZC;SHF;DCE";
+	//private final String openMarket = "CF;SH;SZ";
 	private final int openData = 0;
 	private final int openTime = 0;
 	private final String subscription = ""; // 000001.SZ;000002.SZ";
 	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
+	public static final int doConnect = 0;
+	
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
@@ -262,7 +262,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				}
 
 				if (!isClosed) {
-					connect();
+					doConnect();
 				}
 
 				break;
@@ -290,7 +290,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				String[] markets = data.getCodeTableResult().getMarket();
 				for (String market : markets) {
 					if (!market.isEmpty()) {
-						addReqData(new Object[] { type, market });
+						QuoteMgr.instance.AddRequest(new Object[] { type, market });
 						// List<SymbolInfo> list = updateCodeTable(market);
 						// sendSymbolInfo(list);
 					}
@@ -309,7 +309,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
 				TDF_QUOTATIONDATE_CHANGE change = data.getDateChange();
 
-				addReqData(new Object[] {
+				QuoteMgr.instance.AddRequest(new Object[] {
 						TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE, change });
 
 				// info("%s, quotation change from %d to %d",
@@ -327,7 +327,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				for (int i = 0; i < msg.getAppHead().getItemCount(); i++) {
 					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
 					TDF_MARKET_DATA market = data.getMarketData();
-					addReqData(new Object[] { TDF_MSG_ID.MSG_DATA_MARKET,
+					QuoteMgr.instance.AddRequest(new Object[] { TDF_MSG_ID.MSG_DATA_MARKET,
 							market });
 					// StockItem.processMarketData(market);
 				}
@@ -345,7 +345,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				for (int i = 0; i < msg.getAppHead().getItemCount(); i++) {
 					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
 					TDF_FUTURE_DATA future = data.getFutureData();
-					addReqData(new Object[] { TDF_MSG_ID.MSG_DATA_FUTURE,
+					QuoteMgr.instance.AddRequest(new Object[] { TDF_MSG_ID.MSG_DATA_FUTURE,
 							future });
 					// FutureItem.processFutureData(future);
 				}
@@ -387,6 +387,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	int nId = 0;
 
+	public void doConnect() {
+		
+		this.addReqData(doConnect);
+	}
+	
 	public void connect() {
 
 		while (true) {
@@ -419,8 +424,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						client.delete();
 						client = new TDFClient();
 
-						CustomThreadPool.asyncMethod(methodFuture, reqIp,
-								reqPort, userName, password);
+						//CustomThreadPool.asyncMethod(methodFuture, reqIp,
+						//		reqPort, userName, password);
+						addReqData(doConnect);
 						return;
 
 					} else {
@@ -438,14 +444,17 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	@Override
 	public void init() throws Exception {
 		WindFutureDataAdaptor.instance = this;
+		QuoteMgr.instance.init();
 		initReqThread();
-		CustomThreadPool.asyncMethod(methodFuture, reqIp, reqPort, userName,
-				password);
+		doConnect();
+		//CustomThreadPool.asyncMethod(methodFuture, reqIp, reqPort, userName,
+		//		password);
 
 	}
 
 	@Override
 	public void uninit() {
+		QuoteMgr.instance.uninit();
 		closeReqThread();
 
 	}
@@ -512,7 +521,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 
 		boolean bFound = false;
-		for (UserClient client : clientsList.toArray(new UserClient[] {}))
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+		for (UserClient client : clients)
 			if (client.listener == listener) {
 				client.addSymbol(instrument);
 				bFound = true;
@@ -543,7 +553,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 
 		boolean bFound = false;
-		for (UserClient client : clientsList.toArray(new UserClient[] {}))
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+		for (UserClient client : clients)
 			if (client.listener == listener) {
 				client.removeSymbol(instrument);
 				bFound = true;
@@ -574,8 +585,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 * @param quote
 	 */
 	public void sendQuote(Quote quote) {
-		UserClient[] clients = new UserClient[clientsList.size()];
-		clients = clientsList.toArray(clients);
+		//UserClient[] clients = new UserClient[clientsList.size()];
+		//clients = clientsList.toArray(clients);
+		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
 		for (UserClient client : clients) {
 			client.sendQuote(quote);
 		}
@@ -675,43 +687,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	}
 
-	void process(int type, Object objMsg) {
-		switch (type) {
-		case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT: {
-
-			List<SymbolInfo> list = updateCodeTable((String) objMsg);
-			sendSymbolInfo(list);
-		}
-			break;
-		/*
-		 * case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK: { try {
-		 * Thread.sleep(1000); } catch (InterruptedException e) { }
-		 * 
-		 * if (!isClosed) { connect(); } } break;
-		 */
-		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE: {
-			TDF_QUOTATIONDATE_CHANGE change = (TDF_QUOTATIONDATE_CHANGE) objMsg;
-			info("%s, quotation change from %d to %d", change.getMarket(),
-					change.getOldDate(), change.getNewDate());
-
-			updateCodeTable(change.getMarket());
-		}
-			break;
-		case TDF_MSG_ID.MSG_DATA_FUTURE: {
-			TDF_FUTURE_DATA future = (TDF_FUTURE_DATA) objMsg;
-			FutureItem.processFutureData(future);
-		}
-			break;
-		case TDF_MSG_ID.MSG_DATA_MARKET: {
-			TDF_MARKET_DATA market = (TDF_MARKET_DATA) objMsg;
-			StockItem.processMarketData(market);
-		}
-			break;
-		default:
-			break;
-		}
-	}
-
 	@Override
 	public void onStartEvent(RequestThread sender) {
 
@@ -720,13 +695,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	@Override
 	public void onRequestEvent(RequestThread sender, Object reqObj) {
 
-		Object[] arr = (Object[]) reqObj;
-		if (arr == null || arr.length != 2) {
-			return;
+		int type = (int)reqObj;
+		if (type == doConnect) {
+			initFuture(reqIp, reqPort, userName, password);
 		}
-		int type = (int) arr[0];
-		process(type, arr[1]);
-		arr = null;
 		reqObj = null;
 	}
 

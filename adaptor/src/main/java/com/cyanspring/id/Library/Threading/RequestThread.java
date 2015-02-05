@@ -91,7 +91,6 @@ public class RequestThread implements AutoCloseable {
 					LogUtil.logException(log, e);
 				}
 			}
-
 		});
 		m_thread.setName(getName());
 		m_thread.start();

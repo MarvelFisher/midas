@@ -297,8 +297,8 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 		thread.start();
 		setSession(); 
 		QuoteMgr.Instance().addSymbols(getPreSubscriptionList());
-		List<String> list = new ArrayList<String>();
-		list.addAll(nonFX.keySet());
+		List<String> list = new ArrayList<String>(nonFX.keySet());
+		//list.addAll(nonFX.keySet());
 		
 		QuoteMgr.Instance().addSymbols(list);
 
