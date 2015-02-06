@@ -79,8 +79,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	public static UserClient getUserClient(ChannelHandlerContext ctx) {
 
-		UserClient[] arr = new UserClient[clientlist.size()];
-		for (UserClient client : clientlist.toArray(arr)) {
+		List<UserClient> list = new ArrayList<UserClient>(clientlist);
+		
+		for (UserClient client : list) {
 			if (client.isSameContext(ctx)) {
 				return client;
 			}
@@ -95,12 +96,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	public static void removeUserClient(ChannelHandlerContext ctx) {
-
-		// if (channels.size() <= 0)
-		// return;
-
-		List<UserClient> list = new ArrayList<UserClient>();
-		list.addAll(clientlist);
+		List<UserClient> list = new ArrayList<UserClient>(clientlist);		
 		for (UserClient client : list) {
 
 			if (client.isSameContext(ctx)) {
@@ -133,8 +129,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			packetData = SocketUtil.packData(data);
 			data = null;
 
-			List<UserClient> list = new ArrayList<UserClient>();
-			list.addAll(clientlist);
+			List<UserClient> list = new ArrayList<UserClient>(clientlist);
 			for (UserClient client : list) {
 				client.sendData(symbol, packetData);
 			}
@@ -238,10 +233,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		try {
-			final ByteBuf buffer = (ByteBuf) msg;
+			ByteBuf buffer = (ByteBuf) msg;
 			byte[] data = new byte[buffer.readableBytes()];
 			buffer.readBytes(data);
 			// buffer.release();
+			buffer = null;
 			UserClient client = getUserClient(ctx);
 			client.onReceive(data);
 			data = null;

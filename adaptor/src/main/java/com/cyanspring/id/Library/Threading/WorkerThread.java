@@ -22,6 +22,15 @@ public class WorkerThread {
 	protected Object m_objUserObject = null;
 	protected boolean isClose = false;
 
+	protected String name = "";
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public WorkerThread() {
 	}
 
@@ -61,6 +70,9 @@ public class WorkerThread {
 			});
 
 			m_fStart = true;
+			if (getName().isEmpty() == false) {
+				m_thread.setName(getName());
+			}			
 			m_thread.start();
 			return true;
 		} catch (RuntimeException e) {

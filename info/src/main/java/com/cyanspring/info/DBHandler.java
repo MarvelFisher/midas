@@ -199,6 +199,7 @@ public class DBHandler
     	HistoricalPrice price = new HistoricalPrice(symbol, true) ;
     	String strTable = String.format("%04X_%s", service, type) ;
     	String sqlcmd = "" ;
+    	boolean getPrice = false;
     	if (dir)
     	{
     		sqlcmd = String.format("select * from %s where SYMBOL = '%s' order by TRADEDATE limit 1 ;", 
@@ -222,17 +223,25 @@ public class DBHandler
 				price.setHigh(rs.getDouble("HIGH_PRICE"));
 				price.setLow(rs.getDouble("LOW_PRICE"));
 				price.setVolume(rs.getInt("VOLUME"));
+				getPrice = true;
 			}
-			return price ;
+			if (getPrice)
+			{
+				return price ;
+			}
+			else
+			{
+				return null;
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
             log.error(e.toString(), e) ;
             log.trace(sqlcmd);
-			return price ;
+			return null ;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
             log.error(e.toString(), e) ;
-			return price ;
+			return null ;
 		}
     }
     public void deletePrice(byte service, String type, String symbol, HistoricalPrice price)

@@ -71,6 +71,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public ClientHandler() {
 		if (timer == null) {
 			timer = new TimerThread();
+			timer.setName("ClientHandler.Timer");
 			timer.TimerEvent = this;
 			timer.start();
 		}
@@ -323,7 +324,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	@Override
 	protected void finalize() throws Throwable {
-		fini();
+		uninit();
 	}
 
 	@Override
@@ -344,12 +345,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		}
 	}
 
-	void fini() throws Exception {
+	void uninit() throws Exception {
 	}
 
 	@Override
 	public void close() throws Exception {
-		fini();
+		uninit();
 		FinalizeHelper.suppressFinalize(this);
 	}
 }

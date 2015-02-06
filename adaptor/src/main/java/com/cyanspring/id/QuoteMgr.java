@@ -114,6 +114,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	 * 
 	 */
 	public void initTimer() {
+		timerThread.setName("QuoteMgr.Timer");
 		timerThread.TimerEvent = this;
 		timerThread.setInterval(1000);
 		timerThread.start();
@@ -372,7 +373,6 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 			} else { // sync method
 				FileMgr.writeFile(strPath, listData, true);
 			}
-			// Thread.sleep(5000);
 
 		} catch (Exception ex) {
 			LogUtil.logException(log, ex);

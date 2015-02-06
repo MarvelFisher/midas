@@ -34,12 +34,13 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	
 	TimerThread timer = new TimerThread();
 	public QuoteMgr() {
+		timer.setName("QuoteMgr.Timer");
 		timer.TimerEvent = this;
 		timer.setInterval(5000);
 		timer.start();		
 	}
 
-	void fini() {
+	void uninit() {
 		synchronized (m_lock) {
 			symbolList.clear();
 		}		
@@ -91,7 +92,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	}
 	
 	public void close() {
-		fini();
+		uninit();
 		FinalizeHelper.suppressFinalize(this);
 	}
 
