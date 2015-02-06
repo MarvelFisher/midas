@@ -41,8 +41,10 @@ import com.cyanspring.common.business.MultiInstrumentStrategyData;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.ChangeUserPasswordEvent;
 import com.cyanspring.common.event.account.ChangeUserPasswordReplyEvent;
@@ -91,6 +93,9 @@ public class PersistenceManager {
 	SessionFactory sessionFactory;
 	
 	@Autowired
+	ScheduleManager scheduleManager;
+	
+	@Autowired
 	CentralDbConnector centralDbConnector;
 	
 	private boolean syncCentralDb = true;
@@ -104,6 +109,8 @@ public class PersistenceManager {
 	private String embeddedHost = "localhost";
 	private int embeddedPort = 1527;
 	
+	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private long timeInterval = 10*60*1000;
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -123,6 +130,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
+			subscribeToEvent(AsyncTimerEvent.class, null);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -135,6 +143,7 @@ public class PersistenceManager {
 			return eventManager;
 		}
 	};
+	
 	
 	public PersistenceManager() {
 	}
@@ -154,6 +163,8 @@ public class PersistenceManager {
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("PersistenceManager");
+		
+		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
 
 	}
 
@@ -309,6 +320,11 @@ public class PersistenceManager {
 		}
 	}
 	
+	public void processAsyncTimerEvent(AsyncTimerEvent event) {
+		if(syncCentralDb)
+			log.debug("Received AsyncTimerEvent, connection:" + centralDbConnector.updateConnection());
+	}
+		
 	public void processPmUserLoginEvent(PmUserLoginEvent event)
 	{
 		log.debug("Received PmUserLoginEvent: " + event.getOriginalEvent().getUserId());
