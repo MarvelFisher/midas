@@ -155,7 +155,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
 		log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
 		Quote quote = quotes.get(event.getSymbol());
-		if (quote == null || quote.isStale()) {
+//		if (quote == null || quote.isStale()) {
+		if (quote == null) {
 			adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
 		} else {
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
@@ -269,6 +270,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 
 		quotes = loadQuotes(tickDir + "/" + lastQuoteFile);
+log.info("Quotes Loaded Counts [" + quotes.size() + "] " );
 for(Entry<String, Quote> entry : quotes.entrySet())
 {
 	log.info("Quotes Loaded Results [" + entry.getKey() + "] " + entry.getValue().toString());
@@ -279,6 +281,7 @@ for(Entry<String, Quote> entry : quotes.entrySet())
 			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
 
+		log.info("LastTradeDateQuotes Loaded Counts [" + lastTradeDateQuotes.size() + "] " );
 for(Entry<String, Quote> entry : lastTradeDateQuotes.entrySet())
 {
 	log.info("LastTradeDateQuotes Loaded Results [" + entry.getKey() + "] " + entry.getValue().toString());
