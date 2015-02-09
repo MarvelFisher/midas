@@ -26,7 +26,7 @@ public class NewsManager implements IPlugin {
 		public IAsyncEventManager getEventManager() {
 			return eventManager;
 		}
-	};
+	}; 
 	
 	@Override
 	public void init() throws Exception {

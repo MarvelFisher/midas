@@ -21,7 +21,7 @@
             	<ref bean="centralDbProcessor"/>
 	        </list>
 		</property>
-	</bean>
+	</bean> 
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
 		<property name="timeoutSecond" value="3000" />
