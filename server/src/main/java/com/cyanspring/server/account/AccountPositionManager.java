@@ -432,8 +432,15 @@ public class AccountPositionManager implements IPlugin {
 		boolean ok = true;
 		User user = event.getUser();
 		String message = "";
+		
 		if(null != userKeeper && null != accountKeeper) {
 			try {
+				
+				if(null == user.getUserType() || (!user.getUserType().equals(UserType.FACEBOOK) && !user.getUserType().equals(UserType.QQ) && !user.getUserType().equals(UserType.WECHAT) && !user.getUserType().equals(UserType.TWITTER)))
+				{
+					throw new UserException("Cannot create user by wrong UserType");
+				}
+				
 				user.setId(user.getId().toLowerCase());
 				if(!userKeeper.userExists(user.getId()))
 				{
@@ -451,9 +458,6 @@ public class AccountPositionManager implements IPlugin {
 						}
 					}
 					user.setDefaultAccount(defaultAccountId);
-					if(null == user.getUserType())
-						user.setUserType(UserType.NORMAL);
-	
 					Account account = new Account(defaultAccountId, event.getUser().getId());
 					accountKeeper.setupAccount(account);
 					
@@ -486,7 +490,7 @@ public class AccountPositionManager implements IPlugin {
 		{
 			try {
 				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getKey(), 
-						event.getSender(), user, null, null, false, message, event.getTxId()));
+						event.getSender(), user, null, null, false, event.getOriginalID(), message, event.getTxId()));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}

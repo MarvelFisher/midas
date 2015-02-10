@@ -9,13 +9,20 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 	private String txId;
 	private String country;
 	private String language;
+	private String original_id;
 
-	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language, String txId) {
+	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language, String org_id, String txId) {
 		super(key, receiver);
 		this.user = user;
 		this.country = country;
 		this.language = language;
 		this.txId = txId;
+		this.original_id = org_id;
+	}
+	
+	public String getOriginalID()
+	{
+		return original_id;
 	}
 
 	public User getUser() {

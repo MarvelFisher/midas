@@ -410,7 +410,8 @@ public class PersistenceManager {
 			
 			try {
 				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
-						event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
+						event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+						message, event.getOriginalEvent().getTxId()));
 				if(ok) {
 					user.setLastLogin(Clock.getInstance().now());
 					eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
@@ -472,7 +473,8 @@ public class PersistenceManager {
 			{
 				try {
 					eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
-							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, message, event.getOriginalEvent().getTxId()));
+							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
+							, message, event.getOriginalEvent().getTxId()));
 					if(ok) {
 						for(Account account : event.getAccounts())
 							eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));

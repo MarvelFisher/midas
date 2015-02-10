@@ -11,21 +11,26 @@ public class UserCreateAndLoginReplyEvent extends RemoteAsyncEvent {
 	private String message; 
 	private String txId;
 	private User user;
+	private String original_id;
 	private Account defaultAccount;
 	private List<Account> accounts;
 
 	public UserCreateAndLoginReplyEvent(String key, String receiver, User user,
 			Account defaultAccount, List<Account> accounts, boolean ok,
-			String message, String txId) {
+			String org_id, String message, String txId) {
 		super(key, receiver);
 		this.user = user;
 		this.defaultAccount = defaultAccount;
 		this.accounts = accounts;
 		this.ok = ok;
+		this.original_id = org_id;
 		this.message = message;
 		this.txId = txId;
 	}
-
+	public String getOriginalID()
+	{
+		return original_id;
+	}
 	public boolean isOk() {
 		return ok;
 	}
