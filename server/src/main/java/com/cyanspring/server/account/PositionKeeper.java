@@ -22,6 +22,7 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.fx.FxException;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
@@ -71,6 +72,15 @@ public class PositionKeeper {
 	}
 	
 	public void processParentOrder(ParentOrder order, Account account) {
+		if(order.getOrdStatus().isCompleted()) {
+			if(checkAccountPositionLock(order.getId())) {
+				String accountSymbol = unlockAccountPosition(order.getId());
+				if(null != accountSymbol) {
+					log.debug("Close position action completed: " + accountSymbol + ", " + order.getId());
+				}
+			}
+		}
+
 		Map<String, Map<String, ParentOrder>> accountMap = parentOrders.get(order.getAccount());
 		if(null == accountMap) {
 			accountMap = new HashMap<String, Map<String, ParentOrder>>();
@@ -583,24 +593,28 @@ public class PositionKeeper {
 	
 
 	public void lockAccountPosition(String account, String symbol, String orderId) {
-		log.info("Lock postion: " + account + ", " + symbol + ", " + orderId);
+		log.info("Lock position: " + account + ", " + symbol + ", " + orderId);
 		closePositionActionMap.put(orderId, getClosePositionKey(account, symbol));
 	}
 	
 	public String unlockAccountPosition(String account, String symbol) {
 		String result = closePositionActionMap.removeKeyByValue(getClosePositionKey(account, symbol));
-		log.info("Unlock postion: " + account + ", " + symbol + ", " + result);
+		log.info("Unlock position: " + account + ", " + symbol + ", " + result);
 		return result;
 	}
 	
 	public String unlockAccountPosition(String orderId) {
 		String result = closePositionActionMap.remove(orderId);
-		log.info("Unlock postion: " + result + ", " + orderId);
+		log.info("Unlock position: " + result + ", " + orderId);
 		return result;
 	}
 	
 	public boolean checkAccountPositionLock(String account, String symbol) {
 		return closePositionActionMap.containsValue(getClosePositionKey(account, symbol));
+	}
+	
+	public boolean checkAccountPositionLock(String orderId) {
+		return closePositionActionMap.containsKey(orderId);
 	}
 	
 	public Iterator<Map.Entry<String,String>> getPendingClosePositionIterator() {

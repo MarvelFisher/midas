@@ -462,6 +462,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 	
 	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
+		log.info("Process order: " + event.getParent());
 		Account account = accountKeeper.getAccount(event.getParent().getAccount());
 		positionKeeper.processParentOrder(event.getParent().clone(), account);
 	}
@@ -681,11 +682,6 @@ public class AccountPositionManager implements IPlugin {
 			return false;
 		
 		return !quote.isStale();
-	}
-	
-	private boolean quoteIsValid(String symbol) {
-		Quote quote = marketData.get(symbol);
-		return quoteIsValid(quote);
 	}
 	
 	private void checkStopLoss(Account account) {
