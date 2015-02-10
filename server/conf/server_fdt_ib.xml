@@ -404,7 +404,7 @@
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
-		<property name="host" value="localhost" />
+		<property name="host" value="10.0.0.30" />
 		<!-- property name="host" value=""/ -->
 		<property name="port" value="4001" />
 		<property name="clientId" value="110" />
