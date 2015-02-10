@@ -1,0 +1,84 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+	<bean id="marketSessionManager" class="com.cyanspring.server.marketsession.MarketSessionManager">
+	    <property name="timing"> 
+        	<ref bean="timingBean"/>
+        </property>
+        <property name="openDays"> 
+            <ref bean="openDaysBean"/>
+        </property>
+        <property name="closeDays"> 
+            <ref bean="closeDaysBean"/>
+        </property>
+        <property name="closeWeekDays"> 
+            <ref bean="closeWeekDaysBean"/>
+        </property>
+	</bean>
+	
+	<bean id="timingBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg>
+			<list>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>06:00:00</value></constructor-arg>
+				</bean>	
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>CLOSE</value></constructor-arg>
+		        	<constructor-arg><value>06:00:00</value></constructor-arg>
+		        	<constructor-arg><value>06:10:00</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
+		        	<constructor-arg><value>06:10:00</value></constructor-arg>
+		        	<constructor-arg><value>06:15:00</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>06:15:00</value></constructor-arg>
+		        	<constructor-arg><value>23:59:59</value></constructor-arg> <!-- Make sure not restart Manager at the time -->
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="openDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg><value>OPEN</value></constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>2015-01-01</value>
+				<value>2015-01-02</value>
+				<value>2015-01-06</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="closeDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg><value>CLOSE</value></constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>2015-01-04</value>
+				<value>2015-01-09</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="closeWeekDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg><value>CLOSE</value></constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>6</value>
+				<value>7</value>
+			</list>
+		</constructor-arg>
+	</bean>	
+
+</beans>
