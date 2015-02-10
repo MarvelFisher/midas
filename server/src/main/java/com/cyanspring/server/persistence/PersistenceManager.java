@@ -400,12 +400,26 @@ public class PersistenceManager {
 				defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
 			} 
 			
-			list = accountKeeper.getAccounts(event.getUser().getId());
+			list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
 			
 			if(defaultAccount == null && (list == null || list.size() <= 0)) {
 				ok = false;
 				message = "No trading account available for this user";
 			}
+
+			
+			try {
+				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
+						event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
+				if(ok) {
+					user.setLastLogin(Clock.getInstance().now());
+					eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+				}
+
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+			log.info("Login: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 			
 		}
 		else	//user not exist, create user and then getAccount
