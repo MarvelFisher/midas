@@ -14,10 +14,11 @@ public class UserCreateAndLoginReplyEvent extends RemoteAsyncEvent {
 	private String original_id;
 	private Account defaultAccount;
 	private List<Account> accounts;
+	private boolean first_created = false;
 
 	public UserCreateAndLoginReplyEvent(String key, String receiver, User user,
 			Account defaultAccount, List<Account> accounts, boolean ok,
-			String org_id, String message, String txId) {
+			String org_id, String message, String txId, boolean fstCreated) {
 		super(key, receiver);
 		this.user = user;
 		this.defaultAccount = defaultAccount;
@@ -26,6 +27,11 @@ public class UserCreateAndLoginReplyEvent extends RemoteAsyncEvent {
 		this.original_id = org_id;
 		this.message = message;
 		this.txId = txId;
+		this.first_created = fstCreated;
+	}
+	public boolean isFirstCreated()
+	{
+		return first_created;
 	}
 	public String getOriginalID()
 	{

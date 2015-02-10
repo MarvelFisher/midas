@@ -490,7 +490,7 @@ public class AccountPositionManager implements IPlugin {
 		{
 			try {
 				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getKey(), 
-						event.getSender(), user, null, null, false, event.getOriginalID(), message, event.getTxId()));
+						event.getSender(), user, null, null, false, event.getOriginalID(), message, event.getTxId(), false));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
