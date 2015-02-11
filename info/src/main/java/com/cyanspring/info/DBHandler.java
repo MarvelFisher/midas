@@ -91,9 +91,8 @@ public class DBHandler
         {
             reconnectSQL();
         }
-        Statement stat = null ;
+        createStatement();
         try {
-        	stat = connect.createStatement() ;
         	connect.setAutoCommit(false);
 			stat = connect.createStatement();
 
@@ -108,29 +107,8 @@ public class DBHandler
 				log.error(se.getMessage(), se);
 			}
 		} finally {
-			if (stat != null) {
-				try {
-					stat.close();
-				} catch (SQLException e) {
-					log.error(e.getMessage(), e);
-				}
-			}
+			closeStatement();
 		}
-//        try
-//        {
-//            if (stat != null)
-//            {
-//                stat.close();
-//                stat = null;
-//            }
-//            stat = connect.createStatement();
-//            stat.executeUpdate(sqlcmd);
-//        }
-//        catch (SQLException se)
-//        {
-//            log.error(se.toString(), se);
-//            log.trace(sqlcmd);
-//        }
     }
     public ResultSet querySQL(String sqlcmd)
     {
@@ -149,10 +127,30 @@ public class DBHandler
         }
         catch (SQLException se)
         {
-            log.error(se.toString(), se) ;
+            log.error(se.toString(), se);
             log.trace(sqlcmd);
         }
         return rs;
+    }
+    public void checkSQLConnect()
+    {
+    	if (!isConnected())
+    	{
+            reconnectSQL();
+    	}
+    	createStatement();
+    	try 
+    	{
+			stat.executeQuery("SELECT 1;");
+		} 
+    	catch (SQLException e) 
+    	{
+            log.error(e.toString(), e) ;
+		}
+    	finally
+    	{
+    		closeStatement();
+    	}
     }
     public void createStatement()
     {
@@ -170,6 +168,21 @@ public class DBHandler
             log.error(e.toString(), e) ;
 		}
     }
+    public void closeStatement()
+    {
+    	if (stat != null)
+    	{
+    		try 
+    		{
+				stat.close();
+				stat = null;
+			} 
+    		catch (SQLException e) 
+			{
+				log.error(e.toString(), e);
+			}
+    	}
+    }
     public void addBatch(String sqlcmd)
     {
         try
@@ -186,13 +199,15 @@ public class DBHandler
         try 
         {
 			stat.executeBatch();
-			stat.close();
-			stat = null ;
 		} 
         catch (SQLException e) 
         {
 			log.error(e.toString(), e) ;
 		}
+        finally 
+        {
+        	closeStatement();
+        }
     }
     public HistoricalPrice getLastValue(byte service, String type, String symbol, boolean dir)
     {

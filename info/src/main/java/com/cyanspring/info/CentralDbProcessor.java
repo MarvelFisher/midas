@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.TimeZone;
+import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
@@ -70,8 +73,12 @@ public class CentralDbProcessor implements IPlugin
 	private int    nTickCount ;
 	private MarketSessionType sessionType = null ;
 	private String tradedate ;
-	private boolean isStartup = true;
+	static boolean isStartup = true;
 	private Queue<QuoteEvent> quoteBuffer;
+
+	// for checking SQL connect 
+	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private long timeInterval = 10*60*1000;
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
@@ -90,6 +97,8 @@ public class CentralDbProcessor implements IPlugin
 	@Autowired
 	private RefDataManager refDataManager;
 	
+	@Autowired
+	ScheduleManager scheduleManager;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor(){
 
@@ -99,6 +108,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(SearchSymbolRequestEvent.class, null);
 			subscribeToEvent(SymbolListSubscribeRequestEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
+			subscribeToEvent(AsyncTimerEvent.class, null);
 		}
 
 		@Override
@@ -172,6 +182,12 @@ public class CentralDbProcessor implements IPlugin
 				return curTime - nOpen ;
 			}
 		}
+	}
+	
+	public void processAsyncTimerEvent(AsyncTimerEvent event) 
+	{
+		if (!isStartup)
+			dbhnd.checkSQLConnect();
 	}
 	
 	public void processQuoteEvent(QuoteEvent event)
@@ -1048,7 +1064,8 @@ public class CentralDbProcessor implements IPlugin
 		refDataManager.init();
 //		onCallRefData();
 		requestMarketSession() ;
-//		requestSymbolList() ;
+
+		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
 	}
 	@Override
 	public void uninit() {
