@@ -7,7 +7,7 @@
 
 	<context:annotation-config />
 
-	<import resource="fx/*" />
+	<import resource="fu/*" />
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
