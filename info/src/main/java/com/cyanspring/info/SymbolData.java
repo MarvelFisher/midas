@@ -188,9 +188,10 @@ public class SymbolData implements Comparable<SymbolData>
 		String strDateTime = "" ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00") ;
 		strDateTime = sdf.format(cal.getTime()) ;
+		HistoricalPrice lastPrice;
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			HistoricalPrice lastPrice = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
+			lastPrice = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
 			Calendar cal_ = Calendar.getInstance() ;
 			if (lastPrice != null)
 			{
@@ -209,15 +210,51 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				centralDB.dbhnd.deletePrice(service, strType, getStrSymbol(), lastPrice);
 			}
+			lastPrice.setTimestamp(cal.getTime());
+			if (!bDelete)
+			{
+				if (dOpen != 0) 
+				{
+					lastPrice.setOpen(dOpen);
+				}
+				lastPrice.setVolume((int)dCurVolume);
+			}
+			else
+			{
+				lastPrice.setVolume(lastPrice.getVolume() + (int)dCurVolume);
+			}
+			if (lastPrice.getHigh() < dCurHigh && dCurHigh != 0)
+			{
+				lastPrice.setHigh(dCurHigh);
+			}
+			if (lastPrice.getLow() > dCurLow && dCurLow != 0)
+			{
+				lastPrice.setLow(dCurLow);
+			}
+			if (dClose != 0) 
+			{
+				lastPrice.setClose(dClose);
+			}
+		}
+		else
+		{
+			lastPrice = new HistoricalPrice(cal.getTime(),
+											strSymbol,
+											dOpen,
+											dCurHigh,
+											dCurLow,
+											dClose,
+											(int)dCurVolume);
 		}
 		sqlcmd = String.format(
 				"insert into %s (TRADEDATE,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) ", strTable) ;
 		sqlcmd += String.format(
                 "values ('%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY ",
-                strDateTime, getStrSymbol(), dOpen, dClose, dCurHigh, dCurLow, (int)dCurVolume) ;
+                strDateTime, getStrSymbol(), lastPrice.getOpen(), 
+                lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
 		sqlcmd += String.format(
 				"Update OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;",
-				dOpen, dClose, dCurHigh, dCurLow, (int)dCurVolume) ;
+				lastPrice.getOpen(), lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
 		centralDB.dbhnd.updateSQL(sqlcmd);
 	}
 	
@@ -278,7 +315,10 @@ public class SymbolData implements Comparable<SymbolData>
 		if (prices.isEmpty())
 		{
 			priceEmpty = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
-			prices.add(priceEmpty) ;
+			if (priceEmpty != null)
+			{
+				prices.add(priceEmpty) ;
+			}
 		}
 		else
 		{
@@ -307,11 +347,12 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				if (price.getTimestamp() == null)
 				{
-					if (fill == true)
-					{
-						price.copy((HistoricalPrice)priceEmpty.clone());
-						price.setTimestamp(firsttime.getTime());
-					}
+//					if (fill == true)
+//					{
+//						price.copy((HistoricalPrice)priceEmpty.clone());
+//						price.setTimestamp(firsttime.getTime());
+//					}
+					continue;
 				}
 				else if (end != null && 0 < price.getTimestamp().compareTo(end))
 				{
@@ -519,6 +560,10 @@ public class SymbolData implements Comparable<SymbolData>
 		centralDB.dbhnd.createStatement();
 		for (HistoricalPrice price : prices)
 		{
+			if (price.getTimestamp() == null)
+			{
+				continue;
+			}
 			strDateTime = sdf.format(price.getTimestamp()) ;
 			sqlcmd = String.format(
 					"insert into %s (TRADEDATE,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) " + 

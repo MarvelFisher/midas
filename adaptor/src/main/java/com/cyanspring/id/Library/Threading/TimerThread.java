@@ -50,6 +50,7 @@ public class TimerThread extends WorkerThread implements AutoCloseable {
 	}
 
 	public TimerThread() {
+		setName("TimerThread");
 	}
 
 	@Override

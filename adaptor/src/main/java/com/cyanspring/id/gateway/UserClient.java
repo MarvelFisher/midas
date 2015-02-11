@@ -70,7 +70,7 @@ public class UserClient implements AutoCloseable {
 		LogUtil.logInfo(log, "[%s] add new client", key);
 	}
 
-	protected void fini() {
+	protected void uninit() {
 		if (refList != null) {
 			refList.clear();
 			refList = null;
@@ -239,7 +239,7 @@ public class UserClient implements AutoCloseable {
 	public void close() throws Exception {
 
 		LogUtil.logInfo(log, "[%s] remove client", key);
-		fini();
+		uninit();
 		FinalizeHelper.suppressFinalize(this);
 
 	}

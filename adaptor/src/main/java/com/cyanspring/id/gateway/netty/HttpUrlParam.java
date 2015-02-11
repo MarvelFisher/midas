@@ -138,7 +138,7 @@ public class HttpUrlParam implements AutoCloseable {
 		return dRetVal;
 	}
 
-	void fini() {
+	void uninit() {
 		url = null;;
 		cmd = null;
 		map.clear();
@@ -146,7 +146,7 @@ public class HttpUrlParam implements AutoCloseable {
 	
 	@Override
 	public void close() throws Exception {
-		fini();
+		uninit();
 		FinalizeHelper.suppressFinalize(this);
 
 	}

@@ -14,13 +14,14 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
+<!-- 	        	<ref bean="newsManager"/> -->
             	<ref bean="alertManager"/>
 <!--             	<ref bean="historicalInfoManager"/> -->
 <!--             	<ref bean="marketInfoManager"/> -->
             	<ref bean="centralDbProcessor"/>
 	        </list>
 		</property>
-	</bean>
+	</bean> 
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
 		<property name="timeoutSecond" value="3000" />
@@ -30,6 +31,9 @@
 		<property name="maxNoOfAlerts" value="20" />
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
+	</bean>
+	
+	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">		
 	</bean>
 
 	<bean id="historicalInfoManager" class="com.cyanspring.info.market.HistoricalInfoManager">
@@ -106,7 +110,8 @@
 	</bean>
 
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
-<!-- 		<property name="url" value="nio://10.0.0.51:61616?wireFormat.maxInactivityDuration=86400000"></property> Solve channel is inactive problem -->
+<!-- 	Solve channel is inactive problem -->
+<!-- 		<property name="url" value="nio://10.0.0.51:61616?wireFormat.maxInactivityDuration=86400000"></property>  -->
 		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDuration=86400000"></property>
 	</bean>
 	

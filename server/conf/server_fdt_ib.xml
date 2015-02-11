@@ -391,7 +391,7 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
-				<ref bean="ibAdaptor" />
+				<!-- <ref bean="ibAdaptor" /> -->
 			</list>
 		</constructor-arg>
 	</bean>
@@ -404,7 +404,11 @@
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
+<<<<<<< HEAD
 		<property name="host" value="10.0.0.30" />
+=======
+		<property name="host" value="10.0.0.20" />
+>>>>>>> refs/heads/master
 		<!-- property name="host" value=""/ -->
 		<property name="port" value="4001" />
 		<property name="clientId" value="110" />

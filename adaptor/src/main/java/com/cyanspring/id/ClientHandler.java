@@ -41,7 +41,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			.getLogger(IdMarketDataAdaptor.class);
 
 	public static Date lastRecv = DateUtil.now();
-	static TimerThread timer = new TimerThread();
+	public static Date lastCheck = DateUtil.now();
+	static TimerThread timer = null;
 	static ChannelHandlerContext context; // context deal with server
 
 	/**
@@ -68,12 +69,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		if (IdMarketDataAdaptor.instance.isGateway() == false) {
-			if (timer == null) {
-				timer = new TimerThread();
-				timer.TimerEvent = this;
-				timer.start();
-			}
+		if (timer == null) {
+			timer = new TimerThread();
+			timer.setName("ClientHandler.Timer");
+			timer.TimerEvent = this;
+			timer.start();
 		}
 	}
 
@@ -107,6 +107,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) {
 		IdMarketDataAdaptor.instance.updateState(false);
+		IdMarketDataAdaptor.isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
 
 	}
@@ -157,6 +158,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Close the connection when an exception is raised.
 		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
+		IdMarketDataAdaptor.isConnected = false;
+		IdMarketDataAdaptor.instance.reconClient();
 	}
 
 	/**
@@ -254,7 +257,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public static void subscribe(String[] arrSymbol) {
 
 		for (String symbol : arrSymbol) {
-			subscribe(IdMarketDataAdaptor.instance.getExch(), symbol);
+			subscribe(IdMarketDataAdaptor.instance.getExch(symbol), symbol);
 		}
 	}
 
@@ -321,31 +324,33 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	@Override
 	protected void finalize() throws Throwable {
-		fini();
+		uninit();
 	}
 
 	@Override
 	public void onTimer(TimerThread objSender) {
+		if (lastCheck.getTime() < lastRecv.getTime()) {
+			lastCheck = lastRecv;
+		}
+			
 		Date now = DateUtil.now();
-		TimeSpan ts = TimeSpan.getTimeSpan(now, lastRecv);
-		if (lastRecv.getTime() != 0 && ts.getTotalSeconds() > 10) {
-			lastRecv = now;
+		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
+		if (IdMarketDataAdaptor.isConnecting == false && lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
+			IdMarketDataAdaptor.isConnected = false;
+			IdMarketDataAdaptor.instance.sendState(false);
+			lastCheck = now;
 			if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
-				IdMarketDataAdaptor.instance.closeClient();
+				IdMarketDataAdaptor.instance.reconClient();
 			}
 		}
 	}
 
-	void fini() throws Exception {
-		if (timer != null) {
-			timer.close();
-			timer = null;
-		}
+	void uninit() throws Exception {
 	}
 
 	@Override
 	public void close() throws Exception {
-		fini();
+		uninit();
 		FinalizeHelper.suppressFinalize(this);
 	}
 }

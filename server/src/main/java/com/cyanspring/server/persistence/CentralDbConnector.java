@@ -72,7 +72,7 @@ public class CentralDbConnector {
 
 			log.info("Connected to the database");
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.error("Cannot connection to Database", e);
 			return false;
 		}
 
@@ -104,7 +104,7 @@ public class CentralDbConnector {
 				conn = null;
 				log.info("Disconnected from database");
 			} catch (Exception e) {
-				log.error(e.getMessage(), e);
+				log.error("Cannot disconnect from database", e);
 			}
 		}
 	}
@@ -149,11 +149,11 @@ public class CentralDbConnector {
 			bIsSuccess = true;
 		} catch (SQLException e) {
 			bIsSuccess = false;
-			log.error(e.getMessage(), e);
+			log.warn("Cannot register user.", e);
 			try {
 				conn.rollback();
 			} catch (SQLException se) {
-				log.error(se.getMessage(), se);
+				log.warn("Register User rollback fail", se);
 			}
 		} finally {
 			if (stmt != null) {
@@ -179,7 +179,7 @@ public class CentralDbConnector {
 				nCount = rs.getInt("COUNT(*)");
 
 		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
 		} finally {
 			if (stmt != null) {
 				closeStmt(stmt);
@@ -204,7 +204,7 @@ public class CentralDbConnector {
 				nCount = rs.getInt("COUNT(*)");
 
 		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
 		} finally {
 			if (stmt != null) {
 				closeStmt(stmt);
@@ -245,7 +245,7 @@ public class CentralDbConnector {
 			}
 
 		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
 		} finally {
 			if (stmt != null) {
 				closeStmt(stmt);
@@ -296,7 +296,7 @@ public class CentralDbConnector {
 			}
 		} catch (SQLException e) {
 			closeStmt(stmt);
-			log.error(e.getMessage(), e);
+			log.warn(e.getMessage(), e);
 			return false;
 		} finally {
 			if (stmt != null) {
@@ -306,11 +306,29 @@ public class CentralDbConnector {
 		return true;
 	}
 
+	public boolean updateConnection(){
+		if (!checkConnected())
+			return false;
+		Statement stmt = null;
+		boolean state = true;
+		try{
+			stmt = conn.createStatement();
+			stmt.executeQuery("SELECT 1;");
+		}catch(SQLException e){
+			state = false;
+			log.warn(e.getMessage(), e);
+		}finally{
+			if(stmt != null)
+				closeStmt(stmt);			
+		}
+		return state;
+	}
+	
 	private void closeStmt(Statement stmt) {
 		try {
 			stmt.close();
 		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
+			log.warn("Cannot close statement", e);
 		}
 	}
 
@@ -371,7 +389,7 @@ public class CentralDbConnector {
 	    }
 	    catch(Exception e) 
 	    {
-	    	log.error("create md5 error", e);
+	    	log.warn("create md5 error", e);
 	    }
 	    return md5;
 	 }
