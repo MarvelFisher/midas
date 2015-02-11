@@ -664,6 +664,16 @@ public abstract class SingleOrderStrategy extends Strategy {
 		terminate();
 	}
 	
+	private void rejectParentOrder(CancelStrategyOrderEvent event) {
+		String source = parentOrder.get(String.class, OrderField.SOURCE.value());
+		// only update clOrdID when the amendment is from same source
+		if(null != event.getTxId() && null != event.getSourceId() && event.getSourceId().equals(source))
+			parentOrder.put(OrderField.CLORDERID.value(), event.getTxId());
+		parentOrder.setOrdStatus(OrdStatus.REJECTED);
+		parentOrder.touch();
+		terminate();
+	}
+	
 	protected void processCancelStrategyOrderEvent(CancelStrategyOrderEvent event) {
 		logDebug("processCancelStrategyOrderEvent received: " + event.getSourceId());
 		CancelParentOrderReplyEvent reply = null;
