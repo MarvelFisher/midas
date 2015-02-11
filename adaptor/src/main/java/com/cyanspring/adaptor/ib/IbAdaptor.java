@@ -23,8 +23,10 @@ import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
+import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
+import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -91,10 +93,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	//gc thread
 	Thread gcThread;
 	
+	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
+	
 	public IbAdaptor() {
 		clientSocket = new EClientSocket(this);
 	}
 	
+	/*
 	@Override
 	synchronized public void init() throws Exception {
 		while(!clientSocket.isConnected()) {
@@ -126,12 +131,51 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		
 		notifyMarketDataState(true);
 	}
+	*/
 	
+	
+	private void ConnectToIBGateway()
+	{
+		while(!clientSocket.isConnected()) {
+			log.debug("Attempting to establish connection to IB TWS/Gateway...");
+			clientSocket.eConnect(host, port, clientId);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				log.warn(e.getMessage(), e);
+			}
+		}
+		log.info("IB connected");	
+	}
+	
+	@Override
+	synchronized public void init() throws Exception {
+
+		gcThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(true) {
+					if(clientSocket.isConnected() == false)
+					{
+						ConnectToIBGateway();
+					}
+					gcChildOrders();
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+			}
+			
+		});
+		gcThread.start();			
+	}	
 	
 	@Override
 	synchronized public void uninit() {
 		clientSocket.eDisconnect();
-		gcThread.interrupt();
+		gcThread.interrupt();	
 	}
 
 	private void gcChildOrders() {
@@ -206,6 +250,11 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		
 		Integer reqId = nextOrderId.getAndIncrement();
 		symbolToId.put(instrument, reqId);
+		subscribeMarketData(refData,instrument,reqId,contract,genericTickTags);
+	}
+	
+	void subscribeMarketData(RefData refData,String instrument,int reqId,Contract contract,String genericTickTags)
+	{
 		clientSocket.reqMktData(reqId, contract, genericTickTags, false);
 		log.info("subscribeMarketData: " + instrument + "," + reqId);
 		if(reqMarketDepth) {
@@ -457,6 +506,26 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 			order.setOrdStatus(autoStatus(order));
 			downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
 		}
+		if(id == -1)
+		{
+			if(errorCode == 1100)
+			{
+				// Connectivity between IB and TWS has been lost. 				
+			}
+			else if(errorCode == 1101)
+			{
+				// Connectivity between IB and TWS has been restoreddata lost.*	
+				// *Market and account data subscription requests must be resubmitted
+			}
+			else if(errorCode == 1102)
+			{
+				// Connectivity between IB and TWS has been restoreddata maintained.
+			}
+			else if(errorCode == 1300)
+			{
+				//  TWS socket port has been reset and this connection is being dropped. Please reconnect on the new port - <port_num> 
+			}
+		}
 	}
 
 	@Override
@@ -466,7 +535,10 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		symbolToId.clear();
 		
 		// notify downstream down
-		downStreamListener.onState(false);
+		if(downStreamListener != null)
+		{
+			downStreamListener.onState(false);
+		}
 		
 		// notify market data feed down
 		notifyMarketDataState(false);
@@ -519,17 +591,37 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 			//publishQuote(quote);
 			break;
 		case 6: 
-			quote.setHigh(price); 
-			publishQuote(quote);
+			quote.setHigh(price);
+			if(quote.getOpened() == false)
+			{
+				if(PriceUtils.Equal(quote.getHigh(),quote.getLow()))
+				{
+					quote.setOpen(price);
+					quote.setOpened(true);
+				}
+			}
+			publishQuote(quote);		
 			break;
 
 		case 7: 
 			quote.setLow(price); 
+			if(quote.getOpened() == false)
+			{
+				if(PriceUtils.Equal(quote.getHigh(),quote.getLow()))
+				{
+					quote.setOpen(price);
+					quote.setOpened(true);
+				}
+			}			
 			publishQuote(quote);
 			break;
 
 		case 9: 
-			quote.setClose(price); 
+			quote.setClose(price);
+			if( quote.getBid() == -1 && quote.getAsk() == -1)
+			{
+				quote.setOpened(false);
+			}
 			publishQuote(quote);
 			break;
 
@@ -877,6 +969,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	@Override
 	public void managedAccounts(String accountsList) {
 		log.debug(EWrapperMsgGenerator.managedAccounts(accountsList));
+		notifyMarketDataState(true);
 	}
 
 	@Override
