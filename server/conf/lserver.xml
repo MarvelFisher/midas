@@ -7,7 +7,12 @@
 
 	<context:annotation-config />
 
-	<import resource="fu_test/*" />
+	<import resource="test/*" />
+	<import resource="common/business.xml" />
+	<import resource="common/strategy.xml" />
+	<import resource="common/centralDb.xml" />
+	<import resource="common/persistence.xml" />
+	<import resource="classpath*:conf/common.xml" />
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
@@ -34,5 +39,26 @@
 	<bean id="dataBasePwd" class="java.lang.String">
 		<constructor-arg value="tqt001" />
 	</bean>
+	
+	<!-- IBAdaptor setting (Setting can be marked if not used)-->
+	
+	<!-- <bean id="ibID" class="java.lang.String"><constructor-arg value="IB01" /></bean>	
+	<bean id="ibHost" class="java.lang.String"><constructor-arg value="10.0.0.20" /></bean>
+	<bean id="ibPort" class="java.lang.String"><constructor-arg value="4001" /></bean>	
+	<bean id="ibClientId" class="java.lang.String"><constructor-arg value="110" /></bean> -->
+	
+	<!-- IDAdaptor setting (Setting can be marked if not used)-->
+	
+	<!-- <bean id="idIP" class="java.lang.String"><constructor-arg value="10.0.0.32" /></bean>	
+	<bean id="idPort" class="java.lang.String"><constructor-arg value="6086" /></bean>
+	<bean id="idUserName" class="java.lang.String"><constructor-arg value="fdtcanned" /></bean>	
+	<bean id="idUserPwd" class="java.lang.String"><constructor-arg value="MFW9dC26" /></bean> -->
+
+	<!-- WindAdaptor setting (Setting can be marked if not used)-->
+	
+	<bean id="windIP" class="java.lang.String"><constructor-arg value="114.80.154.34" /></bean>	
+	<bean id="windPort" class="java.lang.String"><constructor-arg value="10051" /></bean>
+	<bean id="windUserName" class="java.lang.String"><constructor-arg value="TD1001888001" /></bean>	
+	<bean id="windUserPwd" class="java.lang.String"><constructor-arg value="62015725" /></bean>
 
 </beans>

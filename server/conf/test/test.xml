@@ -7,10 +7,6 @@
 
 	<context:annotation-config />
 
-	<import resource="../common/business.xml" />
-	<import resource="../common/strategy.xml" />
-	<import resource="classpath*:conf/common.xml" />
-
 	<bean id="server" class="com.cyanspring.server.Server">
 		<property name="simulatorMode">
 			<value>true</value>
@@ -235,10 +231,10 @@
 	<bean id="windFutureDataAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
 		<property name="showGui" value="true"></property>
-		<property name="reqIp" value="114.80.154.34"></property>
-		<property name="reqPort" value="10051"></property>
-		<property name="userName" value="TD1001888001"></property>
-		<property name="password" value="62015725"></property>
+		<property name="reqIp" ref="windIP"></property>
+		<property name="reqPort" ref="windPort"></property>
+		<property name="userName" ref="windUserName"></property>
+		<property name="password" ref="windUserPwd"></property>
 	</bean>
 
 </beans>

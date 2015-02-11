@@ -9,30 +9,6 @@
 
 	<context:annotation-config />
 
-	<bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
-		<property name="cpds"><ref bean="cpds"/></property>
-	</bean>
-	
-	<bean id="cpds" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
-		<property name="user" value="tqt001"/>
-		<property name="password" value="tqt001"/>
-
-		<property name="initialPoolSize" value="3" />
-		<property name="maxPoolSize" value="10" />
-		<property name="maxIdleTime" value="600"/>
-		<property name="minPoolSize" value="2" />
-				
-		<property name="acquireRetryAttempts" value="30" />
-		<property name="numHelperThreads" value="3" />
-        <property name="testConnectionOnCheckin" value="false"/>
-        <property name="testConnectionOnCheckout" value="true"/>
-        <property name="preferredTestQuery" value="SELECT 1"/>
-        <property name="automaticTestTable" value="Test"/>
-        <property name="idleConnectionTestPeriod" value="60"/>
-	</bean>
-
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	 <!-- Embedded mode -->
 	  <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>

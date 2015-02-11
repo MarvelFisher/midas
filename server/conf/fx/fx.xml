@@ -7,10 +7,6 @@
 
 	<context:annotation-config />
 
-	<import resource="../common/business.xml" />
-	<import resource="../common/strategy.xml" />
-	<import resource="classpath*:conf/common.xml" />
-
 	<bean id="globalStrategySettings" class="com.cyanspring.common.strategy.GlobalStrategySettings">
 		<property name="checkAdjQuote" value="false" />
 		<property name="singleOrderCommonDisplayFields" ref="singleOrderCommonDisplayFields" />
@@ -385,11 +381,11 @@
 	</bean>
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
-		<property name="id" value="IB01" />
-		<property name="host" value="10.0.0.20" />
+		<property name="id" ref="ibID" />
+		<property name="host" ref="ibHost" />
 		<!-- property name="host" value=""/ -->
-		<property name="port" value="4001" />
-		<property name="clientId" value="110" />
+		<property name="port" ref="ibPort" />
+		<property name="clientId" ref="ibClientId" />
 		<property name="reqMarketDepth" value="false" />
 		<property name="logMarketData" value="false" />
 		<property name="refDataManager">
@@ -398,13 +394,13 @@
 	</bean>
 
 	<bean id="IdMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
-		<property name="account" value="fdtcanned"></property>
-		<property name="password" value="MFW9dC26"></property>
+		<property name="account" ref="idUserName"></property>
+		<property name="password" ref="idUserPwd"></property>
 		<!-- <property name="gateway" value="false"></property> <property name="host" 
 			value="198.190.11.31"></property> <property name="port" value="4001"></property> -->
 		<property name="gateway" value="true"></property>
-		<property name="reqIp" value="10.0.0.32"></property>
-		<property name="reqPort" value="6086"></property>
+		<property name="reqIp" ref="idIP"></property>
+		<property name="reqPort" ref="idPort"></property>
 
 		<property name="exch" value="687"></property>
 		<property name="preOpen" value="610"></property>
