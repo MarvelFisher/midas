@@ -1,0 +1,68 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+	<import resource="fx/*"/>
+	
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
+		<property name="timeoutSecond" value="3000" />
+		<property name="createThreadCount" value="5" />
+		<property name="maxRetrytimes" value="3" />
+		<property name="killTimeoutSecond" value="60000" />
+		<property name="maxNoOfAlerts" value="20" />
+		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
+		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
+	</bean>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
+	  <property name="username" value="tqt001"/>
+	  <property name="password" value="tqt001"/>
+	</bean>
+	
+	<bean id="jdbcUrl" class="java.lang.String">	
+<!-- 		<constructor-arg value="jdbc:mysql://10.0.0.10:3306/TA_DS_TEST?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" /> -->
+		<constructor-arg value="jdbc:mysql://10.0.0.10/TA_DS_TEST?jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;user=tqt001&amp;password=tqt001" />
+	</bean>
+	
+	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>Test</value>
+		</property>
+		<property name="category">
+			<value>Info</value>
+		</property>
+		<property name="id">
+			<value>I1</value>
+		</property>
+	</bean>	
+	
+	<bean id="systemInfoMD" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>Test</value>
+		</property>
+		<property name="category">
+			<value>EB</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>	
+	
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="nio://0.0.0.0:61617"></property>
+	</bean>
+	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
+		<!-- 	Solve channel is inactive problem -->
+		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDuration=86400000"></property>
+	</bean>
+	
+	
+</beans>
