@@ -292,8 +292,14 @@ public class DefaultExecutionManager implements IExecutionManager, IAsyncExecute
 	
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
 		log.debug("Received child order update: " + event.getExecType() + " - " + event.getOrder());
-		if(tranTracker == null)
+		if(tranTracker == null) {
+			if(event.getExecType().equals(ExecType.CANCELED) || 
+				event.getExecType().equals(ExecType.REJECTED) ||
+				event.getExecType().equals(ExecType.REPLACE)
+				)
+				event.getOrder().setUnsolicited(true);
 			return;
+		}
 		
 		ExecType execType = event.getExecType();
 		ChildOrder order = event.getOrder();
@@ -339,10 +345,12 @@ public class DefaultExecutionManager implements IExecutionManager, IAsyncExecute
 				} else { // unsolicited cancel
 					tranTracker.failed = true;
 					tranTracker.lastError = "Child order has been unsolicitedly cancelled: " + order;
+					order.setUnsolicited(true);
 					log.warn("Unsolicited child cancel: " + order);
 				}
 				processTransaction();
 			} else { // unsolicited cancel
+				order.setUnsolicited(true);
 				log.warn("Unsolicited child cancel: " + order);
 			}
 		} else if (execType.equals(ExecType.REJECTED)) {
@@ -353,6 +361,7 @@ public class DefaultExecutionManager implements IExecutionManager, IAsyncExecute
 				tranTracker.lastError = event.getMessage();
 				processTransaction();
 			} else { // unsolicited reject
+				order.setUnsolicited(true);
 				log.warn("unsolicited child reject: " + order);
 			}
 		} else {// rest we don't care

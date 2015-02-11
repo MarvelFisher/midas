@@ -93,6 +93,9 @@ public abstract class SingleOrderStrategy extends Strategy {
 	protected MarketStatistic marketStatistic = new MarketStatistic();
 	protected RefData refData;
 	protected ITickTable tickTable;
+	protected boolean rejectOnReject;
+	protected boolean cancelOnCancel;
+
 	
 	private static List<FieldDef> commonFieldDefs;
 	
@@ -497,6 +500,19 @@ public abstract class SingleOrderStrategy extends Strategy {
 	
 	protected void postProcessUpdateChildOrderEvent(UpdateChildOrderEvent event) {
 		super.postProcessUpdateChildOrderEvent(event);
+		ChildOrder order = event.getOrder();
+		if(order.getOrdStatus().equals(OrdStatus.CANCELED) && order.isUnsolicited() && cancelOnCancel) {
+			parentOrder.setOrdStatus(OrdStatus.CANCELED);
+			parentOrder.touch();
+			terminate();
+			return;
+		} else if(order.getOrdStatus().equals(OrdStatus.REJECTED) && rejectOnReject) {
+			parentOrder.setOrdStatus(OrdStatus.REJECTED);
+			parentOrder.touch();
+			terminate();
+			return;
+		}
+		
 		executeWithTiming(ExecuteTiming.ASAP, event.getClass());
 	}
 	
@@ -660,16 +676,6 @@ public abstract class SingleOrderStrategy extends Strategy {
 		if(null != event.getTxId() && null != event.getSourceId() && event.getSourceId().equals(source))
 			parentOrder.put(OrderField.CLORDERID.value(), event.getTxId());
 		parentOrder.setOrdStatus(OrdStatus.CANCELED);
-		parentOrder.touch();
-		terminate();
-	}
-	
-	private void rejectParentOrder(CancelStrategyOrderEvent event) {
-		String source = parentOrder.get(String.class, OrderField.SOURCE.value());
-		// only update clOrdID when the amendment is from same source
-		if(null != event.getTxId() && null != event.getSourceId() && event.getSourceId().equals(source))
-			parentOrder.put(OrderField.CLORDERID.value(), event.getTxId());
-		parentOrder.setOrdStatus(OrdStatus.REJECTED);
 		parentOrder.touch();
 		terminate();
 	}
@@ -863,4 +869,21 @@ public abstract class SingleOrderStrategy extends Strategy {
 	public static void setCommonFieldDefs(List<FieldDef> commonFieldDefs) {
 		SingleOrderStrategy.commonFieldDefs = commonFieldDefs;
 	}
+	
+	public boolean isRejectOnReject() {
+		return rejectOnReject;
+	}
+
+	public void setRejectOnReject(boolean rejectOnReject) {
+		this.rejectOnReject = rejectOnReject;
+	}
+
+	public boolean isCancelOnCancel() {
+		return cancelOnCancel;
+	}
+
+	public void setCancelOnCancel(boolean cancelOnCancel) {
+		this.cancelOnCancel = cancelOnCancel;
+	}
+
 }

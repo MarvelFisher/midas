@@ -454,7 +454,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		   order.getOrdStatus().isPending() &&
 		   errorCode != 202 &&
 		   (errorCode != 399 || !errorMsg.contains("Warning"))){
-			order.setOrdStatus(autoStatus(order));
+			order.setOrdStatus(OrdStatus.REJECTED);
 			downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
 		}
 	}
