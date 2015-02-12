@@ -47,7 +47,7 @@
 	<!-- MarketDataManager setting-->
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="windAdaptor" />
+			<ref bean="ibAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList" ref="preSubscriptionList">
 		</property>
@@ -62,7 +62,7 @@
 	
 	<!-- IBAdaptor setting (Setting can be marked if not used)-->
 	
-	<!-- <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
 		<property name="host" value="10.0.0.20" />
 		<property name="port" value="4001" />
@@ -72,11 +72,11 @@
 		<property name="refDataManager">
 			<ref bean="refDataManager" />
 		</property>
-	</bean> -->
+	</bean>
 	
 	<!-- IDAdaptor setting (Setting can be marked if not used)-->
 	
-	<!-- <bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>
 		<property name="password" value="MFW9dC26"></property>
 		<property name="gateway" value="true"></property>
@@ -92,7 +92,7 @@
 				<entry key="XAGUSD" value="691" />
 			</map>
 		</property>	
-	</bean> -->
+	</bean>
 
 	<!-- WindAdaptor setting (Setting can be marked if not used)-->
 	
