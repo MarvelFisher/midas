@@ -55,7 +55,7 @@
 	
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>conf/refdata/refData_cf.xml</value>
+			<value>refdata/refData_cf.xml</value>
 		</property>
 	</bean>
 	
