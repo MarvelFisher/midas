@@ -3,7 +3,6 @@ package com.cyanspring.server.marketdata;
 import java.util.HashMap;
 
 import com.cyanspring.common.marketdata.Quote;
-import com.google.common.collect.HashMultiset;
 
 public class AggregationTicks {
 	
