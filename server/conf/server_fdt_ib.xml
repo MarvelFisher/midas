@@ -39,7 +39,7 @@
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
-<!-- 				<ref bean="alertManager" /> -->
+				<!-- <ref bean="alertManager" /> -->
 			</list>
 		</property>
 		<property name="readyMap">
@@ -103,94 +103,186 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="ibAdaptor" />
+			<list>
+				<ref bean="idMarketDataAdaptor" />
+				<ref bean="ibAdaptor" />
+			</list>
 		</constructor-arg>
+		<property name="interval" value="1000"></property>
 		<property name="preSubscriptionList">
 			<list>
-				<value>AUDCAD</value>
-				<value>AUDCHF</value>
-				<value>AUDCNH</value>
-				<value>AUDHKD</value>
-				<value>AUDJPY</value>
-				<value>AUDNZD</value>
-				<value>AUDSGD</value>
-				<value>AUDUSD</value>
-				<value>GBPAUD</value>
-				<value>GBPCAD</value>
-				<value>GBPCHF</value>
-				<value>GBPCNH</value>
-				<!-- <value>GBPDKK</value> -->
-				<value>GBPHKD</value>
-				<value>GBPJPY</value>
-				<value>GBPNOK</value>
-				<value>GBPNZD</value>
-				<value>GBPSEK</value>
-				<value>GBPUSD</value>
-				<value>CADCHF</value>
-				<value>CADCNH</value>
-				<value>CADHKD</value>
-				<value>CADJPY</value>
-				<value>CNHHKD</value>
-				<value>CNHJPY</value>
-				<!-- <value>DKKJPY</value> -->
-				<!-- <value>DKKNOK</value> -->
-				<!-- <value>DKKSEK</value> -->
-				<value>EURAUD</value>
-				<value>EURCAD</value>
-				<value>EURCHF</value>
-				<value>EURCNH</value>
-				<value>EURCZK</value>
-				<!-- <value>EURDKK</value> -->
-				<value>EURGBP</value>
-				<value>EURHKD</value>
-				<value>EURHUF</value>
-				<value>EURILS</value>
-				<value>EURJPY</value>
-				<value>EURMXN</value>
-				<value>EURNOK</value>
-				<value>EURNZD</value>
-				<value>EURRUB</value>
-				<value>EURSEK</value>
-				<value>EURSGD</value>
-				<value>EURUSD</value>
-				<value>HKDJPY</value>
-				<value>KRWAUD</value>
-				<value>KRWCAD</value>
-				<value>KRWCHF</value>
-				<value>KRWEUR</value>
-				<value>KRWGBP</value>
-				<value>KRWHKD</value>
-				<value>KRWJPY</value>
-				<value>KRWUSD</value>
-				<value>MXNJPY</value>
-				<value>NZDCHF</value>
-				<value>NZDJPY</value>
-				<value>NZDUSD</value>
-				<value>NOKJPY</value>
-				<value>NOKSEK</value>
-				<value>SGDCNH</value>
-				<value>SGDJPY</value>
-				<value>SEKJPY</value>
-				<value>CHFCNH</value>
-				<!-- <value>CHFDKK</value> -->
-				<value>CHFJPY</value>
-				<value>CHFNOK</value>
-				<value>CHFSEK</value>
-				<value>USDCAD</value>
-				<value>USDCHF</value>
-				<value>USDCNH</value>
-				<value>USDCZK</value>
-				<value>USDHKD</value>
-				<value>USDHUF</value>
-				<value>USDILS</value>
-				<value>USDJPY</value>
-				<value>USDMXN</value>
-				<value>USDNOK</value>
-				<value>USDRUB</value>
-				<value>USDSEK</value>
-				<value>USDSGD</value>
-				<value>XAUUSD</value>
-				<value>XAGUSD</value>
+				<list>
+					<value>AUDCAD</value>
+					<value>AUDCHF</value>
+					<value>AUDCNH</value>
+					<value>AUDHKD</value>
+					<value>AUDJPY</value>
+					<value>AUDNZD</value>
+					<value>AUDSGD</value>
+					<value>AUDUSD</value>
+					<value>GBPAUD</value>
+					<value>GBPCAD</value>
+					<value>GBPCHF</value>
+					<value>GBPCNH</value>
+					<!-- <value>GBPDKK</value> -->
+					<value>GBPHKD</value>
+					<value>GBPJPY</value>
+					<value>GBPNOK</value>
+					<value>GBPNZD</value>
+					<value>GBPSEK</value>
+					<value>GBPUSD</value>
+					<value>CADCHF</value>
+					<value>CADCNH</value>
+					<value>CADHKD</value>
+					<value>CADJPY</value>
+					<value>CNHHKD</value>
+					<value>CNHJPY</value>
+					<!-- <value>DKKJPY</value> -->
+					<!-- <value>DKKNOK</value> -->
+					<!-- <value>DKKSEK</value> -->
+					<value>EURAUD</value>
+					<value>EURCAD</value>
+					<value>EURCHF</value>
+					<value>EURCNH</value>
+					<value>EURCZK</value>
+					<!-- <value>EURDKK</value> -->
+					<value>EURGBP</value>
+					<value>EURHKD</value>
+					<value>EURHUF</value>
+					<value>EURILS</value>
+					<value>EURJPY</value>
+					<value>EURMXN</value>
+					<value>EURNOK</value>
+					<value>EURNZD</value>
+					<value>EURRUB</value>
+					<value>EURSEK</value>
+					<value>EURSGD</value>
+					<value>EURUSD</value>
+					<value>HKDJPY</value>
+					<value>KRWAUD</value>
+					<value>KRWCAD</value>
+					<value>KRWCHF</value>
+					<value>KRWEUR</value>
+					<value>KRWGBP</value>
+					<value>KRWHKD</value>
+					<value>KRWJPY</value>
+					<value>KRWUSD</value>
+					<value>MXNJPY</value>
+					<value>NZDCHF</value>
+					<value>NZDJPY</value>
+					<value>NZDUSD</value>
+					<value>NOKJPY</value>
+					<value>NOKSEK</value>
+					<value>SGDCNH</value>
+					<value>SGDJPY</value>
+					<value>SEKJPY</value>
+					<value>CHFCNH</value>
+					<!-- <value>CHFDKK</value> -->
+					<value>CHFJPY</value>
+					<value>CHFNOK</value>
+					<value>CHFSEK</value>
+					<value>USDCAD</value>
+					<value>USDCHF</value>
+					<value>USDCNH</value>
+					<value>USDCZK</value>
+					<value>USDHKD</value>
+					<value>USDHUF</value>
+					<value>USDILS</value>
+					<value>USDJPY</value>
+					<value>USDMXN</value>
+					<value>USDNOK</value>
+					<value>USDRUB</value>
+					<value>USDSEK</value>
+					<value>USDSGD</value>
+					<value>XAUUSD</value>
+					<value>XAGUSD</value>
+				</list>
+				<list>
+					<value>AUDCAD</value>
+					<value>AUDCHF</value>
+					<value>AUDCNH</value>
+					<value>AUDHKD</value>
+					<value>AUDJPY</value>
+					<value>AUDNZD</value>
+					<value>AUDSGD</value>
+					<value>AUDUSD</value>
+					<value>GBPAUD</value>
+					<value>GBPCAD</value>
+					<value>GBPCHF</value>
+					<value>GBPCNH</value>
+					<!-- <value>GBPDKK</value> -->
+					<value>GBPHKD</value>
+					<value>GBPJPY</value>
+					<value>GBPNOK</value>
+					<value>GBPNZD</value>
+					<value>GBPSEK</value>
+					<value>GBPUSD</value>
+					<value>CADCHF</value>
+					<value>CADCNH</value>
+					<value>CADHKD</value>
+					<value>CADJPY</value>
+					<value>CNHHKD</value>
+					<value>CNHJPY</value>
+					<!-- <value>DKKJPY</value> -->
+					<!-- <value>DKKNOK</value> -->
+					<!-- <value>DKKSEK</value> -->
+					<value>EURAUD</value>
+					<value>EURCAD</value>
+					<value>EURCHF</value>
+					<value>EURCNH</value>
+					<value>EURCZK</value>
+					<!-- <value>EURDKK</value> -->
+					<value>EURGBP</value>
+					<value>EURHKD</value>
+					<value>EURHUF</value>
+					<value>EURILS</value>
+					<value>EURJPY</value>
+					<value>EURMXN</value>
+					<value>EURNOK</value>
+					<value>EURNZD</value>
+					<value>EURRUB</value>
+					<value>EURSEK</value>
+					<value>EURSGD</value>
+					<value>EURUSD</value>
+					<value>HKDJPY</value>
+					<value>KRWAUD</value>
+					<value>KRWCAD</value>
+					<value>KRWCHF</value>
+					<value>KRWEUR</value>
+					<value>KRWGBP</value>
+					<value>KRWHKD</value>
+					<value>KRWJPY</value>
+					<value>KRWUSD</value>
+					<value>MXNJPY</value>
+					<value>NZDCHF</value>
+					<value>NZDJPY</value>
+					<value>NZDUSD</value>
+					<value>NOKJPY</value>
+					<value>NOKSEK</value>
+					<value>SGDCNH</value>
+					<value>SGDJPY</value>
+					<value>SEKJPY</value>
+					<value>CHFCNH</value>
+					<!-- <value>CHFDKK</value> -->
+					<value>CHFJPY</value>
+					<value>CHFNOK</value>
+					<value>CHFSEK</value>
+					<value>USDCAD</value>
+					<value>USDCHF</value>
+					<value>USDCNH</value>
+					<value>USDCZK</value>
+					<value>USDHKD</value>
+					<value>USDHUF</value>
+					<value>USDILS</value>
+					<value>USDJPY</value>
+					<value>USDMXN</value>
+					<value>USDNOK</value>
+					<value>USDRUB</value>
+					<value>USDSEK</value>
+					<value>USDSGD</value>
+					<value>XAUUSD</value>
+					<value>XAGUSD</value>
+				</list>
 			</list>
 		</property>
 		<property name="sessionMonitor">
@@ -366,14 +458,16 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
-<!-- 	<bean id="alertManager" class="com.cyanspring.server.alert.AlertManager"> -->
-<!-- 		<property name="timeoutSecond" value="3000" /> -->
-<!-- 		<property name="createThreadCount" value="5" /> -->
-<!-- 		<property name="maxRetrytimes" value="3" /> -->
-<!-- 		<property name="killTimeoutSecond" value="60000" /> -->
-<!-- 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" /> -->
-<!-- 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" /> -->
-<!-- 	</bean> -->
+	<!-- <bean id="alertManager" class="com.cyanspring.server.alert.AlertManager"> -->
+	<!-- <property name="timeoutSecond" value="3000" /> -->
+	<!-- <property name="createThreadCount" value="5" /> -->
+	<!-- <property name="maxRetrytimes" value="3" /> -->
+	<!-- <property name="killTimeoutSecond" value="60000" /> -->
+	<!-- <property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" 
+		/> -->
+	<!-- <property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" 
+		/> -->
+	<!-- </bean> -->
 
 	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
@@ -416,7 +510,7 @@
 		<property name="cancelOpenOrders" value="false" />
 	</bean>
 
-	<bean id="IdMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+	<bean id="idMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>
 		<property name="password" value="MFW9dC26"></property>
 		<!-- <property name="gateway" value="false"></property> <property name="host" 
@@ -434,15 +528,12 @@
 				<entry key="XAUUSD" value="691" />
 				<entry key="XAGUSD" value="691" />
 			</map>
-		</property>	
+		</property>
 	</bean>
 
-	<!-- <bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
-		<property name="host" value="10.0.0.10" />
-		<property name="port" value="3306" />
-		<property name="user" value="tqt001" />
-		<property name="pass" value="tqt001" />
-		<property name="database" value="LTS" />
-	</bean> -->
+	<!-- <bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector"> 
+		<property name="host" value="10.0.0.10" /> <property name="port" value="3306" 
+		/> <property name="user" value="tqt001" /> <property name="pass" value="tqt001" 
+		/> <property name="database" value="LTS" /> </bean> -->
 
 </beans>

@@ -291,6 +291,7 @@ public class SymbolItem implements AutoCloseable {
 	 */
 	Quote getQuote() {
 		Quote quote = new Quote(symbol, null, null);
+		quote.sourceId = 2;
 		quote.setTimeStamp(tick.time);
 		quote.setBid(tick.bid);
 		quote.setAsk(tick.ask);
