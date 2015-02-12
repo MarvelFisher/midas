@@ -154,8 +154,6 @@
 		</property>
 		<property name="fxSymbols">
 			<list>
-				<value>IF1502</value>
-				<value>IF1503</value>
 			</list>
 		</property>
 		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->
