@@ -61,7 +61,8 @@
 	</bean>
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<!-- 	Solve channel is inactive problem -->
-		<property name="url" value="nio://localhost:61626?wireFormat.maxInactivityDuration=86400000"></property>
+		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property>
+<!-- 		<property name="url" value="nio://localhost:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
 	</bean>
 	
 	
