@@ -14,33 +14,33 @@
         </property>
 	</bean>
 	
-	<bean id="sessionStateBean" class="com.cyanspring.common.marketsession.MarketSessionState">
+	<bean id="sessionStateBean" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="lastTradeDaysBean"></constructor-arg>
 		<property name="successNext" ref="lastTradeTimeState"></property>
 		<property name="failNext" ref="normalState"></property>
 	</bean>
 	
-	<bean id="normalState" class="com.cyanspring.common.marketsession.MarketSessionState">
+	<bean id="normalState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="openDaysBean"></constructor-arg>
 		<property name="successNext" ref="timeState"></property>
 		<property name="failNext" ref="closeState"></property>
 	</bean>
 		
-	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionState">
+	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="closeDaysBean"></constructor-arg>
 		<property name="failNext" ref="closeWeekState"></property>
 	</bean>
 	
-	<bean id="closeWeekState" class="com.cyanspring.common.marketsession.MarketSessionState">
+	<bean id="closeWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
 		<constructor-arg ref="closeWeekDaysBean"></constructor-arg>
 		<property name="failNext" ref="timeState"></property>
 	</bean>
 	
-	<bean id="timeState" class="com.cyanspring.common.marketsession.MarketSessionState">
+	<bean id="timeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
 		<constructor-arg ref="timingBean"></constructor-arg>
 	</bean>
 	
-	<bean id="lastTradeTimeState" class="com.cyanspring.common.marketsession.MarketSessionState">
+	<bean id="lastTradeTimeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
 		<constructor-arg ref="lastTradeTimingBean"></constructor-arg>
 	</bean>
 		
