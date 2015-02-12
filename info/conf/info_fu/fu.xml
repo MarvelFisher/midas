@@ -30,15 +30,8 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
-	            <value>AUDUSD</value>
-	            <value>USDJPY</value>
-	            <value>USDCHF</value>
-	            <value>USDCAD</value>
-	            <value>EURUSD</value>
-	            <value>EURJPY</value>
-	            <value>GBPUSD</value>
-	            <value>NZDUSD</value>
-	            <value>GBPJPY</value>
+	            <value>IF1502</value>
+	            <value>IF1503</value>
 	        </list>    
 		</property>
 	</bean>
@@ -62,7 +55,7 @@
 	
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>refdata/refData_fdt.xml</value>
+			<value>conf/refdata/refData_cf.xml</value>
 		</property>
 	</bean>
 	
