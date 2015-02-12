@@ -8,7 +8,7 @@
 >
 
 	<context:annotation-config />
-	<import resource="fx/*"/>
+	<import resource="info_fu/*"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
 		<property name="timeoutSecond" value="3000" />
