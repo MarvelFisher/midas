@@ -617,8 +617,8 @@ public class PositionKeeper {
 		return closePositionActionMap.containsKey(orderId);
 	}
 	
-	public Iterator<Map.Entry<String,String>> getPendingClosePositionIterator() {
-		return closePositionActionMap.entrySet().iterator();
+	public Map<String,String> getPendingClosePositions() {
+		return closePositionActionMap.getCopy();
 	}
 	
 }

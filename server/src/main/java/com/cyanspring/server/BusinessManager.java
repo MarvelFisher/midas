@@ -490,7 +490,7 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
-			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositionIterator();
+			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositions().entrySet().iterator();
 			while(iter.hasNext()) {
 				Entry<String,String> entry = iter.next();
 				ParentOrder order = orders.get(entry.getKey());

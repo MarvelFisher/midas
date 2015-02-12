@@ -109,8 +109,13 @@ public class DualMap<T, U> {
  		}
 	}
 	
+	synchronized public Map<T, U> getCopy() {
+		return new HashMap<T, U>(map1);
+	}
+
 	synchronized public void clear() {
 		map1.clear();
 		map2.clear();
 	}
+	
 }
