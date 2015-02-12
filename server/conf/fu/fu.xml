@@ -44,22 +44,6 @@
 		</property>
 	</bean>
 
-	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
-		<property name="env">
-			<value>Test</value>
-		</property>
-		<property name="category">
-			<value>EB</value>
-		</property>
-		<property name="id">
-			<value>S1</value>
-		</property>
-	</bean>
-
-	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61616"></property>
-	</bean>
-
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="transportService" />
@@ -84,7 +68,7 @@
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
 		<property name="embeddedSQLServer" value="true"></property>
 		<property name="embeddedHost" value="0.0.0.0"></property>
-		<property name="embeddedPort" value="1527"></property>
+		<property name="embeddedPort" ref="derbyPort"></property>
 		<property name="deleteTerminated" value="false"></property>
 		<property name="textSize" value="4000"></property>
 		<property name="cleanStart" value="false"></property>

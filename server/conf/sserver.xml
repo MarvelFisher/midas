@@ -61,6 +61,7 @@
 	<bean id="windUserName" class="java.lang.String"><constructor-arg value="TD1001888001" /></bean>	
 	<bean id="windUserPwd" class="java.lang.String"><constructor-arg value="62015725" /></bean>
 
-	
+	<!-- Derby setting -->
+	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
 
 </beans>
