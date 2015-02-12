@@ -78,23 +78,13 @@
 	<bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
 	</bean>
 
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
-			<ref bean="mdAdaptor" />
-		</constructor-arg>
-		<property name="preSubscriptionList">
 			<list>
 				<value>IF1502</value>
 				<value>IF1503</value>
 			</list>
-		</property>
-		<property name="sessionMonitor">
-			<map>
-				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-				<entry key="PREOPEN" value="0" />
-				<entry key="CLOSE" value="0" />
-			</map>
-		</property>
+		</constructor-arg>
 	</bean>
 
 	<bean id="strategyContainer" class="com.cyanspring.strategy.AsyncStrategyContainer"

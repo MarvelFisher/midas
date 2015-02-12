@@ -15,9 +15,9 @@
 	
 	<bean id="cpds" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
-		<property name="user" value="tqt001"/>
-		<property name="password" value="tqt001"/>
+        <property name="jdbcUrl" ref="dataBaseUrl" />
+		<property name="user" ref="dataBaseUser"/>
+		<property name="password" ref="dataBasePwd"/>
 
 		<property name="initialPoolSize" value="3" />
 		<property name="maxPoolSize" value="10" />
