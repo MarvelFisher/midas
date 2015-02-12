@@ -33,7 +33,6 @@
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
-				<!-- <ref bean="alertManager" /> -->
 			</list>
 		</property>
 		<property name="readyMap">
@@ -81,7 +80,7 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="windFutureDataAdaptor" />
+			<ref bean="mdAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -140,7 +139,7 @@
 			<list>
 			</list>
 		</property>
-		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->
+		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
@@ -180,22 +179,6 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
-	<!-- <bean id="alertManager" class="com.cyanspring.server.alert.AlertManager"> -->
-	<!-- <property name="timeoutSecond" value="3000" /> -->
-	<!-- <property name="createThreadCount" value="5" /> -->
-	<!-- <property name="maxRetrytimes" value="3" /> -->
-	<!-- <property name="killTimeoutSecond" value="60000" /> -->
-	<!-- <property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" 
-		/> -->
-	<!-- <property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" 
-		/> -->
-	<!-- </bean> -->
-
-	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
-		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
-		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
-	</bean>
-
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
@@ -213,15 +196,6 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-	</bean>
-
-	<bean id="windFutureDataAdaptor"
-		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
-		<property name="showGui" value="true"></property>
-		<property name="reqIp" value="114.80.154.34"></property>
-		<property name="reqPort" value="10051"></property>
-		<property name="userName" value="TD1001888001"></property>
-		<property name="password" value="62015725"></property>
 	</bean>
 
 </beans>

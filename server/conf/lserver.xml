@@ -40,25 +40,57 @@
 		<constructor-arg value="tqt001" />
 	</bean>
 	
+	<bean id="dailyExec" class="java.lang.String">
+		<constructor-arg value="05:45:00" />
+	</bean>
+	
+	
 	<!-- IBAdaptor setting (Setting can be marked if not used)-->
 	
-	<!-- <bean id="ibID" class="java.lang.String"><constructor-arg value="IB01" /></bean>	
-	<bean id="ibHost" class="java.lang.String"><constructor-arg value="10.0.0.20" /></bean>
-	<bean id="ibPort" class="java.lang.String"><constructor-arg value="4001" /></bean>	
-	<bean id="ibClientId" class="java.lang.String"><constructor-arg value="110" /></bean> -->
+	<!-- <bean id="mdAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+		<property name="id" value="IB01" />
+		<property name="host" value="10.0.0.20" />
+		<property name="port" value="4001" />
+		<property name="clientId" ref="110" />
+		<property name="reqMarketDepth" value="false" />
+		<property name="logMarketData" value="false" />
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>
+	</bean> -->
 	
 	<!-- IDAdaptor setting (Setting can be marked if not used)-->
 	
-	<!-- <bean id="idIP" class="java.lang.String"><constructor-arg value="10.0.0.32" /></bean>	
-	<bean id="idPort" class="java.lang.String"><constructor-arg value="6086" /></bean>
-	<bean id="idUserName" class="java.lang.String"><constructor-arg value="fdtcanned" /></bean>	
-	<bean id="idUserPwd" class="java.lang.String"><constructor-arg value="MFW9dC26" /></bean> -->
+	<!-- <bean id="mdAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+		<property name="account" value="fdtcanned"></property>
+		<property name="password" value="MFW9dC26"></property>
+		<property name="gateway" value="true"></property>
+		<property name="reqIp" value="10.0.0.32"></property>
+		<property name="reqPort" value="6086"></property>
+		<property name="exch" value="687"></property>
+		<property name="preOpen" value="610"></property>
+		<property name="open" value="615"></property>
+		<property name="close" value="600"></property>
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>	
+	</bean> -->
 
 	<!-- WindAdaptor setting (Setting can be marked if not used)-->
 	
-	<bean id="windIP" class="java.lang.String"><constructor-arg value="114.80.154.34" /></bean>	
-	<bean id="windPort" class="java.lang.String"><constructor-arg value="10051" /></bean>
-	<bean id="windUserName" class="java.lang.String"><constructor-arg value="TD1001888001" /></bean>	
-	<bean id="windUserPwd" class="java.lang.String"><constructor-arg value="62015725" /></bean>
+	<bean id="mdAdaptor"
+		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
+		<property name="showGui" value="true"></property>
+		<property name="reqIp" value="114.80.154.34"></property>
+		<property name="reqPort" value="10051"></property>
+		<property name="userName" value="TD1001888001"></property>
+		<property name="password" value="62015725"></property>
+	</bean>
+	
+	<!-- Derby setting -->
+	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
 
 </beans>

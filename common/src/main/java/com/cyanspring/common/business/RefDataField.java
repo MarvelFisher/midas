@@ -37,7 +37,8 @@ public enum RefDataField {
 	PRICE_LIMIT("Price limit"),     // 帳跌停板幅度 %
 	DECIMALPOINT("Decimal point"),  // 小數位數	
 	DENOMINATOR("Denominator"),     // 分母
-	NUMERATOR_DP("Nnumerator DP")   // 分子小數位數 
+	NUMERATOR_DP("Nnumerator DP"),   // 分子小數位數 
+	TRADABLE("Tradable") 
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

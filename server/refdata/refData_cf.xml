@@ -92,7 +92,11 @@
 			<entry>
 				<string>Numerator DP</string>
 				<string>0</string>
-			</entry>						
+			</entry>		
+			<entry>
+				<string>Tradable</string>
+				<string>1</string>
+			</entry>				
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -188,6 +192,10 @@
 			<entry>
 				<string>Numerator DP</string>
 				<string>0</string>
+			</entry>
+			<entry>
+				<string>Tradable</string>
+				<string>1</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>

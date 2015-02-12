@@ -58,7 +58,7 @@
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
 		<property name="embeddedSQLServer" value="true"></property>
 		<property name="embeddedHost" value="0.0.0.0"></property>
-		<property name="embeddedPort" value="1527"></property>
+		<property name="embeddedPort" ref="derbyPort"></property>
 		<property name="deleteTerminated" value="false"></property>
 		<property name="textSize" value="4000"></property>
 		<property name="cleanStart" value="false"></property>
@@ -68,7 +68,7 @@
 
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="windFutureDataAdaptor" />
+			<ref bean="mdAdaptor" />
 		</constructor-arg>
 		<property name="preSubscriptionList">
 			<list>
@@ -198,11 +198,6 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
-	<bean id="parseAlertSender" class="com.cyanspring.server.alert.ParseAlertSender">
-		<property name="parseApplicationId" value="SzaPSKsOWCA0paXxKYLSOdruiQjfsKb2KiyNR073" />
-		<property name="parseRestApiId" value="G0eVbakiHczHuwuEUY0F1TVrSMrcjiPWRiMfdu6Z" />
-	</bean>
-
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
@@ -226,15 +221,6 @@
 			<list>
 			</list>
 		</constructor-arg>
-	</bean>
-	
-	<bean id="windFutureDataAdaptor"
-		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
-		<property name="showGui" value="true"></property>
-		<property name="reqIp" ref="windIP"></property>
-		<property name="reqPort" ref="windPort"></property>
-		<property name="userName" ref="windUserName"></property>
-		<property name="password" ref="windUserPwd"></property>
-	</bean>
+	</bean>	
 
 </beans>

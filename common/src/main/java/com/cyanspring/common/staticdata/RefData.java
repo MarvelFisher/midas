@@ -135,4 +135,8 @@ public class RefData extends DataObject {
 	public String getNumberatorDp(){
 		return this.get(String.class, RefDataField.NUMERATOR_DP.value());
 	}
+	
+	public String getTradable(){
+		return this.get(String.class, RefDataField.TRADABLE.value());
+	}
 }
