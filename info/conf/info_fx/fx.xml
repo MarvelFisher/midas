@@ -1,0 +1,69 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
+		<property name = "plugins">
+	        <list>
+            	<ref bean="alertManager"/>
+            	<ref bean="centralDbProcessor"/>
+	        </list>
+		</property>
+	</bean>
+	
+	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" ref="jdbcUrl"/>
+		<property name="open">
+			<value>2215</value>
+		</property>
+		<property name="preopen">
+			<value>2210</value>
+		</property>
+		<property name="close">
+			<value>2200</value>
+		</property>
+		<property name="preSubscriptionList">
+			<list>
+	            <value>AUDUSD</value>
+	            <value>USDJPY</value>
+	            <value>USDCHF</value>
+	            <value>USDCAD</value>
+	            <value>EURUSD</value>
+	            <value>EURJPY</value>
+	            <value>GBPUSD</value>
+	            <value>NZDUSD</value>
+	            <value>GBPJPY</value>
+	        </list>    
+		</property>
+	</bean>
+	
+	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
+	</bean>
+	
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportService"/>
+	    </constructor-arg>
+		<property name="embedBroker" value="true"></property>
+	</bean>
+	
+	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportServiceMD"/>
+	    </constructor-arg>
+		<property name="embedBroker" value="false"></property>
+	</bean>
+	
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+		<property name="refDataFile">
+			<value>refdata/refData_fdt.xml</value>
+		</property>
+	</bean>
+	
+</beans>

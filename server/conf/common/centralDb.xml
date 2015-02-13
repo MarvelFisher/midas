@@ -1,0 +1,35 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+
+	<bean id="CentralDbConnector" class="com.cyanspring.server.persistence.CentralDbConnector">
+		<property name="cpds"><ref bean="cpds"/></property>
+	</bean>
+	
+	<bean id="cpds" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" ref="dataBaseUrl" />
+		<property name="user" ref="dataBaseUser"/>
+		<property name="password" ref="dataBasePwd"/>
+
+		<property name="initialPoolSize" value="3" />
+		<property name="maxPoolSize" value="10" />
+		<property name="maxIdleTime" value="600"/>
+		<property name="minPoolSize" value="2" />
+				
+		<property name="acquireRetryAttempts" value="30" />
+		<property name="numHelperThreads" value="3" />
+        <property name="testConnectionOnCheckin" value="false"/>
+        <property name="testConnectionOnCheckout" value="true"/>
+        <property name="preferredTestQuery" value="SELECT 1"/>
+        <property name="automaticTestTable" value="Test"/>
+        <property name="idleConnectionTestPeriod" value="60"/>
+	</bean>
+</beans>

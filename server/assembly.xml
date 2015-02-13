@@ -23,6 +23,7 @@
 			<directory>${basedir}/../adaptor/</directory>
 			<includes>
 				<include>conf/*</include>
+				<include>windlib/*</include>
 				<include>*.bat</include>
 				<include>*.sh</include>
 			</includes>
@@ -31,7 +32,7 @@
 		<fileSet>
 			<directory>${basedir}/../info/</directory>
 			<includes>
-				<include>conf/*</include>
+				<include>conf/**</include>
 				<include>*.bat</include>
 				<include>*.sh</include>
 			</includes>

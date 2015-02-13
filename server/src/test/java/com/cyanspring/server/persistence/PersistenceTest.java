@@ -42,7 +42,7 @@ import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.PersistType;
 import com.cyanspring.common.type.StrategyState;
 
-@ContextConfiguration(locations = { "classpath:conf/persistence.xml" })
+@ContextConfiguration(locations = { "classpath:conf/common/persistence.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class PersistenceTest {
 	private static final Logger log = LoggerFactory
@@ -53,7 +53,7 @@ public class PersistenceTest {
 	
 	@BeforeClass
 	public static void BeforeClass() throws Exception {
-		DOMConfigurator.configure("conf/log4j.xml");
+		DOMConfigurator.configure("conf/common/log4j.xml");
 	}
 
 	@Test
