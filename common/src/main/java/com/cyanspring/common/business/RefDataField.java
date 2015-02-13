@@ -21,23 +21,23 @@ public enum RefDataField {
 	EN_DISPLAYNAME("ENName"),
 	TW_DISPLAYNAME("TWName"),
 	CN_DISPLAYNAME("CNName"),
-	REF_SYMBOL("Ref symbol"),  // 相關商品. ex : 股票選擇權裡面的股票
-	TYPE("Type"),    // 股票/期貨/選擇權 ...
-	CATEGORY("Category"),      // 商品分類 . ex IF
-	TICK_TABLE("Tick table"),  // tick table ref
-	SETTLEMENT_DATE("Settlement date"),  // 到期日
+	REF_SYMBOL("Ref symbol"),
+	TYPE("Type"), 
+	CATEGORY("Category"),
+	TICK_TABLE("Tick table"),
+	SETTLEMENT_DATE("Settlement date"),  
 	PRICE_PER_UNIT("Price per unit"),
-	EN_TRADING_UNIT("ENTrading unit"),   // 交易單位
-	TW_TRADING_UNIT("TWTrading unit"),   // 交易單位
-	CN_TRADING_UNIT("CNTrading unit"),   // 交易單位
-	MARGIN_RATE("Margin Rate"),          // 保證金 %%
-	COMMISSION_FEE("Commission fee"),    // 手續費
-	MINIMAL_COMMISSION_FEE("Minimal CF"),// 最低收續費
-	MAXIMAL_LOT("Maximal lot"),     // 最大下單手數
-	PRICE_LIMIT("Price limit"),     // 帳跌停板幅度 %
-	DECIMALPOINT("Decimal point"),  // 小數位數	
-	DENOMINATOR("Denominator"),     // 分母
-	NUMERATOR_DP("Nnumerator DP"),   // 分子小數位數 
+	EN_TRADING_UNIT("ENTrading unit"),   
+	TW_TRADING_UNIT("TWTrading unit"),   
+	CN_TRADING_UNIT("CNTrading unit"),   
+	MARGIN_RATE("Margin Rate"),          
+	COMMISSION_FEE("Commission fee"),    
+	MINIMAL_COMMISSION_FEE("Minimal CF"),
+	MAXIMAL_LOT("Maximal lot"),     
+	PRICE_LIMIT("Price limit"),     
+	DECIMALPOINT("Decimal point"),  
+	DENOMINATOR("Denominator"),     
+	NUMERATOR_DP("Nnumerator DP"),
 	TRADABLE("Tradable") 
 	;
 	
