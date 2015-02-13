@@ -22,7 +22,7 @@ public class OrderCountValidator implements IOrderValidator {
 	private static final Logger log = LoggerFactory
 			.getLogger(OrderCountValidator.class);
 
-	private int limit = 2;
+	private int limit = 500;
 	private Date currentDate;
 	private Map<String, Integer> countMap = new HashMap<String, Integer>();
 
