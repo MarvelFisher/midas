@@ -10,6 +10,7 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
+	        	<ref bean="newsManager"/>
             	<ref bean="alertManager"/>
             	<ref bean="centralDbProcessor"/>
 	        </list>
