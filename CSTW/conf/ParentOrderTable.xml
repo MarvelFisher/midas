@@ -77,6 +77,16 @@
         <width>113</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Reason</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Route</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>
   </entry>
 </map>

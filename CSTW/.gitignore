@@ -1,0 +1,13 @@
+/bin
+conf/ExecutionPositionTable.xml
+conf/AccountTable.xml
+conf/ChildOrderTable.xml
+conf/ClosedPositionTable.xml
+conf/ExecutionTable.xml
+conf/MultiInstrumentStrategyTable.xml
+conf/MultiInstrumentTable.xml
+conf/MultiOrderStrategyTable.xml
+conf/OpenPositionTable.xml
+conf/ParentOrderTable.xml
+conf/SignalView.xml
+conf/SingleInstrumentTable.xml
