@@ -1,0 +1,109 @@
+package com.cyanspring.server.marketdata;
+
+import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.util.TimeThrottler;
+
+public class AggrQuote {
+
+	TimeThrottler timer;
+	double minAsk = 0, maxBid = 0, maxBidAsk = 0;
+	double open = 0, high = 0, low = 0, close = 0;
+	Quote quote = null;
+	int sourceId = -1;
+
+	public AggrQuote(String symbol, long inteval) {
+		timer = new TimeThrottler(inteval);
+		minAsk = maxBid = maxBidAsk = 0;
+	}
+
+	void clearQuote() {
+		minAsk = maxBid = maxBidAsk = 0;
+	}
+	public Quote updateQuote(Quote src) {
+
+		if (quote == null) {
+			quote = src;
+		}
+
+		if (maxBid < src.getBid()) {
+			maxBid = src.getBid();
+			maxBidAsk = src.getAsk();
+		}
+		
+		minAsk = minAsk != 0 ? Math.min(src.getAsk(), minAsk) : src.getAsk();
+		
+		if (src.sourceId == sourceId && src.getClose() != close) {
+			open = high = low = 0;		
+			sourceId = src.sourceId;			
+		}
+		
+		if (src.sourceId == 1) {
+			
+			if ( src.getClose() != 0) {
+				close = src.getClose();
+			}
+			
+			if ( src.getOpen() != 0) {			
+				open = src.getOpen();
+			}
+			
+			if ( src.getLow() != 0) {
+				low = src.getLow();
+			}
+			
+			if ( src.getHigh() != 0) {
+				high = src.getHigh();
+			}
+			
+			sourceId = src.sourceId;
+		}
+		else {
+			
+			if (close == 0 || sourceId == src.sourceId) {		
+				close = src.getClose();	
+				sourceId = src.sourceId;
+			}		
+			
+			if (open == 0 || sourceId == src.sourceId) {
+				open = src.getOpen();	
+				sourceId = src.sourceId;
+			}
+			
+			if (low == 0 || sourceId == src.sourceId) {
+				low = src.getLow();
+				sourceId = src.sourceId;
+			}
+			
+			if (high == 0 || sourceId == src.sourceId) {
+				high = src.getHigh();
+				sourceId = src.sourceId;
+			}
+		}
+		
+		
+		if (timer.check()) {
+			Quote retQuote = src;
+			if (minAsk <= maxBid) {
+				minAsk = maxBidAsk;
+			}
+			
+			double last = (maxBid + minAsk) / 2;
+			retQuote.setBid(maxBid);
+			retQuote.setAsk(minAsk);
+			retQuote.setLast(last);
+			
+			retQuote.setOpen(open);
+			retQuote.setHigh(high);
+			retQuote.setLow(low);
+			retQuote.setClose(close);
+			
+			clearQuote();
+			
+			return retQuote;
+			
+		} else {
+			return null;
+		}
+	}
+
+}

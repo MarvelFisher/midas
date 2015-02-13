@@ -481,6 +481,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 
 	synchronized private void publishQuote(Quote quote) {
 		quote = (Quote)quote.clone();
+		quote.sourceId = 1;
 		quote.setTimeStamp(new Date());
 		List<IMarketDataListener> list = subs.get(quote.getSymbol());
 		if(null != list)
