@@ -18,44 +18,17 @@ public class SymbolInfo implements Cloneable{
 	private String esName;
 	private String esSubName;
 	
-	public SymbolInfo(String market, 
-			String code, String windCode, String hint, String cnName, String enName, String twName, String jpName, String krName, String esName) 
+	public SymbolInfo(String market, String code) 
 	{
 		this.market = market;
 		this.code = code;
-		this.windCode = windCode;
-		this.hint = hint;
-		this.cnName = cnName;
-		this.enName = enName;
-		this.twName = twName;
-		this.jpName = jpName;
-		this.krName = krName;
-		this.esName = esName;
-		if (hint == null || hint.isEmpty())
-		{
-			this.cnSubName = code;
-			this.twSubName = code;
-			this.enSubName = code;
-			this.jpSubName = code;
-			this.esSubName = code;
-			this.krSubName = code;
-		}
-		else
-		{
-			this.cnSubName = SymbolInfoType.fromString(hint).getCnName();
-			this.twSubName = SymbolInfoType.fromString(hint).getTwName();
-			this.enSubName = SymbolInfoType.fromString(hint).getEnName();
-			this.jpSubName = SymbolInfoType.fromString(hint).getJpName();
-			this.esSubName = SymbolInfoType.fromString(hint).getEsName();
-			this.krSubName = SymbolInfoType.fromString(hint).getKrName();
-		}
 	}
 	public SymbolInfo(SymbolInfo symbolinfo)
 	{
 		this.market = symbolinfo.getMarket();
 		this.code = symbolinfo.getCode();
-		this.windCode = symbolinfo.getWindCode();
-		this.hint = symbolinfo.getHint();
+		this.setWindCode(symbolinfo.getWindCode());
+		this.setHint(symbolinfo.getHint());
 		this.cnName = symbolinfo.getCnName();
 		this.cnSubName = symbolinfo.getCnSubName();
 		this.enName = symbolinfo.getEnName();
@@ -117,5 +90,35 @@ public class SymbolInfo implements Cloneable{
 	}
 	public String getEsSubName() {
 		return esSubName;
+	}
+	public void setCnName(String cnName) {
+		this.cnName = cnName;
+		this.cnSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getCnName();
+	}
+	public void setTwName(String twName) {
+		this.twName = twName;
+		this.twSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getTwName();
+	}
+	public void setEnName(String enName) {
+		this.enName = enName;
+		this.enSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEnName();
+	}
+	public void setJpName(String jpName) {
+		this.jpName = jpName;
+		this.jpSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getJpName();
+	}
+	public void setEsName(String esName) {
+		this.esName = esName;
+		this.esSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEsName();
+	}
+	public void setKrName(String krName) {
+		this.krName = krName;
+		this.krSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getKrName();
+	}
+	public void setWindCode(String windCode) {
+		this.windCode = windCode;
+	}
+	public void setHint(String hint) {
+		this.hint = hint;
 	}
 }
