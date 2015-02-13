@@ -10,10 +10,16 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
+	        	<ref bean="newsManager"/>
             	<ref bean="alertManager"/>
             	<ref bean="centralDbProcessor"/>
 	        </list>
 		</property>
+	</bean>
+	
+	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
+		<property name="endString" value="（更多精彩" />
+		<property name="CheckThreadStatusInterval" value="60000" />		
 	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
