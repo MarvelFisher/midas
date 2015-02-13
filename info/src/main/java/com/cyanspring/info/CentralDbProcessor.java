@@ -2,8 +2,11 @@ package com.cyanspring.info;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -795,39 +798,24 @@ public class CentralDbProcessor implements IPlugin
 		{
 			return;
 		}
-		Calendar calStamp = Calendar.getInstance() ;
-		Calendar calSent = Calendar.getInstance() ;
-		calStamp.setTime(quote.getTimeStamp()) ;
-		calSent.setTime(quote.getTimeSent()) ;
 		
 		String strFile = String.format("./DAT/%s/%s.TCK", 
 				getTradedate(), quote.getSymbol()) ;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss") ;
-		double bid = quote.getBid() ;
-		double ask = quote.getAsk() ;
-		double price = (bid + ask) / 2 ;
 		File file = new File(strFile) ;
-		String strOut = String.format("%s|%.5f|%.5f|%.5f|%f|%f|%.5f|%f|%.5f|%.5f|%.5f|%.5f|" + 
-				"%f|%s|%s", 
-				quote.getSymbol(), price, bid, ask, quote.getBidVol(), 
-				quote.getAskVol(), quote.getLast(), quote.getLastVol(), quote.getHigh(), 
-				quote.getLow(), quote.getOpen(), quote.getClose(), quote.getTotalVolume(),
-				sdf.format(quote.getTimeStamp()), sdf.format(quote.getTimeSent())) ;
+        file.getParentFile().mkdirs();
+        boolean fileExist = file.exists();
         try
         {
-            file.getParentFile().mkdirs();
-            if (!file.exists())
-            {
-                file.createNewFile() ;
-            }
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file, true)) ;
-            fileOut.write(strOut) ;
-            fileOut.newLine() ;
-            fileOut.close() ;
+            FileOutputStream fos = new FileOutputStream(file, true);
+            ObjectOutputStream oos = (!fileExist) ? new ObjectOutputStream(fos) : new AppendingObjectOutputStream(fos); 
+        	oos.writeObject(quote);
+            oos.flush();
+            oos.close();
+            fos.close();
         }
         catch (IOException e)
         {
-            log.error(e.toString(), e);
+            log.error(e.getMessage(), e);
         }
 	}
 	
@@ -934,7 +922,7 @@ public class CentralDbProcessor implements IPlugin
 					if (preSubscriptionList.contains(refdata.getSymbol()))
 					{
 						defaultSymbolInfo.add(new SymbolInfo(refdata.getExchange(), 
-								refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), null));
+								refdata.getSymbol(), null, refdata.getCNDisplayName(), refdata.getENDisplayName(), refdata.getTWDisplayName()));
 					}
 				}
 				sqlcmd += ";" ;
@@ -1120,4 +1108,23 @@ public class CentralDbProcessor implements IPlugin
 		this.preSubscriptionList = preSubscriptionList;
 	}
 	
+}
+
+class AppendingObjectOutputStream extends ObjectOutputStream 
+{
+
+    public AppendingObjectOutputStream(OutputStream out) throws IOException 
+    {
+      super(out);
+    }
+
+    @Override
+    protected void writeStreamHeader() throws IOException 
+    {
+		// do not write a header, but reset:
+		// this line added after another question
+	 	// showed a problem with the original
+	 	reset();
+    }
+
 }
