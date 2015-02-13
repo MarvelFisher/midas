@@ -240,9 +240,9 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
+		log.info("Process MarketSession: " + event.getSession());
 		this.tradedate = event.getTradeDate() ;
 		setSessionType(event.getSession(), event.getMarket()) ;
-		log.info("Process MarketSession: " + event.getSession());
 		isStartup = false;
 	}
 	
@@ -875,9 +875,11 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void onCallRefData()
 	{
+		log.info("Call refData strat");
 		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
 		if (refList.isEmpty() || this.listSymbolData.isEmpty() == false)
 		{
+			log.warn("refData is empty: " + refList.isEmpty() + " or already read");
 			return ;
 		}
 		String sqlcmd;
@@ -934,6 +936,7 @@ public class CentralDbProcessor implements IPlugin
 				log.error(e.toString(), e);;
 			}
 		}
+		log.info("Call refData finish");
 	}
 	
 	public void resetStatement()
