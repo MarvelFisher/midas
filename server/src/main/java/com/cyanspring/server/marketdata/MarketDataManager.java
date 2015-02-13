@@ -101,7 +101,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	AggregationTicks aggrTicks = null;
 
-	Date lastTickTime = new Date(0);
 	long interval = 300;
 
 	public boolean isAggregation() {
@@ -319,21 +318,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			quote2 = event.getQuote();
 		}
 
-		// if (lastTickTime.getTime() > quote2.getTimeStamp().getTime()) {
-		// return;
-		// }
-		// lastTickTime = quote2.getTimeStamp();
-
-		//String strFmt = formatDate(quote2.getTimeStamp(),
-		//		"yyyy-MM-dd HH:mm:ss.SSS");
+		//String strFmt = formatDate(quote2.getTimeStamp(),"yyyy-MM-dd HH:mm:ss.SSS");
 		//if (symbol.equals("USDJPY")) {
-		//	log.info(String.format("[%s] %s PC=%f,O=%f,H=%f,L=%f", strFmt, quote2.toString(), quote2.getClose(), quote2.getOpen(), quote2.getHigh(), quote2.getLow()));
+		//	log.debug(String.format("[%s] %s PC=%f,O=%f,H=%f,L=%f", strFmt, quote2.toString(), quote2.getClose(), quote2.getOpen(), quote2.getHigh(), quote2.getLow()));
 		//}
 		
-		//if (quote2.getBid() >= quote2.getAsk()) {
-		//	log.error(String.format("*****************************[%s] %s", strFmt, quote2.toString()));
-		//}
-
 		event = new QuoteEvent(event.getKey(), null, quote2);
 
 		if (eventProcessor.isSync()) {

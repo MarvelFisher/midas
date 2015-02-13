@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
+import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.RingBuffer;
@@ -221,7 +222,12 @@ public class Parser implements IReqThreadCallback {
 				break;
 			case FieldID.LastTradeTime: {
 
-				tTime = new Date((long) (Double.parseDouble(vec2[1]) * 1000));
+				if (IdMarketDataAdaptor.instance.isLocalTime == true)
+				{
+					tTime = DateUtil.now();
+				} else {
+					tTime = new Date((long) (Double.parseDouble(vec2[1]) * 1000));
+				}
 			}
 				break;
 			case FieldID.LastActivityTime:

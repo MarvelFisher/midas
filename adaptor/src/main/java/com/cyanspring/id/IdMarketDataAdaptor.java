@@ -76,6 +76,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 		this.reqPort = reqPort;
 	}
 
+	public boolean isLocalTime = true;
 	int reqPort = 0;
 	int preOpen = 0;
 	int open = 0;

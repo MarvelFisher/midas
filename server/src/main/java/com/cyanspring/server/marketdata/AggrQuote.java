@@ -37,19 +37,49 @@ public class AggrQuote {
 			sourceId = src.sourceId;			
 		}
 		
-		if (close == 0 || src.sourceId == 1) {		
-			close = src.getClose();	
-		}		
-		
-		if (open == 0 || (src.sourceId == 1 && src.getOpen() != 0)) {
-			open = src.getOpen();					
+		if (src.sourceId == 1) {
+			
+			if ( src.getClose() != 0) {
+				close = src.getClose();
+			}
+			
+			if ( src.getOpen() != 0) {			
+				open = src.getOpen();
+			}
+			
+			if ( src.getLow() != 0) {
+				low = src.getLow();
+			}
+			
+			if ( src.getHigh() != 0) {
+				high = src.getHigh();
+			}
+			
+			sourceId = src.sourceId;
+		}
+		else {
+			
+			if (close == 0 || sourceId == src.sourceId) {		
+				close = src.getClose();	
+				sourceId = src.sourceId;
+			}		
+			
+			if (open == 0 || sourceId == src.sourceId) {
+				open = src.getOpen();	
+				sourceId = src.sourceId;
+			}
+			
+			if (low == 0 || sourceId == src.sourceId) {
+				low = src.getLow();
+				sourceId = src.sourceId;
+			}
+			
+			if (high == 0 || sourceId == src.sourceId) {
+				high = src.getHigh();
+				sourceId = src.sourceId;
+			}
 		}
 		
-		if (low == 0 || low > src.getLow()) {
-			low = src.getLow();
-		}
-		
-		high = Math.max(high, src.getHigh());		
 		
 		if (timer.check()) {
 			Quote retQuote = src;
