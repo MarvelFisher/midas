@@ -37,9 +37,6 @@ import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
-import com.cyanspring.common.downstream.DownStreamManager;
-import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.downstream.IOrderRouter;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -77,7 +74,6 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
-import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
@@ -473,7 +469,6 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			log.debug("Close position order " + strategy.getId() + " assigned to container " + container.getId());
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
-			eventProcessor.subscribeToEventNow(UpdateParentOrderEvent.class, order.getId());
 			eventManager.sendEvent(addStrategyEvent);
 
 		} catch (Exception e) {
@@ -489,20 +484,9 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 	}
 
-	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
-		ParentOrder order = event.getParent();
-		if(order.getOrdStatus().isCompleted()) {
-			String accountSymbol = positionKeeper.unlockAccountPosition(order.getId());
-			if(null != accountSymbol) {
-				log.debug("Close position action completed: " + accountSymbol + ", " + order.getId());
-			}
-			eventProcessor.unsubscribeToEvent(UpdateParentOrderEvent.class, order.getId());
-		}
-	}
-	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
-			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositionIterator();
+			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositions().entrySet().iterator();
 			while(iter.hasNext()) {
 				Entry<String,String> entry = iter.next();
 				ParentOrder order = orders.get(entry.getKey());
@@ -790,6 +774,5 @@ public class BusinessManager implements ApplicationContextAware {
 	public void setClosePositionCheckInterval(long closePositionCheckInterval) {
 		this.closePositionCheckInterval = closePositionCheckInterval;
 	}
-	
 	
 }
