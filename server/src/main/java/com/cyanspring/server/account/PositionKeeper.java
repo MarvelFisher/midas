@@ -571,10 +571,16 @@ public class PositionKeeper {
 		}
 	}
 	
-	public void rollAccount(Account account) {
+	public Account rollAccount(Account account) {
 		synchronized(getSyncAccount(account.getId())) {
 			account.updateEndOfDay();
+			try {
+				return account.clone();
+			} catch (CloneNotSupportedException e) {
+				log.error(e.getMessage(), e);
+			}
 		}
+		return null;
 	}
 	
 	private String getClosePositionKey(String account, String symbol) {

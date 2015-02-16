@@ -476,7 +476,7 @@ public class AccountPositionManager implements IPlugin {
 		
 		Execution execution = event.getExecution();
 		if(null != execution) {
-			log.debug("Process execution: " + execution);			
+			log.debug("Process execution: " + execution + ", " + event.getOrder().getId() + ", " + event.getOrder().getStrategyId());			
 			try {
 				Account account = accountKeeper.getAccount(execution.getAccount());
 				positionKeeper.processExecution(execution, account);
@@ -797,12 +797,8 @@ public class AccountPositionManager implements IPlugin {
 		log.info("Account day end processing start");
 		List<Account> list = accountKeeper.getAllAccounts();
 		for(Account account: list) {
-			positionKeeper.rollAccount(account);
-			try {
-				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account.clone()));
-			} catch (CloneNotSupportedException e) {
-				log.error(e.getMessage(), e);
-			}
+			Account copy = positionKeeper.rollAccount(account);
+			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, copy));
 			account.resetDailyPnL();
 		}
 		eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, tradeDate));

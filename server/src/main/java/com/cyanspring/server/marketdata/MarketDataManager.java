@@ -647,4 +647,14 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
 		this.sessionMonitor = sessionMonitor;
 	}
+
+	public long getTimerInterval() {
+		return timerInterval;
+	}
+
+	public void setTimerInterval(long timerInterval) {
+		this.timerInterval = timerInterval;
+	}
+	
+	
 }
