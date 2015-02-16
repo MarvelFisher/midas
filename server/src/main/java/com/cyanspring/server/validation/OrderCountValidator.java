@@ -43,6 +43,7 @@ public class OrderCountValidator implements IOrderValidator {
 		if(!currentDate.equals(now)) {
 			countMap.clear();
 			countMap.put(account, 1);
+			currentDate = now;
 			return true;
 		}
 		
