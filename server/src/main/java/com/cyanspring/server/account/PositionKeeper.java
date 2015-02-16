@@ -15,18 +15,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ParentOrder;
-import com.cyanspring.common.fx.FxException;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
+import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.StrategyState;
+import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 
@@ -42,7 +44,8 @@ public class PositionKeeper {
 	private ConcurrentHashMap<String, List<Execution>> executions = new ConcurrentHashMap<String, List<Execution>>();
 	private ConcurrentHashMap<String, Map<String, Map<String, ParentOrder>>> parentOrders = // keys: account/symbol/orderId
 				new ConcurrentHashMap<String, Map<String, Map<String, ParentOrder>>>();
-	
+	private DualMap<String, String> closePositionActionMap = new DualMap<String, String>();
+
 	private IPositionListener listener;
 	private IQuoteFeeder quoteFeeder;
 
@@ -51,6 +54,9 @@ public class PositionKeeper {
 	
 	@Autowired
 	IFxConverter fxConverter;
+	
+	@Autowired
+	AccountKeeper accountKeeper;
 	
 	public IPositionListener setListener(IPositionListener listener) {
 		IPositionListener result = this.listener;
@@ -70,7 +76,14 @@ public class PositionKeeper {
 			Map<String, Map<String, ParentOrder>> existing = parentOrders.putIfAbsent(order.getAccount(), accountMap);
 			accountMap = existing == null?accountMap:existing;
 		}
-
+		
+		if(checkAccountPositionLock(order.getAccount(), order.getSymbol()) && 
+			order.getOrdStatus().isCompleted() && 
+			!order.getOrdStatus().equals(OrdStatus.FILLED)) {
+				unlockAccountPosition(order.getId());
+				log.debug("Close position action completed: " + order.getAccount() + ", " + order.getSymbol() + ", " + order.getId());
+		}
+		
 		synchronized(getSyncAccount(order.getAccount())) {
 			Map<String, ParentOrder> symbolMap = accountMap.get(order.getSymbol());
 			if(null == symbolMap) {
@@ -96,11 +109,12 @@ public class PositionKeeper {
 		
 		//update execution
 		boolean parentOrderUdpated = false;
+		ParentOrder parentOrder = null;
 		Map<String, Map<String, ParentOrder>> accountOrders =  parentOrders.get(execution.getAccount());
 		if(null != accountOrders) {
 			Map<String, ParentOrder> symbolOrders = accountOrders.get(execution.getSymbol());
 			if(null != symbolOrders) {		
-				ParentOrder parentOrder = symbolOrders.get(execution.getParentOrderId());
+				parentOrder = symbolOrders.get(execution.getParentOrderId());
 				if(null != parentOrder) {
 					parentOrder.processExecution(execution);
 					parentOrderUdpated = true;
@@ -187,6 +201,14 @@ public class PositionKeeper {
 			if(needAccountUpdate)
 				notifyAccountUpdate(account);
 			
+		}
+
+		if(parentOrder != null && 
+			checkAccountPositionLock(parentOrder.getAccount(), parentOrder.getSymbol()) &&
+			parentOrder.getOrdStatus().equals(OrdStatus.FILLED) &&
+			PriceUtils.Equal(parentOrder.getCumQty(), parentOrder.getQuantity())) {
+				unlockAccountPosition(parentOrder.getId());
+				log.debug("Close position action completed ex: " + parentOrder.getAccount() + ", " + parentOrder.getSymbol() + ", " + parentOrder.getId());
 		}
 	}
 	
@@ -422,7 +444,15 @@ public class PositionKeeper {
 				marginValue += getMarginValueByAccountAndSymbol(account, symbol, quote);
 			}
 			account.setUrPnL(accountUrPnL);
-
+			
+			AccountSetting accountSetting;
+			try {
+				accountSetting = accountKeeper.getAccountSetting(account.getId());
+			} catch (AccountException e) {
+				log.error(e.getMessage(), e);
+				return;
+			}
+			
 			double accountMargin = (account.getCash() +  account.getUrPnL()) * Default.getMarginTimes();
 			account.setMargin(accountMargin - marginValue);
 		}
@@ -554,10 +584,47 @@ public class PositionKeeper {
 		}
 	}
 	
-	public void rollAccount(Account account) {
+	public Account rollAccount(Account account) {
 		synchronized(getSyncAccount(account.getId())) {
 			account.updateEndOfDay();
+			try {
+				return account.clone();
+			} catch (CloneNotSupportedException e) {
+				log.error(e.getMessage(), e);
+			}
 		}
+		return null;
 	}
+	
+	private String getClosePositionKey(String account, String symbol) {
+		return account + "-" + symbol;
+	}
+	
+
+	public void lockAccountPosition(String account, String symbol, String orderId) {
+		log.info("Lock postion: " + account + ", " + symbol + ", " + orderId);
+		closePositionActionMap.put(orderId, getClosePositionKey(account, symbol));
+	}
+	
+	public String unlockAccountPosition(String account, String symbol) {
+		String result = closePositionActionMap.removeKeyByValue(getClosePositionKey(account, symbol));
+		log.info("Unlock postion: " + account + ", " + symbol + ", " + result);
+		return result;
+	}
+	
+	public String unlockAccountPosition(String orderId) {
+		String result = closePositionActionMap.remove(orderId);
+		log.info("Unlock postion: " + result + ", " + orderId);
+		return result;
+	}
+	
+	public boolean checkAccountPositionLock(String account, String symbol) {
+		return closePositionActionMap.containsValue(getClosePositionKey(account, symbol));
+	}
+	
+	public Map<String, String> getPendingClosePositions() {
+		return new HashMap<String, String>(closePositionActionMap.getMap());
+	}
+	
 	
 }

@@ -485,4 +485,13 @@ for(Entry<String, Quote> entry : lastTradeDateQuotes.entrySet())
 	public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
 		this.sessionMonitor = sessionMonitor;
 	}
+	
+	public long getTimerInterval() {
+		return timerInterval;
+	}
+
+	public void setTimerInterval(long timerInterval) {
+		this.timerInterval = timerInterval;
+	}
+	
 }
