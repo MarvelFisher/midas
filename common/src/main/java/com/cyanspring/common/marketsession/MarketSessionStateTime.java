@@ -77,7 +77,8 @@ public class MarketSessionStateTime extends MarketSessionState{
 		
 		if(TimeUtil.getTimePass(startCal.getTime(), dateCal.getTime()) <= 0 &&
 				TimeUtil.getTimePass(endCal.getTime(), dateCal.getTime()) >= 0){
-			saveTradeDate(date);
+			if(!compare.session.equals(MarketSessionType.CLOSE))
+				saveTradeDate(date);
 			return true;
 		}			
 		return false;
