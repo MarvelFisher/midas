@@ -48,9 +48,16 @@
 	<!-- MarketDataManager setting-->
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="simMarketDataAdaptor" />
+			<list>
+				<ref bean="simMarketDataAdaptor" />
+			</list>
 		</constructor-arg>
-		<property name="preSubscriptionList" ref="preSubscriptionList">
+		<property name="quoteThrottle" value="1000"></property>
+		<property name="timerInterval" value="1000"></property>
+		<property name="preSubscriptionList">
+			<list>
+				<ref bean="preSubscriptionList" />
+			</list>
 		</property>
 		<property name="sessionMonitor">
 			<map>
