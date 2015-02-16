@@ -51,6 +51,8 @@ public class MarketSessionStateTime extends MarketSessionState{
 		
 		if(tradeDate == null){
 			tradeDate = sdf.format(date);
+			tradeDateUpdate = true;
+			return;
 		}
 		
 		if(TimeUtil.getTimePass(date, scheduledToday) > 0 && !tradeDate.equals(nextTradeDate)){
@@ -77,7 +79,6 @@ public class MarketSessionStateTime extends MarketSessionState{
 		
 		if(TimeUtil.getTimePass(startCal.getTime(), dateCal.getTime()) <= 0 &&
 				TimeUtil.getTimePass(endCal.getTime(), dateCal.getTime()) >= 0){
-			if(!compare.session.equals(MarketSessionType.CLOSE))
 				saveTradeDate(date);
 			return true;
 		}			

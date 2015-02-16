@@ -50,7 +50,7 @@
 		<constructor-arg ref="ahtBean"></constructor-arg>
 	</bean>
 	
-	<bean id="htState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
+	<bean id="htState" class="com.cyanspring.common.marketsession.MarketSessionStateHTime">
 		<constructor-arg ref="htBean"></constructor-arg>
 	</bean>
 	
