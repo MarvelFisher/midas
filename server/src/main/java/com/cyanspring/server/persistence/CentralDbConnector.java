@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.Default;
+import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserType;
 
 public class CentralDbConnector {
@@ -34,6 +35,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
+	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
 	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
 	private ComboPooledDataSource cpds;	
@@ -214,14 +216,21 @@ public class CentralDbConnector {
 	}
 
 	public boolean userLogin(String sUser, String sPassword) {
+		return userLoginEx(sUser, sPassword) != null;
+	}
+	public User userLoginEx(String sUser, String sPassword) {
 		if (!checkConnected())
-			return false;
+			return null;
 
-		String sQuery = String.format(getUserPasswordSalt, sUser);
+		String sQuery = String.format(getUserAllInfo, sUser);
 		Statement stmt = null;
 
 		String md5Password = null;
 		String salt = null;
+		String username = null;
+		String email = null;
+		String phone = null;
+		UserType userType = null;
 
 		try {
 			stmt = conn.createStatement();
@@ -230,18 +239,22 @@ public class CentralDbConnector {
 			if (rs.next()){
 				md5Password = rs.getString("PASSWORD");
 				salt = rs.getString("SALT");
+				username = rs.getString("USERNAME");
+				email = rs.getString("EMAIL");
+				phone = rs.getString("PHONE");
+				userType = UserType.fromCode(rs.getInt("USERLEVEL"));
 			}
 			
 			if(md5Password == null){
 				closeStmt(stmt);
-				return false;
+				return null;
 			}
 
 			String fullPassword = (salt == null)? sPassword : sPassword + salt;
 			
 			if(md5Password.equals(md5(fullPassword))){
 				closeStmt(stmt);
-				return true;
+				return new User(sUser, username, sPassword, email, phone, userType);
 			}
 
 		} catch (SQLException e) {
@@ -251,9 +264,8 @@ public class CentralDbConnector {
 				closeStmt(stmt);
 			}
 		}
-		return false;
-	}
-	
+		return null;
+	}	
 	public boolean changePassword(String sUser, String originalPass, String newPass) {
 		if (!checkConnected())
 			return false;

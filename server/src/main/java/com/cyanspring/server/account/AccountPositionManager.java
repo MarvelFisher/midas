@@ -62,8 +62,12 @@ import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
+import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
+import com.cyanspring.common.event.account.UserCreateAndLoginEvent;
+import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
+import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
@@ -152,6 +156,7 @@ public class AccountPositionManager implements IPlugin {
 
 		@Override
 		public void subscribeToEvents() {
+			subscribeToEvent(UserCreateAndLoginEvent.class, null);	//for Facebook, QQ, WeChat
 			subscribeToEvent(UserLoginEvent.class, null);
 			subscribeToEvent(CreateUserEvent.class, null);
 			subscribeToEvent(CreateAccountEvent.class, null);
@@ -421,6 +426,76 @@ public class AccountPositionManager implements IPlugin {
 			}
 		}
 	}
+
+	public void processUserCreateAndLoginEvent(UserCreateAndLoginEvent event) {
+		log.debug("Received UserCreateAndLoginEvent: " + event.getUser().getId());
+		boolean ok = true;
+		User user = event.getUser();
+		String message = "";
+		
+		if(null != userKeeper && null != accountKeeper) {
+			try {
+				
+				if(null == user.getUserType() || (!user.getUserType().equals(UserType.FACEBOOK) && !user.getUserType().equals(UserType.QQ) && !user.getUserType().equals(UserType.WECHAT) && !user.getUserType().equals(UserType.TWITTER)))
+				{
+					throw new UserException("Cannot create user by wrong UserType");
+				}
+				
+				user.setId(user.getId().toLowerCase());
+				if(!userKeeper.userExists(user.getId()))
+				{
+					//Account account = new Account(generateAccountId(), event.getUser().getId(), defaultCurrency);
+					String defaultAccountId = user.getDefaultAccount();
+					if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
+						if(!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
+							defaultAccountId = user.getId() + "-" + Default.getMarket();
+						} else {
+							defaultAccountId = generateAccountId();
+							if(accountKeeper.accountExists(defaultAccountId)) {
+								throw new UserException("Cannot create default account for user: " +
+										user.getId() + ", last try: " + defaultAccountId);
+							}
+						}
+					}
+					user.setDefaultAccount(defaultAccountId);
+					Account account = new Account(defaultAccountId, event.getUser().getId());
+					accountKeeper.setupAccount(account);
+					
+					//user not exist
+					eventManager.sendEvent(new PmUserCreateAndLoginEvent(PersistenceManager.ID, event.getReceiver(), user, event, userKeeper, accountKeeper, Arrays.asList(account)));
+					
+				}
+				else
+				{
+					//user exist
+					eventManager.sendEvent(new PmUserCreateAndLoginEvent(PersistenceManager.ID, event.getReceiver(), null, event, userKeeper, accountKeeper, null));
+//					throw new UserException("User already exists: " + user.getId());
+				}
+
+			} catch (UserException ue) {
+				message = ue.getMessage();
+				ok = false;
+			} catch (AccountException ae) {
+				message = ae.getMessage();
+				ok = false;
+			} 
+		} else {
+			ok = false;
+			message = "System not yet Ready for Authentication";
+		}
+		
+		log.info("processUserCreateAndLoginEvent: " + event.getUser() + ", " + ok + ", " + message);
+		
+		if(!ok)
+		{
+			try {
+				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getKey(), 
+						event.getSender(), user, null, null, false, event.getOriginalID(), message, event.getTxId(), false));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}	
 	
 	public void processOnUserCreatedEvent(OnUserCreatedEvent event) {
 		try {
@@ -462,6 +537,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 	
 	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
+		log.info("Process order: " + event.getParent());
 		Account account = accountKeeper.getAccount(event.getParent().getAccount());
 		positionKeeper.processParentOrder(event.getParent().clone(), account);
 	}
@@ -681,11 +757,6 @@ public class AccountPositionManager implements IPlugin {
 			return false;
 		
 		return !quote.isStale();
-	}
-	
-	private boolean quoteIsValid(String symbol) {
-		Quote quote = marketData.get(symbol);
-		return quoteIsValid(quote);
 	}
 	
 	private void checkStopLoss(Account account) {

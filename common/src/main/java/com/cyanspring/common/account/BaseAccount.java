@@ -19,6 +19,9 @@ public abstract class BaseAccount implements Serializable {
 	private double cashDeposited;
 	private double rollPrice = 1.0;
 	private double margin;
+	private double commission;
+	private boolean cashAvailable;	
+
 	private Date created;
 	
 	protected BaseAccount() {
@@ -153,6 +156,22 @@ public abstract class BaseAccount implements Serializable {
 		this.rollPrice = rollPrice;
 	}
 
+	public synchronized double getCommission() {
+		return commission;
+	}
+
+	public synchronized void setCommission(double commission) {
+		this.commission = commission;
+	}
+	
+	public synchronized boolean isCashAvailable() {
+		return cashAvailable;
+	}
+
+	public synchronized void setCashAvailable(boolean cashAvailable) {
+		this.cashAvailable = cashAvailable;
+	}
+	
 	// end of getters/setters
 	
 	public synchronized void addMargin(double value) {
