@@ -31,25 +31,31 @@
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
-		<constructor-arg value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
-	</bean>	
+		<constructor-arg
+			value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+	</bean>
 	<bean id="dataBaseUser" class="java.lang.String">
 		<constructor-arg value="tqt001" />
-	</bean>	
+	</bean>
 	<bean id="dataBasePwd" class="java.lang.String">
 		<constructor-arg value="tqt001" />
 	</bean>
-	
+
 	<bean id="dailyExec" class="java.lang.String">
 		<constructor-arg value="05:45:00" />
 	</bean>
-		
-	<!-- MarketDataManager setting-->
+
+	<!-- MarketDataManager setting -->
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
-			<ref bean="ibAdaptor" />
+			<list>
+				<ref bean="ibAdaptor" />
+			</list>
 		</constructor-arg>
-		<property name="preSubscriptionList" ref="preSubscriptionList">
+		<property name="preSubscriptionList">
+			<list>
+				<ref bean="preSubscriptionList" />
+			</list>
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -59,9 +65,9 @@
 			</map>
 		</property>
 	</bean>
-	
-	<!-- IBAdaptor setting (Setting can be marked if not used)-->
-	
+
+	<!-- IBAdaptor setting (Setting can be marked if not used) -->
+
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
 		<property name="host" value="10.0.0.20" />
@@ -73,9 +79,9 @@
 			<ref bean="refDataManager" />
 		</property>
 	</bean>
-	
-	<!-- IDAdaptor setting (Setting can be marked if not used)-->
-	
+
+	<!-- IDAdaptor setting (Setting can be marked if not used) -->
+
 	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>
 		<property name="password" value="MFW9dC26"></property>
@@ -91,11 +97,11 @@
 				<entry key="XAUUSD" value="691" />
 				<entry key="XAGUSD" value="691" />
 			</map>
-		</property>	
+		</property>
 	</bean>
 
-	<!-- WindAdaptor setting (Setting can be marked if not used)-->
-	
+	<!-- WindAdaptor setting (Setting can be marked if not used) -->
+
 	<bean id="windAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
 		<property name="showGui" value="true"></property>
@@ -104,8 +110,10 @@
 		<property name="userName" value="TD1001888001"></property>
 		<property name="password" value="62015725"></property>
 	</bean>
-	
+
 	<!-- Derby setting -->
-	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
+	<bean id="derbyPort" class="java.lang.String">
+		<constructor-arg value="1528" />
+	</bean>
 
 </beans>

@@ -97,8 +97,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	// private final boolean outputToScreen = true;
 	/*********************** configuration ***************************************/
-	private final String openMarket = "CZC;SHF;DCE";
-	//private final String openMarket = "CF;SH;SZ";
+	//private final String openMarket = "CZC;SHF;DCE";
+	private final String openMarket = "CF;SH;SZ";
 	private final int openData = 0;
 	private final int openTime = 0;
 	private final String subscription = ""; // 000001.SZ;000002.SZ";
@@ -468,7 +468,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	@Override
 	public boolean getState() {
-		return false;
+		return this.isConnected(); //false;
 	}
 
 	/*

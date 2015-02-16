@@ -59,9 +59,7 @@ import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateUserEvent;
-import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
-import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
@@ -130,7 +128,6 @@ public class PersistenceManager {
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
@@ -381,113 +378,6 @@ public class PersistenceManager {
 		}
 		log.info("Login: " + event.getOriginalEvent().getUserId() + ", " + ok);
 	}
-
-	public void processPmUserCreateAndLoginEvent(PmUserCreateAndLoginEvent event)
-	{
-		log.debug("Received PmUserLoginEvent: " + event.getOriginalEvent().getUser().getId());
-		
-		UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
-		AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
-		boolean ok = true;
-		String message = "";
-		User user = null;
-		Account defaultAccount = null;
-		List<Account> list = null;
-		if(null == event.getUser())	//user exist , getAccount
-		{
-			user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
-			if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
-				defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
-			} 
-			
-			list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
-			
-			if(defaultAccount == null && (list == null || list.size() <= 0)) {
-				ok = false;
-				message = "No trading account available for this user";
-			}
-
-			
-			try {
-				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
-						event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
-						message, event.getOriginalEvent().getTxId(), false));
-				if(ok) {
-					user.setLastLogin(Clock.getInstance().now());
-					eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
-				}
-
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-			log.info("Login: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
-			
-		}
-		else	//user not exist, create user and then getAccount
-		{
-			Session session = sessionFactory.openSession();
-			user = event.getUser();
-			Transaction tx = null;
-			ok = true;
-			
-			try 
-			{
-				if(syncCentralDb)
-				{
-					if(centralDbConnector.isUserExist(user.getId()))
-						throw new CentralDbException("This user already exists: " + user.getId());
-					if(centralDbConnector.isEmailExist(user.getEmail()))
-						throw new CentralDbException("This email already exists: " + user.getEmail());
-					if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-								user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
-						throw new CentralDbException("can't create this user: " + user.getId());
-				}
-				
-				tx = session.beginTransaction();
-				session.save(user);
-				tx.commit();
-				log.info("Created user: " + event.getUser());
-			}
-			catch (Exception e) {
-				if(e instanceof CentralDbException)
-					log.warn(e.getMessage(), e);
-				else 
-					log.error(e.getMessage(), e);
-				ok = false;
-				message = String.format("can't create user, err=[%s]", e.getMessage());
-			    if (tx!=null) 
-			    	tx.rollback();
-			}
-			finally {
-				session.close();
-			}
-			
-			if(ok)
-			{
-				for(Account account : event.getAccounts())
-					createAccount(account);
-				eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
-			}
-			
-			if(event.getOriginalEvent() != null)
-			{
-				try {
-					eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
-							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
-							, message, event.getOriginalEvent().getTxId(), true));
-					if(ok) {
-						for(Account account : event.getAccounts())
-							eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
-					}
-
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
-			}			
-		}
-		
-	}
-		
 	
 	public void processSignalEvent(SignalEvent event) {
 		persistXml(event.getKey(), PersistType.SIGNAL, StrategyState.Running, null, null, null, event.getSignal().toCompactXML());

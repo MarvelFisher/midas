@@ -51,7 +51,6 @@ public class ActiveMQService implements ITransportService, ExceptionListener {
     protected int persistent = DeliveryMode.NON_PERSISTENT;
     private boolean transacted;
     private int ackMode = Session.AUTO_ACKNOWLEDGE;
-    private long memoryLimit = 1024 * 1024 * 128;
     
     // members
     BrokerService broker;
@@ -130,7 +129,6 @@ public class ActiveMQService implements ITransportService, ExceptionListener {
 	@Override
 	public void startBroker() throws Exception {
 		broker = new BrokerService();
-		broker.getSystemUsage().getMemoryUsage().setLimit(memoryLimit);
 		TransportConnector connector = new TransportConnector();
 		connector.setUri(new URI(url));
 		broker.addConnector(connector);
@@ -292,14 +290,6 @@ public class ActiveMQService implements ITransportService, ExceptionListener {
 
 	public void setAckMode(int ackMode) {
 		this.ackMode = ackMode;
-	}
-
-	public long getMemoryLimit() {
-		return memoryLimit;
-	}
-
-	public void setMemoryLimit(long memoryLimit) {
-		this.memoryLimit = memoryLimit;
 	}
 
 }

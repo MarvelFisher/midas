@@ -75,14 +75,6 @@ public class ChildOrder extends Order {
 		put(OrderField.STRATEGY_ID.value(), strategyId);
 	}
 	
-	public boolean isUnsolicited() {
-		return get(boolean.class, OrderField.UNSOLICITED.value());
-	}
-	
-	public void setUnsolicited(boolean unsolicited) {
-		put(OrderField.UNSOLICITED.value(), unsolicited);
-	}
-	
 	@Override
 	protected String fieldsToString() {
 		return super.fieldsToString() + ", " + getType() + ", " + getParentOrderId() + ", " + getStrategyId() + ", " + getClOrderId();

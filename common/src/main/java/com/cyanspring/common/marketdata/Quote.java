@@ -26,7 +26,7 @@ public class Quote implements Cloneable, Serializable {
 	private static final Logger log = LoggerFactory
 			.getLogger(Quote.class);
 	String id = IdGenerator.getInstance().getNextID();
-	public int sourceId = 1;
+	public int sourceId = 1; 
 	
 	String symbol;
 	double bid;

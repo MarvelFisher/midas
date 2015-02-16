@@ -4,27 +4,43 @@ public class SymbolInfo implements Cloneable{
 	private String market;
 	private String code;
 	private String windCode;
+	private String hint;
 	private String cnName;
+	private String cnSubName;
 	private String twName;
+	private String twSubName;
 	private String enName;
+	private String enSubName;
+	private String krName;
+	private String krSubName;
+	private String jpName;
+	private String jpSubName;
+	private String esName;
+	private String esSubName;
 	
-	public SymbolInfo(String market, 
-			String code, String windCode, String cnName, String enName, String twName) 
+	public SymbolInfo(String market, String code) 
 	{
 		this.market = market;
 		this.code = code;
-		this.windCode = windCode;
-		this.cnName = cnName;
-		this.enName = enName;
-		this.twName = twName;
 	}
 	public SymbolInfo(SymbolInfo symbolinfo)
 	{
 		this.market = symbolinfo.getMarket();
 		this.code = symbolinfo.getCode();
-		this.windCode = symbolinfo.getWindCode();
+		this.setWindCode(symbolinfo.getWindCode());
+		this.setHint(symbolinfo.getHint());
 		this.cnName = symbolinfo.getCnName();
+		this.cnSubName = symbolinfo.getCnSubName();
 		this.enName = symbolinfo.getEnName();
+		this.enSubName = symbolinfo.getEnSubName();
+		this.twName = symbolinfo.getTwName();
+		this.twSubName = symbolinfo.getTwSubName();
+		this.jpName = symbolinfo.getJpName();
+		this.jpSubName = symbolinfo.getJpSubName();
+		this.krName = symbolinfo.getKrName();
+		this.krSubName = symbolinfo.getKrSubName();
+		this.esName = symbolinfo.getEsName();
+		this.esSubName = symbolinfo.getEsSubName();
 	}
 
 	public String getMarket() {
@@ -45,7 +61,64 @@ public class SymbolInfo implements Cloneable{
 	public String getTwName() {
 		return twName;
 	}
+	public String getHint() {
+		return hint;
+	}
+	public String getCnSubName() {
+		return cnSubName;
+	}
+	public String getTwSubName() {
+		return twSubName;
+	}
+	public String getEnSubName() {
+		return enSubName;
+	}
+	public String getKrName() {
+		return krName;
+	}
+	public String getKrSubName() {
+		return krSubName;
+	}
+	public String getJpName() {
+		return jpName;
+	}
+	public String getJpSubName() {
+		return jpSubName;
+	}
+	public String getEsName() {
+		return esName;
+	}
+	public String getEsSubName() {
+		return esSubName;
+	}
+	public void setCnName(String cnName) {
+		this.cnName = cnName;
+		this.cnSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getCnName();
+	}
 	public void setTwName(String twName) {
 		this.twName = twName;
+		this.twSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getTwName();
+	}
+	public void setEnName(String enName) {
+		this.enName = enName;
+		this.enSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEnName();
+	}
+	public void setJpName(String jpName) {
+		this.jpName = jpName;
+		this.jpSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getJpName();
+	}
+	public void setEsName(String esName) {
+		this.esName = esName;
+		this.esSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEsName();
+	}
+	public void setKrName(String krName) {
+		this.krName = krName;
+		this.krSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getKrName();
+	}
+	public void setWindCode(String windCode) {
+		this.windCode = windCode;
+	}
+	public void setHint(String hint) {
+		this.hint = hint;
 	}
 }

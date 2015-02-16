@@ -13,12 +13,6 @@ public enum UserType
 	FRONTMANAGER(5),
 	BACKMANAGER(6),
 	
-	// Third-Party Authentication
-	FACEBOOK(50),
-	QQ(51),
-	WECHAT(52),
-	TWITTER(53),
-	
 	TEST(101),
 	GROUPUSER(102),
 	;

@@ -11,8 +11,6 @@
 	<bean id="sdmaStrategy" class="com.cyanspring.sample.singleorder.sdma.SDMAStrategy" scope="prototype">
 		<property name="strategyName" value="SDMA"/>
 		<property name="quoteRequired" value="false"/>
-		<property name="cancelOnCancel" value="true"/>
-		<property name="rejectOnReject" value="true"/>
 		<property name="quantityAnalyzer">
 			<bean class="com.cyanspring.strategy.singleorder.AllQuantityAnalyzer"></bean>	
 		</property>

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -92,81 +91,40 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	//gc thread
 	Thread gcThread;
 	
-	//Require Open Orders
-	private Boolean cancelOpenOrders;
-	private Stack<Integer> delOrdersLst = new Stack<>();
-	private Thread delThread;
-	
-	// initial flag
-	private boolean init = true;
-	
-	public void setCancelOpenOrders(Boolean cancelOpenOrders) {
-		this.cancelOpenOrders = cancelOpenOrders;
-	}
-	
 	public IbAdaptor() {
 		clientSocket = new EClientSocket(this);
 	}
 	
 	@Override
 	synchronized public void init() throws Exception {
-		if(init){		
-			while(!clientSocket.isConnected()) {
-				log.debug("Attempting to establish connection to IB TWS/Gateway...");
-				clientSocket.eConnect(host, port, clientId);
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					log.warn(e.getMessage(), e);
-				}
-			}
-			
-			log.info("IB connected");		
-			
-			gcThread = new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					while(true) {
-						gcChildOrders();
-						try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e) {
-							return;
-						}
-					}
-				}
-				
-			});
-			gcThread.start();
-			
-			if(cancelOpenOrders){
-				delThread = new Thread(new Runnable() {				
-					@Override
-					public void run() {
-						clientSocket.reqOpenOrders();	
-						do{
-							for(int delId : delOrdersLst){
-								clientSocket.cancelOrder(delId);							
-							}
-							try {
-								Thread.sleep(5000);
-							} catch (InterruptedException e) {
-								log.warn(e.getMessage(), e);
-							}
-						}while(!delOrdersLst.isEmpty());
-						cancelOpenOrders = false;
-						downStreamConnection.setState(true);
-						notifyMarketDataState(true);
-					}
-				});	
-				if(!delThread.isAlive())
-					delThread.start();
-			}else{
-				notifyMarketDataState(true);			
+		while(!clientSocket.isConnected()) {
+			log.debug("Attempting to establish connection to IB TWS/Gateway...");
+			clientSocket.eConnect(host, port, clientId);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				log.warn(e.getMessage(), e);
 			}
 		}
-		init = false;
+		log.info("IB connected");
+		gcThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while(true) {
+					gcChildOrders();
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+			}
+			
+		});
+		gcThread.start();
+		
+		notifyMarketDataState(true);
 	}
 	
 	
@@ -202,7 +160,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	
 	@Override
 	public boolean getState() {
-		return !cancelOpenOrders ? clientSocket.isConnected() : !cancelOpenOrders;
+		return clientSocket.isConnected();
 	}
 	
 	@Override
@@ -307,7 +265,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		
 		@Override
 		public boolean getState() {
-			return !cancelOpenOrders ? clientSocket.isConnected() : !cancelOpenOrders;
+			return clientSocket.isConnected();
 		}
 
 		@Override
@@ -446,21 +404,17 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 
 		@Override
 		public boolean getState() {
-			return !cancelOpenOrders ? clientSocket.isConnected() : !cancelOpenOrders;
+			return clientSocket.isConnected();
 		}
 
 		@Override
 		public IDownStreamSender setListener(IDownStreamListener listener) {
 			IbAdaptor.this.downStreamListener = listener;
-			if(!cancelOpenOrders)
-				setState(true);
+			if(null != listener)
+				downStreamListener.onState(true);
 			return IbAdaptor.this.downStreamSender;
 		}
 		
-		public void setState(boolean state){
-			if(null != downStreamSender)
-				downStreamListener.onState(state);
-		}
 	}
 	
 	@Override
@@ -496,15 +450,12 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	synchronized public void error(int id, int errorCode, String errorMsg) {
 		log.info("IB-ERR: " + EWrapperMsgGenerator.error(id, errorCode, errorMsg));
 		ChildOrder order = idToOrder.get(id);
-		if(null != order) {
-		   if(errorCode == 201) {
-			   order.setOrdStatus(OrdStatus.REJECTED);
-		   } else if(order.getOrdStatus().isPending() &&
-				   errorCode != 202 &&
-				   (errorCode != 399 || !errorMsg.contains("Warning"))){
-			   order.setOrdStatus(autoStatus(order));
-		   }
-		   downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
+		if(null != order && 
+		   order.getOrdStatus().isPending() &&
+		   errorCode != 202 &&
+		   (errorCode != 399 || !errorMsg.contains("Warning"))){
+			order.setOrdStatus(autoStatus(order));
+			downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
 		}
 	}
 
@@ -748,19 +699,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 				avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld));
 		
 		ChildOrder order = idToOrder.get(orderId);
-		
-		log.info("Order Status: " + status);
-		
-		if(delOrdersLst.contains(orderId) && status.equals("Cancelled")){
-			delOrdersLst.removeElement(orderId);
-		}
-				
-		log.info("delOrdersLst size: " + delOrdersLst.size());
-//		if(delOrdersLst.isEmpty()){
-//			cancelOpenOrders = false;
-//		}
-		
-		if(null == order) {			
+		if(null == order) {
 			log.warn("orderStatus: unable to find this order in cache: " + 
 					EWrapperMsgGenerator.orderStatus(orderId, status, filled, remaining, 
 					avgFillPrice, permId, parentId, lastFillPrice, clientId, whyHeld));
@@ -834,13 +773,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	synchronized public void openOrder(int orderId, Contract contract, Order order,
 			OrderState orderState) {
 		log.info(EWrapperMsgGenerator.openOrder(orderId, contract, order, orderState));
-		
-		if(cancelOpenOrders && !delOrdersLst.contains(orderId)){
-			delOrdersLst.push(orderId);	
-			if(!delThread.isAlive())
-				delThread.start();
-		}	
-		
 		ChildOrder child = idToOrder.get(orderId);
 		if(null == child) {
 			log.warn("orderStatus: unable to find this order in cache: " + 
@@ -872,7 +804,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	@Override
 	public void openOrderEnd() {
 		log.debug(EWrapperMsgGenerator.openOrderEnd());
-//		cancelOpenOrders = false;
 	}
 
 	@Override

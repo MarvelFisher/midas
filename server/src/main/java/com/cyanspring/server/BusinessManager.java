@@ -473,6 +473,7 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			log.debug("Close position order " + strategy.getId() + " assigned to container " + container.getId());
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
+			eventProcessor.subscribeToEventNow(UpdateParentOrderEvent.class, order.getId());
 			eventManager.sendEvent(addStrategyEvent);
 
 		} catch (Exception e) {
@@ -488,9 +489,20 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 	}
 
+	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
+		ParentOrder order = event.getParent();
+		if(order.getOrdStatus().isCompleted()) {
+			String accountSymbol = positionKeeper.unlockAccountPosition(order.getId());
+			if(null != accountSymbol) {
+				log.debug("Close position action completed: " + accountSymbol + ", " + order.getId());
+			}
+			eventProcessor.unsubscribeToEvent(UpdateParentOrderEvent.class, order.getId());
+		}
+	}
+	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
-			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositions().entrySet().iterator();
+			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositionIterator();
 			while(iter.hasNext()) {
 				Entry<String,String> entry = iter.next();
 				ParentOrder order = orders.get(entry.getKey());
