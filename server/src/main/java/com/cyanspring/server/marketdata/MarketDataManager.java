@@ -1,4 +1,4 @@
-/*******************************************************************************
+/******************************************************************************* 
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
@@ -12,6 +12,7 @@ package com.cyanspring.server.marketdata;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,29 +57,33 @@ import com.cyanspring.event.AsyncEventProcessor;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketDataStateListener {
+public class MarketDataManager implements IPlugin, IMarketDataListener,
+		IMarketDataStateListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(MarketDataManager.class);
-	
+
 	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
-	
+
 	@Autowired
 	protected IRemoteEventManager eventManager;
-	
+
 	@Autowired
 	protected ScheduleManager scheduleManager;
-	
+
 	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
-	
+
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	protected Date lastQuoteSent = Clock.getInstance().now();
 	protected long quoteThrottle = 100; // 0 = no throttle
 	protected long timerInterval = 300;
 	protected Map<String, QuoteEvent> quotesToBeSent = new HashMap<String, QuoteEvent>();
 	private boolean preSubscribed = false;
-	private List<String> preSubscriptionList;
-	private IMarketDataAdaptor adaptor;
+	// private List<String> preSubscriptionList;
+	private List<List<String>> preSubscriptionList = new ArrayList<List<String>>();
+	// private IMarketDataAdaptor adaptor;
+	private List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
+
 	private String tickDir = "ticks";
 	private String lastQuoteFile = "last.xml";
 	private String lastTradeDateQuoteFile = "last_tdq.xml";
@@ -91,8 +96,54 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	boolean isUninit = false;
 	private Map<MarketSessionType, Long> sessionMonitor;
 	private Date chkDate;
-	private long chkTime;	
+	private long chkTime;
+	boolean state = false;
 
+	AggregationTicks aggrTicks = null;
+
+	long interval = 300;
+
+	public boolean isAggregation() {
+		return interval > 0;
+	}
+
+	public long getInterval() {
+		return interval;
+	}
+
+	public void setInterval(long interval) {
+		this.interval = interval;
+	}
+
+	public boolean isState() {
+		return state;
+	}
+
+	public void setState(boolean state) {
+		this.state = state;
+	}
+
+	/*
+	 * int indexAdaptor = 0; void setAdaptorActive(boolean next) { if (next) {
+	 * indexAdaptor ++; indexAdaptor %= adaptors.size(); }
+	 * 
+	 * List<IMarketDataAdaptor> list = new
+	 * ArrayList<IMarketDataAdaptor>(adaptors); for(int i = 0; i < list.size();
+	 * i++) { IMarketDataAdaptor adaptor = list.get(i); if (indexAdaptor == i) {
+	 * adaptor.setActive(true); } else { adaptor.setActive(false); } } }
+	 * 
+	 * void findAdaptorActive() {
+	 * 
+	 * List<IMarketDataAdaptor> list = new
+	 * ArrayList<IMarketDataAdaptor>(adaptors); boolean first = false; for(int i
+	 * = 0; i < list.size(); i++) { IMarketDataAdaptor adaptor = list.get(i); if
+	 * (first == false && adaptor.getState()){ first = true;
+	 * adaptor.setActive(true); indexAdaptor = i; } else
+	 * adaptor.setActive(false); }
+	 * 
+	 * if (first == false) { indexAdaptor = 0; adaptors.get(0).setActive(true);
+	 * } }
+	 */
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -110,65 +161,95 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			return eventManager;
 		}
 	};
-		
-	public void processMarketSessionEvent(MarketSessionEvent event){
+
+	public void processMarketSessionEvent(MarketSessionEvent event) {
 		chkTime = sessionMonitor.get(event.getSession());
-		log.info("Get MarketSessionEvent: " + event.getSession() + ", map size: " + sessionMonitor.size() + ", checkTime: " + chkTime);
+		log.info("Get MarketSessionEvent: " + event.getSession()
+				+ ", map size: " + sessionMonitor.size() + ", checkTime: "
+				+ chkTime);
 	}
-	
-	public void processLastTradeDateQuotesRequestEvent(LastTradeDateQuotesRequestEvent event) {		
+
+	public void processLastTradeDateQuotesRequestEvent(
+			LastTradeDateQuotesRequestEvent event) {
 		try {
-			if(tradeDate == null){
-				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(null, null);
+			if (tradeDate == null) {
+				TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(
+						null, null);
 				eventManager.sendEvent(tdrEvent);
-			}else{
-				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-				log.info("LastTradeDateQuotesRequestEvent sending lastTradeDateQuotes: " + lst );
-				LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(null, null, tradeDate, lst);
-				eventManager.sendRemoteEvent(lastTDQEvent);				
+			} else {
+				List<Quote> lst = new ArrayList<Quote>(
+						lastTradeDateQuotes.values());
+				log.info("LastTradeDateQuotesRequestEvent sending lastTradeDateQuotes: "
+						+ lst);
+				LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(
+						null, null, tradeDate, lst);
+				eventManager.sendRemoteEvent(lastTDQEvent);
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
-	public void processTradeDateEvent(TradeDateEvent event){
+
+	public void processTradeDateEvent(TradeDateEvent event) {
 		String newTradeDate = event.getTradeDate();
-		if(!newTradeDate.equals(tradeDate) || tradeDate == null){
+		if (!newTradeDate.equals(tradeDate) || tradeDate == null) {
 			tradeDate = newTradeDate;
 			try {
-				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,null,tradeDate));
+				eventManager.sendGlobalEvent(new TradeDateUpdateEvent(null,
+						null, tradeDate));
 				saveLastTradeDateQuotes();
-				List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-				log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
-				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));				
+				List<Quote> lst = new ArrayList<Quote>(
+						lastTradeDateQuotes.values());
+				log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:"
+						+ tradeDate);
+				eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null,
+						null, tradeDate, lst));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
 	}
-	
+
 	public void processPresubscribeEvent(PresubscribeEvent event) {
 		preSubscribe();
 	}
-	
+
 	public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
-		log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
-		Quote quote = quotes.get(event.getSymbol());
-		if (quote == null) {
-			adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
-		} else {
-			if(quote.isStale())
-				adaptor.subscribeMarketData(event.getSymbol(), MarketDataManager.this);
-			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
+		log.debug("QuoteSubEvent: " + event.getSymbol() + ", "
+				+ event.getReceiver());
+		String symbol = event.getSymbol();
+		Quote quote = quotes.get(symbol);
+		if (quote == null || quote.isStale()) {
+			for (int i = 0; i < preSubscriptionList.size(); i++) {
+				List<String> preList = preSubscriptionList.get(i);
+				if (preList.contains(symbol)) {
+					IMarketDataAdaptor adaptor = adaptors.get(i);
+					adaptor.subscribeMarketData(symbol, MarketDataManager.this);
+
+				}
+			}
+		}
+
+		if (quote != null) {
+			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(),
+					event.getSender(), quote));
 		}
 	}
-	
-	public void processTradeSubEvent(TradeSubEvent event) throws MarketDataException {
-		TradeSubEvent tradeSubEvent = (TradeSubEvent)event;
-		Quote quote = quotes.get(tradeSubEvent.getSymbol());
+
+	public void processTradeSubEvent(TradeSubEvent event)
+			throws MarketDataException {
+		TradeSubEvent tradeSubEvent = (TradeSubEvent) event;
+		String symbol = tradeSubEvent.getSymbol();
+		Quote quote = quotes.get(symbol);
 		if (quote == null) {
-			adaptor.subscribeMarketData(tradeSubEvent.getSymbol(), MarketDataManager.this);
+			for (int i = 0; i < preSubscriptionList.size(); i++) {
+				List<String> preList = preSubscriptionList.get(i);
+				if (preList.contains(symbol)) {
+					IMarketDataAdaptor adaptor = adaptors.get(i);
+					adaptor.subscribeMarketData(symbol, MarketDataManager.this);
+
+				}
+			}
 		}
 	}
 
@@ -179,63 +260,101 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private void clearAndSendQuoteEvent(QuoteEvent event) {
 		event.getQuote().setTimeSent(Clock.getInstance().now());
-		quotesToBeSent.remove(event.getQuote().getSymbol()); //clear anything in queue because we are sending it now
+		quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
+																// in queue
+																// because we
+																// are sending
+																// it now
 		sendQuoteEvent(event);
 	}
 
 	private void logStaleInfo(Quote prev, Quote quote, boolean stale) {
-		log.info("Quote stale: " + quote.getSymbol() + ", " + stale + ", Prev: " + prev + ", New: " + quote);
+		log.info("Quote stale: " + quote.getSymbol() + ", " + stale
+				+ ", Prev: " + prev + ", New: " + quote);
 	}
-	
+
 	public void processQuoteEvent(QuoteEvent event) {
 		Quote quote = event.getQuote();
-		
+
 		Quote prev = quotes.get(quote.getSymbol());
-		
-		if(null == prev) {
+
+		if (null == prev) {
 			logStaleInfo(prev, quote, quote.isStale());
 			quotes.put(quote.getSymbol(), quote);
 			clearAndSendQuoteEvent(event);
 			return;
 		} else if (null != quoteChecker && !quoteChecker.check(quote)) {
 			boolean prevStale = prev.isStale();
-			prev.setStale(true); //just set the existing stale
-			if(!prevStale) {
+			prev.setStale(true); // just set the existing stale
+			if (!prevStale) {
 				logStaleInfo(prev, quote, true);
-				clearAndSendQuoteEvent(new QuoteEvent(event.getKey(), null, prev));
+				clearAndSendQuoteEvent(new QuoteEvent(event.getKey(), null,
+						prev));
 			}
 			return;
 		} else {
 			quotes.put(quote.getSymbol(), quote);
-			if(prev.isStale() != quote.isStale()) {
+			if (prev.isStale() != quote.isStale()) {
 				logStaleInfo(prev, quote, quote.isStale());
 			}
 		}
+
+		if (aggrTicks == null) {
+			aggrTicks = new AggregationTicks();
+			aggrTicks.setInterval(interval);
+		}
+
 		
-		if(eventProcessor.isSync()) {
+		Quote quote2 = null;
+		String symbol = event.getQuote().getSymbol();
+		if (isAggregation()) {
+			quote2 = aggrTicks.updateQuote(symbol, event.getQuote());
+			if (quote2 == null) {
+				return;
+			}
+		} else {
+			quote2 = event.getQuote();
+		}
+
+		//String strFmt = formatDate(quote2.getTimeStamp(),"yyyy-MM-dd HH:mm:ss.SSS");
+		//if (symbol.equals("USDJPY")) {
+		//	log.debug(String.format("[%s] %s PC=%f,O=%f,H=%f,L=%f", strFmt, quote2.toString(), quote2.getClose(), quote2.getOpen(), quote2.getHigh(), quote2.getLow()));
+		//}
+		
+		event = new QuoteEvent(event.getKey(), null, quote2);
+
+		if (eventProcessor.isSync()) {
 			sendQuoteEvent(event);
 			return;
 		}
-			
+
 		// queue up quotes
-		if (null != prev && quoteThrottle != 0 && TimeUtil.getTimePass(prev.getTimeSent()) < quoteThrottle) {
-			quote.setTimeSent(prev.getTimeSent()); // important record the last time sent of this quote
+		if (null != prev && quoteThrottle != 0
+				&& TimeUtil.getTimePass(prev.getTimeSent()) < quoteThrottle) {
+			quote.setTimeSent(prev.getTimeSent()); // important record the last
+													// time sent of this quote
 			quotesToBeSent.put(quote.getSymbol(), event);
 			return;
 		}
-		
+
 		// send the quote now
 		clearAndSendQuoteEvent(event);
 	}
-	
+
+	public static String formatDate(Date dt, String strFmt) {
+		SimpleDateFormat sdf = new SimpleDateFormat(strFmt);
+		return sdf.format(dt);
+	}
+
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		//flush out all quotes throttled
-		for(Entry<String, QuoteEvent> entry: quotesToBeSent.entrySet()){
+		// flush out all quotes throttled
+		for (Entry<String, QuoteEvent> entry : quotesToBeSent.entrySet()) {
 			sendQuoteEvent(entry.getValue());
-			//log.debug("Sending throttle quote: " + entry.getValue().getQuote());
+			// log.debug("Sending throttle quote: " +
+			// entry.getValue().getQuote());
 		}
 		quotesToBeSent.clear();
 		saveLastQuotes();
@@ -245,26 +364,29 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void processTradeEvent(TradeEvent event) {
 		eventManager.sendEvent(event);
 	}
-	
-	public MarketDataManager(IMarketDataAdaptor adaptor) {
-		this.adaptor = adaptor;
+
+	public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
+		// this.adaptor = adaptors.get(0);
+		this.adaptors = adaptors;
+		// setAdaptorActive(false);
 	}
-	
+
 	@Override
 	public void init() throws Exception {
 		log.info("initialising");
 		// subscribe to events
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
-		if(eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("MarketDataManager");				
+		if (eventProcessor.getThread() != null)
+			eventProcessor.getThread().setName("MarketDataManager");
 
 		// create tick directory
 		File file = new File(tickDir);
-		if(!file.isDirectory()) {
+		if (!file.isDirectory()) {
 			log.info("Creating tick directory: " + tickDir);
-			if(!file.mkdir()) {
-				throw new TickDataException("Unable to create tick data directory: " + tickDir);
+			if (!file.mkdir()) {
+				throw new TickDataException(
+						"Unable to create tick data directory: " + tickDir);
 			}
 		} else {
 			log.info("Existing tick directory: " + tickDir);
@@ -272,59 +394,72 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 
 		quotes = loadQuotes(tickDir + "/" + lastQuoteFile);
 		lastTradeDateQuotes = loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
-		if(lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0){
-			log.warn("No lastTradeDateQuotes values while initialing.");			
+		if (lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0) {
+			log.warn("No lastTradeDateQuotes values while initialing.");
 			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
-		
+
 		chkDate = Clock.getInstance().now();
-		
-		adaptor.subscribeMarketDataState(this);
-		Thread thread = new Thread(new Runnable(){
+		for (IMarketDataAdaptor adaptor : adaptors) {
+			adaptor.subscribeMarketDataState(this);
+		}
+
+		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					adaptor.init();
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
+				for (final IMarketDataAdaptor adaptor : adaptors) {
+					try {
+						adaptor.init();
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
 				}
 			}
-			
+
 		});
+
 		thread.start();
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-			  public void run() {
-				  uninit();
-			  }
-			});
-		
-		
-		if(adaptor.getState())
+			public void run() {
+				uninit();
+			}
+		});
+
+		//
+		boolean curState = true;
+		for (IMarketDataAdaptor adaptor : adaptors) {
+			if (!adaptor.getState())
+				curState = false;
+		}
+		if (curState) {
 			eventProcessor.onEvent(new PresubscribeEvent(null));
-		
-		if(!eventProcessor.isSync())
-			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);			
+		}
+		setState(curState);
+
+		if (!eventProcessor.isSync())
+			scheduleManager.scheduleRepeatTimerEvent(timerInterval,
+					eventProcessor, timerEvent);
 	}
-	
+
 	private void saveLastQuotes() {
-		if(TimeUtil.getTimePass(lastQuoteSaveTime) < lastQuoteSaveInterval) 
+		if (TimeUtil.getTimePass(lastQuoteSaveTime) < lastQuoteSaveInterval)
 			return;
-		
-		if(quotes.size() <= 0)
+
+		if (quotes.size() <= 0)
 			return;
-		
+
 		lastQuoteSaveTime = Clock.getInstance().now();
 		String fileName = tickDir + "/" + lastQuoteFile;
 		saveQuotesToFile(fileName);
 	}
-	
-	private void saveLastTradeDateQuotes(){
+
+	private void saveLastTradeDateQuotes() {
 		if (lastTradeDateQuotes.size() <= 0 && quotes.size() <= 0)
-			return;		
-		lastTradeDateQuotes = quotes;			
+			return;
+		lastTradeDateQuotes = quotes;
 		String fileName = tickDir + "/" + lastTradeDateQuoteFile;
-		saveQuotesToFile(fileName); 		
+		saveQuotesToFile(fileName);
 	}
 
 	private void saveQuotesToFile(String fileName) {
@@ -338,102 +473,140 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private void broadCastStaleQuotes() {
-		if(staleQuotesSent)
+		if (staleQuotesSent)
 			return;
-		
-		if(TimeUtil.getTimePass(initTime) < lastQuoteSaveInterval) 
+
+		if (TimeUtil.getTimePass(initTime) < lastQuoteSaveInterval)
 			return;
-		
+
 		staleQuotesSent = true;
-		for(Quote quote: quotes.values()) {
-			if(quote.isStale())
-				this.clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+		for (Quote quote : quotes.values()) {
+			if (quote.isStale())
+				this.clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(),
+						null, quote));
 		}
-	}		
-	
-	private HashMap<String, Quote> loadQuotes(String fileName){
+	}
+
+	private HashMap<String, Quote> loadQuotes(String fileName) {
 		File file = new File(fileName);
 		HashMap<String, Quote> quotes = new HashMap<>();
-		if(file.exists() && quotes.size() <= 0){
-			try{
+		if (file.exists() && quotes.size() <= 0) {
+			try {
 				ClassLoader save = xstream.getClassLoader();
 				ClassLoader cl = HashMap.class.getClassLoader();
-				if (cl != null) 
+				if (cl != null)
 					xstream.setClassLoader(cl);
-				quotes = (HashMap<String, Quote>)xstream.fromXML(file);
-				if(!(quotes instanceof HashMap)) 
-					throw new Exception("Can't xstream load last quote: " + fileName);
+				quotes = (HashMap<String, Quote>) xstream.fromXML(file);
+				if (!(quotes instanceof HashMap))
+					throw new Exception("Can't xstream load last quote: "
+							+ fileName);
 				xstream.setClassLoader(save);
-			}catch(Exception e){
+			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
-			for(Quote quote: quotes.values()) {
+			for (Quote quote : quotes.values()) {
 				quote.setStale(true);
 			}
 			log.info("Quotes loaded: " + fileName);
 		}
 		return quotes;
 	}
-	
+
 	public void reset() {
 		quotes.clear();
 	}
-	
+
 	@Override
 	public void uninit() {
 		if (isUninit)
 			return;
-		
+
 		isUninit = true;
 
 		log.info("uninitialising");
-		if(!eventProcessor.isSync())
+		if (!eventProcessor.isSync())
 			scheduleManager.cancelTimerEvent(timerEvent);
 
-		adaptor.uninit();
+		for (IMarketDataAdaptor adaptor : adaptors) {
+			adaptor.uninit();
+		}
 
 		eventProcessor.uninit();
 	}
-	
+
 	@Override
 	public void onQuote(Quote quote) {
-		if(TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0){
+		if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
 			log.error("Quotes receive time large than excepted.");
 		}
 		chkDate = Clock.getInstance().now();
 		QuoteEvent event = new QuoteEvent(quote.getSymbol(), null, quote);
 		eventProcessor.onEvent(event);
 	}
-	
+
 	@Override
 	public void onTrade(Trade trade) {
 		TradeEvent event = new TradeEvent(trade.getSymbol(), null, trade);
 		eventProcessor.onEvent(event);
 	}
-	
+
+	/*
+	 * @Override public void onState(boolean on) {
+	 * 
+	 * // findAdaptorActive(); if (!on) { log.warn("MarketData feed is down");
+	 * preSubscribed = false; } else { log.info("MarketData feed is up"); //
+	 * eventProcessor.onEvent(new PresubscribeEvent(null)); }
+	 * 
+	 * if (isState()) { if (!on) { setState(false); } else {
+	 * eventProcessor.onEvent(new PresubscribeEvent(null)); } } else { if (on) {
+	 * boolean curisState = true; for (IMarketDataAdaptor adaptor : adaptors) {
+	 * if (!adaptor.getState()) curisState = false; } if (curisState) {
+	 * setState(true); eventProcessor.onEvent(new PresubscribeEvent(null)); } }
+	 * }
+	 * 
+	 * eventManager.sendEvent(new MarketDataReadyEvent(null, isState())); }
+	 */
+
 	@Override
 	public void onState(boolean on) {
 		if (!on) {
 			log.warn("MarketData feed is down");
+			preSubscribed = false;
 		} else {
 			log.info("MarketData feed is up");
 			eventProcessor.onEvent(new PresubscribeEvent(null));
 		}
-		eventManager.sendEvent(new MarketDataReadyEvent(null, on));
-	
-	}
-	
-	private void preSubscribe() {
-		if(null == preSubscriptionList || preSubscribed)
-			return;
 		
+		if (on) {
+			eventManager.sendEvent(new MarketDataReadyEvent(null, on));
+		} else {
+			for (IMarketDataAdaptor adaptor : adaptors) {
+				if (!adaptor.getState()) {
+					eventManager
+							.sendEvent(new MarketDataReadyEvent(null, true));
+					return;
+				}
+			}
+			eventManager.sendEvent(new MarketDataReadyEvent(null, false));
+		}
+	}
+
+	private void preSubscribe() {
+		if (null == preSubscriptionList || preSubscribed)
+			return;
+
 		preSubscribed = true;
 		log.debug("Market data presubscribe: " + preSubscriptionList);
 		try {
-			for (String symbol : preSubscriptionList)
-				adaptor.subscribeMarketData(symbol, this);
+			for (int i = 0; i < preSubscriptionList.size(); i++) {
+				List<String> preList = preSubscriptionList.get(i);
+				IMarketDataAdaptor adaptor = adaptors.get(i);
+				for (String symbol : preList) {
+					adaptor.subscribeMarketData(symbol, this);
+				}
+			}
 		} catch (MarketDataException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -455,11 +628,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		this.quoteThrottle = quoteThrottle;
 	}
 
-	public List<String> getPreSubscriptionList() {
+	public List<List<String>> getPreSubscriptionList() {
 		return preSubscriptionList;
 	}
 
-	public void setPreSubscriptionList(List<String> preSubscriptionList) {
+	public void setPreSubscriptionList(List<List<String>> preSubscriptionList) {
 		this.preSubscriptionList = preSubscriptionList;
 	}
 
@@ -469,8 +642,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 
 	public void setQuoteChecker(IQuoteChecker quoteChecker) {
 		this.quoteChecker = quoteChecker;
-	}	
-	
+	}
+
 	public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
 		this.sessionMonitor = sessionMonitor;
 	}
