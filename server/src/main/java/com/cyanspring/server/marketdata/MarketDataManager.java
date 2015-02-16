@@ -46,7 +46,7 @@ import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.PriceQuoteChecker;
+import com.cyanspring.common.marketdata.PriceSessionQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.TickDataException;
 import com.cyanspring.common.marketdata.Trade;
@@ -71,7 +71,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	@Autowired
 	protected ScheduleManager scheduleManager;
 
-	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
+	//private IQuoteChecker quoteChecker = new PriceQuoteChecker();
+	private PriceSessionQuoteChecker quoteChecker = new PriceSessionQuoteChecker();
 
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	protected Date lastQuoteSent = Clock.getInstance().now();
@@ -99,20 +100,16 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private long chkTime;
 	boolean state = false;
 
-	AggregationTicks aggrTicks = null;
+	//AggregationTicks aggrTicks = null;
+	
+	QuoteAggregator aggregator;
 
-	long interval = 300;
-
-	public boolean isAggregation() {
-		return interval > 0;
+	public QuoteAggregator getAggregator() {
+		return aggregator;
 	}
 
-	public long getInterval() {
-		return interval;
-	}
-
-	public void setInterval(long interval) {
-		this.interval = interval;
+	public void setAggregator(QuoteAggregator aggregator) {
+		this.aggregator = aggregator;
 	}
 
 	public boolean isState() {
@@ -163,6 +160,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	};
 
 	public void processMarketSessionEvent(MarketSessionEvent event) {
+		quoteChecker.setSession(event.getSession());
 		chkTime = sessionMonitor.get(event.getSession());
 		log.info("Get MarketSessionEvent: " + event.getSession()
 				+ ", map size: " + sessionMonitor.size() + ", checkTime: "
@@ -255,6 +253,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	private void sendQuoteEvent(QuoteEvent event) {
 		try {
+			//log.info(String.format("%s", event.getQuote().toString()));
 			eventManager.sendGlobalEvent(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -262,12 +261,15 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	}
 
 	private void clearAndSendQuoteEvent(QuoteEvent event) {
+		//log.info(String.format("%s", event.getQuote().toString()));
 		event.getQuote().setTimeSent(Clock.getInstance().now());
 		quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
 																// in queue
 																// because we
 																// are sending
 																// it now
+		
+		aggregator.reset(event.getQuote().getSymbol());
 		sendQuoteEvent(event);
 	}
 
@@ -286,7 +288,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			quotes.put(quote.getSymbol(), quote);
 			clearAndSendQuoteEvent(event);
 			return;
-		} else if (null != quoteChecker && !quoteChecker.check(quote)) {
+		} else if (null != quoteChecker && !quoteChecker.checkWithSession(quote)) {
 			boolean prevStale = prev.isStale();
 			prev.setStale(true); // just set the existing stale
 			if (!prevStale) {
@@ -302,29 +304,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			}
 		}
 
-		if (aggrTicks == null) {
-			aggrTicks = new AggregationTicks();
-			aggrTicks.setInterval(interval);
-		}
-
 		
-		Quote quote2 = null;
 		String symbol = event.getQuote().getSymbol();
-		if (isAggregation()) {
-			quote2 = aggrTicks.updateQuote(symbol, event.getQuote());
-			if (quote2 == null) {
-				return;
-			}
-		} else {
-			quote2 = event.getQuote();
+		if (null != aggregator) {
+			quote = aggregator.update(symbol, event.getQuote());
 		}
-
-		//String strFmt = formatDate(quote2.getTimeStamp(),"yyyy-MM-dd HH:mm:ss.SSS");
-		//if (symbol.equals("USDJPY")) {
-		//	log.debug(String.format("[%s] %s PC=%f,O=%f,H=%f,L=%f", strFmt, quote2.toString(), quote2.getClose(), quote2.getOpen(), quote2.getHigh(), quote2.getLow()));
-		//}
-		
-		event = new QuoteEvent(event.getKey(), null, quote2);
+	
+		event = new QuoteEvent(event.getKey(), null, quote);
 
 		if (eventProcessor.isSync()) {
 			sendQuoteEvent(event);
@@ -641,7 +627,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	}
 
 	public void setQuoteChecker(IQuoteChecker quoteChecker) {
-		this.quoteChecker = quoteChecker;
+		this.quoteChecker = (PriceSessionQuoteChecker)quoteChecker;
 	}
 
 	public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
