@@ -498,6 +498,7 @@ public class PersistenceManager {
 			{
 				if(syncCentralDb)
 				{
+					/*
 					if(centralDbConnector.isUserExist(user.getId()))
 						throw new CentralDbException("This user already exists: " + user.getId());
 					if(centralDbConnector.isEmailExist(user.getEmail()))
@@ -505,6 +506,16 @@ public class PersistenceManager {
 					if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
 								user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
 						throw new CentralDbException("can't create this user: " + user.getId());
+						*/
+					if(!centralDbConnector.isUserExist(user.getId())) // user dose not exist in Mysql either
+					{
+						if(centralDbConnector.isEmailExist(user.getEmail()))
+							throw new CentralDbException("This email already exists: " + user.getEmail());
+						if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
+									user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
+							throw new CentralDbException("can't create this user: " + user.getId());
+						
+					}
 				}
 				
 				tx = session.beginTransaction();
