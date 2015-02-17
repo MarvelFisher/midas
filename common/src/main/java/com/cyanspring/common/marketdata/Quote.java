@@ -202,6 +202,8 @@ public class Quote implements Cloneable, Serializable {
 			e.printStackTrace();
 			return null;
 		}
+		if(null == result)
+			return null; 
 		result.bids = new LinkedList<QtyPrice>();
 		for(QtyPrice qp: bids) {
 			result.bids.add(new QtyPrice(qp.quantity, qp.price));
