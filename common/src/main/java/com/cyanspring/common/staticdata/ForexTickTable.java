@@ -9,6 +9,7 @@
  * governing permissions and limitations under the License.
  ******************************************************************************/
 package com.cyanspring.common.staticdata;
+
 import com.cyanspring.common.util.PriceUtils;
 
 public class ForexTickTable implements ITickTable {
@@ -24,6 +25,29 @@ public class ForexTickTable implements ITickTable {
 		{50,		maxPrice,		0.005}
 	};
 
+	private double getTick(double price) {
+		
+		for (double[] arr : tickTable) {
+			if (arr[0] >= price && arr[1] <= price) {
+				return arr[2];
+			}
+		}
+		
+		int length = tickTable.length;
+		if (price <= tickTable[0][1])
+			return tickTable[0][2];
+		if (price >= tickTable[length - 1][0])
+			return tickTable[length - 1][2];		
+		
+		return  delta;		
+		 
+	}
+	
+	public int getStep(double priceBid, double priceAsk) {
+		
+		return (int)((priceAsk - priceBid) / getTick(priceBid));
+		//return 0;
+	}
 	
 	private double roundPrice(double price) {
 		return ((int)((price + delta) * scale))/(double)scale;

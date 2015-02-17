@@ -52,6 +52,7 @@ import com.cyanspring.common.marketdata.TickDataException;
 import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.staticdata.ForexTickTable;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.thoughtworks.xstream.XStream;
@@ -65,6 +66,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
 
+	//private ForexTickTable forexTickTable = new ForexTickTable();
+	
 	@Autowired
 	protected IRemoteEventManager eventManager;
 
@@ -218,13 +221,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		String symbol = event.getSymbol();
 		Quote quote = quotes.get(symbol);
 		if (quote == null || quote.isStale()) {
-			for (int i = 0; i < preSubscriptionList.size(); i++) {
-				List<String> preList = preSubscriptionList.get(i);
-				if (preList.contains(symbol)) {
-					IMarketDataAdaptor adaptor = adaptors.get(i);
-					adaptor.subscribeMarketData(symbol, MarketDataManager.this);
-
-				}
+			for (int i = 0; i < adaptors.size(); i++) {
+				IMarketDataAdaptor adaptor = adaptors.get(i);
+				adaptor.subscribeMarketData(symbol, MarketDataManager.this);
 			}
 		}
 
@@ -253,23 +252,29 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	private void sendQuoteEvent(QuoteEvent event) {
 		try {
-			//log.info(String.format("%s", event.getQuote().toString()));
 			eventManager.sendGlobalEvent(event);
+			//if (event.getQuote().getSymbol().equals("USDJPY")) {
+				/// out put ticks between buy/sell price
+				//int step = this.forexTickTable.getStep(event.getQuote().getBid(), event.getQuote().getAsk());
+				//String time = formatDate(event.getQuote().getTimeStamp(), "HH:mm:ss");
+				//log.info(String.format("[%s]%s dif=[]", time, event.getQuote().toString())); //), step));
+			//}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 
+	
 	private void clearAndSendQuoteEvent(QuoteEvent event) {
-		//log.info(String.format("%s", event.getQuote().toString()));
 		event.getQuote().setTimeSent(Clock.getInstance().now());
 		quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
 																// in queue
 																// because we
 																// are sending
 																// it now
-		
-		aggregator.reset(event.getQuote().getSymbol());
+		if (null  != aggregator) {
+			aggregator.reset(event.getQuote().getSymbol());
+		}
 		sendQuoteEvent(event);
 	}
 
@@ -304,12 +309,17 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			}
 		}
 
-		
 		String symbol = event.getQuote().getSymbol();
+		//if (event.getQuote().getSymbol().equals("USDJPY")) {
+		//	int step = this.forexTickTable.getStep(quote.getBid(), quote.getAsk());
+		//	log.info(String.format("[        ]%s dif=[%d]", event.getQuote().toString(), step));
+		//}
+
 		if (null != aggregator) {
 			quote = aggregator.update(symbol, event.getQuote());
 		}
 	
+
 		event = new QuoteEvent(event.getKey(), null, quote);
 
 		if (eventProcessor.isSync()) {
@@ -526,7 +536,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void onQuote(Quote quote) {
 		if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
 			log.error("Quotes receive time large than excepted.");
-		}
+		}			
+		
 		chkDate = Clock.getInstance().now();
 		QuoteEvent event = new QuoteEvent(quote.getSymbol(), null, quote);
 		eventProcessor.onEvent(event);
