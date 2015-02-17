@@ -214,5 +214,8 @@
 			</list>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregator">
+	</bean>
 
 </beans>

@@ -447,5 +447,8 @@
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
+	
+	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregator">
+	</bean>
 
 </beans>

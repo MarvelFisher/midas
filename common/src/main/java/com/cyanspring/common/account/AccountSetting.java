@@ -15,7 +15,7 @@ public class AccountSetting extends DataObject {
 		setCompanySLValue(0.0);
 		setMargin(0.0);
 		setRoute("");
-		setLeverageRate(0.0);
+		//setLeverageRate(0.0);
 		setCommission(0.0);
 		setDailyStopLoss(0.0);
 	}	
@@ -55,12 +55,12 @@ public class AccountSetting extends DataObject {
 	public void setRoute(String route) {
 		put(AccountSettingType.ROUTE.value(), route);
 	}
-	public Double getLeverageRate(){
-		return get(Double.class, AccountSettingType.LEVERAGERATE.value());
-	}
-	public void setLeverageRate(Double lRate){
-		put(AccountSettingType.LEVERAGERATE.value(), lRate);
-	}
+	//public Double getLeverageRate(){
+	//	return get(Double.class, AccountSettingType.LEVERAGERATE.value());
+	//}
+	//public void setLeverageRate(Double lRate){
+	//	put(AccountSettingType.LEVERAGERATE.value(), lRate);
+	//}
 	public Double getCommission(){
 		return get(Double.class, AccountSettingType.COMMISSION.value());
 	}

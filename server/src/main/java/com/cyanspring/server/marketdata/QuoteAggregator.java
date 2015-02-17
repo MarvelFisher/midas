@@ -4,17 +4,9 @@ import java.util.HashMap;
 
 import com.cyanspring.common.marketdata.Quote;
 
-public class AggregationTicks {
+public class QuoteAggregator {
 	
-	long interval;
-
-	public long getInterval() {
-		return interval;
-	}
-
-	public void setInterval(long interval) {
-		this.interval = interval;
-	}
+	
 	HashMap<String, AggrQuote> table = new HashMap<String, AggrQuote>(); 
 	
 	AggrQuote getQuote(String symbol) {
@@ -22,20 +14,22 @@ public class AggregationTicks {
 			return table.get(symbol);		
 		}
 		else {
-			AggrQuote aggrQuote = new AggrQuote(symbol, interval);
+			AggrQuote aggrQuote = new AggrQuote(symbol);
 			table.put(symbol,aggrQuote);
 			return aggrQuote;
 		}
+	}	
+	
+	public void reset(String symbol) {
+		AggrQuote aggrQuote = getQuote(symbol);
+		if (null != aggrQuote) {
+			aggrQuote.reset();
+		}
 	}
 	
-	
-	public Quote updateQuote(String symbol, Quote quote) {
+	public Quote update(String symbol, Quote quote) {
 		AggrQuote aggrQuote = getQuote(symbol);
-		return aggrQuote.updateQuote(quote);
+		return aggrQuote.update(quote);
 		
 	}
-	
-	
-	
-
 }
