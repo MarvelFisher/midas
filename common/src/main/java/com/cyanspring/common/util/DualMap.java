@@ -113,4 +113,8 @@ public class DualMap<T, U> {
 		map1.clear();
 		map2.clear();
 	}
+	
+	synchronized public Map<T, U> getMap() {
+		return map1;
+	}
 }

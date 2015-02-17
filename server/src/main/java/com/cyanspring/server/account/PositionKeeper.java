@@ -22,13 +22,11 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ParentOrder;
-import com.cyanspring.common.event.order.UpdateParentOrderEvent;
-import com.cyanspring.common.fx.FxException;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
+import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.PriceUtils;
@@ -87,7 +85,14 @@ public class PositionKeeper {
 			Map<String, Map<String, ParentOrder>> existing = parentOrders.putIfAbsent(order.getAccount(), accountMap);
 			accountMap = existing == null?accountMap:existing;
 		}
-
+		
+		if(checkAccountPositionLock(order.getAccount(), order.getSymbol()) && 
+			order.getOrdStatus().isCompleted() && 
+			!order.getOrdStatus().equals(OrdStatus.FILLED)) {
+				unlockAccountPosition(order.getId());
+				log.debug("Close position action completed: " + order.getAccount() + ", " + order.getSymbol() + ", " + order.getId());
+		}
+		
 		synchronized(getSyncAccount(order.getAccount())) {
 			Map<String, ParentOrder> symbolMap = accountMap.get(order.getSymbol());
 			if(null == symbolMap) {
@@ -113,11 +118,12 @@ public class PositionKeeper {
 		
 		//update execution
 		boolean parentOrderUdpated = false;
+		ParentOrder parentOrder = null;
 		Map<String, Map<String, ParentOrder>> accountOrders =  parentOrders.get(execution.getAccount());
 		if(null != accountOrders) {
 			Map<String, ParentOrder> symbolOrders = accountOrders.get(execution.getSymbol());
 			if(null != symbolOrders) {		
-				ParentOrder parentOrder = symbolOrders.get(execution.getParentOrderId());
+				parentOrder = symbolOrders.get(execution.getParentOrderId());
 				if(null != parentOrder) {
 					parentOrder.processExecution(execution);
 					parentOrderUdpated = true;
@@ -204,6 +210,14 @@ public class PositionKeeper {
 			if(needAccountUpdate)
 				notifyAccountUpdate(account);
 			
+		}
+
+		if(parentOrder != null && 
+			checkAccountPositionLock(parentOrder.getAccount(), parentOrder.getSymbol()) &&
+			parentOrder.getOrdStatus().equals(OrdStatus.FILLED) &&
+			PriceUtils.Equal(parentOrder.getCumQty(), parentOrder.getQuantity())) {
+				unlockAccountPosition(parentOrder.getId());
+				log.debug("Close position action completed ex: " + parentOrder.getAccount() + ", " + parentOrder.getSymbol() + ", " + parentOrder.getId());
 		}
 	}
 	
@@ -581,10 +595,16 @@ public class PositionKeeper {
 		}
 	}
 	
-	public void rollAccount(Account account) {
+	public Account rollAccount(Account account) {
 		synchronized(getSyncAccount(account.getId())) {
 			account.updateEndOfDay();
+			try {
+				return account.clone();
+			} catch (CloneNotSupportedException e) {
+				log.error(e.getMessage(), e);
+			}
 		}
+		return null;
 	}
 	
 	private String getClosePositionKey(String account, String symbol) {

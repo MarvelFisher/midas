@@ -37,9 +37,6 @@ import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
-import com.cyanspring.common.downstream.DownStreamManager;
-import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.downstream.IOrderRouter;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -77,7 +74,6 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
-import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
@@ -445,6 +441,7 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			if(!PriceUtils.isZero(event.getQty()))
 				qty = Math.min(qty, event.getQty());
+
 			OrderSide side = position.getQty() > 0? OrderSide.Sell : OrderSide.Buy;
 			ParentOrder order = new ParentOrder(position.getSymbol(), side, qty, 0.0, OrderType.Market);
 			order.put(OrderField.STRATEGY.value(), "SDMA");
@@ -490,7 +487,7 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
-			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositionIterator();
+			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositions().entrySet().iterator();
 			while(iter.hasNext()) {
 				Entry<String,String> entry = iter.next();
 				ParentOrder order = orders.get(entry.getKey());
@@ -516,7 +513,6 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 	}
 	
-
 	private HashMap<String, Object> convertOrderFields(Map<String, Object> fields, String strategyName) throws DataConvertException, StrategyException {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
@@ -778,6 +774,5 @@ public class BusinessManager implements ApplicationContextAware {
 	public void setClosePositionCheckInterval(long closePositionCheckInterval) {
 		this.closePositionCheckInterval = closePositionCheckInterval;
 	}
-	
 	
 }

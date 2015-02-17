@@ -994,6 +994,10 @@ public class CentralDbProcessor implements IPlugin
 		{
 			onCallRefData();
 		}
+		else if (this.sessionType == null)
+		{
+			onCallRefData();
+		}
 		if (sessionType == MarketSessionType.OPEN)
 		{
 			if (this.sessionType != MarketSessionType.OPEN)

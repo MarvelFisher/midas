@@ -271,11 +271,22 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 		}
 
 		quotes = loadQuotes(tickDir + "/" + lastQuoteFile);
+log.info("Quotes Loaded Counts [" + quotes.size() + "] " );
+for(Entry<String, Quote> entry : quotes.entrySet())
+{
+	log.info("Quotes Loaded Results [" + entry.getKey() + "] " + entry.getValue().toString());
+}
 		lastTradeDateQuotes = loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
 		if(lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0){
 			log.warn("No lastTradeDateQuotes values while initialing.");			
 			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
+
+		log.info("LastTradeDateQuotes Loaded Counts [" + lastTradeDateQuotes.size() + "] " );
+for(Entry<String, Quote> entry : lastTradeDateQuotes.entrySet())
+{
+	log.info("LastTradeDateQuotes Loaded Results [" + entry.getKey() + "] " + entry.getValue().toString());
+}
 		
 		chkDate = Clock.getInstance().now();
 		
@@ -474,4 +485,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener, IMarketD
 	public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
 		this.sessionMonitor = sessionMonitor;
 	}
+	
+	public long getTimerInterval() {
+		return timerInterval;
+	}
+
+	public void setTimerInterval(long timerInterval) {
+		this.timerInterval = timerInterval;
+	}
+	
 }
