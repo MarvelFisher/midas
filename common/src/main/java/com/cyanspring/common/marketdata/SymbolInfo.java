@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class SymbolInfo implements Cloneable, Serializable{
+public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
 	private String market = null;
 	private String code = null;
 	private String windCode = null;
@@ -139,5 +139,12 @@ public class SymbolInfo implements Cloneable, Serializable{
 	}
 	public void setTickTable(int tickTable) {
 		this.tickTable = tickTable;
+	}
+	@Override
+	public int compareTo(SymbolInfo o) {
+		int i = this.market.compareTo(o.market);
+		if (i != 0) return i;
+		i = this.code.compareTo(o.code);
+		return i;
 	}
 }

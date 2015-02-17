@@ -1,9 +1,14 @@
 package com.cyanspring.info;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -87,7 +92,7 @@ public class SymbolData implements Comparable<SymbolData>
 			dCurVolume = quote.getTotalVolume() ;
 		}
 	}
-	public void setPrice(double bid, double ask, Date date)
+	public boolean setPrice(double bid, double ask, Date date)
 	{
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.setTime(date) ;
@@ -95,7 +100,8 @@ public class SymbolData implements Comparable<SymbolData>
 		int nPos = centralDB.getPosByTime(curTime) ;
 		double dPrice = (bid + ask) / 2 ;
 		HistoricalPrice price = priceData.get(nPos) ;
-		price.setPrice(dPrice) ;
+		boolean changed = price.setPrice(dPrice);
+		if (changed) writeToMin() ;
 		price.setTimestamp(date) ;
 		if (d52WHigh < dPrice)
 		{
@@ -119,6 +125,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		dCurPrice = dPrice ;
 		dClose = dPrice ;
+		return changed;
 	}
 	
 	public void readFromTick()
@@ -131,7 +138,7 @@ public class SymbolData implements Comparable<SymbolData>
 			isUpdating = false ;
 			return;
 		}
-		String strFile = String.format("./DAT/%s/%s.TCK", 
+		String strFile = String.format("./DAT/%s/%s.1M", 
 				centralDB.getTradedate(), getStrSymbol()) ;
 		File file = new File(strFile);
 		if (file.exists() == false)
@@ -139,42 +146,57 @@ public class SymbolData implements Comparable<SymbolData>
 			isUpdating = false ;
 			return;
 		}
-		String strIn = "" ;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Quote quote = new Quote(getStrSymbol(), null, null) ;
-		StringTokenizer strtok ;
-		try 
-		{
-			BufferedReader fileIn = new BufferedReader(new FileReader(strFile)) ;
-			while((strIn = fileIn.readLine()) != null)
-			{
-				strtok = new StringTokenizer(strIn) ;
-				strtok.nextToken("|") ;
-				strtok.nextToken("|") ;
-				quote.setBid(Double.parseDouble(strtok.nextToken("|")));
-				quote.setAsk(Double.parseDouble(strtok.nextToken("|")));
-				quote.setBidVol(Double.parseDouble(strtok.nextToken("|")));
-				quote.setAskVol(Double.parseDouble(strtok.nextToken("|")));
-				quote.setLast(Double.parseDouble(strtok.nextToken("|")));
-				quote.setLastVol(Double.parseDouble(strtok.nextToken("|")));
-				quote.setHigh(Double.parseDouble(strtok.nextToken("|")));
-				quote.setLow(Double.parseDouble(strtok.nextToken("|")));
-				quote.setOpen(Double.parseDouble(strtok.nextToken("|")));
-				quote.setClose(Double.parseDouble(strtok.nextToken("|")));
-				quote.setTotalVolume(Double.parseDouble(strtok.nextToken("|")));
-				quote.setTimeStamp(dateFormat.parse(strtok.nextToken("|")));
-				quote.setTimeSent(dateFormat.parse(strtok.nextToken("|")));
-				setPrice(quote.getBid(), quote.getAsk(), quote.getTimeStamp());
-			}
-			fileIn.close();
+	    try
+        {
+	        FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            try
+            {
+                Object o = ois.readObject();
+                priceData = (ArrayList<HistoricalPrice>)o;
+            }
+            catch (EOFException e)
+            {
+            }
+            catch (Exception e)
+            {
+            	log.error(e.getMessage(), e);
+            }
+            ois.close();
+            fis.close();
 			isUpdating = false ;
-		} 
-		catch (IOException | ParseException e) 
-		{
-			e.printStackTrace();
+        }
+        catch (Exception e)
+        {
+        	log.error(e.getMessage(), e);
 			isUpdating = false ;
+        }
+	}
+	
+	public void writeToMin()
+	{
+		if (centralDB.getTradedate() == null)
+		{
+			return;
 		}
+		String strFile = String.format("./DAT/%s/%s.1M", 
+				centralDB.getTradedate(), getStrSymbol()) ;
+		File file = new File(strFile) ;
+        file.getParentFile().mkdirs();
+        boolean fileExist = file.exists();
+        try
+        {
+            FileOutputStream fos = new FileOutputStream(file, false);
+            ObjectOutputStream oos = new ObjectOutputStream(fos); 
+        	oos.writeObject(priceData);
+            oos.flush();
+            oos.close();
+            fos.close();
+        }
+        catch (IOException e)
+        {
+            log.error(e.getMessage(), e);
+        }
 	}
 	
 	public void insertSQLDate(byte service, String strType)
