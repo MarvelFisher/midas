@@ -221,13 +221,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		String symbol = event.getSymbol();
 		Quote quote = quotes.get(symbol);
 		if (quote == null || quote.isStale()) {
-			for (int i = 0; i < preSubscriptionList.size(); i++) {
-				List<String> preList = preSubscriptionList.get(i);
-				if (preList.contains(symbol)) {
-					IMarketDataAdaptor adaptor = adaptors.get(i);
-					adaptor.subscribeMarketData(symbol, MarketDataManager.this);
-
-				}
+			for (int i = 0; i < adaptors.size(); i++) {
+				IMarketDataAdaptor adaptor = adaptors.get(i);
+				adaptor.subscribeMarketData(symbol, MarketDataManager.this);
 			}
 		}
 

@@ -156,7 +156,6 @@
   	<property column="USER_ID"			name="userId"		 type="java.lang.String"/>
   	<property column="MARKET"			name="market"		 type="java.lang.String"/>
   	<property column="CASH"				name="cash"			 type="java.lang.Double"/>
-  	<property column="COMMISSION"		name="commission"	 type="java.lang.Double"/>
   	<property column="MARGIN"			name="margin"		 type="java.lang.Double"/>
   	<property column="PNL"				name="PnL"			 type="java.lang.Double"/>
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	 type="java.lang.Double"/>
@@ -166,7 +165,6 @@
   	<property column="UNIT_PRICE"		name="unitPrice"	 type="java.lang.Double"/>
   	<property column="ACTIVE"			name="active"		 type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		 type="java.util.Date"/>
-  	<property column="CASHAVAILABLE"	name="cashAvailable" type="java.lang.Boolean"/>
   	<property column="CURRENCY"			name="currency" 	 type="java.lang.String"/>
   </class>
   
@@ -221,9 +219,6 @@
   	<property column="COMPANY_SL_VALUE"	name="companySLValue" type="java.lang.Double"/>
   	<property column="MARGIN"			name="margin"	      type="java.lang.Double"/>
 	<property column="ROUTE" 			name="route" 		  type="java.lang.String"/>
-	<property column="LEVERAGERATE" 	name="leverageRate"   type="java.lang.Double"/>
-	<property column="COMMISSION" 		name="commission"     type="java.lang.Double"/>
-	<property column="DAILYSTOPLOSS" 	name="dailyStopLoss"     type="java.lang.Double"/>
   </class>
 
   <sql-query name="rollEndOfDay1">
