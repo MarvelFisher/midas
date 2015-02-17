@@ -17,10 +17,10 @@ JAVA_OPTS="${JAVA_OPTS} -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTen
 echo "Starting LTS "`date` | tee -a ./log/console.log
 java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar conf/fxserver.xml >> ./log/console.log &
 
-sleep 15
+sleep 30
 ./runinfo.sh start
 
-sleep 30
+sleep 75
 echo "Starting AppServer "`date` | tee -a ./log/console.log
 cd ../appServer
 ./run.sh start
