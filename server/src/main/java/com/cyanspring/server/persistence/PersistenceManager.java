@@ -350,22 +350,22 @@ public class PersistenceManager {
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 					*/
 				if(!syncCentralDb)
+				{
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
+					if(ok)
+						user = userKeeper.getUser(userId);
+					else
+						message = "userid or password invalid";
+				}
 				else
 				{
 					user = centralDbConnector.userLoginEx(userId, event.getOriginalEvent().getPassword());
-					if(null != user)
+					if(null != user) // login successful from mysql
 					{
 						ok = userKeeper.userExists(userId);
 						
 						if(!ok) // user created by another LTS, must be created here again
 						{
-							tx = session.beginTransaction();
-							session.save(user);
-							tx.commit();
-							log.info("[PmUserLoginEvent] Created user: " + userId);
-							ok = true;
-
 							//generating default Account
 							String defaultAccountId = user.getDefaultAccount();
 							if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
@@ -379,8 +379,39 @@ public class PersistenceManager {
 									}
 								}
 							}
+							
+							//account creating process
+							defaultAccount = new Account(defaultAccountId, userId);
+							user.setDefaultAccount(defaultAccountId);
+							accountKeeper.setupAccount(defaultAccount);
+							createAccount(defaultAccount);
+							list = new ArrayList<Account>();
+							list.add(defaultAccount);
+							eventManager.sendEvent(new OnUserCreatedEvent(user, list));
+							eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, defaultAccount));
+							
+							tx = session.beginTransaction();
+							session.save(user);
+							tx.commit();
+							log.info("[PmUserLoginEvent] Created user: " + userId);
+							ok = true;
+							
+						}
+						else //user exists in derby
+						{
+							user = userKeeper.getUser(userId);
+							list = accountKeeper.getAccounts(userId);
 						}
 					}
+					else
+					{
+						message = "userid or password invalid";
+					}
+				}
+				
+				if(null == user.getDefaultAccount() ) {
+					ok = false;
+					throw new UserException("[PmUserLoginEvent]No trading account available for this user: " + userId);
 				}
 
 			} catch (Exception ue) {
@@ -396,45 +427,6 @@ public class PersistenceManager {
 				session.close();
 			}
 			
-			try{
-				
-				if(ok) {
-					if(null == user)
-						user = userKeeper.getUser(userId);
-					if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
-						defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
-						list = accountKeeper.getAccounts(userId);
-					}
-					else // defaultAccount == null
-					{
-						String defaultAccountId;
-						if(!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
-							defaultAccountId = user.getId() + "-" + Default.getMarket();
-						} else {
-							defaultAccountId = Default.getAccountPrefix() + IdGenerator.getInstance().getNextSimpleId();
-							if(accountKeeper.accountExists(defaultAccountId)) {
-								throw new UserException("[PmUserLoginEvent]Cannot create default account for user: " +
-										user.getId() + ", last try: " + defaultAccountId);
-							}
-						}
-						defaultAccount = new Account(defaultAccountId, userId);
-						accountKeeper.setupAccount(defaultAccount);
-						createAccount(defaultAccount);
-						list = new ArrayList<Account>();
-						list.add(defaultAccount);
-						eventManager.sendEvent(new OnUserCreatedEvent(user, list));
-						eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, defaultAccount));
-						
-					} 
-					
-					if(defaultAccount == null && (list == null || list.size() <= 0)) {
-						ok = false;
-						throw new UserException("[PmUserLoginEvent]No trading account available for this user: " + userId);
-					}
-				}
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
 		} else {
 			ok = false;
 			message = "Server is not set up for login";
