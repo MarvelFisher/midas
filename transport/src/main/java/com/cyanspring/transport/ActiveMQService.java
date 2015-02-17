@@ -130,11 +130,11 @@ public class ActiveMQService implements ITransportService, ExceptionListener {
 	@Override
 	public void startBroker() throws Exception {
 		broker = new BrokerService();
+		broker.setPersistent(false);
 		broker.getSystemUsage().getMemoryUsage().setLimit(memoryLimit);
 		TransportConnector connector = new TransportConnector();
 		connector.setUri(new URI(url));
 		broker.addConnector(connector);
-		broker.setPersistent(false);
 		broker.start();
 	}
 
