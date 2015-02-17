@@ -1,7 +1,10 @@
 package com.cyanspring.common.marketdata;
 
 public enum SymbolInfoType {
-	IFL0("", "", "", "", "", "")
+	IFL0("", "", "", "", "", ""),
+	IFL1("", "", "", "", "", ""),
+	IFF0("", "", "", "", "", ""),
+	IFF1("", "", "", "", "", "")
 	;
 
 	public static SymbolInfoType fromString(String s)

@@ -1,22 +1,29 @@
 package com.cyanspring.common.marketdata;
 
-public class SymbolInfo implements Cloneable{
-	private String market;
-	private String code;
-	private String windCode;
-	private String hint;
-	private String cnName;
-	private String cnSubName;
-	private String twName;
-	private String twSubName;
-	private String enName;
-	private String enSubName;
-	private String krName;
-	private String krSubName;
-	private String jpName;
-	private String jpSubName;
-	private String esName;
-	private String esSubName;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+public class SymbolInfo implements Cloneable, Serializable{
+	private String market = null;
+	private String code = null;
+	private String windCode = null;
+	private String hint = null;
+	private String cnName = null;
+	private String cnSubName = null;
+	private String twName = null;
+	private String twSubName = null;
+	private String enName = null;
+	private String enSubName = null;
+	private String krName = null;
+	private String krSubName = null;
+	private String jpName = null;
+	private String jpSubName = null;
+	private String esName = null;
+	private String esSubName = null;
+	private int lotSize = -1;
+	private Map<Double, Double> tickTable = null;
+	
 	
 	public SymbolInfo(String market, String code) 
 	{
@@ -120,5 +127,17 @@ public class SymbolInfo implements Cloneable{
 	}
 	public void setHint(String hint) {
 		this.hint = hint;
+	}
+	public int getLotSize() {
+		return lotSize;
+	}
+	public void setLotSize(int lotSize) {
+		this.lotSize = lotSize;
+	}
+	public Map<Double, Double> getTickTable() {
+		return tickTable;
+	}
+	public void setTickTable(Map<Double, Double> tickTable) {
+		this.tickTable = tickTable;
 	}
 }

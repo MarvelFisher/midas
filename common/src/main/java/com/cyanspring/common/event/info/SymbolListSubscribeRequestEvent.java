@@ -10,6 +10,7 @@ public class SymbolListSubscribeRequestEvent extends RemoteAsyncEvent {
 	private String market ;
 	private String group ;
 	private String txId ;
+	private int queryType = -1;
 	private List<String> symbolList ;
 
 	public SymbolListSubscribeRequestEvent(String key, String receiver) {
@@ -71,6 +72,12 @@ public class SymbolListSubscribeRequestEvent extends RemoteAsyncEvent {
 
 	public void setTxId(String txId) {
 		this.txId = txId;
+	}
+	public int getQueryType() {
+		return queryType;
+	}
+	public void setQueryType(int queryType) {
+		this.queryType = queryType;
 	}
 
 }
