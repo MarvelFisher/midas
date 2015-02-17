@@ -143,9 +143,13 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	@Override
 	public int compareTo(SymbolInfo o) {
 		int i = 0;
-		if (o.market != null) i = this.market.compareTo(o.market);
+		if (o.market == null) return 1;
+		else if (this.market == null) return -1;
+		else i = this.market.compareTo(o.market);
 		if (i != 0) return i;
-		if (o.code != null) i = this.code.compareTo(o.code);
+		if (o.code == null) return 1;
+		else if (this.code == null) return -1;
+		else i = this.code.compareTo(o.code);
 		return i;
 	}
 }
