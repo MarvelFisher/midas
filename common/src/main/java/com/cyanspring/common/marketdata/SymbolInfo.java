@@ -22,7 +22,7 @@ public class SymbolInfo implements Cloneable, Serializable{
 	private String esName = null;
 	private String esSubName = null;
 	private int lotSize = -1;
-	private Map<Double, Double> tickTable = null;
+	private int tickTable = -1;
 	
 	
 	public SymbolInfo(String market, String code) 
@@ -134,10 +134,10 @@ public class SymbolInfo implements Cloneable, Serializable{
 	public void setLotSize(int lotSize) {
 		this.lotSize = lotSize;
 	}
-	public Map<Double, Double> getTickTable() {
+	public int getTickTable() {
 		return tickTable;
 	}
-	public void setTickTable(Map<Double, Double> tickTable) {
+	public void setTickTable(int tickTable) {
 		this.tickTable = tickTable;
 	}
 }
