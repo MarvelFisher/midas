@@ -242,7 +242,7 @@ public class CentralDbConnector {
 				username = rs.getString("USERNAME");
 				email = rs.getString("EMAIL");
 				phone = rs.getString("PHONE");
-				userType = UserType.fromCode(rs.getInt("USERLEVEL"));
+				userType = UserType.fromCode(rs.getInt("USERTYPE"));
 			}
 			
 			if(md5Password == null){
