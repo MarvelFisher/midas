@@ -44,7 +44,6 @@ public class PositionKeeper {
 	private ConcurrentHashMap<String, List<Execution>> executions = new ConcurrentHashMap<String, List<Execution>>();
 	private ConcurrentHashMap<String, Map<String, Map<String, ParentOrder>>> parentOrders = // keys: account/symbol/orderId
 				new ConcurrentHashMap<String, Map<String, Map<String, ParentOrder>>>();
-	private DualMap<String, String> closePositionActionMap = new DualMap<String, String>();
 
 	private IPositionListener listener;
 	private IQuoteFeeder quoteFeeder;
@@ -58,6 +57,8 @@ public class PositionKeeper {
 	@Autowired
 	AccountKeeper accountKeeper;
 	
+	private ClosePositionLock closePositionLock = new ClosePositionLock();
+	
 	public IPositionListener setListener(IPositionListener listener) {
 		IPositionListener result = this.listener;
 		this.listener = listener;
@@ -70,18 +71,13 @@ public class PositionKeeper {
 	}
 	
 	public void processParentOrder(ParentOrder order, Account account) {
+		closePositionLock.processParentOrder(order);
+		
 		Map<String, Map<String, ParentOrder>> accountMap = parentOrders.get(order.getAccount());
 		if(null == accountMap) {
 			accountMap = new HashMap<String, Map<String, ParentOrder>>();
 			Map<String, Map<String, ParentOrder>> existing = parentOrders.putIfAbsent(order.getAccount(), accountMap);
 			accountMap = existing == null?accountMap:existing;
-		}
-		
-		if(checkAccountPositionLock(order.getAccount(), order.getSymbol()) && 
-			order.getOrdStatus().isCompleted() && 
-			!order.getOrdStatus().equals(OrdStatus.FILLED)) {
-				unlockAccountPosition(order.getId());
-				log.debug("Close position action completed: " + order.getAccount() + ", " + order.getSymbol() + ", " + order.getId());
 		}
 		
 		synchronized(getSyncAccount(order.getAccount())) {
@@ -93,6 +89,7 @@ public class PositionKeeper {
 			
 			if(order.getOrdStatus().isCompleted() || order.getState() == StrategyState.Terminated) {
 				symbolMap.remove(order.getId());
+				log.debug("Remove completed parentOrder: " + order.getId());
 			} else {
 				symbolMap.put(order.getId(), order);
 			}
@@ -116,8 +113,13 @@ public class PositionKeeper {
 			if(null != symbolOrders) {		
 				parentOrder = symbolOrders.get(execution.getParentOrderId());
 				if(null != parentOrder) {
+					log.debug("Before processing execution: " + parentOrder);
 					parentOrder.processExecution(execution);
 					parentOrderUdpated = true;
+					if(PriceUtils.EqualGreaterThan(parentOrder.getCumQty(), parentOrder.getQuantity())) { // fully filled
+						symbolOrders.remove(execution.getParentOrderId());
+						log.debug("Remove fully filled parentOrder: " + execution.getParentOrderId());
+					}
 				}
 			}
 		} 
@@ -210,6 +212,9 @@ public class PositionKeeper {
 				unlockAccountPosition(parentOrder.getId());
 				log.debug("Close position action completed ex: " + parentOrder.getAccount() + ", " + parentOrder.getSymbol() + ", " + parentOrder.getId());
 		}
+		
+		closePositionLock.processExecution(execution);
+
 	}
 	
 	protected void notifyRemoveDetailOpenPosition(OpenPosition position) {
@@ -465,9 +470,6 @@ public class PositionKeeper {
 		double sellQty = 0;
 
 		synchronized(getSyncAccount(account.getId())) {
-			OpenPosition overallPosition = getOverallPosition(account, symbol);
-			double positionQty = overallPosition.getQty();
-			
 			Map<String, Map<String, ParentOrder>> accountMap = parentOrders.get(account.getId());
 			if (null != accountMap) {
 				Map<String, ParentOrder> symbolMap = accountMap.get(symbol);
@@ -483,8 +485,13 @@ public class PositionKeeper {
 					}
 				}
 			}
-			buyQty += positionQty;
-			sellQty -= positionQty;
+			
+			OpenPosition overallPosition = getOverallPosition(account, symbol);
+			double positionQty = overallPosition.getQty();
+			if(positionQty > 0)
+				buyQty += positionQty;
+			else
+				sellQty -= positionQty;
 		}
 		
 		if(extraQty > 0)
@@ -598,35 +605,19 @@ public class PositionKeeper {
 		return null;
 	}
 	
-	private String getClosePositionKey(String account, String symbol) {
-		return account + "-" + symbol;
-	}
-	
-
-	public void lockAccountPosition(String account, String symbol, String orderId) {
-		log.info("Lock postion: " + account + ", " + symbol + ", " + orderId);
-		closePositionActionMap.put(orderId, getClosePositionKey(account, symbol));
-	}
-	
-	public String unlockAccountPosition(String account, String symbol) {
-		String result = closePositionActionMap.removeKeyByValue(getClosePositionKey(account, symbol));
-		log.info("Unlock postion: " + account + ", " + symbol + ", " + result);
-		return result;
+	public void lockAccountPosition(ParentOrder order) {
+		closePositionLock.lockAccountPosition(order);
 	}
 	
 	public String unlockAccountPosition(String orderId) {
-		String result = closePositionActionMap.remove(orderId);
-		log.info("Unlock postion: " + result + ", " + orderId);
-		return result;
+		return closePositionLock.unlockAccountPosition(orderId);
 	}
 	
 	public boolean checkAccountPositionLock(String account, String symbol) {
-		return closePositionActionMap.containsValue(getClosePositionKey(account, symbol));
+		return closePositionLock.checkAccountPositionLock(account, symbol);
 	}
 	
-	public Map<String, String> getPendingClosePositions() {
-		return new HashMap<String, String>(closePositionActionMap.getMap());
-	}
-	
-	
+	public List<ParentOrder> getTimeoutLocks() {
+		return closePositionLock.getTimeoutOrders();
+	}	
 }
