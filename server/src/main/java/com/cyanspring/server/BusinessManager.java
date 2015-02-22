@@ -12,7 +12,6 @@ package com.cyanspring.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -74,7 +73,6 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
-import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
@@ -456,7 +454,7 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			// add order to local map
 			orders.put(order.getId(), order.getAccount(), order);
-			positionKeeper.lockAccountPosition(account.getId(), symbol, order.getId());
+			positionKeeper.lockAccountPosition(order);
 			
 			// send to order manager
 			UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(order.getId(), ExecType.NEW, event.getTxId(), order, null);
@@ -487,28 +485,18 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
-			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositions().entrySet().iterator();
-			while(iter.hasNext()) {
-				Entry<String,String> entry = iter.next();
-				ParentOrder order = orders.get(entry.getKey());
-				if(null == order) {
-					log.warn("Close position record doesn't exist: " + entry.getValue() + ", " + entry.getKey());
-					positionKeeper.unlockAccountPosition(entry.getKey());
+			for(ParentOrder order: positionKeeper.getTimeoutLocks()) {
+				if(!order.getOrdStatus().isCompleted()) {
+					log.debug("Close position action timeout, trying to cancel: " + order);
+					String source = order.get(String.class, OrderField.SOURCE.value());
+					String txId = order.get(String.class, OrderField.CLORDERID.value());
+					CancelStrategyOrderEvent cancel = 
+							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, false);
+					eventManager.sendEvent(cancel);
+				} else {
+					log.debug("Close position action completed, remove stale record: " + order);
 				}
-				
-				if(TimeUtil.getTimePass(order.getCreated()) > this.closePositionCheckInterval) {
-					if(!order.getOrdStatus().isCompleted()) {
-						log.debug("Close position action timeout, trying to cancel: " + entry.getValue() + ", " + order.getId());
-						String source = order.get(String.class, OrderField.SOURCE.value());
-						String txId = order.get(String.class, OrderField.CLORDERID.value());
-						CancelStrategyOrderEvent cancel = 
-								new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, false);
-						eventManager.sendEvent(cancel);
-					} else {
-						log.debug("Close position action completed, remove stale record: " + entry.getValue() + ", " + order.getId());
-					}
-					positionKeeper.unlockAccountPosition(order.getId());
-				}
+				positionKeeper.unlockAccountPosition(order.getId());
 			}
 		}
 	}
