@@ -459,6 +459,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 	
 	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
+		log.debug("processUpdateParentOrderEvent: " + event.getParent());
 		Account account = accountKeeper.getAccount(event.getParent().getAccount());
 		positionKeeper.processParentOrder(event.getParent().clone(), account);
 	}
