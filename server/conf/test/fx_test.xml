@@ -69,8 +69,8 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>IF1502</value>
-				<value>IF1503</value>
+				<value>AUDUSD</value>
+				<value>USDJPY</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -124,9 +124,11 @@
 		</property>
 		<property name="fxSymbols">
 			<list>
+				<value>AUDUSD</value>
+				<value>USDJPY</value>
 			</list>
 		</property>
-		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->
+		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
@@ -166,7 +168,7 @@
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>refdata/refData_cf.xml</value>
+			<value>refdata/refData_fdt.xml</value>
 		</property>
 	</bean>
 
@@ -211,6 +213,9 @@
 			<list>
 			</list>
 		</constructor-arg>
+	</bean>
+	
+	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregator">
 	</bean>
 
 </beans>
