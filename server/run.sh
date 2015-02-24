@@ -9,8 +9,6 @@ cd $WORKDIR
 if [ -s LTS_PID ]; then
 LTS_PID=`cat LTS_PID`
 kill -9 $LTS_PID
-else
-jps -v|grep cyanspring-server-2.56.jar|cut -d ' ' -f1|xargs kill -9
 fi
 
 sleep 5
