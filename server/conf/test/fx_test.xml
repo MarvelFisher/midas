@@ -128,7 +128,7 @@
 				<value>USDJPY</value>
 			</list>
 		</property>
-		<property name="dailyExecTime" value="05:45:00" /> <!-- format=[HH:mm:ss] 24hr -->
+		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
