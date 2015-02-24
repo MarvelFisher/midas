@@ -8,32 +8,70 @@ import cn.com.wind.td.tdf.TDF_MSG_ID;
 import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
 
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.id.SymbolItem;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 
-public class QuoteMgr implements IReqThreadCallback{
+public class QuoteMgr implements IReqThreadCallback {
 
 	public static QuoteMgr instance = new QuoteMgr();
-	
+	Object m_lock = new Object();
+
+	public static QuoteMgr instance() {
+		return instance;
+	}
+
 	RequestThread thread = null;
-	
-	public void init(){
+
+	public void init() {
 		if (thread == null) {
 			thread = new RequestThread(this, "QuoteMgr");
 			thread.start();
-		}		
+		}
 	}
-	
+
 	public void uninit() {
 		if (thread != null) {
 			thread.close();
 			thread = null;
 		}
 	}
-	public void AddRequest(Object  reqObj) {
+
+	public void AddRequest(Object reqObj) {
 		thread.addRequest(reqObj);
 	}
+
+	public boolean checkFutureSymbol(String strSymbol) {
+		return FutureItem.symbolTable.containsKey(strSymbol); //Future
+	}
+
+	public void addFutureSymbol(String symbol, String exchange) {
+		if (checkFutureSymbol(symbol) == false) {
+			FutureItem item = new FutureItem(symbol);
+			item.setMarket(exchange);
+			// item
+			synchronized (m_lock) {
+				FutureItem.symbolTable.put(symbol, item);
+			}
+		}
+	}
 	
+	public boolean checkStockSymbol(String strSymbol) {
+		return StockItem.symbolTable.containsKey(strSymbol); //Stock
+	}
+
+	public void addStockSymbol(String symbol, String exchange) {
+		if (checkStockSymbol(symbol) == false) {
+			StockItem item = new StockItem(symbol);
+			item.setMarket(exchange);
+			// item
+			synchronized (m_lock) {
+				StockItem.symbolTable.put(symbol, item);
+			}
+		}
+	}	
+	
+
 	void process(int type, Object objMsg) {
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		switch (type) {
@@ -51,8 +89,9 @@ public class QuoteMgr implements IReqThreadCallback{
 		 */
 		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE: {
 			TDF_QUOTATIONDATE_CHANGE change = (TDF_QUOTATIONDATE_CHANGE) objMsg;
-			WindFutureDataAdaptor.info("%s, quotation change from %d to %d", change.getMarket(),
-					change.getOldDate(), change.getNewDate());
+			WindFutureDataAdaptor.info("%s, quotation change from %d to %d",
+					change.getMarket(), change.getOldDate(),
+					change.getNewDate());
 
 			adaptor.updateCodeTable(change.getMarket());
 		}
@@ -71,10 +110,10 @@ public class QuoteMgr implements IReqThreadCallback{
 			break;
 		}
 	}
-	
+
 	@Override
 	public void onStartEvent(RequestThread sender) {
-		
+
 	}
 
 	@Override
@@ -85,15 +124,14 @@ public class QuoteMgr implements IReqThreadCallback{
 		}
 		int type = (int) arr[0];
 		process(type, arr[1]);
-		
+
 		arr = null;
-		reqObj = null;	
+		reqObj = null;
 	}
 
 	@Override
 	public void onStopEvent(RequestThread sender) {
 
-		
 	}
 
 }

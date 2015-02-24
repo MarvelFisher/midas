@@ -153,11 +153,11 @@ public class FutureFeed implements IFrameClose {
 		newClient.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 
-				if (client == null) {
+				//if (client == null) {
 					client = new FutureClient(FutureFeed.instance);
 					FutureFeed.instance.addClient(client);
-					newClient.setEnabled(false);
-				}
+					//newClient.setEnabled(false);
+				//}
 			}
 		});
 		mainframe.addButton(newClient);
