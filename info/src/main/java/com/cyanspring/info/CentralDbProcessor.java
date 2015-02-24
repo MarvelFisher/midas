@@ -694,7 +694,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			for (SymbolInfo symbolinfo : refSymbolInfo)
 			{
-				if (symbolinfo.getMarket().equals(market))
+				if (symbolinfo.getMarket() != null && symbolinfo.getMarket().equals(market))
 					symbolinfos.add(symbolinfo);
 			}
 			sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`HINT`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`,`JP_NAME`,`KR_NAME`,`ES_NAME`,`NO`) VALUES");
