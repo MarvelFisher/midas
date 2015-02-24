@@ -20,7 +20,7 @@ export LD_LIBRARY_PATH=$WORKDIR/windlib:$LD_LIBRARY_PATH
 JAVA_OPTS="${JAVA_OPTS} -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -Xloggc:log/gc`date +%Y%m%d_%H%M%S`.log -server -d64 -Xmx3g -XX:+HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -XX:MaxGCPauseMillis=100 -XX:+UseG1GC -XX:InitiatingHeapOccupancyPercent=0 -XX:MaxDirectMemorySize=1G -XX:AutoBoxCacheMax=3000000"
 echo "Starting LTS "`date` | tee -a ./log/console.log
 java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar conf/fxserver.xml >> ./log/console.log &
-echo $! >> LTS_PID
+echo $! > LTS_PID
 
 sleep 30
 ./runinfo.sh start
