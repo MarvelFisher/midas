@@ -100,8 +100,7 @@ public class NewsManager implements IPlugin {
 							}
 						}
 						article.append(ar + "\r\n");
-//						log.info(em.text());							
-						int i = 0;
+//						log.info(em.text());
 					}					
 					news.setArticle(article.toString());
 					newsLst.add(0,news);					
@@ -116,7 +115,7 @@ public class NewsManager implements IPlugin {
 					}
 //					log.info(article.toString());
 					//Send to Social
-					
+					obj = new URL("http://forexmastergaedev.appspot.com/rest/appSendPost");
 					
 					
 					
