@@ -50,7 +50,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Discard the received data silently.
 		lastRecv = DateUtil.now();
 		String in = (String) msg;
-		System.out.println(in);
+//		System.out.println(in);
 		try {
 			String strHash = null;
 			String strDataType = null;
