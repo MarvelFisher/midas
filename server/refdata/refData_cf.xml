@@ -96,7 +96,11 @@
 			<entry>
 				<string>Tradable</string>
 				<string>1</string>
-			</entry>				
+			</entry>	
+			<entry>
+				<string>Strategy</string>
+				<string>IF</string>
+			</entry>			
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -196,6 +200,10 @@
 			<entry>
 				<string>Tradable</string>
 				<string>1</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>IF</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>

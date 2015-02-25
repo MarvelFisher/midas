@@ -139,4 +139,32 @@ public class RefData extends DataObject {
 	public String getTradable(){
 		return this.get(String.class, RefDataField.TRADABLE.value());
 	}
+	
+	public String getStragety(){
+		return this.get(String.class, RefDataField.STRAGETY.value());
+	}
+	
+	public void setSymbol(String symbol){
+		this.set(symbol, RefDataField.SYMBOL.value());
+	}
+	
+	public void setENDisplayName(String enName){
+		this.set(enName, RefDataField.EN_DISPLAYNAME.value());
+	}
+	
+	public void setTWDisplayName(String twName){
+		this.set(twName, RefDataField.TW_DISPLAYNAME.value());
+	}
+	
+	public void setCNDisplayName(String cnName){
+		this.set(cnName, RefDataField.CN_DISPLAYNAME.value());
+	}
+	
+	public void setRefSymbol(String refSymbol){
+		this.set(refSymbol, RefDataField.REF_SYMBOL.value());
+	}
+	
+	public void setSettlementDate(String settlementDate){
+		this.set(settlementDate, RefDataField.SETTLEMENT_DATE.value());
+	}
 }

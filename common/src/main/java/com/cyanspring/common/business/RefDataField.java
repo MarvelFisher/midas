@@ -38,7 +38,8 @@ public enum RefDataField {
 	DECIMALPOINT("Decimal point"),  // 小數位數	
 	DENOMINATOR("Denominator"),     // 分母
 	NUMERATOR_DP("Nnumerator DP"),   // 分子小數位數 
-	TRADABLE("Tradable") 
+	TRADABLE("Tradable"),
+	STRAGETY("Stragety")
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();
