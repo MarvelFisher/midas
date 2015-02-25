@@ -7,10 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,15 +19,11 @@ public class DBHandler
 	private static final Logger log = LoggerFactory
 			.getLogger(DBHandler.class);
 	private String     jdbcUrl;
-	private String     driverClass;
-	private String     pass;
-	private String     database;
 	private Connection connect = null ;
 	private Statement  stat = null ;
 	DBHandler(String jdbcUrl, String driverClass) throws Exception
 	{
 		this.jdbcUrl = jdbcUrl ;
-		this.driverClass = driverClass ;
 		Class.forName(driverClass);
 		try 
 		{
@@ -209,10 +203,15 @@ public class DBHandler
         	closeStatement();
         }
     }
-    public HistoricalPrice getLastValue(byte service, String type, String symbol, boolean dir)
+    public HistoricalPrice getLastValue(String market, String type, String symbol, boolean dir)
     {
+    	if (market == null)
+    	{
+    		return null;
+    	}
     	HistoricalPrice price = new HistoricalPrice(symbol, true) ;
-    	String strTable = String.format("%04X_%s", service, type) ;
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+    	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
     	boolean getPrice = false;
     	if (dir)
@@ -259,13 +258,18 @@ public class DBHandler
 			return null ;
 		}
     }
-    public void deletePrice(byte service, String type, String symbol, HistoricalPrice price)
+    public void deletePrice(String market, String type, String symbol, HistoricalPrice price)
     {
     	if (price == null)
     	{
     		return;
     	}
-    	String strTable = String.format("%04X_%s", service, type) ;
+    	if (market == null)
+    	{
+    		return;
+    	}
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+    	String strTable = String.format("%s_%s", prefix, type) ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00") ;
 		String sqlcmd = String.format("DELETE FROM %s WHERE SYMBOL='%s' AND TRADEDATE='%s';", 
 				strTable, symbol, sdf.format(price.getTimestamp())) ;
