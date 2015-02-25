@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.TimeZone;
 
@@ -89,6 +90,7 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<SymbolInfo> refSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<String> appServIDList = new ArrayList<String>();
+	private HashMap<String, Map<Double, Double>> tickTableMap = new HashMap<String, Map<Double, Double>>();
 	DBHandler dbhnd ;
 	
 	@Autowired
@@ -901,7 +903,7 @@ public class CentralDbProcessor implements IPlugin
 					symbolinfo.setKrName(refdata.getENDisplayName());
 					symbolinfo.setEsName(refdata.getENDisplayName());
 					symbolinfo.setLotSize(refdata.getLotSize());
-					//symbolinfo.setTickTable();
+					symbolinfo.setTickTable(refdata.getTickTable());
 					if (refdata.getExchange() != null && refdata.getExchange().equals("FX"))
 					{
 						outSymbol.println(refdata.getSymbol());
@@ -923,6 +925,8 @@ public class CentralDbProcessor implements IPlugin
 						defaultSymbolInfo.remove(index);
 						defaultSymbolInfo.add(index, symbolinfo);
 					}
+					if (!tickTableMap.containsKey(refdata.getTickTable()))
+						tickTableMap.put(refdata.getTickTable(), new HashMap<Double, Double>());
 				}
 				outSymbol.close();
 			} 
@@ -947,6 +951,7 @@ public class CentralDbProcessor implements IPlugin
 			this.listSymbolData.clear();
 			this.quoteBuffer.clear();
 			this.refSymbolInfo.clear();
+			this.tickTableMap.clear();
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);
@@ -1008,6 +1013,7 @@ public class CentralDbProcessor implements IPlugin
 	public void sendCentralReady(String appserv)
 	{
 		CentralDbReadyEvent event = new CentralDbReadyEvent(null, appserv);
+		event.setTickTableList(tickTableMap);
 		sendEvent(event);
 	}
 	
