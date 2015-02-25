@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -229,7 +230,7 @@ public class CentralDbProcessor implements IPlugin
 				int index = Collections.binarySearch(listSymbolData, symbolData) ;
 				if (index < 0)
 				{
-					listSymbolData.add(~index, new SymbolData(quote.getSymbol(), "FX", this)) ;
+					listSymbolData.add(~index, new SymbolData(quote.getSymbol(), Default.getMarket(), this)) ;
 					index = ~index ;
 				}
 				listSymbolData.get(index).setPrice(quote);
@@ -244,7 +245,7 @@ public class CentralDbProcessor implements IPlugin
 			int index = Collections.binarySearch(listSymbolData, symbolData) ;
 			if (index < 0)
 			{
-				listSymbolData.add(~index, new SymbolData(quote.getSymbol(), "FX", this)) ;
+				listSymbolData.add(~index, new SymbolData(quote.getSymbol(), Default.getMarket(), this)) ;
 				index = ~index ;
 			}
 			listSymbolData.get(index).setPrice(quote);
@@ -862,6 +863,14 @@ public class CentralDbProcessor implements IPlugin
 	public void onCallRefData()
 	{
 		log.info("Call refData start");
+		try 
+		{
+			refDataManager.init();
+		} 
+		catch (Exception e) 
+		{
+			log.error(e.toString(), e);
+		}
 		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
 		if (refList.isEmpty() || this.listSymbolData.isEmpty() == false)
 		{
@@ -884,13 +893,13 @@ public class CentralDbProcessor implements IPlugin
 					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
 					symbolinfo = new SymbolInfo(refdata.getExchange(), refdata.getSymbol());
 					symbolinfo.setWindCode(null);
-					symbolinfo.setHint(null);
+					symbolinfo.setHint(refdata.getRefSymbol());
 					symbolinfo.setCnName(refdata.getCNDisplayName());
 					symbolinfo.setEnName(refdata.getENDisplayName());
 					symbolinfo.setTwName(refdata.getTWDisplayName());
-					symbolinfo.setJpName(null);
-					symbolinfo.setKrName(null);
-					symbolinfo.setEsName(null);
+					symbolinfo.setJpName(refdata.getENDisplayName());
+					symbolinfo.setKrName(refdata.getENDisplayName());
+					symbolinfo.setEsName(refdata.getENDisplayName());
 					symbolinfo.setLotSize(refdata.getLotSize());
 					//symbolinfo.setTickTable();
 					if (refdata.getExchange() != null && refdata.getExchange().equals("FX"))
