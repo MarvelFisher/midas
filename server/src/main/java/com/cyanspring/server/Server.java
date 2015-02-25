@@ -535,8 +535,8 @@ public class Server implements ApplicationContextAware{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		String configFile = "conf/server_hyper.xml";
-		String logConfigFile = "conf/log4j.xml";
+		String configFile = "conf/sserver.xml";
+		String logConfigFile = "conf/common/log4j.xml";
 		if(args.length == 1) {
 			configFile = args[0];
 		} else if (args.length == 2) {

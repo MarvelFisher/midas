@@ -58,7 +58,7 @@ public abstract class ExchangeBtOrderTest implements IDownStreamListener {
 	
 	@BeforeClass
 	public static void BeforeClass() throws Exception {
-		DOMConfigurator.configure("conf/log4j.xml");
+		DOMConfigurator.configure("conf/common/log4j.xml");
 		exchange = new ExchangeBT();
 		exchange.init();
 

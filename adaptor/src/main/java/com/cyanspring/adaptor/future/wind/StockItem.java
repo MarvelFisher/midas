@@ -341,7 +341,10 @@ public class StockItem implements AutoCloseable{
 	}
 	
 	public SymbolInfo getSymbolInfo() {
-		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName(), "");
+		SymbolInfo info = new SymbolInfo(getMarket(), symbolId);
+		info.setWindCode(windCode());
+		info.setCnName(getCnName());
+		info.setEnName(getEnName());
 		return info;
 	}
 	

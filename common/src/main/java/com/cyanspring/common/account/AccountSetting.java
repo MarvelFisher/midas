@@ -10,12 +10,21 @@ public class AccountSetting extends DataObject {
 	}
 	public AccountSetting(String accountId) {
 		setId(accountId);
-		setDefaultQty(Default.getOrderQuantity());
-		setStopLossValue(Default.getPositionStopLoss());
-		setCompanySLValue(0.0);
-		setMargin(0.0);
-		setRoute("");
 	}	
+	
+	//!!! very important: you must add entry here whenever you add a setting
+	public static AccountSetting createEmptySettings(String accountId) {
+		AccountSetting settings = new AccountSetting(accountId);
+		settings.setDefaultQty(Default.getOrderQuantity());
+		settings.setStopLossValue(Default.getPositionStopLoss());
+		settings.setCompanySLValue(0.0);
+		settings.setMargin(0.0);
+		settings.setRoute("");
+		settings.setCommission(0.0);
+		settings.setDailyStopLoss(0.0);
+
+		return settings;
+	}
 	public String getId() {
 		return get(String.class, AccountSettingType.ID.value());
 	}
@@ -52,6 +61,26 @@ public class AccountSetting extends DataObject {
 	public void setRoute(String route) {
 		put(AccountSettingType.ROUTE.value(), route);
 	}
+	//public Double getLeverageRate(){
+	//	return get(Double.class, AccountSettingType.LEVERAGERATE.value());
+	//}
+	//public void setLeverageRate(Double lRate){
+	//	put(AccountSettingType.LEVERAGERATE.value(), lRate);
+	//}
+	public Double getCommission(){
+		return get(Double.class, AccountSettingType.COMMISSION.value());
+	}
+	public void setCommission(Double commission){
+		put(AccountSettingType.COMMISSION.value(), commission);
+	}	
+	public Double getDailyStopLoss(){
+		return get(Double.class, AccountSettingType.DAILYSTOPLOSS.value());
+	}
+	public void setDailyStopLoss(Double dailyStopLoss){
+		put(AccountSettingType.DAILYSTOPLOSS.value(), dailyStopLoss);
+	}
+	
+	
 	public AccountSetting clone() {
 		return (AccountSetting)super.clone();
 	} 

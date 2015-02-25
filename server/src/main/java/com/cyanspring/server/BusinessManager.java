@@ -12,7 +12,6 @@ package com.cyanspring.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,9 +36,6 @@ import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
-import com.cyanspring.common.downstream.DownStreamManager;
-import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.downstream.IOrderRouter;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -77,8 +73,6 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
-import com.cyanspring.common.util.DualMap;
-import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
@@ -445,6 +439,7 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			if(!PriceUtils.isZero(event.getQty()))
 				qty = Math.min(qty, event.getQty());
+
 			OrderSide side = position.getQty() > 0? OrderSide.Sell : OrderSide.Buy;
 			ParentOrder order = new ParentOrder(position.getSymbol(), side, qty, 0.0, OrderType.Market);
 			order.put(OrderField.STRATEGY.value(), "SDMA");
@@ -459,7 +454,7 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			// add order to local map
 			orders.put(order.getId(), order.getAccount(), order);
-			positionKeeper.lockAccountPosition(account.getId(), symbol, order.getId());
+			positionKeeper.lockAccountPosition(order);
 			
 			// send to order manager
 			UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(order.getId(), ExecType.NEW, event.getTxId(), order, null);
@@ -473,7 +468,6 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			log.debug("Close position order " + strategy.getId() + " assigned to container " + container.getId());
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
-			eventProcessor.subscribeToEventNow(UpdateParentOrderEvent.class, order.getId());
 			eventManager.sendEvent(addStrategyEvent);
 
 		} catch (Exception e) {
@@ -489,46 +483,24 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 	}
 
-	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
-		ParentOrder order = event.getParent();
-		if(order.getOrdStatus().isCompleted()) {
-			String accountSymbol = positionKeeper.unlockAccountPosition(order.getId());
-			if(null != accountSymbol) {
-				log.debug("Close position action completed: " + accountSymbol + ", " + order.getId());
-			}
-			eventProcessor.unsubscribeToEvent(UpdateParentOrderEvent.class, order.getId());
-		}
-	}
-	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
-			Iterator<Map.Entry<String,String>> iter = positionKeeper.getPendingClosePositionIterator();
-			while(iter.hasNext()) {
-				Entry<String,String> entry = iter.next();
-				ParentOrder order = orders.get(entry.getKey());
-				if(null == order) {
-					log.warn("Close position record doesn't exist: " + entry.getValue() + ", " + entry.getKey());
-					positionKeeper.unlockAccountPosition(entry.getKey());
+			for(ParentOrder order: positionKeeper.getTimeoutLocks()) {
+				if(!order.getOrdStatus().isCompleted()) {
+					log.debug("Close position action timeout, trying to cancel: " + order);
+					String source = order.get(String.class, OrderField.SOURCE.value());
+					String txId = order.get(String.class, OrderField.CLORDERID.value());
+					CancelStrategyOrderEvent cancel = 
+							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, false);
+					eventManager.sendEvent(cancel);
+				} else {
+					log.debug("Close position action completed, remove stale record: " + order);
 				}
-				
-				if(TimeUtil.getTimePass(order.getCreated()) > this.closePositionCheckInterval) {
-					if(!order.getOrdStatus().isCompleted()) {
-						log.debug("Close position action timeout, trying to cancel: " + entry.getValue() + ", " + order.getId());
-						String source = order.get(String.class, OrderField.SOURCE.value());
-						String txId = order.get(String.class, OrderField.CLORDERID.value());
-						CancelStrategyOrderEvent cancel = 
-								new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, false);
-						eventManager.sendEvent(cancel);
-					} else {
-						log.debug("Close position action completed, remove stale record: " + entry.getValue() + ", " + order.getId());
-					}
-					positionKeeper.unlockAccountPosition(order.getId());
-				}
+				positionKeeper.unlockAccountPosition(order.getId());
 			}
 		}
 	}
 	
-
 	private HashMap<String, Object> convertOrderFields(Map<String, Object> fields, String strategyName) throws DataConvertException, StrategyException {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
@@ -790,6 +762,5 @@ public class BusinessManager implements ApplicationContextAware {
 	public void setClosePositionCheckInterval(long closePositionCheckInterval) {
 		this.closePositionCheckInterval = closePositionCheckInterval;
 	}
-	
 	
 }

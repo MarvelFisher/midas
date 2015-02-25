@@ -105,6 +105,7 @@ public class InfoServer
 			}
 			if(!event.getServer() && readyList.allUp()) {
 				try {
+					waitForCDbPReady();
 					eventManager.publishRemoteEvent(channel, new ServerReadyEvent(true));
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
@@ -192,6 +193,7 @@ public class InfoServer
 			map.put(key, value);
 			boolean now = allUp();
 			if(!serverReady && now) {
+				waitForCDbPReady();
 				serverReady = true;
 				log.info("Server is ready: " + now);
 				ServerReadyEvent event = new ServerReadyEvent(now);
@@ -234,6 +236,21 @@ public class InfoServer
 		*/
 	}
 	
+	public void waitForCDbPReady()
+	{
+		try 
+		{
+			while(CentralDbProcessor.isStartup)
+			{
+				Thread.sleep(1);
+			}
+		} 
+		catch (InterruptedException e) 
+		{
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	
 	//getters and setters
 	public List<IPlugin> getPlugins() {
@@ -245,8 +262,8 @@ public class InfoServer
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String configFile = "conf/info_server.xml";
-		String logConfigFile = "conf/info_log4j.xml";
+		String configFile = "conf/info_sserver.xml";
+		String logConfigFile = "conf/info_slog4j.xml";
 		if(args.length == 1) {
 			configFile = args[0];
 		} else if (args.length == 2) {

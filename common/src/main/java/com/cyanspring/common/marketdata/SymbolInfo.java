@@ -1,30 +1,53 @@
 package com.cyanspring.common.marketdata;
 
-public class SymbolInfo implements Cloneable{
-	private String market;
-	private String code;
-	private String windCode;
-	private String cnName;
-	private String twName;
-	private String enName;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
+	private String market = null;
+	private String code = null;
+	private String windCode = null;
+	private String hint = null;
+	private String cnName = null;
+	private String cnSubName = null;
+	private String twName = null;
+	private String twSubName = null;
+	private String enName = null;
+	private String enSubName = null;
+	private String krName = null;
+	private String krSubName = null;
+	private String jpName = null;
+	private String jpSubName = null;
+	private String esName = null;
+	private String esSubName = null;
+	private int lotSize = -1;
+	private int tickTable = -1;
 	
-	public SymbolInfo(String market, 
-			String code, String windCode, String cnName, String enName, String twName) 
+	
+	public SymbolInfo(String market, String code) 
 	{
 		this.market = market;
 		this.code = code;
-		this.windCode = windCode;
-		this.cnName = cnName;
-		this.enName = enName;
-		this.twName = twName;
 	}
 	public SymbolInfo(SymbolInfo symbolinfo)
 	{
 		this.market = symbolinfo.getMarket();
 		this.code = symbolinfo.getCode();
-		this.windCode = symbolinfo.getWindCode();
+		this.setWindCode(symbolinfo.getWindCode());
+		this.setHint(symbolinfo.getHint());
 		this.cnName = symbolinfo.getCnName();
+		this.cnSubName = symbolinfo.getCnSubName();
 		this.enName = symbolinfo.getEnName();
+		this.enSubName = symbolinfo.getEnSubName();
+		this.twName = symbolinfo.getTwName();
+		this.twSubName = symbolinfo.getTwSubName();
+		this.jpName = symbolinfo.getJpName();
+		this.jpSubName = symbolinfo.getJpSubName();
+		this.krName = symbolinfo.getKrName();
+		this.krSubName = symbolinfo.getKrSubName();
+		this.esName = symbolinfo.getEsName();
+		this.esSubName = symbolinfo.getEsSubName();
 	}
 
 	public String getMarket() {
@@ -45,7 +68,88 @@ public class SymbolInfo implements Cloneable{
 	public String getTwName() {
 		return twName;
 	}
+	public String getHint() {
+		return hint;
+	}
+	public String getCnSubName() {
+		return cnSubName;
+	}
+	public String getTwSubName() {
+		return twSubName;
+	}
+	public String getEnSubName() {
+		return enSubName;
+	}
+	public String getKrName() {
+		return krName;
+	}
+	public String getKrSubName() {
+		return krSubName;
+	}
+	public String getJpName() {
+		return jpName;
+	}
+	public String getJpSubName() {
+		return jpSubName;
+	}
+	public String getEsName() {
+		return esName;
+	}
+	public String getEsSubName() {
+		return esSubName;
+	}
+	public void setCnName(String cnName) {
+		this.cnName = cnName;
+		this.cnSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getCnName();
+	}
 	public void setTwName(String twName) {
 		this.twName = twName;
+		this.twSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getTwName();
+	}
+	public void setEnName(String enName) {
+		this.enName = enName;
+		this.enSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEnName();
+	}
+	public void setJpName(String jpName) {
+		this.jpName = jpName;
+		this.jpSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getJpName();
+	}
+	public void setEsName(String esName) {
+		this.esName = esName;
+		this.esSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEsName();
+	}
+	public void setKrName(String krName) {
+		this.krName = krName;
+		this.krSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getKrName();
+	}
+	public void setWindCode(String windCode) {
+		this.windCode = windCode;
+	}
+	public void setHint(String hint) {
+		this.hint = hint;
+	}
+	public int getLotSize() {
+		return lotSize;
+	}
+	public void setLotSize(int lotSize) {
+		this.lotSize = lotSize;
+	}
+	public int getTickTable() {
+		return tickTable;
+	}
+	public void setTickTable(int tickTable) {
+		this.tickTable = tickTable;
+	}
+	@Override
+	public int compareTo(SymbolInfo o) {
+		int i = 0;
+		if (o.market == null) return 1;
+		else if (this.market == null) return -1;
+		else i = this.market.compareTo(o.market);
+		if (i != 0) return i;
+		if (o.code == null) return 1;
+		else if (this.code == null) return -1;
+		else i = this.code.compareTo(o.code);
+		return i;
 	}
 }

@@ -99,7 +99,8 @@ public class FutureClient implements IMarketDataListener,
 	public void onQuote(Quote quote) {
 		//dialog.addLog(quote.toString());
 		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f", quote.getSymbol(),
-				DateUtil.formatDate(DateUtil.toGmt(quote.getTimeStamp()), "HH:mm:ss.SSS"),
+//				DateUtil.formatDate(DateUtil.toGmt(quote.getTimeStamp()), "HH:mm:ss.SSS"),
+				DateUtil.formatDate(quote.getTimeStamp(), "yyyyMMdd-HH:mm:ss.SSS"),
 				quote.getBid(), quote.getAsk());
 
 	}

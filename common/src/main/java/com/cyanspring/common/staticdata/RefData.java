@@ -67,4 +67,76 @@ public class RefData extends DataObject {
 	public String getCNDisplayName(){
 		return this.get(String.class, RefDataField.CN_DISPLAYNAME.value());
 	}
+	
+	public String getRefSymbol(){
+		return this.get(String.class, RefDataField.REF_SYMBOL.value());
+	}
+	
+	public String getType(){
+		return this.get(String.class, RefDataField.TYPE.value());
+	}
+	
+	public String getCategory(){
+		return this.get(String.class, RefDataField.CATEGORY.value());
+	}
+	
+	public String getTickTable(){
+		return this.get(String.class, RefDataField.TICK_TABLE.value());
+	}
+	
+	public String getSettlementDate(){
+		return this.get(String.class, RefDataField.SETTLEMENT_DATE.value());
+	}
+	
+	public String getPricePerUnit(){
+		return this.get(String.class, RefDataField.PRICE_PER_UNIT.value());
+	}
+	
+	public String getENTradingUnit(){
+		return this.get(String.class, RefDataField.EN_TRADING_UNIT.value());
+	}
+	
+	public String getTWTradingUnit(){
+		return this.get(String.class, RefDataField.TW_TRADING_UNIT.value());
+	}
+	
+	public String getCNTradingUnit(){
+		return this.get(String.class, RefDataField.CN_TRADING_UNIT.value());
+	}
+	
+	public String getMarginRate(){
+		return this.get(String.class, RefDataField.MARGIN_RATE.value());
+	}
+	
+	public String getCommissionFee(){
+		return this.get(String.class, RefDataField.COMMISSION_FEE.value());
+	}
+	
+	public String getMinimalCommissionFee(){
+		return this.get(String.class, RefDataField.MINIMAL_COMMISSION_FEE.value());
+	}
+	
+	public String getMaximalLot(){
+		return this.get(String.class, RefDataField.MAXIMAL_LOT.value());
+	}
+	
+	public String getPriceLimit(){
+		return this.get(String.class, RefDataField.PRICE_LIMIT.value());
+	}
+	
+	public String getDeciamlPoint(){
+		return this.get(String.class, RefDataField.DECIMALPOINT.value());
+	}
+	
+	public String getDenominator(){
+		return this.get(String.class, RefDataField.DENOMINATOR.value());
+	}
+	
+	public String getNumberatorDp(){
+		return this.get(String.class, RefDataField.NUMERATOR_DP.value());
+	}
+	
+	public String getTradable(){
+		return this.get(String.class, RefDataField.TRADABLE.value());
+	}
 }

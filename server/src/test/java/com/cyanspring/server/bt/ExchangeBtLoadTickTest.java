@@ -23,7 +23,7 @@ public class ExchangeBtLoadTickTest implements IMarketDataListener {
 	
 	@BeforeClass
 	public static void BeforeClass() throws Exception {
-		DOMConfigurator.configure("conf/log4j.xml");
+		DOMConfigurator.configure("conf/common/log4j.xml");
 	}
 
 	@Test

@@ -9,18 +9,45 @@
  * governing permissions and limitations under the License.
  ******************************************************************************/
 package com.cyanspring.common.staticdata;
+
 import com.cyanspring.common.util.PriceUtils;
 
 public class ForexTickTable implements ITickTable {
 	//private final static double minPrice = 0.01;
-	private final static double maxPrice = 100000.0;
+	private final static double maxPrice = 1000000000.0;
 	private final int scale = 100000;
 	private final double delta = 0.0000001;
 	private final static double tickTable[][] = { 
-		{0.00005,	10,			0.00005},
-		{10,		maxPrice,		0.005}
+		{0.0000001,		0.1,		0.0000001},
+		{0.1,			10,			0.00005},
+		{10,			20,			0.0001},
+		{20,			50,			0.0005},
+		{50,		maxPrice,		0.005}
 	};
 
+	private double getTick(double price) {
+		
+		for (double[] arr : tickTable) {
+			if (arr[0] >= price && arr[1] <= price) {
+				return arr[2];
+			}
+		}
+		
+		int length = tickTable.length;
+		if (price <= tickTable[0][1])
+			return tickTable[0][2];
+		if (price >= tickTable[length - 1][0])
+			return tickTable[length - 1][2];		
+		
+		return  delta;		
+		 
+	}
+	
+	public int getStep(double priceBid, double priceAsk) {
+		
+		return (int)((priceAsk - priceBid) / getTick(priceBid));
+		//return 0;
+	}
 	
 	private double roundPrice(double price) {
 		return ((int)((price + delta) * scale))/(double)scale;

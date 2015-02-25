@@ -36,7 +36,7 @@ public class FutureItem implements AutoCloseable{
 	double lowLimit = 0;
 	
 	
-	public static FutureItem getItem(String symbolId, boolean enableCreateNew) {
+	public static FutureItem getItem(String symbolId, String windCode, boolean enableCreateNew) {
 
 		synchronized (symbolTable) {
 			if (symbolTable.containsKey(symbolId) == true) {
@@ -46,6 +46,7 @@ public class FutureItem implements AutoCloseable{
 			// else
 			if (enableCreateNew) {
 				FutureItem item = new FutureItem(symbolId);
+				if(WindFutureDataAdaptor.instance.gateway) item.setMarket(windCode.split("\\.")[1]);
 				symbolTable.put(symbolId, item);
 				return item;
 			}
@@ -144,7 +145,8 @@ public class FutureItem implements AutoCloseable{
 	
 	public static SymbolInfo processCODE(TDF_CODE code) {
 		String symbolId = code.getCode();
-		FutureItem item = FutureItem.getItem(symbolId, true);
+		String windCode = code.getWindCode();
+		FutureItem item = FutureItem.getItem(symbolId, windCode, true);
 			
 		item.setMarket(code.getMarket());
 		String cnName = WindFutureDataAdaptor.convertGBString(code.getCNName());
@@ -169,8 +171,9 @@ public class FutureItem implements AutoCloseable{
 	static int lastShow = 0;
 	public static void processFutureData(TDF_FUTURE_DATA data) {
 		String symbolId = data.getCode();
+		String windCode = data.getWindCode();
 
-		FutureItem item = getItem(symbolId, true);
+		FutureItem item = getItem(symbolId, windCode, true);
 
 		data.getStatus();
 
@@ -203,7 +206,11 @@ public class FutureItem implements AutoCloseable{
 		quote.setLow((double) data.getLow() / 10000);
 		quote.setLast((double) data.getMatch() / 10000);
 		quote.setClose((double) data.getPreClose() / 10000);
-
+		
+		//stale 
+		if (data.getStatus() != 0)
+			quote.setStale(true);
+		
 		// if (diff ) send info event
 		// ==================
 		//quote.setPresettlePrice((double) data.getSettlePrice() / 10000); //.getPreSettlePrice() / 10000);
@@ -289,7 +296,10 @@ public class FutureItem implements AutoCloseable{
 	}
 	
 	public SymbolInfo getSymbolInfo() {
-		SymbolInfo info = new SymbolInfo(getMarket(), symbolId, windCode(), getCnName(), getEnName(), "");
+		SymbolInfo info = new SymbolInfo(getMarket(), symbolId);
+		info.setWindCode(windCode());
+		info.setCnName(getCnName());
+		info.setEnName(getEnName());
 		return info;
 	}
 	

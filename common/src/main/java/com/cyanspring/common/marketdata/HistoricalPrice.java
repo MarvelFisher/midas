@@ -46,21 +46,27 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		this.close = close ;
 		this.volume = volume ;
 	}
-	public void setPrice(double price)
+	public boolean setPrice(double price)
 	{
+		boolean changed = false; 
 		if (open == 0)
 		{
 			open = price ;
+			changed = true;
 		}
 		if (high < price)
 		{
 			high = price ;
+			changed = true;
 		}
 		if (low == 0 || low > price)
 		{
 			low = price ;
+			changed = true;
 		}
+		if (close != price) changed = true;
 		close = price ;
+		return changed;
 	}
 	public void copy(HistoricalPrice price)
 	{

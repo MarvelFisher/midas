@@ -152,20 +152,20 @@
   </class>
 
   <class name="com.cyanspring.common.account.Account" table="ANYONE.ACCOUNTS">
-  	<id 	  column="ACCOUNT_ID" 		name="id"			type="java.lang.String"/>
-  	<property column="USER_ID"			name="userId"		type="java.lang.String"/>
-  	<property column="MARKET"			name="market"		type="java.lang.String"/>
-  	<property column="CASH"				name="cash"			type="java.lang.Double"/>
-  	<property column="MARGIN"			name="margin"		type="java.lang.Double"/>
-  	<property column="PNL"				name="PnL"			type="java.lang.Double"/>
-  	<property column="ALL_TIME_PNL"		name="allTimePnL"	type="java.lang.Double"/>
-  	<property column="UR_PNL"			name="urPnL"		type="java.lang.Double"/>
-  	<property column="CASH_DEPOSITED"	name="cashDeposited"		type="java.lang.Double"/>
-  	<property column="ROLL_PRICE"		name="rollPrice"	type="java.lang.Double"/>
-  	<property column="UNIT_PRICE"		name="unitPrice"	type="java.lang.Double"/>
-  	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
-  	<property column="CREATED"			name="created"		type="java.util.Date"/>
-  	<property column="CURRENCY"			name="currency" 	type="java.lang.String"/>
+  	<id 	  column="ACCOUNT_ID" 		name="id"			 type="java.lang.String"/>
+  	<property column="USER_ID"			name="userId"		 type="java.lang.String"/>
+  	<property column="MARKET"			name="market"		 type="java.lang.String"/>
+  	<property column="CASH"				name="cash"			 type="java.lang.Double"/>
+  	<property column="MARGIN"			name="margin"		 type="java.lang.Double"/>
+  	<property column="PNL"				name="PnL"			 type="java.lang.Double"/>
+  	<property column="ALL_TIME_PNL"		name="allTimePnL"	 type="java.lang.Double"/>
+  	<property column="UR_PNL"			name="urPnL"		 type="java.lang.Double"/>
+  	<property column="CASH_DEPOSITED"	name="cashDeposited" type="java.lang.Double"/>
+  	<property column="ROLL_PRICE"		name="rollPrice"	 type="java.lang.Double"/>
+  	<property column="UNIT_PRICE"		name="unitPrice"	 type="java.lang.Double"/>
+  	<property column="ACTIVE"			name="active"		 type="java.lang.Boolean"/>
+  	<property column="CREATED"			name="created"		 type="java.util.Date"/>
+  	<property column="CURRENCY"			name="currency" 	 type="java.lang.String"/>
   </class>
   
 <!--   
@@ -203,22 +203,22 @@
   	<property column="CREATED"			name="created"		type="java.util.Date"/>
 
     <union-subclass name="com.cyanspring.common.account.OpenPosition" table="ANYONE.OPEN_POSITIONS">
-	  	<property column="PRICE"			name="price"		type="java.lang.Double"/>
+	  	<property column="PRICE"		name="price"		type="java.lang.Double"/>
     </union-subclass>
     
     <union-subclass name="com.cyanspring.common.account.ClosedPosition" table="ANYONE.CLOSED_POSITIONS">
-	  	<property column="BUY_PRICE"		name="buyPrice"		type="java.lang.Double"/>
-	  	<property column="SELL_PRICE"		name="sellPrice"	type="java.lang.Double"/>
+	  	<property column="BUY_PRICE"	name="buyPrice"		type="java.lang.Double"/>
+	  	<property column="SELL_PRICE"	name="sellPrice"	type="java.lang.Double"/>
     </union-subclass>
   </class>
   
   <class name="com.cyanspring.common.account.AccountSetting" table="ANYONE.ACCOUNT_SETTINGS">
-  	<id 	  column="ACCOUNT_ID" 		name="id"			type="java.lang.String"/>
-  	<property column="DEFAULT_QTY"		name="defaultQty"	type="java.lang.Double"/>
-  	<property column="STOP_LOSS_VALUE"	name="stopLossValue"	type="java.lang.Double"/>
-  	<property column="COMPANY_SL_VALUE"	name="companySLValue"	type="java.lang.Double"/>
-  	<property column="MARGIN"			name="margin"	type="java.lang.Double"/>
-	<property column="ROUTE" 			name="route" 		type="java.lang.String"/>
+  	<id 	  column="ACCOUNT_ID" 		name="id"			  type="java.lang.String"/>
+  	<property column="DEFAULT_QTY"		name="defaultQty"	  type="java.lang.Double"/>
+  	<property column="STOP_LOSS_VALUE"	name="stopLossValue"  type="java.lang.Double"/>
+  	<property column="COMPANY_SL_VALUE"	name="companySLValue" type="java.lang.Double"/>
+  	<property column="MARGIN"			name="margin"	      type="java.lang.Double"/>
+	<property column="ROUTE" 			name="route" 		  type="java.lang.String"/>
   </class>
 
   <sql-query name="rollEndOfDay1">
@@ -228,7 +228,7 @@
   </sql-query>
   <sql-query name="rollEndOfDay2">
     <![CDATA[
-    INSERT INTO ANYONE.ACCOUNTS_DAILY SELECT a.*, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS a
+    INSERT INTO ANYONE.ACCOUNTS_DAILY(ACCOUNT_ID, USER_ID, MARKET, CASH, COMMISSION, MARGIN, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASHAVAILABLE, CURRENCY, ON_DATE, ON_TIME, TRADE_DATE) SELECT ACCOUNT_ID, USER_ID, MARKET, CASH, COMMISSION, MARGIN, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASHAVAILABLE, CURRENCY, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS
     ]]>
   </sql-query>
   <sql-query name="rollEndOfDay3">

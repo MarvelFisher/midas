@@ -61,7 +61,7 @@ public class AccountKeeper {
 		
 		AccountSetting setting = accountSettings.get(account);
 		if(null == setting)
-			return new AccountSetting(account);
+			return AccountSetting.createEmptySettings(account);
 		
 		synchronized(setting) {
 			return setting.clone();

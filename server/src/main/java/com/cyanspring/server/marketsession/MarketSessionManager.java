@@ -51,10 +51,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	
 	private MarketSessionType currentSessionType;
 	
-	private MarketSessionTime timing;
-	private MarketSessionTime openDays;
-	private MarketSessionTime closeDays;
-	private MarketSessionTime closeWeekDays;
 	private MarketSessionState sessionState;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -115,15 +111,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	@Override
 	public void init() throws Exception {
 		log.info("initialising");
-		sessionState = new MarketSessionStateDay(openDays);
-		MarketSessionState closeState = new MarketSessionStateDay(closeDays);
-		MarketSessionState closeWeekState = new MarketSessionStateWeekDay(closeWeekDays);
-		MarketSessionState timeState = new MarketSessionStateTime(timing);
-		
-		sessionState.setSuccessNext(timeState);
-		sessionState.setFailNext(closeState);
-		closeState.setFailNext(closeWeekState);
-		closeWeekState.setFailNext(timeState);
 
 		sessionState.init();
 		
@@ -135,7 +122,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 		
 		if(!eventProcessor.isSync())
 			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);	
-	}
+	}	
 
 	@Override
 	public void uninit() {
@@ -154,20 +141,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 		return currentSessionType;
 	}
 
-	public void setTiming(MarketSessionTime timing) {
-		this.timing = timing;
+	public void setSessionState(MarketSessionState sessionState) {
+		this.sessionState = sessionState;
 	}
-
-	public void setOpenDays(MarketSessionTime openDays) {
-		this.openDays = openDays;
-	}
-
-	public void setCloseDays(MarketSessionTime closeDays) {
-		this.closeDays = closeDays;
-	}
-
-	public void setCloseWeekDays(MarketSessionTime closeWeekDays) {
-		this.closeWeekDays = closeWeekDays;
-	}
-	
 }

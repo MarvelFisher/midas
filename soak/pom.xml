@@ -165,10 +165,5 @@
 			<version>${cyanspring.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.cyanspring.client</groupId>
-			<artifactId>cyanspring-client</artifactId>
-			<version>${cyanspring.version}</version>
-		</dependency>
 	</dependencies>
 </project>

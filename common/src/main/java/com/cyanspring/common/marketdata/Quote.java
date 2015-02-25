@@ -26,6 +26,7 @@ public class Quote implements Cloneable, Serializable {
 	private static final Logger log = LoggerFactory
 			.getLogger(Quote.class);
 	String id = IdGenerator.getInstance().getNextID();
+	public int sourceId = 1; 
 	
 	String symbol;
 	double bid;
@@ -204,13 +205,23 @@ public class Quote implements Cloneable, Serializable {
 			e.printStackTrace();
 			return null;
 		}
+		if(null == result)
+			return null; 
+		
 		result.bids = new LinkedList<QtyPrice>();
-		for(QtyPrice qp: bids) {
-			result.bids.add(new QtyPrice(qp.quantity, qp.price));
+		if(null != bids)
+		{
+			for(QtyPrice qp: bids) {
+				result.bids.add(new QtyPrice(qp.quantity, qp.price));
+			}
 		}
+		
 		result.asks = new LinkedList<QtyPrice>();
-		for(QtyPrice qp: asks) {
-			result.asks.add(new QtyPrice(qp.quantity, qp.price));
+		if(null != asks)
+		{
+			for(QtyPrice qp: asks) {
+				result.asks.add(new QtyPrice(qp.quantity, qp.price));
+			}
 		}
 		return result;
 	}

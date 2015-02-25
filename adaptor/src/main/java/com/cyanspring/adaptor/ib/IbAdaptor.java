@@ -499,12 +499,15 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	synchronized public void error(int id, int errorCode, String errorMsg) {
 		log.info("IB-ERR: " + EWrapperMsgGenerator.error(id, errorCode, errorMsg));
 		ChildOrder order = idToOrder.get(id);
-		if(null != order && 
-		   order.getOrdStatus().isPending() &&
-		   errorCode != 202 &&
-		   (errorCode != 399 || !errorMsg.contains("Warning"))){
-			order.setOrdStatus(autoStatus(order));
-			downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
+		if(null != order) {
+		   if(errorCode == 201) {
+			   order.setOrdStatus(OrdStatus.REJECTED);
+		   } else if(order.getOrdStatus().isPending() &&
+				   errorCode != 202 &&
+				   (errorCode != 399 || !errorMsg.contains("Warning"))){
+			   order.setOrdStatus(autoStatus(order));
+		   }
+		   downStreamListener.onOrder(ExecType.REJECTED, order, null, "IB error: " + errorCode + ", " + errorMsg);
 		}
 		if(id == -1)
 		{
@@ -553,6 +556,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 
 	synchronized private void publishQuote(Quote quote) {
 		quote = (Quote)quote.clone();
+		quote.sourceId = 1;
 		quote.setTimeStamp(new Date());
 		List<IMarketDataListener> list = subs.get(quote.getSymbol());
 		if(null != list)
