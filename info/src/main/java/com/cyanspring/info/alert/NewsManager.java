@@ -1,7 +1,10 @@
 package com.cyanspring.info.alert;
 
+import java.io.DataOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -29,7 +32,9 @@ public class NewsManager implements IPlugin {
 	@Autowired
 	ScheduleManager scheduleManager;
 	
-	private String endString; 
+	private String endString;
+	private String socialAPI;
+	private String PostAccount;
 	private int CheckThreadStatusInterval ;
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -84,7 +89,7 @@ public class NewsManager implements IPlugin {
 					doc = Jsoup.parse(childSite.toString()) ;
 					childSite = doc.select("p");
 					StringBuffer article = new StringBuffer();
-					
+					article.append(title + " -- ");
 					for(Element em : childSite)
 					{
 						String ar = em.text();
@@ -110,15 +115,33 @@ public class NewsManager implements IPlugin {
 						newsLst.remove(34);
 					}
 					if (firstGetNews)
-					{						
+					{	
 						continue;
 					}
 //					log.info(article.toString());
 					//Send to Social
-					obj = new URL("http://forexmastergaedev.appspot.com/rest/appSendPost");
+					obj = new URL(getSocialAPI());
+					HttpURLConnection httpCon = (HttpURLConnection) obj.openConnection();
 					
+					String strPoststring = "{\"photoUrl\":\"" +PicturePath + "\",\"postMessage\":\"" +  article.toString() +
+							"\",\"userAccount\":\"" + getPostAccount() + "\"}";
+					String Post = "data=" + URLEncoder.encode(strPoststring,"UTF-8");
+					httpCon.setRequestMethod("POST");
+					httpCon.setRequestProperty("user-Agent","LTSInfo-NewsManager");
+//					httpCon.setRequestProperty("Content-type", "application/json");
+					httpCon.setRequestProperty("Content-Length", Integer.toString(Post.length()));
 					
+					httpCon.setDoOutput(true);
+					DataOutputStream wr = new DataOutputStream(httpCon.getOutputStream());
+					wr.writeBytes(Post);
+					wr.flush();
+					wr.close();					
 					
+					int responseCode = httpCon.getResponseCode();
+					if (responseCode != 200)
+					{
+						log.warn("[Social API]Send to Social Error.");
+					}
 //					URL childSite = new URL(href);
 //					con = (HttpURLConnection) childSite.openConnection();
 //					con.setRequestMethod("GET");
@@ -171,6 +194,17 @@ public class NewsManager implements IPlugin {
 		}
 	}	
 	
+//	public String toUtf8(String str) {
+//		String returnstr = "";
+//		try {
+//			returnstr =  new String(str.getBytes("UTF-8"),"UTF-8");
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return returnstr ;
+//	}
+	
 	@Override
 	public void init() throws Exception {
 		// TODO Auto-generated method stub
@@ -208,6 +242,22 @@ public class NewsManager implements IPlugin {
 
 	public void setCheckThreadStatusInterval(int checkThreadStatusInterval) {
 		CheckThreadStatusInterval = checkThreadStatusInterval;
+	}
+
+	public String getSocialAPI() {
+		return socialAPI;
+	}
+
+	public void setSocialAPI(String socialAPI) {
+		this.socialAPI = socialAPI;
+	}
+
+	public String getPostAccount() {
+		return PostAccount;
+	}
+
+	public void setPostAccount(String postAccount) {
+		PostAccount = postAccount;
 	}
 
 }
