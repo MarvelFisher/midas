@@ -82,7 +82,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	protected long quoteThrottle = 100; // 0 = no throttle
 	protected long timerInterval = 300;
 	protected Map<String, QuoteEvent> quotesToBeSent = new HashMap<String, QuoteEvent>();
-	private boolean preSubscribed = false;
+	//private boolean preSubscribed = false;
 	// private List<String> preSubscriptionList;
 	private List<List<String>> preSubscriptionList = new ArrayList<List<String>>();
 	// private IMarketDataAdaptor adaptor;
@@ -187,7 +187,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				eventManager.sendRemoteEvent(lastTDQEvent);
 			}
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.error(e.getMessage(), e); 
 		}
 	}
 
@@ -223,6 +223,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		if (quote == null || quote.isStale()) {
 			for (int i = 0; i < adaptors.size(); i++) {
 				IMarketDataAdaptor adaptor = adaptors.get(i);
+				if (!adaptor.getState()) 
+					continue;
 				adaptor.subscribeMarketData(symbol, MarketDataManager.this);
 			}
 		}
@@ -244,7 +246,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				if (preList.contains(symbol)) {
 					IMarketDataAdaptor adaptor = adaptors.get(i);
 					adaptor.subscribeMarketData(symbol, MarketDataManager.this);
-
 				}
 			}
 		}
@@ -253,11 +254,12 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private void sendQuoteEvent(QuoteEvent event) {
 		try {
 			eventManager.sendGlobalEvent(event);
+			/// out put ticks between buy/sell price
+			
 			//if (event.getQuote().getSymbol().equals("USDJPY")) {
-				/// out put ticks between buy/sell price
-				//int step = this.forexTickTable.getStep(event.getQuote().getBid(), event.getQuote().getAsk());
-				//String time = formatDate(event.getQuote().getTimeStamp(), "HH:mm:ss");
-				//log.info(String.format("[%s]%s dif=[]", time, event.getQuote().toString())); //), step));
+			//	double step = this.forexTickTable.getSpread(event.getQuote().getBid(), event.getQuote().getAsk());
+			//	String time = formatDate(event.getQuote().getTimeStamp(), "HH:mm:ss");
+			//	log.info(String.format("[%s]%s dif=[%.2f]", time, event.getQuote().toString(), step));
 			//}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -285,7 +287,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	public void processQuoteEvent(QuoteEvent event) {
 		Quote quote = event.getQuote();
-
 		Quote prev = quotes.get(quote.getSymbol());
 
 		if (null == prev) {
@@ -433,11 +434,11 @@ for(Entry<String, Quote> entry : quotes.entrySet())
 			}
 		});
 
-		//
-		boolean curState = true;
+		
+		boolean curState = false;
 		for (IMarketDataAdaptor adaptor : adaptors) {
-			if (!adaptor.getState())
-				curState = false;
+			if (adaptor.getState())
+				curState = true;
 		}
 		if (curState) {
 			eventProcessor.onEvent(new PresubscribeEvent(null));
@@ -560,57 +561,37 @@ for(Entry<String, Quote> entry : quotes.entrySet())
 		eventProcessor.onEvent(event);
 	}
 
-	/*
-	 * @Override public void onState(boolean on) {
-	 * 
-	 * // findAdaptorActive(); if (!on) { log.warn("MarketData feed is down");
-	 * preSubscribed = false; } else { log.info("MarketData feed is up"); //
-	 * eventProcessor.onEvent(new PresubscribeEvent(null)); }
-	 * 
-	 * if (isState()) { if (!on) { setState(false); } else {
-	 * eventProcessor.onEvent(new PresubscribeEvent(null)); } } else { if (on) {
-	 * boolean curisState = true; for (IMarketDataAdaptor adaptor : adaptors) {
-	 * if (!adaptor.getState()) curisState = false; } if (curisState) {
-	 * setState(true); eventProcessor.onEvent(new PresubscribeEvent(null)); } }
-	 * }
-	 * 
-	 * eventManager.sendEvent(new MarketDataReadyEvent(null, isState())); }
-	 */
-
 	@Override
 	public void onState(boolean on) {
-		if (!on) {
-			log.warn("MarketData feed is down");
-			preSubscribed = false;
-		} else {
-			log.info("MarketData feed is up");
-			eventProcessor.onEvent(new PresubscribeEvent(null));
-		}
-		
 		if (on) {
-			eventManager.sendEvent(new MarketDataReadyEvent(null, on));
+			log.info("MarketData feed is up");
+			setState(true);
+			eventManager.sendEvent(new MarketDataReadyEvent(null, true));
+			eventProcessor.onEvent(new PresubscribeEvent(null));
 		} else {
 			for (IMarketDataAdaptor adaptor : adaptors) {
-				if (!adaptor.getState()) {
-					eventManager
-							.sendEvent(new MarketDataReadyEvent(null, true));
+				if (adaptor.getState()) {
 					return;
 				}
 			}
+			log.warn("MarketData feed is down");
+			setState(false);
 			eventManager.sendEvent(new MarketDataReadyEvent(null, false));
 		}
 	}
-
+	
 	private void preSubscribe() {
-		if (null == preSubscriptionList || preSubscribed)
+		if (null == preSubscriptionList)
 			return;
 
-		preSubscribed = true;
 		log.debug("Market data presubscribe: " + preSubscriptionList);
 		try {
 			for (int i = 0; i < preSubscriptionList.size(); i++) {
 				List<String> preList = preSubscriptionList.get(i);
 				IMarketDataAdaptor adaptor = adaptors.get(i);
+				if (!adaptor.getState())
+					continue;
+				
 				for (String symbol : preList) {
 					adaptor.subscribeMarketData(symbol, this);
 				}

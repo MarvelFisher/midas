@@ -11,6 +11,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.util.CharsetUtil;
 
 import java.nio.charset.Charset;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,17 +91,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 		response.headers().set(CONTENT_LENGTH, buffer.readableBytes());
 		
 		// Close the connection as soon as the error message is sent.
-		ctx.channel().writeAndFlush(response)
-				.addListener(new ChannelFutureListener() {
-
-					@Override
-					public void operationComplete(ChannelFuture future)
-							throws Exception {
-						future.channel().flush();
-						future.channel().close();
-
-					}
-				});
+		try {
+			ctx.channel().writeAndFlush(response).sync();
+		} catch (InterruptedException e) {
+			LogUtil.logException(log, e);
+		}			
 	}
 
 	public static void sendError(ChannelHandlerContext ctx,
@@ -115,15 +110,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 		response.headers().set(CONTENT_LENGTH, buffer.readableBytes());
 
 		// Close the connection as soon as the error message is sent.
-		ctx.channel().writeAndFlush(response)
-				.addListener(new ChannelFutureListener() {
-
-					@Override
-					public void operationComplete(ChannelFuture future)
-							throws Exception {
-						future.channel().close();
-					}
-				});
+		try {
+			ctx.channel().writeAndFlush(response).sync();
+		} catch (InterruptedException e) {
+			LogUtil.logException(log, e);
+		}			
 	}
 
 }

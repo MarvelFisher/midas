@@ -4,19 +4,17 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.id.MarketStatus;
-import com.cyanspring.id.Library.Threading.TimerThread;
-import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.BitConverter;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
-import com.cyanspring.id.Library.Util.TimeSpan;
 import com.cyanspring.id.Library.Util.Network.SpecialCharDef;
 import com.cyanspring.id.gateway.IDGateWayDialog;
 import com.cyanspring.id.gateway.IdGateway;
@@ -30,6 +28,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -38,16 +38,15 @@ import io.netty.util.ReferenceCountUtil;
  * the server.
  */
 public class ClientHandler extends ChannelInboundHandlerAdapter implements
-		TimerEventHandler, AutoCloseable {
+		AutoCloseable {
 	public static final Integer connected = 1;
 	public static final Integer disConnected = 2;
 	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
 	public static ClientHandler Instance = null;
 	static ChannelHandlerContext ctx; // context deal with server
-	static TimerThread timer = null;
+	//static TimerThread timer = null;
 	public static Date lastRecv = new Date(0);
 	public static Date lastCheck = new Date(0);
-
 
 	/**
 	 * sendData to server
@@ -74,12 +73,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		if (timer == null) {			
-			timer = new TimerThread();
-			timer.setName("ClientHandler.Timer");
-			timer.TimerEvent = this;
-			timer.start();
-		}
+		//if (timer == null) {			
+		//	timer = new TimerThread();
+		//	timer.setName("ClientHandler.Timer");
+		//	timer.TimerEvent = this;
+		//	timer.start();
+		//}
 	}
 
 	/**
@@ -106,6 +105,26 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
 			throws Exception {
 		super.userEventTriggered(ctx, evt);
+		if (evt instanceof IdleStateEvent) {
+			IdleStateEvent e = (IdleStateEvent) evt;
+			if (e.state() == IdleState.READER_IDLE) {
+				if (IdGateway.isConnecting == false) {
+					IdGateway.isConnected = false;
+					if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
+						IdGateway.instance().reconClient();
+					}
+					log.error("Read idle");
+				}				
+			}
+			/*			
+			else if (e.state() == IdleState.WRITER_IDLE) {
+				// String str =
+				// WindGatewayHandler.addHashTail("API=ServerHeartBeat");
+				// ctx.writeAndFlush(str);
+			}
+*/			
+		}
+		else {
 		if (evt == ClientHandler.connected) {
 			logOn(IdGateway.instance().getAccount(), IdGateway.instance()
 					.getPassword());
@@ -117,6 +136,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		} else if (evt == ClientHandler.disConnected) {
 			IdGateway.isConnected = false;
 			IdGateway.instance().reconClient();
+		}
 		}
 	}
 
@@ -306,6 +326,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	}
 
+/*	
 	@Override
 	public void onTimer(TimerThread objSender) {
 		if (lastCheck.getTime() < lastRecv.getTime()) {
@@ -323,7 +344,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			}
 		}
 	}
-
+*/
 	void uninit() throws Exception {
 	}
 

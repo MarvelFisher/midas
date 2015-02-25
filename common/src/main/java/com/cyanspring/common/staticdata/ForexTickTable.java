@@ -28,7 +28,7 @@ public class ForexTickTable implements ITickTable {
 	private double getTick(double price) {
 		
 		for (double[] arr : tickTable) {
-			if (arr[0] >= price && arr[1] <= price) {
+			if (arr[0] < price && price <= arr[1]) {
 				return arr[2];
 			}
 		}
@@ -43,9 +43,9 @@ public class ForexTickTable implements ITickTable {
 		 
 	}
 	
-	public int getStep(double priceBid, double priceAsk) {
+	public double getSpread(double priceBid, double priceAsk) {
 		
-		return (int)((priceAsk - priceBid) / getTick(priceBid));
+		return (priceAsk - priceBid) / getTick(priceBid);
 		//return 0;
 	}
 	

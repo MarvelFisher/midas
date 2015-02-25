@@ -107,7 +107,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) {
 		IdMarketDataAdaptor.instance.updateState(false);
-		IdMarketDataAdaptor.isConnected = false;
+		//IdMarketDataAdaptor.isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
 
 	}
@@ -158,7 +158,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Close the connection when an exception is raised.
 		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
-		IdMarketDataAdaptor.isConnected = false;
+		IdMarketDataAdaptor.instance.updateState(false);//.isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
 	}
 
@@ -336,8 +336,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
 		if (IdMarketDataAdaptor.isConnecting == false && lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
-			IdMarketDataAdaptor.isConnected = false;
-			IdMarketDataAdaptor.instance.sendState(false);
+			//IdMarketDataAdaptor.isConnected = false;
+			IdMarketDataAdaptor.instance.updateState(false);
 			lastCheck = now;
 			if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
 				IdMarketDataAdaptor.instance.reconClient();
