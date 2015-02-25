@@ -596,6 +596,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 			break;
 		case 6: 
 			quote.setHigh(price);
+			/*
 			if(quote.getOpened() == false)
 			{
 				if(PriceUtils.Equal(quote.getHigh(),quote.getLow()))
@@ -604,11 +605,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 					quote.setOpened(true);
 				}
 			}
+			*/
 			publishQuote(quote);		
 			break;
 
 		case 7: 
 			quote.setLow(price); 
+			/*
 			if(quote.getOpened() == false)
 			{
 				if(PriceUtils.Equal(quote.getHigh(),quote.getLow()))
@@ -616,16 +619,19 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 					quote.setOpen(price);
 					quote.setOpened(true);
 				}
-			}			
+			}
+			*/			
 			publishQuote(quote);
 			break;
 
 		case 9: 
 			quote.setClose(price);
+			/*
 			if( quote.getBid() == -1 && quote.getAsk() == -1)
 			{
 				quote.setOpened(false);
 			}
+			*/
 			publishQuote(quote);
 			break;
 
