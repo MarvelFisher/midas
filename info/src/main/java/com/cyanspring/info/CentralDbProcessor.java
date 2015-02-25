@@ -616,9 +616,15 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void userRequestAllSymbol(SymbolListSubscribeEvent retEvent, String market)
 	{
-		retEvent.setSymbolList(refSymbolInfo);
+		ArrayList<SymbolInfo> retSymbolInfo = new ArrayList<SymbolInfo>();
+		for (SymbolInfo symbolinfo : refSymbolInfo)
+		{
+			if (symbolinfo.getMarket().equals(market))
+				retSymbolInfo.add(symbolinfo);
+		}
+		retEvent.setSymbolList(retSymbolInfo);
 		retEvent.setOk(true);
-		log.info("Process Request All Symbol success Symbol: " + refSymbolInfo.size());
+		log.info("Process Request All Symbol success Symbol: " + retSymbolInfo.size());
 		sendEvent(retEvent);
 	}
 	
