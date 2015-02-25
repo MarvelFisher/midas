@@ -10,15 +10,21 @@ public class AccountSetting extends DataObject {
 	}
 	public AccountSetting(String accountId) {
 		setId(accountId);
-		setDefaultQty(Default.getOrderQuantity());
-		setStopLossValue(Default.getPositionStopLoss());
-		setCompanySLValue(0.0);
-		setMargin(0.0);
-		setRoute("");
-		//setLeverageRate(0.0);
-		setCommission(0.0);
-		setDailyStopLoss(0.0);
 	}	
+	
+	//!!! very important: you must add entry here whenever you add a setting
+	public static AccountSetting createEmptySettings(String accountId) {
+		AccountSetting settings = new AccountSetting(accountId);
+		settings.setDefaultQty(Default.getOrderQuantity());
+		settings.setStopLossValue(Default.getPositionStopLoss());
+		settings.setCompanySLValue(0.0);
+		settings.setMargin(0.0);
+		settings.setRoute("");
+		settings.setCommission(0.0);
+		settings.setDailyStopLoss(0.0);
+
+		return settings;
+	}
 	public String getId() {
 		return get(String.class, AccountSettingType.ID.value());
 	}
