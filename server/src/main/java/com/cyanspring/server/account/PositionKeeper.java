@@ -25,6 +25,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.StrategyState;
@@ -49,7 +50,7 @@ public class PositionKeeper {
 	private IQuoteFeeder quoteFeeder;
 
 	@Autowired
-	RefDataManager refDataManager;
+	IRefDataManager refDataManager;
 	
 	@Autowired
 	IFxConverter fxConverter;

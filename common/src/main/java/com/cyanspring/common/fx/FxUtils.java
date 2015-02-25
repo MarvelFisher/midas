@@ -3,6 +3,7 @@ package com.cyanspring.common.fx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 
@@ -18,7 +19,7 @@ public class FxUtils {
 		return symbol.substring(3);
 	}
 	
-	static public double convertPositionToCurrency(RefDataManager refDataManager, 
+	static public double convertPositionToCurrency(IRefDataManager refDataManager, 
 			IFxConverter fxConverter,
 			String baseCurrency, 
 			String symbol, double qty, double price) {
@@ -46,7 +47,7 @@ public class FxUtils {
 		}
 	}
 
-	static public double convertPnLToCurrency(RefDataManager refDataManager, 
+	static public double convertPnLToCurrency(IRefDataManager refDataManager, 
 			IFxConverter fxConverter, String baseCurrency, String symbol, double qty) {
 		if(null == refDataManager) {
 			log.warn("RefDataManager is null");

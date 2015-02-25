@@ -140,8 +140,8 @@ public class RefData extends DataObject {
 		return this.get(String.class, RefDataField.TRADABLE.value());
 	}
 	
-	public String getStragety(){
-		return this.get(String.class, RefDataField.STRAGETY.value());
+	public String getStrategy(){
+		return this.get(String.class, RefDataField.STRATEGY.value());
 	}
 	
 	public void setSymbol(String symbol){

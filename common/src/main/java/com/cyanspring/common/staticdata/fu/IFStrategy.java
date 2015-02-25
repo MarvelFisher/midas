@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.cyanspring.common.staticdata.RefData;
 
-public class IFStragety implements RefDataStragety {
+public class IFStrategy implements RefDataStrategy {
 	private static final Logger log = LoggerFactory
-			.getLogger(IFStragety.class);
+			.getLogger(IFStrategy.class);
 	public RefData n0;
 	public RefData n1;
 //	private RefData s0;

@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.staticdata.fu.IFStragety;
-import com.cyanspring.common.staticdata.fu.RefDataStragety;
+import com.cyanspring.common.staticdata.fu.IFStrategy;
+import com.cyanspring.common.staticdata.fu.RefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -27,7 +27,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 	Map<String, RefData> map = new HashMap<String, RefData>();
 	private String market = Default.getMarket();
 	private XStream xstream = new XStream(new DomDriver());
-	private Map<String,RefDataStragety> stragetyMap = new HashMap<>();
+	private Map<String,RefDataStrategy> stragetyMap = new HashMap<>();
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -43,13 +43,13 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Clock.getInstance().now());
-		RefDataStragety stragety;
+		RefDataStrategy stragety;
 		for(RefData refData: list) {
-			if(!stragetyMap.containsKey(refData.getStragety())){
-				stragety = (RefDataStragety) Class.forName(refData.getStragety() + "Stragety").newInstance();
-				stragetyMap.put(refData.getStragety(), stragety);
+			if(!stragetyMap.containsKey(refData.getStrategy())){
+				stragety = (RefDataStrategy) Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy").newInstance();
+				stragetyMap.put(refData.getStrategy(), stragety);
 			}else{
-				stragety = stragetyMap.get(refData.getStragety());
+				stragety = stragetyMap.get(refData.getStrategy());
 			}
 			stragety.init(cal);
 			stragety.setExchangeRefData(refData);
