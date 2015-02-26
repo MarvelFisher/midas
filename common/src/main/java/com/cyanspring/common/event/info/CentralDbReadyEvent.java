@@ -1,23 +1,22 @@
 package com.cyanspring.common.event.info;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.staticdata.ITickTable;
 
 @SuppressWarnings("serial")
 public class CentralDbReadyEvent  extends RemoteAsyncEvent
 {
-	private HashMap<String, Map<Double, Double>> tickTableList = null;
+	private Map<String, ITickTable> tickTableList = null;
 	public CentralDbReadyEvent(String key, String receiver) 
 	{
 		super(key, receiver);
 	}
-	public HashMap<String, Map<Double, Double>> getTickTableList() {
+	public Map<String, ITickTable> getTickTableList() {
 		return tickTableList;
 	}
-	public void setTickTableList(HashMap<String, Map<Double, Double>> tickTableList) {
+	public void setTickTableList(Map<String, ITickTable> tickTableList) {
 		this.tickTableList = tickTableList;
 	}
 }
