@@ -579,7 +579,7 @@ public class SymbolData implements Comparable<SymbolData>
 		try {
 			prices = getPriceList(strType, null, true, prices);
 		} catch (ParseException e) {
-			log.error(e.toString());
+			log.error(e.getMessage(), e);
 			return ;
 		}
 		if (prices.isEmpty())
@@ -649,7 +649,7 @@ public class SymbolData implements Comparable<SymbolData>
 				listPrice.add(price) ;
 			}
 		} catch (SQLException | ParseException e) {
-			log.error(e.toString(), e);
+			log.error(e.getMessage(), e);
 			return null ;
 		}
 		if (0 <= tradedate.compareTo(enddate))
@@ -680,7 +680,7 @@ public class SymbolData implements Comparable<SymbolData>
 					return null ;
 				}
 			} catch (ParseException e) {
-				log.error(e.toString(), e);
+				log.error(e.getMessage(), e);
 				return null ;
 			}
 		}

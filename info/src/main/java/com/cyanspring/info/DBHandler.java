@@ -1,6 +1,7 @@
 package com.cyanspring.info;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +19,8 @@ public class DBHandler
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(DBHandler.class);
+	private final String createTable = "CREATE TABLE `%s` ( `TRADEDATE`  datetime NOT NULL DEFAULT '0000-00-00 00:00:00' , `SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL , `OPEN_PRICE`  double NULL DEFAULT NULL , `CLOSE_PRICE`  double NULL DEFAULT NULL , `HIGH_PRICE`  double NULL DEFAULT NULL , `LOW_PRICE`  double NULL DEFAULT NULL , `VOLUME`  int(11) NULL DEFAULT NULL , UNIQUE INDEX `0016_1Index` USING BTREE (`TRADEDATE`, `SYMBOL`) ) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0;";
+	private final String checkTable = "show tables like '%s'";; 
 	private String     jdbcUrl;
 	private Connection connect = null ;
 	private Statement  stat = null ;
@@ -32,7 +35,7 @@ public class DBHandler
 		catch (SQLException e) 
 		{
 			// TODO Auto-generated catch block
-			log.error(e.toString(), e);
+			log.error(e.getMessage(), e);
 		}
 	}
 	public boolean isConnected()
@@ -46,7 +49,7 @@ public class DBHandler
         }
         catch (SQLException se)
         {
-            log.error(se.toString(), se);
+            log.error(se.getMessage(), se);
         }
         return false;
     }
@@ -62,7 +65,7 @@ public class DBHandler
         }
         catch (SQLException e)
         {
-            log.error(e.toString(), e);
+            log.error(e.getMessage(), e);
         }
     }
     public void disconnectSQL()
@@ -76,7 +79,7 @@ public class DBHandler
         }
         catch (SQLException e)
         {
-            log.error(e.toString(), e);
+            log.error(e.getMessage(), e);
         }
     }
     public void updateSQL(String sqlcmd)
@@ -121,7 +124,7 @@ public class DBHandler
         }
         catch (SQLException se)
         {
-            log.error(se.toString(), se);
+            log.error(se.getMessage(), se);
             log.trace(sqlcmd);
         }
         return rs;
@@ -139,7 +142,7 @@ public class DBHandler
 		} 
     	catch (SQLException e) 
     	{
-            log.error(e.toString(), e) ;
+            log.error(e.getMessage(), e) ;
 		}
     	finally
     	{
@@ -159,7 +162,7 @@ public class DBHandler
 		} 
     	catch (SQLException e) 
     	{
-            log.error(e.toString(), e) ;
+            log.error(e.getMessage(), e) ;
 		}
     }
     public void closeStatement()
@@ -173,7 +176,7 @@ public class DBHandler
 			} 
     		catch (SQLException e) 
 			{
-				log.error(e.toString(), e);
+				log.error(e.getMessage(), e);
 			}
     	}
     }
@@ -185,7 +188,7 @@ public class DBHandler
         }
         catch(SQLException se)
         {
-        	log.error(se.toString(), se) ;
+        	log.error(se.getMessage(), se) ;
         }
     }
     public void executeBatch()
@@ -196,7 +199,7 @@ public class DBHandler
 		} 
         catch (SQLException e) 
         {
-			log.error(e.toString(), e) ;
+			log.error(e.getMessage(), e) ;
 		}
         finally 
         {
@@ -249,12 +252,12 @@ public class DBHandler
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-            log.error(e.toString(), e) ;
+            log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
 			return null ;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-            log.error(e.toString(), e) ;
+            log.error(e.getMessage(), e) ;
 			return null ;
 		}
     }
@@ -274,5 +277,47 @@ public class DBHandler
 		String sqlcmd = String.format("DELETE FROM %s WHERE SYMBOL='%s' AND TRADEDATE='%s';", 
 				strTable, symbol, sdf.format(price.getTimestamp())) ;
 		updateSQL(sqlcmd) ;
+    }
+    public void checkMarketExist(String market)
+    {
+    	String prefix = null;
+    	if (market.equals("FX"))
+    	{
+    		prefix = "0040";
+    	}
+    	else
+    	{
+    		prefix = market;
+    	}
+    	checkTableExist(prefix + "_1");
+    	checkTableExist(prefix + "_R");
+    	checkTableExist(prefix + "_A");
+    	checkTableExist(prefix + "_Q");
+    	checkTableExist(prefix + "_H");
+    	checkTableExist(prefix + "_6");
+    	checkTableExist(prefix + "_T");
+    	checkTableExist(prefix + "_D");
+    	checkTableExist(prefix + "_W");
+    	checkTableExist(prefix + "_M");
+    }
+    public void checkTableExist(String table)
+    {
+    	if (table == null)
+    		return;
+    	try 
+    	{
+        	DatabaseMetaData dbm = connect.getMetaData();
+        	ResultSet tables = dbm.getTables(null, null, table, null);
+        	if (tables.next()) {
+        	  // Table exists
+        	}
+        	else {
+				String sqlcmd = String.format(createTable, table);
+				updateSQL(sqlcmd);
+        	}
+		} 
+    	catch (SQLException e) {
+			log.error(e.getMessage(), e);
+		}
     }
 }
