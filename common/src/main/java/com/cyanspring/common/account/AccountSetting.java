@@ -32,13 +32,15 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.ID.value(), id);
 	}
 	public Double getDefaultQty() {
-		return get(Double.class, AccountSettingType.DEFAULT_QTY.value());
+		Double result = get(Double.class, AccountSettingType.DEFAULT_QTY.value());
+		return null == result? Default.getOrderQuantity() : result;
 	}
 	public void setDefaultQty(Double defaultQty) {
 		put(AccountSettingType.DEFAULT_QTY.value(), defaultQty);
 	}
 	public Double getStopLossValue() {
-		return get(Double.class, AccountSettingType.STOP_LOSS_VALUE.value());
+		Double result = get(Double.class, AccountSettingType.STOP_LOSS_VALUE.value());
+		return null == result? Default.getPositionStopLoss() : result;
 	}
 	public void setStopLossValue(Double stopLossValue) {
 		put(AccountSettingType.STOP_LOSS_VALUE.value(), stopLossValue);
@@ -49,10 +51,10 @@ public class AccountSetting extends DataObject {
 	public void setCompanySLValue(Double companySLValue){
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
 	}
-	public Double getMargin(){
+	public double getMargin(){
 		return get(Double.class, AccountSettingType.MARGIN.value());
 	}
-	public void setMargin(Double margin){
+	public void setMargin(double margin){
 		put(AccountSettingType.MARGIN.value(), margin);
 	}
 	public String getRoute() {
@@ -67,16 +69,16 @@ public class AccountSetting extends DataObject {
 	//public void setLeverageRate(Double lRate){
 	//	put(AccountSettingType.LEVERAGERATE.value(), lRate);
 	//}
-	public Double getCommission(){
-		return get(Double.class, AccountSettingType.COMMISSION.value());
+	public double getCommission(){
+		return get(double.class, AccountSettingType.COMMISSION.value());
 	}
-	public void setCommission(Double commission){
+	public void setCommission(double commission){
 		put(AccountSettingType.COMMISSION.value(), commission);
 	}	
-	public Double getDailyStopLoss(){
-		return get(Double.class, AccountSettingType.DAILYSTOPLOSS.value());
+	public double getDailyStopLoss(){
+		return get(double.class, AccountSettingType.DAILYSTOPLOSS.value());
 	}
-	public void setDailyStopLoss(Double dailyStopLoss){
+	public void setDailyStopLoss(double dailyStopLoss){
 		put(AccountSettingType.DAILYSTOPLOSS.value(), dailyStopLoss);
 	}
 	
