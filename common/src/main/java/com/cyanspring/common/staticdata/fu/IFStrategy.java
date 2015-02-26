@@ -29,18 +29,12 @@ public class IFStrategy implements RefDataStrategy {
 		if(this.cal == null){
 			n0 = new RefData();
 			n1 = new RefData();
-			setStragetyData(cal);
-			
-			if(cal.compareTo(this.cal) > 0){
-				this.cal.add(Calendar.MONTH, 1);
-				setStragetyData(this.cal);								
-			}
-		}else{
-			if(cal.compareTo(this.cal) > 0){
-				this.cal.add(Calendar.MONTH, 1);
-				setStragetyData(this.cal);
-			}else{
-			}
+			setStragetyData(cal);		
+		}
+
+		if(cal.compareTo(this.cal) > 0){
+			this.cal.add(Calendar.MONTH, 1);
+			setStragetyData(this.cal);								
 		}
 	}
 	
