@@ -16,8 +16,12 @@ public class TickTableManager {
 	private Map<String, ITickTable> tickTables;
 
 	public ITickTable getTickTable(RefData refData) {
+		String tickTableID = refData.getTickTable();
 		String exchange = refData.getExchange();
 		ITickTable tickTable;
+		if(null != tickTableID && (tickTable = tickTables.get(tickTableID)) != null) {
+			 return tickTable;
+		}
 		if(null != exchange && (tickTable = tickTables.get(exchange)) != null) {
 			 return tickTable;
 		}
