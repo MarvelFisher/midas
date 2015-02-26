@@ -37,18 +37,18 @@ public class SymbolData implements Comparable<SymbolData>
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(SymbolData.class);
-	private CentralDbProcessor centralDB ;
-	private boolean isUpdating ;
-	private String strSymbol ;
-	private double d52WHigh ;
-	private double d52WLow ; 
-	private double dCurPrice ;
-	private double dCurHigh ;
-	private double dCurLow ;
-	private double dOpen ;
-	private double dClose ;
-	private double dCurVolume ;
-	private String market;
+	private CentralDbProcessor centralDB = null;
+	private boolean isUpdating = false;
+	private String strSymbol = null;
+	private String market = null;
+	private double d52WHigh = 0;
+	private double d52WLow = 0; 
+	private double dCurPrice = 0;
+	private double dCurHigh = 0;
+	private double dCurLow = 0;
+	private double dOpen = 0;
+	private double dClose = 0;
+	private double dCurVolume = 0;
 	private ArrayList<HistoricalPrice> priceData = new ArrayList<HistoricalPrice>() ;
 	private ArrayList<Quote> quoteTmp = new ArrayList<Quote>() ;
 	
@@ -58,7 +58,7 @@ public class SymbolData implements Comparable<SymbolData>
 		this.centralDB = centralDB ;
 		this.market = market;
 		readFromTick() ;
-		get52WHighLow((byte)0x40) ;
+		get52WHighLow() ;
 	}
 	public SymbolData(String symbol) {
 		this.setStrSymbol(symbol) ;
@@ -199,13 +199,18 @@ public class SymbolData implements Comparable<SymbolData>
         }
 	}
 	
-	public void insertSQLDate(byte service, String strType)
+	public void insertSQLDate(String strType)
 	{
+    	if (market == null)
+    	{
+    		return;
+    	}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
-		String strTable = String.format("%04X_%s", service, strType) ;
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+		String strTable = String.format("%s_%s", prefix, strType) ;
 		String sqlcmd = "" ;
 		String strDateTime = "" ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00") ;
@@ -213,7 +218,7 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice lastPrice;
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			lastPrice = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
+			lastPrice = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
 			Calendar cal_ = Calendar.getInstance() ;
 			if (lastPrice != null)
 			{
@@ -230,7 +235,7 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			if (bDelete)
 			{
-				centralDB.dbhnd.deletePrice(service, strType, getStrSymbol(), lastPrice);
+				centralDB.dbhnd.deletePrice(market, strType, getStrSymbol(), lastPrice);
 			}
 			lastPrice.setTimestamp(cal.getTime());
 			if (!bDelete)
@@ -300,10 +305,15 @@ public class SymbolData implements Comparable<SymbolData>
 		return phl ;
 	}
 	
-	public void get52WHighLow(byte service)
+	public void get52WHighLow()
 	{
-		String sqlcmd = String.format("SELECT * FROM %04X_W WHERE SYMBOL='%s' ORDER BY TRADEDATE desc LIMIT 52;", 
-				service, getStrSymbol()) ;
+    	if (market == null)
+    	{
+    		return;
+    	}
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY TRADEDATE desc LIMIT 52;", 
+				prefix, getStrSymbol()) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			double dHigh = 0 ; 
@@ -327,8 +337,7 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
-	public ArrayList<HistoricalPrice> getPriceList(byte service, 
-												   String strType, 
+	public ArrayList<HistoricalPrice> getPriceList(String strType, 
 												   Date end, 
 												   boolean fill,
 												   ArrayList<HistoricalPrice> prices) throws ParseException
@@ -336,7 +345,7 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-			priceEmpty = centralDB.dbhnd.getLastValue(service, strType, getStrSymbol(), false) ;
+			priceEmpty = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
 			if (priceEmpty != null)
 			{
 				prices.add(priceEmpty) ;
@@ -560,11 +569,15 @@ public class SymbolData implements Comparable<SymbolData>
 		
 	}
 	
-	public void insertSQLTick(byte service, String strType)
+	public void insertSQLTick(String strType)
 	{
+    	if (market == null)
+    	{
+    		return;
+    	}
 		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
 		try {
-			prices = getPriceList(service, strType, null, true, prices);
+			prices = getPriceList(strType, null, true, prices);
 		} catch (ParseException e) {
 			log.error(e.toString());
 			return ;
@@ -573,8 +586,9 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			return ;
 		}
-		
-		String strTable = String.format("%04X_%s", service, strType) ;
+
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+		String strTable = String.format("%s_%s", prefix, strType) ;
 		String sqlcmd = "" ;//"START TRANSACTION;" ;
 		String strDateTime = "" ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:00") ;
@@ -600,8 +614,12 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
-	public List<HistoricalPrice> getHistoricalPrice(byte service, String type, String symbol, Date start, Date end)
+	public List<HistoricalPrice> getHistoricalPrice(String type, String symbol, Date start, Date end)
 	{
+    	if (market == null)
+    	{
+    		return null;
+    	}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
 		SimpleDateFormat sdfprice = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 		sdfprice.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -609,8 +627,9 @@ public class SymbolData implements Comparable<SymbolData>
 		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
-		String sqlcmd = String.format("SELECT * FROM %04X_%s WHERE `SYMBOL`='%s' AND `TRADEDATE`>='%s' AND `TRADEDATE`<'%s' ORDER BY `TRADEDATE`;", 
-				service, type, symbol, sdfprice.format(start), sdfprice.format(end)) ;
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `TRADEDATE`>='%s' AND `TRADEDATE`<'%s' ORDER BY `TRADEDATE`;", 
+				prefix, type, symbol, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			while(rs.next())
@@ -646,7 +665,7 @@ public class SymbolData implements Comparable<SymbolData>
 				case "6":
 				case "T":
 				{
-					/*ArrayList<HistoricalPrice> listDaily =*/ getPriceList((byte)0x40, type, end, false, listPrice) ;
+					/*ArrayList<HistoricalPrice> listDaily =*/ getPriceList(type, end, false, listPrice) ;
 //					listPrice.addAll(listDaily) ;
 					break ;
 				}

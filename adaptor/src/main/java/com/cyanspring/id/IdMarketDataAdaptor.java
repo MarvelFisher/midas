@@ -311,7 +311,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 				Util.addLog("client socket connected : %s:%d", HOST, PORT);
 				
 				isConnecting = false;
-				isConnected = true;
+				//isConnected = true;
+				IdMarketDataAdaptor.instance.updateState(true);
 			} else {
 				LogUtil.logInfo(log, "Connect to %s:%d fail.", HOST, PORT);
 				Util.addLog(InfoString.ALert, "Connect to %s:%d fail.",	HOST, PORT);

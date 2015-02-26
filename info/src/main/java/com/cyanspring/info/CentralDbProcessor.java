@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,14 +17,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.TimeZone;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -90,6 +90,7 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<SymbolInfo> refSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<String> appServIDList = new ArrayList<String>();
+	private HashMap<String, Map<Double, Double>> tickTableMap = new HashMap<String, Map<Double, Double>>();
 	DBHandler dbhnd ;
 	
 	@Autowired
@@ -231,7 +232,7 @@ public class CentralDbProcessor implements IPlugin
 				int index = Collections.binarySearch(listSymbolData, symbolData) ;
 				if (index < 0)
 				{
-					listSymbolData.add(~index, new SymbolData(quote.getSymbol(), "FX", this)) ;
+					listSymbolData.add(~index, new SymbolData(quote.getSymbol(), Default.getMarket(), this)) ;
 					index = ~index ;
 				}
 				listSymbolData.get(index).setPrice(quote);
@@ -246,7 +247,7 @@ public class CentralDbProcessor implements IPlugin
 			int index = Collections.binarySearch(listSymbolData, symbolData) ;
 			if (index < 0)
 			{
-				listSymbolData.add(~index, new SymbolData(quote.getSymbol(), "FX", this)) ;
+				listSymbolData.add(~index, new SymbolData(quote.getSymbol(), Default.getMarket(), this)) ;
 				index = ~index ;
 			}
 			listSymbolData.get(index).setPrice(quote);
@@ -256,10 +257,9 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
-		log.info("Process MarketSession: " + event.getSession());
+		log.info("Process MarketSession: " + event.getTradeDate() + " " + event.getSession());
 		this.tradedate = event.getTradeDate() ;
 		setSessionType(event.getSession(), event.getMarket()) ;
-		isStartup = false;
 	}
 	
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
@@ -306,6 +306,11 @@ public class CentralDbProcessor implements IPlugin
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
 		retEvent.setSymbol(symbol);
 		log.info("Process Historical Price Request");
+		String type   = event.getHistoryType() ;
+		Date   start  = event.getStartDate() ;
+		Date   end    = event.getEndDate() ;
+		List<HistoricalPrice> listPrice = null;
+		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
 		synchronized(this)
 		{
 			index = Collections.binarySearch(listSymbolData, new SymbolData(symbol)) ;
@@ -318,11 +323,7 @@ public class CentralDbProcessor implements IPlugin
 				return ;
 			}
 		}
-		String type   = event.getHistoryType() ;
-		Date   start  = event.getStartDate() ;
-		Date   end    = event.getEndDate() ;
-		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
-		List<HistoricalPrice> listPrice = listSymbolData.get(index).getHistoricalPrice((byte)0x40, type, symbol, start, end) ;
+		listPrice = listSymbolData.get(index).getHistoricalPrice(type, symbol, start, end) ;
 		if (listPrice == null || listPrice.isEmpty())
 		{
 			retEvent.setOk(false) ;
@@ -618,10 +619,15 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void userRequestAllSymbol(SymbolListSubscribeEvent retEvent, String market)
 	{
-		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
-		retEvent.setSymbolList(refSymbolInfo);
+		ArrayList<SymbolInfo> retSymbolInfo = new ArrayList<SymbolInfo>();
+		for (SymbolInfo symbolinfo : refSymbolInfo)
+		{
+			if (symbolinfo.getMarket().equals(market))
+				retSymbolInfo.add(symbolinfo);
+		}
+		retEvent.setSymbolList(retSymbolInfo);
 		retEvent.setOk(true);
-		log.info("Process Request All Symbol success Symbol: " + symbolinfos.size());
+		log.info("Process Request All Symbol success Symbol: " + retSymbolInfo.size());
 		sendEvent(retEvent);
 	}
 	
@@ -858,7 +864,15 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void onCallRefData()
 	{
-		log.info("Call refData strat");
+		log.info("Call refData start");
+		try 
+		{
+			refDataManager.init();
+		} 
+		catch (Exception e) 
+		{
+			log.error(e.toString(), e);
+		}
 		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
 		if (refList.isEmpty() || this.listSymbolData.isEmpty() == false)
 		{
@@ -872,7 +886,7 @@ public class CentralDbProcessor implements IPlugin
 			{
 				outSymbol = new PrintWriter(new BufferedWriter(new FileWriter("Symbol")));
 				defaultSymbolInfo.clear();
-				for (String str : preSubscriptionList)
+				for (int ii = 0; ii < preSubscriptionList.size(); ii++)
 					defaultSymbolInfo.add(null);
 				refSymbolInfo.clear();
 				SymbolInfo symbolinfo = null;
@@ -881,15 +895,15 @@ public class CentralDbProcessor implements IPlugin
 					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
 					symbolinfo = new SymbolInfo(refdata.getExchange(), refdata.getSymbol());
 					symbolinfo.setWindCode(null);
-					symbolinfo.setHint(null);
+					symbolinfo.setHint(refdata.getRefSymbol());
 					symbolinfo.setCnName(refdata.getCNDisplayName());
 					symbolinfo.setEnName(refdata.getENDisplayName());
 					symbolinfo.setTwName(refdata.getTWDisplayName());
-					symbolinfo.setJpName(null);
-					symbolinfo.setKrName(null);
-					symbolinfo.setEsName(null);
+					symbolinfo.setJpName(refdata.getENDisplayName());
+					symbolinfo.setKrName(refdata.getENDisplayName());
+					symbolinfo.setEsName(refdata.getENDisplayName());
 					symbolinfo.setLotSize(refdata.getLotSize());
-					//symbolinfo.setTickTable();
+					symbolinfo.setTickTable(refdata.getTickTable());
 					if (refdata.getExchange() != null && refdata.getExchange().equals("FX"))
 					{
 						outSymbol.println(refdata.getSymbol());
@@ -911,6 +925,8 @@ public class CentralDbProcessor implements IPlugin
 						defaultSymbolInfo.remove(index);
 						defaultSymbolInfo.add(index, symbolinfo);
 					}
+					if (!tickTableMap.containsKey(refdata.getTickTable()))
+						tickTableMap.put(refdata.getTickTable(), new HashMap<Double, Double>());
 				}
 				outSymbol.close();
 			} 
@@ -923,15 +939,19 @@ public class CentralDbProcessor implements IPlugin
 				sendCentralReady(appserv);
 			}
 		}
+		isStartup = false;
 		log.info("Call refData finish");
 	}
 	
 	public void resetStatement()
 	{
+		isStartup = true;
 		synchronized(this)
 		{
 			this.listSymbolData.clear();
 			this.quoteBuffer.clear();
+			this.refSymbolInfo.clear();
+			this.tickTableMap.clear();
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);
@@ -952,21 +972,22 @@ public class CentralDbProcessor implements IPlugin
 					{
 						continue;
 					}
-					symbol.insertSQLDate((byte)0x40, "D");
-					symbol.insertSQLDate((byte)0x40, "W");
-					symbol.insertSQLDate((byte)0x40, "M");
-					symbol.insertSQLTick((byte)0x40, "1");
-					symbol.insertSQLTick((byte)0x40, "R");
-					symbol.insertSQLTick((byte)0x40, "A");
-					symbol.insertSQLTick((byte)0x40, "Q");
-					symbol.insertSQLTick((byte)0x40, "H");
-					symbol.insertSQLTick((byte)0x40, "6");
-					symbol.insertSQLTick((byte)0x40, "T");
+					symbol.insertSQLDate("D");
+					symbol.insertSQLDate("W");
+					symbol.insertSQLDate("M");
+					symbol.insertSQLTick("1");
+					symbol.insertSQLTick("R");
+					symbol.insertSQLTick("A");
+					symbol.insertSQLTick("Q");
+					symbol.insertSQLTick("H");
+					symbol.insertSQLTick("6");
+					symbol.insertSQLTick("T");
 				}
 			}
 			else if (sessionType == MarketSessionType.PREOPEN)
 			{
 				resetStatement() ;
+				onCallRefData();
 			}
 		}
 		else if (this.sessionType == MarketSessionType.CLOSE)
@@ -975,11 +996,8 @@ public class CentralDbProcessor implements IPlugin
 					|| sessionType == MarketSessionType.PREOPEN)
 			{
 				resetStatement() ;
+				onCallRefData();
 			}
-		}
-		else if (this.sessionType == null)
-		{
-			onCallRefData();
 		}
 		else if (this.sessionType == null)
 		{
@@ -995,6 +1013,7 @@ public class CentralDbProcessor implements IPlugin
 	public void sendCentralReady(String appserv)
 	{
 		CentralDbReadyEvent event = new CentralDbReadyEvent(null, appserv);
+		event.setTickTableList(tickTableMap);
 		sendEvent(event);
 	}
 	

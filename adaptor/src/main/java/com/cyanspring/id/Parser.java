@@ -221,7 +221,7 @@ public class Parser implements IReqThreadCallback {
 				break;
 			case FieldID.LastTradeTime: {
 
-				tTime = new Date((long) (Double.parseDouble(vec2[1]) * 1000));
+				tTime = new Date(); //(long) (Double.parseDouble(vec2[1]) * 1000));
 			}
 				break;
 			case FieldID.LastActivityTime:
@@ -280,7 +280,7 @@ public class Parser implements IReqThreadCallback {
 		}
 
 		if (true == adaptor.getIsClose()) {
-			if (nStatus == MarketStatus.PREOPEN || nStatus == MarketStatus.OPEN ) {
+			if (nStatus == MarketStatus.OPEN ) {
 				adaptor.setIsClose(false);
 				QuoteMgr.instance().sunrise();
 				QuoteMgr.instance().writeFile(false, true);

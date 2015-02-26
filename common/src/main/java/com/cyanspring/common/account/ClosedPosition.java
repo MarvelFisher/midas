@@ -3,6 +3,7 @@ package com.cyanspring.common.account;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
+import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefDataManager;
 
 public class ClosedPosition extends Position {
@@ -29,7 +30,7 @@ public class ClosedPosition extends Position {
 		this.sellPrice = closePrice;
 	}
 	
-	static public ClosedPosition create(RefDataManager refDataManager, IFxConverter fxConverter, 
+	static public ClosedPosition create(IRefDataManager refDataManager, IFxConverter fxConverter, 
 			OpenPosition position, Execution execution, Account account) {
 		ClosedPosition result = new ClosedPosition();
 		result.setId(position.getId() + "_" + execution.getId());

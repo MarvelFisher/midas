@@ -31,6 +31,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Frame.InfoString;
@@ -475,7 +476,10 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 						@Override
 						public void initChannel(SocketChannel ch) throws Exception {
 							ChannelPipeline p = ch.pipeline();
-							p.addLast(new ClientHandler());
+							 
+							 p.addLast("idleStateHandler", new IdleStateHandler(20, 0, 0));
+							 //p.addLast("idleHandler", new IdleHandler());		
+							 p.addLast(new ClientHandler());
 						}
 					});
 

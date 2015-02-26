@@ -22,7 +22,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String esName = null;
 	private String esSubName = null;
 	private int lotSize = -1;
-	private int tickTable = -1;
+	private String tickTable = "";
 	
 	
 	public SymbolInfo(String market, String code) 
@@ -134,10 +134,10 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setLotSize(int lotSize) {
 		this.lotSize = lotSize;
 	}
-	public int getTickTable() {
+	public String getTickTable() {
 		return tickTable;
 	}
-	public void setTickTable(int tickTable) {
+	public void setTickTable(String tickTable) {
 		this.tickTable = tickTable;
 	}
 	@Override

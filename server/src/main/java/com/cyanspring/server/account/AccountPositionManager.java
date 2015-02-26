@@ -86,6 +86,7 @@ import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.util.IdGenerator;
@@ -144,7 +145,7 @@ public class AccountPositionManager implements IPlugin {
 	IFxConverter fxConverter;
 	
 	@Autowired
-	RefDataManager refDataManager;
+	IRefDataManager refDataManager;
 	
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
