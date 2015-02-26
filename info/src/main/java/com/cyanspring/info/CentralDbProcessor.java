@@ -57,6 +57,7 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
+import com.cyanspring.common.staticdata.TickTableManager;
 import com.cyanspring.event.AsyncEventProcessor;
 
 
@@ -90,7 +91,6 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<SymbolInfo> refSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<String> appServIDList = new ArrayList<String>();
-	private HashMap<String, Map<Double, Double>> tickTableMap = new HashMap<String, Map<Double, Double>>();
 	DBHandler dbhnd ;
 	
 	@Autowired
@@ -104,6 +104,9 @@ public class CentralDbProcessor implements IPlugin
 	
 	@Autowired
 	private RefDataManager refDataManager;
+	
+	@Autowired
+	private TickTableManager tickTableManager;
 	
 	@Autowired
 	ScheduleManager scheduleManager;
@@ -377,6 +380,7 @@ public class CentralDbProcessor implements IPlugin
 		retEvent.setMarket(event.getMarket());
 		retEvent.setTxId(event.getTxId());
 		retEvent.setType(event.getType());
+		retEvent.setQueryType(event.getQueryType());
 		String user = event.getUserID();
 		String market = event.getMarket();
 		String group = event.getGroup();
@@ -871,7 +875,7 @@ public class CentralDbProcessor implements IPlugin
 		} 
 		catch (Exception e) 
 		{
-			log.error(e.toString(), e);
+			log.error(e.getMessage(), e);
 		}
 		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
 		if (refList.isEmpty() || this.listSymbolData.isEmpty() == false)
@@ -882,6 +886,7 @@ public class CentralDbProcessor implements IPlugin
 		synchronized(this)
 		{
 			PrintWriter outSymbol;
+			ArrayList<String> marketList = new ArrayList<String>();
 			try 
 			{
 				outSymbol = new PrintWriter(new BufferedWriter(new FileWriter("Symbol")));
@@ -893,7 +898,12 @@ public class CentralDbProcessor implements IPlugin
 				for(RefData refdata : refList)
 				{
 					if (refdata.getExchange() == null) continue;
-					
+
+					if (!marketList.contains(refdata.getExchange()))
+					{
+						dbhnd.checkMarketExist(refdata.getExchange());
+						marketList.add(refdata.getExchange());
+					}
 					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
 					symbolinfo = new SymbolInfo(refdata.getExchange(), refdata.getSymbol());
 					symbolinfo.setWindCode(null);
@@ -927,14 +937,12 @@ public class CentralDbProcessor implements IPlugin
 						defaultSymbolInfo.remove(index);
 						defaultSymbolInfo.add(index, symbolinfo);
 					}
-					if (!tickTableMap.containsKey(refdata.getTickTable()))
-						tickTableMap.put(refdata.getTickTable(), new HashMap<Double, Double>());
 				}
 				outSymbol.close();
 			} 
 			catch (IOException e) 
 			{
-				log.error(e.toString(), e);;
+				log.error(e.getMessage(), e);;
 			}
 			for (String appserv : appServIDList)
 			{
@@ -953,7 +961,6 @@ public class CentralDbProcessor implements IPlugin
 			this.listSymbolData.clear();
 			this.quoteBuffer.clear();
 			this.refSymbolInfo.clear();
-			this.tickTableMap.clear();
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);
@@ -1015,7 +1022,8 @@ public class CentralDbProcessor implements IPlugin
 	public void sendCentralReady(String appserv)
 	{
 		CentralDbReadyEvent event = new CentralDbReadyEvent(null, appserv);
-		event.setTickTableList(tickTableMap);
+		event.setTickTableList(tickTableManager.getTickTables());
+		log.info("Sending ReadyEvent to: " + appserv);
 		sendEvent(event);
 	}
 	
