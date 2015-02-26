@@ -72,7 +72,7 @@ public class UserClient implements AutoCloseable {
 	public void sendQuote(Quote quote) {
 
 		if (isMySymbol(quote.getSymbol())) {
-			listener.onQuote(quote);
+			listener.onQuote(quote, 2);
 		}
 	}
 

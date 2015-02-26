@@ -179,7 +179,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		
 		// call back listener
 		if(null != mdListener) {
-			mdListener.onQuote(quote);
+			mdListener.onQuote(quote, 1);
 			//work out trade
 			if(null != prevQuote && quote.getTotalVolume() > prevQuote.getTotalVolume()) {
 				Trade trade = new Trade();
@@ -549,7 +549,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		this.mdListener = listener; // supports only one listener
 		Quote quote = currentQuotes.get(instrument);
 		if(null != quote && null!= mdListener)
-			mdListener.onQuote(quote);
+			mdListener.onQuote(quote, 1);
 	}
 
 	@Override

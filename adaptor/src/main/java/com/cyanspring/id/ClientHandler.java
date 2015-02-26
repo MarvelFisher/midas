@@ -25,6 +25,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -77,6 +79,24 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		}
 	}
 
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
+			throws Exception {
+		super.userEventTriggered(ctx, evt);
+		if (evt instanceof IdleStateEvent) {
+			IdleStateEvent e = (IdleStateEvent) evt;
+			if (e.state() == IdleState.READER_IDLE) {
+				if (IdMarketDataAdaptor.isConnecting == false) {
+					IdMarketDataAdaptor.instance.updateState(false);
+					if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
+						IdMarketDataAdaptor.instance.reconClient();
+					}
+					log.error("Read idle");
+				}
+			}
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -107,7 +127,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) {
 		IdMarketDataAdaptor.instance.updateState(false);
-		//IdMarketDataAdaptor.isConnected = false;
+		// IdMarketDataAdaptor.isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
 
 	}
@@ -158,7 +178,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Close the connection when an exception is raised.
 		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
-		IdMarketDataAdaptor.instance.updateState(false);//.isConnected = false;
+		IdMarketDataAdaptor.instance.updateState(false);// .isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
 	}
 
@@ -332,11 +352,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		if (lastCheck.getTime() < lastRecv.getTime()) {
 			lastCheck = lastRecv;
 		}
-			
+
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
-		if (IdMarketDataAdaptor.isConnecting == false && lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
-			//IdMarketDataAdaptor.isConnected = false;
+		if (IdMarketDataAdaptor.isConnecting == false
+				&& lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
+			// IdMarketDataAdaptor.isConnected = false;
 			IdMarketDataAdaptor.instance.updateState(false);
 			lastCheck = now;
 			if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {

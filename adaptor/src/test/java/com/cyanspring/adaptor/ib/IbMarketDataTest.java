@@ -73,7 +73,7 @@ public class IbMarketDataTest implements IMarketDataListener {
 	}
 	
 	@Override
-	public void onQuote(Quote quote) {
+	public void onQuote(Quote quote, int sourceId) {
 		log.debug("Quote: " + quote);
 		quoteCount++;
 		quote.print();
