@@ -31,9 +31,15 @@ public abstract class MarketSessionState {
 	public void init() throws ParseException{
 		tradeDateUpdate = false;
 		Date date = Clock.getInstance().now();
+		String[] times = Default.getTradeDateTime().split(":");	
+		int nHour = Integer.parseInt(times[0]);
+		int nMin = Integer.parseInt(times[1]);
+		int nSecond = Integer.parseInt(times[2]);		
+		Calendar cal = Default.getCalendar();
 		while(tradeDate == null){
 			calTradeDate(date);
 			date = TimeUtil.getPreviousDay(date);
+			date = TimeUtil.getScheduledDate(cal, date, nHour, nMin, nSecond+1);
 		}
 	}
 	
@@ -82,6 +88,7 @@ public abstract class MarketSessionState {
 			for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
 				if(compareTime(sessionTime, sessionData, date)){
 					goSuccess(date);
+					return;
 				}
 			}
 		}else{
