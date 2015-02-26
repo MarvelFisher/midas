@@ -596,36 +596,38 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 			break;
 		case 6: 
 			quote.setHigh(price);
-			if(quote.getOpened() == false)
+
+			if(quote.getOpen() == 0)
 			{
 				if(PriceUtils.Equal(quote.getHigh(),quote.getLow()))
 				{
-					quote.setOpen(price);
-					quote.setOpened(true);
+					quote.setOpen(price);			
 				}
 			}
+
 			publishQuote(quote);		
 			break;
 
 		case 7: 
-			quote.setLow(price); 
-			if(quote.getOpened() == false)
+			quote.setLow(price); 			
+			if(quote.getOpen() == 0)
 			{
 				if(PriceUtils.Equal(quote.getHigh(),quote.getLow()))
 				{
-					quote.setOpen(price);
-					quote.setOpened(true);
+					quote.setOpen(price);					
 				}
-			}			
+			}
 			publishQuote(quote);
 			break;
 
 		case 9: 
 			quote.setClose(price);
+
 			if( quote.getBid() == -1 && quote.getAsk() == -1)
 			{
-				quote.setOpened(false);
+				quote.setOpen(0);
 			}
+
 			publishQuote(quote);
 			break;
 

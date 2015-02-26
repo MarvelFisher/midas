@@ -219,7 +219,14 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 								}
 								lst.add(~pos, str);						
 							}
-						}					
+						}	
+						else if(strDataType.equals("ClearSubscribe"))
+						{
+							lst.clear();
+							String logstr = "Clear Subscribe from : " + channel.remoteAddress();
+							System.out.println(logstr);
+							log.info(logstr);							
+						}
 						else if(strDataType.equals("ReqHeartBeat"))
 						{
 							if(ctx.pipeline().get("idleHandler") == null)
@@ -242,7 +249,6 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			}
 		} 
     	catch (Exception e) {
-    		// TODO Auto-generated catch block
     		e.printStackTrace();
     		log.warn("Exception during parseRequest : " + e.getMessage() );
     	}

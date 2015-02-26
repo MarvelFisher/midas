@@ -43,7 +43,7 @@ public class Quote implements Cloneable, Serializable {
 	Date timeStamp;
 	Date timeSent;
 	boolean stale;
-	boolean opened;
+//	boolean opened;
 	
 	public String getSymbol() {
 		return symbol;
@@ -128,7 +128,7 @@ public class Quote implements Cloneable, Serializable {
 		this.asks = asks;
 		this.timeStamp = Clock.getInstance().now();
 		this.timeSent = this.timeStamp;
-		this.opened = true;
+//		this.opened = true;
 	}
 	
 	public List<QtyPrice> getBids() {
@@ -225,7 +225,7 @@ public class Quote implements Cloneable, Serializable {
 		}
 		return result;
 	}
-	
+/*	
 	public void setOpened(boolean opened)
 	{
 		this.opened = opened;
@@ -235,4 +235,5 @@ public class Quote implements Cloneable, Serializable {
 	{
 		return this.opened;
 	}
+	*/
 }
