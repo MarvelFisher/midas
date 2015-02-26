@@ -39,6 +39,7 @@ public class MarketSessionStateDay extends MarketSessionState{
 	
 	@Override
 	protected boolean compareTime(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException{
+		tradeDateUpdate = false;
 		SimpleDateFormat sdf = new SimpleDateFormat(sessionTime.getTimeFormat());
 		Calendar compareCal = Calendar.getInstance();
 		compareCal.setTime(sdf.parse(compare.date));
