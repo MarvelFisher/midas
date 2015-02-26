@@ -7,8 +7,8 @@
 
 	<context:annotation-config />
 
-	<import resource="test/fu_test.xml" />
-	<import resource="fu/MarketSession.xml" />
+	<import resource="test/fc_test.xml" />
+	<import resource="fc/MarketSession.xml" />
 	<import resource="common/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
