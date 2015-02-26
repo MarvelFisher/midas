@@ -69,6 +69,6 @@
 	</bean>
 	
 	<!-- Derby setting -->
-	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
+	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1527" /></bean>
 
 </beans>

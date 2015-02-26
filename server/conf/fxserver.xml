@@ -127,7 +127,7 @@
 
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String">
-		<constructor-arg value="1528" />
+		<constructor-arg value="1527" />
 	</bean>
 
 </beans>
