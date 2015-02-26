@@ -71,7 +71,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 			List<IMarketDataListener> list = subs.get(book.getCode());
 			if(null != list)
 				for(IMarketDataListener listener: list)
-					listener.onQuote((Quote)quote.clone());
+					listener.onQuote((Quote)quote.clone(), 1);
 			
 			
 		}
@@ -131,7 +131,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		if(book != null) {
 			Quote quote = bookToQuote(book);
 			cache.put(instrument, quote);
-			listener.onQuote((Quote)quote.clone());
+			listener.onQuote((Quote)quote.clone(), 1);
 		}
 			
 	}

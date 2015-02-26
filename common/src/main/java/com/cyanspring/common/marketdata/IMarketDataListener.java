@@ -12,6 +12,6 @@ package com.cyanspring.common.marketdata;
 
 
 public interface IMarketDataListener {
-	void onQuote(Quote quote);
+	void onQuote(Quote quote, int sourceId);
 	void onTrade(Trade trade);
 }

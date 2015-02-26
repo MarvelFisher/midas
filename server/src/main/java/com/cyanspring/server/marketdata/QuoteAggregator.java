@@ -27,9 +27,9 @@ public class QuoteAggregator {
 		}
 	}
 	
-	public Quote update(String symbol, Quote quote) {
+	public Quote update(String symbol, Quote quote, int sourceId) {
 		AggrQuote aggrQuote = getQuote(symbol);
-		return aggrQuote.update(quote);
+		return aggrQuote.update(quote, sourceId);
 		
 	}
 }

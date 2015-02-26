@@ -86,7 +86,7 @@ public class ForexClient implements IMarketDataListener,
 	 * @see com.cyanspring.common.marketdata.IMarketDataListener#onQuote(com.cyanspring.common.marketdata.Quote)
 	 */
 	@Override
-	public void onQuote(Quote quote) {
+	public void onQuote(Quote quote, int sourceId) {
 		//dialog.addLog(quote.toString());
 		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f", quote.getSymbol(),
 				DateUtil.formatDate(DateUtil.toGmt(quote.getTimeStamp()), "HH:mm:ss.SSS"),

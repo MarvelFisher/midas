@@ -30,6 +30,7 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.LastTradeDateQuotesEvent;
 import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
 import com.cyanspring.common.event.marketdata.PresubscribeEvent;
@@ -66,7 +67,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
 
-	//private ForexTickTable forexTickTable = new ForexTickTable();
+	private ForexTickTable forexTickTable = new ForexTickTable();
 	
 	@Autowired
 	protected IRemoteEventManager eventManager;
@@ -256,11 +257,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			eventManager.sendGlobalEvent(event);
 			/// out put ticks between buy/sell price
 			
-			//if (event.getQuote().getSymbol().equals("USDJPY")) {
-			//	double step = this.forexTickTable.getSpread(event.getQuote().getBid(), event.getQuote().getAsk());
-			//	String time = formatDate(event.getQuote().getTimeStamp(), "HH:mm:ss");
-			//	log.info(String.format("[%s]%s dif=[%.2f]", time, event.getQuote().toString(), step));
-			//}
+			if (event.getQuote().getSymbol().equals("USDJPY")) {
+				double step = this.forexTickTable.getSpread(event.getQuote().getBid(), event.getQuote().getAsk());
+				String time = formatDate(event.getQuote().getTimeStamp(), "HH:mm:ss");
+				log.info(String.format("[%s]%s dif=[%.2f]", time, event.getQuote().toString(), step));
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -285,21 +286,21 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ ", Prev: " + prev + ", New: " + quote);
 	}
 
-	public void processQuoteEvent(QuoteEvent event) {
-		Quote quote = event.getQuote();
+	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
+		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
 
 		if (null == prev) {
 			logStaleInfo(prev, quote, quote.isStale());
 			quotes.put(quote.getSymbol(), quote);
-			clearAndSendQuoteEvent(event);
+			clearAndSendQuoteEvent(inEvent.getQuoteEvent());
 			return;
 		} else if (null != quoteChecker && !quoteChecker.checkWithSession(quote)) {
 			boolean prevStale = prev.isStale();
 			prev.setStale(true); // just set the existing stale
 			if (!prevStale) {
 				logStaleInfo(prev, quote, true);
-				clearAndSendQuoteEvent(new QuoteEvent(event.getKey(), null,
+				clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
 						prev));
 			}
 			return;
@@ -310,18 +311,18 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			}
 		}
 
-		String symbol = event.getQuote().getSymbol();
+		String symbol = inEvent.getQuote().getSymbol();
 		//if (event.getQuote().getSymbol().equals("USDJPY")) {
 		//	int step = this.forexTickTable.getStep(quote.getBid(), quote.getAsk());
 		//	log.info(String.format("[        ]%s dif=[%d]", event.getQuote().toString(), step));
 		//}
 
 		if (null != aggregator) {
-			quote = aggregator.update(symbol, event.getQuote());
+			quote = aggregator.update(symbol, inEvent.getQuote(), inEvent.getSourceId());
 		}
 	
 
-		event = new QuoteEvent(event.getKey(), null, quote);
+		QuoteEvent event = new QuoteEvent(inEvent.getKey(), null, quote);
 
 		if (eventProcessor.isSync()) {
 			sendQuoteEvent(event);
@@ -545,13 +546,13 @@ for(Entry<String, Quote> entry : quotes.entrySet())
 	}
 
 	@Override
-	public void onQuote(Quote quote) {
+	public void onQuote(Quote quote, int sourceId) {
 		if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
 			log.error("Quotes receive time large than excepted.");
 		}			
 		
 		chkDate = Clock.getInstance().now();
-		QuoteEvent event = new QuoteEvent(quote.getSymbol(), null, quote);
+		InnerQuoteEvent event = new InnerQuoteEvent(quote.getSymbol(), null, quote, sourceId);
 		eventProcessor.onEvent(event);
 	}
 
