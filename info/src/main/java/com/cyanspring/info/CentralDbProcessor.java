@@ -84,7 +84,9 @@ public class CentralDbProcessor implements IPlugin
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long timeInterval = 10*60*1000;
+	private long timeInterval = 1000;
+	private long checkSQLInterval = 10 * 60;
+	private long checkSQLTimer = 0;
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
@@ -210,7 +212,23 @@ public class CentralDbProcessor implements IPlugin
 	public void processAsyncTimerEvent(AsyncTimerEvent event) 
 	{
 		if (!isStartup)
-			dbhnd.checkSQLConnect();
+		{
+			checkSQLTimer++;
+			if (checkSQLTimer >= checkSQLInterval)
+			{
+				dbhnd.checkSQLConnect();
+				checkSQLTimer = 0;
+			}
+		}
+		resetSymbolDataStat();
+	}
+	
+	public void resetSymbolDataStat()
+	{
+		for (SymbolData symboldata : listSymbolData)
+		{
+			symboldata.setWriteMin(true);
+		}
 	}
 	
 	public void processQuoteEvent(QuoteEvent event)
@@ -347,7 +365,6 @@ public class CentralDbProcessor implements IPlugin
 		}
 	}
 	
-
 	public void processSymbolEvent(SymbolEvent event)
 	{
 		ArrayList<SymbolInfo> symbolInfoList = (ArrayList<SymbolInfo>)event.getSymbolInfoList();
@@ -370,7 +387,6 @@ public class CentralDbProcessor implements IPlugin
 		this.writeSymbolInfo(symbolInfoList) ;
 	}
 	
-
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
 		SymbolListSubscribeEvent retEvent = new SymbolListSubscribeEvent(null, event.getSender());
@@ -958,6 +974,7 @@ public class CentralDbProcessor implements IPlugin
 		isStartup = true;
 		synchronized(this)
 		{
+			log.debug("Clear listSymbolData " + listSymbolData.size() + " symbols");
 			this.listSymbolData.clear();
 			this.quoteBuffer.clear();
 			this.refSymbolInfo.clear();

@@ -31,7 +31,7 @@ import com.cyanspring.common.event.info.PriceHighLowType;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.util.PriceUtils;
 
 public class SymbolData implements Comparable<SymbolData>
 {
@@ -39,6 +39,7 @@ public class SymbolData implements Comparable<SymbolData>
 			.getLogger(SymbolData.class);
 	private CentralDbProcessor centralDB = null;
 	private boolean isUpdating = false;
+	private boolean writeMin = false;
 	private String strSymbol = null;
 	private String market = null;
 	private double d52WHigh = 0;
@@ -54,6 +55,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
 	{
+		log.info("Create SymbolData " + strSymbol + " Market=" + market + " TradeDate=" + centralDB.getTradedate());
 		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
 		this.market = market;
@@ -101,13 +103,13 @@ public class SymbolData implements Comparable<SymbolData>
 		double dPrice = (bid + ask) / 2 ;
 		HistoricalPrice price = priceData.get(nPos) ;
 		boolean changed = price.setPrice(dPrice);
-		if (changed) writeToMin() ;
+		if (changed && writeMin) writeToMin() ;
 		price.setTimestamp(date) ;
 		if (d52WHigh < dPrice)
 		{
 			d52WHigh = dPrice ;
 		}
-		if (d52WLow > dPrice || d52WLow == 0)
+		if (PriceUtils.isZero(d52WLow) || d52WLow > dPrice)
 		{
 			d52WLow = dPrice ;
 		}
@@ -115,11 +117,11 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			dCurHigh = dPrice ;
 		}
-		if (dCurLow > dPrice || dCurLow == 0)
+		if (PriceUtils.isZero(dCurLow) || dCurLow > dPrice)
 		{
 			dCurLow = dPrice ;
 		}
-		if (dOpen == 0)
+		if (PriceUtils.isZero(dOpen))
 		{
 			dOpen = dPrice ;
 		}
@@ -175,6 +177,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void writeToMin()
 	{
+		writeMin = false;
 		if (centralDB.getTradedate() == null)
 		{
 			return;
@@ -326,7 +329,7 @@ public class SymbolData implements Comparable<SymbolData>
 				{
 					this.d52WHigh = dHigh ;
 				}
-				if (this.d52WLow > dLow || this.d52WLow == 0)
+				if (PriceUtils.isZero(this.d52WLow) || this.d52WLow > dLow)
 				{
 					this.d52WLow = dLow ;
 				}
@@ -702,6 +705,12 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setMarket(String market) {
 		this.market = market;
+	}
+	public boolean isWriteMin() {
+		return writeMin;
+	}
+	public void setWriteMin(boolean writeMin) {
+		this.writeMin = writeMin;
 	}
 	
 }

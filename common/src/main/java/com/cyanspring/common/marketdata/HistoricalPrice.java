@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.cyanspring.common.util.PriceUtils;
+
 public class HistoricalPrice  implements Serializable, Comparable<HistoricalPrice>, Cloneable {
 	Date   timestamp = null ;
 	String symbol = null ;
@@ -49,7 +51,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	public boolean setPrice(double price)
 	{
 		boolean changed = false; 
-		if (open == 0)
+		if (PriceUtils.isZero(open))
 		{
 			open = price ;
 			changed = true;
@@ -59,7 +61,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 			high = price ;
 			changed = true;
 		}
-		if (low == 0 || low > price)
+		if (PriceUtils.isZero(low) || low > price)
 		{
 			low = price ;
 			changed = true;
@@ -80,7 +82,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	}
 	public void update(HistoricalPrice price)
 	{
-		if (this.open == 0)
+		if (PriceUtils.isZero(this.open))
 		{
 			this.open = price.open ;
 		}
@@ -89,7 +91,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		{
 			this.high = price.high;
 		}
-		if (this.low > price.low)
+		if (PriceUtils.isZero(low) || this.low > price.low)
 		{
 			this.low = price.low;
 		}
