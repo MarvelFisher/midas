@@ -23,7 +23,6 @@ public class IFStrategy implements RefDataStrategy {
 //	private int[] season = {Calendar.MARCH, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.DECEMBER};
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private Calendar cal;
-	private Boolean update;
 	
 	@Override
 	public void init(Calendar cal) {
@@ -36,36 +35,29 @@ public class IFStrategy implements RefDataStrategy {
 				this.cal.add(Calendar.MONTH, 1);
 				setStragetyData(this.cal);								
 			}
-			update = true;
 		}else{
 			if(cal.compareTo(this.cal) > 0){
 				this.cal.add(Calendar.MONTH, 1);
 				setStragetyData(this.cal);
-				update = true;
 			}else{
-				update = false;
 			}
 		}
-		System.out.println(n0ID);
-		System.out.println(n1ID);
 	}
 	
 	@Override
 	public void setExchangeRefData(RefData refData) {		
-		if(update){
-			if(refData.getRefSymbol().equals("IFL0")){
-				refData.setSettlementDate(n0.getSettlementDate());
-				refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0ID);
-				refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0ID);
-				refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0ID);
-				refData.setSymbol(refData.getSymbol().substring(0, 2) + n0ID);
-			}else if(refData.getRefSymbol().equals("IFL1")){
-				refData.setSettlementDate(n0.getSettlementDate());
-				refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1ID);
-				refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1ID);
-				refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1ID);
-				refData.setSymbol(refData.getSymbol().substring(0, 2) + n1ID);
-			}
+		if(refData.getRefSymbol().equals("IFL0")){
+			refData.setSettlementDate(n0.getSettlementDate());
+			refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0ID);
+			refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0ID);
+			refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0ID);
+			refData.setSymbol(refData.getSymbol().substring(0, 2) + n0ID);
+		}else if(refData.getRefSymbol().equals("IFL1")){
+			refData.setSettlementDate(n1.getSettlementDate());
+			refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1ID);
+			refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1ID);
+			refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1ID);
+			refData.setSymbol(refData.getSymbol().substring(0, 2) + n1ID);
 		}
 	}
 	
