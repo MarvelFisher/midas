@@ -73,12 +73,12 @@ public class QuoteMgr implements IReqThreadCallback {
 	
 
 	void process(int type, Object objMsg) {
-		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
+//		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		switch (type) {
 		case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT: {
 
-			List<SymbolInfo> list = adaptor.updateCodeTable((String) objMsg);
-			adaptor.sendSymbolInfo(list);
+//			List<SymbolInfo> list = adaptor.updateCodeTable((String) objMsg);
+//			adaptor.sendSymbolInfo(list);
 		}
 			break;
 		/*
@@ -93,7 +93,7 @@ public class QuoteMgr implements IReqThreadCallback {
 					change.getMarket(), change.getOldDate(),
 					change.getNewDate());
 
-			adaptor.updateCodeTable(change.getMarket());
+//			adaptor.updateCodeTable(change.getMarket());
 		}
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE: {

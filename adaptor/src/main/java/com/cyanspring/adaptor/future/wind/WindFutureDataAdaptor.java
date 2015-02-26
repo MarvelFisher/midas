@@ -7,6 +7,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,7 @@ import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.UserClient;
 import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
@@ -167,7 +169,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	// private final boolean outputToScreen = true;
 	/*********************** configuration ***************************************/
 	// private final String openMarket = "CZC;SHF;DCE";
-	private final String openMarket = "CF";
+	private final String openMarket = "";
 	private final int openData = 0;
 	private final int openTime = 0;
 	private final String subscription = ""; // 000001.SZ;000002.SZ";
@@ -178,7 +180,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
-	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>();
+	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // save future
+	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // save stock
 	// boolean connected = false;
 	boolean isClosed = false;
 
@@ -309,7 +312,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		isClosed = false;
 		client.close();
 	}
-
+	
+	//Parse Change Data
 	public TDF_QUOTATIONDATE_CHANGE convertToChangeData(String[] in_arr) {
 		TDF_QUOTATIONDATE_CHANGE changedata = new TDF_QUOTATIONDATE_CHANGE();
 		String key = null;
@@ -332,94 +336,220 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 		return changedata;
 	}
+	
+	//Parse Index Data
 
+	// Parse Stock Data
+	public TDF_MARKET_DATA convertToStockData(String[] in_arr) {
+		TDF_MARKET_DATA stock = null;
+		String key = null;
+		String value = null;
+		String[] kv_arr = null;
+
+		for (int i = 0; i < in_arr.length; i++) {
+			if (in_arr[i] != null && !"".equals(in_arr[i])) {
+				kv_arr = in_arr[i].split("=");
+				if (kv_arr.length > 1) {
+					key = kv_arr[0];
+					value = kv_arr[1];
+					if (key.equals("Symbol")) {
+						if (futuredata.containsKey(value)) {
+							stock = stockdata.get(value);
+						} else {
+							// add future data
+							stock = new TDF_MARKET_DATA();
+							stock.setWindCode(value);
+							stock.setCode(value.split("\\.")[0]);
+							stockdata.put(value, stock);
+						}
+					}
+					switch (key) {
+					case "ActionDay":
+						stock.setActionDay(Integer.parseInt(value));
+						break;
+					case "AskPrice":
+						stock.setAskPrice(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "AskVol":
+						stock.setAskVol(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "BidPrice":
+						stock.setBidPrice(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "BidVol":
+						stock.setBidVol(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "High":
+						stock.setHigh(Long.parseLong(value));
+						break;
+					case "Ceil":
+						stock.setHighLimited(Long.parseLong(value));
+						break;
+					case "Low":
+						stock.setLow(Long.parseLong(value));
+						break;
+					case "Floor":
+						stock.setLowLimited(Long.parseLong(value));
+						break;
+					case "Last":
+						stock.setMatch(Long.parseLong(value));
+						break;
+					case "Open":
+						stock.setOpen(Long.parseLong(value));
+						break;
+					case "IOPV":
+						stock.setIOPV(Integer.parseInt(value));
+						break;
+					case "PreClose":
+						stock.setPreClose(Long.parseLong(value));
+						break;
+					case "Status":
+						stock.setStatus(Integer.parseInt(value));
+						break;
+					case "Time":
+						stock.setTime(Integer.parseInt(value));
+						break;
+					case "TradingDay":
+						stock.setTradingDay(Integer.parseInt(value));
+						break;
+					case "Turnover":
+						stock.setTurnover(Long.parseLong(value));
+						break;
+					case "Volume":
+						stock.setVolume(Long.parseLong(value));
+						break;
+					case "NumTrades":
+						stock.setNumTrades(Long.parseLong(value));
+						break;
+					case "TotalBidVol":
+						stock.setTotalBidVol(Long.parseLong(value));
+						break;
+					case "WgtAvgAskPrice":
+						stock.setWeightedAvgAskPrice(Long.parseLong(value));
+						break;
+					case "WgtAvgBidPrice":
+						stock.setWeightedAvgBidPrice(Long.parseLong(value));
+						break;
+					case "YieldToMaturity":
+						stock.setYieldToMaturity(Integer.parseInt(value));
+						break;
+					case "Prefix":
+						stock.setPrefix(value);
+						break;
+					case "Syl1":
+						stock.setSyl1(Integer.parseInt(value));
+						break;
+					case "Syl2":
+						stock.setSyl2(Integer.parseInt(value));
+						break;
+					case "SD2":
+						stock.setSD2(Integer.parseInt(value));
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+		return stock;
+	}
+
+	// Parse Future Data
 	public TDF_FUTURE_DATA convertToFutureData(String[] in_arr) {
 		TDF_FUTURE_DATA future = null;
 		String key = null;
 		String value = null;
+		String[] kv_arr = null;
 
 		for (int i = 0; i < in_arr.length; i++) {
 			if (in_arr[i] != null && !"".equals(in_arr[i])) {
-				key = in_arr[i].split("=")[0];
-				value = in_arr[i].split("=")[1];
-				if (key.equals("Symbol")) {
-					if (futuredata.containsKey(value)) {
-						future = futuredata.get(value);
-					} else {
-						// add future data
-						future = new TDF_FUTURE_DATA();
-						future.setWindCode(value);
-						future.setCode(value.split("\\.")[0]);
-						futuredata.put(value, future);
+				kv_arr = in_arr[i].split("=");
+				if (kv_arr.length > 1) {
+					key = kv_arr[0];
+					value = kv_arr[1];
+					if (key.equals("Symbol")) {
+						if (futuredata.containsKey(value)) {
+							future = futuredata.get(value);
+						} else {
+							// add future data
+							future = new TDF_FUTURE_DATA();
+							future.setWindCode(value);
+							future.setCode(value.split("\\.")[0]);
+							futuredata.put(value, future);
+						}
 					}
-				}
-				switch (key) {
-				case "ActionDay":
-					future.setActionDay(Integer.parseInt(value));
-					break;
-				case "AskPrice":
-					future.setAskPrice(parseStringTolong(value.substring(1,
-							value.length() - 1).split("\\s")));
-					break;
-				case "AskVol":
-					future.setAskVol(parseStringTolong(value.substring(1,
-							value.length() - 1).split("\\s")));
-					break;
-				case "BidPrice":
-					future.setBidPrice(parseStringTolong(value.substring(1,
-							value.length() - 1).split("\\s")));
-					break;
-				case "BidVol":
-					future.setBidVol(parseStringTolong(value.substring(1,
-							value.length() - 1).split("\\s")));
-					break;
-				case "Close":
-					future.setClose(Long.parseLong(value));
-					break;
-				case "High":
-					future.setHigh(Long.parseLong(value));
-					break;
-				case "Ceil":
-					future.setHighLimited(Long.parseLong(value));
-					break;
-				case "Low":
-					future.setLow(Long.parseLong(value));
-					break;
-				case "Floor":
-					future.setLowLimited(Long.parseLong(value));
-					break;
-				case "Last":
-					future.setMatch(Long.parseLong(value));
-					break;
-				case "Open":
-					future.setOpen(Long.parseLong(value));
-					break;
-				case "OI":
-					future.setOpenInterest(Long.parseLong(value));
-					break;
-				case "PreClose":
-					future.setPreClose(Long.parseLong(value));
-					break;
-				case "SettlePrice":
-					future.setSettlePrice(Long.parseLong(value));
-					break;
-				case "Status":
-					future.setStatus(Integer.parseInt(value));
-					break;
-				case "Time":
-					future.setTime(Integer.parseInt(value));
-					break;
-				case "TradingDay":
-					future.setTradingDay(Integer.parseInt(value));
-					break;
-				case "Turnover":
-					future.setTurnover(Long.parseLong(value));
-					break;
-				case "Volume":
-					future.setVolume(Long.parseLong(value));
-					break;
-				default:
-					break;
+					switch (key) {
+					case "ActionDay":
+						future.setActionDay(Integer.parseInt(value));
+						break;
+					case "AskPrice":
+						future.setAskPrice(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "AskVol":
+						future.setAskVol(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "BidPrice":
+						future.setBidPrice(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "BidVol":
+						future.setBidVol(parseStringTolong(value.substring(1,
+								value.length() - 1).split("\\s")));
+						break;
+					case "Close":
+						future.setClose(Long.parseLong(value));
+						break;
+					case "High":
+						future.setHigh(Long.parseLong(value));
+						break;
+					case "Ceil":
+						future.setHighLimited(Long.parseLong(value));
+						break;
+					case "Low":
+						future.setLow(Long.parseLong(value));
+						break;
+					case "Floor":
+						future.setLowLimited(Long.parseLong(value));
+						break;
+					case "Last":
+						future.setMatch(Long.parseLong(value));
+						break;
+					case "Open":
+						future.setOpen(Long.parseLong(value));
+						break;
+					case "OI":
+						future.setOpenInterest(Long.parseLong(value));
+						break;
+					case "PreClose":
+						future.setPreClose(Long.parseLong(value));
+						break;
+					case "SettlePrice":
+						future.setSettlePrice(Long.parseLong(value));
+						break;
+					case "Status":
+						future.setStatus(Integer.parseInt(value));
+						break;
+					case "Time":
+						future.setTime(Integer.parseInt(value));
+						break;
+					case "TradingDay":
+						future.setTradingDay(Integer.parseInt(value));
+						break;
+					case "Turnover":
+						future.setTurnover(Long.parseLong(value));
+						break;
+					case "Volume":
+						future.setVolume(Long.parseLong(value));
+						break;
+					default:
+						break;
+					}
 				}
 			}
 		}
@@ -442,7 +572,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		switch (datatype) {
 		// 系统消息
 		case TDF_MSG_ID.MSG_SYS_HEART_BEAT:
-			debug("MSG_SYS_HEART_BEAT");
+			// debug("MSG_SYS_HEART_BEAT");
 			break;
 		case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:
 			break;
@@ -461,19 +591,17 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			break;
 		// 资料消息
 		case TDF_MSG_ID.MSG_DATA_MARKET:
-			debug("MSG_DATA_MARKET");
+			TDF_MARKET_DATA stock = convertToStockData(in_arr);
+			QuoteMgr.instance.AddRequest(new Object[] {
+					TDF_MSG_ID.MSG_DATA_MARKET, stock });
 			break;
 		case TDF_MSG_ID.MSG_DATA_INDEX:
+			debug("MSG_DATA_INDEX");
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE:
 			TDF_FUTURE_DATA future = convertToFutureData(in_arr);
 			QuoteMgr.instance.AddRequest(new Object[] {
 					TDF_MSG_ID.MSG_DATA_FUTURE, future });
-			// TEST
-			if (future.getStatus() != 0)
-				LogUtil.logDebug(log, "FUTURE DATA STATUS:%d",
-						future.getStatus());
-			// TEST
 			break;
 		case TDF_MSG_ID.MSG_DATA_TRANSACTION:
 			// Transaction
@@ -899,16 +1027,26 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 		if (addSymbol(instrument) == true) {
 			if (WindFutureDataAdaptor.instance.gateway) {
-				ClientHandler.subscribe(String.format("%s.%s", instrument,
-						getExchange()));
-				if (targetType == 1) {
+				//TEST
+				if(instrument.indexOf(".") > 0){ //Stock
+					ClientHandler.subscribe(instrument);		
+					QuoteMgr.instance().addStockSymbol(instrument.split("\\.")[0],
+							instrument.split("\\.")[1]); // stock					
+				}else{
+					ClientHandler.subscribe(String.format("%s.%s", instrument,
+							getExchange()));					
 					QuoteMgr.instance().addFutureSymbol(instrument,
 							getExchange()); // future
 				}
-				if (targetType == 2) {
-					QuoteMgr.instance().addStockSymbol(instrument,
-							getExchange()); // stock
-				}
+				//TEST
+//				if (targetType == 1) {
+//					QuoteMgr.instance().addFutureSymbol(instrument,
+//							getExchange()); // future
+//				}
+//				if (targetType == 2) {
+//					QuoteMgr.instance().addStockSymbol(instrument,
+//							getExchange()); // stock
+//				}
 			}
 		}
 
@@ -1040,8 +1178,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		if (!symbolList.contains(listener)) {
 			// do Action
 			List<SymbolInfo> list = FutureItem.getSymbolInfoList();
+			List<SymbolInfo> stock_list = StockItem.getSymbolInfoList();
+			list.addAll(stock_list);
 			listener.onSymbol(list);
-			// listener.onSymbol(FutureItem.);
 			symbolList.add(listener);
 		}
 	}

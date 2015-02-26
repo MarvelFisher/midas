@@ -118,7 +118,7 @@
 		<property name="reqPort" value="10051"></property>
 		<property name="userName" value="TD1001888001"></property>
 		<property name="password" value="62015725"></property>
-		<property name="gateway" value="false"></property> 
+		<property name="gateway" value="true"></property> 
 		<property name="gatewayIp" value="10.0.0.48"></property>
 		<property name="gatewayPort" value="10049"></property>
 		<property name="targetType" value="1"></property><!-- 1:Future 2:Stock -->

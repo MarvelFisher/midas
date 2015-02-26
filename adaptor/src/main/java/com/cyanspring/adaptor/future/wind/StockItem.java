@@ -36,7 +36,7 @@ public class StockItem implements AutoCloseable{
 	double lowLimit = 0;
 	
 	
-	public static StockItem getItem(String symbolId, boolean enableCreateNew) {
+	public static StockItem getItem(String symbolId, String windCode, boolean enableCreateNew) {
 
 		synchronized (symbolTable) {
 			if (symbolTable.containsKey(symbolId) == true) {
@@ -46,6 +46,7 @@ public class StockItem implements AutoCloseable{
 			// else
 			if (enableCreateNew) {
 				StockItem item = new StockItem(symbolId);
+				if(WindFutureDataAdaptor.instance.gateway) item.setMarket(windCode.split("\\.")[1]);
 				symbolTable.put(symbolId, item);
 				return item;
 			}
@@ -204,7 +205,8 @@ public class StockItem implements AutoCloseable{
 	
 	public static SymbolInfo processCODE(TDF_CODE code) {
 		String symbolId = code.getCode();
-		StockItem item = StockItem.getItem(symbolId, true);
+		String windCode = code.getWindCode();
+		StockItem item = StockItem.getItem(symbolId, windCode, true);
 			
 		item.setMarket(code.getMarket());
 		String cnName = WindFutureDataAdaptor.convertGBString(code.getCNName());
@@ -229,11 +231,12 @@ public class StockItem implements AutoCloseable{
 	static int lastShow = 0;
 	public static void processMarketData(TDF_MARKET_DATA data) {
 		String symbolId = data.getCode();
+		String windCode = data.getWindCode();
 		//int status = data.getStatus();
 		//WindFutureDataAdaptor.info("%d %d", data.getSyl1(), data.getSyl2());
 		
 		
-		StockItem item = getItem(symbolId, true);
+		StockItem item = getItem(symbolId, windCode, true);
 		data.getStatus();
 
 		List<QtyPrice> bids = new ArrayList<QtyPrice>();

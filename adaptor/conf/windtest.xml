@@ -15,7 +15,7 @@
 		<property name="gatewayIp" value="10.0.0.48"></property>
 		<property name="gatewayPort" value="10049"></property>
 		<property name="targetType" value="1"></property><!-- 1:Future 2:Stock -->
-		<property name="exchange" value="SHF"></property>
+		<property name="exchange" value="CF"></property>
 
 		 
 <!-- CF -->
