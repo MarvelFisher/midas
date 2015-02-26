@@ -24,6 +24,7 @@
 		<property name="endString" value="（更多精彩" />
 		<property name="CheckThreadStatusInterval" value="60000" />
 		<property name="SocialAPI" value="http://forexmastergaedev.appspot.com/rest/appSendPost"/>
+		<!-- 		<property name="SocialAPI" value="http://joedev3.forexmastergaedev.appspot.com/rest/appSendPost"/> -->
 		<property name="PostAccount" value="fxmcn003"/>		
 	</bean>
 	

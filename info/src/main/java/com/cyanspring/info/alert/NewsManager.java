@@ -1,7 +1,6 @@
 package com.cyanspring.info.alert;
 
 import java.io.DataOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -116,24 +115,25 @@ public class NewsManager implements IPlugin {
 					}
 					if (firstGetNews)
 					{	
-						continue;
+//						continue;
 					}
 //					log.info(article.toString());
 					//Send to Social
 					obj = new URL(getSocialAPI());
 					HttpURLConnection httpCon = (HttpURLConnection) obj.openConnection();
 					
-					String strPoststring = "{\"photoUrl\":\"" +PicturePath + "\",\"postMessage\":\"" +  article.toString() +
-							"\",\"userAccount\":\"" + getPostAccount() + "\"}";
-					String Post = "data=" + URLEncoder.encode(strPoststring,"UTF-8");
+//					String strPoststring = "data={\"photoUrl\":\"" + URLEncoder.encode(PicturePath,"UTF-8") + "\",\"postMessage\":\"" +  URLEncoder.encode(article.toString(),"UTF-8") +
+//							"\",\"userAccount\":\"" + getPostAccount() + "\"}";
+					String strPoststring = "photoUrl=" + PicturePath + "&postMessage=" + URLEncoder.encode(article.toString(), "UTF-8") + "&userAccount=" + getPostAccount() ;
+					log.info("Send to Social photoUrl=" + PicturePath);
 					httpCon.setRequestMethod("POST");
 					httpCon.setRequestProperty("user-Agent","LTSInfo-NewsManager");
 //					httpCon.setRequestProperty("Content-type", "application/json");
-					httpCon.setRequestProperty("Content-Length", Integer.toString(Post.length()));
+					httpCon.setRequestProperty("Content-Length", Integer.toString(strPoststring.length()));
 					
 					httpCon.setDoOutput(true);
 					DataOutputStream wr = new DataOutputStream(httpCon.getOutputStream());
-					wr.writeBytes(Post);
+					wr.writeBytes(strPoststring);
 					wr.flush();
 					wr.close();					
 					
@@ -259,5 +259,4 @@ public class NewsManager implements IPlugin {
 	public void setPostAccount(String postAccount) {
 		PostAccount = postAccount;
 	}
-
 }
