@@ -622,7 +622,7 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> retSymbolInfo = new ArrayList<SymbolInfo>();
 		for (SymbolInfo symbolinfo : refSymbolInfo)
 		{
-			if (symbolinfo.getMarket().equals(market))
+			if (symbolinfo.getMarket() != null && market != null && symbolinfo.getMarket().equals(market))
 				retSymbolInfo.add(symbolinfo);
 		}
 		retEvent.setSymbolList(retSymbolInfo);
@@ -892,6 +892,8 @@ public class CentralDbProcessor implements IPlugin
 				SymbolInfo symbolinfo = null;
 				for(RefData refdata : refList)
 				{
+					if (refdata.getExchange() == null) continue;
+					
 					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
 					symbolinfo = new SymbolInfo(refdata.getExchange(), refdata.getSymbol());
 					symbolinfo.setWindCode(null);
