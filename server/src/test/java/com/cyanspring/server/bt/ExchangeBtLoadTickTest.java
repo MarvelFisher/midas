@@ -42,7 +42,7 @@ public class ExchangeBtLoadTickTest implements IMarketDataListener {
 	}
 
 	@Override
-	public void onQuote(Quote quote) {
+	public void onQuote(Quote quote, int sourceId) {
 		log.info("Quote: " + quote.getSymbol() + ", " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(quote.getTimeStamp()));
 		if(null != currentQuote) {
 			assertTrue( quote.getTimeStamp().equals(currentQuote.getTimeStamp()) ||  

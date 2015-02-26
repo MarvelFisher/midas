@@ -37,7 +37,7 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 	}
 
 	@Override
-	public void onQuote(Quote quote) {
+	public void onQuote(Quote quote, int sourceId) {
 		super.processQuote(quote);
 	}
 
@@ -54,7 +54,7 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 		if(quote == null)
 			mdAdaptor.subscribeMarketData(instrument, this);
 		if(null != quote && null!= mdListener)
-			mdListener.onQuote(quote);
+			mdListener.onQuote(quote, 1);
 	}
 	
 	public IMarketDataAdaptor getMdAdaptor() {

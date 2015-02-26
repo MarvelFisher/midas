@@ -21,6 +21,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
@@ -299,6 +300,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 						public void initChannel(SocketChannel ch)
 								throws Exception {
 							ChannelPipeline p = ch.pipeline();
+							 p.addLast("idleStateHandler", new IdleStateHandler(20, 0, 0));
 							p.addLast(new ClientHandler());
 						}
 					});

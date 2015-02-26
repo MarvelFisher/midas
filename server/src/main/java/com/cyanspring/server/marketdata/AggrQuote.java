@@ -19,7 +19,7 @@ public class AggrQuote {
 		minAsk = maxBid = maxBidAsk = 0;
 	}
 
-	public Quote update(Quote src) {
+	public Quote update(Quote src, int sourceId) {
 
 		if (quote == null) {
 			quote = src;
@@ -34,7 +34,7 @@ public class AggrQuote {
 
 		if (src.sourceId == sourceId && src.getClose() != close) {
 			open = high = low = 0;
-			sourceId = src.sourceId;
+			this.sourceId = sourceId;
 		}
 
 		if (src.sourceId == 1) {
@@ -55,27 +55,27 @@ public class AggrQuote {
 				high = src.getHigh();
 			}
 
-			sourceId = src.sourceId;
+			this.sourceId = sourceId;
 		} else {
 
 			if (close == 0 || sourceId == src.sourceId) {
 				close = src.getClose();
-				sourceId = src.sourceId;
+				this.sourceId = sourceId;
 			}
 
 			if (open == 0 || sourceId == src.sourceId) {
 				open = src.getOpen();
-				sourceId = src.sourceId;
+				this.sourceId = sourceId;
 			}
 
 			if (low == 0 || sourceId == src.sourceId) {
 				low = src.getLow();
-				sourceId = src.sourceId;
+				this.sourceId = sourceId;
 			}
 
 			if (high == 0 || sourceId == src.sourceId) {
 				high = src.getHigh();
-				sourceId = src.sourceId;
+				this.sourceId = sourceId;
 			}
 		}
 
