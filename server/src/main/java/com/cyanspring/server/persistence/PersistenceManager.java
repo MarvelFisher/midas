@@ -101,7 +101,7 @@ public class PersistenceManager {
 	@Autowired
 	CentralDbConnector centralDbConnector;
 	
-	private boolean checkEmailUnique = true;
+	private CheckEmailType checkEmailUnique = CheckEmailType.allCheck;
 	private boolean syncCentralDb = true;
 	private boolean embeddedSQLServer;
 	private int textSize = 4000;
@@ -510,7 +510,8 @@ public class PersistenceManager {
 						*/
 					if(!centralDbConnector.isUserExist(user.getId())) // user dose not exist in Mysql either
 					{
-						if(checkEmailUnique)
+						if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
+						    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
 						{
 							if(centralDbConnector.isEmailExist(user.getEmail()))
 								throw new CentralDbException("This email already exists: " + user.getEmail());
@@ -811,7 +812,9 @@ public class PersistenceManager {
 			{
 				if(centralDbConnector.isUserExist(user.getId()))
 					throw new CentralDbException("This user already exists: " + user.getId());
-				if(checkEmailUnique)
+				
+				if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
+					    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
 				{
 					if(centralDbConnector.isEmailExist(user.getEmail()))
 						throw new CentralDbException("This email already exists: " + user.getEmail());
@@ -1131,6 +1134,14 @@ public class PersistenceManager {
 
 	public void setEmbeddedPort(int embeddedPort) {
 		this.embeddedPort = embeddedPort;
+	}
+
+	public CheckEmailType isCheckEmailUnique() {
+		return checkEmailUnique;
+	}
+
+	public void setCheckEmailUnique(CheckEmailType checkEmailUnique) {
+		this.checkEmailUnique = checkEmailUnique;
 	}
 	
 }
