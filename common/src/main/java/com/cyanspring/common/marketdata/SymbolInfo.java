@@ -100,27 +100,27 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
-		this.cnSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getCnName();
+		this.cnSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getCnName();
 	}
 	public void setTwName(String twName) {
 		this.twName = twName;
-		this.twSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getTwName();
+		this.twSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getTwName();
 	}
 	public void setEnName(String enName) {
 		this.enName = enName;
-		this.enSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEnName();
+		this.enSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getEnName();
 	}
 	public void setJpName(String jpName) {
 		this.jpName = jpName;
-		this.jpSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getJpName();
+		this.jpSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getJpName();
 	}
 	public void setEsName(String esName) {
 		this.esName = esName;
-		this.esSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getEsName();
+		this.esSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getEsName();
 	}
 	public void setKrName(String krName) {
 		this.krName = krName;
-		this.krSubName = (getHint() == null || getHint().isEmpty()) ? this.code : SymbolInfoType.fromString(getHint()).getKrName();
+		this.krSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getKrName();
 	}
 	public void setWindCode(String windCode) {
 		this.windCode = windCode;
