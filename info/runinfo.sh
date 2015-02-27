@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ -s LTS-INFO_PID ]; then
-LTS_PID=`cat LTS-INFO_PID`
-kill -9 $LTS-INFO_PID
+INFO_PID=`cat LTS-INFO_PID`
+kill -9 $INFO_PID
 fi
 
 
