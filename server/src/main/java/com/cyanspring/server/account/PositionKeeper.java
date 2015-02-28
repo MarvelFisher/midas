@@ -188,10 +188,10 @@ public class PositionKeeper {
 				}
 			}
 			
-			if(!PriceUtils.isZero(Default.getCommision())) {
+			if(!PriceUtils.isZero(Default.getCommission())) {
 				double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
-				double commision = Default.getCommision(value);
+				double commision = Default.getCommission(value);
 				account.updatePnL(-commision);
 				needAccountUpdate = true;
 			} 
@@ -527,7 +527,7 @@ public class PositionKeeper {
 				account.getCurrency(), quote.getSymbol(), 
 				deltaQty, price));
 		
-		deltaValue += Default.getCommision(deltaValue);
+		deltaValue += Default.getCommission(deltaValue);
 		return account.getMargin() * Default.getMarginCall() - deltaValue >= 0;
 	}
 	

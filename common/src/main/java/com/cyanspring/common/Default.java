@@ -12,8 +12,8 @@ public class Default {
 	private static double accountCash = 100000.0;
 	private static double marginTimes = 40.0;
 	private static double marginCut = 100000;
-	private static double commision = 0.0;
-	private static double commisionMin = 0.0;
+	private static double commission = 0.0;
+	private static double commissionMin = 0.0;
 	private static TimeZone timeZone;
 	private static double orderQuantity = 100000;
 	private static double positionStopLoss = 1000.0;
@@ -29,8 +29,8 @@ public class Default {
 		double accountCash,
 		double marginTimes,
 		double marginCut,
-		double commision,
-		double commisionMin,
+		double commission,
+		double commissionMin,
 		TimeZone timeZone,
 		double orderQuantity,
 		double positionStopLoss,
@@ -45,8 +45,8 @@ public class Default {
 		Default.accountCash = accountCash;
 		Default.marginTimes = marginTimes;
 		Default.marginCut = marginCut;
-		Default.commision = commision;
-		Default.commisionMin = commisionMin;
+		Default.commission = commission;
+		Default.commissionMin = commissionMin;
 		Default.timeZone = timeZone;
 		Default.orderQuantity = orderQuantity;
 		Default.positionStopLoss = positionStopLoss;
@@ -82,8 +82,8 @@ public class Default {
 		return marginTimes;
 	}
 
-	public static double getCommision() {
-		return commision;
+	public static double getCommission() {
+		return commission;
 	}
 	
 	public static TimeZone getTimeZone() {
@@ -110,12 +110,12 @@ public class Default {
 		return marginCall;
 	}
 
-	public static double getCommisionMin() {
-		return commisionMin;
+	public static double getCommissionMin() {
+		return commissionMin;
 	}
 	
-	public static double getCommision(double value) {
-		return Math.max(commisionMin, value * commision);
+	public static double getCommission(double value) {
+		return Math.max(commissionMin, value * commission);
 	}
 
 	public static String getTradeDateTime() {

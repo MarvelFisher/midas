@@ -156,6 +156,7 @@
   	<property column="USER_ID"			name="userId"		 type="java.lang.String"/>
   	<property column="MARKET"			name="market"		 type="java.lang.String"/>
   	<property column="CASH"				name="cash"			 type="java.lang.Double"/>
+  	<property column="CASH_AVAILABLE"	name="cashAvailable"			 type="java.lang.Double"/>
   	<property column="MARGIN"			name="margin"		 type="java.lang.Double"/>
   	<property column="PNL"				name="PnL"			 type="java.lang.Double"/>
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	 type="java.lang.Double"/>
@@ -204,6 +205,7 @@
 
     <union-subclass name="com.cyanspring.common.account.OpenPosition" table="ANYONE.OPEN_POSITIONS">
 	  	<property column="PRICE"		name="price"		type="java.lang.Double"/>
+	  	<property column="MARGIN"		name="margin"		type="java.lang.Double"/>
     </union-subclass>
     
     <union-subclass name="com.cyanspring.common.account.ClosedPosition" table="ANYONE.CLOSED_POSITIONS">
@@ -219,6 +221,9 @@
   	<property column="COMPANY_SL_VALUE"	name="companySLValue" type="java.lang.Double"/>
   	<property column="MARGIN"			name="margin"	      type="java.lang.Double"/>
 	<property column="ROUTE" 			name="route" 		  type="java.lang.String"/>
+	<property column="COMMISSION" 			name="commission" type="java.lang.String"/>
+	<property column="LEVERAGE_RATE" 			name="leverageRate" 		  type="java.lang.String"/>
+	<property column="DAILY_STOPLOSS" 			name="dailyStopLoss" 		  type="java.lang.String"/>
   </class>
 
   <sql-query name="rollEndOfDay1">
@@ -228,8 +233,7 @@
   </sql-query>
   <sql-query name="rollEndOfDay2">
     <![CDATA[
-    INSERT INTO ANYONE.ACCOUNTS_DAILY SELECT a.*, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS a
-    ]]>
+	INSERT INTO ANYONE.ACCOUNTS_DAILY(ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, ON_DATE, ON_TIME, TRADE_DATE) SELECT ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS    ]]>
   </sql-query>
   <sql-query name="rollEndOfDay3">
     <![CDATA[

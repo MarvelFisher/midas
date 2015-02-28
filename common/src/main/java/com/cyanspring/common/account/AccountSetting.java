@@ -21,10 +21,12 @@ public class AccountSetting extends DataObject {
 		settings.setMargin(0.0);
 		settings.setRoute("");
 		settings.setCommission(0.0);
+		settings.setLeverageRate(0.0);
 		settings.setDailyStopLoss(0.0);
 
 		return settings;
 	}
+	
 	public String getId() {
 		return get(String.class, AccountSettingType.ID.value());
 	}
@@ -63,12 +65,12 @@ public class AccountSetting extends DataObject {
 	public void setRoute(String route) {
 		put(AccountSettingType.ROUTE.value(), route);
 	}
-	//public Double getLeverageRate(){
-	//	return get(Double.class, AccountSettingType.LEVERAGERATE.value());
-	//}
-	//public void setLeverageRate(Double lRate){
-	//	put(AccountSettingType.LEVERAGERATE.value(), lRate);
-	//}
+	public double getLeverageRate(){
+		return get(double.class, AccountSettingType.LEVERAGE_RATE.value());
+	}
+	public void setLeverageRate(double lRate){
+		put(AccountSettingType.LEVERAGE_RATE.value(), lRate);
+	}
 	public double getCommission(){
 		return get(double.class, AccountSettingType.COMMISSION.value());
 	}
@@ -76,10 +78,10 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.COMMISSION.value(), commission);
 	}	
 	public double getDailyStopLoss(){
-		return get(double.class, AccountSettingType.DAILYSTOPLOSS.value());
+		return get(double.class, AccountSettingType.DAILY_STOPLOSS.value());
 	}
 	public void setDailyStopLoss(double dailyStopLoss){
-		put(AccountSettingType.DAILYSTOPLOSS.value(), dailyStopLoss);
+		put(AccountSettingType.DAILY_STOPLOSS.value(), dailyStopLoss);
 	}
 	
 	
