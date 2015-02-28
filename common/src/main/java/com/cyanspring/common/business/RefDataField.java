@@ -6,6 +6,7 @@ public enum RefDataField {
 	SYMBOL("Symbol"),
 	DESC("Desc"),
 	EXCHANGE("Exchange"),
+	MARKET("Market"),
 	CURRENCY("Currency"),
 	FX_CURRENCY("FX Currency"),
 	LOT_SIZE("Lot size"),

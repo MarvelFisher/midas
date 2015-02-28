@@ -104,8 +104,8 @@ public class RefData extends DataObject {
 		return this.get(String.class, RefDataField.CN_TRADING_UNIT.value());
 	}
 	
-	public String getMarginRate(){
-		return this.get(String.class, RefDataField.MARGIN_RATE.value());
+	public double getMarginRate(){
+		return this.get(double.class, RefDataField.MARGIN_RATE.value());
 	}
 	
 	public String getCommissionFee(){
@@ -144,6 +144,10 @@ public class RefData extends DataObject {
 		return this.get(String.class, RefDataField.STRATEGY.value());
 	}
 	
+	public String getMarket(){
+		return this.get(String.class, RefDataField.MARKET.value());
+	}
+		
 	public void setSymbol(String symbol){
 		this.set(symbol, RefDataField.SYMBOL.value());
 	}

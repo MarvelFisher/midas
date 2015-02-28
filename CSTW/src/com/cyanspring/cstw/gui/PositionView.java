@@ -237,6 +237,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private Label lbDailyPnL;
 	private Label lbPnL;
 	private Label lbUrPnL;
+	private Label lbCashAvailable;
 	
 	private void createAccountInfoPad(Composite parent) {
 		GridLayout layout = new GridLayout(3, true);
@@ -298,6 +299,14 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 		lbUrPnL = new Label(comp3, SWT.RIGHT);
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Label lb7 = new Label(comp1, SWT.LEFT);
+		lb1.setText("Cash Available: ");
+		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbCashAvailable = new Label(comp1, SWT.RIGHT);
+		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
 	}
 
 	private void createOpenPositionViewer(Composite parent) {
@@ -414,6 +423,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					PositionView.this.lbDailyPnL.setText(decimalFormat.format(PositionView.this.account.getDailyPnL()));
 					PositionView.this.lbPnL.setText(decimalFormat.format(PositionView.this.account.getPnL()));
 					PositionView.this.lbUrPnL.setText(decimalFormat.format(PositionView.this.account.getUrPnL()));
+					PositionView.this.lbCashAvailable.setText(decimalFormat.format(PositionView.this.account.getCashAvailable()));
 					PositionView.this.topComposite.layout();
 				}
 			}

@@ -166,6 +166,9 @@
 	<bean id="tickDataWriter" class="com.cyanspring.common.marketdata.QuoteDataWriter">
 	</bean>
 
+	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
+	</bean>
+
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
 			<value>refdata/refData_fdt.xml</value>
