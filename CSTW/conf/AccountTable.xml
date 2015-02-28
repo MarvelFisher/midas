@@ -87,6 +87,11 @@
         <width>50</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>CashAvailable</title>
+        <width>50</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>
   </entry>
 </map>
