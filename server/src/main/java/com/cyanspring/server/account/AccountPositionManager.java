@@ -125,6 +125,9 @@ public class AccountPositionManager implements IPlugin {
 	private String tradeDate;
 	private int asyncSendBatch = 3000;
 	private long asyncSendInterval = 3000;
+	private boolean sendDynamicPositionUpdate = false;
+	private boolean recoveryDone = false;
+	private boolean resetMarginHeld = false;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -322,7 +325,7 @@ public class AccountPositionManager implements IPlugin {
 		@Override
 		public void onOpenPositionDynamiceUpdate(OpenPosition position) {
 			try {
-				if(dynamicDataHasChanged(position)) {
+				if(sendDynamicPositionUpdate && dynamicDataHasChanged(position)) {
 					perfFqyPositionUpdate.count();
 					eventManager.sendRemoteEvent(new OpenPositionDynamicUpdateEvent(position.getAccount(), null, position));
 				}
@@ -721,6 +724,9 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	private void updateDynamicData() {
+		if(!recoveryDone)
+			return;
+		
 		if(!allFxRatesReceived) {
 			for(String symbol: fxSymbols) {
 				Double rate = fxConverter.getFxRate(symbol);
@@ -731,6 +737,11 @@ public class AccountPositionManager implements IPlugin {
 			}
 			allFxRatesReceived = true;
 			log.info("FX rates ready: " + fxConverter.toString());
+		}
+		
+		if(resetMarginHeld) {
+			resetMarginHeld = false;
+			positionKeeper.resetMarginHeld();
 		}
 		
 		if(rmUpdateThrottler.check()) {
@@ -915,6 +926,11 @@ public class AccountPositionManager implements IPlugin {
 		positionKeeper.injectOpenPositions(opens);
 		positionKeeper.injectClosedPositions(closed);
 	}
+	
+	public void endAcountPositionRecovery() {
+		recoveryDone = true;
+		log.info("Account position recovery done");
+	}
 
 	// getters and setters
 	public long getJobInterval() {
@@ -996,6 +1012,21 @@ public class AccountPositionManager implements IPlugin {
 	public void setAsyncSendInterval(long asyncSendInterval) {
 		this.asyncSendInterval = asyncSendInterval;
 	}
-	
-	
+
+	public boolean isSendDynamicPositionUpdate() {
+		return sendDynamicPositionUpdate;
+	}
+
+	public void setSendDynamicPositionUpdate(boolean sendDynamicPositionUpdate) {
+		this.sendDynamicPositionUpdate = sendDynamicPositionUpdate;
+	}
+
+	public boolean isResetMarginHeld() {
+		return resetMarginHeld;
+	}
+
+	public void setResetMarginHeld(boolean resetMarginHeld) {
+		this.resetMarginHeld = resetMarginHeld;
+	}
+
 }

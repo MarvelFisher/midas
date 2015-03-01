@@ -158,6 +158,7 @@
   	<property column="CASH"				name="cash"			 type="java.lang.Double"/>
   	<property column="CASH_AVAILABLE"	name="cashAvailable"			 type="java.lang.Double"/>
   	<property column="MARGIN"			name="margin"		 type="java.lang.Double"/>
+  	<property column="MARGIN_HELD"			name="marginHeld"		type="java.lang.Double"/>
   	<property column="PNL"				name="PnL"			 type="java.lang.Double"/>
   	<property column="ALL_TIME_PNL"		name="allTimePnL"	 type="java.lang.Double"/>
   	<property column="UR_PNL"			name="urPnL"		 type="java.lang.Double"/>
@@ -233,7 +234,7 @@
   </sql-query>
   <sql-query name="rollEndOfDay2">
     <![CDATA[
-	INSERT INTO ANYONE.ACCOUNTS_DAILY(ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, ON_DATE, ON_TIME, TRADE_DATE) SELECT ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS    ]]>
+	INSERT INTO ANYONE.ACCOUNTS_DAILY(ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, MARGIN_HELD, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, ON_DATE, ON_TIME, TRADE_DATE) SELECT ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, MARGIN_HELD, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS    ]]>
   </sql-query>
   <sql-query name="rollEndOfDay3">
     <![CDATA[

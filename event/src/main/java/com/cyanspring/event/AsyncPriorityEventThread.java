@@ -34,7 +34,7 @@ public abstract class AsyncPriorityEventThread {
 	protected List<AsyncEvent> normalEvents = Collections.synchronizedList(new LinkedList<AsyncEvent>());
 	private boolean running = false;
 	private boolean slow = false;
-	private int slowThreshold = 200;
+	private int slowThreshold = 1000;
 	private long eventCount;
 	private PerfTracker perfTracker = new PerfTracker();
 	

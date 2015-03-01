@@ -238,6 +238,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private Label lbPnL;
 	private Label lbUrPnL;
 	private Label lbCashAvailable;
+	private Label lbCashDeduct;
+	private Label lbMarginHeld;
 	
 	private void createAccountInfoPad(Composite parent) {
 		GridLayout layout = new GridLayout(3, true);
@@ -301,11 +303,25 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		Label lb7 = new Label(comp1, SWT.LEFT);
-		lb1.setText("Cash Available: ");
-		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		lb7.setText("Cash Available: ");
+		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		lbCashAvailable = new Label(comp1, SWT.RIGHT);
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		Label lb8 = new Label(comp2, SWT.LEFT);
+		lb8.setText("Cash Deduct");
+		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbCashDeduct = new Label(comp2, SWT.RIGHT);
+		lbCashDeduct.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		Label lb10 = new Label(comp3, SWT.LEFT);
+		lb10.setText("Margin Held");
+		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbMarginHeld = new Label(comp3, SWT.RIGHT);
+		lbMarginHeld.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 	}
 
@@ -424,6 +440,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					PositionView.this.lbPnL.setText(decimalFormat.format(PositionView.this.account.getPnL()));
 					PositionView.this.lbUrPnL.setText(decimalFormat.format(PositionView.this.account.getUrPnL()));
 					PositionView.this.lbCashAvailable.setText(decimalFormat.format(PositionView.this.account.getCashAvailable()));
+					PositionView.this.lbMarginHeld.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
+					PositionView.this.lbCashDeduct.setText(decimalFormat.format(PositionView.this.account.getCashDeduct()));
 					PositionView.this.topComposite.layout();
 				}
 			}

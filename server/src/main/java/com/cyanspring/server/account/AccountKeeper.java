@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import webcurve.util.PriceUtils;
 
@@ -14,6 +15,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.ILeverageManager;
 
 public class AccountKeeper {
 	private static final Logger log = LoggerFactory
@@ -28,6 +30,9 @@ public class AccountKeeper {
 	private int rmJobBatch = 2000;
 	private AccountJobs dynamicJobs;
 	private AccountJobs rmJobs;
+	
+	@Autowired
+	ILeverageManager leverageManager;
 	
 	public void init() {
 		dynamicJobs = new AccountJobs(dynamicJobBatch);
@@ -113,7 +118,7 @@ public class AccountKeeper {
 				account.addCash(Default.getAccountCash());
 		if(account.getMarket() == null)
 			account.setMarket(Default.getMarket());
-		account.addMargin(account.getCash() * Default.getMarginTimes());
+		account.addMargin(account.getCash() * leverageManager.getLeverage(null, null));
 		account.setActive(true);
 	}
 	

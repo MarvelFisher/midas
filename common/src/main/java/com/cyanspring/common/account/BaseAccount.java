@@ -19,7 +19,8 @@ public abstract class BaseAccount implements Serializable {
 	private double cashDeposited;
 	private double rollPrice = 1.0;
 	private double margin;
-	private double cashAvailable;	
+	private double cashAvailable;
+	private double marginHeld;
 
 	private Date created;
 	
@@ -161,6 +162,18 @@ public abstract class BaseAccount implements Serializable {
 
 	public void setCashAvailable(double cashAvailable) {
 		this.cashAvailable = cashAvailable;
+	}
+
+	public double getMarginHeld() {
+		return marginHeld;
+	}
+
+	public void setMarginHeld(double marginHeld) {
+		this.marginHeld = marginHeld;
+	}
+
+	public double getCashDeduct() {
+		return this.cash - this.marginHeld;
 	}
 
 	// end of getters/setters

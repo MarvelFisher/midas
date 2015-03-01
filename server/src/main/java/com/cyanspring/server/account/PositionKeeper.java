@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
+import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.business.Execution;
@@ -26,6 +28,7 @@ import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.StrategyState;
@@ -58,6 +61,9 @@ public class PositionKeeper {
 	@Autowired
 	AccountKeeper accountKeeper;
 	
+	@Autowired
+	ILeverageManager leverageManager;
+
 	private ClosePositionLock closePositionLock = new ClosePositionLock();
 	
 	public IPositionListener setListener(IPositionListener listener) {
@@ -97,6 +103,24 @@ public class PositionKeeper {
 		}
 		
 		this.updateAccountDynamicData(account);
+	}
+	
+	private OpenPosition createOpenPosition(Execution execution, Account account) {
+		AccountSetting accountSetting = null;
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		double margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+				execution.getSymbol(), execution.getQuantity(), execution.getPrice());
+		RefData refData = refDataManager.getRefData(execution.getSymbol());
+		double leverage = leverageManager.getLeverage(refData, accountSetting);
+		margin /= leverage;
+		log.debug("Open position margin: " + margin + ", " + leverage);
+		account.setMarginHeld(account.getMarginHeld() + margin);
+		return new OpenPosition(execution, margin);
 	}
 	
 	public void processExecution(Execution execution, Account account) throws PositionException {
@@ -143,9 +167,8 @@ public class PositionKeeper {
 				symbolPositions.put(execution.getSymbol(), list);
 			}
 			
-			boolean needAccountUpdate = false;
 			if(list.size() <= 0) { // no existing position, just add it
-				OpenPosition position = new OpenPosition(execution);
+				OpenPosition position = createOpenPosition(execution, account);
 				list.add(position);
 				this.notifyUpdateDetailOpenPosition(position);
 			} else {
@@ -160,14 +183,12 @@ public class PositionKeeper {
 						OpenPosition pos = it.next();
 						if(PriceUtils.EqualGreaterThan(Math.abs(execPos), Math.abs(pos.getQty()))) {
 							transferToClosedPositions(pos, execution, account);
-							needAccountUpdate = true;
 							it.remove();
 							this.notifyRemoveDetailOpenPosition(pos);
 							execPos += pos.getQty();
 						} else {
 							OpenPosition transfer = pos.split(-execPos);
 							transferToClosedPositions(transfer, execution, account);
-							needAccountUpdate = true;
 							execPos = 0;
 							this.notifyUpdateDetailOpenPosition(pos);
 						}
@@ -175,14 +196,14 @@ public class PositionKeeper {
 					
 					//if there is still execution quantity left
 					if(PriceUtils.GreaterThan(Math.abs(execPos), 0)) {
-						OpenPosition position = new OpenPosition(execution);
+						OpenPosition position = createOpenPosition(execution, account);
 						position.setQty(execPos);
 						list.add(position);
 						this.notifyUpdateDetailOpenPosition(position);
 					}
 					
 				} else { // same side just add it
-					OpenPosition position = new OpenPosition(execution);
+					OpenPosition position = createOpenPosition(execution, account);
 					list.add(position);
 					this.notifyUpdateDetailOpenPosition(position);
 				}
@@ -193,7 +214,6 @@ public class PositionKeeper {
 						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
 				double commision = Default.getCommission(value);
 				account.updatePnL(-commision);
-				needAccountUpdate = true;
 			} 
 
 			updateAccountDynamicData(account);
@@ -201,8 +221,7 @@ public class PositionKeeper {
 			OpenPosition update = getOverallPosition(account, execution.getSymbol());
 			notifyOpenPositionUpdate(update);
 
-			if(needAccountUpdate)
-				notifyAccountUpdate(account);
+			notifyAccountUpdate(account);
 			
 		}
 
@@ -265,7 +284,8 @@ public class PositionKeeper {
 		list.add(pos); 
 
 		account.updatePnL(pos.getAcPnL());
-		
+		account.setMarginHeld(account.getMarginHeld() - Math.abs(position.getMargin()));
+				
 		notifyClosedPositionUpdate(pos);
 	}
 	
@@ -325,7 +345,7 @@ public class PositionKeeper {
 	
 	// this one gives the overall positions for a specific account and symbol
 	public OpenPosition getOverallPosition(Account account, String symbol) {
-		OpenPosition result = new OpenPosition(account.getUserId(), account.getId(), symbol, 0, 0);
+		OpenPosition result = new OpenPosition(account.getUserId(), account.getId(), symbol, 0, 0, 0);
 		Map<String, List<OpenPosition>> ap = accountPositions.get(account.getId());
 		if(null == ap)
 			return result;
@@ -362,14 +382,16 @@ public class PositionKeeper {
 		double qty = 0;
 		double amount = 0;
 		double PnL = 0;
+		double margin = 0;
 		for(OpenPosition pos: list) {
 			qty += pos.getQty();
 			amount += pos.getQty() * pos.getPrice();
 			PnL += pos.getPnL();
+			margin += pos.getMargin();
 		}
 		double price = amount / qty;
 		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(), 
-				list.get(0).getSymbol(), qty, price);
+				list.get(0).getSymbol(), qty, price, margin);
 		result.setPnL(PnL);
 		return result;
 	}
@@ -418,9 +440,18 @@ public class PositionKeeper {
 	public void updateAccountDynamicData(Account account) {
 		double accountUrPnL = 0;
 		double marginValue = 0;
+		double marginHeld = 0;
 		if(null == quoteFeeder)
 			return;
 
+		AccountSetting accountSetting;
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+			return;
+		}
+		
 		synchronized(getSyncAccount(account.getId())) {
 			// since margin is contributed by both open position and open orders, we need
 			// to work out a combined list of symbols with either one of them
@@ -448,21 +479,18 @@ public class PositionKeeper {
 				}
 				
 				marginValue += getMarginValueByAccountAndSymbol(account, symbol, quote);
+				
+				RefData refData = refDataManager.getRefData(symbol);
+				double lev = leverageManager.getLeverage(refData, accountSetting);
+				marginHeld += marginValue / lev;
 			}
 			account.setUrPnL(accountUrPnL);
 			
-			AccountSetting accountSetting;
-			try {
-				accountSetting = accountKeeper.getAccountSetting(account.getId());
-			} catch (AccountException e) {
-				log.error(e.getMessage(), e);
-				return;
-			}
-			
-			double accountMargin = (account.getCash() +  account.getUrPnL()) * Default.getMarginTimes();
+			double accountMargin = (account.getCash() +  account.getUrPnL()) * leverageManager.getLeverage(null, accountSetting);
 			if(PriceUtils.GreaterThan(accountSetting.getMargin(), 0))
 				accountMargin = (account.getCash() +  account.getUrPnL()) * accountSetting.getMargin();
 			account.setMargin(accountMargin - marginValue);
+			account.setCashAvailable(account.getCash()  +  account.getUrPnL() - marginHeld);
 		}
 	}
 	
@@ -604,6 +632,44 @@ public class PositionKeeper {
 			}
 		}
 		return null;
+	}
+	
+	public void resetMarginHeld() {
+		log.info("Resetting margin held...");
+		for(Entry<String, Map<String, List<OpenPosition>>> entry: accountPositions.entrySet()) {
+			if(null == entry)
+				continue;
+			
+			Account account = accountKeeper.getAccount(entry.getKey());
+			AccountSetting accountSetting = null;
+			try {
+				accountSetting = accountKeeper.getAccountSetting(entry.getKey());
+			} catch (AccountException e) {
+				log.error(e.getMessage(), e);
+			}
+
+			account.setMarginHeld(0.0);
+			for(List<OpenPosition> list: entry.getValue().values()) {
+				if(null == list)
+					continue;
+				
+				double total = 0.0;
+				for(OpenPosition position: list) {
+					double margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+							position.getSymbol(), Math.abs(position.getQty()), position.getPrice());
+					RefData refData = refDataManager.getRefData(position.getSymbol());
+					double leverage = leverageManager.getLeverage(refData, accountSetting);
+					margin /= leverage;
+					total += margin;
+					position.setMargin(margin);
+					this.notifyUpdateDetailOpenPosition(position);
+				}
+				account.setMarginHeld(account.getMarginHeld()+total);
+				
+			}
+			this.notifyAccountUpdate(account);
+		}
+		log.info("Resetting margin held done");
 	}
 	
 	public void lockAccountPosition(ParentOrder order) {

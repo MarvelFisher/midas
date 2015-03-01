@@ -271,6 +271,8 @@ public class Server implements ApplicationContextAware{
 			accountPositionManager.injectPositions(list1, list2);
 		}
 		
+		accountPositionManager.endAcountPositionRecovery();
+		
 		if(null != executionRecoveryProcessor) {
 			List<Execution> executions = executionRecoveryProcessor.recover();
 			log.info("Executions recovered: " + executions.size());

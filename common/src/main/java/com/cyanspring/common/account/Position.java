@@ -6,6 +6,7 @@ import java.util.Date;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.PriceUtils;
 
+@SuppressWarnings("serial")
 public abstract class Position implements Serializable{
 	private String id;
 	private String account;
@@ -15,8 +16,6 @@ public abstract class Position implements Serializable{
 	private double PnL;
 	private Date created;
 	private double acPnL;
-	private double commission;
-	private double margin;
 
 	protected Position() {
 		
@@ -127,22 +126,6 @@ public abstract class Position implements Serializable{
 				this.qty + ", " + this.PnL;
 	}
 	
-	public double getCommission() {
-		return commission;
-	}
-
-	public void setCommission(double commission) {
-		this.commission = commission;
-	}
-
-	public double getMargin() {
-		return margin;
-	}
-
-	public void setMargin(double margin) {
-		this.margin = margin;
-	}
-
 	@Override
 	public synchronized String toString() {
 		return "[" + formatString() + "]";

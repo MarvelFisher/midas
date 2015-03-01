@@ -6,6 +6,7 @@ import java.util.Map;
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Default;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.staticdata.RefData;
 
@@ -14,24 +15,34 @@ public class LeverageManager implements ILeverageManager{
 	Map<String, Double> leverageByExchange = new HashMap<String, Double>();
 	
 	@Override
-	public double getLeverage(RefData refData) {
+	public double getLeverage(RefData refData, AccountSetting settings) {
+		double factor = 1.0;
+		if(null != settings) {
+			double lev = settings.getLeverageRate();
+			if(!PriceUtils.isZero(lev))
+				factor = lev;
+		}
+		
+		if(null == refData)
+			return Default.getMarginTimes();
+		
 		Double marginRate = refData.getMarginRate();
 		if(!PriceUtils.isZero(marginRate)) {
-			return 1/marginRate;
+			return factor/marginRate;
 		}
 		
 		String market = refData.getMarket();
 		marginRate = leverageByMarket.get(market);
 		if(null != marginRate && !PriceUtils.isZero(marginRate))
-			return 1/marginRate;
+			return factor/marginRate;
 		
 		String exchange = refData.getExchange();
 		marginRate = leverageByExchange.get(exchange);
 		if(null != marginRate && !PriceUtils.isZero(marginRate))
-			return 1/marginRate;
+			return factor/marginRate;
 		
 		
-		return Default.getMarginTimes();
+		return Default.getMarginTimes() * factor;
 	}
 
 	public Map<String, Double> getLeverageByMarket() {
