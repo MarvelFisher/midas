@@ -36,6 +36,7 @@ public class TestPositionKeeper {
 	@Before
 	public void before() {
 		keeper = new PositionKeeper();
+		keeper.accountKeeper = new AccountKeeper();
 	}
 	
 	@Test

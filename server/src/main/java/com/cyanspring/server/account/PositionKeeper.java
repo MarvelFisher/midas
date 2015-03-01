@@ -113,13 +113,16 @@ public class PositionKeeper {
 			log.error(e.getMessage(), e);
 		}
 
-		double margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
-				execution.getSymbol(), execution.getQuantity(), execution.getPrice());
-		RefData refData = refDataManager.getRefData(execution.getSymbol());
-		double leverage = leverageManager.getLeverage(refData, accountSetting);
-		margin /= leverage;
-		log.debug("Open position margin: " + margin + ", " + leverage);
-		account.setMarginHeld(account.getMarginHeld() + margin);
+		double margin = 0.0;
+		if(null != refDataManager) {
+			margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+					execution.getSymbol(), execution.getQuantity(), execution.getPrice());
+			RefData refData = refDataManager.getRefData(execution.getSymbol());
+			double leverage = leverageManager.getLeverage(refData, accountSetting);
+			margin /= leverage;
+			log.debug("Open position margin: " + margin + ", " + leverage);
+			account.setMarginHeld(account.getMarginHeld() + margin);
+		}
 		return new OpenPosition(execution, margin);
 	}
 	
