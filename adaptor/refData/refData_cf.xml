@@ -1,0 +1,210 @@
+<list>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Type</string>
+        <string>INDEX_FU</string>
+      </entry>
+      <entry>
+        <string>TWTrading unit</string>
+        <string>人民幣/點</string>
+      </entry>
+      <entry>
+        <string>Price limit</string>
+        <string>10</string>
+      </entry>
+      <entry>
+        <string>Settlement date</string>
+        <string>2015-03-20</string>
+      </entry>
+      <entry>
+        <string>Commission fee</string>
+        <string>0.25</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>IF1503.CF</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>沪深1503.CF</string>
+      </entry>
+      <entry>
+        <string>Numerator DP</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <string>1</string>
+      </entry>
+      <entry>
+        <string>Minimal CF</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>CNTrading unit</string>
+        <string>人民币/点</string>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <string>300</string>
+      </entry>
+      <entry>
+        <string>Maximal lot</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Strategy</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <string>10</string>
+      </entry>
+      <entry>
+        <string>Category</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Denominator</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IF1503.CF</string>
+      </entry>
+      <entry>
+        <string>ENTrading unit</string>
+        <string>RMB/Point</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>滬深1503.CF</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IFL0</string>
+      </entry>
+      <entry>
+        <string>Tradable</string>
+        <string>1</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Type</string>
+        <string>INDEX_FU</string>
+      </entry>
+      <entry>
+        <string>TWTrading unit</string>
+        <string>人民幣/點</string>
+      </entry>
+      <entry>
+        <string>Price limit</string>
+        <string>10</string>
+      </entry>
+      <entry>
+        <string>Settlement date</string>
+        <string>2015-04-17</string>
+      </entry>
+      <entry>
+        <string>Commission fee</string>
+        <string>0.25</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>IF1504.CF</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>沪深1504.CF</string>
+      </entry>
+      <entry>
+        <string>Numerator DP</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <string>1</string>
+      </entry>
+      <entry>
+        <string>Minimal CF</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>CNTrading unit</string>
+        <string>人民币/点</string>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <string>300</string>
+      </entry>
+      <entry>
+        <string>Maximal lot</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Strategy</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <string>10</string>
+      </entry>
+      <entry>
+        <string>Category</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Denominator</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IF1504.CF</string>
+      </entry>
+      <entry>
+        <string>ENTrading unit</string>
+        <string>RMB/Point</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>滬深1504.CF</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IFL1</string>
+      </entry>
+      <entry>
+        <string>Tradable</string>
+        <string>1</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+</list>

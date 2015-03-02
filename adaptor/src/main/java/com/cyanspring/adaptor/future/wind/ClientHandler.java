@@ -73,7 +73,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-						LogUtil.logDebug(log, in);
+//						LogUtil.logDebug(log, in);
 						if (strDataType.equals("DATA_FUTURE")) {
 							datatype = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
