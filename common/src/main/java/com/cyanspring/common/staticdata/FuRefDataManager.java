@@ -53,7 +53,8 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 			}
 			stragety.init(cal);
 			stragety.setExchangeRefData(refData);
-			map.put(refData.getSymbol(), refData);
+			//map.put(refData.getSymbol(), refData);
+			map.put(refData.getRefSymbol(), refData); //key = refsymbol
 		}		
 		saveRefDataToFile(refDataFile, new ArrayList<RefData>(map.values()));
 	}

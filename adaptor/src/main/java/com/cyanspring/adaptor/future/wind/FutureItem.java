@@ -170,7 +170,7 @@ public class FutureItem implements AutoCloseable{
 	static Date timeLast = DateUtil.now(); 
 	static int lastShow = 0;
 	public static void processFutureData(TDF_FUTURE_DATA data) {
-		String symbolId = data.getCode();
+		String symbolId = data.getWindCode();
 		String windCode = data.getWindCode();
 
 		FutureItem item = getItem(symbolId, windCode, true);
@@ -182,7 +182,7 @@ public class FutureItem implements AutoCloseable{
 
 		makeBidAskList(data.getBidPrice(), data.getBidVol(), data.getAskPrice(), data.getAskVol(), bids, asks);
 
-		Quote quote = new Quote(data.getCode(), bids, asks);
+		Quote quote = new Quote(symbolId, bids, asks);
 
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getActionDay(), data.getTime());
@@ -292,7 +292,7 @@ public class FutureItem implements AutoCloseable{
 	}
 
 	public String windCode() {
-		return String.format("%s.%s", getMarket(), symbolId);
+		return String.format(symbolId);
 	}
 	
 	public SymbolInfo getSymbolInfo() {
