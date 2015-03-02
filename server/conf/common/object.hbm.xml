@@ -222,9 +222,9 @@
   	<property column="COMPANY_SL_VALUE"	name="companySLValue" type="java.lang.Double"/>
   	<property column="MARGIN"			name="margin"	      type="java.lang.Double"/>
 	<property column="ROUTE" 			name="route" 		  type="java.lang.String"/>
-	<property column="COMMISSION" 			name="commission" type="java.lang.String"/>
-	<property column="LEVERAGE_RATE" 			name="leverageRate" 		  type="java.lang.String"/>
-	<property column="DAILY_STOPLOSS" 			name="dailyStopLoss" 		  type="java.lang.String"/>
+	<property column="COMMISSION" 			name="commission" type="java.lang.Double"/>
+	<property column="LEVERAGE_RATE" 			name="leverageRate" 		  type="java.lang.Double"/>
+	<property column="DAILY_STOPLOSS" 			name="dailyStopLoss" 		  type="java.lang.Double"/>
   </class>
 
   <sql-query name="rollEndOfDay1">
