@@ -230,7 +230,7 @@ public class StockItem implements AutoCloseable{
 	static Date timeLast = DateUtil.now(); 
 	static int lastShow = 0;
 	public static void processMarketData(TDF_MARKET_DATA data) {
-		String symbolId = data.getCode();
+		String symbolId = data.getWindCode();
 		String windCode = data.getWindCode();
 		//int status = data.getStatus();
 		//WindFutureDataAdaptor.info("%d %d", data.getSyl1(), data.getSyl2());
@@ -244,7 +244,7 @@ public class StockItem implements AutoCloseable{
 
 		makeBidAskList(data.getBidPrice(), data.getBidVol(), data.getAskPrice(), data.getAskVol(), bids, asks);
 
-		Quote quote = new Quote(data.getCode(), bids, asks);
+		Quote quote = new Quote(symbolId, bids, asks);
 
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getActionDay(), data.getTime());
@@ -340,7 +340,7 @@ public class StockItem implements AutoCloseable{
 	}
 	
 	public String windCode() {
-		return String.format("%s.%s", getMarket(), symbolId);
+		return String.format(symbolId);
 	}
 	
 	public SymbolInfo getSymbolInfo() {
