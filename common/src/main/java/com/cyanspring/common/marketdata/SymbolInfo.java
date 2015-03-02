@@ -26,10 +26,9 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String tickTable = "";
 	
 	
-	public SymbolInfo(String market, String exchange, String code) 
+	public SymbolInfo(String market, String code) 
 	{
 		this.market = market;
-		this.market = exchange;
 		this.code = code;
 	}
 	public SymbolInfo(SymbolInfo symbolinfo)
@@ -102,6 +101,9 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public String getEsSubName() {
 		return esSubName;
+	}
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
 	}
 	public void setCnName(String cnName) {
 		this.cnName = cnName;

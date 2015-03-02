@@ -478,7 +478,8 @@ public class CentralDbProcessor implements IPlugin
 			SymbolInfo symbolinfo = null;
 			while(rs.next())
 			{
-				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
+				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+				symbolinfo.setExchange(rs.getString("EXCHANGE"));
 				symbolinfo.setWindCode(rs.getString("WINDCODE"));
 				symbolinfo.setHint(rs.getString("HINT"));
 				symbolinfo.setCnName(rs.getString("CN_NAME"));
@@ -582,7 +583,7 @@ public class CentralDbProcessor implements IPlugin
 				}
 				else
 				{
-					SymbolInfo symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
+					SymbolInfo symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
 					int index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 					if (index >= 0)
 					{
@@ -663,7 +664,8 @@ public class CentralDbProcessor implements IPlugin
 			SymbolInfo symbolinfo = null;
 			while(rs.next())
 			{
-				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
+				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+				symbolinfo.setExchange(rs.getString("EXCHANGE"));
 				symbolinfo.setWindCode(rs.getString("WINDCODE"));
 				symbolinfo.setHint(rs.getString("HINT"));
 				symbolinfo.setCnName(rs.getString("CN_NAME"));
@@ -724,7 +726,7 @@ public class CentralDbProcessor implements IPlugin
 				if (symbolinfo.getMarket() != null && symbolinfo.getMarket().equals(market))
 					symbolinfos.add(symbolinfo);
 			}
-			sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`HINT`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`,`JP_NAME`,`KR_NAME`,`ES_NAME`,`NO`) VALUES");
+			sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`EXCHANGE`,`CODE`,`HINT`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`,`JP_NAME`,`KR_NAME`,`ES_NAME`,`NO`) VALUES");
 			boolean first = true;
 			int No = 0;
 			for (SymbolInfo syminfo : symbolinfos)
@@ -770,7 +772,8 @@ public class CentralDbProcessor implements IPlugin
 				SymbolInfo symbolinfo;
 				while(rs.next())
 				{
-					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
+					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+					symbolinfo.setExchange(rs.getString("EXCHANGE"));
 					symbolinfo.setWindCode(rs.getString("WINDCODE"));
 					symbolinfo.setHint(rs.getString("HINT"));
 					symbolinfo.setCnName(rs.getString("CN_NAME"));
@@ -922,7 +925,8 @@ public class CentralDbProcessor implements IPlugin
 						marketList.add(refdata.getExchange());
 					}
 					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
-					symbolinfo = new SymbolInfo(serverMarket, refdata.getExchange(), refdata.getSymbol());
+					symbolinfo = new SymbolInfo(serverMarket, refdata.getSymbol());
+					symbolinfo.setExchange(refdata.getExchange());
 					symbolinfo.setWindCode(null);
 					symbolinfo.setHint(refdata.getRefSymbol());
 					symbolinfo.setCnName(refdata.getCNDisplayName());
