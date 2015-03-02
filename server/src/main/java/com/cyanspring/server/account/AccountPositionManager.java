@@ -830,8 +830,8 @@ public class AccountPositionManager implements IPlugin {
 	
 	private boolean checkMarginCall(Account account) {
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
-		if(PriceUtils.LessThan(account.getMargin(), 0.0) && positions.size() > 0) {
-			log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL());
+		if(PriceUtils.EqualLessThan(account.getCashAvailable(), 0.0) && positions.size() > 0) {
+			log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL() + ", " + account.getCashAvailable());
 			
 			Collections.sort(positions, new Comparator<OpenPosition>() {
 
@@ -866,7 +866,9 @@ public class AccountPositionManager implements IPlugin {
 				}
 
 				log.info("Margin cut: " + position.getAccount() + ", " +
-						position.getSymbol() + ", " + position.getAcPnL() + ", " + account.getMargin() + ", " + quote);
+						position.getSymbol() + ", " + position.getAcPnL() + ", " + 
+						account.getMargin() + ", " + 
+						account.getCashAvailable() + ", " + quote);
 				
 				double qty = Math.min(Math.abs(position.getQty()), Default.getMarginCut());
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
