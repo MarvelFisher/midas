@@ -31,6 +31,7 @@ import com.cyanspring.common.event.info.PriceHighLowType;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
 
 public class SymbolData implements Comparable<SymbolData>
@@ -494,6 +495,10 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void getPriceDate(String strType, ArrayList<HistoricalPrice> pricelist)
 	{
+		if (PriceUtils.isZero(dOpen))
+		{
+			return;
+		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -655,7 +660,7 @@ public class SymbolData implements Comparable<SymbolData>
 			log.error(e.getMessage(), e);
 			return null ;
 		}
-		if (0 <= tradedate.compareTo(enddate))
+		if (0 <= tradedate.compareTo(enddate) && centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
 			try {
 				switch(type)
@@ -668,8 +673,7 @@ public class SymbolData implements Comparable<SymbolData>
 				case "6":
 				case "T":
 				{
-					/*ArrayList<HistoricalPrice> listDaily =*/ getPriceList(type, end, false, listPrice) ;
-//					listPrice.addAll(listDaily) ;
+					getPriceList(type, end, false, listPrice) ;
 					break ;
 				}
 				case "D":

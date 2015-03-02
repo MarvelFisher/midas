@@ -1152,6 +1152,10 @@ public class CentralDbProcessor implements IPlugin
 	public void setPreSubscriptionList(ArrayList<String> preSubscriptionList) {
 		this.preSubscriptionList = preSubscriptionList;
 	}
+
+	public MarketSessionType getSessionType() {
+		return sessionType;
+	}
 	
 }
 
