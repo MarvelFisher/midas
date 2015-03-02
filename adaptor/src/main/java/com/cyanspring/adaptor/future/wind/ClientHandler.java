@@ -51,7 +51,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Discard the received data silently.
 		lastRecv = DateUtil.now();
 		String in = (String) msg;
-		// System.out.println(in); // TEST
+		//System.out.println(in);
 		try {
 			String strHash = null;
 			String strDataType = null;
@@ -73,7 +73,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-						LogUtil.logDebug(log, in);
+//						LogUtil.logDebug(log, in);
 						if (strDataType.equals("DATA_FUTURE")) {
 							datatype = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
@@ -129,59 +129,60 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		context = ctx;
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		adaptor.updateState(true);
+		
+		
 		String[] arrSymbol = WindFutureDataAdaptor.instance.getRefSymbol();
-		String exchange = WindFutureDataAdaptor.instance.getExchange();
 		if (arrSymbol.length > 0) {
 			for (String symbol : arrSymbol) {
-				subscribe(symbol + "." + exchange);
+				subscribe(symbol);
 			}
-		}
-
-
-//		// INDEX
-//		subscribe("000300.SH");
-//
-//		// STOCK
+		}		
+		
+//		sendRequestCodeTable("CF");
+		
+		 // INDEX
+//		 subscribe("000300.SH");
 //		
-//		subscribe("601318.SH"); //中國平安
-//		subscribe("600030.SH"); //中信證券
-//		subscribe("601628.SH"); //中國人壽
-//		subscribe("601989.SH"); //中國重工
-//		subscribe("600000.SH"); //浦發銀行
-//		subscribe("000002.SZ"); //万科A
-//		subscribe("600016.SH"); //民生银行
-//		subscribe("600837.SH"); //海通证券
-//		subscribe("300104.SZ"); //乐视网
-//		subscribe("002230.SZ"); //科大讯飞
+//		 // STOCK
 //		
-//
-//		// FUTURE
-//		subscribe("AG1506.SHF"); // 白銀
+//		 subscribe("601318.SH"); //中國平安
+//		 subscribe("600030.SH"); //中信證券
+//		 subscribe("601628.SH"); //中國人壽
+//		 subscribe("601989.SH"); //中國重工
+//		 subscribe("600000.SH"); //浦發銀行
+//		 subscribe("000002.SZ"); //万科A
+//		 subscribe("600016.SH"); //民生银行
+//		 subscribe("600837.SH"); //海通证券
+//		 subscribe("300104.SZ"); //乐视网
+//		 subscribe("002230.SZ"); //科大讯飞
+//		
+//		
+//		 // FUTURE
+//		 subscribe("AG1506.SHF"); // 白銀
 //		 subscribe("CU1506.SHF"); //滬銅
 //		 subscribe("AU1506.SHF"); //黃金
 //		 subscribe("RB1505.SHF"); //螺紋鋼
 //		 subscribe("RU1505.SHF"); //橡膠
 //		 subscribe("ZN1503.SHF"); //鋅
 //		 subscribe("M1505.DCE"); //豆粕
-//		subscribe("I1505.DCE"); // 鐵礦石
+//		 subscribe("I1505.DCE"); // 鐵礦石
 //		 subscribe("L1505.DCE"); //聚乙烯
 //		 subscribe("Y1505.DCE"); //豆油
 //		 subscribe("PP1505.DCE"); //聚丙烯
 //		 subscribe("P1505.DCE"); //棕櫚油
 //		 subscribe("J1505.DCE"); //焦炭
 //		 subscribe("JD1505.DCE"); //雞蛋
-//		subscribe("FG506.CZC"); // 玻璃
+//		 subscribe("FG506.CZC"); // 玻璃
 //		 subscribe("RM505.CZC"); //菜籽粕
 //		 subscribe("TA505.CZC"); //PTA //有夜盤
 //		 subscribe("SR505.CZC"); //白糖 //有夜盤
 //		 subscribe("MA506.CZC"); //鄭醇
 //		 subscribe("CF505.CZC"); //棉花
-//		subscribe("IF1502.CF"); // 滬深300當月
+//		 subscribe("IF1502.CF"); // 滬深300當月
 //		 subscribe("IF1503.CF"); //滬深300下月
-		
 
 		sendReqHeartbeat(); // send request heartbeat message
-		
+
 	}
 
 	@Override
@@ -201,14 +202,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
 		if (WindFutureDataAdaptor.isConnecting == false
 				&& lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
-			// WindFutureDataAdaptor.isConnected = false;
-			// WindFutureDataAdaptor.instance.sendState(false);
 			lastCheck = now;
-			// if (WindFutureDataAdaptor.instance.getStatus() !=
-			// MarketStatus.CLOSE) {
-			// System.out.println("reconnect!");
 			WindFutureDataAdaptor.instance.reconClient();
-			// }
 		}
 	}
 
@@ -231,25 +226,26 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	/**
 	 * get markets
 	 */
-	public static void sendRequestMarket(){
+	public static void sendRequestMarket() {
 		FixStringBuilder fsb = new FixStringBuilder('=', '|');
 
 		fsb.append("API");
-		fsb.append("GetMarkets");		
+		fsb.append("GetMarkets");
 		int fsbhashCode = fsb.toString().hashCode();
 		fsb.append("Hash");
-		fsb.append(String.valueOf(fsbhashCode));		
-		
+		fsb.append(String.valueOf(fsbhashCode));
+
 		LogUtil.logInfo(log, "[RequestMarket]%s", fsb.toString());
 		Util.addLog("[RequestMarket]%s", fsb.toString());
-		sendData(fsb.toString() + "\r\n");			
+		sendData(fsb.toString() + "\r\n");
 	}
-	
+
 	/**
 	 * get exchange symbol list
+	 * 
 	 * @param exchange
 	 */
-	public static void sendRequestCodeTable(String market){
+	public static void sendRequestCodeTable(String market) {
 		FixStringBuilder fsb = new FixStringBuilder('=', '|');
 
 		fsb.append("API");
@@ -262,9 +258,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 		LogUtil.logInfo(log, "[RequestCodeTable]%s", fsb.toString());
 		Util.addLog("[RequestCodeTable]%s", fsb.toString());
-		sendData(fsb.toString() + "\r\n");		
+		sendData(fsb.toString() + "\r\n");
 	}
-	
+
 	/**
 	 * Send Request HeartBeat Message
 	 */

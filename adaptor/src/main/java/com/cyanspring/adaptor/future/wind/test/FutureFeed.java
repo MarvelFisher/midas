@@ -31,7 +31,7 @@ public class FutureFeed implements IFrameClose {
 	FutureClient client = null;
 	Mainframe mainframe = null;
 	public boolean isSelectAll = false;
-	public String watchSymbol = "IF1501";
+	public String watchSymbol = "IF1503.CF";
 	public boolean isWatchSymbol(String symbol) {
 			return symbol.compareToIgnoreCase(watchSymbol) == 0;
 	}
@@ -161,6 +161,16 @@ public class FutureFeed implements IFrameClose {
 			}
 		});
 		mainframe.addButton(newClient);
+		
+		//add clear subscribe button
+		final JButton clearSubscribeButton = new JButton("Clear Sub");
+		clearSubscribeButton.addActionListener(new ActionListener() {	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				adaptor.clearSubscribeMarketData();
+			}
+		});
+		mainframe.addButton(clearSubscribeButton);
 	}
 	
 	@Override

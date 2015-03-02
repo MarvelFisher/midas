@@ -7,23 +7,23 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IF1502</string>
+				<string>IF1502.CF</string>
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>IF1502</string>
+				<string>IF1502.CF</string>
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>滬深1502</string>
+				<string>滬深1502.CF</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>沪深1502</string>
+				<string>沪深1502.CF</string>
 			</entry>
 			<entry>
 				<string>Exchange</string>
-				<string>FC</string>
+				<string>CF</string>
 			</entry>			
 			<entry>
 				<string>Ref symbol</string>
@@ -111,23 +111,23 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IF1503</string>
+				<string>IF1503.CF</string>
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>IF1503</string>
+				<string>IF1503.CF</string>
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>滬深1503</string>
+				<string>滬深1503.CF</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>沪深1503</string>
+				<string>沪深1503.CF</string>
 			</entry>
 			<entry>
 				<string>Exchange</string>
-				<string>FC</string>
+				<string>CF</string>
 			</entry>			
 			<entry>
 				<string>Ref symbol</string>

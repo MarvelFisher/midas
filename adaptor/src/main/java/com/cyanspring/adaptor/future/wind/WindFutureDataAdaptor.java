@@ -40,6 +40,8 @@ import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.UserClient;
 import com.cyanspring.id.Util;
@@ -60,8 +62,16 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	int gatewayPort = 0;
 	boolean gateway = false;
 	boolean showGui = false;
-	int targetType = 0;
 	String exchange = ""; // exchange
+	IRefDataManager refDataManager;
+
+	public IRefDataManager getRefDataManager() {
+		return refDataManager;
+	}
+
+	public void setRefDataManager(IRefDataManager refDataManager) {
+		this.refDataManager = refDataManager;
+	}
 
 	public boolean isShowGui() {
 		return showGui;
@@ -127,14 +137,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		this.gateway = gateway;
 	}
 
-	public int getTargetType() {
-		return targetType;
-	}
-
-	public void setTargetType(int targetType) {
-		this.targetType = targetType;
-	}
-
 	public String getExchange() {
 		return exchange;
 	}
@@ -180,8 +182,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
-	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // save future
-	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // save stock
+	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // save
+																										// future
+	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // save
+																									// stock
 	// boolean connected = false;
 	boolean isClosed = false;
 
@@ -312,8 +316,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		isClosed = false;
 		client.close();
 	}
-	
-	//Parse Change Data
+
+	// Parse Change Data
 	public TDF_QUOTATIONDATE_CHANGE convertToChangeData(String[] in_arr) {
 		TDF_QUOTATIONDATE_CHANGE changedata = new TDF_QUOTATIONDATE_CHANGE();
 		String key = null;
@@ -336,8 +340,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 		return changedata;
 	}
-	
-	//Parse Index Data
+
+	// Parse Index Data
 
 	// Parse Stock Data
 	public TDF_MARKET_DATA convertToStockData(String[] in_arr) {
@@ -946,6 +950,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	@Override
 	public void init() throws Exception {
 		WindFutureDataAdaptor.instance = this;
+		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init
+																	// RefDataManager
 		QuoteMgr.instance.init();
 		initReqThread();
 		doConnect();
@@ -1027,26 +1033,23 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 		if (addSymbol(instrument) == true) {
 			if (WindFutureDataAdaptor.instance.gateway) {
-				//TEST
-				if(instrument.indexOf(".") > 0){ //Stock
-					ClientHandler.subscribe(instrument);		
-					QuoteMgr.instance().addStockSymbol(instrument.split("\\.")[0],
-							instrument.split("\\.")[1]); // stock					
-				}else{
-					ClientHandler.subscribe(String.format("%s.%s", instrument,
-							getExchange()));					
-					QuoteMgr.instance().addFutureSymbol(instrument,
-							getExchange()); // future
+				log.info("subscribeMarketData RefSymbol: " + instrument);
+				log.debug("Setting refDataManager: "
+						+ refDataManager.getClass());
+				RefData refData = refDataManager.getRefData(instrument);
+				if (refData == null) {
+					LogUtil.logError(log, "RefSymbol " + instrument
+							+ " is not found in reference data");
+					throw new MarketDataException("Ref Symbol:" + instrument + " is not found in reference data");
+				} else {
+					LogUtil.logDebug(log, "RefSymbol " + instrument
+							+ " Exchange " + refData.getExchange() + "Symbol "
+							+ refData.getSymbol());
+					ClientHandler.subscribe(refData.getSymbol());
+					QuoteMgr.instance().addFutureSymbol(refData.getSymbol(),
+							refData.getExchange()); // future
+					instrument = refData.getSymbol();
 				}
-				//TEST
-//				if (targetType == 1) {
-//					QuoteMgr.instance().addFutureSymbol(instrument,
-//							getExchange()); // future
-//				}
-//				if (targetType == 2) {
-//					QuoteMgr.instance().addStockSymbol(instrument,
-//							getExchange()); // stock
-//				}
 			}
 		}
 
@@ -1199,6 +1202,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			List<SymbolInfo> list = updateCodeTable(market);
 			sendSymbolInfo(list);
 		}
+	}
+
+	public void clearSubscribeMarketData() {
+		ClientHandler.sendClearSubscribe();
 	}
 
 	public static String printSymbolInfo(SymbolInfo info) {

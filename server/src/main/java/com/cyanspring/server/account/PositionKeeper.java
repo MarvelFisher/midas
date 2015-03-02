@@ -542,7 +542,7 @@ public class PositionKeeper {
 				marginQty, price));
 	}
 	
-	public boolean checkMarginDeltaByAccountAndSymbol(Account account, String symbol, Quote quote, double extraQty) {
+	public boolean checkMarginDeltaByAccountAndSymbol(Account account, String symbol, Quote quote, double extraQty) throws AccountException {
 		double currentMarginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
 		double futureMarginQty = getMarginQtyByAccountAndSymbol(account, symbol, extraQty);
 		if(Math.abs(currentMarginQty) >= Math.abs(futureMarginQty))
@@ -559,7 +559,18 @@ public class PositionKeeper {
 				deltaQty, price));
 		
 		deltaValue += Default.getCommission(deltaValue);
-		return account.getMargin() * Default.getMarginCall() - deltaValue >= 0;
+		
+		AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
+
+		RefData refData = refDataManager.getRefData(symbol);
+		double leverage = leverageManager.getLeverage(refData, accountSetting);
+		
+		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {
+			return true;
+		} else {
+			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage);
+			return false;
+		}
 	}
 	
 	public List<Execution> getExecutions(String account) {
