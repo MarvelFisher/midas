@@ -74,6 +74,7 @@ public class CentralDbProcessor implements IPlugin
 	private int    nOpen ;
 	private int    nClose ;
 	private int    nPreOpen ;
+	private String serverMarket;
 	private ArrayList<String> preSubscriptionList;
 	
 	private int    nTickCount ;
@@ -477,7 +478,7 @@ public class CentralDbProcessor implements IPlugin
 			SymbolInfo symbolinfo = null;
 			while(rs.next())
 			{
-				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
 				symbolinfo.setWindCode(rs.getString("WINDCODE"));
 				symbolinfo.setHint(rs.getString("HINT"));
 				symbolinfo.setCnName(rs.getString("CN_NAME"));
@@ -581,7 +582,7 @@ public class CentralDbProcessor implements IPlugin
 				}
 				else
 				{
-					SymbolInfo symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+					SymbolInfo symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
 					int index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 					if (index >= 0)
 					{
@@ -662,7 +663,7 @@ public class CentralDbProcessor implements IPlugin
 			SymbolInfo symbolinfo = null;
 			while(rs.next())
 			{
-				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
 				symbolinfo.setWindCode(rs.getString("WINDCODE"));
 				symbolinfo.setHint(rs.getString("HINT"));
 				symbolinfo.setCnName(rs.getString("CN_NAME"));
@@ -769,7 +770,7 @@ public class CentralDbProcessor implements IPlugin
 				SymbolInfo symbolinfo;
 				while(rs.next())
 				{
-					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("EXCHANGE"), rs.getString("CODE"));
 					symbolinfo.setWindCode(rs.getString("WINDCODE"));
 					symbolinfo.setHint(rs.getString("HINT"));
 					symbolinfo.setCnName(rs.getString("CN_NAME"));
@@ -921,7 +922,7 @@ public class CentralDbProcessor implements IPlugin
 						marketList.add(refdata.getExchange());
 					}
 					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
-					symbolinfo = new SymbolInfo(refdata.getExchange(), refdata.getSymbol());
+					symbolinfo = new SymbolInfo(serverMarket, refdata.getExchange(), refdata.getSymbol());
 					symbolinfo.setWindCode(null);
 					symbolinfo.setHint(refdata.getRefSymbol());
 					symbolinfo.setCnName(refdata.getCNDisplayName());
@@ -1155,6 +1156,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public MarketSessionType getSessionType() {
 		return sessionType;
+	}
+
+	public String getServerMarket() {
+		return serverMarket;
+	}
+
+	public void setServerMarket(String serverMarket) {
+		this.serverMarket = serverMarket;
 	}
 	
 }

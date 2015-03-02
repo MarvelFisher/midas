@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
 	private String market = null;
+	private String exchange = null;
 	private String code = null;
 	private String windCode = null;
 	private String hint = null;
@@ -25,9 +26,10 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String tickTable = "";
 	
 	
-	public SymbolInfo(String market, String code) 
+	public SymbolInfo(String market, String exchange, String code) 
 	{
 		this.market = market;
+		this.market = exchange;
 		this.code = code;
 	}
 	public SymbolInfo(SymbolInfo symbolinfo)
@@ -52,6 +54,9 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 
 	public String getMarket() {
 		return market;
+	}
+	public String getExchange() {
+		return exchange;
 	}
 	public String getCode() {
 		return code;

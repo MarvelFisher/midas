@@ -26,6 +26,9 @@
 		<property name="preopen">
 			<value>2210</value>
 		</property>
+		<property name="serverMarket">
+			<value>FC</value>
+		</property>
 		<property name="close">
 			<value>2200</value>
 		</property>

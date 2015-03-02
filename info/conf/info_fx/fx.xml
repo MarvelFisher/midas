@@ -29,6 +29,9 @@
 		<property name="close">
 			<value>2200</value>
 		</property>
+		<property name="serverMarket">
+			<value>FX</value>
+		</property>
 		<property name="preSubscriptionList">
 			<list>
 	            <value>AUDUSD</value>
