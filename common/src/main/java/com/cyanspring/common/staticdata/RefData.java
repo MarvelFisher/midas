@@ -88,8 +88,8 @@ public class RefData extends DataObject {
 		return this.get(String.class, RefDataField.SETTLEMENT_DATE.value());
 	}
 	
-	public String getPricePerUnit(){
-		return this.get(String.class, RefDataField.PRICE_PER_UNIT.value());
+	public double getPricePerUnit(){
+		return this.get(double.class, RefDataField.PRICE_PER_UNIT.value());
 	}
 	
 	public String getENTradingUnit(){
@@ -108,32 +108,32 @@ public class RefData extends DataObject {
 		return this.get(double.class, RefDataField.MARGIN_RATE.value());
 	}
 	
-	public String getCommissionFee(){
-		return this.get(String.class, RefDataField.COMMISSION_FEE.value());
+	public double getCommissionFee(){
+		return this.get(double.class, RefDataField.COMMISSION_FEE.value());
 	}
 	
-	public String getMinimalCommissionFee(){
-		return this.get(String.class, RefDataField.MINIMAL_COMMISSION_FEE.value());
+	public double getMinimalCommissionFee(){
+		return this.get(double.class, RefDataField.MINIMAL_COMMISSION_FEE.value());
 	}
 	
-	public String getMaximalLot(){
-		return this.get(String.class, RefDataField.MAXIMAL_LOT.value());
+	public double getMaximalLot(){
+		return this.get(double.class, RefDataField.MAXIMAL_LOT.value());
 	}
 	
-	public String getPriceLimit(){
-		return this.get(String.class, RefDataField.PRICE_LIMIT.value());
+	public double getPriceLimit(){
+		return this.get(double.class, RefDataField.PRICE_LIMIT.value());
 	}
 	
-	public String getDeciamlPoint(){
-		return this.get(String.class, RefDataField.DECIMALPOINT.value());
+	public double getDeciamlPoint(){
+		return this.get(double.class, RefDataField.DECIMALPOINT.value());
 	}
 	
-	public String getDenominator(){
-		return this.get(String.class, RefDataField.DENOMINATOR.value());
+	public double getDenominator(){
+		return this.get(double.class, RefDataField.DENOMINATOR.value());
 	}
 	
-	public String getNumberatorDp(){
-		return this.get(String.class, RefDataField.NUMERATOR_DP.value());
+	public double getNumberatorDp(){
+		return this.get(double.class, RefDataField.NUMERATOR_DP.value());
 	}
 	
 	public String getTradable(){
