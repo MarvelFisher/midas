@@ -71,7 +71,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>10.0</double>
+        <double>0.1</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -175,7 +175,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>10.0</double>
+        <double>0.1</double>
       </entry>
       <entry>
         <string>Category</string>
