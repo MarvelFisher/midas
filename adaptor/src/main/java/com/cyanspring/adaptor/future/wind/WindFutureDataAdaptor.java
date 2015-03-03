@@ -831,6 +831,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 */
 	public void sendState(boolean on) {
 		for (IMarketDataStateListener listener : stateList) {
+			LogUtil.logDebug(log, "IMarketDataStateListener = " + listener.getClass());
 			listener.onState(on);
 		}
 	}
@@ -872,7 +873,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		boolean isChanged = isConnected != connected;
 		isConnected = connected;
 		if (isChanged) {
-			SendState(connected);
+			sendState(connected);
 		}
 	}
 
@@ -950,8 +951,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	@Override
 	public void init() throws Exception {
 		WindFutureDataAdaptor.instance = this;
-		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init
-																	// RefDataManager
+		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init  RefDataManager
 		QuoteMgr.instance.init();
 		initReqThread();
 		doConnect();
@@ -1105,17 +1105,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			UserClient client = new UserClient(listener);
 			client.removeSymbol(instrument);
 			clientsList.add(client);
-		}
-	}
-
-	/**
-	 * Send connection State
-	 * 
-	 * @param on
-	 */
-	public void SendState(boolean on) {
-		for (IMarketDataStateListener listener : stateList) {
-			listener.onState(on);
 		}
 	}
 
