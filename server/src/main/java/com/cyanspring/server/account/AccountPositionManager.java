@@ -86,6 +86,7 @@ import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.staticdata.FuRefDataManager;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
@@ -720,6 +721,13 @@ public class AccountPositionManager implements IPlugin {
 			if(nDayOfWeek != Calendar.SUNDAY && nDayOfWeek != Calendar.SATURDAY)
 				processDayEndTasks();
 			scheduleDayEndEvent();
+			if(refDataManager instanceof FuRefDataManager){				
+				try {
+					refDataManager.init();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
 		}
 	}
 
