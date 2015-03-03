@@ -13,12 +13,12 @@ package com.cyanspring.common.staticdata;
 import java.util.Map;
 
 public class TickTableManager {
-	private Map<String, ITickTable> tickTables;
+	private Map<String, AbstractTickTable> tickTables;
 
-	public ITickTable getTickTable(RefData refData) {
+	public AbstractTickTable getTickTable(RefData refData) {
 		String tickTableID = refData.getTickTable();
 		String exchange = refData.getExchange();
-		ITickTable tickTable;
+		AbstractTickTable tickTable;
 		if(null != tickTableID && (tickTable = tickTables.get(tickTableID)) != null) {
 			 return tickTable;
 		}
@@ -29,11 +29,11 @@ public class TickTableManager {
 		return tickTables.get("DEFAULT");
 	}
 
-	public Map<String, ITickTable> getTickTables() {
+	public Map<String, AbstractTickTable> getTickTables() {
 		return tickTables;
 	}
 
-	public void setTickTables(Map<String, ITickTable> tickTables) {
+	public void setTickTables(Map<String, AbstractTickTable> tickTables) {
 		this.tickTables = tickTables;
 	}
 	

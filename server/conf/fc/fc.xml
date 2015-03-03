@@ -107,7 +107,7 @@
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
-			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
+			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.AbstractTickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
 				<entry key="IF" value-ref="ifTickTable" />
