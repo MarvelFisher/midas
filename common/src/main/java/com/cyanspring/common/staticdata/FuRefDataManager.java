@@ -24,7 +24,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 	private static final Logger log = LoggerFactory
 			.getLogger(FuRefDataManager.class);
 	String refDataFile;	
-	Map<String, RefData> map = new HashMap<String, RefData>();
+	Map<String, RefData> map;
 	private String market = Default.getMarket();
 	private XStream xstream = new XStream(new DomDriver());
 	private Map<String,RefDataStrategy> stragetyMap = new HashMap<>();
@@ -33,6 +33,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 	@Override
 	public void init() throws Exception {
 		log.info("initialising with " + refDataFile);
+		map = new HashMap<String, RefData>();
 		File file = new File(refDataFile);
 		List<RefData> list;
 		if (file.exists()) {
@@ -53,8 +54,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 			}
 			stragety.init(cal);
 			stragety.setExchangeRefData(refData);
-			//map.put(refData.getSymbol(), refData);
-			map.put(refData.getRefSymbol(), refData); //key = refsymbol
+			map.put(refData.getRefSymbol(), refData); //key = Ref Symbol
 		}		
 		saveRefDataToFile(refDataFile, new ArrayList<RefData>(map.values()));
 	}
