@@ -178,6 +178,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
 	public static final int doConnect = 0;
 	public static boolean isConnected = false;
+	static boolean isConnecting = false;
 
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
@@ -750,7 +751,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	}
 
 	boolean isClose = false;
-	static boolean isConnecting = false;
 	static NioEventLoopGroup clientGroup = null;
 
 	/**
@@ -784,7 +784,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 				isConnecting = false;
 				isConnected = true;
-				setConnected(true);
+				//setConnected(true);
 			} else {
 				LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
 				Util.addLog(InfoString.ALert, "Connect to %s:%d fail.", ip,
@@ -818,10 +818,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	}
 
 	public void updateState(boolean connected) {
-		if (isConnected != connected) {
-			isConnected = connected;
+//		if (isConnected != connected) {
+//			isConnected = connected;
 			sendState(connected);
-		}
+//		}
 	}
 
 	/**

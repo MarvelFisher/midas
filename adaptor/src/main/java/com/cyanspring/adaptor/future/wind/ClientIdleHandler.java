@@ -27,8 +27,8 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
 				// reconnect to wind getway
 				ctx.close();
 				WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-				adaptor.updateState(false);
 				WindFutureDataAdaptor.isConnected = false;
+				adaptor.updateState(false);
 				WindFutureDataAdaptor.instance.reconClient();
 			} else if (e.state() == IdleState.WRITER_IDLE) {
 //				LogUtil.logInfo(log, "WRITER_IDLE");
