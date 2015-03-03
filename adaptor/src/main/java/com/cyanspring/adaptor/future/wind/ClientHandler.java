@@ -117,8 +117,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// cause.printStackTrace();
 		ctx.close();
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		adaptor.updateState(false);
 		WindFutureDataAdaptor.isConnected = false;
+		adaptor.updateState(false);
 		WindFutureDataAdaptor.instance.reconClient();
 
 	}
@@ -189,6 +189,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		LogUtil.logInfo(log, "Wind channel InActive");
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
+		WindFutureDataAdaptor.isConnected = false;
 		adaptor.updateState(false);
 	}
 
@@ -200,7 +201,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
-		if (WindFutureDataAdaptor.isConnecting == false
+		if (!WindFutureDataAdaptor.isConnecting && !WindFutureDataAdaptor.isConnected
 				&& lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
 			lastCheck = now;
 			WindFutureDataAdaptor.instance.reconClient();

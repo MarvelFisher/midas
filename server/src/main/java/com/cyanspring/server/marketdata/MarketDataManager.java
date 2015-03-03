@@ -416,6 +416,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 		chkDate = Clock.getInstance().now();
 		for (IMarketDataAdaptor adaptor : adaptors) {
+			log.debug("IMarketDataAdaptor=" + adaptor.getClass() + " SubMarketDataState");
 			adaptor.subscribeMarketDataState(this);
 		}
 
