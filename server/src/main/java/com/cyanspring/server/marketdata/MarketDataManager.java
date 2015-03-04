@@ -255,7 +255,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private void sendQuoteEvent(QuoteEvent event) {
 		try {
 			eventManager.sendGlobalEvent(event);
-			// / out put ticks between buy/sell price
 
 //			if (event.getQuote().getSymbol().equals("USDJPY")) {
 //				double step = this.forexTickTable.getSpread(event.getQuote()
@@ -264,7 +263,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 //						"HH:mm:ss");
 //				log.info(String.format("[%s]%s dif=[%.2f]", time, event
 //						.getQuote().toString(), step));
-//			}
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
