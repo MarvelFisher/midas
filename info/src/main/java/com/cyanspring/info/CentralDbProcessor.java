@@ -161,18 +161,14 @@ public class CentralDbProcessor implements IPlugin
 		int nOpen = this.nOpen ;
 		int nClose = (overDay) ? (this.nClose + 1440) : this.nClose ;
 		int nPreOpen = (overDay) ? (this.nPreOpen + 1440) : this.nPreOpen ;
-		int curTime = (inputTime < this.nOpen && inputTime < this.nClose) ? inputTime + 1440 : inputTime ;
+		int curTime = (inputTime < this.nOpen) ? inputTime + 1440 : inputTime ;
 		if (overDay)
 		{
-			if (curTime < nPreOpen && curTime > nClose)
+			if (curTime < nPreOpen && curTime >= nClose)
 			{
-				return nTickCount ;
+				return nTickCount - 1;
 			}
-			else if (curTime > nPreOpen)
-			{
-				return 0 ;
-			}
-			else if (curTime < nOpen)
+			else if (curTime >= nPreOpen)
 			{
 				return 0 ;
 			}
@@ -183,13 +179,9 @@ public class CentralDbProcessor implements IPlugin
 		}
 		else
 		{
-			if (curTime > nClose)
+			if (curTime >= nClose)
 			{
-				return nTickCount ;
-			}
-			else if (curTime < nOpen)
-			{
-				return 0 ;
+				return nTickCount - 1;
 			}
 			else 
 			{
@@ -1028,11 +1020,6 @@ public class CentralDbProcessor implements IPlugin
 		else if (this.sessionType == null)
 		{
 			onCallRefData();
-		}
-		if (sessionType == MarketSessionType.OPEN)
-		{
-			if (this.sessionType != MarketSessionType.OPEN)
-				onCallRefData();
 		}
 		this.sessionType = sessionType;
 	}
