@@ -257,14 +257,14 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			eventManager.sendGlobalEvent(event);
 			// / out put ticks between buy/sell price
 
-			if (event.getQuote().getSymbol().equals("USDJPY")) {
-				double step = this.forexTickTable.getSpread(event.getQuote()
-						.getBid(), event.getQuote().getAsk());
-				String time = formatDate(event.getQuote().getTimeStamp(),
-						"HH:mm:ss");
-				log.info(String.format("[%s]%s dif=[%.2f]", time, event
-						.getQuote().toString(), step));
-			}
+//			if (event.getQuote().getSymbol().equals("USDJPY")) {
+//				double step = this.forexTickTable.getSpread(event.getQuote()
+//						.getBid(), event.getQuote().getAsk());
+//				String time = formatDate(event.getQuote().getTimeStamp(),
+//						"HH:mm:ss");
+//				log.info(String.format("[%s]%s dif=[%.2f]", time, event
+//						.getQuote().toString(), step));
+//			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
