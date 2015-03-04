@@ -51,7 +51,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Discard the received data silently.
 		lastRecv = DateUtil.now();
 		String in = (String) msg;
-		//System.out.println(in);
+		// System.out.println(in);
 		try {
 			String strHash = null;
 			String strDataType = null;
@@ -73,7 +73,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-//						LogUtil.logDebug(log, in);
+						if (WindFutureDataAdaptor.instance.isMarketDataLog())
+							LogUtil.logDebug(log, in);
 						if (strDataType.equals("DATA_FUTURE")) {
 							datatype = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
@@ -129,57 +130,56 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		context = ctx;
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		adaptor.updateState(true);
-		
-		
+
 		String[] arrSymbol = WindFutureDataAdaptor.instance.getRefSymbol();
 		if (arrSymbol.length > 0) {
 			for (String symbol : arrSymbol) {
 				subscribe(symbol);
 			}
-		}		
-		
-//		sendRequestCodeTable("CF");
-		
-		 // INDEX
-//		 subscribe("000300.SH");
-//		
-//		 // STOCK
-//		
-//		 subscribe("601318.SH"); //中國平安
-//		 subscribe("600030.SH"); //中信證券
-//		 subscribe("601628.SH"); //中國人壽
-//		 subscribe("601989.SH"); //中國重工
-//		 subscribe("600000.SH"); //浦發銀行
-//		 subscribe("000002.SZ"); //万科A
-//		 subscribe("600016.SH"); //民生银行
-//		 subscribe("600837.SH"); //海通证券
-//		 subscribe("300104.SZ"); //乐视网
-//		 subscribe("002230.SZ"); //科大讯飞
-//		
-//		
-//		 // FUTURE
-//		 subscribe("AG1506.SHF"); // 白銀
-//		 subscribe("CU1506.SHF"); //滬銅
-//		 subscribe("AU1506.SHF"); //黃金
-//		 subscribe("RB1505.SHF"); //螺紋鋼
-//		 subscribe("RU1505.SHF"); //橡膠
-//		 subscribe("ZN1503.SHF"); //鋅
-//		 subscribe("M1505.DCE"); //豆粕
-//		 subscribe("I1505.DCE"); // 鐵礦石
-//		 subscribe("L1505.DCE"); //聚乙烯
-//		 subscribe("Y1505.DCE"); //豆油
-//		 subscribe("PP1505.DCE"); //聚丙烯
-//		 subscribe("P1505.DCE"); //棕櫚油
-//		 subscribe("J1505.DCE"); //焦炭
-//		 subscribe("JD1505.DCE"); //雞蛋
-//		 subscribe("FG506.CZC"); // 玻璃
-//		 subscribe("RM505.CZC"); //菜籽粕
-//		 subscribe("TA505.CZC"); //PTA //有夜盤
-//		 subscribe("SR505.CZC"); //白糖 //有夜盤
-//		 subscribe("MA506.CZC"); //鄭醇
-//		 subscribe("CF505.CZC"); //棉花
-//		 subscribe("IF1502.CF"); // 滬深300當月
-//		 subscribe("IF1503.CF"); //滬深300下月
+		}
+
+		// sendRequestCodeTable("CF");
+
+		// INDEX
+		// subscribe("000300.SH");
+		//
+		// // STOCK
+		//
+		// subscribe("601318.SH"); //中國平安
+		// subscribe("600030.SH"); //中信證券
+		// subscribe("601628.SH"); //中國人壽
+		// subscribe("601989.SH"); //中國重工
+		// subscribe("600000.SH"); //浦發銀行
+		// subscribe("000002.SZ"); //万科A
+		// subscribe("600016.SH"); //民生银行
+		// subscribe("600837.SH"); //海通证券
+		// subscribe("300104.SZ"); //乐视网
+		// subscribe("002230.SZ"); //科大讯飞
+		//
+		//
+		// // FUTURE
+		// subscribe("AG1506.SHF"); // 白銀
+		// subscribe("CU1506.SHF"); //滬銅
+		// subscribe("AU1506.SHF"); //黃金
+		// subscribe("RB1505.SHF"); //螺紋鋼
+		// subscribe("RU1505.SHF"); //橡膠
+		// subscribe("ZN1503.SHF"); //鋅
+		// subscribe("M1505.DCE"); //豆粕
+		// subscribe("I1505.DCE"); // 鐵礦石
+		// subscribe("L1505.DCE"); //聚乙烯
+		// subscribe("Y1505.DCE"); //豆油
+		// subscribe("PP1505.DCE"); //聚丙烯
+		// subscribe("P1505.DCE"); //棕櫚油
+		// subscribe("J1505.DCE"); //焦炭
+		// subscribe("JD1505.DCE"); //雞蛋
+		// subscribe("FG506.CZC"); // 玻璃
+		// subscribe("RM505.CZC"); //菜籽粕
+		// subscribe("TA505.CZC"); //PTA //有夜盤
+		// subscribe("SR505.CZC"); //白糖 //有夜盤
+		// subscribe("MA506.CZC"); //鄭醇
+		// subscribe("CF505.CZC"); //棉花
+		// subscribe("IF1502.CF"); // 滬深300當月
+		// subscribe("IF1503.CF"); //滬深300下月
 
 		sendReqHeartbeat(); // send request heartbeat message
 
@@ -201,7 +201,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
-		if (!WindFutureDataAdaptor.isConnecting && !WindFutureDataAdaptor.isConnected
+		if (!WindFutureDataAdaptor.isConnecting
+				&& !WindFutureDataAdaptor.isConnected
 				&& lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
 			lastCheck = now;
 			WindFutureDataAdaptor.instance.reconClient();

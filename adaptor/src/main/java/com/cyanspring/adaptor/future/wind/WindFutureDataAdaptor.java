@@ -62,8 +62,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	int gatewayPort = 0;
 	boolean gateway = false;
 	boolean showGui = false;
-	String exchange = ""; // exchange
 	IRefDataManager refDataManager;
+	boolean marketDataLog = false; //log control
 
 	public IRefDataManager getRefDataManager() {
 		return refDataManager;
@@ -136,13 +136,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void setGateway(boolean gateway) {
 		this.gateway = gateway;
 	}
-
-	public String getExchange() {
-		return exchange;
+	
+	public boolean isMarketDataLog() {
+		return marketDataLog;
 	}
 
-	public void setExchange(String exchange) {
-		this.exchange = exchange;
+	public void setMarketDataLog(boolean marketDataLog) {
+		this.marketDataLog = marketDataLog;
 	}
 
 	public String[] getRefSymbol() {
@@ -164,9 +164,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			.getLogger(WindFutureDataAdaptor.class);
 
 	public static WindFutureDataAdaptor instance = null;
-	// static final Method methodFuture = Delegate.getMethod("initFuture",
-	// WindFutureDataAdaptor.class, new Class[] { String.class, int.class,
-	// String.class, String.class });
 
 	// private final boolean outputToScreen = true;
 	/*********************** configuration ***************************************/
@@ -176,20 +173,17 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	private final int openTime = 0;
 	private final String subscription = ""; // 000001.SZ;000002.SZ";
 	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
-	public static final int doConnect = 0;
-	public static boolean isConnected = false;
-	static boolean isConnecting = false;
+	private static final int doConnect = 0;
+	static volatile boolean isConnected = false;
+	static volatile boolean isConnecting = false;
 
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
-	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // save
-																										// future
-	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // save
-																									// stock
-	// boolean connected = false;
-	boolean isClosed = false;
+	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // future
+	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // stock
 
+	boolean isClosed = false;
 	RequestThread thread = null;
 
 	void initReqThread() {
@@ -636,9 +630,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				break;
 			case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:
 				error("网路断开！");
-				setConnected(false);
-				// addReqData(new Object[] {
-				// TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK, null });
+				isConnected = false;
+				updateState(false);
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -655,7 +648,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				TDF_CONNECT_RESULT connect = data.getConnectResult();
 				info("connect %s", connect.getConnResult() != 0 ? "success"
 						: "fail");
-				// PrintHelper.printConnectResult(data.getConnectResult());
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT: {
@@ -663,8 +655,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				TDF_LOGIN_RESULT login = data.getLoginResult();
 				info("login %s", login.getLoginResult() != 0 ? "success"
 						: "fail");
-
-				// PrintHelper.printLoginResult(data.getLoginResult());
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT: {
@@ -675,8 +665,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					if (!market.isEmpty()) {
 						QuoteMgr.instance.AddRequest(new Object[] { type,
 								market });
-						// List<SymbolInfo> list = updateCodeTable(market);
-						// sendSymbolInfo(list);
 					}
 				}
 				break;
@@ -686,7 +674,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				TDF_MARKET_CLOSE close = data.getMarketClose();
 				info("%s, %d, %s", close.getMarket(), close.getTime(),
 						convertGBString(close.getInfo()));
-				// PrintHelper.printMarketClose(data.getMarketClose());
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE: {
@@ -695,14 +682,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 				QuoteMgr.instance.AddRequest(new Object[] {
 						TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE, change });
-
-				// info("%s, quotation change from %d to %d",
-				// change.getMarket(),
-				// change.getOldDate(), change.getNewDate());
-
-				// printCodeTable(change.getMarket());
-
-				// PrintHelper.printDateChange(data.getDateChange());
 				break;
 			}
 			// 资料消息
@@ -784,7 +763,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 				isConnecting = false;
 				isConnected = true;
-				//setConnected(true);
 			} else {
 				LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
 				Util.addLog(InfoString.ALert, "Connect to %s:%d fail.", ip,
@@ -818,10 +796,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	}
 
 	public void updateState(boolean connected) {
-//		if (isConnected != connected) {
-//			isConnected = connected;
-			sendState(connected);
-//		}
+		sendState(connected);
 	}
 
 	/**
@@ -831,7 +806,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 */
 	public void sendState(boolean on) {
 		for (IMarketDataStateListener listener : stateList) {
-			LogUtil.logDebug(log, "IMarketDataStateListener = " + listener.getClass());
+			LogUtil.logDebug(log,
+					"IMarketDataStateListener = " + listener.getClass());
 			listener.onState(on);
 		}
 	}
@@ -852,7 +828,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			clientGroup = null;
 		}
 
-		// Parser.instance().clearRingbuffer();
 		LogUtil.logInfo(log, "Wind initClient exit");
 		Util.addLog(InfoString.ALert, "Wind initClient exit");
 	}
@@ -867,14 +842,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	public boolean isConnected() {
 		return isConnected;
-	}
-
-	public void setConnected(boolean connected) {
-		boolean isChanged = isConnected != connected;
-		isConnected = connected;
-		if (isChanged) {
-			sendState(connected);
-		}
 	}
 
 	int nId = 0;
@@ -907,7 +874,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			setting.setReconnectCount(99999999);
 			setting.setReconnectGap(10);
 			setting.setProtocol(0);
-			setting.setMarkets(getExchange());
+			setting.setMarkets(openMarket);
 			setting.setDate(openData);
 			setting.setTime(openTime);
 			setting.setSubScriptions(subscription);
@@ -920,7 +887,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			if (err != TDF_ERR.TDF_ERR_SUCCESS) {
 
 				isConnecting = true;
-				setConnected(false);
 				error("Can't connect to %s:%d[%s]", reqIp, reqPort,
 						getErrMsg(err));
 				try {
@@ -930,8 +896,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						client.delete();
 						client = new TDFClient();
 
-						// CustomThreadPool.asyncMethod(methodFuture, reqIp,
-						// reqPort, userName, password);
 						addReqData(doConnect);
 						return;
 
@@ -942,7 +906,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				}
 			} else {
 				isConnecting = false;
-				setConnected(true);
+				isConnected = true;
+				updateState(true);
 				break;
 			}
 		}
@@ -951,13 +916,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	@Override
 	public void init() throws Exception {
 		WindFutureDataAdaptor.instance = this;
-		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init  RefDataManager
+		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init
+																	// RefDataManager
 		QuoteMgr.instance.init();
 		initReqThread();
 		doConnect();
-		// CustomThreadPool.asyncMethod(methodFuture, reqIp, reqPort, userName,
-		// password);
-
 	}
 
 	@Override
@@ -1040,7 +1003,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				if (refData == null) {
 					LogUtil.logError(log, "RefSymbol " + instrument
 							+ " is not found in reference data");
-					throw new MarketDataException("Ref Symbol:" + instrument + " is not found in reference data");
+					throw new MarketDataException("Ref Symbol:" + instrument
+							+ " is not found in reference data");
 				} else {
 					LogUtil.logDebug(log, "RefSymbol " + instrument
 							+ " Exchange " + refData.getExchange() + "Symbol "
@@ -1232,9 +1196,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 		int type = (int) reqObj;
 		if (type == doConnect) {
+			if (isConnected == true)
+				return;
 			if (gateway) {
-				if (isConnected == true)
-					return;
 				LogUtil.logInfo(log, "connect to Wind GW %s:%d",
 						getGatewayIp(), getGatewayPort());
 				initFuture(gatewayIp, gatewayPort);
