@@ -85,8 +85,8 @@ public class CentralDbProcessor implements IPlugin
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long timeInterval = 1000;
-	private long checkSQLInterval = 10 * 60;
+	private long timeInterval = 60000;
+	private long checkSQLInterval = 10 * 60 * 1000;
 	private long checkSQLTimer = 0;
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
@@ -206,7 +206,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		if (!isStartup)
 		{
-			checkSQLTimer++;
+			checkSQLTimer += timeInterval;
 			if (checkSQLTimer >= checkSQLInterval)
 			{
 				dbhnd.checkSQLConnect();
