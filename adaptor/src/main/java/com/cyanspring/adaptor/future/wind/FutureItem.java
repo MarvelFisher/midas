@@ -284,11 +284,13 @@ public class FutureItem implements AutoCloseable{
 		}
 		
 		// log quote as alive frame
-		TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
-		if (ts.getTotalSeconds() >= 30) {			
-			WindFutureDataAdaptor.info(s);
-			timeLast = now;
-		}		
+		if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
+			TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
+			if (ts.getTotalSeconds() >= 30) {			
+				WindFutureDataAdaptor.info(s);
+				timeLast = now;
+			}		
+		}
 	}
 
 	public String windCode() {
