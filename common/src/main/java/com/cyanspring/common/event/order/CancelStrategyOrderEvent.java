@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.common.event.order;
 
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.event.EventPriority;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
@@ -17,13 +18,15 @@ public class CancelStrategyOrderEvent extends RemoteAsyncEvent {
 	private String txId;
 	private String sourceId;
 	private boolean force;
+	private OrderReason reason;
 
 	public CancelStrategyOrderEvent(String key, String receiver, String txId,
-			String sourceId, boolean force) {
+			String sourceId, OrderReason reason, boolean force) {
 		super(key, receiver);
 		setPriority(EventPriority.HIGH);
 		this.txId = txId;
 		this.sourceId = sourceId;
+		this.reason = reason;
 		this.force = force;
 	}
 
@@ -37,6 +40,10 @@ public class CancelStrategyOrderEvent extends RemoteAsyncEvent {
 
 	public boolean isForce() {
 		return force;
+	}
+
+	public OrderReason getReason() {
+		return reason;
 	}
 	
 }

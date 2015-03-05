@@ -86,6 +86,7 @@ import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.staticdata.FuRefDataManager;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
@@ -280,7 +281,8 @@ public class AccountPositionManager implements IPlugin {
 
 		boolean dynamicDataHasChanged(Account account) {
 			Account last = accountUpdates.get(account.getId());
-			if(last == null || account == null || last.getMargin() != account.getMargin() || last.getUrPnL() != account.getUrPnL()) {
+			if(last == null || account == null || last.getMargin() != account.getMargin() || 
+					last.getUrPnL() != account.getUrPnL() || last.getCashAvailable() != account.getCashAvailable()) {
 				try {
 					accountUpdates.put(account.getId(), account.clone());
 				} catch (CloneNotSupportedException e) {
@@ -719,6 +721,13 @@ public class AccountPositionManager implements IPlugin {
 			if(nDayOfWeek != Calendar.SUNDAY && nDayOfWeek != Calendar.SATURDAY)
 				processDayEndTasks();
 			scheduleDayEndEvent();
+			if(refDataManager instanceof FuRefDataManager){				
+				try {
+					refDataManager.init();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
 		}
 	}
 
@@ -832,50 +841,74 @@ public class AccountPositionManager implements IPlugin {
 		if(PriceUtils.EqualLessThan(account.getCashAvailable(), 0.0) && positions.size() > 0) {
 			log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL() + ", " + account.getCashAvailable());
 			
-			Collections.sort(positions, new Comparator<OpenPosition>() {
-
-				@Override
-				public int compare(OpenPosition p1, OpenPosition p2) {
-					if(PriceUtils.GreaterThan(p1.getAcPnL(), p2.getAcPnL()))
-						return 1;
-					else if(PriceUtils.LessThan(p1.getAcPnL(), p2.getAcPnL()))
-						return -1;
+			List<ParentOrder> orders = positionKeeper.getParentOrders(account.getId());
+			
+			if(orders.size()> 0) {
+				for(ParentOrder order: orders) {
+					Quote quote = marketData.get(order.getSymbol());
+					if(!quoteIsValid(quote))
+						continue;
 					
-					return 0;
-				}
-				
-			});
-			
-			String sortedList = "";
-			for(OpenPosition position: positions) {
-				sortedList += position.getAcPnL() + ",";
-			}
-			log.debug("Sorted list: " + sortedList);
-			
-			for(int i=0; i<positions.size(); i++) {
-				OpenPosition position = positions.get(i);
-				Quote quote = marketData.get(position.getSymbol());
-				if(!quoteIsValid(quote))
-					continue;
+					log.info("Margin cut cancel order: " + account.getId() + ", " +
+							order.getSymbol() + ", " + 
+							account.getMargin() + ", " + 
+							account.getCashAvailable() + ", " + quote);
 
-				if(positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
-					log.debug("Margin call but account is locked: " + 
-						account.getId() + ", " + position.getSymbol());
-					return true;
+					positionKeeper.lockAccountPosition(order);
+					String source = order.get(String.class, OrderField.SOURCE.value());
+					String txId = order.get(String.class, OrderField.CLORDERID.value());
+					CancelStrategyOrderEvent cancel = 
+							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.MarginCall, false);
+					eventManager.sendEvent(cancel);
+					break;
 				}
+			} else {
 
-				log.info("Margin cut: " + position.getAccount() + ", " +
-						position.getSymbol() + ", " + position.getAcPnL() + ", " + 
-						account.getMargin() + ", " + 
-						account.getCashAvailable() + ", " + quote);
+				Collections.sort(positions, new Comparator<OpenPosition>() {
+	
+					@Override
+					public int compare(OpenPosition p1, OpenPosition p2) {
+						if(PriceUtils.GreaterThan(p1.getAcPnL(), p2.getAcPnL()))
+							return 1;
+						else if(PriceUtils.LessThan(p1.getAcPnL(), p2.getAcPnL()))
+							return -1;
+						
+						return 0;
+					}
+					
+				});
 				
-				double qty = Math.min(Math.abs(position.getQty()), Default.getMarginCut());
-				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
-						IdGenerator.getInstance().getNextID());
+				String sortedList = "";
+				for(OpenPosition position: positions) {
+					sortedList += position.getAcPnL() + ",";
+				}
+				log.debug("Sorted list: " + sortedList);
 				
-				eventManager.sendEvent(event);
-				break;
+				for(int i=0; i<positions.size(); i++) {
+					OpenPosition position = positions.get(i);
+					Quote quote = marketData.get(position.getSymbol());
+					if(!quoteIsValid(quote))
+						continue;
+	
+					if(positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
+						log.debug("Margin call but account is locked: " + 
+							account.getId() + ", " + position.getSymbol());
+						return true;
+					}
+	
+					log.info("Margin cut close position: " + position.getAccount() + ", " +
+							position.getSymbol() + ", " + position.getAcPnL() + ", " + 
+							account.getMargin() + ", " + 
+							account.getCashAvailable() + ", " + quote);
+					
+					double qty = Math.min(Math.abs(position.getQty()), Default.getMarginCut());
+					ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
+							null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
+							IdGenerator.getInstance().getNextID());
+					
+					eventManager.sendEvent(event);
+					break;
+				}
 			}
 			return true;
 		}
