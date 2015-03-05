@@ -27,12 +27,12 @@ public abstract class MarketSessionState {
 	protected MarketSessionEvent currentMarketSessionEvent;
 	protected MarketSessionTime sessionTime;
 //	protected static String nextTradeDate;
-	private boolean tradeDateUpdate;
 	
 	protected static String tradeDate;
 	private static XStream xstream;
 	private static File file;
 	private static boolean calTradeDate;
+	private static boolean tradeDateUpdate;
 		
 	protected abstract boolean checkState(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException;
 	protected abstract MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException;
@@ -48,6 +48,7 @@ public abstract class MarketSessionState {
 			file = new File(filePath);
 			if(file.exists()){
 				tradeDate = (String) xstream.fromXML(file);
+				tradeDateUpdate = true;
 			}else{
 				throw new Exception("Missing refdata file: " + filePath);
 			}	
@@ -75,7 +76,7 @@ public abstract class MarketSessionState {
 				   TimeUtil.getTimePass(date, currentMarketSessionEvent.getStart()) <= 0;
 	}
 	
-	public boolean isTradeDateChange(Date date) throws ParseException{		
+	public boolean isTradeDateChange() throws ParseException{		
 		return tradeDateUpdate;
 	}
 	

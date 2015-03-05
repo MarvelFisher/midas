@@ -90,20 +90,21 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		Date date = Clock.getInstance().now();
-		try {
-			if(sessionState.isTradeDateChange(date)){
-				TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
-				log.info("Send TradeDateEvent: " + tdEvent.getTradeDate());
-				eventManager.sendEvent(tdEvent);
-				sessionState.setTradeDateUpdated();
-			}
+		try {			
 			if(sessionState.isStateChanged(date)){				
 				MarketSessionEvent msEvent = sessionState.getCurrentMarketSessionEvent(date);
 				msEvent.setKey(null);
 				msEvent.setReceiver(null);
 				log.info("Send MarketSessionEvent: " + msEvent);
 				eventManager.sendGlobalEvent(msEvent);	
-			}			
+			}
+			log.info("TradeDate state: " + sessionState.isTradeDateChange());
+			if(sessionState.isTradeDateChange()){
+				TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
+				log.info("Send TradeDateEvent: " + tdEvent.getTradeDate());
+				eventManager.sendEvent(tdEvent);
+				sessionState.setTradeDateUpdated();
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
