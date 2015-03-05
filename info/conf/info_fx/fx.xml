@@ -31,13 +31,13 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
-	            <value>AUDUSD</value>
 	            <value>USDJPY</value>
 	            <value>USDCHF</value>
 	            <value>USDCAD</value>
 	            <value>EURUSD</value>
 	            <value>EURJPY</value>
 	            <value>GBPUSD</value>
+	            <value>AUDUSD</value>
 	            <value>NZDUSD</value>
 	            <value>GBPJPY</value>
 	        </list>    

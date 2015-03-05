@@ -209,6 +209,7 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
+    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -584,6 +585,7 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
+    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
 		try {
 			prices = getPriceList(strType, null, true, prices);
