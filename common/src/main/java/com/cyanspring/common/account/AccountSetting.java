@@ -54,7 +54,7 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
 	}
 	public double getMargin(){
-		return get(Double.class, AccountSettingType.MARGIN.value());
+		return get(double.class, AccountSettingType.MARGIN.value());
 	}
 	public void setMargin(double margin){
 		put(AccountSettingType.MARGIN.value(), margin);

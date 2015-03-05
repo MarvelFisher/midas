@@ -209,6 +209,7 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
+    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -244,7 +245,7 @@ public class SymbolData implements Comparable<SymbolData>
 			lastPrice.setTimestamp(cal.getTime());
 			if (!bDelete)
 			{
-				if (dOpen != 0) 
+				if (PriceUtils.isZero(dOpen) == false) 
 				{
 					lastPrice.setOpen(dOpen);
 				}
@@ -254,15 +255,15 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				lastPrice.setVolume(lastPrice.getVolume() + (int)dCurVolume);
 			}
-			if (lastPrice.getHigh() < dCurHigh && dCurHigh != 0)
+			if (lastPrice.getHigh() < dCurHigh && PriceUtils.isZero(dCurHigh) == false)
 			{
 				lastPrice.setHigh(dCurHigh);
 			}
-			if (lastPrice.getLow() > dCurLow && dCurLow != 0)
+			if (lastPrice.getLow() > dCurLow && PriceUtils.isZero(dCurLow) == false)
 			{
 				lastPrice.setLow(dCurLow);
 			}
-			if (dClose != 0) 
+			if (PriceUtils.isZero(dClose) == false) 
 			{
 				lastPrice.setClose(dClose);
 			}
@@ -287,6 +288,7 @@ public class SymbolData implements Comparable<SymbolData>
 				"Update OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;",
 				lastPrice.getOpen(), lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
 		centralDB.dbhnd.updateSQL(sqlcmd);
+		logHistoricalPrice(lastPrice);
 	}
 	
 	public PriceHighLow getPriceHighLow(PriceHighLowType type)
@@ -583,6 +585,7 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
+    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
 		try {
 			prices = getPriceList(strType, null, true, prices);
@@ -617,6 +620,7 @@ public class SymbolData implements Comparable<SymbolData>
 					price.getClose(), price.getHigh(), price.getLow(), (int)price.getVolume(),
 					price.getOpen(), price.getClose(), price.getHigh(), price.getLow(), (int)price.getVolume()) ;
 			centralDB.dbhnd.addBatch(sqlcmd);
+			logHistoricalPrice(price);
 		}
 		centralDB.dbhnd.executeBatch();
 		return ;
@@ -692,6 +696,13 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 		}
 		return listPrice ;
+	}
+	public void logHistoricalPrice(HistoricalPrice hp)
+	{
+		//if (...)
+		log.debug(String.format("%s : %s open: %.5f, high: %.5f, low: %.5f, close:%.5f, volume: %d", 
+				hp.getTimestamp(), hp.getSymbol(), hp.getOpen(),
+				hp.getHigh(), hp.getLow(), hp.getClose(), hp.getVolume()));
 	}
 	@Override
 	public int compareTo(SymbolData o) {

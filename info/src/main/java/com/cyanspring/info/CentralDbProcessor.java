@@ -84,8 +84,8 @@ public class CentralDbProcessor implements IPlugin
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long timeInterval = 1000;
-	private long checkSQLInterval = 10 * 60;
+	private long timeInterval = 60000;
+	private long checkSQLInterval = 10 * 60 * 1000;
 	private long checkSQLTimer = 0;
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
@@ -161,18 +161,14 @@ public class CentralDbProcessor implements IPlugin
 		int nOpen = this.nOpen ;
 		int nClose = (overDay) ? (this.nClose + 1440) : this.nClose ;
 		int nPreOpen = (overDay) ? (this.nPreOpen + 1440) : this.nPreOpen ;
-		int curTime = (inputTime < this.nOpen && inputTime < this.nClose) ? inputTime + 1440 : inputTime ;
+		int curTime = (inputTime < this.nOpen) ? inputTime + 1440 : inputTime ;
 		if (overDay)
 		{
-			if (curTime < nPreOpen && curTime > nClose)
+			if (curTime < nPreOpen && curTime >= nClose)
 			{
-				return nTickCount ;
+				return nTickCount - 1;
 			}
-			else if (curTime > nPreOpen)
-			{
-				return 0 ;
-			}
-			else if (curTime < nOpen)
+			else if (curTime >= nPreOpen)
 			{
 				return 0 ;
 			}
@@ -183,13 +179,9 @@ public class CentralDbProcessor implements IPlugin
 		}
 		else
 		{
-			if (curTime > nClose)
+			if (curTime >= nClose)
 			{
-				return nTickCount ;
-			}
-			else if (curTime < nOpen)
-			{
-				return 0 ;
+				return nTickCount - 1;
 			}
 			else 
 			{
@@ -213,7 +205,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		if (!isStartup)
 		{
-			checkSQLTimer++;
+			checkSQLTimer += timeInterval;
 			if (checkSQLTimer >= checkSQLInterval)
 			{
 				dbhnd.checkSQLConnect();
@@ -528,13 +520,11 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		if (defaultSymbolInfo == null || defaultSymbolInfo.isEmpty())
 		{
-			for (SymbolInfo syminfo : refSymbolInfo)
-			{
-				if (defaultSymbol.contains(syminfo.getCode()))
-				{
-					retsymbollist.add(syminfo);
-				}
-			}
+			retEvent.setOk(false);
+			retEvent.setMessage("Default SymbolInfo is empty");
+			log.debug("Process Request Default Symbol fail: Default SymbolInfo is empty");
+			sendEvent(retEvent);
+			return ;
 		}
 		else
 		{
@@ -981,10 +971,10 @@ public class CentralDbProcessor implements IPlugin
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);
-		nTickCount = getTickCount() ;
 		nOpen = (open/100) * 60 + (open%100) ;
 		nPreOpen = (preopen/100) * 60 + (preopen%100) ;
 		nClose = (close/100) * 60 + (close%100) ;
+		nTickCount = getTickCount() ;
 	}
 	
 	public void setSessionType(MarketSessionType sessionType, String market) {
@@ -1028,11 +1018,6 @@ public class CentralDbProcessor implements IPlugin
 		else if (this.sessionType == null)
 		{
 			onCallRefData();
-		}
-		if (sessionType == MarketSessionType.OPEN)
-		{
-			if (this.sessionType != MarketSessionType.OPEN)
-				onCallRefData();
 		}
 		this.sessionType = sessionType;
 	}
