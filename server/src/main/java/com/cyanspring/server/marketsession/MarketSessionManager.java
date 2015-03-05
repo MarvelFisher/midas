@@ -98,7 +98,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 				log.info("Send MarketSessionEvent: " + msEvent);
 				eventManager.sendGlobalEvent(msEvent);	
 			}
-			log.info("TradeDate state: " + sessionState.isTradeDateChange());
 			if(sessionState.isTradeDateChange()){
 				TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
 				log.info("Send TradeDateEvent: " + tdEvent.getTradeDate());
