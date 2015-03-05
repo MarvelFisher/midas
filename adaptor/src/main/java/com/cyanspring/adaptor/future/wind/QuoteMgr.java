@@ -1,14 +1,10 @@
 package com.cyanspring.adaptor.future.wind;
 
-import java.util.List;
-
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_MARKET_DATA;
 import cn.com.wind.td.tdf.TDF_MSG_ID;
 import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
 
-import com.cyanspring.common.marketdata.SymbolInfo;
-import com.cyanspring.id.SymbolItem;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 

@@ -286,7 +286,7 @@ public class FutureItem implements AutoCloseable{
 		// log quote as alive frame
 		if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
 			TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
-			if (ts.getTotalSeconds() >= 30) {			
+			if (ts.getTotalSeconds() >= 20) {			
 				WindFutureDataAdaptor.info(s);
 				timeLast = now;
 			}		

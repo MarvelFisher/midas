@@ -73,8 +73,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-						if (WindFutureDataAdaptor.instance.isMarketDataLog())
-							LogUtil.logDebug(log, in);
 						if (strDataType.equals("DATA_FUTURE")) {
 							datatype = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
@@ -89,11 +87,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 						}
 						if (strDataType.equals("QDateChange")) {
 							datatype = TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE;
-							// LogUtil.logDebug(log, in);
+							LogUtil.logDebug(log, in);
 						}
 						if (strDataType.equals("MarketClose")) {
 							datatype = TDF_MSG_ID.MSG_SYS_MARKET_CLOSE;
-							// LogUtil.logDebug(log, in);
+							LogUtil.logDebug(log, in);
 						}
 
 						WindFutureDataAdaptor.instance.processGateWayMessage(

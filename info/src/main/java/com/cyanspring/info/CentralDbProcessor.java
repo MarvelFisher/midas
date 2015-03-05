@@ -951,10 +951,10 @@ public class CentralDbProcessor implements IPlugin
 						defaultSymbolInfo.remove(index);
 						defaultSymbolInfo.add(index, symbolinfo);
 					}
-					while (defaultSymbolInfo.contains(null)) 
-					{
-						defaultSymbolInfo.remove(null);
-					}
+				}
+				while (defaultSymbolInfo.contains(null)) 
+				{
+					defaultSymbolInfo.remove(null);
 				}
 				outSymbol.close();
 			} 

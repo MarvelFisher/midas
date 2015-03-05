@@ -79,11 +79,11 @@
 
 	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
 		<property name="id" value="IB01" />
-		<property name="host" value="10.0.1.20" />
+		<property name="host" value="10.0.0.20" />
 		<property name="port" value="4001" />
 		<property name="clientId" value="199" />
 		<property name="reqMarketDepth" value="false" />
-		<property name="logMarketData" value="false" />
+		<property name="logMarketData" value="true" />
 		<!--<property name="cancelOpenOrders" value="true" /> -->
 		<property name="refDataManager">
 			<ref bean="refDataManager" />
@@ -121,9 +121,9 @@
 		<property name="password" value="62015725"></property>
 		<property name="gateway" value="true"></property> 
 		<property name="gatewayIp" value="202.55.14.140"></property> 
-		<!--  <property name="gatewayIp" value="10.0.0.48"></property> -->
 		<property name="gatewayPort" value="10049"></property>
 		<property name="marketDataLog" value="false"></property>
+		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->		
 		<property name="refDataManager">
 			<ref bean="refDataManager" />
 		</property>					
