@@ -16,18 +16,20 @@
 	
 	<bean id="sessionStateBean" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="openDaysBean"></constructor-arg>
-		<property name="successNext" ref="timeState"></property>
-		<property name="failNext" ref="closeState"></property>
+		<property name="inState" ref="timeState"></property>
+		<property name="outState" ref="closeState"></property>
+		<property name="calTradeDate" value="true"></property>
+		<property name="filePath" value="conf/common/tradedate.xml"></property>
 	</bean>
 		
 	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="closeDaysBean"></constructor-arg>
-		<property name="failNext" ref="closeWeekState"></property>
+		<property name="outState" ref="closeWeekState"></property>
 	</bean>
 	
 	<bean id="closeWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
 		<constructor-arg ref="closeWeekDaysBean"></constructor-arg>
-		<property name="failNext" ref="timeState"></property>
+		<property name="outState" ref="timeState"></property>
 	</bean>
 	
 	<bean id="timeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
@@ -45,16 +47,16 @@
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
 		        	<constructor-arg><value>20:30:00</value></constructor-arg>
-		        	<constructor-arg><value>21:00:00</value></constructor-arg>
-				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
-		        	<constructor-arg><value>OPEN</value></constructor-arg>
-		        	<constructor-arg><value>21:00:00</value></constructor-arg>
 		        	<constructor-arg><value>23:59:59</value></constructor-arg>
 				</bean>		
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
-		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
 		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>09:00:00</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>09:00:00</value></constructor-arg>
 		        	<constructor-arg><value>15:15:00</value></constructor-arg> <!-- Make sure not restart Manager at the time -->
 				</bean>
 			</list>

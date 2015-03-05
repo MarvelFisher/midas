@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.util.TimeUtil;
 
 
 public class MarketSessionStateDay extends MarketSessionState{
@@ -18,7 +19,7 @@ public class MarketSessionStateDay extends MarketSessionState{
 	}
 	
 	@Override
-	protected MarketSessionEvent createEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
+	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat(sessionTime.getTimeFormat());
 		Date parseDate = dateFormat.parse(sessionData.date);
@@ -38,16 +39,11 @@ public class MarketSessionStateDay extends MarketSessionState{
 	}
 	
 	@Override
-	protected boolean compareTime(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException{
-		tradeDateUpdate = false;
+	protected boolean checkState(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException{
+//		tradeDateUpdate = false;
 		SimpleDateFormat sdf = new SimpleDateFormat(sessionTime.getTimeFormat());
-		Calendar compareCal = Calendar.getInstance();
-		compareCal.setTime(sdf.parse(compare.date));
-		Calendar dateCal = Calendar.getInstance();
-		dateCal.setTime(date);
-		if(compareCal.get(Calendar.YEAR) == dateCal.get(Calendar.YEAR) &&
-				compareCal.get(Calendar.MONTH) == dateCal.get(Calendar.MONTH) &&
-				compareCal.get(Calendar.DAY_OF_MONTH) == dateCal.get(Calendar.DAY_OF_MONTH))
+		
+		if(TimeUtil.sameDate(date, sdf.parse(compare.date)))
 			return true;
 		return false;
 	}

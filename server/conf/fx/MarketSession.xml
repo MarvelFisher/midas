@@ -16,30 +16,32 @@
 		
 	<bean id="sessionStateBean" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="openDaysBean"></constructor-arg>
-		<property name="successNext" ref="ntState"></property>
-		<property name="failNext" ref="closeState"></property>
+		<property name="inState" ref="ntState"></property>
+		<property name="outState" ref="closeState"></property>
+		<property name="calTradeDate" value="true"></property>
+		<property name="filePath" value="conf/common/tradedate.xml"></property>
 	</bean>
 		
 	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="closeDaysBean"></constructor-arg>
-		<property name="failNext" ref="sunDState"></property>
+		<property name="outState" ref="sunDState"></property>
 	</bean>
 	
 	<bean id="sunDState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
 		<constructor-arg ref="sunDBean"></constructor-arg>
-		<property name="failNext" ref="satDState"></property>
+		<property name="outState" ref="satDState"></property>
 	</bean>
 	
 	<bean id="satDState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
 		<constructor-arg ref="satDBean"></constructor-arg>
-		<property name="successNext" ref="htState"></property>
-		<property name="failNext" ref="monDState"></property>
+		<property name="inState" ref="htState"></property>
+		<property name="outState" ref="monDState"></property>
 	</bean>
 	
 	<bean id="monDState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
 		<constructor-arg ref="monDBean"></constructor-arg>
-		<property name="successNext" ref="ahtState"></property>
-		<property name="failNext" ref="ntState"></property>
+		<property name="inState" ref="ahtState"></property>
+		<property name="outState" ref="ntState"></property>
 	</bean>
 	
 	<bean id="ntState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
