@@ -522,13 +522,11 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		if (defaultSymbolInfo == null || defaultSymbolInfo.isEmpty())
 		{
-			for (SymbolInfo syminfo : refSymbolInfo)
-			{
-				if (defaultSymbol.contains(syminfo.getCode()))
-				{
-					retsymbollist.add(syminfo);
-				}
-			}
+			retEvent.setOk(false);
+			retEvent.setMessage("Default SymbolInfo is empty");
+			log.debug("Process Request Default Symbol fail: Default SymbolInfo is empty");
+			sendEvent(retEvent);
+			return ;
 		}
 		else
 		{
@@ -985,10 +983,10 @@ public class CentralDbProcessor implements IPlugin
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);
-		nTickCount = getTickCount() ;
 		nOpen = (open/100) * 60 + (open%100) ;
 		nPreOpen = (preopen/100) * 60 + (preopen%100) ;
 		nClose = (close/100) * 60 + (close%100) ;
+		nTickCount = getTickCount() ;
 	}
 	
 	public void setSessionType(MarketSessionType sessionType, String market) {
