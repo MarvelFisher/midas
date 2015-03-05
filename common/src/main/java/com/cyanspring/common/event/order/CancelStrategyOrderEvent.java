@@ -23,6 +23,7 @@ public class CancelStrategyOrderEvent extends RemoteAsyncEvent {
 	public CancelStrategyOrderEvent(String key, String receiver, String txId,
 			String sourceId, OrderReason reason, boolean force) {
 		super(key, receiver);
+		setPriority(EventPriority.HIGH);
 		this.txId = txId;
 		this.sourceId = sourceId;
 		this.reason = reason;
