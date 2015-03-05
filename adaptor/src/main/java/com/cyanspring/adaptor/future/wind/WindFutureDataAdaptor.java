@@ -63,7 +63,16 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	boolean gateway = false;
 	boolean showGui = false;
 	IRefDataManager refDataManager;
-	boolean marketDataLog = false; //log control
+	boolean marketDataLog = false; // log control
+	String marketType = "";
+
+	public String getMarketType() {
+		return marketType;
+	}
+
+	public void setMarketType(String marketType) {
+		this.marketType = marketType;
+	}
 
 	public IRefDataManager getRefDataManager() {
 		return refDataManager;
@@ -136,7 +145,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void setGateway(boolean gateway) {
 		this.gateway = gateway;
 	}
-	
+
 	public boolean isMarketDataLog() {
 		return marketDataLog;
 	}
@@ -995,24 +1004,33 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			return;
 
 		if (addSymbol(instrument) == true) {
-			if (WindFutureDataAdaptor.instance.gateway) {
-				log.info("subscribeMarketData RefSymbol: " + instrument);
-				log.debug("Setting refDataManager: "
-						+ refDataManager.getClass());
-				RefData refData = refDataManager.getRefData(instrument);
-				if (refData == null) {
-					LogUtil.logError(log, "RefSymbol " + instrument
-							+ " is not found in reference data");
-					throw new MarketDataException("Ref Symbol:" + instrument
-							+ " is not found in reference data");
-				} else {
-					LogUtil.logDebug(log, "RefSymbol " + instrument
-							+ " Exchange " + refData.getExchange() + "Symbol "
-							+ refData.getSymbol());
-					ClientHandler.subscribe(refData.getSymbol());
-					QuoteMgr.instance().addFutureSymbol(refData.getSymbol(),
-							refData.getExchange()); // future
-					instrument = refData.getSymbol();
+			if (WindFutureDataAdaptor.instance.isGateway()) {
+				// Future
+				if ("F".equals(WindFutureDataAdaptor.instance.getMarketType())) {
+					log.info("subscribeMarketData RefSymbol: " + instrument);
+					log.debug("Setting refDataManager: "
+							+ refDataManager.getClass());
+					RefData refData = refDataManager.getRefData(instrument);
+					if (refData == null) {
+						LogUtil.logError(log, "RefSymbol " + instrument
+								+ " is not found in reference data");
+						throw new MarketDataException("Ref Symbol:"
+								+ instrument
+								+ " is not found in reference data");
+					} else {
+						LogUtil.logDebug(log, "RefSymbol " + instrument
+								+ " Exchange " + refData.getExchange()
+								+ "Symbol " + refData.getSymbol());
+						ClientHandler.subscribe(refData.getSymbol());
+						QuoteMgr.instance().addFutureSymbol(
+								refData.getSymbol(), refData.getExchange()); // future
+						instrument = refData.getSymbol();
+					}
+				}
+				// Stock
+				if ("S".equals(WindFutureDataAdaptor.instance.getMarketType())) {
+					ClientHandler.subscribe(instrument);
+					QuoteMgr.instance().addStockSymbol(instrument, null);
 				}
 			}
 		}

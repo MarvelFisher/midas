@@ -1,0 +1,105 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+	<bean id="marketSessionManager" class="com.cyanspring.server.marketsession.MarketSessionManager">
+	    <property name="sessionState"> 
+        	<ref bean="sessionStateBean"/>
+        </property>
+	</bean>
+	
+	<bean id="sessionStateBean" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
+		<constructor-arg ref="openDaysBean"></constructor-arg>
+		<property name="successNext" ref="timeState"></property>
+		<property name="failNext" ref="closeState"></property>
+	</bean>
+		
+	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
+		<constructor-arg ref="closeDaysBean"></constructor-arg>
+		<property name="failNext" ref="closeWeekState"></property>
+	</bean>
+	
+	<bean id="closeWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
+		<constructor-arg ref="closeWeekDaysBean"></constructor-arg>
+		<property name="failNext" ref="timeState"></property>
+	</bean>
+	
+	<bean id="timeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
+		<constructor-arg ref="timingBean"></constructor-arg>
+	</bean>
+		
+	<bean id="timingBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg>
+			<list>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>CLOSE</value></constructor-arg>
+		        	<constructor-arg><value>15:15:00</value></constructor-arg>
+		        	<constructor-arg><value>20:30:00</value></constructor-arg>
+				</bean>	
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
+		        	<constructor-arg><value>20:30:00</value></constructor-arg>
+		        	<constructor-arg><value>21:00:00</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>21:00:00</value></constructor-arg>
+		        	<constructor-arg><value>23:59:59</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>15:15:00</value></constructor-arg> <!-- Make sure not restart Manager at the time -->
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>	
+		
+	<bean id="openDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg><value>OPEN</value></constructor-arg>
+		<constructor-arg>
+			<list>				
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="closeDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg><value>CLOSE</value></constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>2015-01-01</value>
+				<value>2015-01-02</value>
+				<value>2015-02-18</value>
+				<value>2015-02-19</value>
+				<value>2015-02-20</value>
+				<value>2015-02-23</value>
+				<value>2015-02-24</value>
+				<value>2015-04-06</value>
+				<value>2015-05-01</value>
+				<value>2015-06-22</value>
+				<value>2015-10-01</value>
+				<value>2015-10-02</value>
+				<value>2015-10-05</value>
+				<value>2015-10-06</value>
+				<value>2015-10-07</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="closeWeekDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+		<constructor-arg><value>CLOSE</value></constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>6</value>
+				<value>7</value>
+			</list>
+		</constructor-arg>
+	</bean>	
+
+</beans>

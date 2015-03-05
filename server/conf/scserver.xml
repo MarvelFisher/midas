@@ -7,7 +7,7 @@
 
 	<context:annotation-config />
 
-	<import resource="fc/*" />
+	<import resource="sc/*" />
 <!-- 	<import resource="common/business.xml" /> -->
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
@@ -27,7 +27,7 @@
 	</bean>
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61626"></property>
+		<property name="url" value="nio://0.0.0.0:61636"></property>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -113,7 +113,7 @@
 		<property name="gatewayIp" value="202.55.14.140"></property> 
 		<property name="gatewayPort" value="10049"></property>	
 		<property name="marketDataLog" value="true"></property>
-		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->		
+		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->		
 		<property name="refDataManager">
 			<ref bean="refDataManager" />
 		</property>			
@@ -121,7 +121,7 @@
 
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String">
-		<constructor-arg value="1528" />
+		<constructor-arg value="1529" />
 	</bean>
 
 </beans>
