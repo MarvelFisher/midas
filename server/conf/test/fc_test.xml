@@ -218,5 +218,15 @@
 			</list>
 		</constructor-arg>
 	</bean>
-
+	
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<map>
+				<entry key="IF">
+					<ref bean="IFsessionState" />
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
 </beans>

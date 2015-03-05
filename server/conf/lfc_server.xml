@@ -9,6 +9,7 @@
 
 	<import resource="test/fc_test.xml" />
 	<import resource="fc/MarketSession.xml" />
+	<import resource="fc/IFSessionState.xml" />
 	<import resource="common/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />

@@ -107,7 +107,8 @@
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
-			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.AbstractTickTable">
+			<map key-type="java.lang.String"
+				value-type="com.cyanspring.common.staticdata.AbstractTickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
 				<entry key="IF" value-ref="ifTickTable" />
@@ -192,6 +193,14 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
+	</bean>
+
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<map>
+				<entry key="IF"><ref bean="IFsessionState"/></entry>
+			</map>
+		</constructor-arg>
 	</bean>
 
 </beans>

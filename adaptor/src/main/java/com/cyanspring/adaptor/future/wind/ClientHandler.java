@@ -51,7 +51,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Discard the received data silently.
 		lastRecv = DateUtil.now();
 		String in = (String) msg;
-		// System.out.println(in);
+//		System.out.println(in);
 		try {
 			String strHash = null;
 			String strDataType = null;
@@ -73,6 +73,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
+						
+						if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
+							LogUtil.logDebug(log, in);
+						}
+						
 						if (strDataType.equals("DATA_FUTURE")) {
 							datatype = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}

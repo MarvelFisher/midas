@@ -8,35 +8,28 @@
 >
 
 	<context:annotation-config />
-	<bean id="marketSessionManager" class="com.cyanspring.server.marketsession.MarketSessionManager">
-	    <property name="sessionState"> 
-        	<ref bean="sessionStateBean"/>
-        </property>
-	</bean>
 	
-	<bean id="sessionStateBean" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
-		<constructor-arg ref="openDaysBean"></constructor-arg>
-		<property name="inState" ref="timeState"></property>
-		<property name="outState" ref="closeState"></property>
-		<property name="calTradeDate" value="true"></property>
-		<property name="filePath" value="conf/common/tradedate.xml"></property>
+	<bean id="IFsessionState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
+		<constructor-arg ref="IFopenDays"></constructor-arg>
+		<property name="inState" ref="IFtimeState"></property>
+		<property name="outState" ref="IFcloseState"></property>
 	</bean>
 		
-	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
-		<constructor-arg ref="closeDaysBean"></constructor-arg>
-		<property name="outState" ref="closeWeekState"></property>
+	<bean id="IFcloseState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
+		<constructor-arg ref="IFcloseDays"></constructor-arg>
+		<property name="outState" ref="IFcloseWeekState"></property>
 	</bean>
 	
-	<bean id="closeWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
-		<constructor-arg ref="closeWeekDaysBean"></constructor-arg>
-		<property name="outState" ref="timeState"></property>
+	<bean id="IFcloseWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
+		<constructor-arg ref="IFcloseWeekDays"></constructor-arg>
+		<property name="outState" ref="IFtimeState"></property>
 	</bean>
 	
-	<bean id="timeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
-		<constructor-arg ref="timingBean"></constructor-arg>
+	<bean id="IFtimeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
+		<constructor-arg ref="IFtiming"></constructor-arg>
 	</bean>
 		
-	<bean id="timingBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+	<bean id="IFtiming" class="com.cyanspring.common.marketsession.MarketSessionTime">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
@@ -63,7 +56,7 @@
 		</constructor-arg>
 	</bean>	
 		
-	<bean id="openDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+	<bean id="IFopenDays" class="com.cyanspring.common.marketsession.MarketSessionTime">
 		<constructor-arg><value>OPEN</value></constructor-arg>
 		<constructor-arg>
 			<list>				
@@ -71,7 +64,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="closeDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+	<bean id="IFcloseDays" class="com.cyanspring.common.marketsession.MarketSessionTime">
 		<constructor-arg><value>CLOSE</value></constructor-arg>
 		<constructor-arg>
 			<list>
@@ -94,7 +87,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="closeWeekDaysBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
+	<bean id="IFcloseWeekDays" class="com.cyanspring.common.marketsession.MarketSessionTime">
 		<constructor-arg><value>CLOSE</value></constructor-arg>
 		<constructor-arg>
 			<list>

@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.com.wind.td.tdf.DATA_TYPE_FLAG;
 import cn.com.wind.td.tdf.TDFClient;
@@ -40,6 +41,7 @@ import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
@@ -65,6 +67,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	IRefDataManager refDataManager;
 	boolean marketDataLog = false; // log control
 	String marketType = "";
+	
+	@Autowired
+	MarketSessionUtil marketSessionUtil;
 
 	public String getMarketType() {
 		return marketType;
@@ -191,6 +196,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
 	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // future
 	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // stock
+	static Hashtable<String, String> strategyht = new Hashtable<String, String>(); // save
+																					// symbol
+																					// strategy
 
 	boolean isClosed = false;
 	RequestThread thread = null;
@@ -1019,12 +1027,15 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 								+ " is not found in reference data");
 					} else {
 						LogUtil.logDebug(log, "RefSymbol " + instrument
-								+ " Exchange " + refData.getExchange()
-								+ "Symbol " + refData.getSymbol());
+								+ " Exchange=" + refData.getExchange()
+								+ ",Symbol=" + refData.getSymbol()
+								+ ",Strategy=" + refData.getStrategy());
+						instrument = refData.getSymbol();
+						strategyht.put(instrument, refData.getStrategy());
+						// subscribe
 						ClientHandler.subscribe(refData.getSymbol());
 						QuoteMgr.instance().addFutureSymbol(
 								refData.getSymbol(), refData.getExchange()); // future
-						instrument = refData.getSymbol();
 					}
 				}
 				// Stock

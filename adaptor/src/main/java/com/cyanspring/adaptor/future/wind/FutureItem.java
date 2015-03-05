@@ -16,6 +16,7 @@ import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
 import com.cyanspring.id.Library.Util.TimeSpan;
 
@@ -207,9 +208,17 @@ public class FutureItem implements AutoCloseable{
 		quote.setLast((double) data.getMatch() / 10000);
 		quote.setClose((double) data.getPreClose() / 10000);
 		
-		//stale 
-		if (data.getStatus() != 0)
+		//check stale
+		String strategy = WindFutureDataAdaptor.strategyht.get(symbolId);
+		String msState = WindFutureDataAdaptor.instance.marketSessionUtil.getCurrentMarketSessionType(strategy, DateUtil.now()).name();
+		
+		if(WindFutureDataAdaptor.instance.isMarketDataLog())
+		WindFutureDataAdaptor.debug("Wind Strategy=" + strategy + ",SesssionState=" + msState);
+		
+		if("CLOSE".equals(msState) || "PREOPEN".equals(msState)){
 			quote.setStale(true);
+		}
+		
 		
 		// if (diff ) send info event
 		// ==================

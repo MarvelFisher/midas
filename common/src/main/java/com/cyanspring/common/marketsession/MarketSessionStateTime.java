@@ -21,50 +21,13 @@ public class MarketSessionStateTime extends MarketSessionState{
 	}
 
 	@Override
-	protected MarketSessionEvent createEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
+	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
 		Date start = TimeUtil.parseTime(sessionTime.getTimeFormat(), sessionData.start);
 		Date end = TimeUtil.parseTime(sessionTime.getTimeFormat(), sessionData.end);
 		return new MarketSessionEvent(null, null, sessionData.session, start, end, tradeDate, Default.getMarket());
 	}
 
-	private void saveTradeDate(Date date) throws ParseException {
-		String[] times = Default.getTradeDateTime().split(":");	
-		int nHour = Integer.parseInt(times[0]);
-		int nMin = Integer.parseInt(times[1]);
-		int nSecond = Integer.parseInt(times[2]);
-		
-		Calendar cal = Default.getCalendar();
-		Date scheduledToday = TimeUtil.getScheduledDate(cal, date, nHour, nMin, nSecond);
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		
-		if(tradeDate == null && nextTradeDate == null){
-			if(TimeUtil.getTimePass(date, scheduledToday) > 0){
-				tradeDate = sdf.format(date);
-				nextTradeDate = tradeDate;
-				tradeDateUpdate = true;
-				return;				
-			}else{
-				nextTradeDate = sdf.format(date);
-				return;
-			}
-		}
-		
-		if(tradeDate == null){
-			tradeDate = sdf.format(date);
-			tradeDateUpdate = true;
-			return;
-		}
-		
-		if(TimeUtil.getTimePass(date, scheduledToday) > 0 && !tradeDate.equals(nextTradeDate)){
-			tradeDate = nextTradeDate;
-			tradeDateUpdate = true;
-		}else{			
-			tradeDateUpdate = false;						
-		}
-		nextTradeDate = sdf.format(date);
-	}
-
-	protected boolean compareTime(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException {
+	protected boolean checkState(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat(sessionTime.getTimeFormat());
 		
 		Calendar startCal = Calendar.getInstance();
@@ -79,7 +42,6 @@ public class MarketSessionStateTime extends MarketSessionState{
 		
 		if(TimeUtil.getTimePass(startCal.getTime(), dateCal.getTime()) <= 0 &&
 				TimeUtil.getTimePass(endCal.getTime(), dateCal.getTime()) >= 0){
-				saveTradeDate(date);
 			return true;
 		}			
 		return false;

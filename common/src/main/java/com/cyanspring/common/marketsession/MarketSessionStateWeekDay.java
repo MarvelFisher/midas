@@ -16,7 +16,7 @@ public class MarketSessionStateWeekDay extends MarketSessionState{
 	}
 	
 	@Override
-	protected MarketSessionEvent createEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date){
+	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date){
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		
@@ -34,8 +34,8 @@ public class MarketSessionStateWeekDay extends MarketSessionState{
 	}
 	
 	@Override
-	protected boolean compareTime(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException {
-		tradeDateUpdate = false;
+	protected boolean checkState(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException {
+//		tradeDateUpdate = false;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		int weekDay = cal.get(Calendar.DAY_OF_WEEK);
