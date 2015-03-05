@@ -1,7 +1,7 @@
 package com.cyanspring.common.marketsession;
 
-import java.sql.Date;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Map;
 
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
