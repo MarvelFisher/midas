@@ -141,8 +141,7 @@ public class AccountPositionManager implements IPlugin {
 	@Autowired
 	PositionKeeper positionKeeper;
 	
-	@Autowired
-	ScheduleManager scheduleManager;
+	ScheduleManager scheduleManager = new ScheduleManager();
 	
 	@Autowired
 	IFxConverter fxConverter;

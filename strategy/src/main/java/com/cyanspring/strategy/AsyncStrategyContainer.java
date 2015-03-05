@@ -45,8 +45,7 @@ public class AsyncStrategyContainer implements IStrategyContainer, IAsyncEventLi
 	@Autowired
 	private IRemoteEventManager eventManager;
 
-	@Autowired
-	private ScheduleManager scheduleManager;
+	private ScheduleManager scheduleManager = new ScheduleManager();
 	
 	private boolean sync;
 
