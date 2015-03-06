@@ -210,7 +210,7 @@ public class FutureItem implements AutoCloseable{
 		
 		//check stale
 		String strategy = WindFutureDataAdaptor.strategyht.get(symbolId);
-		String msState = WindFutureDataAdaptor.instance.marketSessionUtil.getCurrentMarketSessionType(strategy, DateUtil.now()).name();
+		String msState = WindFutureDataAdaptor.instance.getMarketSessionUtil().getCurrentMarketSessionType(strategy, DateUtil.now()).name();
 		
 		if(WindFutureDataAdaptor.instance.isMarketDataLog())
 		WindFutureDataAdaptor.debug("Wind Strategy=" + strategy + ",SesssionState=" + msState);
