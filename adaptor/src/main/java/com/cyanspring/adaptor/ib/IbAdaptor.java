@@ -621,8 +621,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 			break;
 
 		case 9: 
-			quote.setClose(price);
-
+			if(price != 0){
+				quote.setClose(price);
+			}
 			if( quote.getBid() == -1 && quote.getAsk() == -1)
 			{
 				quote.setOpen(0);
