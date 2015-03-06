@@ -19,8 +19,8 @@ public class DBHandler
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(DBHandler.class);
-	private final String createTable = "CREATE TABLE `%s` ( `TRADEDATE`  datetime NOT NULL DEFAULT '0000-00-00 00:00:00' , `SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL , `OPEN_PRICE`  double NULL DEFAULT NULL , `CLOSE_PRICE`  double NULL DEFAULT NULL , `HIGH_PRICE`  double NULL DEFAULT NULL , `LOW_PRICE`  double NULL DEFAULT NULL , `VOLUME`  int(11) NULL DEFAULT NULL , UNIQUE INDEX `0016_1Index` USING BTREE (`TRADEDATE`, `SYMBOL`) ) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0;";
-	private final String checkTable = "show tables like '%s'";; 
+	private final String createTable = "CREATE TABLE `%s` (`TRADEDATE`  date NULL DEFAULT NULL ,`KEYTIME`  datetime NOT NULL ,`DATATIME`  datetime NULL DEFAULT NULL ,`SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ,`OPEN_PRICE`  double NULL DEFAULT NULL ,`CLOSE_PRICE`  double NULL DEFAULT NULL ,`HIGH_PRICE`  double NULL DEFAULT NULL ,`LOW_PRICE`  double NULL DEFAULT NULL ,`VOLUME`  int(11) NULL DEFAULT NULL ,`TOTALVOLUME`  bigint(20) NULL DEFAULT NULL ,UNIQUE INDEX `TradeDate_Symbol` USING BTREE (`KEYTIME`, `SYMBOL`)) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0 ;";
+	private final String checkTable = "show tables like '%s'"; 
 	private String     jdbcUrl;
 	private Connection connect = null ;
 	private Statement  stat = null ;
@@ -212,7 +212,7 @@ public class DBHandler
     	{
     		return null;
     	}
-    	HistoricalPrice price = new HistoricalPrice(symbol, true) ;
+    	HistoricalPrice price = new HistoricalPrice() ;
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
@@ -233,7 +233,9 @@ public class DBHandler
     		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			if (rs.next())
 			{
-				price.setTimestamp(sdf.parse(rs.getString("TRADEDATE")));
+				price.setTradedate(rs.getString("TRADEDATE"));
+				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
 				price.setSymbol(rs.getString("SYMBOL")) ;
 				price.setOpen(rs.getDouble("OPEN_PRICE"));
 				price.setClose(rs.getDouble("CLOSE_PRICE"));
@@ -275,7 +277,7 @@ public class DBHandler
     	String strTable = String.format("%s_%s", prefix, type) ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00") ;
 		String sqlcmd = String.format("DELETE FROM %s WHERE SYMBOL='%s' AND TRADEDATE='%s';", 
-				strTable, symbol, sdf.format(price.getTimestamp())) ;
+				strTable, symbol, price.getTradedate()) ;
 		updateSQL(sqlcmd) ;
     }
     public void checkMarketExist(String market)

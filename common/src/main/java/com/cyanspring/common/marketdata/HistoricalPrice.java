@@ -8,7 +8,13 @@ import java.util.TimeZone;
 import com.cyanspring.common.util.PriceUtils;
 
 public class HistoricalPrice  implements Serializable, Comparable<HistoricalPrice>, Cloneable {
-	Date   timestamp = null ;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1903856150760396053L;
+	private String tradedate = null ;
+	private Date   keytime = null ;
+	private Date   datatime = null ;
 	String symbol = null ;
 	double open ;
 	double high ;
@@ -19,20 +25,15 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	public HistoricalPrice()
 	{
 	}
-	public HistoricalPrice(String symbol, boolean defaultTime)
+	public HistoricalPrice(String symbol, String tradedate, Date keytime)
 	{
 		this.symbol = symbol ;
-		if (defaultTime)
-		{
-			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			cal.add(Calendar.DATE, -1);
-			this.timestamp = cal.getTime();
-		}
+		this.setTradedate(tradedate);
+		this.setKeytime(keytime);
 	}
-	public HistoricalPrice(Date   timestamp, 
+	public HistoricalPrice( String tradedate,
+					Date keytime, 
+					Date datatime,
 					String symbol, 
 					double open, 
 					double high, 
@@ -40,7 +41,10 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 					double close, 
 					int    volume)
 	{
-		this.timestamp = timestamp ;
+
+		this.setTradedate(tradedate);
+		this.setKeytime(keytime);
+		this.setDatatime(datatime);
 		this.symbol = symbol ;
 		this.open = open ;
 		this.high = high ;
@@ -72,7 +76,9 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	}
 	public void copy(HistoricalPrice price)
 	{
-		this.setTimestamp(price.getTimestamp());
+		this.setTradedate(price.tradedate);
+		this.setKeytime(price.keytime);
+		this.setDatatime(price.datatime);
 		this.setSymbol(price.getSymbol());
 		this.setOpen(price.getOpen());
 		this.setClose(price.getClose());
@@ -98,14 +104,6 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		this.volume += price.volume;
 	}
 	
-	public Date getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(Date timestamp) {
-		if (timestamp == null)
-			return;
-		this.timestamp = (Date)timestamp.clone();
-	}
 	public String getSymbol() {
 		return symbol;
 	}
@@ -145,13 +143,15 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 
 	@Override
 	public int compareTo(HistoricalPrice o) {
-		return timestamp.compareTo(o.getTimestamp());
+		return getKeytime().compareTo(o.getKeytime());
 	}
 	@Override
 	public Object clone()
 	{
 		HistoricalPrice price = new HistoricalPrice();
-		price.setTimestamp(this.timestamp);
+		price.setTradedate(this.tradedate);
+		price.setKeytime(this.keytime);
+		price.setDatatime(this.datatime);
 		price.setSymbol(this.symbol);
 		price.setOpen(this.open);
 		price.setClose(this.close);
@@ -159,6 +159,24 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		price.setLow(this.low);
 		price.setVolume(this.volume);
 		return price ;
+	}
+	public String getTradedate() {
+		return tradedate;
+	}
+	public void setTradedate(String tradedate) {
+		this.tradedate = tradedate;
+	}
+	public Date getKeytime() {
+		return keytime;
+	}
+	public void setKeytime(Date keytime) {
+		this.keytime = keytime;
+	}
+	public Date getDatatime() {
+		return datatime;
+	}
+	public void setDatatime(Date datatime) {
+		this.datatime = datatime;
 	}
 
 }

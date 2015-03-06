@@ -215,8 +215,8 @@ public class CentralDbProcessor implements IPlugin
 				dbhnd.checkSQLConnect();
 				checkSQLTimer = 0;
 			}
+			resetSymbolDataStat();
 		}
-		resetSymbolDataStat();
 	}
 	
 	public void resetSymbolDataStat()
