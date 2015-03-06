@@ -161,7 +161,7 @@ public class Quote implements Cloneable, Serializable {
 
 	public String toString()
 	{
-		return id + " - " + symbol + " : [" + bidVol + "@" + bid + "," + askVol + "@" + ask + "]"
+		return id + " - " + symbol + " : [" + bidVol + "@" + bid + "," + askVol + "@" + ask + "," + timeSent + "]"
 			+ bids + asks;
 	}
 	
