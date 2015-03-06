@@ -29,6 +29,7 @@ public abstract class MarketSessionState {
 //	protected static String nextTradeDate;
 	
 	protected static String tradeDate;
+	protected static boolean isHoliday;
 	private static XStream xstream;
 	private static File file;
 	private static boolean calTradeDate;
@@ -127,6 +128,15 @@ public abstract class MarketSessionState {
 			log.error(e.getMessage(), e);
 		}		
 		return currentMarketSessionEvent.getSession();
+	}
+	
+	public boolean isHoliday(Date date){
+		try {
+			createMarketSessionEvent(date);
+		} catch (ParseException e) {
+			log.error(e.getMessage(), e);
+		}
+		return isHoliday;
 	}
 	
 	public void setOutState(MarketSessionState outState) {

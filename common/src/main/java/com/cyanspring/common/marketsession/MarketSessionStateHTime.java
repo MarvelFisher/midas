@@ -20,6 +20,7 @@ public class MarketSessionStateHTime extends MarketSessionState {
 	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime,
 			MarketSessionTime.SessionData sessionData, Date date)
 			throws ParseException {
+		isHoliday = true;
 		Date start = TimeUtil.parseTime(sessionTime.getTimeFormat(),
 				sessionData.start);
 		Date end = TimeUtil.parseTime(sessionTime.getTimeFormat(),

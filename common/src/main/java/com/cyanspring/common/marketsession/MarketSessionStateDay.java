@@ -20,6 +20,11 @@ public class MarketSessionStateDay extends MarketSessionState{
 	
 	@Override
 	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
+		if(sessionData.session.equals(MarketSessionType.CLOSE))
+			isHoliday = true;
+		else
+			isHoliday = false;
+		
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat dateFormat = new SimpleDateFormat(sessionTime.getTimeFormat());
 		Date parseDate = dateFormat.parse(sessionData.date);

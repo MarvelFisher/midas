@@ -156,6 +156,7 @@
 		<property name="refDataFile">
 			<value>refdata/refData_cf.xml</value>
 		</property>
+		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 	</bean>
 
 	<bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">

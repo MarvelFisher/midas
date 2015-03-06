@@ -3,6 +3,7 @@ package com.cyanspring.common.staticdata;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.fu.IFStrategy;
 import com.cyanspring.common.staticdata.fu.RefDataStrategy;
 import com.thoughtworks.xstream.XStream;
@@ -27,8 +29,9 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 	Map<String, RefData> map;
 	private String market = Default.getMarket();
 	private XStream xstream = new XStream(new DomDriver());
-	private Map<String,RefDataStrategy> stragetyMap = new HashMap<>();
-	
+	private Map<String,RefDataStrategy> strategyMap = new HashMap<>();
+	private MarketSessionUtil marketSessionUtil;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
@@ -44,20 +47,22 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Clock.getInstance().now());
-		RefDataStrategy stragety;
+		RefDataStrategy strategy;
 		for(RefData refData: list) {
-			if(!stragetyMap.containsKey(refData.getStrategy())){
-				stragety = (RefDataStrategy) Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy").newInstance();
-				stragetyMap.put(refData.getStrategy(), stragety);
+			if(!strategyMap.containsKey(refData.getStrategy())){
+				Class<RefDataStrategy> tempClz = (Class<RefDataStrategy>)Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy");
+				Constructor<RefDataStrategy> ctor = tempClz.getConstructor(MarketSessionUtil.class);
+				strategy = ctor.newInstance(marketSessionUtil);
+				strategyMap.put(refData.getStrategy(), strategy);
 			}else{
-				stragety = stragetyMap.get(refData.getStrategy());
+				strategy = strategyMap.get(refData.getStrategy());
 			}
-			stragety.init(cal);
-			stragety.setExchangeRefData(refData);
+			strategy.init(cal);
+			strategy.setExchangeRefData(refData);
 			map.put(refData.getRefSymbol(), refData); //key = Ref Symbol
 		}		
 		saveRefDataToFile(refDataFile, new ArrayList<RefData>(map.values()));
-	}
+	}	
 
 	@Override
 	public void uninit() {
@@ -90,7 +95,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 		this.refDataFile = refDataFile;
 	}
 	
-	private void saveRefDataToFile(String path, List list){
+	private void saveRefDataToFile(String path, List<RefData> list){
 		File file = new File(path);
 		try {
 			file.createNewFile();
@@ -100,5 +105,9 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 		}	
+	}
+	
+	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
+		this.marketSessionUtil = marketSessionUtil;
 	}
 }
