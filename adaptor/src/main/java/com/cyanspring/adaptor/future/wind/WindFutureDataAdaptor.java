@@ -67,9 +67,15 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	IRefDataManager refDataManager;
 	boolean marketDataLog = false; // log control
 	String marketType = "";
-	
-	@Autowired
 	MarketSessionUtil marketSessionUtil;
+	
+	public MarketSessionUtil getMarketSessionUtil() {
+		return marketSessionUtil;
+	}
+
+	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
+		this.marketSessionUtil = marketSessionUtil;
+	}
 
 	public String getMarketType() {
 		return marketType;
