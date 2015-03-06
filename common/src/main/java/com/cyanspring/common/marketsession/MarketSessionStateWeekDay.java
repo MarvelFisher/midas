@@ -17,6 +17,7 @@ public class MarketSessionStateWeekDay extends MarketSessionState{
 	
 	@Override
 	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date){
+		isHoliday = false;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		

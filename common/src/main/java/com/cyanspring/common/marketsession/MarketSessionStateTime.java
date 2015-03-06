@@ -22,6 +22,7 @@ public class MarketSessionStateTime extends MarketSessionState{
 
 	@Override
 	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException{
+		isHoliday = false;
 		Date start = TimeUtil.parseTime(sessionTime.getTimeFormat(), sessionData.start);
 		Date end = TimeUtil.parseTime(sessionTime.getTimeFormat(), sessionData.end);
 		return new MarketSessionEvent(null, null, sessionData.session, start, end, tradeDate, Default.getMarket());

@@ -13,13 +13,18 @@ public class MarketSessionUtil {
 		this.map = map;
 	}
 	
-	public MarketSessionType getCurrentMarketSessionType(String market, Date date){
-		MarketSessionState state = map.get(market);
+	public MarketSessionType getCurrentMarketSessionType(String symbol, Date date){
+		MarketSessionState state = map.get(symbol);
 		return state.getCurrentMarketSession(date);
 	}
 	
-	public MarketSessionEvent getCurrentMarketSessionEvent(String market, Date date) throws ParseException{
-		MarketSessionState state = map.get(market);
+	public MarketSessionEvent getCurrentMarketSessionEvent(String symbol, Date date) throws ParseException{
+		MarketSessionState state = map.get(symbol);
 		return state.getCurrentMarketSessionEvent(date);
+	}
+	
+	public boolean isHoliday(String symbol, Date date){
+		MarketSessionState state = map.get(symbol);		
+		return state.isHoliday(date);
 	}
 }
