@@ -220,6 +220,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ event.getReceiver());
 		String symbol = event.getSymbol();
 		Quote quote = quotes.get(symbol);
+		if (quote != null) {
+			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(),
+					event.getSender(), quote));
+		}		
 		if (quote == null || quote.isStale()) {
 			for (int i = 0; i < adaptors.size(); i++) {
 				IMarketDataAdaptor adaptor = adaptors.get(i);
@@ -227,11 +231,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 					continue;
 				adaptor.subscribeMarketData(symbol, MarketDataManager.this);
 			}
-		}
-
-		if (quote != null) {
-			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(),
-					event.getSender(), quote));
 		}
 	}
 
