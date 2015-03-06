@@ -45,11 +45,21 @@
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
 		        	<constructor-arg><value>00:00:00</value></constructor-arg>
-		        	<constructor-arg><value>09:00:00</value></constructor-arg>
+		        	<constructor-arg><value>09:15:00</value></constructor-arg>
 				</bean>		
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
 		        	<constructor-arg><value>OPEN</value></constructor-arg>
-		        	<constructor-arg><value>09:00:00</value></constructor-arg>
+		        	<constructor-arg><value>09:15:00</value></constructor-arg>
+		        	<constructor-arg><value>11:30:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>CLOSE</value></constructor-arg>
+		        	<constructor-arg><value>11:30:00</value></constructor-arg>
+		        	<constructor-arg><value>13:00:00</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>13:00:00</value></constructor-arg>
 		        	<constructor-arg><value>15:15:00</value></constructor-arg> <!-- Make sure not restart Manager at the time -->
 				</bean>
 			</list>
