@@ -646,6 +646,8 @@ public abstract class SingleOrderStrategy extends Strategy {
 		public void postHandle(boolean success, String info) {
 			if(success){
 				cancelParentOrder(event);
+				if(null != event.getReason())
+					parentOrder.setReason(event.getReason());
 				UpdateParentOrderEvent update = new UpdateParentOrderEvent(parentOrder.getId(), ExecType.CANCELED, event.getTxId(), parentOrder, info);
 				container.sendEvent(update);
 			}
@@ -688,6 +690,8 @@ public abstract class SingleOrderStrategy extends Strategy {
 			reply = new CancelParentOrderReplyEvent(
 					event.getSourceId(), event.getSender(), true, null, event.getTxId(), parentOrder);
 			container.sendLocalOrRemoteEvent(reply);
+			if(null != event.getReason())
+				parentOrder.setReason(event.getReason());
 			container.sendEvent(new UpdateParentOrderEvent(parentOrder.getId(), ExecType.CANCELED, event.getTxId(), parentOrder, null));
 			return;
 		}

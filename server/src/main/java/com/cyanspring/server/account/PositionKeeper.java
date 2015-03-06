@@ -82,7 +82,7 @@ public class PositionKeeper {
 		
 		Map<String, Map<String, ParentOrder>> accountMap = parentOrders.get(order.getAccount());
 		if(null == accountMap) {
-			accountMap = new HashMap<String, Map<String, ParentOrder>>();
+			accountMap = new ConcurrentHashMap<String, Map<String, ParentOrder>>();
 			Map<String, Map<String, ParentOrder>> existing = parentOrders.putIfAbsent(order.getAccount(), accountMap);
 			accountMap = existing == null?accountMap:existing;
 		}
@@ -90,7 +90,7 @@ public class PositionKeeper {
 		synchronized(getSyncAccount(order.getAccount())) {
 			Map<String, ParentOrder> symbolMap = accountMap.get(order.getSymbol());
 			if(null == symbolMap) {
-				symbolMap = new HashMap<String, ParentOrder>();
+				symbolMap = new ConcurrentHashMap<String, ParentOrder>();
 				accountMap.put(order.getSymbol(), symbolMap);
 			}
 			
@@ -103,6 +103,7 @@ public class PositionKeeper {
 		}
 		
 		this.updateAccountDynamicData(account);
+		notifyAccountDynamicUpdate(account);
 	}
 	
 	private OpenPosition createOpenPosition(Execution execution, Account account) {
@@ -238,6 +239,37 @@ public class PositionKeeper {
 		
 		closePositionLock.processExecution(execution);
 
+	}
+	
+	public List<ParentOrder> getParentOrders(String account) {
+		List<ParentOrder> orders = new ArrayList<ParentOrder>();
+		
+		Map<String, Map<String, ParentOrder>> symbolMap = parentOrders.get(account);
+		if(null != symbolMap) {
+			for(Map<String, ParentOrder> orderMap: symbolMap.values()) {
+				if(null != orderMap) {
+					for(ParentOrder order: orderMap.values()) {
+						orders.add(order);
+					}
+				}
+			}
+		}
+		return orders;
+	}
+	
+	public List<ParentOrder> getParentOrders(String account, String symbol) {
+		List<ParentOrder> orders = new ArrayList<ParentOrder>();
+		
+		Map<String, Map<String, ParentOrder>> symbolMap = parentOrders.get(account);
+		if(null != symbolMap) {
+			Map<String, ParentOrder> orderMap = symbolMap.get(symbol);
+			if(null != orderMap) {
+				for(ParentOrder order: orderMap.values()) {
+					orders.add(order);
+				}
+			}
+		}
+		return orders;
 	}
 	
 	protected void notifyRemoveDetailOpenPosition(OpenPosition position) {
@@ -481,11 +513,12 @@ public class PositionKeeper {
 					}
 				}
 				
-				marginValue += getMarginValueByAccountAndSymbol(account, symbol, quote);
+				double value = getMarginValueByAccountAndSymbol(account, symbol, quote);
+				marginValue += value;
 				
 				RefData refData = refDataManager.getRefData(symbol);
 				double lev = leverageManager.getLeverage(refData, accountSetting);
-				marginHeld += marginValue / lev;
+				marginHeld += value / lev;
 			}
 			account.setUrPnL(accountUrPnL);
 			
@@ -611,7 +644,7 @@ public class PositionKeeper {
 		for(OpenPosition position: positions) {
 			Map<String, List<OpenPosition>> symbolPositions = accountPositions.get(position.getAccount());
 			if(null == symbolPositions) {
-				symbolPositions = new HashMap<String, List<OpenPosition>>();
+				symbolPositions = new ConcurrentHashMap<String, List<OpenPosition>>();
 				this.accountPositions.put(position.getAccount(), symbolPositions);
 			}
 			
