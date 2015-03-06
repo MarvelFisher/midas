@@ -14,7 +14,7 @@ import com.cyanspring.common.util.PriceUtils;
 
 public class HKexTickTable extends AbstractTickTable{
 	private final static double tickTable[][] = { 
-		{0.01,		0.25,		0.001},
+		{0,		0.25,		0.001},
 		{0.25,		0.50,		0.005},
 		{0.50,		10.00,		0.010},
 		{10.00,		20.00,		0.020},
@@ -24,7 +24,7 @@ public class HKexTickTable extends AbstractTickTable{
 		{500.00,	1000.00,	0.500},
 		{1000.00,	2000.00,	1.000},
 		{2000.00,	5000.00,	2.000},
-		{5000.00,	9995.00,	5.000}
+		{5000.00,	Double.MAX_VALUE,	5.000}
 	};
 
 	//private final static double minPrice = 0.01;
