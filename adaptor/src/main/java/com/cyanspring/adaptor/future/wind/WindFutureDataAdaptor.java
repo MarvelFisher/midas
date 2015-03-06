@@ -7,14 +7,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.com.wind.td.tdf.DATA_TYPE_FLAG;
 import cn.com.wind.td.tdf.TDFClient;
@@ -44,8 +42,6 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.id.UserClient;
 import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;

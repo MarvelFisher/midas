@@ -72,7 +72,7 @@ public class UserClient implements AutoCloseable {
 	public void sendQuote(Quote quote) {
 
 		if (isMySymbol(quote.getSymbol())) {
-			listener.onQuote(quote, 2);
+			listener.onQuote(quote, 2); //use in MDM proceessInnerQuoteEvent , Id Adapter sourceid=2
 		}
 	}
 

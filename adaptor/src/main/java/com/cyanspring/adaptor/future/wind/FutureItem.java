@@ -265,19 +265,21 @@ public class FutureItem implements AutoCloseable{
 		// update volume
 		long totalVolume = data.getVolume();
 		
-		if (item.totalVolume == 0) {
-			item.totalVolume = totalVolume;			
-			return;
-		}
+//		if (item.totalVolume == 0) {
+//			item.totalVolume = totalVolume;			
+//			return;
+//		}
 			
 		if (totalVolume - item.totalVolume > 0) {
 			item.volume = totalVolume - item.volume;
 			item.totalVolume = totalVolume;
 
-			quote.setTotalVolume(totalVolume);
-			quote.setLastVol(item.volume);
+//			quote.setTotalVolume(totalVolume);
+//			quote.setLastVol(item.volume);
 		}
-
+		quote.setTotalVolume(totalVolume);
+		quote.setLastVol(item.volume);
+		
 		// fire quote event
 		String s = quote.toString();
 		WindFutureDataAdaptor.instance.sendQuote(quote);

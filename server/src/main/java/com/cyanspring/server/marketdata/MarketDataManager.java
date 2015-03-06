@@ -297,12 +297,20 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			return;
 		} else if (null != quoteChecker
 				&& !quoteChecker.checkWithSession(quote)) {
-			boolean prevStale = prev.isStale();
-			prev.setStale(true); // just set the existing stale
-			if (!prevStale) {
-				logStaleInfo(prev, quote, true);
+			//if wind Adapter Quote always send,if other Adapter Quote prev not stale to send 
+			if( inEvent.getSourceId()>100){
+				//Stale continue send Quote
+				quotes.put(quote.getSymbol(), quote);
 				clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-						prev));
+						quote));					
+			}else{
+				boolean prevStale = prev.isStale();
+				prev.setStale(true); // just set the existing stale
+				if (!prevStale){
+					//Stale send prev Quote
+					clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
+							prev));					
+				}
 			}
 			return;
 		} else {
@@ -313,12 +321,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		}
 
 		String symbol = inEvent.getQuote().getSymbol();
-		// if (event.getQuote().getSymbol().equals("USDJPY")) {
-		// int step = this.forexTickTable.getStep(quote.getBid(),
-		// quote.getAsk());
-		// log.info(String.format("[        ]%s dif=[%d]",
-		// event.getQuote().toString(), step));
-		// }
 
 		if (null != aggregator) {
 			quote = aggregator.update(symbol, inEvent.getQuote(),
@@ -600,7 +602,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				IMarketDataAdaptor adaptor = adaptors.get(i);
 				if (!adaptor.getState())
 					continue;
-
+				log.debug("Market data presubscribe adapter begin : " + adaptor.getState());
 				for (String symbol : preList) {
 					adaptor.subscribeMarketData(symbol, this);
 				}

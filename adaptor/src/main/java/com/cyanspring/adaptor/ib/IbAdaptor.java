@@ -561,7 +561,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		List<IMarketDataListener> list = subs.get(quote.getSymbol());
 		if(null != list)
 			for(IMarketDataListener listener: list)
-				listener.onQuote(quote, 1);
+				listener.onQuote(quote, 1);   //use in MDM proceessInnerQuoteEvent , IB Adapter sourceid=1
 
 	}
 	
