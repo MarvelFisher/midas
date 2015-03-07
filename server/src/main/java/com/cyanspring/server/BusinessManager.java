@@ -11,6 +11,7 @@
 package com.cyanspring.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,8 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
 import com.cyanspring.common.event.order.AmendStrategyOrderEvent;
@@ -77,6 +80,7 @@ import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
+import com.cyanspring.server.order.MultiOrderCancelTracker;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
 import com.cyanspring.server.validation.ParentOrderPreCheck;
 import com.cyanspring.server.validation.ParentOrderValidator;
@@ -135,6 +139,7 @@ public class BusinessManager implements ApplicationContextAware {
 	private boolean autoStartStrategy;
 	private AsyncTimerEvent closePositionCheckEvent = new AsyncTimerEvent();
 	private long closePositionCheckInterval = 10000;
+	private Map<String, MultiOrderCancelTracker> cancelTrackers = new HashMap<String, MultiOrderCancelTracker>();
 	
 	public boolean isAutoStartStrategy() {
 		return autoStartStrategy;
@@ -158,6 +163,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(NewSingleInstrumentStrategyEvent.class, null);
 			subscribeToEvent(NewMultiInstrumentStrategyEvent.class, null);
 			subscribeToEvent(ClosePositionRequestEvent.class, null);
+			subscribeToEvent(ResetAccountRequestEvent.class, null);
 		}
 
 		@Override
@@ -483,6 +489,38 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 	}
 
+	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
+		ParentOrder order = event.getParent();
+		log.info("Received UpdateParentOrderEvent: " + order);
+		String account = order.getAccount();
+		MultiOrderCancelTracker tracker = cancelTrackers.get(account);
+		if(null != tracker) {
+			if(tracker.checkParentOrderUpdate(event)) {
+				log.info("Cancel tracker completed");
+				cancelTrackers.remove(account);
+				orders.removeMap(account);
+				eventManager.sendEvent(new InternalResetAccountRequestEvent(tracker.getEvent()));
+			} 
+		} else {
+			log.warn("Receive order update but no matching tracker: " + order);
+		}
+	}
+	
+	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+		String account = event.getAccount();
+		log.info("Received ResetAccountRequestEvent: " + account);
+		Map<String, ParentOrder> map = orders.getMap(account);
+		if(null != map && map.size() > 0) {
+			MultiOrderCancelTracker tracker = new MultiOrderCancelTracker(eventManager, eventProcessor, event);
+			for(ParentOrder order: map.values()) {
+				tracker.add(order);
+			}
+			cancelTrackers.put(account, tracker);
+		} else {
+			eventManager.sendEvent(new InternalResetAccountRequestEvent(event));
+		}
+	}
+	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if(event == this.closePositionCheckEvent) {
 			for(ParentOrder order: positionKeeper.getTimeoutLocks()) {

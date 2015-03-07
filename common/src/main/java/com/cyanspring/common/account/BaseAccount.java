@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.Default;
 import com.cyanspring.common.util.PriceUtils;
 
 public abstract class BaseAccount implements Serializable {
@@ -32,6 +33,19 @@ public abstract class BaseAccount implements Serializable {
 		this();
 		this.id = id;
 		this.userId = userId;
+	}
+	
+	public void reset() {
+		this.PnL = 0.0;
+		this.urPnL = 0.0;
+		this.allTimePnL = 0.0;
+		this.active = true;
+		this.cash = Default.getAccountCash();
+		this.cashDeposited = Default.getAccountCash();
+		this.rollPrice = 1.0;
+		this.margin = Default.getMarginTimes() * this.cash;
+		this.cashAvailable = this.cash;
+		this.marginHeld = 0.0;
 	}
 	
 	public synchronized double getPnL() {

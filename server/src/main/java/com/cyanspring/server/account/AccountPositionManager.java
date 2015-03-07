@@ -56,6 +56,7 @@ import com.cyanspring.common.event.account.CreateAccountReplyEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
+import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
@@ -68,6 +69,8 @@ import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyEvent;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
@@ -178,7 +181,8 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
 			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(OnUserCreatedEvent.class, null);
-			subscribeToEvent(TradeDateEvent.class, null);
+			subscribeToEvent(TradeDateEvent.class, null);		
+			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 		}
 
 		@Override
@@ -709,6 +713,18 @@ public class AccountPositionManager implements IPlugin {
 		PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID, 
 				null, accountSetting);
 		eventManager.sendEvent(pmEvent);
+	}
+	
+	public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
+		ResetAccountRequestEvent evt = event.getEvent();
+		log.info("Received InternalResetAccountRequestEvent: " + evt.getAccount());
+		positionKeeper.resetAccount(evt.getAccount());
+		try {
+			eventManager.sendRemoteEvent(new ResetAccountReplyEvent(evt.getKey(), 
+					evt.getSender(), evt.getAccount(), evt.getTxId(), true, ""));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
