@@ -31,6 +31,8 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
@@ -81,6 +83,7 @@ public class OrderManager {
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(SingleInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(MultiInstrumentStrategyUpdateEvent.class, null);
+			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 		}
 
 		@Override
@@ -96,6 +99,20 @@ public class OrderManager {
 	public OrderManager() {
 	}
 
+	public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
+		ResetAccountRequestEvent evt = event.getEvent();
+		String account = evt.getAccount();
+		Map<String, ParentOrder> map = parentOrders.removeMap(account);
+		if(null == map)
+			return;
+		for(ParentOrder parent: map.values()) {
+			archiveChildOrders.remove(parent.getId());
+			activeChildOrders.remove(parent.getId());
+			executions.remove(parent.getId());
+		}
+		log.info("Reset account removes orders: " + map.size());
+	}
+	
 	public void processChildOrderSnapshotRequestEvent(
 			ChildOrderSnapshotRequestEvent event) throws Exception {
 		String client = event.getSender();

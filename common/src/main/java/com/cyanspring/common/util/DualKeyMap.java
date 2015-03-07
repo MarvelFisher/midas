@@ -19,6 +19,16 @@ public class DualKeyMap<K1, K2, V> {
 		return null == map? new HashMap<K1, V>() : map;
 	}
 	
+	public Map<K1, V> removeMap(K2 k) {
+		Map<K1, V> map = map2.remove(k);
+		if(null != map) {
+			for(K1 k1: map.keySet()) {
+				map1.remove(k1);
+			}
+		}
+		return map;
+	}
+	
 	public V put(K1 k1, K2 k2, V v) {
 		Map<K1, V> map = map2.get(k2);
 		if (null == map) {
@@ -27,6 +37,12 @@ public class DualKeyMap<K1, K2, V> {
 		}
 		map.put(k1, v);
 		return map1.put(k1, v);
+	}
+	
+	public V remove(K1 k1, K2 k2) {
+		Map<K1, V> map = map2.get(k2);
+		map.remove(k1);
+		return map1.remove(k1);
 	}
 	
 	public void clear() {

@@ -5,15 +5,11 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 public class ResetAccountRequestEvent extends RemoteAsyncEvent {
 	private String account;
 	private String txId;
-	private boolean ok;
-	private String message;
 	public ResetAccountRequestEvent(String key, String receiver,
-			String account, String txId, boolean ok, String message) {
+			String account, String txId) {
 		super(key, receiver);
 		this.account = account;
 		this.txId = txId;
-		this.ok = ok;
-		this.message = message;
 	}
 	
 	public String getAccount() {
@@ -22,12 +18,5 @@ public class ResetAccountRequestEvent extends RemoteAsyncEvent {
 	public String getTxId() {
 		return txId;
 	}
-	public boolean isOk() {
-		return ok;
-	}
-	public String getMessage() {
-		return message;
-	}
-	
 	
 }

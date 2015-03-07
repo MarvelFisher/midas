@@ -3,6 +3,7 @@ package com.cyanspring.cstw.gui;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
@@ -31,6 +32,7 @@ import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.util.ArrayMap;
@@ -109,7 +111,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		createUserAccountAction(parent);
 		createCountAccountAction(parent);
-		//createMenu(parent);
+		createResetAccountAction(parent);
 		
 		if(Business.getInstance().isFirstServerReady())
 			sendSubscriptionRequest(Business.getInstance().getFirstServer());
@@ -157,6 +159,52 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createCountAccountAction);
+	}
+	
+	private void createResetAccountAction(final Composite parent) {
+		// create local toolbars
+		createCountAccountAction = new Action() {
+			public void run() {
+				Table table = viewer.getTable();
+				TableItem items[] = table.getSelection();
+				Account account = null;
+				if(items.length > 0) {
+					TableItem item = items[0]; 
+					Object obj = item.getData();
+					if (obj instanceof Account) {
+						account = (Account)obj;
+					}
+				} 
+				
+				if(null == account)
+					return;
+
+				boolean result = 
+						  MessageDialog.openConfirm(parent.getShell(), 
+								  "Reset account", "Are you sure to reset account: " + account.getId());
+
+	
+				if(result) {
+					try {
+						Business.getInstance().getEventManager().
+							sendRemoteEvent(new ResetAccountRequestEvent(ID, 
+									Business.getInstance().getFirstServer(), account.getId(), IdGenerator.getInstance().getNextID()));
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
+				}
+
+			}
+		};
+		createCountAccountAction.setText("reset account");
+		createCountAccountAction.setToolTipText("Reset account");
+
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.CANCEL_ICON.toString());
+		createCountAccountAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createCountAccountAction);
+		
 	}
 	
 	private void createMenu(Composite parent) {

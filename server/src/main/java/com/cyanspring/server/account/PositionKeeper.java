@@ -734,4 +734,16 @@ public class PositionKeeper {
 	public List<ParentOrder> getTimeoutLocks() {
 		return closePositionLock.getTimeoutOrders();
 	}	
+	
+	public void resetAccount(String accountId) {
+		Account account = accountKeeper.getAccount(accountId);
+		synchronized(getSyncAccount(accountId)) {
+			account.reset();
+			parentOrders.remove(accountId);
+			accountPositions.remove(accountId);
+			closedPositions.remove(accountId);
+			executions.remove(accountId);
+		}	
+		this.notifyAccountUpdate(account);
+	}
 }
