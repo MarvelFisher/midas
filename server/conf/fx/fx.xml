@@ -128,14 +128,14 @@
 					<value>EURSGD</value>
 					<value>EURUSD</value>
 					<value>HKDJPY</value>
-					<value>KRWAUD</value>
+					<!-- <value>KRWAUD</value>
 					<value>KRWCAD</value>
 					<value>KRWCHF</value>
 					<value>KRWEUR</value>
 					<value>KRWGBP</value>
 					<value>KRWHKD</value>
 					<value>KRWJPY</value>
-					<value>KRWUSD</value>
+					<value>KRWUSD</value> -->
 					<value>MXNJPY</value>
 					<value>NZDCHF</value>
 					<value>NZDJPY</value>
@@ -220,14 +220,14 @@
 					<value>EURSGD</value>
 					<value>EURUSD</value>
 					<value>HKDJPY</value>
-					<value>KRWAUD</value>
+					<!-- <value>KRWAUD</value>
 					<value>KRWCAD</value>
 					<value>KRWCHF</value>
 					<value>KRWEUR</value>
 					<value>KRWGBP</value>
 					<value>KRWHKD</value>
 					<value>KRWJPY</value>
-					<value>KRWUSD</value>
+					<value>KRWUSD</value> -->
 					<value>MXNJPY</value>
 					<value>NZDCHF</value>
 					<value>NZDJPY</value>
