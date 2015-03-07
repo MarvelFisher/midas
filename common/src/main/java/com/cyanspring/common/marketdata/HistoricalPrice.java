@@ -54,6 +54,10 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	}
 	public boolean setPrice(double price)
 	{
+		if (PriceUtils.isZero(price))
+		{
+			return false;
+		}
 		boolean changed = false; 
 		if (PriceUtils.isZero(open))
 		{
@@ -92,12 +96,15 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		{
 			this.open = price.open ;
 		}
-		this.close = price.close;
+		if (!PriceUtils.isZero(price.close))
+		{
+			this.close = price.close;
+		}
 		if (this.high < price.high)
 		{
 			this.high = price.high;
 		}
-		if (PriceUtils.isZero(low) || this.low > price.low)
+		if (PriceUtils.isZero(this.low) || this.low > price.low)
 		{
 			this.low = price.low;
 		}

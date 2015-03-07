@@ -512,15 +512,18 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			if (day == cal.get(Calendar.DATE))
 			{
-				if (lastPrice.getHigh() < dCurHigh)
+				if (PriceUtils.isZero(dCurHigh) && lastPrice.getHigh() < dCurHigh)
 				{
 					lastPrice.setHigh(dCurHigh);
 				}
-				if (lastPrice.getLow() < dCurLow)
+				if (PriceUtils.isZero(dCurLow) && lastPrice.getLow() > dCurLow)
 				{
 					lastPrice.setLow(dCurLow);
 				}
-				lastPrice.setClose(dCurPrice);
+				if (!PriceUtils.isZero(dClose))
+				{
+					lastPrice.setClose(dClose);
+				}
 				lastPrice.setDatatime(date);
 			}
 			else
@@ -533,15 +536,18 @@ public class SymbolData implements Comparable<SymbolData>
 			if (week == cal.get(Calendar.WEEK_OF_YEAR))
 			{
 				lastPrice.setDatatime(date);
-				if (lastPrice.getHigh() < dCurHigh)
+				if (PriceUtils.isZero(dCurHigh) && lastPrice.getHigh() < dCurHigh)
 				{
 					lastPrice.setHigh(dCurHigh);
 				}
-				if (lastPrice.getLow() < dCurLow)
+				if (PriceUtils.isZero(dCurLow) && lastPrice.getLow() > dCurLow)
 				{
 					lastPrice.setLow(dCurLow);
 				}
-				lastPrice.setClose(dCurPrice);
+				if (!PriceUtils.isZero(dClose))
+				{
+					lastPrice.setClose(dClose);
+				}
 				lastPrice.setDatatime(date);
 			}
 			else
@@ -554,15 +560,18 @@ public class SymbolData implements Comparable<SymbolData>
 			if (month == cal.get(Calendar.MONTH))
 			{
 				lastPrice.setDatatime(date);
-				if (lastPrice.getHigh() < dCurHigh)
+				if (PriceUtils.isZero(dCurHigh) && lastPrice.getHigh() < dCurHigh)
 				{
 					lastPrice.setHigh(dCurHigh);
 				}
-				if (lastPrice.getLow() < dCurLow)
+				if (PriceUtils.isZero(dCurLow) && lastPrice.getLow() > dCurLow)
 				{
 					lastPrice.setLow(dCurLow);
 				}
-				lastPrice.setClose(dCurPrice);
+				if (!PriceUtils.isZero(dClose))
+				{
+					lastPrice.setClose(dClose);
+				}
 				lastPrice.setDatatime(date);
 			}
 			else
