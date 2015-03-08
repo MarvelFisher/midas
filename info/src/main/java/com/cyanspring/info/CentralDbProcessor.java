@@ -76,7 +76,7 @@ public class CentralDbProcessor implements IPlugin
 	private int nPreOpen ;
 	private int nChefCount = 5;
 	private ArrayList<String> preSubscriptionList;
-	private ArrayList<SymbolChef> SymbolChefList;
+	private ArrayList<SymbolChef> SymbolChefList = new ArrayList<SymbolChef>();
 	
 	private int    nTickCount ;
 	private MarketSessionType sessionType = null ;
@@ -1012,7 +1012,6 @@ public class CentralDbProcessor implements IPlugin
 		log.info("Initialising...");
 		dbhnd = new DBHandler(jdbcUrl, driverClass) ;
 		quoteBuffer = new LinkedList<QuoteEvent>();
-		resetStatement() ;
 		
 		// subscribe to events
 		eventProcessor.setHandler(this);
@@ -1037,6 +1036,7 @@ public class CentralDbProcessor implements IPlugin
 				SymbolChefList.add(new SymbolChef("Symbol_Chef_" + ii));
 			}
 		}
+		resetStatement() ;
 		requestMarketSession() ;
 
 		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
