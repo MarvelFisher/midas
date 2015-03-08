@@ -32,6 +32,9 @@
 		<property name="serverMarket">
 			<value>FX</value>
 		</property>
+		<property name="nChefCount">
+			<value>5</value>
+		</property>
 		<property name="preSubscriptionList">
 			<list>
 	            <value>USDJPY</value>

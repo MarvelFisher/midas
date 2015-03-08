@@ -43,7 +43,6 @@ public class SymbolData implements Comparable<SymbolData>
 	private String market = null;
 	private double d52WHigh = 0;
 	private double d52WLow = 0; 
-	private double dCurPrice = 0;
 	private double dCurHigh = 0;
 	private double dCurLow = 0;
 	private double dOpen = 0;
@@ -124,7 +123,6 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			dOpen = dPrice ;
 		}
-		dCurPrice = dPrice ;
 		dClose = dPrice ;
 		return changed;
 	}
