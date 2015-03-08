@@ -773,8 +773,8 @@ public class AccountPositionManager implements IPlugin {
 			List<Account> accounts = accountKeeper.getRmJobs().getJobs();
 			for(Account account: accounts) {
 				positionKeeper.updateAccountDynamicData(account);
-				checkStopLoss(account);
-				checkMarginCall(account);
+				if(!checkMarginCall(account))
+					checkStopLoss(account);
 			}
 			perfDataRm.end();
 		}
@@ -853,6 +853,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 	
 	private boolean checkMarginCall(Account account) {
+		boolean result = false;
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		if(PriceUtils.EqualLessThan(account.getCashAvailable(), 0.0) && positions.size() > 0) {
 			log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL() + ", " + account.getCashAvailable());
@@ -863,6 +864,9 @@ public class AccountPositionManager implements IPlugin {
 				for(ParentOrder order: orders) {
 					Quote quote = marketData.get(order.getSymbol());
 					if(!quoteIsValid(quote))
+						continue;
+					
+					if(order.getOrdStatus().isCompleted())
 						continue;
 					
 					log.info("Margin cut cancel order: " + account.getId() + ", " +
@@ -876,6 +880,7 @@ public class AccountPositionManager implements IPlugin {
 					CancelStrategyOrderEvent cancel = 
 							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.MarginCall, false);
 					eventManager.sendEvent(cancel);
+					result = true;
 					break;
 				}
 			} else {
@@ -923,12 +928,12 @@ public class AccountPositionManager implements IPlugin {
 							IdGenerator.getInstance().getNextID());
 					
 					eventManager.sendEvent(event);
+					result = true;
 					break;
 				}
 			}
-			return true;
 		}
-		return false;
+		return result;
 	}
 	
 	private void processDayEndTasks() {

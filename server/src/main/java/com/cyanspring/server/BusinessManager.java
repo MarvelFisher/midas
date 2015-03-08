@@ -13,6 +13,7 @@ package com.cyanspring.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -510,9 +511,16 @@ public class BusinessManager implements ApplicationContextAware {
 		String account = event.getAccount();
 		log.info("Received ResetAccountRequestEvent: " + account);
 		Map<String, ParentOrder> map = orders.getMap(account);
-		if(null != map && map.size() > 0) {
+		
+		List<ParentOrder> list = new LinkedList<ParentOrder>();
+		for(ParentOrder order: map.values()) {
+			if(!order.getOrdStatus().isCompleted())
+				list.add(order);
+		}
+			
+		if(null != list && list.size() > 0) {
 			MultiOrderCancelTracker tracker = new MultiOrderCancelTracker(eventManager, eventProcessor, event);
-			for(ParentOrder order: map.values()) {
+			for(ParentOrder order: list) {
 				tracker.add(order);
 			}
 			cancelTrackers.put(account, tracker);
