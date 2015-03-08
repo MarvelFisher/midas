@@ -1,32 +1,25 @@
 package com.cyanspring.info;
 
-import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowType;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
@@ -45,7 +38,6 @@ public class SymbolData implements Comparable<SymbolData>
 	private String market = null;
 	private double d52WHigh = 0;
 	private double d52WLow = 0; 
-	private double dCurPrice = 0;
 	private double dCurHigh = 0;
 	private double dCurLow = 0;
 	private double dOpen = 0;
@@ -126,7 +118,6 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			dOpen = dPrice ;
 		}
-		dCurPrice = dPrice ;
 		dClose = dPrice ;
 		return changed;
 	}
@@ -187,7 +178,7 @@ public class SymbolData implements Comparable<SymbolData>
 				centralDB.getTradedate(), getStrSymbol()) ;
 		File file = new File(strFile) ;
         file.getParentFile().mkdirs();
-        boolean fileExist = file.exists();
+        file.exists();
         try
         {
             FileOutputStream fos = new FileOutputStream(file, false);

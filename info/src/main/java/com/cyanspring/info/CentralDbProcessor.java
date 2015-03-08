@@ -71,15 +71,18 @@ public class CentralDbProcessor implements IPlugin
 	private int open ;
 	private int preopen ;
 	private int close ;
-	private int    nOpen ;
-	private int    nClose ;
-	private int    nPreOpen ;
+	private int nOpen ;
+	private int nClose ;
+	private int nPreOpen ;
+	private int nChefCount = 5;
 	private ArrayList<String> preSubscriptionList;
+	private ArrayList<SymbolChef> SymbolChefList;
 	
 	private int    nTickCount ;
 	private MarketSessionType sessionType = null ;
 	private String tradedate ;
 	static boolean isStartup = true;
+	private boolean calledRefdata = false;
 	private Queue<QuoteEvent> quoteBuffer;
 
 	// for checking SQL connect 
@@ -89,7 +92,7 @@ public class CentralDbProcessor implements IPlugin
 	private long checkSQLTimer = 0;
 	
 	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
-	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
+//	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<SymbolInfo> refSymbolInfo = new ArrayList<SymbolInfo>();
 	private ArrayList<String> appServIDList = new ArrayList<String>();
@@ -217,9 +220,9 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void resetSymbolDataStat()
 	{
-		for (SymbolData symboldata : listSymbolData)
+		for (SymbolChef chef : SymbolChefList)
 		{
-			symboldata.setWriteMin(true);
+			chef.resetSymbolDataStat();
 		}
 	}
 	
@@ -229,43 +232,9 @@ public class CentralDbProcessor implements IPlugin
 		{
 			return;
 		}
-		if (isStartup)
-		{
-			quoteBuffer.offer(event);
-			return;
-		}
-		Quote quote;
-		while(quoteBuffer.isEmpty() == false)
-		{
-			quote = quoteBuffer.poll().getQuote() ;
-			writeToTick(quote) ;
-			SymbolData symbolData = new SymbolData(quote.getSymbol()) ;
-			synchronized(this)
-			{
-				int index = Collections.binarySearch(listSymbolData, symbolData) ;
-				if (index < 0)
-				{
-					listSymbolData.add(~index, new SymbolData(quote.getSymbol(), Default.getMarket(), this)) ;
-					index = ~index ;
-				}
-				listSymbolData.get(index).setPrice(quote);
-			}
-			log.debug("Quote: " + quote);
-		}
-		quote = event.getQuote() ;
-		writeToTick(quote) ;
-		SymbolData symbolData = new SymbolData(quote.getSymbol()) ;
-		synchronized(this)
-		{
-			int index = Collections.binarySearch(listSymbolData, symbolData) ;
-			if (index < 0)
-			{
-				listSymbolData.add(~index, new SymbolData(quote.getSymbol(), Default.getMarket(), this)) ;
-				index = ~index ;
-			}
-			listSymbolData.get(index).setPrice(quote);
-		}
-		log.debug("Quote: " + quote);
+		Quote quote = event.getQuote();
+		int chefNum = getChefNumber(quote.getSymbol());
+		SymbolChefList.get(chefNum).onQuote(quote);
 	}
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
@@ -283,17 +252,13 @@ public class CentralDbProcessor implements IPlugin
 		List<String> symbolList = event.getSymbolList() ;
 //		Collections.sort(listSymbolData) ;
 		ArrayList<PriceHighLow> phlList = new ArrayList<PriceHighLow>() ;
-		synchronized(this)
+
+		int chefNum;
+		for (String symbol : symbolList)
 		{
-			for (String symbol : symbolList)
-			{
-				index = Collections.binarySearch(listSymbolData, new SymbolData(symbol));
-				if (index < 0)
-				{
-					continue ;
-				}
-				phlList.add(listSymbolData.get(index).getPriceHighLow(event.getType())) ;
-			}
+			chefNum = getChefNumber(symbol);
+			SymbolChefList.get(chefNum);
+			phlList.add(SymbolChefList.get(chefNum).retrievePriceHighLow(symbol, event.getType()));
 		}
 		PriceHighLowEvent retEvent = new PriceHighLowEvent(null, sender) ;
 		retEvent.setType(event.getType());
@@ -324,19 +289,10 @@ public class CentralDbProcessor implements IPlugin
 		Date   end    = event.getEndDate() ;
 		List<HistoricalPrice> listPrice = null;
 		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
-		synchronized(this)
-		{
-			index = Collections.binarySearch(listSymbolData, new SymbolData(symbol)) ;
-			if (index < 0)
-			{
-				retEvent.setOk(false) ;
-				retEvent.setMessage("Can't find requested symbol");
-				sendEvent(retEvent) ;
-				log.debug("Process Historical Price Request fail: Can't find requested symbol");
-				return ;
-			}
-		}
-		listPrice = listSymbolData.get(index).getHistoricalPrice(type, symbol, start, end) ;
+		
+		int chefNum = getChefNumber(symbol);
+		SymbolChefList.get(chefNum);
+		listPrice = SymbolChefList.get(chefNum).retrieveHistoricalPrice(type, symbol, start, end);
 		if (listPrice == null || listPrice.isEmpty())
 		{
 			retEvent.setOk(false) ;
@@ -884,9 +840,14 @@ public class CentralDbProcessor implements IPlugin
 			log.error(e.getMessage(), e);
 		}
 		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
-		if (refList.isEmpty() || this.listSymbolData.isEmpty() == false)
+		if (refList.isEmpty())
 		{
-			log.warn("refData is empty: " + refList.isEmpty() + " or already read");
+			log.warn("refData is empty: " + refList.isEmpty());
+			return ;
+		}
+		if (calledRefdata)
+		{
+			log.warn("refData is already read");
 			return ;
 		}
 		synchronized(this)
@@ -910,7 +871,10 @@ public class CentralDbProcessor implements IPlugin
 						dbhnd.checkMarketExist(refdata.getExchange());
 						marketList.add(refdata.getExchange());
 					}
-					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
+					int chefNum = getChefNumber(refdata.getSymbol());
+					SymbolChef chef = SymbolChefList.get(chefNum);
+					chef.createSymbol(refdata, this);
+//					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
 					symbolinfo = new SymbolInfo(refdata.getExchange(), refdata.getSymbol());
 					symbolinfo.setWindCode(null);
 					symbolinfo.setHint(refdata.getRefSymbol());
@@ -926,13 +890,7 @@ public class CentralDbProcessor implements IPlugin
 					{
 						outSymbol.println(refdata.getSymbol());
 					}
-					int index = Collections.binarySearch(listSymbolData, symbolData) ;
-					if (index < 0)
-					{
-						listSymbolData.add(~index, new SymbolData(refdata.getSymbol(), refdata.getExchange(), this)) ;
-						index = ~index ;
-					}
-					index = Collections.binarySearch(refSymbolInfo, symbolinfo);
+					int index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 					if (index < 0)
 					{
 						refSymbolInfo.add(~index, symbolinfo);
@@ -945,6 +903,7 @@ public class CentralDbProcessor implements IPlugin
 					}
 				}
 				outSymbol.close();
+				calledRefdata = true;
 			} 
 			catch (IOException e) 
 			{
@@ -956,6 +915,10 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		isStartup = false;
+		for (SymbolChef chef : SymbolChefList)
+		{
+			chef.chefStart();
+		}
 		log.info("Call refData finish");
 	}
 	
@@ -964,8 +927,7 @@ public class CentralDbProcessor implements IPlugin
 		isStartup = true;
 		synchronized(this)
 		{
-			log.debug("Clear listSymbolData " + listSymbolData.size() + " symbols");
-			this.listSymbolData.clear();
+			this.clearSymbolChefData();
 			this.quoteBuffer.clear();
 			this.refSymbolInfo.clear();
 		}
@@ -982,23 +944,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			if (sessionType == MarketSessionType.CLOSE)
 			{
-				for (SymbolData symbol : listSymbolData)
-				{
-					if (symbol.getMarket() == null || symbol.getMarket().equals(market) == false)
-					{
-						continue;
-					}
-					symbol.insertSQLDate("D");
-					symbol.insertSQLDate("W");
-					symbol.insertSQLDate("M");
-					symbol.insertSQLTick("1");
-					symbol.insertSQLTick("R");
-					symbol.insertSQLTick("A");
-					symbol.insertSQLTick("Q");
-					symbol.insertSQLTick("H");
-					symbol.insertSQLTick("6");
-					symbol.insertSQLTick("T");
-				}
+				insertSQL(market);
 			}
 			else if (sessionType == MarketSessionType.PREOPEN)
 			{
@@ -1080,7 +1026,17 @@ public class CentralDbProcessor implements IPlugin
 		if(eventProcessorMD.getThread() != null)
 			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
 		refDataManager.init();
-//		onCallRefData();
+		if (nChefCount <= 1)
+		{
+			SymbolChefList.add(new SymbolChef("Symbol_Chef_0"));
+		}
+		else
+		{
+			for (int ii = 0; ii < nChefCount; ii++)
+			{
+				SymbolChefList.add(new SymbolChef("Symbol_Chef_" + ii));
+			}
+		}
 		requestMarketSession() ;
 
 		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
@@ -1142,6 +1098,33 @@ public class CentralDbProcessor implements IPlugin
 		return sessionType;
 	}
 	
+	public int getChefNumber(String strKey)
+	{
+		if(nChefCount <= 1)
+			return 0;
+		
+		int nCode = strKey.hashCode();
+		if(nCode < 0)
+		    nCode = Math.abs(nCode);
+			
+		return nCode % nChefCount;
+	}
+	public void clearSymbolChefData()
+	{
+		for (SymbolChef chef : SymbolChefList)
+		{
+			chef.chefStop();
+			chef.clearSymbol();
+		}
+	}
+	
+	public void insertSQL(String market)
+	{
+		for (SymbolChef chef : SymbolChefList)
+		{
+			chef.insertSQL(market);
+		}
+	}
 }
 
 class AppendingObjectOutputStream extends ObjectOutputStream 
