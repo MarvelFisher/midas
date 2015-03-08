@@ -10,6 +10,7 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.type.StrategyState;
 
 public class MultiOrderCancelTracker {
 	private IAsyncEventManager eventManager;
@@ -37,7 +38,7 @@ public class MultiOrderCancelTracker {
 	
 	public boolean checkParentOrderUpdate(UpdateParentOrderEvent event) {
 		ParentOrder order = event.getParent();
-		if(order.getOrdStatus().isCompleted()) {
+		if(order.getOrdStatus().isCompleted() && order.getState().equals(StrategyState.Terminated)) {
 			eventManager.unsubscribe(UpdateParentOrderEvent.class, order.getId(), listener);
 			orders.remove(order.getId());
 		}

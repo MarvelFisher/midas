@@ -51,6 +51,7 @@ import com.cyanspring.common.event.account.ChangeUserPasswordEvent;
 import com.cyanspring.common.event.account.ChangeUserPasswordReplyEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
+import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
@@ -62,6 +63,7 @@ import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateUserEvent;
 import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
@@ -107,6 +109,7 @@ public class PersistenceManager {
 	private int textSize = 4000;
 	private boolean cleanStart;
 	private boolean todayOnly;
+	private long purgeOrderDays = 20;
 	private boolean deleteTerminated = true;
 	protected boolean persistSignal;
 	NetworkServerControl server;
@@ -136,6 +139,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
+			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -162,6 +166,9 @@ public class PersistenceManager {
 			truncateData(Clock.getInstance().now());
 		else if (todayOnly)
 			truncateData(TimeUtil.getOnlyDate(Clock.getInstance().now()));
+		else if(purgeOrderDays > 0) {
+			truncateOrders();
+		}
 
 		// subscribe to events
 		eventProcessor.setHandler(this);
@@ -263,6 +270,101 @@ public class PersistenceManager {
 		finally {
 			session.close();
 		}
+	}
+
+	private void truncateOrders() {
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			Date date = new Date();
+			date = new Date(date.getTime() - purgeOrderDays * TimeUtil.millisInDay);
+			
+		    tx = session.beginTransaction();
+		    String hql;
+		    Query query;
+		    int rowCount;
+		    
+	        hql = "delete from TextObject where timeStamp < :timeStamp and serverId = :serverId";
+	        query = session.createQuery(hql);
+	        query.setParameter("timeStamp", date);
+	        query.setParameter("serverId", IdGenerator.getInstance().getSystemId());
+	        rowCount = query.executeUpdate();
+	        log.debug("TextObject Records deleted: " + rowCount);
+	        
+	        hql = "delete from ChildOrder where created < :created and serverId = :serverId";
+	        query = session.createQuery(hql);
+	        query.setParameter("created", date);
+	        query.setParameter("serverId", IdGenerator.getInstance().getSystemId());
+	        rowCount = query.executeUpdate();
+	        log.debug("ChildOrder Records deleted: " + rowCount);
+
+	        tx.commit();
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+		    if (tx!=null) 
+		    	tx.rollback();
+		}
+		finally {
+			session.close();
+		}
+	}
+	
+	public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
+		ResetAccountRequestEvent evt = event.getEvent();
+		String account = evt.getAccount();
+		log.info("Received InternalResetAccountRequestEvent: " + account);
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			Date date = new Date();
+			date = new Date(date.getTime() - purgeOrderDays * TimeUtil.millisInDay);
+			
+		    tx = session.beginTransaction();
+		    String hql;
+		    Query query;
+		    int rowCount;
+		    
+	        hql = "delete from TextObject where account = :account";
+	        query = session.createQuery(hql);
+	        query.setParameter("account", account);
+	        rowCount = query.executeUpdate();
+	        log.info("TextObject Records deleted: " + rowCount);
+	        
+	        hql = "delete from ChildOrder where account = :account";
+	        query = session.createQuery(hql);
+	        query.setParameter("account", account);
+	        rowCount = query.executeUpdate();
+	        log.info("ChildOrder Records deleted: " + rowCount);
+
+	        hql = "delete from ClosedPosition where account = :account";
+	        query = session.createQuery(hql);
+	        query.setParameter("account", account);
+	        rowCount = query.executeUpdate();
+	        log.info("CLOSED_POSITION Records deleted: " + rowCount);
+
+	        hql = "delete from OpenPosition where account = :account";
+	        query = session.createQuery(hql);
+	        query.setParameter("account", account);
+	        rowCount = query.executeUpdate();
+	        log.info("OPEN_POSITION Records deleted: " + rowCount);
+
+	        hql = "delete from Execution where account = :account";
+	        query = session.createQuery(hql);
+	        query.setParameter("account", account);
+	        rowCount = query.executeUpdate();
+	        log.info("Execution Records deleted: " + rowCount);
+
+	        tx.commit();
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+		    if (tx!=null) 
+		    	tx.rollback();
+		}
+		finally {
+			session.close();
+		}		
 	}
 
 	private void persistXml(String id, PersistType persistType, StrategyState state, String user, 
@@ -1142,6 +1244,14 @@ public class PersistenceManager {
 
 	public void setCheckEmailUnique(CheckEmailType checkEmailUnique) {
 		this.checkEmailUnique = checkEmailUnique;
+	}
+
+	public long getPurgeOrderDays() {
+		return purgeOrderDays;
+	}
+
+	public void setPurgeOrderDays(long purgeOrderDays) {
+		this.purgeOrderDays = purgeOrderDays;
 	}
 	
 }
