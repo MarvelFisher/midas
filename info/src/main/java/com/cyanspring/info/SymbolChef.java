@@ -132,6 +132,7 @@ public class SymbolChef implements Runnable{
 				try 
 				{
 					Thread.sleep(lTimeOut);
+					continue;
 				} 
 				catch (InterruptedException e) 
 				{

@@ -232,6 +232,10 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processQuoteEvent(QuoteEvent event)
 	{
+		if (SymbolChefList.size() != nChefCount)
+		{
+			return;
+		}
 		if (sessionType == MarketSessionType.CLOSE)
 		{
 			return;
