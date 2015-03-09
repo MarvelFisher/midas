@@ -216,22 +216,26 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			lastPrice = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
 			Calendar cal_ = Calendar.getInstance() ;
+			boolean bDelete = false ;
 			if (lastPrice != null)
 			{
 				cal_.setTime(lastPrice.getTimestamp());
-			}
-			boolean bDelete = false ;
-			if (strType.equals("W"))
-			{
-				bDelete = cal_.get(Calendar.WEEK_OF_YEAR) == cal.get(Calendar.WEEK_OF_YEAR) ;
+				if (strType.equals("W"))
+				{
+					bDelete = cal_.get(Calendar.WEEK_OF_YEAR) == cal.get(Calendar.WEEK_OF_YEAR) ;
+				}
+				else
+				{
+					bDelete = cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH) ;
+				}
+				if (bDelete)
+				{
+					centralDB.dbhnd.deletePrice(market, strType, getStrSymbol(), lastPrice);
+				}
 			}
 			else
 			{
-				bDelete = cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH) ;
-			}
-			if (bDelete)
-			{
-				centralDB.dbhnd.deletePrice(market, strType, getStrSymbol(), lastPrice);
+				lastPrice = new HistoricalPrice(getStrSymbol(), true) ;
 			}
 			lastPrice.setTimestamp(cal.getTime());
 			if (!bDelete)
@@ -246,11 +250,13 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				lastPrice.setVolume(lastPrice.getVolume() + (int)dCurVolume);
 			}
-			if (lastPrice.getHigh() < dCurHigh && PriceUtils.isZero(dCurHigh) == false)
+			if (PriceUtils.isZero(lastPrice.getHigh()) 
+					|| (lastPrice.getHigh() < dCurHigh && PriceUtils.isZero(dCurHigh) == false))
 			{
 				lastPrice.setHigh(dCurHigh);
 			}
-			if (lastPrice.getLow() > dCurLow && PriceUtils.isZero(dCurLow) == false)
+			if (PriceUtils.isZero(lastPrice.getLow()) 
+					|| (lastPrice.getLow() > dCurLow && PriceUtils.isZero(dCurLow) == false))
 			{
 				lastPrice.setLow(dCurLow);
 			}
