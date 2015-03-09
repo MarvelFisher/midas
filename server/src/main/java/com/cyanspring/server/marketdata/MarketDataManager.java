@@ -74,9 +74,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	@Autowired
 	protected IRemoteEventManager eventManager;
 
-	@Autowired
-	protected SystemInfo systemInfo;
-
 	protected ScheduleManager scheduleManager = new ScheduleManager();
 
 	// private IQuoteChecker quoteChecker = new PriceQuoteChecker();
