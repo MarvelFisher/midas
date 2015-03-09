@@ -95,8 +95,11 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 				MarketSessionEvent msEvent = sessionState.getCurrentMarketSessionEvent(date);
 				msEvent.setKey(null);
 				msEvent.setReceiver(null);
-				log.info("Send MarketSessionEvent: " + msEvent);
-				eventManager.sendGlobalEvent(msEvent);	
+				if(currentSessionType == null || !currentSessionType.equals(msEvent.getSession())){
+					log.info("Send MarketSessionEvent: " + msEvent);
+					eventManager.sendGlobalEvent(msEvent);	
+					currentSessionType = msEvent.getSession();
+				}
 			}
 			if(sessionState.isTradeDateChange()){
 				TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
