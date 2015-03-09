@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.TimeZone;
 
@@ -25,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -95,7 +92,7 @@ public class CentralDbProcessor implements IPlugin
 	private long checkSQLInterval = 10 * 60 * 1000;
 	private long checkSQLTimer = 0;
 	
-	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
+//	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 //	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private IRefSymbolInfo refSymbolInfo;
@@ -255,7 +252,6 @@ public class CentralDbProcessor implements IPlugin
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
 		log.info("Process Price High Low Request");
-		int index;
 		String sender = event.getSender() ;
 		List<String> symbolList = event.getSymbolList() ;
 //		Collections.sort(listSymbolData) ;
@@ -287,7 +283,6 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
 	{
-		int index;
 		String symbol = event.getSymbol() ;
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
 		retEvent.setSymbol(symbol);
