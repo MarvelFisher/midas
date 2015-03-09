@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
+
+
 
 
 
@@ -28,6 +31,7 @@ public class WindGateway {
 	public static HashMap<String,TDF_FUTURE_DATA> mapFutureData = new HashMap<String,TDF_FUTURE_DATA>(); 
 	public static HashMap<String,TDF_MARKET_DATA> mapMarketData = new HashMap<String,TDF_MARKET_DATA>();
 	public static HashMap<String,TDF_INDEX_DATA>  mapIndexData  = new HashMap<String,TDF_INDEX_DATA>();
+	public static HashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new HashMap<String,ArrayList<TDF_CODE>>();
 	
 	private static String windMFServerIP = "114.80.154.34";
 	private static String windMFServerPort = "10050";
@@ -395,7 +399,29 @@ public class WindGateway {
 				"|OldDate=" + dateChange.getOldDate() + "|NewDate=" + dateChange.getNewDate();
 		log.info(str);
 		publishWindData(str,null);			
-	}	
+	}
+	
+	public void receiveCodeTable(String strMarket,TDF_CODE[] codes)
+	{
+		ArrayList<TDF_CODE> lst;
+		if(mapCodeTable.containsKey(strMarket))
+		{
+			lst = mapCodeTable.get(strMarket);
+		}
+		else
+		{
+			lst = new ArrayList<TDF_CODE>();
+			mapCodeTable.put(strMarket, lst);
+		}
+		synchronized(lst)
+		{
+			lst.clear();
+			for(TDF_CODE code : codes)
+			{
+				lst.add(code);
+			}
+		}
+	}
 	
 	public void run() throws InterruptedException
 	{
