@@ -180,6 +180,13 @@ public class Demo {
 				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
 				codeTableResult = data.getCodeTableResult();
 				PrintHelper.printCodeTableResult(data.getCodeTableResult());
+				if(windGateway != null)
+				{
+					for(String market : data.getCodeTableResult().getMarket())
+					{
+						windGateway.receiveCodeTable(market, client.getCodeTable(market));
+					}
+				}
 				//printCodeTable();
 				//err = client.setSubscription("AG1506.SHF", 1);
 				//System.out.println("Subscription Result : " + err);
