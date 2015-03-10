@@ -82,7 +82,10 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 			MarketSessionEvent msEvent = sessionState.getCurrentMarketSessionEvent(date);
 			msEvent.setKey(null);
 			msEvent.setReceiver(null);
-			eventManager.sendRemoteEvent(msEvent);
+			if(event.isLocal())
+				eventManager.sendEvent(msEvent);
+			else
+				eventManager.sendRemoteEvent(msEvent);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -40,6 +41,7 @@ import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketdata.TradeSubEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
@@ -254,14 +256,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		try {
 			eventManager.sendGlobalEvent(event);
 
-//			if (event.getQuote().getSymbol().equals("USDJPY")) {
-//				double step = this.forexTickTable.getSpread(event.getQuote()
-//						.getBid(), event.getQuote().getAsk());
-//				String time = formatDate(event.getQuote().getTimeStamp(),
-//						"HH:mm:ss");
-//				log.info(String.format("[%s]%s dif=[%.2f]", time, event
-//						.getQuote().toString(), step));
-
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -289,6 +283,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
 
+		if (quote.getAsk() <= -1 || quote.getBid() <= -1)
+			log.info("Quote Error: " + quote.getSymbol() + ",Bid: "
+					+ quote.getBid() + ",Ask: " + quote.getAsk());
+
 		if (null == prev) {
 			logStaleInfo(prev, quote, quote.isStale());
 			quotes.put(quote.getSymbol(), quote);
@@ -304,6 +302,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 						quote));					
 			}else{
 				boolean prevStale = prev.isStale();
+				logStaleInfo(prev, quote, true);
 				prev.setStale(true); // just set the existing stale
 				if (!prevStale){
 					//Stale send prev Quote
@@ -412,6 +411,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			log.info("LastTradeDateQuotes Loaded Results [" + entry.getKey()
 					+ "] " + entry.getValue().toString());
 		}
+
+		requestMarketSession();
 
 		chkDate = Clock.getInstance().now();
 		for (IMarketDataAdaptor adaptor : adaptors) {
@@ -601,7 +602,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				IMarketDataAdaptor adaptor = adaptors.get(i);
 				if (!adaptor.getState())
 					continue;
+
 				log.debug("Market data presubscribe adapter begin : " + adaptor.getState());
+
 				for (String symbol : preList) {
 					adaptor.subscribeMarketData(symbol, this);
 				}
@@ -653,6 +656,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	public void setTimerInterval(long timerInterval) {
 		this.timerInterval = timerInterval;
+	}
+
+
+	public void requestMarketSession() {
+		eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
 	}
 
 }
