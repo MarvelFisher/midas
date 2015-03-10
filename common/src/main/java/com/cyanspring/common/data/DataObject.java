@@ -64,6 +64,12 @@ public class DataObject implements Cloneable, Serializable{
 		fields.put(filedName, data);
 	}
 	
+	public void set(double data, String filedName){
+		if(fields.containsKey(filedName))
+			fields.remove(filedName);			
+		fields.put(filedName, data);
+	}
+	
 	public boolean fieldExists(String name) {
 		return fields.containsKey(name);
 	}

@@ -63,7 +63,6 @@
 		<property name="textSize" value="4000"></property>
 		<property name="cleanStart" value="false"></property>
 		<property name="todayOnly" value="true"></property>
-		<property name="checkEmailUnique" value="onlyExist"></property>
 		<property name="syncCentralDb" value="false"></property>
 	</bean>
 
@@ -169,6 +168,9 @@
 	</bean>
 
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
+	</bean>
+	
+	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.FuRefDataManager">

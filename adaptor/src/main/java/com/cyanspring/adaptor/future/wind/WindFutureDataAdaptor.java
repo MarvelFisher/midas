@@ -42,6 +42,7 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.fu.IFuRefDataManager;
 import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
@@ -60,7 +61,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	int gatewayPort = 0;
 	boolean gateway = false;
 	boolean showGui = false;
-	IRefDataManager refDataManager;
+	IFuRefDataManager refDataManager;
 	boolean marketDataLog = false; // log control
 	String marketType = "";
 	MarketSessionUtil marketSessionUtil;
@@ -81,11 +82,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		this.marketType = marketType;
 	}
 
-	public IRefDataManager getRefDataManager() {
+	public IFuRefDataManager getRefDataManager() {
 		return refDataManager;
 	}
 
-	public void setRefDataManager(IRefDataManager refDataManager) {
+	public void setRefDataManager(IFuRefDataManager refDataManager) {
 		this.refDataManager = refDataManager;
 	}
 
@@ -1020,7 +1021,12 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					log.info("subscribeMarketData RefSymbol: " + instrument);
 					log.debug("Setting refDataManager: "
 							+ refDataManager.getClass());
-					RefData refData = refDataManager.getRefData(instrument);
+					RefData refData = null;
+					if(instrument.indexOf(".") == -1){
+						refData =refDataManager.getRefDataByRefSymbol(instrument);
+					}else{
+						refData =refDataManager.getRefDataBySymbol(instrument);
+					}
 					if (refData == null) {
 						LogUtil.logError(log, "RefSymbol " + instrument
 								+ " is not found in reference data");

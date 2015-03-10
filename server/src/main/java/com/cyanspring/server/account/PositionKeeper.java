@@ -19,6 +19,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
+import com.cyanspring.common.account.ICommissionManager;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
@@ -63,6 +64,9 @@ public class PositionKeeper {
 	
 	@Autowired
 	ILeverageManager leverageManager;
+	
+	@Autowired
+	ICommissionManager commissionManager;
 
 	private ClosePositionLock closePositionLock = new ClosePositionLock();
 	
@@ -213,10 +217,18 @@ public class PositionKeeper {
 				}
 			}
 			
-			if(!PriceUtils.isZero(Default.getCommission())) {
+			AccountSetting accountSetting = null;
+			try {
+				accountSetting = accountKeeper.getAccountSetting(account.getId());
+			} catch (AccountException e) {
+				log.error(e.getMessage(), e);
+			}
+			RefData refData = refDataManager.getRefData(execution.getSymbol());
+			
+			if(!PriceUtils.isZero(commissionManager.getCommission(refData, accountSetting))) {
 				double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
-				double commision = Default.getCommission(value);
+				double commision = commissionManager.getCommission(refData, accountSetting, value);
 				account.updatePnL(-commision);
 			} 
 
@@ -590,13 +602,12 @@ public class PositionKeeper {
 		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter,
 				account.getCurrency(), quote.getSymbol(), 
 				deltaQty, price));
-		
-		deltaValue += Default.getCommission(deltaValue);
-		
+				
 		AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
 
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
+		deltaValue += commissionManager.getCommission(refData, accountSetting, deltaValue);
 		
 		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {
 			return true;

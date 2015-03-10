@@ -15,6 +15,9 @@ import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
 
 public class TestPositionKeeper {
@@ -36,7 +39,10 @@ public class TestPositionKeeper {
 	@Before
 	public void before() {
 		keeper = new PositionKeeper();
-		keeper.accountKeeper = new AccountKeeper();
+		keeper.accountKeeper = new AccountKeeper();		
+		keeper.refDataManager = new testRefDataManager();
+		keeper.leverageManager = new LeverageManager();
+		keeper.commissionManager = new CommissionManager();
 	}
 	
 	@Test
@@ -245,5 +251,42 @@ public class TestPositionKeeper {
 		log.debug(closedPositions.get(4).toString());
 	}
 
+	private class testRefDataManager implements IRefDataManager{
+		
+		RefData refData;
+		@Override
+		public void init() throws Exception {
+			refData = new RefData();
+			refData.set("AUDUSD", RefDataField.SYMBOL.value());
+			refData.set(0.2, RefDataField.COMMISSION_FEE.value());
+			refData.set(40, RefDataField.MARGIN_RATE.value());
+		}
 
+		@Override
+		public RefData getRefData(String symbol) {
+			if(symbol.equals("AUDUSD"))
+				return refData;
+			return null;
+		}
+
+		@Override
+		public String getRefDataFile() {
+			return null;
+		}
+
+		@Override
+		public List<RefData> getRefDataList() {
+			return null;
+		}
+
+		@Override
+		public String getMarket() {
+			return null;
+		}
+
+		@Override
+		public void setRefDataFile(String refDataFile) {			
+		}
+		
+	}
 }
