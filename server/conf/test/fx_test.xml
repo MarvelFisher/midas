@@ -63,6 +63,7 @@
 		<property name="textSize" value="4000"></property>
 		<property name="cleanStart" value="false"></property>
 		<property name="todayOnly" value="true"></property>
+		<property name="checkEmailUnique" value="onlyExist"></property>
 		<property name="syncCentralDb" value="false"></property>
 	</bean>
 
