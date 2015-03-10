@@ -76,7 +76,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager, IFuRefDataMan
 	
 	@Override
 	public RefData getRefData(String symbol) {
-		return refSymbolMap.get(symbol);
+		return symbolMap.get(symbol);
 	}
 
 	@Override
