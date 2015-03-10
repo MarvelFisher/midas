@@ -456,7 +456,20 @@ public class PersistenceManager {
 				{
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 					if(ok)
+					{
 						user = userKeeper.getUser(userId);
+						
+						if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+							defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+						} 
+						
+						list = accountKeeper.getAccounts(userId);
+						
+						if(defaultAccount == null && (list == null || list.size() <= 0)) {
+							ok = false;
+							message = "No trading account available for this user";
+						}
+					}
 					else
 						message = "userid or password invalid";
 				}
