@@ -15,13 +15,11 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.staticdata.fu.IFStrategy;
-import com.cyanspring.common.staticdata.fu.IFuRefDataManager;
 import com.cyanspring.common.staticdata.fu.RefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class FuRefDataManager implements IPlugin, IRefDataManager, IFuRefDataManager{
+public class FuRefDataManager implements IPlugin, IRefDataManager{
 	private static final Logger log = LoggerFactory
 			.getLogger(FuRefDataManager.class);
 	String refDataFile;	
