@@ -287,6 +287,18 @@ public class TestPositionKeeper {
 		@Override
 		public void setRefDataFile(String refDataFile) {			
 		}
+
+		@Override
+		public RefData getRefDataByRefSymbol(String refSymbol) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public RefData getRefDataBySymbol(String symbol) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 }

@@ -42,7 +42,6 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.fu.IFuRefDataManager;
 import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
@@ -61,7 +60,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	int gatewayPort = 0;
 	boolean gateway = false;
 	boolean showGui = false;
-	IFuRefDataManager refDataManager;
+	IRefDataManager refDataManager;
 	boolean marketDataLog = false; // log control
 	String marketType = "";
 	MarketSessionUtil marketSessionUtil;
@@ -82,11 +81,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		this.marketType = marketType;
 	}
 
-	public IFuRefDataManager getRefDataManager() {
+	public IRefDataManager getRefDataManager() {
 		return refDataManager;
 	}
 
-	public void setRefDataManager(IFuRefDataManager refDataManager) {
+	public void setRefDataManager(IRefDataManager refDataManager) {
 		this.refDataManager = refDataManager;
 	}
 
@@ -1022,19 +1021,22 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					log.debug("Setting refDataManager: "
 							+ refDataManager.getClass());
 					RefData refData = null;
+					String targetField = "";
 					if(instrument.indexOf(".") == -1){
 						refData =refDataManager.getRefDataByRefSymbol(instrument);
+						targetField =  "RefSymbol ";
 					}else{
 						refData =refDataManager.getRefDataBySymbol(instrument);
+						targetField = "Symbol ";
 					}
 					if (refData == null) {
-						LogUtil.logError(log, "RefSymbol " + instrument
+						LogUtil.logError(log, targetField + instrument
 								+ " is not found in reference data");
-						throw new MarketDataException("Ref Symbol:"
+						throw new MarketDataException(targetField
 								+ instrument
 								+ " is not found in reference data");
 					} else {
-						LogUtil.logDebug(log, "RefSymbol " + instrument
+						LogUtil.logDebug(log, targetField + instrument
 								+ " Exchange=" + refData.getExchange()
 								+ ",Symbol=" + refData.getSymbol()
 								+ ",Strategy=" + refData.getStrategy());

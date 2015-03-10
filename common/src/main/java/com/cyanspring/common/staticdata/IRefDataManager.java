@@ -9,4 +9,6 @@ public interface IRefDataManager {
 	public List<RefData> getRefDataList();
 	public String getMarket();
 	public void setRefDataFile(String refDataFile);
+	public RefData getRefDataByRefSymbol(String refSymbol);
+	public RefData getRefDataBySymbol(String symbol);
 }
