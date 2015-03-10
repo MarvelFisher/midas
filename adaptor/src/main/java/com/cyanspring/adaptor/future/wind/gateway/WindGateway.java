@@ -353,25 +353,31 @@ public class WindGateway {
 		String symbol = futureData.getWindCode();
 		TDF_FUTURE_DATA data = mapFutureData.get(symbol);
 		mapFutureData.put(futureData.getWindCode(),futureData);
-		String str = publishFutureChanges(data,futureData);
+		if(WindGatewayHandler.isRegisteredByClient(symbol))
+		{			
+			String str = publishFutureChanges(data,futureData);
+			publishWindData(str,symbol);
+		}
 		if(data != null)
 		{			
 			data = null;
-		}
-		publishWindData(str,symbol);		
+		}		
 			
 	}
 	
 	public void receiveMarketData(TDF_MARKET_DATA marketData) {
 		String symbol = marketData.getWindCode();
 		TDF_MARKET_DATA data = mapMarketData.get(symbol);
-		mapMarketData.put(marketData.getWindCode(),marketData);
-		String str = publishMarketDataChanges(data,marketData);
+		mapMarketData.put(marketData.getWindCode(),marketData);		
+		if(WindGatewayHandler.isRegisteredByClient(symbol))
+		{			
+			String str = publishMarketDataChanges(data,marketData);
+			publishWindData(str,symbol);
+		}
 		if(data != null)
 		{			
 			data = null;
-		}
-		publishWindData(str,symbol);			
+		}		
 	}
 	
 	public void receiveIndexData(TDF_INDEX_DATA indexData)
@@ -379,12 +385,15 @@ public class WindGateway {
 		String symbol = indexData.getWindCode();
 		TDF_INDEX_DATA data = mapIndexData.get(symbol);
 		mapIndexData.put(indexData.getWindCode(),indexData);
-		String str = publishIndexDataChanges(data,indexData);
+		if(WindGatewayHandler.isRegisteredByClient(symbol))
+		{			
+			String str = publishIndexDataChanges(data,indexData);
+			publishWindData(str,symbol);
+		}
 		if(data != null)
 		{			
 			data = null;
-		}
-		publishWindData(str,symbol);			
+		}		
 	}
 	
 	public void receiveMarketClose(TDF_MARKET_CLOSE marketClose) {
@@ -498,6 +507,15 @@ public class WindGateway {
 	public static void main(String[] args) throws InterruptedException
 	{
 		DOMConfigurator.configure("conf/windGatewaylog4j.xml");
+				
+		String current = null;
+		try {
+			current = new java.io.File( "." ).getCanonicalPath();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	        System.out.println("Current dir:"+current);		
 	
 	    //Reading properties file in Java example
         Properties props = new Properties();

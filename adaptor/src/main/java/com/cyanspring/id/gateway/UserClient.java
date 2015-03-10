@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -86,9 +87,14 @@ public class UserClient implements AutoCloseable {
 	public void addRef(String symbol) {
 
 		synchronized (refLock) {
-			if (refList.contains(symbol) == false) {
-				refList.add(symbol);
+			int pos = Collections.binarySearch(refList, symbol);
+			if(pos < 0)
+			{
+				refList.add(~pos,symbol);
 			}
+			//if (refList.contains(symbol) == false) {
+			//	refList.add(symbol);
+			//}
 		}
 		LogUtil.logInfo(log, "[%s] add ref : %s", key, symbol);
 	}
@@ -96,16 +102,22 @@ public class UserClient implements AutoCloseable {
 	public void removeRef(String symbol) {
 
 		synchronized (refLock) {
-			if (refList.contains(symbol) == true) {
-				refList.remove(symbol);
-			}
+			int pos = Collections.binarySearch(refList, symbol);
+			if(pos >= 0)
+			{
+				refList.remove(pos);
+			}			
+			//if (refList.contains(symbol) == true) {
+			//	refList.remove(symbol);
+			//}
 		}
 		LogUtil.logInfo(log, "[%s] remove ref : %s", key, symbol);
 	}
 
 	public void sendData(String symbol, byte[] data) {
 
-		if (!gateway && refList.contains(symbol) == false) {
+		//if (!gateway && refList.contains(symbol) == false) {
+		if(!gateway && Collections.binarySearch(refList, symbol) < 0) {
 			data = null;
 			return;
 		}

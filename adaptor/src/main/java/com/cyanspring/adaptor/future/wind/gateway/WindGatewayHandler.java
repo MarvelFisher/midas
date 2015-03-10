@@ -33,7 +33,19 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	private static final Hashtable<Channel,ArrayList<String>> channels = new Hashtable<Channel,ArrayList<String>>();
 	private static final ArrayList<String> arrGlobalSubsSym = new ArrayList<String>();  
 	private static final Logger log = LoggerFactory
-			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);	
+			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);
+	
+	static public boolean isRegisteredByClient(String symbol)
+	{
+		synchronized(arrGlobalSubsSym)
+		{
+			if(Collections.binarySearch(arrGlobalSubsSym,symbol) < 0)
+			{
+				return false;
+			}
+		}		
+		return true;
+	}
 	
 	public static String addHashTail(String str)
 	{
@@ -44,20 +56,6 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	synchronized static public void publishWindData(String str,String symbol)
 	{
 		str = addHashTail(str);
-		//for(Channel channel : channels)
-		//{
-		//	channel.writeAndFlush(str);
-		//}
-		if(symbol != null)
-		{   // 檢查是否有 client 註冊過此 symbol			
-			synchronized(arrGlobalSubsSym)
-			{
-				if(Collections.binarySearch(arrGlobalSubsSym,symbol) < 0)
-				{
-					return;
-				}
-			}
-		}
 		synchronized(channels)
 		{
 			Iterator<?> it = channels.entrySet().iterator();			
@@ -80,30 +78,6 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();
 		
-		/*
-		synchronized(WindGateway.mapFutureData)
-		{
-			Iterator<?> it = WindGateway.mapFutureData.entrySet().iterator();
-			String str;
-			while (it.hasNext()) {
-				@SuppressWarnings("rawtypes")
-				Map.Entry pairs = (Map.Entry)it.next();
-				str = addHashTail(WindGateway.publishFutureChanges(null, (TDF_FUTURE_DATA)pairs.getValue()));
-				incoming.writeAndFlush(str);
-			}
-		}
-		synchronized(WindGateway.mapMarketData)
-		{
-			Iterator<?> it = WindGateway.mapMarketData.entrySet().iterator();
-			String str;
-			while (it.hasNext()) {
-				@SuppressWarnings("rawtypes")
-				Map.Entry pairs = (Map.Entry)it.next();
-				str = addHashTail(WindGateway.publishMarketDataChanges(null, (TDF_MARKET_DATA)pairs.getValue()));
-				incoming.writeAndFlush(str);
-			}			
-		}
-		*/
 		channels.put(ctx.channel(),new ArrayList<String>());
 		String logstr = "[Server] - " + incoming.remoteAddress() + " has joined! , Current Count : " + channels.size();
 		System.out.println(logstr);
@@ -126,9 +100,6 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
         String in = (String) msg;
         try {
         		if(in != null) {
-        			//String strlog = "in : [" + in + "] , " + ctx.channel().remoteAddress();
-        			//System.out.println(strlog);
-        			//log.info(strlog);
         			Channel channel = ctx.channel();
         			ArrayList<String> lst = channels.get(channel);
         			if(lst == null)
