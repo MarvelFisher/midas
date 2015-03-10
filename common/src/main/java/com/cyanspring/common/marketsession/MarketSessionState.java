@@ -51,7 +51,7 @@ public abstract class MarketSessionState {
 				tradeDate = (String) xstream.fromXML(file);
 				tradeDateUpdate = true;
 			}else{
-				throw new Exception("Missing refdata file: " + filePath);
+				throw new Exception("Missing trade date file: " + filePath);
 			}	
 		}
 	}

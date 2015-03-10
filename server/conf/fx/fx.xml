@@ -404,6 +404,9 @@
 
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
+	
+	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
+	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
