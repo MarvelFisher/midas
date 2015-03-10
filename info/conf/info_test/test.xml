@@ -21,13 +21,19 @@
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
 		<property name="open">
-			<value>2215</value>
+			<value>2115</value>
 		</property>
 		<property name="preopen">
-			<value>2210</value>
+			<value>2110</value>
 		</property>
 		<property name="close">
-			<value>2200</value>
+			<value>2100</value>
+		</property>
+		<property name="serverMarket">
+			<value>FX</value>
+		</property>
+		<property name="nChefCount">
+			<value>5</value>
 		</property>
 		<property name="preSubscriptionList">
 			<list>
