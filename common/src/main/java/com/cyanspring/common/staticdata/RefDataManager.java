@@ -79,4 +79,16 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 	public String getMarket() {
 		return market;
 	}
+
+	@Override
+	public RefData getRefDataByRefSymbol(String refSymbol) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RefData getRefDataBySymbol(String symbol) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
