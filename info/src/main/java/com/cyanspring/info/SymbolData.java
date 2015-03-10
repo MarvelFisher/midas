@@ -648,7 +648,7 @@ public class SymbolData implements Comparable<SymbolData>
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
     	String prefix = (market.equals("FX")) ? "0040" : market;
-		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `TRADEDATE`>='%s' AND `TRADEDATE`<'%s' ORDER BY `TRADEDATE`;", 
+		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `DATATIME`>='%s' AND `DATATIME`<'%s' ORDER BY `DATATIME`;", 
 				prefix, type, symbol, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {

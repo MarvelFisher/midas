@@ -219,12 +219,12 @@ public class DBHandler
     	boolean getPrice = false;
     	if (dir)
     	{
-    		sqlcmd = String.format("select * from %s where SYMBOL = '%s' order by TRADEDATE limit 1 ;", 
+    		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `DATATIME` limit 1 ;", 
     				strTable, symbol) ;
     	}
     	else
     	{
-    		sqlcmd = String.format("select * from %s where SYMBOL = '%s' order by TRADEDATE desc limit 1 ;", 
+    		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `DATATIME` desc limit 1 ;", 
     				strTable, symbol) ;
     	}
     	ResultSet rs = querySQL(sqlcmd) ;
@@ -276,8 +276,8 @@ public class DBHandler
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00") ;
-		String sqlcmd = String.format("DELETE FROM %s WHERE SYMBOL='%s' AND TRADEDATE='%s';", 
-				strTable, symbol, price.getTradedate()) ;
+		String sqlcmd = String.format("DELETE FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`='%s';", 
+				strTable, symbol, price.getKeytime()) ;
 		updateSQL(sqlcmd) ;
     }
     public void checkMarketExist(String market)
