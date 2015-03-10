@@ -36,6 +36,7 @@ public class SymbolData implements Comparable<SymbolData>
 	private static final String insertPrice = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) " + 
             "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY " + 
             "Update TRADEDATE=%s,DATATIME=%s,OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;";
+	private static final String dateFormat = "yyyy-MM-dd HH:mm:ss";
 	private CentralDbProcessor centralDB = null;
 	private boolean isUpdating = false;
 	private boolean writeMin = false;
@@ -284,11 +285,12 @@ public class SymbolData implements Comparable<SymbolData>
 											dClose,
 											(int)dCurVolume);
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 		sqlcmd = String.format(insertPrice, 
-				strTable, tradeDate, lastPrice.getKeytime(), lastPrice.getDatatime(), 
+				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
 				getStrSymbol(), lastPrice.getOpen(), lastPrice.getClose(), 
 				lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
-				tradeDate, lastPrice.getDatatime(), lastPrice.getOpen(), 
+				tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
 				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
 		centralDB.dbhnd.updateSQL(sqlcmd);
 		logHistoricalPrice(lastPrice);
@@ -608,8 +610,8 @@ public class SymbolData implements Comparable<SymbolData>
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String strTable = String.format("%s_%s", prefix, strType) ;
 		String sqlcmd = "" ;//"START TRANSACTION;" ;
-		String strDateTime = "" ;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:00") ;
+		String strKeyTime = "" ;
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat) ;
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		centralDB.dbhnd.createStatement();
 		for (HistoricalPrice price : prices)
@@ -618,12 +620,12 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				continue;
 			}
-			strDateTime = sdf.format(price.getDatatime()) ;
+			strKeyTime = sdf.format(price.getKeytime()) ;
 			sqlcmd = String.format(insertPrice, 
-					strTable, strDateTime, price.getKeytime(), price.getDatatime(), 
+					strTable, strKeyTime, strKeyTime, sdf.format(price.getDatatime()), 
 					getStrSymbol(), price.getOpen(), price.getClose(), 
 					price.getHigh(), price.getLow(), price.getVolume(), 
-					strDateTime, price.getDatatime(), price.getOpen(), 
+					strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
 					price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
 			centralDB.dbhnd.addBatch(sqlcmd);
 			logHistoricalPrice(price);
