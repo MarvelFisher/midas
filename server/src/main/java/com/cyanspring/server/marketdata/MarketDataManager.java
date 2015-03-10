@@ -290,14 +290,39 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ ", Prev: " + prev + ", New: " + quote);
 	}
 
+	//Check Quote Value
+	public Quote checkQuote(Quote prev,Quote quote){
+		if(prev!=null){
+			//Close
+			if(quote.getClose()<=0){
+				quote.setClose(prev.getClose());
+			}
+			//Open
+			if(quote.getOpen()<=0){
+				quote.setOpen(prev.getOpen());
+			}
+			//High
+			if(quote.getHigh()<=0){
+				quote.setHigh(prev.getHigh());
+			}
+			//Low
+			if(quote.getLow()<=0){
+				quote.setLow(prev.getLow());
+			}
+		}
+		return quote;
+	}
+	
 	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
 
-		if (quote.getAsk() <= -1 || quote.getBid() <= -1)
-			log.info("Quote Error: " + quote.getSymbol() + ",Bid: "
-					+ quote.getBid() + ",Ask: " + quote.getAsk());
-
+		checkQuote(prev, quote);
+		
+		if(quote.getAsk()	 == -1 || quote.getBid() == -1){
+			log.info("Quote Error: Symbol=" + quote.getSymbol() + ",Ask=" + quote.getAsk()+",Bid=" +quote.getBid());
+		}
+		
 		if (null == prev) {
 			logStaleInfo(prev, quote, quote.isStale());
 			quotes.put(quote.getSymbol(), quote);
@@ -389,6 +414,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("MarketDataManager");
 
+		//requestMarketSession
+		requestMarketSession();
+		
 		// create tick directory
 		File file = new File(tickDir);
 		if (!file.isDirectory()) {
@@ -419,8 +447,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			log.info("LastTradeDateQuotes Loaded Results [" + entry.getKey()
 					+ "] " + entry.getValue().toString());
 		}
-
-		requestMarketSession();
 
 		chkDate = Clock.getInstance().now();
 		for (IMarketDataAdaptor adaptor : adaptors) {

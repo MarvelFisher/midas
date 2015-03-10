@@ -251,7 +251,6 @@ public class CentralDbProcessor implements IPlugin
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
 		log.info("Process Price High Low Request");
-		int index;
 		String sender = event.getSender() ;
 		List<String> symbolList = event.getSymbolList() ;
 //		Collections.sort(listSymbolData) ;
@@ -283,7 +282,6 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
 	{
-		int index;
 		String symbol = event.getSymbol() ;
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
 		retEvent.setSymbol(symbol);

@@ -411,6 +411,11 @@ public class SymbolData implements Comparable<SymbolData>
 				{
 					continue ;
 				}
+				if (priceEmpty == null)
+				{
+					priceEmpty = price;
+					continue;
+				}
 				if (end != null && 0 < price.getTimestamp().compareTo(end))
 				{
 					return prices ;
