@@ -108,4 +108,23 @@ public class FCRefSymbolInfo  implements IRefSymbolInfo
 		return infoList;
 	}
 
+	@Override
+	public int at(SymbolInfo symbolinfo) 
+	{
+		int index = Collections.binarySearch(refSymbolInfo, symbolinfo);
+		return index;
+	}
+
+	@Override
+	public SymbolInfo get(int index) {
+		if (index >= 0)
+		{
+			return refSymbolInfo.get(index);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 }
