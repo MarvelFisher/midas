@@ -88,7 +88,7 @@ public class CentralDbProcessor implements IPlugin
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long timeInterval = 60000;
+	private long timeInterval = 600000;
 	private long checkSQLInterval = 10 * 60 * 1000;
 	private long checkSQLTimer = 0;
 	
