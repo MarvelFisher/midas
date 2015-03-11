@@ -36,6 +36,11 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.cyanspring.event</groupId>
+			<artifactId>cyanspring-event</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>		
+		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>1.9</version>

@@ -9,10 +9,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import cn.com.wind.td.tdf.DATA_TYPE_FLAG;
 import cn.com.wind.td.tdf.TDFClient;
@@ -31,6 +33,17 @@ import cn.com.wind.td.tdf.TDF_OPTION_CODE;
 import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
 
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.IAsyncEventManager;
+import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
+import com.cyanspring.common.event.marketdata.PresubscribeEvent;
+import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.event.marketdata.TradeSubEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
@@ -39,9 +52,11 @@ import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
@@ -64,7 +79,15 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	boolean marketDataLog = false; // log control
 	String marketType = "";
 	MarketSessionUtil marketSessionUtil;
-	
+	protected long timerInterval = 5000;
+
+	@Autowired
+	protected IRemoteEventManager eventManager;
+
+	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+
+	protected ScheduleManager scheduleManager = new ScheduleManager();
+
 	public MarketSessionUtil getMarketSessionUtil() {
 		return marketSessionUtil;
 	}
@@ -198,9 +221,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
 	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // future
 	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // stock
-	static Hashtable<String, String> strategyht = new Hashtable<String, String>(); // save
-																					// symbol
-																					// strategy
+	static Hashtable<String, String> strategyht = new Hashtable<String, String>(); // SaveSymbolStrategy
+	static Hashtable<String, Quote> lastquoteht = new Hashtable<String, Quote>(); // LastQuoteData
 
 	boolean isClosed = false;
 	RequestThread thread = null;
@@ -224,6 +246,18 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			thread.addRequest(objReq);
 		}
 	}
+
+	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+	};
 
 	public static void info(String f, Object... args) {
 		LogUtil.logInfo(log, f, args);
@@ -329,6 +363,32 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void reconnect() {
 		isClosed = false;
 		client.close();
+	}
+
+	public void processAsyncTimerEvent(AsyncTimerEvent event) {
+		// process symbol Market Session
+		for (String symbol : strategyht.keySet()) {
+			if (isMarketDataLog()) {
+				log.debug("ProcessAsyncTimerEvent Symbol="
+						+ symbol
+						+ ",Strategy="
+						+ strategyht.get(symbol)
+						+ ",MarketSessionType="
+						+ getMarketSessionUtil().getCurrentMarketSessionType(
+								strategyht.get(symbol), DateUtil.now()));
+			}
+			MarketSessionType marketSessionType = getMarketSessionUtil()
+					.getCurrentMarketSessionType(strategyht.get(symbol),
+							DateUtil.now());
+			if (marketSessionType == MarketSessionType.CLOSE) {
+				Quote lastQuote = lastquoteht.get(symbol);
+				if (lastQuote != null && !lastQuote.isStale()) {
+					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol=" + symbol);
+					lastQuote.setStale(true);
+					sendQuote(lastQuote);
+				}
+			}
+		}
 	}
 
 	// Parse Change Data
@@ -934,12 +994,23 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	@Override
 	public void init() throws Exception {
+
+		// subscribe to events
+		eventProcessor.setHandler(this);
+		eventProcessor.init();
+		if (eventProcessor.getThread() != null)
+			eventProcessor.getThread().setName("WindFutureDataAdaptor");
+
 		WindFutureDataAdaptor.instance = this;
 		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init
 																	// RefDataManager
 		QuoteMgr.instance.init();
 		initReqThread();
 		doConnect();
+
+		if (!eventProcessor.isSync())
+			scheduleManager.scheduleRepeatTimerEvent(timerInterval,
+					eventProcessor, timerEvent);
 	}
 
 	@Override
@@ -1022,18 +1093,18 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 							+ refDataManager.getClass());
 					RefData refData = null;
 					String targetField = "";
-					if(instrument.indexOf(".") == -1){ 
-						refData =refDataManager.getRefDataByRefSymbol(instrument);
-						targetField =  "RefSymbol ";
-					}else{
-						refData =refDataManager.getRefDataBySymbol(instrument);
+					if (instrument.indexOf(".") == -1) {
+						refData = refDataManager
+								.getRefDataByRefSymbol(instrument);
+						targetField = "RefSymbol ";
+					} else {
+						refData = refDataManager.getRefDataBySymbol(instrument);
 						targetField = "Symbol ";
 					}
 					if (refData == null) {
 						LogUtil.logError(log, targetField + instrument
 								+ " is not found in reference data");
-						throw new MarketDataException(targetField
-								+ instrument
+						throw new MarketDataException(targetField + instrument
 								+ " is not found in reference data");
 					} else {
 						LogUtil.logDebug(log, targetField + instrument
@@ -1117,12 +1188,19 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 * @param quote
 	 */
 	public void sendQuote(Quote quote) {
-		// UserClient[] clients = new UserClient[clientsList.size()];
-		// clients = clientsList.toArray(clients);
 		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
 		for (UserClient client : clients) {
 			client.sendQuote(quote);
 		}
+	}
+
+	/**
+	 * Save Last Quote Data
+	 * 
+	 * @param quote
+	 */
+	public void saveLastQuote(Quote quote) {
+		lastquoteht.put(quote.getSymbol(), quote);
 	}
 
 	boolean addSymbol(String symbol) {
@@ -1197,11 +1275,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	}
 
 	public void clearSubscribeMarketData() throws Exception {
-		//initial refData
-		refDataManager.init(); 
-		synchronized (m_lock) {
-			refTable.clear();
-		}
+		// initial refData
+		refDataManager.init();
+		refTable.clear();
+		strategyht.clear();
+		lastquoteht.clear();
 		ClientHandler.sendClearSubscribe();
 	}
 
@@ -1229,7 +1307,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		return sb.toString();
 
 	}
-	
+
 	@Override
 	public void onStartEvent(RequestThread sender) {
 
