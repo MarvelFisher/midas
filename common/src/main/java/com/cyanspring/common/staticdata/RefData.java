@@ -124,8 +124,8 @@ public class RefData extends DataObject {
 		return this.get(double.class, RefDataField.PRICE_LIMIT.value());
 	}
 	
-	public double getDeciamlPoint(){
-		return this.get(double.class, RefDataField.DECIMALPOINT.value());
+	public int getDeciamlPoint(){
+		return this.get(int.class, RefDataField.DECIMALPOINT.value());
 	}
 	
 	public double getDenominator(){

@@ -31,11 +31,11 @@
       </entry>
       <entry>
         <string>ENName</string>
-        <string>IF1503.CF</string>
+        <string>IF1503</string>
       </entry>
       <entry>
         <string>CNName</string>
-        <string>沪深1503.CF</string>
+        <string>沪深1503</string>
       </entry>
       <entry>
         <string>Numerator DP</string>
@@ -47,7 +47,7 @@
       </entry>
       <entry>
         <string>Decimal point</string>
-        <double>1.0</double>
+        <int>2</int>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -71,7 +71,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>10.0</double>
+        <double>0.1</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -91,11 +91,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>滬深1503.CF</string>
+        <string>滬深1503</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>IFL0</string>
+        <string>IFC1</string>
       </entry>
       <entry>
         <string>Tradable</string>
@@ -135,11 +135,11 @@
       </entry>
       <entry>
         <string>ENName</string>
-        <string>IF1504.CF</string>
+        <string>IF1504</string>
       </entry>
       <entry>
         <string>CNName</string>
-        <string>沪深1504.CF</string>
+        <string>沪深1504</string>
       </entry>
       <entry>
         <string>Numerator DP</string>
@@ -151,7 +151,7 @@
       </entry>
       <entry>
         <string>Decimal point</string>
-        <double>1.0</double>
+        <int>2</int>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -175,7 +175,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>10.0</double>
+        <double>0.1</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -195,11 +195,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>滬深1504.CF</string>
+        <string>滬深1504</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>IFL1</string>
+        <string>IFC2</string>
       </entry>
       <entry>
         <string>Tradable</string>

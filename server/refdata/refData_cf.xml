@@ -47,7 +47,7 @@
       </entry>
       <entry>
         <string>Decimal point</string>
-        <double>1.0</double>
+        <int>2</int>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -95,7 +95,7 @@
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>IFL0</string>
+        <string>IFC1</string>
       </entry>
       <entry>
         <string>Tradable</string>
@@ -151,7 +151,7 @@
       </entry>
       <entry>
         <string>Decimal point</string>
-        <double>1.0</double>
+        <int>2</int>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -199,7 +199,7 @@
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>IFL1</string>
+        <string>IFC2</string>
       </entry>
       <entry>
         <string>Tradable</string>

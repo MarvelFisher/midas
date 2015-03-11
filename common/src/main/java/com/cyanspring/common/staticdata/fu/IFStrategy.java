@@ -51,13 +51,13 @@ public class IFStrategy implements RefDataStrategy {
 	
 	@Override
 	public void setExchangeRefData(RefData refData) {
-		if(refData.getRefSymbol().equals("IFL0")){
+		if(refData.getRefSymbol().equals("IFC1")){
 			refData.setSettlementDate(n0.getSettlementDate());
 			refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0ID);
 			refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0ID);
 			refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0ID);
 			refData.setSymbol(refData.getSymbol().substring(0, 2) + n0ID + "." + refData.getExchange());
-		}else if(refData.getRefSymbol().equals("IFL1")){
+		}else if(refData.getRefSymbol().equals("IFC2")){
 			refData.setSettlementDate(n1.getSettlementDate());
 			refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1ID);
 			refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1ID);
