@@ -210,7 +210,7 @@ public class FutureItem implements AutoCloseable{
 		
 		//check stale
 		String strategy = WindFutureDataAdaptor.strategyht.get(symbolId);
-		String msState = WindFutureDataAdaptor.instance.getMarketSessionUtil().getCurrentMarketSessionType(strategy, DateUtil.now()).name();
+		String msState = WindFutureDataAdaptor.instance.getMarketSessionUtil().getCurrentMarketSessionType(strategy, tickTime).name();
 		
 		if(WindFutureDataAdaptor.instance.isMarketDataLog())
 		WindFutureDataAdaptor.debug("Wind Strategy=" + strategy + ",SesssionState=" + msState);
@@ -295,13 +295,13 @@ public class FutureItem implements AutoCloseable{
 		}
 		
 		// log quote as alive frame
-		if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
-			TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
-			if (ts.getTotalSeconds() >= 20) {			
-				WindFutureDataAdaptor.info(s);
-				timeLast = now;
-			}		
-		}
+//		if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
+//			TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
+//			if (ts.getTotalSeconds() >= 20) {			
+//				WindFutureDataAdaptor.info(s);
+//				timeLast = now;
+//			}		
+//		}
 	}
 
 	public String windCode() {

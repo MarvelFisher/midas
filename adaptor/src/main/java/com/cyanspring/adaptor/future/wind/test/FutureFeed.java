@@ -167,7 +167,11 @@ public class FutureFeed implements IFrameClose {
 		clearSubscribeButton.addActionListener(new ActionListener() {	
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				adaptor.clearSubscribeMarketData();
+				try {
+					adaptor.clearSubscribeMarketData();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		mainframe.addButton(clearSubscribeButton);

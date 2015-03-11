@@ -1022,7 +1022,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 							+ refDataManager.getClass());
 					RefData refData = null;
 					String targetField = "";
-					if(instrument.indexOf(".") == -1){
+					if(instrument.indexOf(".") == -1){ 
 						refData =refDataManager.getRefDataByRefSymbol(instrument);
 						targetField =  "RefSymbol ";
 					}else{
@@ -1196,7 +1196,12 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 	}
 
-	public void clearSubscribeMarketData() {
+	public void clearSubscribeMarketData() throws Exception {
+		//initial refData
+		refDataManager.init(); 
+		synchronized (m_lock) {
+			refTable.clear();
+		}
 		ClientHandler.sendClearSubscribe();
 	}
 
@@ -1224,7 +1229,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		return sb.toString();
 
 	}
-
+	
 	@Override
 	public void onStartEvent(RequestThread sender) {
 

@@ -81,8 +81,8 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>IFL0</value>
-				<value>IFL1</value>
+				<value>IFC1</value>
+				<value>IFC2</value>
 			</list>
 		</constructor-arg>
 	</bean>
