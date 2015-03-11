@@ -159,7 +159,7 @@
 	           	<value>100000.0</value>
 	           	<value>50000.0</value>
 	           	<value>0.98</value>
-	           	<value>06:10:00</value> <!-- Make sure this time must be same as PREOPEN -->
+	           	<value>05:10:00</value> <!-- Make sure this time must be same as PREOPEN -->
             </list>
        </property>
     </bean>
