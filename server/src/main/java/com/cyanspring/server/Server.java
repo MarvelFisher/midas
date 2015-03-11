@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -77,6 +78,10 @@ public class Server implements ApplicationContextAware{
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
+	
+	@Autowired(required=false)
+	@Qualifier("globalEventManager")
+	private IRemoteEventManager globalEventManager;
 	
 	@Autowired
 	BusinessManager businessManager;
@@ -324,6 +329,9 @@ public class Server implements ApplicationContextAware{
 		this.uid = hostName + "." + IdGenerator.getInstance().getNextID();
 		eventManager.init(channel, inbox);
 		eventManager.addEventChannel(nodeInfoChannel);
+		
+		if(null != globalEventManager)
+			globalEventManager.init(channel, inbox);
 		
 		// subscribe to events
 		eventProcessor.setHandler(this);
