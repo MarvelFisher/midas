@@ -37,8 +37,8 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
-	            <value>IFL0</value>
-	            <value>IFL1</value>
+	            <value>IFC1</value>
+	            <value>IFC2</value>
 	        </list>    
 		</property>
 	</bean>
