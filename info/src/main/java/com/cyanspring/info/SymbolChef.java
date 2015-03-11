@@ -181,7 +181,7 @@ public class SymbolChef implements Runnable{
 		{
 			ConcurrentHashMap.Entry pair = (ConcurrentHashMap.Entry)itr.next();
 			symboldata = (SymbolData)pair.getValue();
-			if (symboldata.getMarket() == null || symboldata.getMarket().equals(market) == false)
+			if (symboldata.getMarket() == null)
 			{
 				continue;
 			}
