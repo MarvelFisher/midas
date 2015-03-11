@@ -18,7 +18,6 @@ public class Default {
 	private static double orderQuantity = 100000;
 	private static double positionStopLoss = 1000.0;
 	private static double marginCall = 0.95;
-	private static String tradeDateTime = "06:15:00";
 	
 	protected static void setValues(
 		String user,  
@@ -34,8 +33,7 @@ public class Default {
 		TimeZone timeZone,
 		double orderQuantity,
 		double positionStopLoss,
-		double marginCall,
-		String tradeDateTime
+		double marginCall
 							) {
 		Default.user = user;
 		Default.account = account;
@@ -51,7 +49,6 @@ public class Default {
 		Default.orderQuantity = orderQuantity;
 		Default.positionStopLoss = positionStopLoss;
 		Default.marginCall = marginCall;
-		Default.tradeDateTime = tradeDateTime;
 	}
 	
 	static public String getUser() {
@@ -116,11 +113,7 @@ public class Default {
 	
 	public static double getCommission(double value) {
 		return Math.max(commissionMin, value * commission);
-	}
-
-	public static String getTradeDateTime() {
-		return tradeDateTime;
-	}
+	}	
 
 	public static double getMarginCut() {
 		return marginCut;
