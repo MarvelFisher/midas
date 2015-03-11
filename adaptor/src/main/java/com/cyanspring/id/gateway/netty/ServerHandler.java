@@ -174,17 +174,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			data = null;
 			return;
 		}
-
-		final ByteBuf buffer = Unpooled.copiedBuffer(data);
-		data = null;
-		ChannelFuture future = ctx.writeAndFlush(buffer);
-		future.addListener(new ChannelFutureListener() {
-			@Override
-			public void operationComplete(ChannelFuture arg0) throws Exception {
-				if (buffer != null && buffer.refCnt() > 0)
-					buffer.release();
-			}
-		});
+		ctx.writeAndFlush(Unpooled.copiedBuffer(data));
+		//final ByteBuf buffer = Unpooled.copiedBuffer(data);
+		//data = null;
+		//ChannelFuture future = ctx.writeAndFlush(buffer);
+		//future.addListener(new ChannelFutureListener() {
+		//	@Override
+		//	public void operationComplete(ChannelFuture arg0) throws Exception {
+		//		if (buffer != null && buffer.refCnt() > 0)
+		//			buffer.release();
+		//	}
+		//});
 	}
 
 	public static String getRemotIP(Channel ch) {

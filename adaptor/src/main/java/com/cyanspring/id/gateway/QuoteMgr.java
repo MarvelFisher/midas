@@ -36,7 +36,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	public QuoteMgr() {
 		timer.setName("QuoteMgr.Timer");
 		timer.TimerEvent = this;
-		timer.setInterval(5000);
+		timer.setInterval(60000);
 		timer.start();		
 	}
 
@@ -57,11 +57,13 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	}
 
 	public void updateAllSymbol(String symbol) {
+		int iPos;
 		synchronized (allSymbol) {		
-		if (allSymbol.contains(symbol))
-			return;		
+			iPos = Collections.binarySearch(allSymbol,symbol);
+			if ( iPos >= 0)
+				return;					
+			allSymbol.add(~iPos,symbol);
 		}
-		allSymbol.add(symbol);
 	}
 	
 	public void dumpSymbols() {
@@ -104,12 +106,22 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 			return true;
 		
 		synchronized(m_lock) {
-			return symbolList.contains(symbol);
+			if(Collections.binarySearch(symbolList, symbol) >= 0)
+				return true;
+			else
+				return false;
+			//return symbolList.contains(symbol);
 		}
 	}
 	
 	public void addSymbols(List<String> list) {
-		symbolList.addAll(list);
+		int iPos;
+		for(String symbol : list)
+		{			
+			iPos = Collections.binarySearch(symbolList, symbol);
+			if(iPos < 0)
+				symbolList.add(~iPos,symbol);
+		}
 	}
 
 	@Override
