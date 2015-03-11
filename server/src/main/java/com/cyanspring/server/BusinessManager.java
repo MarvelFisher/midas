@@ -251,23 +251,29 @@ public class BusinessManager implements ApplicationContextAware {
 		} catch (OrderValidationException e) {
 			failed = true;
 			message = e.getMessage();
+			log.warn(e.getMessage(), e);
 		} catch (OrderException e) {
 			failed = true;
 			message = e.getMessage();
+			log.warn(e.getMessage(), e);
 		} catch (DataConvertException e) {
 			failed = true;
 			message = "DataConvertException: " + e.getMessage();
+			log.warn(e.getMessage(), e);
 		} catch (DownStreamException e) {
 			failed = true;
 			message = e.getMessage();
+			log.warn(e.getMessage(), e);
 		} catch (StrategyException e) {
 			failed = true;
 			message = e.getMessage();
+			log.warn(e.getMessage(), e);
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 			message = "Enter order failed, please check server log";
+			log.warn(e.getMessage(), e);
 		}
 		
 		if (failed) {
