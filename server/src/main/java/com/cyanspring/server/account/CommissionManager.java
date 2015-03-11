@@ -13,28 +13,28 @@ import com.cyanspring.common.staticdata.RefData;
 public class CommissionManager implements ICommissionManager{
 	private Map<String, Double> commissionByMarket = new HashMap<>();
 	private Map<String, Double> commissionByExchange = new HashMap<>();	
-	private double minCommission = 2;
+	private final double minCommission = 2;
 
 	@Override
 	public double getCommission(RefData refData, AccountSetting settings) {
 		double accountCom = 1;
-		if(settings != null)
-			accountCom = settings.getCommission();
+		if(settings != null && settings.getCommission() != 0.0)
+			accountCom = settings.getCommission();		
 		if(refData == null)
 			return Default.getCommission() * accountCom;
 		
-		double com = refData.getCommissionFee();
-		if(com != 0)
+		Double com = refData.getCommissionFee();
+		if(com != 0.0)
 			return com * accountCom;
 		
 		String market = refData.getMarket();
 		com = commissionByMarket.get(market);
-		if(com != 0)
+		if(com != null)
 			return com * accountCom;
 		
 		String exchange = refData.getExchange();
 		com = commissionByExchange.get(exchange);
-		if(com != 0)
+		if(com != null)
 			return com * accountCom;
 		
 		return Default.getCommission() * accountCom;		
