@@ -408,7 +408,9 @@ public class PositionKeeper {
 				Quote quote = quoteFeeder.getQuote(symbol);
 				if(null != quote && null != pos) {
 					double price = getMarketablePrice(quote, pos.getQty());
-					pos.setPnL((price-pos.getPrice())*pos.getQty());
+					double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
+							(price-pos.getPrice()));
+					pos.setPnL(pnl);
 					double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 							quote.getSymbol(), pos.getPnL());
 					pos.setAcPnL(urPnL);
@@ -517,7 +519,9 @@ public class PositionKeeper {
 					if(null != list) {
 						for(OpenPosition position: list) {
 							double price = getMarketablePrice(quote, position.getQty());
-							position.setPnL((price-position.getPrice())*position.getQty());
+							double pnl = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
+									(price-position.getPrice()));
+							position.setPnL(pnl);
 						}
 						
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
