@@ -78,6 +78,7 @@ public class CentralDbProcessor implements IPlugin
 	private int nChefCount = 5;
 	private ArrayList<String> preSubscriptionList;
 	private ArrayList<SymbolChef> SymbolChefList = new ArrayList<SymbolChef>();
+	private ChartCacheProc chartCacheProcessor;
 	
 	private int    nTickCount ;
 	private MarketSessionType sessionType = null ;
@@ -990,6 +991,7 @@ public class CentralDbProcessor implements IPlugin
 				SymbolChefList.add(new SymbolChef("Symbol_Chef_" + ii));
 			}
 		}
+		chartCacheProcessor = new ChartCacheProc();
 		resetStatement() ;
 		requestMarketSession() ;
 
@@ -1093,6 +1095,10 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setnChefCount(int nChefCount) {
 		this.nChefCount = nChefCount;
+	}
+
+	public ChartCacheProc getChartCacheProcessor() {
+		return chartCacheProcessor;
 	}
 	
 }
