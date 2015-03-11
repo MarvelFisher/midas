@@ -574,22 +574,27 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, group, market) ;
 		ResultSet rs = dbhnd.querySQL(sqlcmd);
+		int index;
 		try 
 		{
 			SymbolInfo symbolinfo = null;
 			while(rs.next())
 			{
-				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
-				symbolinfo.setExchange(rs.getString("EXCHANGE"));
-				symbolinfo.setWindCode(rs.getString("WINDCODE"));
-				symbolinfo.setHint(rs.getString("HINT"));
-				symbolinfo.setCnName(rs.getString("CN_NAME"));
-				symbolinfo.setEnName(rs.getString("EN_NAME"));
-				symbolinfo.setTwName(rs.getString("TW_NAME"));
-				symbolinfo.setJpName(rs.getString("JP_NAME"));
-				symbolinfo.setKrName(rs.getString("KR_NAME"));
-				symbolinfo.setEsName(rs.getString("ES_NAME"));
-				symbolinfos.add(symbolinfo);
+//				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+//				symbolinfo.setWindCode(rs.getString("WINDCODE"));
+//				symbolinfo.setHint(rs.getString("HINT"));
+//				symbolinfo.setCnName(rs.getString("CN_NAME"));
+//				symbolinfo.setEnName(rs.getString("EN_NAME"));
+//				symbolinfo.setTwName(rs.getString("TW_NAME"));
+//				symbolinfo.setJpName(rs.getString("JP_NAME"));
+//				symbolinfo.setKrName(rs.getString("KR_NAME"));
+//				symbolinfo.setEsName(rs.getString("ES_NAME"));
+				index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+				if (index >= 0)
+				{
+					symbolinfo = refSymbolInfo.get(index);
+					symbolinfos.add(symbolinfo);
+				}
 			}
 			if (symbolinfos.isEmpty())
 			{
@@ -678,19 +683,25 @@ public class CentralDbProcessor implements IPlugin
 						user, group, market) ;
 				ResultSet rs = dbhnd.querySQL(sqlcmd);
 				SymbolInfo symbolinfo;
+				int index;
 				while(rs.next())
 				{
-					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
-					symbolinfo.setExchange(rs.getString("EXCHANGE"));
-					symbolinfo.setWindCode(rs.getString("WINDCODE"));
-					symbolinfo.setHint(rs.getString("HINT"));
-					symbolinfo.setCnName(rs.getString("CN_NAME"));
-					symbolinfo.setEnName(rs.getString("EN_NAME"));
-					symbolinfo.setTwName(rs.getString("TW_NAME"));
-					symbolinfo.setJpName(rs.getString("JP_NAME"));
-					symbolinfo.setKrName(rs.getString("KR_NAME"));
-					symbolinfo.setEsName(rs.getString("ES_NAME"));
-					retsymbollist.add(symbolinfo);
+//					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+//					symbolinfo.setWindCode(rs.getString("WINDCODE"));
+//					symbolinfo.setHint(rs.getString("HINT"));
+//					symbolinfo.setCnName(rs.getString("CN_NAME"));
+//					symbolinfo.setEnName(rs.getString("EN_NAME"));
+//					symbolinfo.setTwName(rs.getString("TW_NAME"));
+//					symbolinfo.setJpName(rs.getString("JP_NAME"));
+//					symbolinfo.setKrName(rs.getString("KR_NAME"));
+//					symbolinfo.setEsName(rs.getString("ES_NAME"));
+//					retsymbollist.add(symbolinfo);
+					index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+					if (index >= 0)
+					{
+						symbolinfo = refSymbolInfo.get(index);
+						retsymbollist.add(symbolinfo);
+					}
 				}
 				if (symbolinfos.isEmpty())
 				{
