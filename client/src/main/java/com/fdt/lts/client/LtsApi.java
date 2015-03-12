@@ -38,14 +38,23 @@ import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.event.ClientSocketEventManager;
+import com.fdt.lts.client.obj.AccountInfo;
+import com.fdt.lts.client.obj.Order;
+import com.fdt.lts.client.obj.Quote;
 
-public abstract class AbstractApi {
-
-	private static Logger log = LoggerFactory.getLogger(LtsApiAdaptor.class);
-	private String user = "test1";
-	private String account = "test1-FX";
-	private String password = "xxx";
+public abstract class LtsApi implements ITrade{	
+	private static Logger log = LoggerFactory.getLogger(LtsApi.class);
 	
+	protected abstract void onStrategySnapshot();
+	protected abstract void onParentOrderUpdate();
+	protected abstract void onSystemError();
+	
+	private String user;
+	private String account;
+	private String password;
+	private List<String> subQuoteLst;
+	private TradeAdaptor tAct;
+		
 	@Autowired
 	private IRemoteEventManager eventManager = new ClientSocketEventManager();
 	protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -54,9 +63,9 @@ public abstract class AbstractApi {
 			public void subscribeToEvents() {
 				subscribeToEvent(ServerReadyEvent.class, null);
 				subscribeToEvent(QuoteEvent.class, null);
-				subscribeToEvent(EnterParentOrderReplyEvent.class, getId());
-				subscribeToEvent(AmendParentOrderReplyEvent.class, getId());
-				subscribeToEvent(CancelParentOrderReplyEvent.class, getId());
+				subscribeToEvent(EnterParentOrderReplyEvent.class, user);
+				subscribeToEvent(AmendParentOrderReplyEvent.class, user);
+				subscribeToEvent(CancelParentOrderReplyEvent.class, user);
 				subscribeToEvent(ParentOrderUpdateEvent.class, null);
 				subscribeToEvent(StrategySnapshotEvent.class, null);
 				subscribeToEvent(UserLoginReplyEvent.class, null);
@@ -74,11 +83,7 @@ public abstract class AbstractApi {
 			
 		};
 
-	private String getId() {
-		return user;
-	}
-
-	public void init() throws Exception {
+	private void init() throws Exception {
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
@@ -86,8 +91,14 @@ public abstract class AbstractApi {
 		
 		eventManager.init(null, null);
 	}
+	
+	public void init(List<String> subscribeSymbolList, TradeAdaptor tAct) throws Exception{
+		subQuoteLst = subscribeSymbolList;
+		this.tAct = tAct;
+		init();
+	}
 
-	private void sendEvent(RemoteAsyncEvent event) {
+	protected void sendEvent(RemoteAsyncEvent event) {
 		try {
 			eventManager.sendRemoteEvent(event);
 		} catch (Exception e) {
@@ -96,49 +107,79 @@ public abstract class AbstractApi {
 	}
 
 	public void processServerReadyEvent(ServerReadyEvent event) {
-		log.debug("Received ServerReadyEvent: " + event.getSender() + ", " + event.isReady());
 		if(event.isReady()) {
-			sendEvent(new UserLoginEvent(getId(), null, user, password, IdGenerator.getInstance().getNextID()));
+			log.info("> Server is connected. Starting Login...");
+			if(user != null && password != null)
+				sendEvent(new UserLoginEvent(getId(), null, user, password, IdGenerator.getInstance().getNextID()));
+			else
+				log.error("> User ID or Password is empty.");
 		}
 	}
 
 	public void processAccountSnapshotReplyEvent(AccountSnapshotReplyEvent event) {
-		log.debug("### Account Snapshot Start ###");
-		log.debug("Account: " + event.getKey());
-		log.debug("Account settings: " + event.getAccountSetting());
-		log.debug("Open positions: " + event.getOpenPositions());
-		log.debug("Closed positions: " + event.getClosedPositions());
-		log.debug("Trades :" + event.getExecutions());
-		log.debug("### Account Snapshot End ###");
+		if(tAct.getAccountInfo() == null){			
+			AccountInfo aInfo = new AccountInfo();
+			tAct.setAccountInfo(aInfo);
+		}
+		
+		// Add AccountInfo data
+		
+//		log.debug("### Account Snapshot Start ###");
+//		log.debug("Account: " + event.getKey());
+//		log.debug("Account settings: " + event.getAccountSetting());
+//		log.debug("Open positions: " + event.getOpenPositions());
+//		log.debug("Closed positions: " + event.getClosedPositions());
+//		log.debug("Trades :" + event.getExecutions());
+//		log.debug("### Account Snapshot End ###");
 	}
 
 	public void processAccountUpdateEvent(AccountUpdateEvent event) {
+		// Add AccountInfo data update		
 		log.debug("Account: " + event.getAccount());
 	}
 
 	public void processOpenPositionUpdateEvent(OpenPositionUpdateEvent event) {
+		// Add AccountInfo data update
 		log.debug("Position: " + event.getPosition());
 	}
 
 	public void processClosedPositionUpdateEvent(ClosedPositionUpdateEvent event) {
+		// Add AccountInfo data update
 		log.debug("Closed Position: " + event.getPosition());
 	}
 
 	public void processQuoteEvent(QuoteEvent event) {
-		log.debug("Received QuoteEvent: " + event.getKey() + ", " + event.getQuote());
+		Quote quote = new Quote();
+		quote.symbol = event.getQuote().getSymbol();
+		quote.bid = event.getQuote().getBid();
+		quote.ask = event.getQuote().getAsk();
+		quote.last = event.getQuote().getLast();
+		quote.high = event.getQuote().getHigh();
+		quote.low = event.getQuote().getLow();
+		quote.open = event.getQuote().getOpen();
+		quote.close = event.getQuote().getClose();
+		quote.timeStamp = event.getQuote().getTimeStamp();
+		quote.timeSent = event.getQuote().getTimeSent();
+		quote.stale = event.getQuote().isStale();
+		if(tAct != null){
+			tAct.onQuote(quote);			
+		}else{
+			log.info("Get Quote data: " + quote);			
+		}
 	}
 
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
-		log.debug("User login is " + event.isOk() + ", " + event.getMessage() + ", lastLogin: " + event.getUser().getLastLogin() );
 		
 		if(!event.isOk())
 			return;
+		log.info("Login is" + event.isOk() + ", " + event.getMessage() + ", Last login:" + event.getUser().getLastLogin());
+		for(String symbol: subQuoteLst){
+			sendEvent(new QuoteSubEvent(getId(), null, symbol));
+		}
 		
-		sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
-		sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
 		sendEvent(new StrategySnapshotRequestEvent(account, null, null));
 		sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
-		sendEvent(getEnterOrderEvent());
+//		sendEvent(getEnterOrderEvent());
 	}
 
 	public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
@@ -155,21 +196,14 @@ public abstract class AbstractApi {
 			log.debug("Received EnterParentOrderReplyEvent(NACK): " + event.getMessage());
 		} else {
 			log.debug("Received EnterParentOrderReplyEvent(ACK)");
-			Map<String, Object> fields = new HashMap<String, Object>();
-			fields.put(OrderField.PRICE.value(), 0.81);
-			fields.put(OrderField.QUANTITY.value(), 3000.0); // note: you must put xxx.0 to tell java this is a double type here!!
-			AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(), null, 
-					event.getOrder().getId(), fields, IdGenerator.getInstance().getNextID());
-			sendEvent(amendEvent);
+			tAct.onTradeOrderReply();
 		} 
 	}
 
 	public void processAmendParentOrderReplyEvent(AmendParentOrderReplyEvent event) {
 		if(event.isOk()) {
 			log.debug("Received AmendParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
-			CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
-					event.getOrder().getId(), false, IdGenerator.getInstance().getNextID());
-			sendEvent(cancelEvent);
+			tAct.onAmendOrderReply();
 		} else {
 			log.debug("Received AmendParentOrderReplyEvent(NACK): " + event.isOk() + ", message: " + event.getMessage());
 		}
@@ -177,7 +211,7 @@ public abstract class AbstractApi {
 
 	public void processCancelParentOrderReplyEvent(CancelParentOrderReplyEvent event) {
 		if(event.isOk()) {
-			log.debug("Received CancelParentOrderReplyEvent(ACK): " + event.getKey() + ", order: " + event.getOrder());
+			tAct.onCancelOrderReply();
 		} else {
 			log.debug("Received CancelParentOrderReplyEvent(NACK): " + event.isOk() + ", message: " + event.getMessage());
 		}
@@ -185,46 +219,11 @@ public abstract class AbstractApi {
 
 	public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
 		log.debug("Received ParentOrderUpdateEvent: " + event.getExecType() + ", order: " + event.getOrder());
-	}
-
-	EnterParentOrderEvent getEnterOrderEvent() {
-		// SDMA 
-		HashMap<String, Object> fields;
-		EnterParentOrderEvent enterOrderEvent;
-		fields = new HashMap<String, Object>();
-		fields.put(OrderField.SYMBOL.value(), "AUDUSD");
-		fields.put(OrderField.SIDE.value(), OrderSide.Buy);
-		fields.put(OrderField.TYPE.value(), OrderType.Limit);
-		fields.put(OrderField.PRICE.value(), 0.700);
-		//fields.put(OrderField.PRICE.value(), 0.87980);
-		fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must put xxx.0 to tell java this is a double type here!!
-		fields.put(OrderField.STRATEGY.value(), "SDMA");
-		fields.put(OrderField.USER.value(), user);
-		fields.put(OrderField.ACCOUNT.value(), account);
-		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields, IdGenerator.getInstance().getNextID(), false);
-		return enterOrderEvent;
-	}
-
-	EnterParentOrderEvent getEnterStopOrderEvent() {
-		// SDMA 
-		HashMap<String, Object> fields;
-		EnterParentOrderEvent enterOrderEvent;
-		fields = new HashMap<String, Object>();
-		fields.put(OrderField.SYMBOL.value(), "AUDUSD");
-		fields.put(OrderField.SIDE.value(), OrderSide.Buy);
-		fields.put(OrderField.TYPE.value(), OrderType.Market);
-		//fields.put(OrderField.PRICE.value(), 0.87980);
-		fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must put xxx.0 to tell java this is a double type here!!
-		fields.put(OrderField.STRATEGY.value(), "STOP");
-		fields.put(OrderField.STOP_LOSS_PRICE.value(), 0.92);
-		fields.put(OrderField.USER.value(), user);
-		fields.put(OrderField.ACCOUNT.value(), account);
-		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields, IdGenerator.getInstance().getNextID(), false);
-		return enterOrderEvent;
-	}
+	}	
 
 	public void processSystemErrorEvent(SystemErrorEvent event) {
 		log.error("Error code: " + event.getErrorCode() + " - " + event.getMessage());
+		onSystemError();
 	}
 
 	public String getUser() {
@@ -250,5 +249,76 @@ public abstract class AbstractApi {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	@Override
+	public void putOrder(Order order) {
+		HashMap<String, Object> fields;
+		EnterParentOrderEvent enterOrderEvent;
+		fields = new HashMap<String, Object>();
+	
+		fields.put(OrderField.SYMBOL.value(), order.symbol);
+		fields.put(OrderField.SIDE.value(), order.side);
+		fields.put(OrderField.TYPE.value(), order.type);
+		fields.put(OrderField.PRICE.value(), order.value);
+		fields.put(OrderField.QUANTITY.value(), new Double(order.quantity));
+	
+		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
+		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
+		// fields.put(OrderField.TYPE.value(), OrderType.Limit);
+		// fields.put(OrderField.PRICE.value(), 0.700);
+		// fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must
+		// put xxx.0 to tell java this is a double type here!!
+	
+		fields.put(OrderField.STRATEGY.value(), "SDMA");
+		fields.put(OrderField.USER.value(), user);
+		fields.put(OrderField.ACCOUNT.value(), account);
+		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields,
+				IdGenerator.getInstance().getNextID(), false);
+		sendEvent(enterOrderEvent);
+	}
+	@Override
+	public void putStopOrder(Order order) {
+		// SDMA
+		HashMap<String, Object> fields;
+		EnterParentOrderEvent enterOrderEvent;
+		fields = new HashMap<String, Object>();
+	
+		fields.put(OrderField.SYMBOL.value(), order.symbol);
+		fields.put(OrderField.SIDE.value(), order.side);
+		fields.put(OrderField.TYPE.value(), order.type);
+		fields.put(OrderField.QUANTITY.value(), new Double(order.quantity));
+		fields.put(OrderField.STOP_LOSS_PRICE.value(), order.stopLossPrice);
+	
+		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
+		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
+		// fields.put(OrderField.TYPE.value(), OrderType.Market);
+		// fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must
+		// put xxx.0 to tell java this is a double type here!!
+		// fields.put(OrderField.STOP_LOSS_PRICE.value(), 0.92);
+	
+		fields.put(OrderField.STRATEGY.value(), "STOP");
+		fields.put(OrderField.USER.value(), user);
+		fields.put(OrderField.ACCOUNT.value(), account);
+		enterOrderEvent = new EnterParentOrderEvent(getId(), null, fields,
+				IdGenerator.getInstance().getNextID(), false);
+		sendEvent(enterOrderEvent);
+	}
+	@Override
+	public void putAmendOrder(Order order){
+		Map<String, Object> fields = new HashMap<String, Object>();
+		fields.put(OrderField.PRICE.value(), 0.81);
+		fields.put(OrderField.QUANTITY.value(), 3000.0); // note: you must put xxx.0 to tell java this is a double type here!!
 
+		AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(), null, 
+				order.id, fields, IdGenerator.getInstance().getNextID());
+		sendEvent(amendEvent);
+	}
+	@Override
+	public void putCancelOrder(Order order){
+		CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null, 
+				order.id, false, IdGenerator.getInstance().getNextID());
+		sendEvent(cancelEvent);
+	}
+	private String getId(){
+		return user;
+	}
 }
