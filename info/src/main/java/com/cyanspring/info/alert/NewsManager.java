@@ -5,8 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -151,7 +149,16 @@ public class NewsManager implements IPlugin {
 			try
 			{
 				URL obj = new URL("http://wallstreetcn.com/news?cid=6");
-				Document doc = Jsoup.parse(obj, 3000);
+				HttpURLConnection con = null;
+				con = (HttpURLConnection)obj.openConnection();
+				con.setRequestProperty("Content-Type", "");
+				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
+				con.setRequestMethod("GET");
+				
+				int responseCsode = con.getResponseCode();
+
+				Document doc = Jsoup.parse(con.getInputStream(), null, "http://wallstreetcn.com/news?cid=6");
+				
 				Elements links = doc.select("li[class$=news]");
 				log.info("[NewsManager] Load News... Start");
 				int Count =0;
