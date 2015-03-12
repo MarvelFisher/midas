@@ -24,7 +24,22 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String esSubName = null;
 	private int lotSize = -1;
 	private String tickTable = "";
-	
+	private double PriceLimit = 0.0;
+	private String CNTradingUnit = null;
+	private String ENTradingUnit = null;
+	private String TWTradingUnit = null;
+	private String SettlementDate = null;
+	private double CommissionFee = 0.0;
+	private double NumeratorDP = 0.0;
+	private int DecimalPoint = 0;
+	private double MinimalCF = 0.0;
+	private double PricePerUnit = 0.0;
+	private double MaximalLot = 0.0;
+	private String Strategy = null;
+	private double MarginRate = 0.0;
+	private String Category = null;
+	private double Denominator = 0.0;
+	private String Tradable = null;
 	
 	public SymbolInfo(String market, String code) 
 	{
@@ -158,5 +173,101 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		else if (this.code == null) return -1;
 		else i = this.code.compareTo(o.code);
 		return i;
+	}
+	public double getPriceLimit() {
+		return PriceLimit;
+	}
+	public void setPriceLimit(double priceLimit) {
+		PriceLimit = priceLimit;
+	}
+	public String getCNTradingUnit() {
+		return CNTradingUnit;
+	}
+	public void setCNTradingUnit(String cNTradingUnit) {
+		CNTradingUnit = cNTradingUnit;
+	}
+	public String getENTradingUnit() {
+		return ENTradingUnit;
+	}
+	public void setENTradingUnit(String eNTradingUnit) {
+		ENTradingUnit = eNTradingUnit;
+	}
+	public String getTWTradingUnit() {
+		return TWTradingUnit;
+	}
+	public void setTWTradingUnit(String tWTradingUnit) {
+		TWTradingUnit = tWTradingUnit;
+	}
+	public String getSettlementDate() {
+		return SettlementDate;
+	}
+	public void setSettlementDate(String settlementDate) {
+		SettlementDate = settlementDate;
+	}
+	public double getCommissionFee() {
+		return CommissionFee;
+	}
+	public void setCommissionFee(double commissionFee) {
+		CommissionFee = commissionFee;
+	}
+	public double getNumeratorDP() {
+		return NumeratorDP;
+	}
+	public void setNumeratorDP(double numeratorDP) {
+		NumeratorDP = numeratorDP;
+	}
+	public int getDecimalPoint() {
+		return DecimalPoint;
+	}
+	public void setDecimalPoint(int decimalPoint) {
+		DecimalPoint = decimalPoint;
+	}
+	public double getMinimalCF() {
+		return MinimalCF;
+	}
+	public void setMinimalCF(double minimalCF) {
+		MinimalCF = minimalCF;
+	}
+	public double getPricePerUnit() {
+		return PricePerUnit;
+	}
+	public void setPricePerUnit(double pricePerUnit) {
+		PricePerUnit = pricePerUnit;
+	}
+	public double getMaximalLot() {
+		return MaximalLot;
+	}
+	public void setMaximalLot(double maximalLot) {
+		MaximalLot = maximalLot;
+	}
+	public String getStrategy() {
+		return Strategy;
+	}
+	public void setStrategy(String strategy) {
+		Strategy = strategy;
+	}
+	public double getMarginRate() {
+		return MarginRate;
+	}
+	public void setMarginRate(double marginRate) {
+		MarginRate = marginRate;
+	}
+	public String getCategory() {
+		return Category;
+	}
+	public void setCategory(String category) {
+		Category = category;
+	}
+	public double getDenominator() {
+		return Denominator;
+	}
+	public void setDenominator(double denominator) {
+		Denominator = denominator;
+	}
+	public String getTradable() {
+		return Tradable;
+	}
+	public void setTradable(String tradable) {
+		Tradable = tradable;
 	}
 }

@@ -150,8 +150,8 @@
 	           	<value>FC</value>
 	           	<value>USD</value>
 	           	<value>A</value>
-	           	<value>100000.0</value>
-	           	<value>40.0</value>
+	           	<value>1000000.0</value>
+	           	<value>6.666667</value>
 	           	<value>100000.0</value>
 	           	<value>0.00002</value>
 	           	<value>2</value>
@@ -159,7 +159,6 @@
 	           	<value>1.0</value>
 	           	<value>50000.0</value>
 	           	<value>0.98</value>
-	           	<value>06:10:00</value> <!-- Make sure this time must be same as PREOPEN -->
             </list>
        </property>
     </bean>

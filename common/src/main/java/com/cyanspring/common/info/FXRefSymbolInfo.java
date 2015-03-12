@@ -44,6 +44,21 @@ public class FXRefSymbolInfo implements IRefSymbolInfo
 			symbolinfo.setEsName(strTmp);
 			symbolinfo.setLotSize(refdata.getLotSize());
 			symbolinfo.setTickTable(refdata.getTickTable());
+			symbolinfo.setCNTradingUnit(refdata.getCNTradingUnit());
+			symbolinfo.setENTradingUnit(refdata.getENTradingUnit());
+			symbolinfo.setTWTradingUnit(refdata.getTWTradingUnit());
+			symbolinfo.setSettlementDate(refdata.getSettlementDate());
+			symbolinfo.setCommissionFee(refdata.getCommissionFee());
+			symbolinfo.setNumeratorDP(refdata.getNumberatorDp());
+			symbolinfo.setDecimalPoint(refdata.getDeciamlPoint());
+			symbolinfo.setMinimalCF(refdata.getMinimalCommissionFee());
+			symbolinfo.setPricePerUnit(refdata.getPricePerUnit());
+			symbolinfo.setMaximalLot(refdata.getMaximalLot());
+			symbolinfo.setStrategy(refdata.getStrategy());
+			symbolinfo.setMarginRate(refdata.getMarginRate());
+			symbolinfo.setCategory(refdata.getCategory());
+			symbolinfo.setDenominator(refdata.getDenominator());
+			symbolinfo.setTradable(refdata.getTradable());
 			index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 			if (index < 0)
 			{
@@ -94,5 +109,24 @@ public class FXRefSymbolInfo implements IRefSymbolInfo
 			}
 		}
 		return infoList;
+	}
+
+	@Override
+	public int at(SymbolInfo symbolinfo) 
+	{
+		int index = Collections.binarySearch(refSymbolInfo, symbolinfo);
+		return index;
+	}
+
+	@Override
+	public SymbolInfo get(int index) {
+		if (index >= 0)
+		{
+			return refSymbolInfo.get(index);
+		}
+		else
+		{
+			return null;
+		}
 	}
 }

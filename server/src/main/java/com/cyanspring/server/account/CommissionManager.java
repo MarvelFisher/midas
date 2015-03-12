@@ -18,13 +18,13 @@ public class CommissionManager implements ICommissionManager{
 	@Override
 	public double getCommission(RefData refData, AccountSetting settings) {
 		double accountCom = 1;
-		if(settings != null && settings.getCommission() != 0.0)
+		if(settings != null && !PriceUtils.isZero(settings.getCommission()))
 			accountCom = settings.getCommission();		
 		if(refData == null)
 			return Default.getCommission() * accountCom;
 		
 		Double com = refData.getCommissionFee();
-		if(com != 0.0)
+		if(!PriceUtils.isZero(settings.getCommission()))
 			return com * accountCom;
 		
 		String market = refData.getMarket();

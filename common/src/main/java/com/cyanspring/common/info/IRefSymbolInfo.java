@@ -11,4 +11,6 @@ public interface IRefSymbolInfo {
 	public List<SymbolInfo> getBySymbolStrings(List<String> symbolList);
 	public List<SymbolInfo> getBySymbolInfos(List<SymbolInfo> inputInfoList);
 	public List<SymbolInfo> getAllSymbolInfo(String market);
+	public int at(SymbolInfo symbolinfo);
+	public SymbolInfo get(int index);
 }

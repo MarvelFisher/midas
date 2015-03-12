@@ -46,7 +46,9 @@ public class ClosedPosition extends Position {
 			result.setBuyPrice(execution.getPrice());
 			result.setSellPrice(position.getPrice());
 		}
-		result.setPnL((result.getSellPrice() - result.getBuyPrice()) * result.getQty());
+		double pnl = FxUtils.calculatePnL(refDataManager, result.getSymbol(), result.getQty(), 
+				(result.getSellPrice() - result.getBuyPrice()));
+		result.setPnL(pnl);
 		result.setAcPnL(FxUtils.convertPnLToCurrency(refDataManager, fxConverter, 
 				account.getCurrency(), position.getSymbol(), result.getPnL()));
 		result.setCreated(execution.getCreated());

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
+import com.cyanspring.common.util.PriceUtils;
 
 public class FxUtils {
 	private static final Logger log = LoggerFactory
@@ -41,7 +42,13 @@ public class FxUtils {
 					log.error(e.getMessage(), e);
 				}
 			} 
-			return qty;
+			return qty * price;
+		} else if(null != refData) {
+			double pricePerUnit = refData.getPricePerUnit();
+			if(!PriceUtils.isZero(pricePerUnit)) {
+				return qty * pricePerUnit * price;
+			}
+			return qty * price;
 		} else {
 			return qty * price;
 		}
@@ -71,5 +78,24 @@ public class FxUtils {
 		} else {
 			return qty;
 		}
+	}
+	
+	static public double calculatePnL(IRefDataManager refDataManager, String symbol, double qty, double price) {
+		if(null == refDataManager) {
+			log.warn("RefDataManager is null");
+			return qty * price;
+		}
+			
+		RefData refData = refDataManager.getRefData(symbol);
+		if(null != refData) {
+			double pricePerUnit = refData.getPricePerUnit();
+			if(!PriceUtils.isZero(pricePerUnit)) {
+				return qty * pricePerUnit * price;
+			}
+			return qty * price;
+		} else {
+			return qty * price;
+		}
+		
 	}
 }

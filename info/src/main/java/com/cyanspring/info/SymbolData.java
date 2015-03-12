@@ -67,7 +67,10 @@ public class SymbolData implements Comparable<SymbolData>
 	public void resetPriceData()
 	{
 //		int tickCount = centralDB.getTickCount() ;
-		priceData.clear();
+		synchronized(priceData)
+		{
+			priceData.clear();
+		}
 	}
 	public void setPrice(Quote quote)
 	{
@@ -91,41 +94,47 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public boolean setPrice(double bid, double ask, Date date)
 	{
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
-		cal.setTime(date) ;
-		cal.set(Calendar.SECOND, 0);
-		double dPrice = (bid + ask) / 2 ;
-		HistoricalPrice price = priceData.get(cal.getTime()) ;
-		if (price == null)
+		synchronized(priceData)
 		{
-			price = new HistoricalPrice(strSymbol, centralDB.getTradedate(), cal.getTime());
-			priceData.put(cal.getTime(), price);
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+			cal.setTime(date) ;
+			cal.set(Calendar.SECOND, 0);
+			double dPrice = (bid + ask) / 2 ;
+			HistoricalPrice price = priceData.get(cal.getTime()) ;
+			if (price == null)
+			{
+				price = new HistoricalPrice(strSymbol, centralDB.getTradedate(), cal.getTime());
+				priceData.put(cal.getTime(), price);
+			}
+			boolean changed = price.setPrice(dPrice);
+			if (changed && writeMin) //writeToMin() ; 
+			{
+				centralDB.getChartCacheProcessor().put(this);
+			}
+			price.setDatatime(date) ;
+			if (d52WHigh < dPrice)
+			{
+				d52WHigh = dPrice ;
+			}
+			if (PriceUtils.isZero(d52WLow) || d52WLow > dPrice)
+			{
+				d52WLow = dPrice ;
+			}
+			if (dCurHigh < dPrice)
+			{
+				dCurHigh = dPrice ;
+			}
+			if (PriceUtils.isZero(dCurLow) || dCurLow > dPrice)
+			{
+				dCurLow = dPrice ;
+			}
+			if (PriceUtils.isZero(dOpen))
+			{
+				dOpen = dPrice ;
+			}
+			dClose = dPrice ;
+			return changed;
 		}
-		boolean changed = price.setPrice(dPrice);
-		if (changed && writeMin) writeToMin() ;
-		price.setDatatime(date) ;
-		if (d52WHigh < dPrice)
-		{
-			d52WHigh = dPrice ;
-		}
-		if (PriceUtils.isZero(d52WLow) || d52WLow > dPrice)
-		{
-			d52WLow = dPrice ;
-		}
-		if (dCurHigh < dPrice)
-		{
-			dCurHigh = dPrice ;
-		}
-		if (PriceUtils.isZero(dCurLow) || dCurLow > dPrice)
-		{
-			dCurLow = dPrice ;
-		}
-		if (PriceUtils.isZero(dOpen))
-		{
-			dOpen = dPrice ;
-		}
-		dClose = dPrice ;
-		return changed;
 	}
 	
 	public void readFromTick()
@@ -186,12 +195,15 @@ public class SymbolData implements Comparable<SymbolData>
         file.getParentFile().mkdirs();
         try
         {
-            FileOutputStream fos = new FileOutputStream(file, false);
-            ObjectOutputStream oos = new ObjectOutputStream(fos); 
-        	oos.writeObject(priceData);
-            oos.flush();
-            oos.close();
-            fos.close();
+        	synchronized(priceData)
+    		{
+	            FileOutputStream fos = new FileOutputStream(file, false);
+	            ObjectOutputStream oos = new ObjectOutputStream(fos); 
+	        	oos.writeObject(priceData);
+	            oos.flush();
+	            oos.close();
+	            fos.close();
+    		}
         }
         catch (IOException e)
         {
@@ -374,111 +386,114 @@ public class SymbolData implements Comparable<SymbolData>
 		int priceMin = 0;
 		int emptyMin = 0;
 		HistoricalPrice price;
-		if (strType.equals("1"))
+		synchronized(priceData)
 		{
-			for(Map.Entry<Date, HistoricalPrice> entry : priceData.entrySet())
+			if (strType.equals("1"))
 			{
-				price = entry.getValue();
-				if (price.getDatatime() == null)
+				for(Map.Entry<Date, HistoricalPrice> entry : priceData.entrySet())
 				{
-					continue;
+					price = entry.getValue();
+					if (price.getDatatime() == null)
+					{
+						continue;
+					}
+					else if (end != null && 0 < price.getDatatime().compareTo(end))
+					{
+						return prices ;
+					}
+					prices.add(price) ;
 				}
-				else if (end != null && 0 < price.getDatatime().compareTo(end))
-				{
-					return prices ;
-				}
-				prices.add(price) ;
 			}
-		}
-		else
-		{
-			for(Map.Entry<Date, HistoricalPrice> entry : priceData.entrySet())
+			else
 			{
-				price = entry.getValue();
-				if (price.getDatatime() == null)
+				for(Map.Entry<Date, HistoricalPrice> entry : priceData.entrySet())
 				{
-					continue ;
-				}
-				if (priceEmpty.getDatatime() == null)
-				{
-					priceEmpty.update(price);
-					continue;
-				}
-				if (end != null && 0 < price.getDatatime().compareTo(end))
-				{
-					return prices ;
-				}
-				pricetime.setTime(price.getDatatime());
-				emptytime.setTime(priceEmpty.getDatatime());
-				priceMin = pricetime.get(Calendar.HOUR_OF_DAY)*60 + pricetime.get(Calendar.MINUTE);
-				emptyMin = emptytime.get(Calendar.HOUR_OF_DAY)*60 + emptytime.get(Calendar.MINUTE);
-				if (strType.equals("R") 
-						&& (priceMin/5 != emptyMin/5))
-				{
-					priceEmpty = (HistoricalPrice)price.clone() ;
-					prices.add(priceEmpty) ;
-					cal.setTime(price.getDatatime());
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 5) * 5)) ;
-					priceEmpty.setKeytime(cal.getTime());
-				}
-				else if (strType.equals("A") 
-						&& (priceMin/10 != emptyMin/10))
-				{
-					priceEmpty = (HistoricalPrice)price.clone() ;
-					prices.add(priceEmpty) ;
-					cal.setTime(price.getDatatime());
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 10) * 10)) ;
-					priceEmpty.setKeytime(cal.getTime());
-				}
-				else if (strType.equals("Q") 
-						&& (priceMin/15 != emptyMin/15))
-				{
-					priceEmpty = (HistoricalPrice)price.clone() ;
-					prices.add(priceEmpty) ;
-					cal.setTime(price.getDatatime());
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 15) * 15)) ;
-					priceEmpty.setKeytime(cal.getTime());
-				}
-				else if (strType.equals("H") 
-						&& (priceMin/30 != emptyMin/30))
-				{
-					priceEmpty = (HistoricalPrice)price.clone() ;
-					prices.add(priceEmpty) ;
-					cal.setTime(price.getDatatime());
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 30) * 30)) ;
-					priceEmpty.setKeytime(cal.getTime());
-				}
-				else if (strType.equals("6") 
-						&& ((pricetime.get(Calendar.HOUR_OF_DAY) != emptytime.get(Calendar.HOUR_OF_DAY))
-								|| (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE))))
-				{
-					priceEmpty = (HistoricalPrice)price.clone() ;
-					prices.add(priceEmpty) ;
-					cal.setTime(price.getDatatime());
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.HOUR_OF_DAY, pricetime.get(Calendar.HOUR_OF_DAY)) ;
-					priceEmpty.setKeytime(cal.getTime());
-				}
-				else if (strType.equals("T") 
-						&& ((pricetime.get(Calendar.HOUR_OF_DAY)/4 != emptytime.get(Calendar.HOUR_OF_DAY)/4)
-								|| (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE))))
-				{
-					priceEmpty = (HistoricalPrice)price.clone() ;
-					prices.add(priceEmpty) ;
-					cal.setTime(price.getDatatime());
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.HOUR_OF_DAY, (pricetime.get(Calendar.HOUR_OF_DAY) / 4) * 4) ;
-					priceEmpty.setKeytime(cal.getTime());
-				}
-				else
-				{
-					priceEmpty.update(price);
+					price = entry.getValue();
+					if (price.getDatatime() == null)
+					{
+						continue ;
+					}
+					if (priceEmpty.getDatatime() == null)
+					{
+						priceEmpty.update(price);
+						continue;
+					}
+					if (end != null && 0 < price.getDatatime().compareTo(end))
+					{
+						return prices ;
+					}
+					pricetime.setTime(price.getDatatime());
+					emptytime.setTime(priceEmpty.getDatatime());
+					priceMin = pricetime.get(Calendar.HOUR_OF_DAY)*60 + pricetime.get(Calendar.MINUTE);
+					emptyMin = emptytime.get(Calendar.HOUR_OF_DAY)*60 + emptytime.get(Calendar.MINUTE);
+					if (strType.equals("R") 
+							&& (priceMin/5 != emptyMin/5))
+					{
+						priceEmpty = (HistoricalPrice)price.clone() ;
+						prices.add(priceEmpty) ;
+						cal.setTime(price.getDatatime());
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 5) * 5)) ;
+						priceEmpty.setKeytime(cal.getTime());
+					}
+					else if (strType.equals("A") 
+							&& (priceMin/10 != emptyMin/10))
+					{
+						priceEmpty = (HistoricalPrice)price.clone() ;
+						prices.add(priceEmpty) ;
+						cal.setTime(price.getDatatime());
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 10) * 10)) ;
+						priceEmpty.setKeytime(cal.getTime());
+					}
+					else if (strType.equals("Q") 
+							&& (priceMin/15 != emptyMin/15))
+					{
+						priceEmpty = (HistoricalPrice)price.clone() ;
+						prices.add(priceEmpty) ;
+						cal.setTime(price.getDatatime());
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 15) * 15)) ;
+						priceEmpty.setKeytime(cal.getTime());
+					}
+					else if (strType.equals("H") 
+							&& (priceMin/30 != emptyMin/30))
+					{
+						priceEmpty = (HistoricalPrice)price.clone() ;
+						prices.add(priceEmpty) ;
+						cal.setTime(price.getDatatime());
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MINUTE, ((pricetime.get(Calendar.MINUTE) / 30) * 30)) ;
+						priceEmpty.setKeytime(cal.getTime());
+					}
+					else if (strType.equals("6") 
+							&& ((pricetime.get(Calendar.HOUR_OF_DAY) != emptytime.get(Calendar.HOUR_OF_DAY))
+									|| (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE))))
+					{
+						priceEmpty = (HistoricalPrice)price.clone() ;
+						prices.add(priceEmpty) ;
+						cal.setTime(price.getDatatime());
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.HOUR_OF_DAY, pricetime.get(Calendar.HOUR_OF_DAY)) ;
+						priceEmpty.setKeytime(cal.getTime());
+					}
+					else if (strType.equals("T") 
+							&& ((pricetime.get(Calendar.HOUR_OF_DAY)/4 != emptytime.get(Calendar.HOUR_OF_DAY)/4)
+									|| (pricetime.get(Calendar.DATE) != emptytime.get(Calendar.DATE))))
+					{
+						priceEmpty = (HistoricalPrice)price.clone() ;
+						prices.add(priceEmpty) ;
+						cal.setTime(price.getDatatime());
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.HOUR_OF_DAY, (pricetime.get(Calendar.HOUR_OF_DAY) / 4) * 4) ;
+						priceEmpty.setKeytime(cal.getTime());
+					}
+					else
+					{
+						priceEmpty.update(price);
+					}
 				}
 			}
 		}
