@@ -239,7 +239,7 @@ public class NewsManager implements IPlugin {
 					wr.writeBytes(strPoststring);
 					wr.flush();
 					wr.close();					
-					
+					con.disconnect();
 					int responseCode = httpCon.getResponseCode();
 					if (responseCode != 200)
 					{

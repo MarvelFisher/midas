@@ -13,7 +13,7 @@
 	        	<ref bean="newsManager"/>
             	<ref bean="alertManager"/>
             	<ref bean="centralDbProcessor"/>
-            	<ref bean="userManager"/>
+<!--             	<ref bean="userManager"/> -->
 	        </list>
 		</property>
 	</bean>

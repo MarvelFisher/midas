@@ -19,6 +19,7 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.info.alert.ParseThread;
 
 public class UserManager implements IPlugin {
 	private static final Logger log = LoggerFactory
@@ -113,14 +114,7 @@ public class UserManager implements IPlugin {
 //				ContestIdArray.add(RS.getString("CONTEST_ID"));
 				
 				ContestIdArray.add((String) iterator.next());
-			}			
-			for (String ContestId : ContestIdArray) {
-				strCmd = "delete from " + ContestId + "_fx where USER_ID='"
-						+ UserId + "'";
-				query = session.createSQLQuery(strCmd);
-				Return = query.executeUpdate();
-			}
-			
+			}				
 			for (String ContestId : ContestIdArray)
 			{
 				//strCmd = "delete from "+ ContestId + "_fx where USER_ID='" + UserId + "'";
@@ -148,11 +142,12 @@ public class UserManager implements IPlugin {
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("UserManager");
-
 	}
 
 	@Override
 	public void uninit() {
+		log.info("Uninitialising...");
+		eventProcessor.uninit();
 		// TODO Auto-generated method stub
 	}
 }
