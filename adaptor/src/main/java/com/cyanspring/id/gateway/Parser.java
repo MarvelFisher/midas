@@ -65,10 +65,10 @@ public class Parser implements IReqThreadCallback {
 		m_buffer.write(srcData, srcData.length);
 		srcData = null;
 		try {
-
+			byte[] data = new byte[6];
 			while (true) {
 
-				byte[] data = new byte[6];
+				//byte[] data = new byte[6];
 
 				if (m_buffer.getQueuedSize() <= 0
 						|| m_buffer.read(data, 6, false) != 6) {
@@ -139,6 +139,7 @@ public class Parser implements IReqThreadCallback {
 					m_buffer.purge(iPacketDataLength);
 
 					String str = new String(data2, Charset.defaultCharset());
+					data2 = null;
 					int nCmd = str.indexOf("|5001=");
 					if (nCmd >= 0) {
 						LogUtil.logInfo(log, str);

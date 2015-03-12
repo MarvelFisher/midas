@@ -152,14 +152,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		packetData = null;
 		ChannelGroupFuture future = channels.writeAndFlush(buffer);
 
-		future.addListener(new ChannelGroupFutureListener() {
-			@Override
-			public void operationComplete(ChannelGroupFuture arg0)
-					throws Exception {
-				if (buffer != null && buffer.refCnt() > 0)
-					buffer.release();
-			}
-		});
+		//future.addListener(new ChannelGroupFutureListener() {
+		//	@Override
+		//	public void operationComplete(ChannelGroupFuture arg0)
+		//			throws Exception {
+		//		if (buffer != null && buffer.refCnt() > 0)
+		//			buffer.release();
+		//	}
+		//});
 	}
 
 	public static void sendData(ChannelHandlerContext ctx, String symbol,
@@ -170,11 +170,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	public static void sendData(ChannelHandlerContext ctx, String symbol,
 			byte[] data) {
 
-		if (!channels.contains(ctx.channel())) {
-			data = null;
-			return;
-		}
-		ctx.writeAndFlush(Unpooled.copiedBuffer(data));
+		if (channels.contains(ctx.channel()))			
+			ctx.writeAndFlush(Unpooled.copiedBuffer(data));
+		
+		data = null;
+		//if (!channels.contains(ctx.channel())) {
+		//	data = null;
+		//	return;
+		//}		
 		//final ByteBuf buffer = Unpooled.copiedBuffer(data);
 		//data = null;
 		//ChannelFuture future = ctx.writeAndFlush(buffer);

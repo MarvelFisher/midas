@@ -54,8 +54,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * @param data
 	 */
 	public static void sendData(byte[] data) {
+		ctx.writeAndFlush(Unpooled.copiedBuffer(data));
+		data = null;
+		/*
 		final ByteBuf buffer = Unpooled.copiedBuffer(data);
 		data = null;
+
 		ChannelFuture future = ctx.writeAndFlush(buffer);
 
 		future.addListener(new ChannelFutureListener() {
@@ -66,6 +70,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 					buffer.release();
 			}
 		});
+		*/
 
 	}
 

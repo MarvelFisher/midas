@@ -55,8 +55,8 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 	static final double MaxSize = 10 * GB;
 	
 	public static IdGateway instance = new IdGateway();
-	public static String version = "1.00R01";
-	public static String lastUpdated = "2014-12-26";
+	public static String version = "1.00R02";
+	public static String lastUpdated = "2015-03-12";
 	public long inNo = 0, outNo = 0;
 	public double inSize = 0, outSize = 0;
 	static RequestThread thread = null;
@@ -384,7 +384,7 @@ public class IdGateway implements IFrameClose, IReqThreadCallback {
 			// Shut down all event loops to terminate all threads.
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
-			IdGateway.instance().mainFrame.addLog(InfoString.Error, "HttpServer listen : %d fail! [%s]", PORT,
+			IdGateway.instance().addLog(InfoString.Error, "HttpServer listen : %d fail! [%s]", PORT,
 					e.getMessage());
 			LogUtil.logException(log, e);
 		}

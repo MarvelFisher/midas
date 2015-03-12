@@ -76,6 +76,11 @@ public class UserClient implements AutoCloseable {
 			refList.clear();
 			refList = null;
 		}
+		if(buffer != null)
+		{
+			buffer.close();
+			buffer = null;			
+		}
 
 		ctx = null;
 	}
@@ -135,14 +140,18 @@ public class UserClient implements AutoCloseable {
 
 	public void onReceive(byte[] srcData) {
 
+		if(buffer == null)
+		{
+			return;
+		}
+		
 		try {
 
 			buffer.write(srcData, srcData.length);
 			srcData = null;
+			byte[] data = new byte[6];
 
-			while (true) {
-
-				byte[] data = new byte[6];
+			while (true) {				
 
 				if (buffer.getQueuedSize() <= 0
 						|| buffer.read(data, 6, false) != 6) {
@@ -192,6 +201,7 @@ public class UserClient implements AutoCloseable {
 
 					String strFrame = new String(data2,
 							Charset.defaultCharset());
+					data2 = null;
 					parse(strFrame);
 
 				} else {
