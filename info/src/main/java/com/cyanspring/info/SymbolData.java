@@ -37,6 +37,7 @@ public class SymbolData implements Comparable<SymbolData>
             "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY " + 
             "Update TRADEDATE=%s,DATATIME=%s,OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;";
 	private static final String dateFormat = "yyyy-MM-dd HH:mm:ss";
+	private static Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 	private CentralDbProcessor centralDB = null;
 	private boolean isUpdating = false;
 	private boolean writeMin = false;
@@ -96,7 +97,6 @@ public class SymbolData implements Comparable<SymbolData>
 	{
 		synchronized(priceData)
 		{
-			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 			cal.setTime(date) ;
 			cal.set(Calendar.SECOND, 0);
 			double dPrice = (bid + ask) / 2 ;
@@ -107,11 +107,15 @@ public class SymbolData implements Comparable<SymbolData>
 				priceData.put(cal.getTime(), price);
 			}
 			boolean changed = price.setPrice(dPrice);
+			price.setDatatime(date) ;
 			if (changed && writeMin) //writeToMin() ; 
 			{
 				centralDB.getChartCacheProcessor().put(this);
 			}
-			price.setDatatime(date) ;
+			else if (!changed)
+			{
+				return changed;
+			}
 			if (d52WHigh < dPrice)
 			{
 				d52WHigh = dPrice ;
@@ -218,7 +222,7 @@ public class SymbolData implements Comparable<SymbolData>
     		return;
     	}
     	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
@@ -378,7 +382,7 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			priceEmpty = prices.get(prices.size()-1);
 		}
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		Calendar pricetime = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		Calendar emptytime = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
@@ -506,7 +510,7 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			return;
 		}
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);

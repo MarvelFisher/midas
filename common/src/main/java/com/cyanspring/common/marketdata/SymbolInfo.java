@@ -1,10 +1,12 @@
 package com.cyanspring.common.marketdata;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
+import com.cyanspring.common.info.RefSubName;
+
 public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
+	private static Map<String, RefSubName> subNameMap;
 	private String market = null;
 	private String exchange = null;
 	private String code = null;
@@ -122,27 +124,111 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
-		this.cnSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getCnName();
+		if (getHint() == null || getHint().isEmpty())
+		{
+			this.cnSubName = this.code;
+		}
+		else
+		{
+			if (subNameMap.get(getHint()) != null)
+			{
+				this.cnSubName = subNameMap.get(getHint()).getCNSubName();
+			}
+			else
+			{
+				this.cnSubName = this.code;
+			}
+		}
 	}
 	public void setTwName(String twName) {
 		this.twName = twName;
-		this.twSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getTwName();
+		if (getHint() == null || getHint().isEmpty())
+		{
+			this.twSubName = this.code;
+		}
+		else
+		{
+			if (subNameMap.get(getHint()) != null)
+			{
+				this.twSubName = subNameMap.get(getHint()).getTWSubName();
+			}
+			else
+			{
+				this.twSubName = this.code;
+			}
+		}
 	}
 	public void setEnName(String enName) {
 		this.enName = enName;
-		this.enSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getEnName();
+		if (getHint() == null || getHint().isEmpty())
+		{
+			this.enSubName = this.code;
+		}
+		else
+		{
+			if (subNameMap.get(getHint()) != null)
+			{
+				this.enSubName = subNameMap.get(getHint()).getENSubName();
+			}
+			else
+			{
+				this.enSubName = this.code;
+			}
+		}
 	}
 	public void setJpName(String jpName) {
 		this.jpName = jpName;
-		this.jpSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getJpName();
+		if (getHint() == null || getHint().isEmpty())
+		{
+			this.jpSubName = this.code;
+		}
+		else
+		{
+			if (subNameMap.get(getHint()) != null)
+			{
+				this.jpSubName = subNameMap.get(getHint()).getENSubName();
+			}
+			else
+			{
+				this.jpSubName = this.code;
+			}
+		}
 	}
 	public void setEsName(String esName) {
 		this.esName = esName;
-		this.esSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getEsName();
+		if (getHint() == null || getHint().isEmpty())
+		{
+			this.esSubName = this.code;
+		}
+		else
+		{
+			if (subNameMap.get(getHint()) != null)
+			{
+				this.esSubName = subNameMap.get(getHint()).getENSubName();
+			}
+			else
+			{
+				this.esSubName = this.code;
+			}
+		}
 	}
 	public void setKrName(String krName) {
 		this.krName = krName;
-		this.krSubName = (getHint() == null || getHint().isEmpty()) ? this.code : getHint();//SymbolInfoType.fromString(getHint()).getKrName();
+		if (getHint() == null || getHint().isEmpty())
+		{
+			this.krSubName = this.code;
+		}
+		else
+		{
+			if (subNameMap.get(getHint()) != null)
+			{
+				this.krSubName = subNameMap.get(getHint()).getENSubName();
+			}
+			else
+			{
+				this.krSubName = this.code;
+			}
+		}
 	}
 	public void setWindCode(String windCode) {
 		this.windCode = windCode;
@@ -269,5 +355,11 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setTradable(String tradable) {
 		Tradable = tradable;
+	}
+	public static Map<String, RefSubName> getSubNameMap() {
+		return subNameMap;
+	}
+	public static void setSubNameMap(Map<String, RefSubName> subNameMap) {
+		SymbolInfo.subNameMap = subNameMap;
 	}
 }

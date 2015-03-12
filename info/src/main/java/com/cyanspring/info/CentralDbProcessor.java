@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.TimeZone;
 
@@ -50,6 +52,7 @@ import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
+import com.cyanspring.common.info.RefSubName;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
@@ -65,6 +68,8 @@ public class CentralDbProcessor implements IPlugin
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(CentralDbProcessor.class);
+	
+	private Map<String, RefSubName> subNameMap = new HashMap<String, RefSubName>();
 
 	private String driverClass;
 	private String jdbcUrl;
@@ -1003,6 +1008,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		chartCacheProcessor = new ChartCacheProc();
+		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;
 
@@ -1110,6 +1116,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public ChartCacheProc getChartCacheProcessor() {
 		return chartCacheProcessor;
+	}
+
+	public Map<String, RefSubName> getSubNameMap() {
+		return subNameMap;
+	}
+
+	public void setSubNameMap(Map<String, RefSubName> subNameMap) {
+		this.subNameMap = subNameMap;
 	}
 	
 }
