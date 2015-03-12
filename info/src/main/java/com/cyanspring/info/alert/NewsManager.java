@@ -181,7 +181,14 @@ public class NewsManager implements IPlugin {
 						continue;
 					}
 					obj = new URL(href);
-					doc = Jsoup.parse(obj,3000);
+					con = (HttpURLConnection)obj.openConnection();
+					con.setRequestProperty("Content-Type", "");
+					con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
+					con.setRequestMethod("GET");
+					
+					responseCsode = con.getResponseCode();
+					
+					doc = Jsoup.parse(con.getInputStream(), null, href) ;
 					Elements childSite = doc.select("div[class$=article-content]");
 					doc = Jsoup.parse(childSite.toString()) ;
 					childSite = doc.select("p");
