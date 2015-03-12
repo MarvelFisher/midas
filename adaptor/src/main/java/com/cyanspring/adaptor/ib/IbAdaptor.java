@@ -145,6 +145,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 				log.warn(e.getMessage(), e);
 			}
 		}
+		clear();
 		log.info("IB connected");	
 	}
 	
@@ -534,8 +535,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	@Override
 	public void connectionClosed() {
 		log.info("IB connection closed");
-		quotes.clear();
-		symbolToId.clear();
+		clear();
 		
 		// notify downstream down
 		if(downStreamListener != null)
@@ -545,6 +545,11 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		
 		// notify market data feed down
 		notifyMarketDataState(false);
+	}
+	
+	private void clear() {
+		quotes.clear();
+		symbolToId.clear();
 	}
 	
 	synchronized private void publishTrade(Trade trade) {
@@ -933,6 +938,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	public void nextValidId(int orderId) {
 		log.info("nextValidId: " + orderId);
 		nextOrderId.set(orderId);
+		notifyMarketDataState(true);
 	}
 
 	@Override
@@ -976,7 +982,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	@Override
 	public void managedAccounts(String accountsList) {
 		log.debug(EWrapperMsgGenerator.managedAccounts(accountsList));
-		notifyMarketDataState(true);
 	}
 
 	@Override
