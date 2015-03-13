@@ -111,6 +111,7 @@ public class SymbolData implements Comparable<SymbolData>
 			if (changed && writeMin) //writeToMin() ; 
 			{
 				centralDB.getChartCacheProcessor().put(this);
+				writeMin = false;
 			}
 			else if (!changed)
 			{

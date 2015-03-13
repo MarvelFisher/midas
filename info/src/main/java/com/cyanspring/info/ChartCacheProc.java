@@ -33,11 +33,12 @@ public class ChartCacheProc implements Runnable
 	@Override
 	public void run() 
 	{
+		SymbolData symboldata = null;
 		while (true)
 		{
-			if (!m_q.isEmpty())
+			symboldata = m_q.poll();
+			if (symboldata != null)
 			{
-				SymbolData symboldata = m_q.poll();
 				symboldata.writeToMin();
 			}
 			try 
