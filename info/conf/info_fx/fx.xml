@@ -13,8 +13,12 @@
  	        	<ref bean="newsManager"/>
              	<ref bean="alertManager"/>
             	<ref bean="centralDbProcessor"/>
+            	<ref bean="userManager"/>
 	        </list>
 		</property>
+	</bean>
+	
+	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">

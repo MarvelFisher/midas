@@ -22,13 +22,20 @@
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
 		<property name="endString" value="（更多精彩" />
-		<property name="CheckThreadStatusInterval" value="60000" />
+		<property name="CheckThreadStatusInterval" value="300000" />
 		<property name="SocialAPI" value="http://forexmastergaedev.appspot.com/rest/appSendPost"/>
 		<!-- 		<property name="SocialAPI" value="http://joedev3.forexmastergaedev.appspot.com/rest/appSendPost"/> -->
 		<property name="PostAccount" value="fxmcn003"/>		
 	</bean>
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
+	  <property name="username" value="tqt001"/>
+	  <property name="password" value="tqt001"/>
+	</bean>
+	
+	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
 	  <property name="username" value="tqt001"/>

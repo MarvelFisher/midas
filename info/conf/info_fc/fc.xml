@@ -13,8 +13,12 @@
 <!-- 	        	<ref bean="newsManager"/> -->
             	<ref bean="alertManager"/>
             	<ref bean="centralDbProcessor"/>
+            	<ref bean="userManager"/>
 	        </list>
 		</property>
+	</bean>
+	
+	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
@@ -40,6 +44,24 @@
 	            <value>IFC1</value>
 	            <value>IFC2</value>
 	        </list>    
+		</property>
+		<property name="subNameMap">
+			<map>
+		    	<entry key="IFC0">
+		      		<bean class="com.cyanspring.common.info.RefSubName">
+		      			<property name="CNSubName" value="当月"/>
+		      			<property name="TWSubName" value="當月"/>
+		      			<property name="ENSubName" value="IFC0"/>
+		      		</bean>
+		    	</entry>
+		    	<entry key="IFC1">
+		      		<bean class="com.cyanspring.common.info.RefSubName">
+		      			<property name="CNSubName" value="次月"/>
+		      			<property name="TWSubName" value="次月"/>
+		      			<property name="ENSubName" value="IFC1"/>
+		      		</bean>
+		    	</entry>
+		    </map>
 		</property>
 	</bean>
 	

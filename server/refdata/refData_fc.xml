@@ -47,7 +47,7 @@
       </entry>
       <entry>
         <string>Decimal point</string>
-        <int>2</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -151,7 +151,7 @@
       </entry>
       <entry>
         <string>Decimal point</string>
-        <int>2</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Minimal CF</string>
