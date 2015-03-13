@@ -35,6 +35,13 @@
 	  <property name="password" value="tqt001"/>
 	</bean>
 	
+	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
+	  <property name="username" value="tqt001"/>
+	  <property name="password" value="tqt001"/>
+	</bean>
+	
 	<bean id="jdbcUrl" class="java.lang.String">	
 <!-- 		<constructor-arg value="jdbc:mysql://10.0.0.10:3306/TA_DS_TEST?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" /> -->
 		<constructor-arg value="jdbc:mysql://10.0.0.10/TA_DS_TEST?jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;user=tqt001&amp;password=tqt001" />

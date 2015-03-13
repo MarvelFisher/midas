@@ -262,7 +262,7 @@ public class InfoServer
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String configFile = "conf/info_sserver.xml";
+		String configFile = "conf/info_fxserver.xml";
 		String logConfigFile = "conf/info_slog4j.xml";
 		if(args.length == 1) {
 			configFile = args[0];

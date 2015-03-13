@@ -25,5 +25,17 @@
        	</props>
        </property>
 	</bean>
+	
+	<bean id="sessionFactoryCentral" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	  <property name="dataSource" ref="dataSourceCentral"/>
+	  <property name="hibernateProperties">
+      	<props>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.show_sql">false</prop>
+         <prop key="hibernate.format_sql">false</prop>
+         <prop key="hibernate.connection.autocommit">false</prop>
+       	</props>
+       </property>
+	</bean>
 
 </beans>
