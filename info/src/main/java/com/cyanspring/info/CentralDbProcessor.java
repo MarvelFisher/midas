@@ -890,6 +890,7 @@ public class CentralDbProcessor implements IPlugin
 			this.clearSymbolChefData();
 			this.quoteBuffer.clear();
 			refSymbolInfo.reset();
+			calledRefdata = false;
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.add(Calendar.HOUR_OF_DAY, -2);

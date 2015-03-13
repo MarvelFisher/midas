@@ -138,6 +138,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	{
 		while(!clientSocket.isConnected()) {
 			log.debug("Attempting to establish connection to IB TWS/Gateway...");
+			clear();
 			clientSocket.eConnect(host, port, clientId);
 			try {
 				Thread.sleep(2000);
@@ -145,7 +146,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 				log.warn(e.getMessage(), e);
 			}
 		}
-		clear();
 		log.info("IB connected");	
 	}
 	
@@ -225,7 +225,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	public void subscribeMarketData(String instrument,
 			IMarketDataListener listener) throws MarketDataException {
 		log.info("subscribeMarketData: " + instrument);
-		log.debug("Setting refDataManager: " + refDataManager.getClass());
 		RefData refData = refDataManager.getRefData(instrument);
 		if(refData == null) {
 			throw new MarketDataException("Symbol " + instrument + " is not found in reference data");

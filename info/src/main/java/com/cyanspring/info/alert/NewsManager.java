@@ -180,6 +180,7 @@ public class NewsManager implements IPlugin {
 					{
 						continue;
 					}
+					con.disconnect();
 					obj = new URL(href);
 					con = (HttpURLConnection)obj.openConnection();
 					con.setRequestProperty("Content-Type", "");
