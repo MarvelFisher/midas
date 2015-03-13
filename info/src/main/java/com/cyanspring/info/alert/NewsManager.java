@@ -180,6 +180,7 @@ public class NewsManager implements IPlugin {
 					{
 						continue;
 					}
+					con.disconnect();
 					obj = new URL(href);
 					con = (HttpURLConnection)obj.openConnection();
 					con.setRequestProperty("Content-Type", "");
@@ -239,7 +240,7 @@ public class NewsManager implements IPlugin {
 					wr.writeBytes(strPoststring);
 					wr.flush();
 					wr.close();					
-					
+					con.disconnect();
 					int responseCode = httpCon.getResponseCode();
 					if (responseCode != 200)
 					{
