@@ -65,35 +65,35 @@ public class Parser implements IReqThreadCallback {
 		m_buffer.write(srcData, srcData.length);
 		srcData = null;
 		try {
-			byte[] data = new byte[6];
+			byte[] pktHead = new byte[6],pktFrame,pktPayload;
 			while (true) {
-
-				//byte[] data = new byte[6];
-
+				pktFrame = null;
+				pktPayload = null;
+				
 				if (m_buffer.getQueuedSize() <= 0
-						|| m_buffer.read(data, 6, false) != 6) {
+						|| m_buffer.read(pktHead, 6, false) != 6) {
+					pktHead = null;
 					break;
 				}
 
-				if (data[0] != SpecialCharDef.EOT) {
+				if (pktHead[0] != SpecialCharDef.EOT) {
 					LogUtil.logError(log,
 							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-							data[0]);
+							pktHead[0]);
 					m_buffer.purge(1); // Skip One Byte
 					continue;
 				}
 
-				if (data[1] != SpecialCharDef.SPC) {
+				if (pktHead[1] != SpecialCharDef.SPC) {
 					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
-					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
+					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", pktHead[1]);
 					m_buffer.purge(1); // Skip One Byte
 					continue;
 				}
 
 				int iDataLength = 0;
 				try {
-					iDataLength = (int) BitConverter.toLong(data, 2,
-							data.length);
+					iDataLength = (int) BitConverter.toLong(pktHead, 2,6);
 
 				} catch (Exception e) {
 					LogUtil.logError(log, e.getMessage());
@@ -105,16 +105,16 @@ public class Parser implements IReqThreadCallback {
 				if (iPacketDataLength >= m_buffer.getBufSize()) {
 					LogUtil.logError(
 							log,
-							"Parser.Parse iPacketDataLength[%d] >= sizeof(szTempBuf)[%d]",
-							iPacketDataLength, data.length);
-					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
+							"Parser.Parse iPacketDataLength[%d] >= buffer size[%d]",
+							iPacketDataLength, m_buffer.getBufSize());
+					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", pktHead[0]);
 					m_buffer.purge(1); // Skip One Byte
 					continue;
 				}
 
 				if (dwQueueLength >= iPacketDataLength) {
-					data = new byte[iPacketDataLength];
-					int nSize = m_buffer.read(data, iPacketDataLength, false);
+					pktFrame = new byte[iPacketDataLength];
+					int nSize = m_buffer.read(pktFrame, iPacketDataLength, false);
 					if (nSize != iPacketDataLength) {
 						LogUtil.logError(
 								log,
@@ -123,23 +123,24 @@ public class Parser implements IReqThreadCallback {
 						break;
 					}
 
-					if (data[iPacketDataLength - 1] != SpecialCharDef.ETX) {
+					if (pktFrame[iPacketDataLength - 1] != SpecialCharDef.ETX) {
 						LogUtil.logError(
 								log,
 								"Parser.Parse szTempBuf[iPacketDataLength - 1][0x%02x] != ETX iPacketDataLength = %d",
-								data[iPacketDataLength - 1], iPacketDataLength);
+								pktFrame[iPacketDataLength - 1], iPacketDataLength);
 						LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
-								data[0]);
+								pktFrame[0]);
 						m_buffer.purge(1); // Skip One Byte
 						continue;
 					}
 
-					byte[] data2 = new byte[iDataLength];
-					System.arraycopy(data, 6, data2, 0, iDataLength);
+					pktPayload = new byte[iDataLength];
+					System.arraycopy(pktFrame, 6, pktPayload, 0, iDataLength);
 					m_buffer.purge(iPacketDataLength);
 
-					String str = new String(data2, Charset.defaultCharset());
-					data2 = null;
+
+					String str = new String(pktPayload, Charset.defaultCharset());
+
 					int nCmd = str.indexOf("|5001=");
 					if (nCmd >= 0) {
 						LogUtil.logInfo(log, str);
@@ -153,8 +154,7 @@ public class Parser implements IReqThreadCallback {
 					if (nEndIdx < 0)
 						continue;
 					
-					String source = str.substring(nStartIdx + 3, nEndIdx);
-					int sourceInt = Integer.parseInt(source);
+					int sourceInt = Integer.parseInt(str.substring(nStartIdx + 3, nEndIdx));
 					
 					nStartIdx = str.indexOf("|5=");
 					if (nStartIdx < 0)
@@ -163,20 +163,18 @@ public class Parser implements IReqThreadCallback {
 					nEndIdx = str.indexOf("|", nStartIdx + 3);
 					if (nEndIdx < 0)
 						continue;
-
-					String symbol = str.substring(nStartIdx + 3, nEndIdx);
-					symbol = IdSymbolUtil.toSymbol(symbol, sourceInt);		
+					 
+					String symbol = IdSymbolUtil.toSymbol(str.substring(nStartIdx + 3, nEndIdx), sourceInt);		
 
 					QuoteMgr.Instance().updateAllSymbol(symbol);
 					
 					if (QuoteMgr.Instance().checkSymbol(symbol) == false) {
 						continue;
 					}
-
-					//ServerHandler.asyncSendData(symbol, data);
-					ServerHandler.sendData(symbol, data);
-
+					
+					ServerHandler.sendData(symbol, pktFrame);
 				} else {
+					pktHead = null;
 					break;
 				}
 			}

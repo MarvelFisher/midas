@@ -56,4 +56,9 @@ public class MarketSessionEvent extends RemoteAsyncEvent {
 	public void setMarket(String market) {
 		this.market = market;
 	}
+	
+	@Override
+	public String toString() {
+		return "[" + session + "," + market + "," + tradeDate + "," + start + "," + end + "]";
+	}
 }

@@ -44,6 +44,7 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
 import com.cyanspring.common.event.order.AmendStrategyOrderEvent;
@@ -63,6 +64,7 @@ import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.TickTableManager;
@@ -131,8 +133,7 @@ public class BusinessManager implements ApplicationContextAware {
 	@Autowired
 	PositionKeeper positionKeeper;
 	
-	@Autowired
-	ScheduleManager scheduleManager;
+	ScheduleManager scheduleManager = new ScheduleManager();
 	
 	private int noOfContainers = 20;
 	private ArrayList<IStrategyContainer> containers = new ArrayList<IStrategyContainer>();
@@ -141,6 +142,7 @@ public class BusinessManager implements ApplicationContextAware {
 	private AsyncTimerEvent closePositionCheckEvent = new AsyncTimerEvent();
 	private long closePositionCheckInterval = 10000;
 	private Map<String, MultiOrderCancelTracker> cancelTrackers = new HashMap<String, MultiOrderCancelTracker>();
+	private boolean cancelAllOrdersAtClose = false;
 	
 	public boolean isAutoStartStrategy() {
 		return autoStartStrategy;
@@ -165,6 +167,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(NewMultiInstrumentStrategyEvent.class, null);
 			subscribeToEvent(ClosePositionRequestEvent.class, null);
 			subscribeToEvent(ResetAccountRequestEvent.class, null);
+			subscribeToEvent(MarketSessionEvent.class, null);
 		}
 
 		@Override
@@ -743,6 +746,21 @@ public class BusinessManager implements ApplicationContextAware {
 		return result;
 	}
 
+	public void processMarketSessionEvent(MarketSessionEvent event) {
+		log.info("Received MarketSessionEvent: " + event);
+		if(this.cancelAllOrdersAtClose && event.getSession().equals(MarketSessionType.CLOSE)) {
+			for(ParentOrder order: orders.values()) {
+				if(!order.getOrdStatus().isCompleted()) {
+					log.debug("Market close cancel: " + order);
+					String source = order.get(String.class, OrderField.SOURCE.value());
+					String txId = order.get(String.class, OrderField.CLORDERID.value());
+					CancelStrategyOrderEvent cancel = 
+							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, null, false);
+					eventManager.sendEvent(cancel);
+				}			
+			}
+		}
+	}
 	
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers
@@ -813,6 +831,14 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void setClosePositionCheckInterval(long closePositionCheckInterval) {
 		this.closePositionCheckInterval = closePositionCheckInterval;
+	}
+
+	public boolean isCancelAllOrdersAtClose() {
+		return cancelAllOrdersAtClose;
+	}
+
+	public void setCancelAllOrdersAtClose(boolean cancelAllOrdersAtClose) {
+		this.cancelAllOrdersAtClose = cancelAllOrdersAtClose;
 	}
 	
 }

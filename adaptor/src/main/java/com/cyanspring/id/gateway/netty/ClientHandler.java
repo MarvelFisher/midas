@@ -90,7 +90,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
      * 
      */
 	@Override
-	public void channelUnregistered(ChannelHandlerContext ctx) {
+	//public void channelUnregistered(ChannelHandlerContext ctx) {
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		ClientHandler.ctx = null;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
 	}
@@ -101,7 +102,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * @see io.netty.channel.ChannelInboundHandlerAdapter#channelActive(io.netty.channel.ChannelHandlerContext)
 	 */
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) {
+	//public void channelActive(ChannelHandlerContext ctx) {
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		ClientHandler.ctx = ctx;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
 	}
