@@ -84,6 +84,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	//private Map<Integer, Map<String, Object>> pendingAmends = Collections.synchronizedMap(new HashMap<Integer, Map<String, Object>>());
 	private boolean qtyHasChanged;
 	private boolean priceHasChanged;
+	private volatile boolean isConnected = false;
 	private String id = "IB";
 	
 	// caching
@@ -205,7 +206,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	
 	@Override
 	public boolean getState() {
-		return clientSocket.isConnected();
+		//return clientSocket.isConnected();
+		return isConnected;
 	}
 	
 	@Override
@@ -314,7 +316,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		
 		@Override
 		public boolean getState() {
-			return clientSocket.isConnected();
+			//return clientSocket.isConnected();
+			return isConnected;
 		}
 
 		@Override
@@ -453,7 +456,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 
 		@Override
 		public boolean getState() {
-			return clientSocket.isConnected();
+			//return clientSocket.isConnected();
+			return isConnected;
 		}
 
 		@Override
@@ -543,7 +547,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 		}
 		
 		// notify market data feed down
-		notifyMarketDataState(false);
+		isConnected = false;
+		notifyMarketDataState(isConnected);
 	}
 	
 	private void clear() {
@@ -936,8 +941,15 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor, IStreamAdaptor<I
 	@Override
 	public void nextValidId(int orderId) {
 		log.info("nextValidId: " + orderId);
-		nextOrderId.set(orderId);
-		notifyMarketDataState(true);
+		
+		if(orderId > nextOrderId.get()){
+			nextOrderId.set(orderId);
+		}else{
+			log.debug("IB use ourself " + nextOrderId.get());
+		}
+		
+		isConnected = true;
+		notifyMarketDataState(isConnected);
 	}
 
 	@Override
