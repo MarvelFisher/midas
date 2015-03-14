@@ -204,8 +204,8 @@ public final class LtsApi implements ITrade {
 	}
 
 	public void processClosedPositionUpdateEvent(ClosedPositionUpdateEvent event) {
-		// Add AccountInfo data update
-		log.debug("Closed Position: " + event.getPosition());
+		// No need implement in this version
+//		log.debug("Closed Position: " + event.getPosition());
 	}
 
 	public void processQuoteEvent(QuoteEvent event) {
@@ -241,7 +241,6 @@ public final class LtsApi implements ITrade {
 
 		sendEvent(new StrategySnapshotRequestEvent(account, null, null));
 		sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
-		// sendEvent(getEnterOrderEvent());
 	}
 
 	public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
@@ -301,8 +300,11 @@ public final class LtsApi implements ITrade {
 	}
 
 	public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
-		log.debug("Received ParentOrderUpdateEvent: " + event.getExecType()
-				+ ", order: " + event.getOrder());
+		Order updateOrder = setOrderData(event.getOrder());
+		if(orderMap.containsKey(updateOrder.id))
+			orderMap.remove(updateOrder.id);
+		orderMap.put(updateOrder.id, updateOrder);
+		tAdaptor.onNewOrderReply();
 	}
 
 	public void processSystemErrorEvent(SystemErrorEvent event) {
