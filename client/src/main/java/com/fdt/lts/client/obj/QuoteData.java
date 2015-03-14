@@ -2,7 +2,7 @@ package com.fdt.lts.client.obj;
 
 import java.util.Date;
 
-public class Quote {
+public class QuoteData {
 	public String symbol;
 	public double bid;
 	public double ask;

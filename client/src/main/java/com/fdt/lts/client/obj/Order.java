@@ -8,7 +8,7 @@ public class Order {
 	public String symbol;
 	public OrderSide side;
 	public OrderType type;
-	public double value;
-	public int quantity;	
+	public double price;
+	public long quantity;	
 	public double stopLossPrice;
 }

@@ -7,7 +7,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.fdt.lts.client.obj.Quote;
+import com.fdt.lts.client.obj.QuoteData;
 
 public class Demo{
 	public static void main(String[] args) throws Exception {
@@ -24,14 +24,20 @@ public class Demo{
 		symbolLst.add("USDJPY");
 		symbolLst.add("AUDUSD");
 
-		TradeAdaptor act = new TradeAdaptor() {
+		TradeAdaptor trade = new TradeAdaptor() {			
 			@Override
-			public void onQuote(Quote quote) {
+			public void onStart() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onQuote(QuoteData quote) {
 
 			}
 
 			@Override
-			public void onTradeOrderReply() {
+			public void onNewOrderReply() {
 				// TODO Auto-generated method stub
 				
 			}
@@ -48,8 +54,15 @@ public class Demo{
 				
 			}
 
+			@Override
+			public void onError(int code, String msg) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 
-		adaptor.init(symbolLst, act);
+		String user = "test";
+		String pwd = "xxx";
+		adaptor.init(user, pwd, symbolLst, trade);
 	}	
 }
