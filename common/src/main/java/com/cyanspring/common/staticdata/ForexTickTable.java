@@ -15,14 +15,14 @@ import com.cyanspring.common.util.PriceUtils;
 public class ForexTickTable implements ITickTable {
 	//private final static double minPrice = 0.01;
 	private final static double maxPrice = 1000000000.0;
-	private final int scale = 100000;
+	private final int scale = 10000000;
 	private final double delta = 0.0000001;
 	private final static double tickTable[][] = { 
-		{0.0000001,		0.1,		0.0000001},
+		{0,		0.1,		0.0000001},
 		{0.1,			10,			0.00005},
 		{10,			20,			0.0001},
 		{20,			50,			0.0005},
-		{50,		maxPrice,		0.005}
+		{50,		Double.MAX_VALUE,		0.005}
 	};
 
 	private double getTick(double price) {

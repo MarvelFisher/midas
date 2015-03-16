@@ -508,11 +508,12 @@ public class PersistenceManager {
 					}
 					else
 					{
+						ok = false;
 						message = "userid or password invalid";
 					}
 				}
 				
-				if(null == user.getDefaultAccount() ) {
+				if(ok == true && null == user.getDefaultAccount() ) {
 					ok = false;
 					throw new UserException("[PmUserLoginEvent]No trading account available for this user: " + userId);
 				}
