@@ -17,9 +17,7 @@ import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
-import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
-import com.cyanspring.id.Library.Util.TimeSpan;
 
 public class FutureItem implements AutoCloseable {
 
@@ -221,6 +219,7 @@ public class FutureItem implements AutoCloseable {
 
 		if (WindFutureDataAdaptor.instance.isMarketDataLog())
 			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
+					+ ",Symbol=" + symbolId
 					+ ",MarketSessionType=" + marketSessionType + ",Time="
 					+ DateUtil.now());
 

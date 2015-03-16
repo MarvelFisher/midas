@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -37,13 +36,6 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
-import com.cyanspring.common.event.marketdata.PresubscribeEvent;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
-import com.cyanspring.common.event.marketdata.QuoteSubEvent;
-import com.cyanspring.common.event.marketdata.TradeSubEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
@@ -369,13 +361,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		// process symbol Market Session
 		for (String symbol : strategyht.keySet()) {
 			if (isMarketDataLog()) {
-				log.debug("ProcessAsyncTimerEvent Symbol="
-						+ symbol
-						+ ",Strategy="
-						+ strategyht.get(symbol)
-						+ ",MarketSessionType="
-						+ getMarketSessionUtil().getCurrentMarketSessionType(
-								strategyht.get(symbol), DateUtil.now()));
+//				log.debug("ProcessAsyncTimerEvent Symbol="
+//						+ symbol
+//						+ ",Strategy="
+//						+ strategyht.get(symbol)
+//						+ ",MarketSessionType="
+//						+ getMarketSessionUtil().getCurrentMarketSessionType(
+//								strategyht.get(symbol), DateUtil.now()));
 			}
 			MarketSessionType marketSessionType = getMarketSessionUtil()
 					.getCurrentMarketSessionType(strategyht.get(symbol),
@@ -667,7 +659,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE:
 			debug("MSG_SYS_QUOTATIONDATE_CHANGE");
 			break;
-		// 资料消息
 		case TDF_MSG_ID.MSG_DATA_MARKET:
 			TDF_MARKET_DATA stock = convertToStockData(in_arr);
 			QuoteMgr.instance.AddRequest(new Object[] {
