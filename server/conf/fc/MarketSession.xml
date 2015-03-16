@@ -42,16 +42,16 @@
 				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
 		        	<constructor-arg><value>15:15:00</value></constructor-arg>
-		        	<constructor-arg><value>20:30:00</value></constructor-arg>
+		        	<constructor-arg><value>23:59:59</value></constructor-arg>
 				</bean>	
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
-		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
-		        	<constructor-arg><value>20:30:00</value></constructor-arg>
-		        	<constructor-arg><value>23:59:59</value></constructor-arg>
+		        	<constructor-arg><value>CLOSE</value></constructor-arg>
+		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>08:30:00</value></constructor-arg>
 				</bean>		
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
-		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>08:30:00</value></constructor-arg>
 		        	<constructor-arg><value>09:00:00</value></constructor-arg>
 				</bean>		
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
