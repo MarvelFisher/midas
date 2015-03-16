@@ -19,8 +19,6 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.Map;
 
-import org.nustaq.serialization.FSTObjectInput;
-import org.nustaq.serialization.FSTObjectOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +30,9 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
+
+import de.ruedigermoeller.serialization.FSTObjectInputNoShared;
+import de.ruedigermoeller.serialization.FSTObjectOutputNoShared;
 
 public class SymbolData implements Comparable<SymbolData>
 {
@@ -167,7 +168,7 @@ public class SymbolData implements Comparable<SymbolData>
 	    try
         {
 	        FileInputStream fis = new FileInputStream(file);
-            FSTObjectInput in = new FSTObjectInput(fis);
+            FSTObjectInputNoShared in = new FSTObjectInputNoShared(fis);
             priceData = (TreeMap<Date, HistoricalPrice>) in.readObject(TreeMap.class);
             fis.close();
 			isUpdating = false ;
@@ -195,7 +196,7 @@ public class SymbolData implements Comparable<SymbolData>
         	synchronized(priceData)
     		{
 	            FileOutputStream fos = new FileOutputStream(file, false);
-	            FSTObjectOutput out = new FSTObjectOutput(fos);
+	            FSTObjectOutputNoShared out = new FSTObjectOutputNoShared(fos);
 	            out.writeObject( priceData, TreeMap.class );
 	            // DON'T out.close() when using factory method;
 	            out.flush();
