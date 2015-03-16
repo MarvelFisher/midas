@@ -32,7 +32,7 @@ public abstract class MarketSessionState {
 	protected static boolean isHoliday;
 	private static XStream xstream;
 	private static File file;
-	private static boolean calTradeDate;
+	protected boolean calTradeDate = true;
 	private static boolean tradeDateUpdate;
 		
 	protected abstract boolean checkState(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException;
@@ -56,7 +56,7 @@ public abstract class MarketSessionState {
 		}
 	}
 	
-	private void setTradeDate(Date date){
+	protected void setTradeDate(Date date){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String newTradeDate = sdf.format(date);
 		if(!tradeDate.equals(newTradeDate)){
@@ -108,9 +108,7 @@ public abstract class MarketSessionState {
 			for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
 				if(checkState(sessionTime, sessionData, date)){
 					currentMarketSessionEvent = createMarketSessionEvent(sessionTime, sessionData, date);
-					createMarketSessionEvent(date, true);
-					if(calTradeDate && currentMarketSessionEvent.getSession().equals(MarketSessionType.PREOPEN))
-						setTradeDate(date);
+					createMarketSessionEvent(date, true);					
 					return currentMarketSessionEvent; // find and return;
 				}
 			}

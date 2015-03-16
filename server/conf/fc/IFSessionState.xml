@@ -13,6 +13,7 @@
 		<constructor-arg ref="IFopenDays"></constructor-arg>
 		<property name="inState" ref="IFtimeState"></property>
 		<property name="outState" ref="IFcloseState"></property>
+		<property name="calTradeDate" value="false"></property>
 	</bean>
 		
 	<bean id="IFcloseState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
