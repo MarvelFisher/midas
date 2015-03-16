@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
@@ -41,6 +40,7 @@ import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.event.ClientSocketEventManager;
+import com.cyanspring.transport.socket.ClientSocketService;
 import com.fdt.lts.client.error.Error;
 import com.fdt.lts.client.obj.AccountInfo;
 import com.fdt.lts.client.obj.Order;
@@ -57,33 +57,43 @@ public final class LtsApi implements ITrade {
 	private List<String> subQuoteLst;
 	private TradeAdaptor tAdaptor;
 
-	@Autowired
-	private IRemoteEventManager eventManager = new ClientSocketEventManager();
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+	private IRemoteEventManager eventManager;
+	private AsyncEventProcessor eventProcessor;
+	
+	public LtsApi(String host, int port){
+		ClientSocketService socketService = new ClientSocketService();
+		socketService.setHost(host);
+		socketService.setPort(port);
+		eventManager = new ClientSocketEventManager(socketService);
+		
+		eventProcessor = new AsyncEventProcessor() {
 
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(ServerReadyEvent.class, null);
-			subscribeToEvent(QuoteEvent.class, null);
-			subscribeToEvent(EnterParentOrderReplyEvent.class, user);
-			subscribeToEvent(AmendParentOrderReplyEvent.class, user);
-			subscribeToEvent(CancelParentOrderReplyEvent.class, user);
-			subscribeToEvent(ParentOrderUpdateEvent.class, null);
-			subscribeToEvent(StrategySnapshotEvent.class, null);
-			subscribeToEvent(UserLoginReplyEvent.class, null);
-			subscribeToEvent(AccountSnapshotReplyEvent.class, null);
-			subscribeToEvent(AccountUpdateEvent.class, null);
-			subscribeToEvent(OpenPositionUpdateEvent.class, null);
-			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
-			subscribeToEvent(SystemErrorEvent.class, null);
-		}
+			@Override
+			public void subscribeToEvents() {
+				subscribeToEvent(ServerReadyEvent.class, null);
+				subscribeToEvent(QuoteEvent.class, null);
+				subscribeToEvent(EnterParentOrderReplyEvent.class, user);
+				subscribeToEvent(AmendParentOrderReplyEvent.class, user);
+				subscribeToEvent(CancelParentOrderReplyEvent.class, user);
+				subscribeToEvent(ParentOrderUpdateEvent.class, null);
+				subscribeToEvent(StrategySnapshotEvent.class, null);
+				subscribeToEvent(UserLoginReplyEvent.class, null);
+				subscribeToEvent(AccountSnapshotReplyEvent.class, null);
+				subscribeToEvent(AccountUpdateEvent.class, null);
+				subscribeToEvent(OpenPositionUpdateEvent.class, null);
+				subscribeToEvent(ClosedPositionUpdateEvent.class, null);
+				subscribeToEvent(SystemErrorEvent.class, null);
+			}
 
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
+			@Override
+			public IAsyncEventManager getEventManager() {
+				return eventManager;
+			}
 
-	};
+		};
+		
+		
+	}
 
 	private void init() throws Exception {
 		accountInfo = new AccountInfo();
@@ -99,7 +109,7 @@ public final class LtsApi implements ITrade {
 		eventManager.init(null, null);
 	}
 
-	public void init(String user, String password,
+	public void start(String user, String password,
 			List<String> subscribeSymbolList, TradeAdaptor tAct) {
 		this.user = user;
 		this.password = password;
@@ -166,7 +176,7 @@ public final class LtsApi implements ITrade {
 		newExe.setStrategyID(exe.getStrategyId());
 		newExe.setSymbol(exe.getSymbol());
 		newExe.setUser(exe.getUser());
-		accountInfo.addExecution(exe.getOrderId(), newExe);
+		accountInfo.addExecution(exe.getSymbol(), exe.getOrderId(), newExe);
 	}
 
 	private void setOpenPositionData(OpenPosition oPosition) {
@@ -181,7 +191,7 @@ public final class LtsApi implements ITrade {
 		newPosition.setQty(oPosition.getQty());
 		newPosition.setSymbol(oPosition.getSymbol());
 		newPosition.setUser(oPosition.getUser());	
-		accountInfo.addOpenPosition(oPosition.getId(), newPosition);
+		accountInfo.addOpenPosition(oPosition.getSymbol(), oPosition.getId(), newPosition);
 	}
 
 	private void setAccountData(Account account) {
@@ -270,7 +280,7 @@ public final class LtsApi implements ITrade {
 			if(orderMap.containsKey(newOrder.id))
 				orderMap.remove(newOrder.id);
 			orderMap.put(newOrder.id, newOrder);
-			tAdaptor.onNewOrderReply();
+			tAdaptor.onNewOrderReply(newOrder);
 		}
 	}
 
@@ -283,7 +293,7 @@ public final class LtsApi implements ITrade {
 			if(orderMap.containsKey(amendOrder.id))
 				orderMap.remove(amendOrder.id);
 			orderMap.put(amendOrder.id, amendOrder);
-			tAdaptor.onAmendOrderReply();
+			tAdaptor.onAmendOrderReply(amendOrder);
 		}
 	}
 
@@ -295,7 +305,7 @@ public final class LtsApi implements ITrade {
 			Order cancelOrder = setOrderData(event.getOrder());
 			if(orderMap.containsKey(cancelOrder.id))
 				orderMap.remove(cancelOrder.id);
-			tAdaptor.onCancelOrderReply();
+			tAdaptor.onCancelOrderReply(cancelOrder);
 		}
 	}
 
@@ -304,7 +314,7 @@ public final class LtsApi implements ITrade {
 		if(orderMap.containsKey(updateOrder.id))
 			orderMap.remove(updateOrder.id);
 		orderMap.put(updateOrder.id, updateOrder);
-		tAdaptor.onNewOrderReply();
+		tAdaptor.onOrderUpdate(updateOrder);
 	}
 
 	public void processSystemErrorEvent(SystemErrorEvent event) {
@@ -393,13 +403,12 @@ public final class LtsApi implements ITrade {
 	@Override
 	public void putAmendOrder(Order order) {
 		Map<String, Object> fields = new HashMap<String, Object>();
-		fields.put(OrderField.PRICE.value(), 0.81);
-		fields.put(OrderField.QUANTITY.value(), 3000.0); // note: you must put
-															// xxx.0 to tell
-															// java this is a
-															// double type
-															// here!!
-
+		fields.put(OrderField.PRICE.value(), order.price);
+		fields.put(OrderField.QUANTITY.value(), new Double(order.quantity)); // note: you must put
+																			 // xxx.0 to tell
+																			 // java this is a
+																			 // double type
+																			 // here!!
 		AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(),
 				null, order.id, fields, IdGenerator.getInstance().getNextID());
 		sendEvent(amendEvent);

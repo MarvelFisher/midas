@@ -8,29 +8,43 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AccountInfo {
 	private Account account;
 	// private List<ClosePosition> closePositions;
-	private ConcurrentHashMap<String, OpenPosition> openPositions;
+	private ConcurrentHashMap<String, List<OpenPosition>> openPositions;
 //	private List<OpenPosition> openPositions;
-	private ConcurrentHashMap<String, Execution> executions;
+	private ConcurrentHashMap<String, List<Execution>> executions;
 
 	public Account newAccount() {
 		account = new Account();
 		return account;
 	}
 
-	public void addOpenPosition(String id, OpenPosition oposition) {
+	public void addOpenPosition(String symbol, String orderID, OpenPosition oposition) {
 		if (openPositions == null)
-			openPositions = new ConcurrentHashMap<String, OpenPosition>();
-		if(openPositions.get(id) != null)
-			openPositions.remove(id);
-		openPositions.put(id, oposition);
+			openPositions = new ConcurrentHashMap<String, List<OpenPosition>>();
+		List<OpenPosition> opList = openPositions.get(symbol);
+		if(opList == null){
+			opList = new ArrayList<OpenPosition>();
+			openPositions.put(symbol, opList);
+		}
+		for(OpenPosition position : opList){
+			if(position.getId().equals(orderID))
+				opList.remove(orderID);
+		}
+		opList.add(oposition);
 	}
 
-	public void addExecution(String orderID, Execution e) {
+	public void addExecution(String symbol, String orderID, Execution e) {
 		if (executions == null)
-			executions = new ConcurrentHashMap<String, Execution>();
-		if(executions.get(orderID) != null)
-			executions.remove(orderID);
-		executions.put(orderID, e);
+			executions = new ConcurrentHashMap<String, List<Execution>>();
+		List<Execution> exeList = executions.get(symbol);
+		if(exeList == null){
+			exeList = new ArrayList<Execution>();
+			executions.put(symbol, exeList);
+		}
+		for(Execution exe : exeList){
+			if(exe.getId().equals(orderID))
+				exeList.remove(orderID);
+		}
+		exeList.add(e);
 	}
 
 	public class Position {
@@ -331,11 +345,11 @@ public class AccountInfo {
 	// return closePositions;
 	// }
 
-	public List<OpenPosition> getOpenPositions() {
-		return new ArrayList<OpenPosition>(openPositions.values());
+	public List<OpenPosition> getOpenPositions(String symbol) {
+		return openPositions.get(symbol);
 	}
 
-	public List<Execution> getExecutions() {
-		return new ArrayList<Execution>(executions.values());
+	public List<Execution> getExecutions(String symbol) {
+		return executions.get(symbol);
 	}
 }
