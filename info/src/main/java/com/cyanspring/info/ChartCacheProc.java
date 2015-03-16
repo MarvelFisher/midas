@@ -10,7 +10,7 @@ public class ChartCacheProc implements Runnable
 	private static final Logger log = LoggerFactory
 			.getLogger(ChartCacheProc.class);
     private LinkedBlockingQueue<SymbolData> m_q = new LinkedBlockingQueue<SymbolData>();
-    private static final int periodTime = 500;
+    private static final int periodTime = 1000;
     private Thread m_Thread = new Thread(this);
     
     public ChartCacheProc()
@@ -41,16 +41,13 @@ public class ChartCacheProc implements Runnable
 			{
 				symboldata.writeToMin();
 			}
-			else
+			try 
 			{
-				try 
-				{
-					Thread.sleep(periodTime);
-				} 
-				catch (InterruptedException e) 
-				{
-					log.error(e.getMessage(), e);
-				}
+				Thread.sleep(periodTime);
+			} 
+			catch (InterruptedException e) 
+			{
+				log.error(e.getMessage(), e);
 			}
 		}
 
