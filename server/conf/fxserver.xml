@@ -49,21 +49,21 @@
 	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
 		<constructor-arg>
 			<list>
-				<!-- <ref bean="idAdaptor" /> -->
+				<ref bean="idAdaptor" /> 
 				<ref bean="ibAdaptor" />
 			</list>		 
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
-		<!-- 
+		
 		<property name="aggregator" >
 			<ref bean="quoteAggregator" />
 		</property>
-		-->
+		
 		<property name="preSubscriptionList">
 			<list>
 				<ref bean="preSubscriptionList" />
-				<!-- <ref bean="preSubscriptionList2" /> -->
+				<ref bean="preSubscriptionList2" /> 
 			</list>
 		</property>
 		<property name="sessionMonitor">
