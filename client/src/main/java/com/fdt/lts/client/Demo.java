@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.OrderType;
 import com.fdt.lts.client.obj.AccountInfo.OpenPosition;
 import com.fdt.lts.client.obj.Order;
 import com.fdt.lts.client.obj.QuoteData;
@@ -40,13 +41,21 @@ public class Demo{
 				if(quote.symbol.equals(opSymbol)){
 					if(quote.bid <= buyPrice && buyFlag){
 						Order order = new Order();
+						order.symbol = opSymbol;
 						order.side = OrderSide.Buy;
+						order.price = buyPrice;
+						order.quantity = 10000;
+						order.type = OrderType.Limit;
 						newOrder(order);
 						buyFlag = false;
 					}
 					if(quote.ask >= sellPrice && sellFlag){
 						Order order = new Order();
+						order.symbol = opSymbol;
 						order.side = OrderSide.Sell;
+						order.price = sellPrice;
+						order.quantity = 10000;
+						order.type = OrderType.Limit;
 						newOrder(order);
 						sellFlag = false;
 					}
