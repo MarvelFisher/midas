@@ -611,6 +611,8 @@ public class PositionKeeper {
 
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
+		log.info("deltaValue: " + deltaValue);
+		log.info("commissionManager commission: " + commissionManager.getCommission(refData, accountSetting, deltaValue));
 		deltaValue += commissionManager.getCommission(refData, accountSetting, deltaValue);
 		
 		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {

@@ -199,7 +199,6 @@
 			<groupId>com.cyanspring.adaptor</groupId>
 			<artifactId>cyanspring-adaptor</artifactId>
 			<version>${project.parent.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.cyanspring.simulator</groupId>
