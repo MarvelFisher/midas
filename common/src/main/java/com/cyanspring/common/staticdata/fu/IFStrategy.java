@@ -95,8 +95,9 @@ public class IFStrategy implements RefDataStrategy {
 				dayCount++;
 		}
 		
-		if(marketSessionUtil.isHoliday(symbol, cal.getTime()))
-			cal.add(Calendar.DAY_OF_YEAR, 3);
+		while(marketSessionUtil.isHoliday(symbol, cal.getTime())){
+			cal.add(Calendar.DAY_OF_YEAR, 1);
+		}
 		
 		return sdf.format(cal.getTime());
 	}
