@@ -6,7 +6,7 @@ import java.util.Map;
 import com.cyanspring.common.info.RefSubName;
 
 public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
-	private static Map<String, RefSubName> subNameMap;
+	private static Map<String, RefSubName> subNameMap = null;
 	private String market = null;
 	private String exchange = null;
 	private String code = null;
@@ -124,9 +124,9 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
-		if (getHint() == null || getHint().isEmpty())
+		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
 		{
-			this.cnSubName = this.code;
+			this.cnSubName = "";
 		}
 		else
 		{
@@ -136,15 +136,15 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 			}
 			else
 			{
-				this.cnSubName = this.code;
+				this.cnSubName = "";
 			}
 		}
 	}
 	public void setTwName(String twName) {
 		this.twName = twName;
-		if (getHint() == null || getHint().isEmpty())
+		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
 		{
-			this.twSubName = this.code;
+			this.twSubName = "";
 		}
 		else
 		{
@@ -154,15 +154,15 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 			}
 			else
 			{
-				this.twSubName = this.code;
+				this.twSubName = "";
 			}
 		}
 	}
 	public void setEnName(String enName) {
 		this.enName = enName;
-		if (getHint() == null || getHint().isEmpty())
+		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
 		{
-			this.enSubName = this.code;
+			this.enSubName = "";
 		}
 		else
 		{
@@ -172,15 +172,15 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 			}
 			else
 			{
-				this.enSubName = this.code;
+				this.enSubName = "";
 			}
 		}
 	}
 	public void setJpName(String jpName) {
 		this.jpName = jpName;
-		if (getHint() == null || getHint().isEmpty())
+		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
 		{
-			this.jpSubName = this.code;
+			this.jpSubName = "";
 		}
 		else
 		{
@@ -190,15 +190,15 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 			}
 			else
 			{
-				this.jpSubName = this.code;
+				this.jpSubName = "";
 			}
 		}
 	}
 	public void setEsName(String esName) {
 		this.esName = esName;
-		if (getHint() == null || getHint().isEmpty())
+		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
 		{
-			this.esSubName = this.code;
+			this.esSubName = "";
 		}
 		else
 		{
@@ -208,15 +208,15 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 			}
 			else
 			{
-				this.esSubName = this.code;
+				this.esSubName = "";
 			}
 		}
 	}
 	public void setKrName(String krName) {
 		this.krName = krName;
-		if (getHint() == null || getHint().isEmpty())
+		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
 		{
-			this.krSubName = this.code;
+			this.krSubName = "";
 		}
 		else
 		{
@@ -226,7 +226,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 			}
 			else
 			{
-				this.krSubName = this.code;
+				this.krSubName = "";
 			}
 		}
 	}
