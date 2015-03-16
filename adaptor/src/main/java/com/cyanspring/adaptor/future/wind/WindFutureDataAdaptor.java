@@ -369,13 +369,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		// process symbol Market Session
 		for (String symbol : strategyht.keySet()) {
 			if (isMarketDataLog()) {
-				log.debug("ProcessAsyncTimerEvent Symbol="
-						+ symbol
-						+ ",Strategy="
-						+ strategyht.get(symbol)
-						+ ",MarketSessionType="
-						+ getMarketSessionUtil().getCurrentMarketSessionType(
-								strategyht.get(symbol), DateUtil.now()));
+//				log.debug("ProcessAsyncTimerEvent Symbol="
+//						+ symbol
+//						+ ",Strategy="
+//						+ strategyht.get(symbol)
+//						+ ",MarketSessionType="
+//						+ getMarketSessionUtil().getCurrentMarketSessionType(
+//								strategyht.get(symbol), DateUtil.now()));
 			}
 			MarketSessionType marketSessionType = getMarketSessionUtil()
 					.getCurrentMarketSessionType(strategyht.get(symbol),
@@ -667,7 +667,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE:
 			debug("MSG_SYS_QUOTATIONDATE_CHANGE");
 			break;
-		// 资料消息
 		case TDF_MSG_ID.MSG_DATA_MARKET:
 			TDF_MARKET_DATA stock = convertToStockData(in_arr);
 			QuoteMgr.instance.AddRequest(new Object[] {

@@ -221,6 +221,7 @@ public class FutureItem implements AutoCloseable {
 
 		if (WindFutureDataAdaptor.instance.isMarketDataLog())
 			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
+					+ ",Symbol=" + symbolId
 					+ ",MarketSessionType=" + marketSessionType + ",Time="
 					+ DateUtil.now());
 

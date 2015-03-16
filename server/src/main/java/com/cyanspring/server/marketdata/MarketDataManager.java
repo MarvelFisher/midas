@@ -164,12 +164,21 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		}
 	};
 
-	public void processMarketSessionEvent(MarketSessionEvent event) {
+	public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
 		quoteChecker.setSession(event.getSession());
 		chkTime = sessionMonitor.get(event.getSession());
 		log.info("Get MarketSessionEvent: " + event.getSession()
 				+ ", map size: " + sessionMonitor.size() + ", checkTime: "
 				+ chkTime);
+		for (IMarketDataAdaptor adapter : adaptors) {
+			String adapterName = adapter.getClass().getSimpleName();
+			if(adapterName.equals("WindFutureDataAdaptor") && MarketSessionType.PREOPEN == event.getSession()){
+				log.debug("Process Wind Future PREOPEN resubscribe");
+				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter).clearSubscribeMarketData();
+				preSubscribe();
+			}
+		}
+		
 	}
 
 	public void processLastTradeDateQuotesRequestEvent(

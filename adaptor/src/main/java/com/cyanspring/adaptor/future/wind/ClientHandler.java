@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_MSG_ID;
 
 import com.cyanspring.id.Util;
@@ -55,7 +56,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		try {
 			String strHash = null;
 			String strDataType = null;
-			int datatype = -1;
+			int dataType = -1;
 			if (in != null) {
 				String[] in_arr = in.split("\\|");
 				for (String str : in_arr) {
@@ -79,28 +80,30 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 						}
 						
 						if (strDataType.equals("DATA_FUTURE")) {
-							datatype = TDF_MSG_ID.MSG_DATA_FUTURE;
+							dataType = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
 						if (strDataType.equals("DATA_MARKET")) {
-							datatype = TDF_MSG_ID.MSG_DATA_MARKET;
+							dataType = TDF_MSG_ID.MSG_DATA_MARKET;
 						}
 						if (strDataType.equals("DATA_INDEX")) {
-							datatype = TDF_MSG_ID.MSG_DATA_INDEX;
+							dataType = TDF_MSG_ID.MSG_DATA_INDEX;
 						}
 						if (strDataType.equals("Heart Beat")) {
-							datatype = TDF_MSG_ID.MSG_SYS_HEART_BEAT;
+							dataType = TDF_MSG_ID.MSG_SYS_HEART_BEAT;
 						}
 						if (strDataType.equals("QDateChange")) {
-							datatype = TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE;
+							dataType = TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE;
 							LogUtil.logDebug(log, in);
 						}
 						if (strDataType.equals("MarketClose")) {
-							datatype = TDF_MSG_ID.MSG_SYS_MARKET_CLOSE;
+							dataType = TDF_MSG_ID.MSG_SYS_MARKET_CLOSE;
 							LogUtil.logDebug(log, in);
 						}
 
+						if(checkTime(dataType, in_arr)){
 						WindFutureDataAdaptor.instance.processGateWayMessage(
-								datatype, in_arr);
+								dataType, in_arr);
+						}
 					}
 				}
 				System.out.flush();
@@ -108,6 +111,38 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		} finally {
 			ReferenceCountUtil.release(msg);
 		}
+	}
+	
+	/**
+	 * check wind quote time
+	 * @return
+	 */
+	public boolean checkTime(int dataType,String[] in_arr){
+		boolean result = true;
+			
+		//Check Future Time
+		if(dataType == TDF_MSG_ID.MSG_DATA_FUTURE){
+			
+			String key = null;
+			String value = null;
+			String[] kv_arr = null;
+
+			for (int i = 0; i < in_arr.length; i++) {
+				if (in_arr[i] != null && !"".equals(in_arr[i])) {
+					kv_arr = in_arr[i].split("=");
+					if (kv_arr.length > 1) {
+						key = kv_arr[0];
+						value = kv_arr[1];
+						// if Quote Time > 240000000 NOT use Quote
+						if (key.equals("Time") && Integer.parseInt(value) >= 240000000) {
+							result = false;
+						}			
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	@Override
