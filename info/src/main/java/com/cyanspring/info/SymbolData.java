@@ -19,6 +19,8 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.Map;
 
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,20 +167,8 @@ public class SymbolData implements Comparable<SymbolData>
 	    try
         {
 	        FileInputStream fis = new FileInputStream(file);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            try
-            {
-                Object o = ois.readObject();
-                priceData = (TreeMap<Date, HistoricalPrice>)o;
-            }
-            catch (EOFException e)
-            {
-            }
-            catch (Exception e)
-            {
-            	log.error(e.getMessage(), e);
-            }
-            ois.close();
+            FSTObjectInput in = new FSTObjectInput(fis);
+            priceData = (TreeMap<Date, HistoricalPrice>) in.readObject(TreeMap.class);
             fis.close();
 			isUpdating = false ;
         }
@@ -205,10 +195,10 @@ public class SymbolData implements Comparable<SymbolData>
         	synchronized(priceData)
     		{
 	            FileOutputStream fos = new FileOutputStream(file, false);
-	            ObjectOutputStream oos = new ObjectOutputStream(fos); 
-	        	oos.writeObject(priceData);
-	            oos.flush();
-	            oos.close();
+	            FSTObjectOutput out = new FSTObjectOutput(fos);
+	            out.writeObject( priceData, TreeMap.class );
+	            // DON'T out.close() when using factory method;
+	            out.flush();
 	            fos.close();
     		}
         }
