@@ -47,18 +47,18 @@
 		</property>
 		<property name="subNameMap">
 			<map>
-		    	<entry key="IFC0">
+		    	<entry key="IFC1">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
 		      			<property name="CNSubName" value="当月"/>
 		      			<property name="TWSubName" value="當月"/>
-		      			<property name="ENSubName" value="IFC0"/>
+		      			<property name="ENSubName" value="IFC1"/>
 		      		</bean>
 		    	</entry>
-		    	<entry key="IFC1">
+		    	<entry key="IFC2">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
 		      			<property name="CNSubName" value="次月"/>
 		      			<property name="TWSubName" value="次月"/>
-		      			<property name="ENSubName" value="IFC1"/>
+		      			<property name="ENSubName" value="IFC2"/>
 		      		</bean>
 		    	</entry>
 		    </map>
