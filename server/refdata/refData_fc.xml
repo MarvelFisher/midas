@@ -62,8 +62,12 @@
         <double>300.0</double>
       </entry>
       <entry>
-        <string>Maximal lot</string>
+        <string>Maximum lot</string>
         <double>0.0</double>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <double>2500</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -166,8 +170,12 @@
         <double>300.0</double>
       </entry>
       <entry>
-        <string>Maximal lot</string>
+        <string>Maximum lot</string>
         <double>0.0</double>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <double>2500</double>
       </entry>
       <entry>
         <string>Strategy</string>
