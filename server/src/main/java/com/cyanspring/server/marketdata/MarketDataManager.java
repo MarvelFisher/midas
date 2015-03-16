@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -174,7 +173,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			String adapterName = adapter.getClass().getSimpleName();
 			if(adapterName.equals("WindFutureDataAdaptor") && MarketSessionType.PREOPEN == event.getSession()){
 				log.debug("Process Wind Future PREOPEN resubscribe");
-				((WindFutureDataAdaptor) adapter).clearSubscribeMarketData();
+				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter).clearSubscribeMarketData();
 				preSubscribe();
 			}
 		}
