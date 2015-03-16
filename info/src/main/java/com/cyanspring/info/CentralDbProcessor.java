@@ -517,7 +517,7 @@ public class CentralDbProcessor implements IPlugin
 			   ArrayList<String> symbols)
 	{
 		String sqlcmd = String.format("INSERT INTO `Subscribe_Symbol_Info` (`USER_ID`,`GROUP`,`MARKET`,`CODE`,`HINT`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`,`JP_NAME`,`KR_NAME`,`ES_NAME`) VALUES");
-		ArrayList<SymbolInfo> retsymbollist = (ArrayList<SymbolInfo>)refSymbolInfo.getBySymbolStrings(symbols);
+		ArrayList<SymbolInfo> retsymbollist = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		boolean first = true;
 		for (SymbolInfo symbolinfo : retsymbollist)
 		{
@@ -566,7 +566,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void userRequestAllSymbol(SymbolListSubscribeEvent retEvent, String market)
 	{
-		ArrayList<SymbolInfo> retSymbolInfo = (ArrayList<SymbolInfo>)refSymbolInfo.getAllSymbolInfo(market);
+		ArrayList<SymbolInfo> retSymbolInfo = (ArrayList<SymbolInfo>)getRefSymbolInfo().getAllSymbolInfo(market);
 		retEvent.setSymbolList(retSymbolInfo);
 		retEvent.setOk(true);
 		log.info("Process Request All Symbol success Symbol: " + retSymbolInfo.size());
@@ -594,10 +594,10 @@ public class CentralDbProcessor implements IPlugin
 //				symbolinfo.setJpName(rs.getString("JP_NAME"));
 //				symbolinfo.setKrName(rs.getString("KR_NAME"));
 //				symbolinfo.setEsName(rs.getString("ES_NAME"));
-				index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+				index = getRefSymbolInfo().at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
 				if (index >= 0)
 				{
-					symbolinfo = refSymbolInfo.get(index);
+					symbolinfo = getRefSymbolInfo().get(index);
 					symbolinfos.add(symbolinfo);
 				}
 			}
@@ -642,7 +642,7 @@ public class CentralDbProcessor implements IPlugin
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 				" AND `GROUP`='%s' AND `MARKET`='%s';", user, group, market) ;
 		dbhnd.updateSQL(sqlcmd);
-		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)refSymbolInfo.getBySymbolStrings(symbols);
+		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		try
 		{
@@ -701,10 +701,10 @@ public class CentralDbProcessor implements IPlugin
 //					symbolinfo.setKrName(rs.getString("KR_NAME"));
 //					symbolinfo.setEsName(rs.getString("ES_NAME"));
 //					retsymbollist.add(symbolinfo);
-					index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+					index = getRefSymbolInfo().at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
 					if (index >= 0)
 					{
-						symbolinfo = refSymbolInfo.get(index);
+						symbolinfo = getRefSymbolInfo().get(index);
 						retsymbollist.add(symbolinfo);
 					}
 				}
@@ -840,9 +840,9 @@ public class CentralDbProcessor implements IPlugin
 			{
 				outSymbol = new PrintWriter(new BufferedWriter(new FileWriter(serverMarket)));
 				defaultSymbolInfo.clear();
-				refSymbolInfo.reset();
-				refSymbolInfo.setByRefData(refList);
-				defaultSymbolInfo = (ArrayList<SymbolInfo>)refSymbolInfo.getBySymbolStrings(preSubscriptionList);
+				getRefSymbolInfo().reset();
+				getRefSymbolInfo().setByRefData(refList);
+				defaultSymbolInfo = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(preSubscriptionList);
 				for(RefData refdata : refList)
 				{
 					if (refdata.getExchange() == null) continue;
@@ -889,7 +889,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			this.clearSymbolChefData();
 			this.quoteBuffer.clear();
-			refSymbolInfo.reset();
+			getRefSymbolInfo().reset();
 			calledRefdata = false;
 		}
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
@@ -1125,6 +1125,10 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setSubNameMap(Map<String, RefSubName> subNameMap) {
 		this.subNameMap = subNameMap;
+	}
+
+	public IRefSymbolInfo getRefSymbolInfo() {
+		return refSymbolInfo;
 	}
 	
 }

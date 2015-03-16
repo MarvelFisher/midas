@@ -23,9 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.info.PriceHighLowType;
+import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
 
@@ -235,6 +237,20 @@ public class SymbolData implements Comparable<SymbolData>
 		String sqlcmd = "" ;
 		String tradeDate = centralDB.getTradedate() ;
 		HistoricalPrice lastPrice;
+		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
+		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(market, getStrSymbol())));
+		String strSymbol = null;
+		if (symbolinfo != null)
+		{
+			if (symbolinfo.getHint() != null)
+			{
+				strSymbol = symbolinfo.getHint();
+			}
+		}
+		if (strSymbol == null)
+		{
+			strSymbol = getStrSymbol();
+		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
 			lastPrice = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
@@ -295,7 +311,7 @@ public class SymbolData implements Comparable<SymbolData>
 			lastPrice = new HistoricalPrice(centralDB.getTradedate(),
 											keyDate,
 											currentDate,
-											strSymbol,
+											getStrSymbol(),
 											dOpen,
 											dCurHigh,
 											dCurLow,
@@ -310,6 +326,16 @@ public class SymbolData implements Comparable<SymbolData>
 				tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
 				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
 		centralDB.dbhnd.updateSQL(sqlcmd);
+		if (strSymbol.equals(getStrSymbol()) == false)
+		{
+			sqlcmd = String.format(insertPrice, 
+					strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
+					strSymbol, lastPrice.getOpen(), lastPrice.getClose(), 
+					lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
+					tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
+					lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
+			centralDB.dbhnd.updateSQL(sqlcmd);
+		}
 		logHistoricalPrice(lastPrice);
 	}
 	
@@ -626,6 +652,20 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			return ;
 		}
+		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
+		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(market, getStrSymbol())));
+		String strSymbol = null;
+		if (symbolinfo != null)
+		{
+			if (symbolinfo.getHint() != null)
+			{
+				strSymbol = symbolinfo.getHint();
+			}
+		}
+		if (strSymbol == null)
+		{
+			strSymbol = getStrSymbol();
+		}
 
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String strTable = String.format("%s_%s", prefix, strType) ;
@@ -648,6 +688,16 @@ public class SymbolData implements Comparable<SymbolData>
 					strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
 					price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
 			centralDB.dbhnd.addBatch(sqlcmd);
+			if (strSymbol.equals(getStrSymbol()) == false)
+			{
+				sqlcmd = String.format(insertPrice, 
+						strTable, strKeyTime, strKeyTime, sdf.format(price.getDatatime()), 
+						strSymbol, price.getOpen(), price.getClose(), 
+						price.getHigh(), price.getLow(), price.getVolume(), 
+						strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
+						price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
+				centralDB.dbhnd.updateSQL(sqlcmd);
+			}
 			logHistoricalPrice(price);
 		}
 		centralDB.dbhnd.executeBatch();
@@ -667,9 +717,23 @@ public class SymbolData implements Comparable<SymbolData>
 		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
+		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
+		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(market, symbol)));
+		String strSymbol = null;
+		if (symbolinfo != null)
+		{
+			if (symbolinfo.getHint() != null)
+			{
+				strSymbol = symbolinfo.getHint();
+			}
+		}
+		if (strSymbol == null)
+		{
+			strSymbol = symbol;
+		}
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `DATATIME`>='%s' AND `DATATIME`<'%s' ORDER BY `DATATIME`;", 
-				prefix, type, symbol, sdfprice.format(start), sdfprice.format(end)) ;
+				prefix, type, strSymbol, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
 			while(rs.next())
