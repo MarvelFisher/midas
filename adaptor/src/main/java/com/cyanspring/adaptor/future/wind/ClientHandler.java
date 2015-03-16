@@ -4,12 +4,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +20,6 @@ import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
-import com.cyanspring.id.Library.Util.IdSymbolUtil;
 import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.TimeSpan;
 
