@@ -98,6 +98,8 @@ public class Parser implements IReqThreadCallback {
 				} catch (Exception e) {
 					LogUtil.logError(log, e.getMessage());
 					LogUtil.logException(log, e);
+					m_buffer.purge(1); // Skip One Byte
+					continue;					
 				}
 
 				int iPacketDataLength = iDataLength + 7;

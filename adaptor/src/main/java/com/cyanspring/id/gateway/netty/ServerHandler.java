@@ -78,7 +78,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	public static UserClient getUserClient(ChannelHandlerContext ctx) {
-
+				
 		List<UserClient> list = new ArrayList<UserClient>(clientlist);
 		
 		for (UserClient client : list) {
@@ -87,8 +87,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			}
 		}
 
-		// else client not exist, create it
 		synchronized (clLock) {
+			// else client not exist, create it
+
 			UserClient newClient = new UserClient(ctx);
 			clientlist.add(newClient);
 			return newClient;
@@ -147,21 +148,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		data = null;
 		IdGateway.instance().addSize(IDGateWayDialog.TXT_OutSize,
 				packetData.length);
-
-		final ByteBuf buffer = Unpooled.copiedBuffer(packetData);
-		packetData = null;
 		
-		channels.writeAndFlush(buffer);
-		//ChannelGroupFuture future = channels.writeAndFlush(buffer);
-
-		//future.addListener(new ChannelGroupFutureListener() {
-		//	@Override
-		//	public void operationComplete(ChannelGroupFuture arg0)
-		//			throws Exception {
-		//		if (buffer != null && buffer.refCnt() > 0)
-		//			buffer.release();
-		//	}
-		//});
+		channels.writeAndFlush(Unpooled.copiedBuffer(packetData));
 	}
 
 	public static void sendData(ChannelHandlerContext ctx, String symbol,
@@ -176,20 +164,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			ctx.writeAndFlush(Unpooled.copiedBuffer(data));
 		
 		data = null;
-		//if (!channels.contains(ctx.channel())) {
-		//	data = null;
-		//	return;
-		//}		
-		//final ByteBuf buffer = Unpooled.copiedBuffer(data);
-		//data = null;
-		//ChannelFuture future = ctx.writeAndFlush(buffer);
-		//future.addListener(new ChannelFutureListener() {
-		//	@Override
-		//	public void operationComplete(ChannelFuture arg0) throws Exception {
-		//		if (buffer != null && buffer.refCnt() > 0)
-		//			buffer.release();
-		//	}
-		//});
 	}
 
 	public static String getRemotIP(Channel ch) {
@@ -210,29 +184,26 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		IdGateway.instance().updateClient(list);
 	}
 
-	//@Override
-	//public void channelRegistered(ChannelHandlerContext ctx) {
+
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		if (!channels.contains(ctx.channel())) {
 			channels.add(ctx.channel());
 			updateContext();
 			String strIP = getRemotIP(ctx.channel());
 			IdGateway.instance().addLog("add new Client : [%s]", strIP);
+			
+			UserClient client = getUserClient(ctx);
+			LogUtil.logInfo(log, "new Client ip:%s key:%s", client.getIp(),
+					client.getKey());			
 		}
-
-		UserClient client = getUserClient(ctx);
-		LogUtil.logInfo(log, "new Client ip:%s key:%s", client.getIp(),
-				client.getKey());
 
 	}
 
-	//@Override
-	//public void channelUnregistered(ChannelHandlerContext ctx) {
+
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		String strIP = getRemotIP(ctx.channel());
 		channels.remove(ctx.channel());
 		removeUserClient(ctx);
-		ctx.close();
 		updateContext();
 		IdGateway.instance().addLog("remove Client : [%s]", strIP);
 
@@ -244,7 +215,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 			ByteBuf buffer = (ByteBuf) msg;
 			byte[] data = new byte[buffer.readableBytes()];
 			buffer.readBytes(data);
-			// buffer.release();
 			buffer = null;
 			UserClient client = getUserClient(ctx);
 			client.onReceive(data);
@@ -262,10 +232,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// Close the connection when an exception is raised.
+		ctx.close();
 		String strIP = getRemotIP(ctx.channel());
 		LogUtil.logError(log, "[%s] Exception : %s", strIP, cause.getMessage());
 		LogUtil.logException(log, (Exception) cause);
-		removeUserClient(ctx);
-		ctx.close();
+
 	}
 }
