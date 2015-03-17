@@ -2,6 +2,8 @@ package com.cyanspring.adaptor.ib;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
@@ -83,5 +86,10 @@ public class IbMarketDataTest implements IMarketDataListener {
 	public void onTrade(Trade trade) {
 		log.debug("Trade: " + trade);
 		tradeCount++;
+	}
+
+	@Override
+	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+		
 	}
 }

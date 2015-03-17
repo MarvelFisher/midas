@@ -2,6 +2,7 @@ package com.cyanspring.adaptor.future.wind.test;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
 import com.cyanspring.common.marketdata.ISymbolDataListener;
@@ -171,6 +173,11 @@ public class FutureClient implements IMarketDataListener,
 			String s = WindFutureDataAdaptor.printSymbolInfo(info);
 			dialog.addLog(s);
 		}
+		
+	}
+
+	@Override
+	public void onQuoteExt(DataObject quoteExt, int sourceId) {
 		
 	}
 }

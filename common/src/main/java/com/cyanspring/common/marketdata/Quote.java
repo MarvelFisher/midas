@@ -45,6 +45,10 @@ public class Quote implements Cloneable, Serializable {
 	boolean stale;
 //	boolean opened;
 	
+	public String getId(){
+		return id;
+	}
+	
 	public String getSymbol() {
 		return symbol;
 	}

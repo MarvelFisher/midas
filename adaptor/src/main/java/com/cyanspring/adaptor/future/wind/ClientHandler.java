@@ -70,11 +70,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-						
-						if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
-							LogUtil.logDebug(log, in);
-						}
-						
+												
 						if (strDataType.equals("DATA_FUTURE")) {
 							dataType = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
@@ -97,8 +93,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 						}
 
 						if(checkTime(dataType, in_arr)){
-						WindFutureDataAdaptor.instance.processGateWayMessage(
-								dataType, in_arr);
+							if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
+								LogUtil.logDebug(log, in);
+							}
+							WindFutureDataAdaptor.instance.processGateWayMessage(
+									dataType, in_arr);
+						}else{
+							if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
+								LogUtil.logDebug(log, "This Quote NOT USE-" + in);
+							}
 						}
 					}
 				}

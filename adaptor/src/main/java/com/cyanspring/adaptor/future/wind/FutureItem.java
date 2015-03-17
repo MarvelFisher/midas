@@ -3,6 +3,7 @@ package com.cyanspring.adaptor.future.wind;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -10,7 +11,9 @@ import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
@@ -219,16 +222,15 @@ public class FutureItem implements AutoCloseable {
 
 		if (WindFutureDataAdaptor.instance.isMarketDataLog())
 			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
-					+ ",Symbol=" + symbolId
-					+ ",MarketSessionType=" + marketSessionType + ",Time="
-					+ DateUtil.now());
+					+ ",Symbol=" + symbolId + ",MarketSessionType="
+					+ marketSessionType + ",Time=" + DateUtil.now());
 
 		if (marketSessionType == MarketSessionType.PREOPEN
 				|| marketSessionType == MarketSessionType.CLOSE) {
 			quote.setStale(true);
 		}
-		
-		if(marketSessionType == MarketSessionType.OPEN){
+
+		if (marketSessionType == MarketSessionType.OPEN) {
 			quote.setStale(false);
 		}
 
@@ -264,14 +266,9 @@ public class FutureItem implements AutoCloseable {
 			change = true;
 		}
 
-		if (change) {
-			// fire QuoteExt
-		}
-
-		// settle price
-		// pre settle price
-		// high limit
-		// low limit
+		// if (change) {
+		// // fire QuoteExt
+		// }
 
 		// update volume
 		long totalVolume = data.getVolume();
@@ -291,10 +288,18 @@ public class FutureItem implements AutoCloseable {
 		quote.setTotalVolume(totalVolume);
 		quote.setLastVol(item.volume);
 
+		// process Ext field
+		DataObject quoteExt = new DataObject();
+		quoteExt.put(QuoteExtDataField.CEIL.value(), highLimit);
+		quoteExt.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+		quoteExt.put(QuoteExtDataField.SYMBOL.value(), symbolId);
+		quoteExt.put(QuoteExtDataField.ID.value(), quote.getId());
+		quoteExt.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
+		
 		// fire quote event
 		String s = quote.toString();
-		WindFutureDataAdaptor.instance.saveLastQuote(quote);
-		WindFutureDataAdaptor.instance.sendQuote(quote);
+		WindFutureDataAdaptor.instance.saveLastQuote(quote, quoteExt);
+		WindFutureDataAdaptor.instance.sendQuote(quote, quoteExt);
 
 		Date now = DateUtil.now();
 		int timestamp = DateUtil.dateTime2Time(now);

@@ -1,8 +1,11 @@
 package com.cyanspring.server.pt;
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
@@ -63,6 +66,11 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 
 	public void setMdAdaptor(IMarketDataAdaptor mdAdaptor) {
 		this.mdAdaptor = mdAdaptor;
+	}
+
+	@Override
+	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+		
 	}
 
 	

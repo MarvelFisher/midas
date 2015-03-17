@@ -2,6 +2,7 @@ package com.cyanspring.server.bt;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.BeforeClass;
@@ -9,11 +10,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.TickDataException;
 import com.cyanspring.common.marketdata.Trade;
+
 import static org.junit.Assert.assertTrue;
 
 public class ExchangeBtLoadTickTest implements IMarketDataListener {
@@ -54,5 +57,9 @@ public class ExchangeBtLoadTickTest implements IMarketDataListener {
 	@Override
 	public void onTrade(Trade trade) {
 		log.info("Trade: " + trade.getSymbol() + ", " + trade.getPrice() + ", " + trade.getQuantity());
+	}
+
+	@Override
+	public void onQuoteExt(DataObject quoteExt, int sourceId) {		
 	}
 }

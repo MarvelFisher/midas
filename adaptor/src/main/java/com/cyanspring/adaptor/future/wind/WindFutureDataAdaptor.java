@@ -32,6 +32,7 @@ import cn.com.wind.td.tdf.TDF_OPTION_CODE;
 import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
 
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -42,6 +43,7 @@ import com.cyanspring.common.marketdata.IMarketDataStateListener;
 import com.cyanspring.common.marketdata.ISymbolDataListener;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -215,6 +217,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // stock
 	static Hashtable<String, String> strategyht = new Hashtable<String, String>(); // SaveSymbolStrategy
 	static Hashtable<String, Quote> lastquoteht = new Hashtable<String, Quote>(); // LastQuoteData
+	static Hashtable<String, DataObject> lastQuoteExtht = new Hashtable<String, DataObject>(); // LastQuoteExt
 
 	boolean isClosed = false;
 	RequestThread thread = null;
@@ -374,10 +377,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 							DateUtil.now());
 			if (marketSessionType == MarketSessionType.CLOSE) {
 				Quote lastQuote = lastquoteht.get(symbol);
+				DataObject lastQuoteExt = lastQuoteExtht.get(symbol);
 				if (lastQuote != null && !lastQuote.isStale()) {
 					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol=" + symbol);
 					lastQuote.setStale(true);
-					sendQuote(lastQuote);
+					sendQuote(lastQuote, lastQuoteExt);
 				}
 			}
 		}
@@ -993,8 +997,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			eventProcessor.getThread().setName("WindFutureDataAdaptor");
 
 		WindFutureDataAdaptor.instance = this;
-		WindFutureDataAdaptor.instance.getRefDataManager().init(); // init
-																	// RefDataManager
+		getRefDataManager().init(); // init  RefDataManager
+		refTable.clear();
+		
 		QuoteMgr.instance.init();
 		initReqThread();
 		doConnect();
@@ -1178,10 +1183,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 * 
 	 * @param quote
 	 */
-	public void sendQuote(Quote quote) {
+	public void sendQuote(Quote quote, DataObject quoteExt) {
 		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
 		for (UserClient client : clients) {
-			client.sendQuote(quote);
+			client.sendQuote(quote, quoteExt);
 		}
 	}
 
@@ -1190,23 +1195,22 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 * 
 	 * @param quote
 	 */
-	public void saveLastQuote(Quote quote) {
+	public void saveLastQuote(Quote quote, DataObject quoteExt) {
 		lastquoteht.put(quote.getSymbol(), quote);
+		lastQuoteExtht.put(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExt);
 	}
 
 	boolean addSymbol(String symbol) {
 		if (false == refTable.containsKey(symbol)) {
-			synchronized (m_lock) {
 				refTable.put(symbol, 1);
 				return true;
-			}
 		} else {
-			synchronized (m_lock) {
-				Integer refCount = refTable.get(symbol);
-				refCount++;
-				refTable.put(symbol, refCount);
-				return false;
-			}
+				synchronized (m_lock) {
+					int refCount = refTable.get(symbol);
+					refCount++;
+					refTable.put(symbol, refCount);
+					return false;				
+				}
 		}
 	}
 
@@ -1215,7 +1219,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			return false;
 		} else {
 			synchronized (m_lock) {
-				Integer refCount = refTable.get(symbol);
+				int refCount = refTable.get(symbol);
 				refCount--;
 				if (refCount <= 0) {
 					refTable.remove(symbol);
@@ -1266,11 +1270,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	}
 
 	public void clearSubscribeMarketData() throws Exception {
-		// initial refData
 		refDataManager.init();
 		refTable.clear();
 		strategyht.clear();
 		lastquoteht.clear();
+		lastQuoteExtht.clear();
 		ClientHandler.sendClearSubscribe();
 	}
 

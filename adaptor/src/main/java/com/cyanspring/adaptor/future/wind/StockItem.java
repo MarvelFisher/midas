@@ -319,8 +319,8 @@ public class StockItem implements AutoCloseable{
 		int timestamp = DateUtil.dateTime2Time(now);
 		// fire quote event
 		String s = quote.toString();
-		WindFutureDataAdaptor.instance.saveLastQuote(quote);
-		WindFutureDataAdaptor.instance.sendQuote(quote);
+		WindFutureDataAdaptor.instance.saveLastQuote(quote, null);
+		WindFutureDataAdaptor.instance.sendQuote(quote, null);
 
 		// show quote
 		FutureFeed future = FutureFeed.instance;

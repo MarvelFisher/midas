@@ -51,6 +51,7 @@ import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.system.DuplicateSystemIdEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.TickField;
 import com.cyanspring.common.server.event.DownStreamReadyEvent;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
@@ -313,6 +314,8 @@ public class Server implements ApplicationContextAware{
 	public void init() throws Exception {
 		OrderField.validate();
 		TickField.validate();
+		QuoteExtDataField.validate();
+		
 		IdGenerator.getInstance().setPrefix(systemInfo.getId()+"-");
 		
 		// setting ready List
@@ -545,7 +548,7 @@ public class Server implements ApplicationContextAware{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		String configFile = "conf/sserver.xml";
+		String configFile = "conf/fcserver.xml";
 		String logConfigFile = "conf/common/log4j.xml";
 		if(args.length == 1) {
 			configFile = args[0];

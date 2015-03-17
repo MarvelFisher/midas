@@ -2,6 +2,7 @@ package com.cyanspring.id.Test;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.swing.JButton;
@@ -11,6 +12,7 @@ import javax.swing.JTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
 import com.cyanspring.common.marketdata.MarketDataException;
@@ -149,5 +151,10 @@ public class ForexClient implements IMarketDataListener,
 		} catch (MarketDataException e) {
 			LogUtil.logException(log, e);
 		}
+	}
+
+	@Override
+	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+		
 	}
 }

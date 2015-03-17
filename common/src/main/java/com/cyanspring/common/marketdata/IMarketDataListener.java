@@ -10,8 +10,11 @@
  ******************************************************************************/
 package com.cyanspring.common.marketdata;
 
+import com.cyanspring.common.data.DataObject;
+
 
 public interface IMarketDataListener {
 	void onQuote(Quote quote, int sourceId);
+	void onQuoteExt(DataObject quoteExt, int sourceId);
 	void onTrade(Trade trade);
 }

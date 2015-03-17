@@ -3,6 +3,7 @@ package com.cyanspring.adaptor.future.wind;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
@@ -69,10 +70,12 @@ public class UserClient implements AutoCloseable {
 	 * 
 	 * @param quote
 	 */
-	public void sendQuote(Quote quote) {
+	public void sendQuote(Quote quote,DataObject quoteExt) {
 
 		if (isMySymbol(quote.getSymbol())) {
-			listener.onQuote(quote, 101); //use in MDM proceessInnerQuoteEvent , Wind Future Adapter sourceid=101
+			//use in MDM proceessInnerQuoteEvent , Wind Future Adapter sourceid=101
+			listener.onQuote(quote, 101); 
+			listener.onQuoteExt(quoteExt, 101); 
 		}
 	}
 

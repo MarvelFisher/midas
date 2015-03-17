@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -35,6 +36,7 @@ import com.cyanspring.common.event.marketdata.LastTradeDateQuotesEvent;
 import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
 import com.cyanspring.common.event.marketdata.PresubscribeEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
@@ -50,6 +52,7 @@ import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.PriceSessionQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.TickDataException;
 import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -163,7 +166,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		}
 	};
 
-	public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
+	public void processMarketSessionEvent(MarketSessionEvent event)
+			throws Exception {
 		quoteChecker.setSession(event.getSession());
 		chkTime = sessionMonitor.get(event.getSession());
 		log.info("Get MarketSessionEvent: " + event.getSession()
@@ -171,13 +175,15 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ chkTime);
 		for (IMarketDataAdaptor adapter : adaptors) {
 			String adapterName = adapter.getClass().getSimpleName();
-			if(adapterName.equals("WindFutureDataAdaptor") && MarketSessionType.PREOPEN == event.getSession()){
+			if (adapterName.equals("WindFutureDataAdaptor")
+					&& MarketSessionType.PREOPEN == event.getSession()) {
 				log.debug("Process Wind Future PREOPEN resubscribe");
-				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter).clearSubscribeMarketData();
-				preSubscribe();
+				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
+						.clearSubscribeMarketData();
+				eventProcessor.onEvent(new PresubscribeEvent(null));
 			}
 		}
-		
+
 	}
 
 	public void processLastTradeDateQuotesRequestEvent(
@@ -233,7 +239,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		if (quote != null) {
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(),
 					event.getSender(), quote));
-		}		
+		}
 		if (quote == null || quote.isStale()) {
 			for (int i = 0; i < adaptors.size(); i++) {
 				IMarketDataAdaptor adaptor = adaptors.get(i);
@@ -287,39 +293,40 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ ", Prev: " + prev + ", New: " + quote);
 	}
 
-	//Check Quote Value
-	public Quote checkQuote(Quote prev,Quote quote){
-		if(prev!=null){
-			//Close
-			if(quote.getClose()<=0){
+	// Check Quote Value
+	public Quote checkQuote(Quote prev, Quote quote) {
+		if (prev != null) {
+			// Close
+			if (quote.getClose() <= 0) {
 				quote.setClose(prev.getClose());
 			}
-			//Open
-			if(quote.getOpen()<=0){
+			// Open
+			if (quote.getOpen() <= 0) {
 				quote.setOpen(prev.getOpen());
 			}
-			//High
-			if(quote.getHigh()<=0){
+			// High
+			if (quote.getHigh() <= 0) {
 				quote.setHigh(prev.getHigh());
 			}
-			//Low
-			if(quote.getLow()<=0){
+			// Low
+			if (quote.getLow() <= 0) {
 				quote.setLow(prev.getLow());
 			}
 		}
 		return quote;
 	}
-	
+
 	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
 
 		checkQuote(prev, quote);
-		
-		if(quote.getAsk()	 == -1 || quote.getBid() == -1){
-			log.info("Quote Error: Symbol=" + quote.getSymbol() + ",Ask=" + quote.getAsk()+",Bid=" +quote.getBid());
+
+		if (quote.getAsk() == -1 || quote.getBid() == -1) {
+			log.info("Quote Error: Symbol=" + quote.getSymbol() + ",Ask="
+					+ quote.getAsk() + ",Bid=" + quote.getBid());
 		}
-		
+
 		if (null == prev) {
 			logStaleInfo(prev, quote, quote.isStale());
 			quotes.put(quote.getSymbol(), quote);
@@ -327,20 +334,21 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			return;
 		} else if (null != quoteChecker
 				&& !quoteChecker.checkWithSession(quote)) {
-			//if wind Adapter Quote always send,if other Adapter Quote prev not stale to send 
-			if( inEvent.getSourceId()>100){
-				//Stale continue send Quote
+			// if wind Adapter Quote always send,if other Adapter Quote prev not
+			// stale to send
+			if (inEvent.getSourceId() > 100) {
+				// Stale continue send Quote
 				quotes.put(quote.getSymbol(), quote);
 				clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-						quote));					
-			}else{
+						quote));
+			} else {
 				boolean prevStale = prev.isStale();
 				logStaleInfo(prev, quote, true);
 				prev.setStale(true); // just set the existing stale
-				if (!prevStale){
-					//Stale send prev Quote
-					clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-							prev));					
+				if (!prevStale) {
+					// Stale send prev Quote
+					clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(),
+							null, prev));
 				}
 			}
 			return;
@@ -414,9 +422,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("MarketDataManager");
 
-		//requestMarketSession
+		// requestMarketSession
 		requestMarketSession();
-		
+
 		// create tick directory
 		File file = new File(tickDir);
 		if (!file.isDirectory()) {
@@ -450,7 +458,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 		chkDate = Clock.getInstance().now();
 		for (IMarketDataAdaptor adaptor : adaptors) {
-			log.debug("IMarketDataAdaptor=" + adaptor.getClass() + " SubMarketDataState");
+			log.debug("IMarketDataAdaptor=" + adaptor.getClass()
+					+ " SubMarketDataState");
 			adaptor.subscribeMarketDataState(this);
 		}
 
@@ -478,13 +487,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 		boolean curState = false;
 		for (IMarketDataAdaptor adaptor : adaptors) {
-			log.debug(adaptor.getClass() + ", State=" + adaptor.getState()); 
+			log.debug(adaptor.getClass() + ", State=" + adaptor.getState());
 			if (adaptor.getState())
 				curState = true;
 		}
-		
+
 		if (curState) {
-			log.debug("Send PreSubScribeEvent..."); 
+			log.debug("Send PreSubScribeEvent...");
 			eventProcessor.onEvent(new PresubscribeEvent(null));
 		}
 		setState(curState);
@@ -601,6 +610,15 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	}
 
 	@Override
+	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+		log.debug("Receiver Adapter QuoteExt!");
+		if (quoteExt != null) {
+			QuoteExtEvent event = new QuoteExtEvent(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value()), null, quoteExt, sourceId);
+//			System.out.println(quoteExt.toXML());
+		}
+	}
+
+	@Override
 	public void onTrade(Trade trade) {
 		TradeEvent event = new TradeEvent(trade.getSymbol(), null, trade);
 		eventProcessor.onEvent(event);
@@ -637,7 +655,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				if (!adaptor.getState())
 					continue;
 
-				log.debug("Market data presubscribe adapter begin : " + adaptor.getState());
+				log.debug("Market data presubscribe adapter begin : "
+						+ adaptor.getState());
 
 				for (String symbol : preList) {
 					adaptor.subscribeMarketData(symbol, this);
@@ -691,7 +710,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void setTimerInterval(long timerInterval) {
 		this.timerInterval = timerInterval;
 	}
-
 
 	public void requestMarketSession() {
 		eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
