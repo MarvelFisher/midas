@@ -565,7 +565,7 @@ public class PersistenceManager {
 
 	public void processPmUserCreateAndLoginEvent(PmUserCreateAndLoginEvent event)
 	{
-		log.debug("Received PmUserLoginEvent: " + event.getOriginalEvent().getUser().getId());
+		log.debug("Received PmUserCreateAndLoginEvent: " + event.getOriginalEvent().getUser().getId());
 		
 		UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
 		AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
@@ -681,6 +681,7 @@ public class PersistenceManager {
 				}
 			}			
 		}
+		log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 		
 	}
 		
