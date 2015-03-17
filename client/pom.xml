@@ -158,7 +158,6 @@
 			<groupId>com.cyanspring.transport</groupId>
 			<artifactId>cyanspring-transport</artifactId>
 			<version>${cyanspring.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>
