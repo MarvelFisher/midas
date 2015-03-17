@@ -32,12 +32,12 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 	
 	public ArrayList<String> allSymbol = new ArrayList<String>();
 	
-	//TimerThread timer = new TimerThread();
+	TimerThread timer = new TimerThread();
 	public QuoteMgr() {
-		//timer.setName("QuoteMgr.Timer");
-		//timer.TimerEvent = this;
-		//timer.setInterval(60000);
-		//timer.start();		
+		timer.setName("QuoteMgr.Timer");
+		timer.TimerEvent = this;
+		timer.setInterval(300000);
+		timer.start();		
 	}
 
 	void uninit() {
@@ -46,7 +46,7 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 		}		
 		
 		try {
-			//timer.close();
+			timer.close();
 		} catch (Exception e) {
 		}
 	}
@@ -72,7 +72,6 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 		
 		synchronized (allSymbol) {
 			allSymbol.toArray(arrSymbol);
-			//list.addAll(allSymbol);
 		}	
 		
 		for (String symbol : arrSymbol ) {
@@ -110,7 +109,6 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 				return true;
 			else
 				return false;
-			//return symbolList.contains(symbol);
 		}
 	}
 	

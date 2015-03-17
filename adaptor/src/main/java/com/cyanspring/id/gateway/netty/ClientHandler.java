@@ -90,9 +90,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
      * 
      */
 	@Override
-	public void channelUnregistered(ChannelHandlerContext ctx) {
+	//public void channelUnregistered(ChannelHandlerContext ctx) {
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		ClientHandler.ctx = null;
-		ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
+		IdGateway.isConnected = false;
+		IdGateway.instance().reconClient();		
+		//ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
 	}
 
 	/**
@@ -101,9 +104,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * @see io.netty.channel.ChannelInboundHandlerAdapter#channelActive(io.netty.channel.ChannelHandlerContext)
 	 */
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) {
+	//public void channelActive(ChannelHandlerContext ctx) {
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		ClientHandler.ctx = ctx;
-		ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
+		logOn(IdGateway.instance().getAccount(), IdGateway.instance()
+				.getPassword());
+		if (IdGateway.instance().isGateway() == true) {
+			setCTFOn(IdGateway.instance().getExch());
+		} else {
+			setCTFOnSymbols();
+		}		
+		//ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
 	}
 
 	@Override
@@ -113,22 +124,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		if (evt instanceof IdleStateEvent) {
 			IdleStateEvent e = (IdleStateEvent) evt;
 			if (e.state() == IdleState.READER_IDLE) {
-				if (IdGateway.isConnecting == false) {
-					IdGateway.isConnected = false;
-					if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
-						IdGateway.instance().reconClient();
-					}
-					log.error("Read idle");
+				if (IdGateway.isConnected) {
+					log.error("Read idle , close Channel.");
+					ctx.close();
+					//IdGateway.isConnected = false;
+					//IdGateway.instance().closeClient();
+					//if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
+					//	IdGateway.instance().reconClient();
+					//}
 				}				
-			}
-			/*			
-			else if (e.state() == IdleState.WRITER_IDLE) {
-				// String str =
-				// WindGatewayHandler.addHashTail("API=ServerHeartBeat");
-				// ctx.writeAndFlush(str);
-			}
-*/			
+			}		
 		}
+		/*
 		else {
 		if (evt == ClientHandler.connected) {
 			logOn(IdGateway.instance().getAccount(), IdGateway.instance()
@@ -143,6 +150,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			IdGateway.instance().reconClient();
 		}
 		}
+		*/
 	}
 
 	/**

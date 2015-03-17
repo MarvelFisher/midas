@@ -24,7 +24,7 @@ import com.cyanspring.id.gateway.netty.ServerHandler;
 
 public class UserClient implements AutoCloseable {
 	private static final Logger log = LoggerFactory.getLogger(IdGateway.class);
-	static final int MAX_COUNT = 1024 * 1024;
+	static final int MAX_COUNT = 16 * 1024 * 1024 + 16;
 	String key = createUniqKey();
 
 	Date timeLast = new Date(0);
@@ -97,9 +97,6 @@ public class UserClient implements AutoCloseable {
 			{
 				refList.add(~pos,symbol);
 			}
-			//if (refList.contains(symbol) == false) {
-			//	refList.add(symbol);
-			//}
 		}
 		LogUtil.logInfo(log, "[%s] add ref : %s", key, symbol);
 	}
@@ -112,23 +109,17 @@ public class UserClient implements AutoCloseable {
 			{
 				refList.remove(pos);
 			}			
-			//if (refList.contains(symbol) == true) {
-			//	refList.remove(symbol);
-			//}
 		}
 		LogUtil.logInfo(log, "[%s] remove ref : %s", key, symbol);
 	}
 
 	public void sendData(String symbol, byte[] data) {
 
-		//if (!gateway && refList.contains(symbol) == false) {
 		if(!gateway && Collections.binarySearch(refList, symbol) < 0) {
-			data = null;
 			return;
 		}
 
 		if (ctx == null) {
-			data = null;
 			return;
 		}
 
@@ -149,31 +140,35 @@ public class UserClient implements AutoCloseable {
 
 			buffer.write(srcData, srcData.length);
 			srcData = null;
-			byte[] data = new byte[6];
+			byte[] pktHead = new byte[6],pktFrame,pktPayload;
 
-			while (true) {				
+			while (true) {
+				pktFrame = null;
+				pktPayload = null;
 
 				if (buffer.getQueuedSize() <= 0
-						|| buffer.read(data, 6, false) != 6) {
+						|| buffer.read(pktHead, 6, false) != 6) {
+					pktHead = null;
 					break;
 				}
 
-				if (data[0] != SpecialCharDef.EOT) {
+				if (pktHead[0] != SpecialCharDef.EOT) {
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
-				if (data[1] != SpecialCharDef.SPC) {
+				if (pktHead[1] != SpecialCharDef.SPC) {
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
 
 				int iDataLength = 0;
 				try {
-					iDataLength = (int) BitConverter.toLong(data, 2,
-							data.length);
+					iDataLength = (int) BitConverter.toLong(pktHead, 2, 6);
 				} catch (Exception e) {
 					LogUtil.logError(log, e.getMessage());
 					LogUtil.logException(log, e);
+					buffer.purge(1); // Skip One Byte
+					continue;					
 				}
 
 				int iPacketDataLength = iDataLength + 7;
@@ -184,27 +179,29 @@ public class UserClient implements AutoCloseable {
 				}
 
 				if (dwQueueLength >= iPacketDataLength) {
-					data = new byte[iPacketDataLength];
-					int nSize = buffer.read(data, iPacketDataLength, false);
+					pktFrame = new byte[iPacketDataLength];
+					int nSize = buffer.read(pktFrame, iPacketDataLength, false);
 					if (nSize != iPacketDataLength) {
 						break;
 					}
 
-					if (data[iPacketDataLength - 1] != SpecialCharDef.ETX) {
+					if (pktFrame[iPacketDataLength - 1] != SpecialCharDef.ETX) {
 						buffer.purge(1); // Skip One Byte
 						continue;
 					}
 
-					byte[] data2 = new byte[iDataLength];
-					System.arraycopy(data, 6, data2, 0, iDataLength);
+					pktPayload = new byte[iDataLength];
+					System.arraycopy(pktFrame, 6, pktPayload, 0, iDataLength);
 					buffer.purge(iPacketDataLength);
 
-					String strFrame = new String(data2,
+					String strPayload = new String(pktPayload,
 							Charset.defaultCharset());
-					data2 = null;
-					parse(strFrame);
+				
+					parse(strPayload);
+					strPayload = null;
 
 				} else {
+					pktHead = null;
 					break;
 				}
 			}
@@ -215,11 +212,11 @@ public class UserClient implements AutoCloseable {
 
 	public void parse(String frame) {
 		boolean isRemove = false;
-		String[] vec = StringUtil.split(frame, '|');
+		String[] vec = StringUtil.split(frame, '|'),vec2;
 		int exch = 687;
 		for (int i = 0; i < vec.length; i++) {
 
-			String[] vec2 = StringUtil.split(vec[i], '=');
+			vec2 = StringUtil.split(vec[i], '=');
 			if (vec2.length != 2)
 				continue;
 
@@ -255,6 +252,8 @@ public class UserClient implements AutoCloseable {
 				break;
 			}
 		}
+		vec2 = null;
+		vec = null;
 	}
 
 	@Override
