@@ -252,7 +252,10 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 			
 			socketService.setUserContext(event.getUser().getId(), record.ctx);
 
-			accountUserMap.put(event.getDefaultAccount().getId(), event.getUser().getId());
+			if(event.getDefaultAccount() != null)
+				accountUserMap.put(event.getDefaultAccount().getId(), event.getUser().getId());
+			else
+				accountUserMap.put(event.getAccounts().get(0).getId(), event.getUser().getId());
 			for(Account account: event.getAccounts()) {
 				accountUserMap.put(account.getId(), event.getUser().getId());
 			}
