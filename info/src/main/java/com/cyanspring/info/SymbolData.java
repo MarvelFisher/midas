@@ -722,7 +722,7 @@ public class SymbolData implements Comparable<SymbolData>
 			strSymbol = symbol;
 		}
     	String prefix = (market.equals("FX")) ? "0040" : market;
-		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `DATATIME`>='%s' AND `DATATIME`<'%s' ORDER BY `DATATIME`;", 
+		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' AND `KEYTIME`<'%s' ORDER BY `KEYTIME`;", 
 				prefix, type, strSymbol, sdfprice.format(start), sdfprice.format(end)) ;
 		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
 		try {
