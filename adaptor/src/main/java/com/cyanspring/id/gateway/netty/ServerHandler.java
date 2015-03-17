@@ -150,7 +150,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 		final ByteBuf buffer = Unpooled.copiedBuffer(packetData);
 		packetData = null;
-		ChannelGroupFuture future = channels.writeAndFlush(buffer);
+		
+		channels.writeAndFlush(buffer);
+		//ChannelGroupFuture future = channels.writeAndFlush(buffer);
 
 		//future.addListener(new ChannelGroupFutureListener() {
 		//	@Override
@@ -208,8 +210,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 		IdGateway.instance().updateClient(list);
 	}
 
-	@Override
-	public void channelRegistered(ChannelHandlerContext ctx) {
+	//@Override
+	//public void channelRegistered(ChannelHandlerContext ctx) {
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		if (!channels.contains(ctx.channel())) {
 			channels.add(ctx.channel());
 			updateContext();
@@ -223,9 +226,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
 	}
 
-	@Override
-	public void channelUnregistered(ChannelHandlerContext ctx) {
+	//@Override
+	//public void channelUnregistered(ChannelHandlerContext ctx) {
+	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		String strIP = getRemotIP(ctx.channel());
+		channels.remove(ctx.channel());
 		removeUserClient(ctx);
 		ctx.close();
 		updateContext();
