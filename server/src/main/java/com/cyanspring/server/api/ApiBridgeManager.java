@@ -287,7 +287,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 			quoteSubscription.put(event.getSymbol(), userSymbol);
 		}
 		
-		userSymbol.put(ctx.getId(), event.getSymbol());
+		userSymbol.put(ctx.getUser(), event.getSymbol());
 		
 		sendEventToManager(new QuoteSubEvent(ctx.getUser(), getBridgeId(), event.getSymbol()));
 	}
