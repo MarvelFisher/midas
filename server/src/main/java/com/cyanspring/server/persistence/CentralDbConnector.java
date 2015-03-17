@@ -151,15 +151,20 @@ public class CentralDbConnector {
 			bIsSuccess = true;
 		} catch (SQLException e) {
 			bIsSuccess = false;
-			log.warn("Cannot register user.", e);
+			log.warn("Cannot register user."+userId, e);
 			try {
 				conn.rollback();
 			} catch (SQLException se) {
-				log.warn("Register User rollback fail", se);
+				log.warn("Register User rollback fail."+userId, se);
 			}
 		} finally {
 			if (stmt != null) {
 				closeStmt(stmt);
+			}
+			try {
+				conn.commit();
+			} catch (SQLException se) {
+				log.warn("Register User commit fail."+userId, se);
 			}
 		}
 		return bIsSuccess;
