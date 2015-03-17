@@ -26,7 +26,7 @@ public class SocketUtil {
 	private static final Logger log = LoggerFactory.getLogger(SocketUtil.class);
 	
 	public static byte[] packData(byte[] data) {
-		int nZip = (data.length > 1024) ? 1 : 0;
+		int nZip = 0; // (data.length > 1024) ? 1 : 0;
 		try (ByteArrayOutputStream bs = new ByteArrayOutputStream()) {
 			if (nZip == 1) {
 				bs.write(new byte[] { SpecialCharDef.STX });
@@ -88,6 +88,8 @@ public class SocketUtil {
 
 				} catch (Exception e) {
 					LogUtil.logException(log, e);
+					buffer.purge(1); // Skip One Byte
+					continue;					
 				}
 
 				int iPacketDataLength = iDataLength + 7;

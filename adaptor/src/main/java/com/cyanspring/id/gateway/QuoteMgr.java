@@ -72,7 +72,6 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 		
 		synchronized (allSymbol) {
 			allSymbol.toArray(arrSymbol);
-			//list.addAll(allSymbol);
 		}	
 		
 		for (String symbol : arrSymbol ) {
@@ -110,7 +109,6 @@ public class QuoteMgr implements AutoCloseable, TimerEventHandler {
 				return true;
 			else
 				return false;
-			//return symbolList.contains(symbol);
 		}
 	}
 	

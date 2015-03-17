@@ -97,9 +97,6 @@ public class UserClient implements AutoCloseable {
 			{
 				refList.add(~pos,symbol);
 			}
-			//if (refList.contains(symbol) == false) {
-			//	refList.add(symbol);
-			//}
 		}
 		LogUtil.logInfo(log, "[%s] add ref : %s", key, symbol);
 	}
@@ -112,23 +109,17 @@ public class UserClient implements AutoCloseable {
 			{
 				refList.remove(pos);
 			}			
-			//if (refList.contains(symbol) == true) {
-			//	refList.remove(symbol);
-			//}
 		}
 		LogUtil.logInfo(log, "[%s] remove ref : %s", key, symbol);
 	}
 
 	public void sendData(String symbol, byte[] data) {
 
-		//if (!gateway && refList.contains(symbol) == false) {
 		if(!gateway && Collections.binarySearch(refList, symbol) < 0) {
-			data = null;
 			return;
 		}
 
 		if (ctx == null) {
-			data = null;
 			return;
 		}
 
@@ -176,6 +167,8 @@ public class UserClient implements AutoCloseable {
 				} catch (Exception e) {
 					LogUtil.logError(log, e.getMessage());
 					LogUtil.logException(log, e);
+					buffer.purge(1); // Skip One Byte
+					continue;					
 				}
 
 				int iPacketDataLength = iDataLength + 7;
