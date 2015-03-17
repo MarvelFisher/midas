@@ -14,12 +14,12 @@ import com.fdt.lts.client.obj.Order;
 import com.fdt.lts.client.obj.QuoteData;
 
 public class Demo{
-	public static void main(String[] args) throws Exception {		
+	public static void main(String[] args) throws Exception {	
 		String host = "";
 		int port = 0;
 		// start server
 		LtsApi adaptor = new LtsApi(host, port);				
-		
+	
 		ArrayList<String> symbolLst = new ArrayList<String>();
 		symbolLst.add("USDJPY");
 		symbolLst.add("AUDUSD");
@@ -38,24 +38,24 @@ public class Demo{
 			
 			@Override
 			public void onQuote(QuoteData quote) {
-				if(quote.symbol.equals(opSymbol)){
-					if(quote.bid <= buyPrice && buyFlag){
+				if(quote.getSymbol().equals(opSymbol)){
+					if(quote.getBid() <= buyPrice && buyFlag){
 						Order order = new Order();
-						order.symbol = opSymbol;
-						order.side = OrderSide.Buy;
-						order.price = buyPrice;
-						order.quantity = 10000;
-						order.type = OrderType.Limit;
+						order.setSymbol(opSymbol);
+						order.setSide(OrderSide.Buy);
+						order.setPrice(buyPrice);
+						order.setQuantity(10000);
+						order.setType(OrderType.Limit);
 						newOrder(order);
 						buyFlag = false;
 					}
-					if(quote.ask >= sellPrice && sellFlag){
+					if(quote.getAsk() >= sellPrice && sellFlag){
 						Order order = new Order();
-						order.symbol = opSymbol;
-						order.side = OrderSide.Sell;
-						order.price = sellPrice;
-						order.quantity = 10000;
-						order.type = OrderType.Limit;
+						order.setSymbol(opSymbol);
+						order.setSide(OrderSide.Sell);
+						order.setPrice(sellPrice);
+						order.setQuantity(10000);
+						order.setType(OrderType.Limit);
 						newOrder(order);
 						sellFlag = false;
 					}
@@ -64,13 +64,13 @@ public class Demo{
 
 			@Override
 			public void onNewOrderReply(Order order) {				
-				if(order.symbol.equals(opSymbol)){
-					List<OpenPosition> list = accountInfo.getOpenPositions(order.symbol);
+				if(order.getSymbol().equals(opSymbol)){
+					List<OpenPosition> list = accountInfo.getOpenPositions(order.getSymbol());
 					for(OpenPosition position : list){
-						if(position.getId().equals(order.id)){
-							if(order.side.equals(OrderSide.Buy))
+						if(position.getId().equals(order.getId())){
+							if(order.getSide().equals(OrderSide.Buy))
 								sellFlag = true;
-							else if(order.side.equals(OrderSide.Sell))
+							else if(order.getSide().equals(OrderSide.Sell))
 								buyFlag = true;
 						}
 					}
@@ -89,13 +89,13 @@ public class Demo{
 			
 			@Override
 			public void onOrderUpdate(Order order) {
-				if(order.symbol.equals(opSymbol)){
-					List<OpenPosition> list = accountInfo.getOpenPositions(order.symbol);
+				if(order.getSymbol().equals(opSymbol)){
+					List<OpenPosition> list = accountInfo.getOpenPositions(order.getSymbol());
 					for(OpenPosition position : list){
-						if(position.getId().equals(order.id)){
-							if(order.side.equals(OrderSide.Buy))
+						if(position.getId().equals(order.getId())){
+							if(order.getSide().equals(OrderSide.Buy))
 								sellFlag = true;
-							else if(order.side.equals(OrderSide.Sell))
+							else if(order.getSide().equals(OrderSide.Sell))
 								buyFlag = true;
 						}
 					}

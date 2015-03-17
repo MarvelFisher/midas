@@ -1,14 +1,110 @@
 package com.fdt.lts.client.obj;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 
 public class Order {
-	public String id;
-	public String symbol;
-	public OrderSide side;
-	public OrderType type;
-	public double price;
-	public long quantity;	
-	public double stopLossPrice;
+	//for thread safe 
+	private final ReentrantLock lock = new ReentrantLock();
+	
+	private String id;
+	private String symbol;
+	private OrderSide side;
+	private OrderType type;
+	private double price;
+	private long quantity;	
+	private double stopLossPrice;
+	
+	
+	public String getId() {	
+			return id;
+	}
+	public void setId(String id) {	
+		try{
+			lock.lock();
+			this.id = id;
+		}finally{
+			lock.unlock();
+		}
+	}
+	
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		try{
+			lock.lock();
+			this.price = price;
+		}finally{
+			lock.unlock();
+		}
+	}
+	public void setQuantity(long quantity) {
+		try{
+			lock.lock();
+			this.quantity = quantity;
+		}finally{
+			lock.unlock();
+		}
+	}
+	public String getSymbol() {
+
+			return symbol;
+
+	}
+	public void setSymbol(String symbol) {
+		try{
+			lock.lock();
+			this.symbol = symbol;
+		}finally{
+			lock.unlock();
+		}
+	}
+	public OrderSide getSide() {
+			return side;
+	}
+	public void setSide(OrderSide side) {
+		try{
+			lock.lock();
+			this.side = side;
+		}finally{
+			lock.unlock();
+		}
+	}
+	public OrderType getType() {
+			return type;
+	}
+	public void setType(OrderType type) {
+		try{
+			lock.lock();
+			this.type = type;
+		}finally{
+			lock.unlock();
+		}
+	}
+
+	public long getQuantity() {
+			return quantity;
+	}
+	public void setQuantity(int quantity) {
+		try{
+			lock.lock();
+			this.quantity = quantity;
+		}finally{
+			lock.unlock();
+		}
+	}
+	public double getStopLossPrice() {
+			return stopLossPrice;
+	}
+	public void setStopLossPrice(double stopLossPrice) {
+		try{
+			lock.lock();
+			this.stopLossPrice = stopLossPrice;
+		}finally{
+			lock.unlock();
+		}
+	}
 }

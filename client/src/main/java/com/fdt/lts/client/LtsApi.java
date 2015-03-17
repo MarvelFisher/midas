@@ -225,17 +225,17 @@ public final class LtsApi implements ITrade {
 
 	private QuoteData setQuoteData(Quote iquote) {
 		QuoteData quote = new QuoteData();
-		quote.symbol = iquote.getSymbol();
-		quote.bid = iquote.getBid();
-		quote.ask = iquote.getAsk();
-		quote.last = iquote.getLast();
-		quote.high = iquote.getHigh();
-		quote.low = iquote.getLow();
-		quote.open = iquote.getOpen();
-		quote.close = iquote.getClose();
-		quote.timeStamp = iquote.getTimeStamp();
-		quote.timeSent = iquote.getTimeSent();
-		quote.stale = iquote.isStale();
+		quote.setSymbol(iquote.getSymbol());
+		quote.setBid(iquote.getBid());
+		quote.setAsk(iquote.getAsk());
+		quote.setLast(iquote.getLast());
+		quote.setHigh(iquote.getHigh());
+		quote.setLow(iquote.getLow());
+		quote.setOpen(iquote.getOpen());
+		quote.setClose(iquote.getClose());
+		quote.setTimeStamp(iquote.getTimeStamp());
+		quote.setTimeSent(iquote.getTimeSent());
+		quote.setStale(iquote.isStale());
 		return quote;
 	}
 
@@ -261,13 +261,13 @@ public final class LtsApi implements ITrade {
 
 	private Order setOrderData(ParentOrder order) {
 		Order newOrder = new Order();
-		newOrder.id = order.getId();
-		newOrder.price = order.getPrice();
-		newOrder.quantity = new Double(order.getQuantity()).longValue();
-		newOrder.side = order.getSide();
-		newOrder.stopLossPrice = order.get(double.class, OrderField.STOP_LOSS_PRICE.value());			
-		newOrder.symbol = order.getSymbol();
-		newOrder.type = order.getOrderType();
+		newOrder.setId(order.getId());
+		newOrder.setPrice(order.getPrice());
+		newOrder.setQuantity(new Double(order.getQuantity()).longValue());
+		newOrder.setSide(order.getSide());
+		newOrder.setStopLossPrice(order.get(double.class, OrderField.STOP_LOSS_PRICE.value()));
+		newOrder.setSymbol(order.getSymbol());
+		newOrder.setType(order.getOrderType());
 		return newOrder;
 	}
 
@@ -277,9 +277,9 @@ public final class LtsApi implements ITrade {
 			tAdaptor.onError(Error.NEW_ORDER_ERROR.getCode(), Error.NEW_ORDER_ERROR.getMsg());			
 		} else {
 			Order newOrder = setOrderData(event.getOrder());
-			if(orderMap.containsKey(newOrder.id))
-				orderMap.remove(newOrder.id);
-			orderMap.put(newOrder.id, newOrder);
+			if(orderMap.containsKey(newOrder.getId()))
+				orderMap.remove(newOrder.getId());
+			orderMap.put(newOrder.getId(), newOrder);
 			tAdaptor.onNewOrderReply(newOrder);
 		}
 	}
@@ -290,9 +290,9 @@ public final class LtsApi implements ITrade {
 			tAdaptor.onError(Error.AMEND_ORDER_ERROR.getCode(), Error.AMEND_ORDER_ERROR.getMsg());
 		} else {
 			Order amendOrder = setOrderData(event.getOrder());
-			if(orderMap.containsKey(amendOrder.id))
-				orderMap.remove(amendOrder.id);
-			orderMap.put(amendOrder.id, amendOrder);
+			if(orderMap.containsKey(amendOrder.getId()))
+				orderMap.remove(amendOrder.getId());
+			orderMap.put(amendOrder.getId(), amendOrder);
 			tAdaptor.onAmendOrderReply(amendOrder);
 		}
 	}
@@ -303,17 +303,17 @@ public final class LtsApi implements ITrade {
 			tAdaptor.onError(Error.CANCEL_ORDER_ERROR.getCode(), Error.CANCEL_ORDER_ERROR.getMsg());
 		} else {
 			Order cancelOrder = setOrderData(event.getOrder());
-			if(orderMap.containsKey(cancelOrder.id))
-				orderMap.remove(cancelOrder.id);
+			if(orderMap.containsKey(cancelOrder.getId()))
+				orderMap.remove(cancelOrder.getId());
 			tAdaptor.onCancelOrderReply(cancelOrder);
 		}
 	}
 
 	public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
 		Order updateOrder = setOrderData(event.getOrder());
-		if(orderMap.containsKey(updateOrder.id))
-			orderMap.remove(updateOrder.id);
-		orderMap.put(updateOrder.id, updateOrder);
+		if(orderMap.containsKey(updateOrder.getId()))
+			orderMap.remove(updateOrder.getId());
+		orderMap.put(updateOrder.getId(), updateOrder);
 		tAdaptor.onOrderUpdate(updateOrder);
 	}
 
@@ -351,11 +351,11 @@ public final class LtsApi implements ITrade {
 		EnterParentOrderEvent enterOrderEvent;
 		fields = new HashMap<String, Object>();
 
-		fields.put(OrderField.SYMBOL.value(), order.symbol);
-		fields.put(OrderField.SIDE.value(), order.side);
-		fields.put(OrderField.TYPE.value(), order.type);
-		fields.put(OrderField.PRICE.value(), order.price);
-		fields.put(OrderField.QUANTITY.value(), new Double(order.quantity));
+		fields.put(OrderField.SYMBOL.value(), order.getSymbol());
+		fields.put(OrderField.SIDE.value(), order.getSide());
+		fields.put(OrderField.TYPE.value(), order.getType());
+		fields.put(OrderField.PRICE.value(), order.getPrice());
+		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity()));
 
 		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
 		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
@@ -379,11 +379,11 @@ public final class LtsApi implements ITrade {
 		EnterParentOrderEvent enterOrderEvent;
 		fields = new HashMap<String, Object>();
 
-		fields.put(OrderField.SYMBOL.value(), order.symbol);
-		fields.put(OrderField.SIDE.value(), order.side);
-		fields.put(OrderField.TYPE.value(), order.type);
-		fields.put(OrderField.QUANTITY.value(), new Double(order.quantity));
-		fields.put(OrderField.STOP_LOSS_PRICE.value(), order.stopLossPrice);
+		fields.put(OrderField.SYMBOL.value(), order.getSymbol());
+		fields.put(OrderField.SIDE.value(), order.getSide());
+		fields.put(OrderField.TYPE.value(), order.getType());
+		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity()));
+		fields.put(OrderField.STOP_LOSS_PRICE.value(), order.getStopLossPrice());
 
 		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
 		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
@@ -403,21 +403,21 @@ public final class LtsApi implements ITrade {
 	@Override
 	public void putAmendOrder(Order order) {
 		Map<String, Object> fields = new HashMap<String, Object>();
-		fields.put(OrderField.PRICE.value(), order.price);
-		fields.put(OrderField.QUANTITY.value(), new Double(order.quantity)); // note: you must put
+		fields.put(OrderField.PRICE.value(), order.getPrice());
+		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity())); // note: you must put
 																			 // xxx.0 to tell
 																			 // java this is a
 																			 // double type
 																			 // here!!
 		AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(),
-				null, order.id, fields, IdGenerator.getInstance().getNextID());
+				null, order.getId(), fields, IdGenerator.getInstance().getNextID());
 		sendEvent(amendEvent);
 	}
 
 	@Override
 	public void putCancelOrder(Order order) {
 		CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(
-				getId(), null, order.id, false, IdGenerator.getInstance()
+				getId(), null, order.getId(), false, IdGenerator.getInstance()
 						.getNextID());
 		sendEvent(cancelEvent);
 	}
