@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
@@ -32,6 +33,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.info.util.IPriceSetter;
 
 public class SymbolData implements Comparable<SymbolData>
 {
@@ -42,6 +44,8 @@ public class SymbolData implements Comparable<SymbolData>
             "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;";
 	private static final String dateFormat = "yyyy-MM-dd HH:mm:ss";
 	private static Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+	
+	private static IPriceSetter setter;
 	private CentralDbProcessor centralDB = null;
 	private boolean isUpdating = false;
 	private boolean writeMin = false;
@@ -55,7 +59,7 @@ public class SymbolData implements Comparable<SymbolData>
 	private double dClose = 0;
 	private double dCurVolume = 0;
 	private TreeMap<Date, HistoricalPrice> priceData = new TreeMap<Date, HistoricalPrice>() ;
-	private ArrayList<Quote> quoteTmp = new ArrayList<Quote>() ;
+	private LinkedBlockingQueue<Quote> quoteTmp = new LinkedBlockingQueue<Quote>() ;
 	
 	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
 	{
@@ -77,73 +81,52 @@ public class SymbolData implements Comparable<SymbolData>
 			priceData.clear();
 		}
 	}
-	public void setPrice(Quote quote)
+	public void parseQuote(Quote quote)
 	{
+		try 
+		{
+			quoteTmp.put(quote) ;
+		} 
+		catch (InterruptedException e) 
+		{
+			log.error(e.toString(), e);
+		}
 		if (isUpdating)
 		{
-			quoteTmp.add(quote) ;
+			return;
 		}
 		else
 		{
-			if (!quoteTmp.isEmpty())
+			Quote q;
+			while ((q = quoteTmp.poll()) != null)
 			{
-				for (Quote q : quoteTmp)
-				{
-					setPrice(q.getBid(), q.getAsk(), q.getTimeStamp()) ;
-				}
-				quoteTmp.clear();
+				setPrice(q) ;
 			}
-			setPrice(quote.getBid(), quote.getAsk(), quote.getTimeStamp()) ;
 			dCurVolume = quote.getTotalVolume() ;
 		}
 	}
-	public boolean setPrice(double bid, double ask, Date date)
+	public boolean setPrice(Quote quote)
 	{
+		boolean changed;
 		synchronized(priceData)
 		{
-			cal.setTime(date) ;
+			cal.setTime(quote.getTimeStamp()) ;
 			cal.set(Calendar.SECOND, 0);
-			double dPrice = (bid + ask) / 2 ;
 			HistoricalPrice price = priceData.get(cal.getTime()) ;
 			if (price == null)
 			{
 				price = new HistoricalPrice(strSymbol, centralDB.getTradedate(), cal.getTime());
 				priceData.put(cal.getTime(), price);
 			}
-			boolean changed = price.setPrice(dPrice);
-			price.setDatatime(date) ;
-			if (changed && writeMin) //writeToMin() ; 
-			{
-				centralDB.getChartCacheProcessor().put(this);
-				writeMin = false;
-			}
-			else if (!changed)
-			{
-				return changed;
-			}
-			if (d52WHigh < dPrice)
-			{
-				d52WHigh = dPrice ;
-			}
-			if (PriceUtils.isZero(d52WLow) || d52WLow > dPrice)
-			{
-				d52WLow = dPrice ;
-			}
-			if (dCurHigh < dPrice)
-			{
-				dCurHigh = dPrice ;
-			}
-			if (PriceUtils.isZero(dCurLow) || dCurLow > dPrice)
-			{
-				dCurLow = dPrice ;
-			}
-			if (PriceUtils.isZero(dOpen))
-			{
-				dOpen = dPrice ;
-			}
-			dClose = dPrice ;
-			return changed;
+			changed = setter.setPrice(price, quote, dCurVolume);
 		}
+		if (changed && writeMin) //writeToMin() ; 
+		{
+			centralDB.getChartCacheProcessor().put(this);
+			writeMin = false;
+		}
+		setter.setDataPrice(this, quote);
+		return changed;
 	}
 	
 	public void readFromTick()
@@ -215,7 +198,7 @@ public class SymbolData implements Comparable<SymbolData>
     		return;
     	}
     	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
-//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
@@ -271,9 +254,9 @@ public class SymbolData implements Comparable<SymbolData>
 			lastPrice.setDatatime(currentDate);
 			if (!bDelete)
 			{
-				if (PriceUtils.isZero(dOpen) == false) 
+				if (PriceUtils.isZero(getdOpen()) == false) 
 				{
-					lastPrice.setOpen(dOpen);
+					lastPrice.setOpen(getdOpen());
 				}
 				lastPrice.setVolume((int)dCurVolume);
 			}
@@ -282,18 +265,18 @@ public class SymbolData implements Comparable<SymbolData>
 				lastPrice.setVolume(lastPrice.getVolume() + (int)dCurVolume);
 			}
 			if (PriceUtils.isZero(lastPrice.getHigh()) 
-					|| (lastPrice.getHigh() < dCurHigh && PriceUtils.isZero(dCurHigh) == false))
+					|| (lastPrice.getHigh() < getdCurHigh() && PriceUtils.isZero(getdCurHigh()) == false))
 			{
-				lastPrice.setHigh(dCurHigh);
+				lastPrice.setHigh(getdCurHigh());
 			}
 			if (PriceUtils.isZero(lastPrice.getLow()) 
-					|| (lastPrice.getLow() > dCurLow && PriceUtils.isZero(dCurLow) == false))
+					|| (lastPrice.getLow() > getdCurLow() && PriceUtils.isZero(getdCurLow()) == false))
 			{
-				lastPrice.setLow(dCurLow);
+				lastPrice.setLow(getdCurLow());
 			}
-			if (PriceUtils.isZero(dClose) == false) 
+			if (PriceUtils.isZero(getdClose()) == false) 
 			{
-				lastPrice.setClose(dClose);
+				lastPrice.setClose(getdClose());
 			}
 		}
 		else
@@ -302,13 +285,14 @@ public class SymbolData implements Comparable<SymbolData>
 											keyDate,
 											currentDate,
 											getStrSymbol(),
-											dOpen,
-											dCurHigh,
-											dCurLow,
-											dClose,
+											getdOpen(),
+											getdCurHigh(),
+											getdCurLow(),
+											getdClose(),
 											(int)dCurVolume);
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sqlcmd = String.format(insertPrice, 
 				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
 				getStrSymbol(), lastPrice.getOpen(), lastPrice.getClose(), 
@@ -334,15 +318,15 @@ public class SymbolData implements Comparable<SymbolData>
 		PriceHighLow phl = new PriceHighLow() ;
 		if (type == PriceHighLowType.DAY)
 		{
-			phl.setHigh(this.dCurHigh);
-			phl.setLow(this.dCurLow);
+			phl.setHigh(this.getdCurHigh());
+			phl.setLow(this.getdCurLow());
 			phl.setSymbol(this.getStrSymbol());
 			phl.setType(type) ;
 		}
 		else if (type == PriceHighLowType.W52)
 		{
-			phl.setHigh(this.d52WHigh);
-			phl.setLow(this.d52WLow);
+			phl.setHigh(this.getD52WHigh());
+			phl.setLow(this.getD52WLow());
 			phl.setSymbol(this.getStrSymbol());
 			phl.setType(type) ;
 		}
@@ -366,13 +350,13 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				dHigh = rs.getDouble("HIGH_PRICE") ;
 				dLow = rs.getDouble("LOW_PRICE") ;
-				if (this.d52WHigh < dHigh)
+				if (this.getD52WHigh() < dHigh)
 				{
-					this.d52WHigh = dHigh ;
+					this.setD52WHigh(dHigh) ;
 				}
-				if (PriceUtils.isZero(this.d52WLow) || this.d52WLow > dLow)
+				if (PriceUtils.isZero(this.getD52WLow()) || this.getD52WLow() > dLow)
 				{
-					this.d52WLow = dLow ;
+					this.setD52WLow(dLow) ;
 				}
 			}
 		} catch (SQLException e) {
@@ -523,7 +507,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void getPriceDate(String strType, ArrayList<HistoricalPrice> pricelist)
 	{
-		if (PriceUtils.isZero(dOpen))
+		if (PriceUtils.isZero(getdOpen()))
 		{
 			return;
 		}
@@ -539,10 +523,10 @@ public class SymbolData implements Comparable<SymbolData>
 													   date, 
 													   date, 
 													   getStrSymbol(), 
-													   dOpen, 
-													   dCurHigh, 
-													   dCurLow, 
-													   dClose, 
+													   getdOpen(), 
+													   getdCurHigh(), 
+													   getdCurLow(), 
+													   getdClose(), 
 													   (int)dCurVolume) ;
 		HistoricalPrice lastPrice = null ;
 		if (pricelist.size() > 1)
@@ -554,17 +538,17 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			if (day == cal.get(Calendar.DATE))
 			{
-				if (PriceUtils.isZero(dCurHigh) && lastPrice.getHigh() < dCurHigh)
+				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
 				{
-					lastPrice.setHigh(dCurHigh);
+					lastPrice.setHigh(getdCurHigh());
 				}
-				if (PriceUtils.isZero(dCurLow) && lastPrice.getLow() > dCurLow)
+				if (PriceUtils.isZero(getdCurLow()) && lastPrice.getLow() > getdCurLow())
 				{
-					lastPrice.setLow(dCurLow);
+					lastPrice.setLow(getdCurLow());
 				}
-				if (!PriceUtils.isZero(dClose))
+				if (!PriceUtils.isZero(getdClose()))
 				{
-					lastPrice.setClose(dClose);
+					lastPrice.setClose(getdClose());
 				}
 				lastPrice.setDatatime(date);
 			}
@@ -578,17 +562,17 @@ public class SymbolData implements Comparable<SymbolData>
 			if (week == cal.get(Calendar.WEEK_OF_YEAR))
 			{
 				lastPrice.setDatatime(date);
-				if (PriceUtils.isZero(dCurHigh) && lastPrice.getHigh() < dCurHigh)
+				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
 				{
-					lastPrice.setHigh(dCurHigh);
+					lastPrice.setHigh(getdCurHigh());
 				}
-				if (PriceUtils.isZero(dCurLow) && lastPrice.getLow() > dCurLow)
+				if (PriceUtils.isZero(getdCurLow()) && lastPrice.getLow() > getdCurLow())
 				{
-					lastPrice.setLow(dCurLow);
+					lastPrice.setLow(getdCurLow());
 				}
-				if (!PriceUtils.isZero(dClose))
+				if (!PriceUtils.isZero(getdClose()))
 				{
-					lastPrice.setClose(dClose);
+					lastPrice.setClose(getdClose());
 				}
 				lastPrice.setDatatime(date);
 			}
@@ -602,17 +586,17 @@ public class SymbolData implements Comparable<SymbolData>
 			if (month == cal.get(Calendar.MONTH))
 			{
 				lastPrice.setDatatime(date);
-				if (PriceUtils.isZero(dCurHigh) && lastPrice.getHigh() < dCurHigh)
+				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
 				{
-					lastPrice.setHigh(dCurHigh);
+					lastPrice.setHigh(getdCurHigh());
 				}
-				if (PriceUtils.isZero(dCurLow) && lastPrice.getLow() > dCurLow)
+				if (PriceUtils.isZero(getdCurLow()) && lastPrice.getLow() > getdCurLow())
 				{
-					lastPrice.setLow(dCurLow);
+					lastPrice.setLow(getdCurLow());
 				}
-				if (!PriceUtils.isZero(dClose))
+				if (!PriceUtils.isZero(getdClose()))
 				{
-					lastPrice.setClose(dClose);
+					lastPrice.setClose(getdClose());
 				}
 				lastPrice.setDatatime(date);
 			}
@@ -790,7 +774,6 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	@Override
 	public int compareTo(SymbolData o) {
-		// TODO Auto-generated method stub
 		return this.getStrSymbol().compareTo(o.getStrSymbol());
 	}
 	public String getStrSymbol() {
@@ -810,6 +793,48 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setWriteMin(boolean writeMin) {
 		this.writeMin = writeMin;
+	}
+	public static IPriceSetter getSetter() {
+		return setter;
+	}
+	public static void setSetter(IPriceSetter setter) {
+		SymbolData.setter = setter;
+	}
+	public double getD52WHigh() {
+		return d52WHigh;
+	}
+	public void setD52WHigh(double d52wHigh) {
+		d52WHigh = d52wHigh;
+	}
+	public double getD52WLow() {
+		return d52WLow;
+	}
+	public void setD52WLow(double d52wLow) {
+		d52WLow = d52wLow;
+	}
+	public double getdCurHigh() {
+		return dCurHigh;
+	}
+	public void setdCurHigh(double dCurHigh) {
+		this.dCurHigh = dCurHigh;
+	}
+	public double getdCurLow() {
+		return dCurLow;
+	}
+	public void setdCurLow(double dCurLow) {
+		this.dCurLow = dCurLow;
+	}
+	public double getdOpen() {
+		return dOpen;
+	}
+	public void setdOpen(double dOpen) {
+		this.dOpen = dOpen;
+	}
+	public double getdClose() {
+		return dClose;
+	}
+	public void setdClose(double dClose) {
+		this.dClose = dClose;
 	}
 	
 }
