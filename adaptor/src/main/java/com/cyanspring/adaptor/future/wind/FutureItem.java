@@ -192,7 +192,11 @@ public class FutureItem implements AutoCloseable {
 				data.getTime());
 		Date tickTime;
 		try {
-			tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
+			if(data.getTime() < WindFutureDataAdaptor.AM10){
+				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
+			}else{
+				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
+			}
 		} catch (ParseException e) {
 			tickTime = DateUtil.now();
 		}
@@ -353,4 +357,18 @@ public class FutureItem implements AutoCloseable {
 	public void close() throws Exception {
 		FinalizeHelper.suppressFinalize(this);
 	}
+	
+	public static void main(String[] args){
+		String timeStamp = String.format("%d-%d", 20150318,
+				90000000);
+		Date tickTime;
+		try {
+			tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
+			System.out.println(tickTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
 }
