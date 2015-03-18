@@ -54,8 +54,6 @@ public class AccountInfo {
 		private final ReentrantLock lock = new ReentrantLock();
 
 		private String id;
-		private String account;
-		private String user;
 		private String symbol;
 		private double qty;
 		private double PnL;
@@ -73,34 +71,6 @@ public class AccountInfo {
 			} finally {
 				lock.unlock();
 			}
-		}
-
-		public String getAccount() {
-			return account;
-		}
-
-		public void setAccount(String account) {
-			try {
-				lock.lock();
-				this.account = account;
-			} finally {
-				lock.unlock();
-			}
-
-		}
-
-		public String getUser() {
-			return user;
-		}
-
-		public void setUser(String user) {
-			try {
-				lock.lock();
-				this.user = user;
-			} finally {
-				lock.unlock();
-			}
-
 		}
 
 		public String getSymbol() {
@@ -196,7 +166,6 @@ public class AccountInfo {
 		private final ReentrantLock lock = new ReentrantLock();
 
 		private double price;
-		private double margin;
 
 		public double getPrice() {
 			return price;
@@ -206,19 +175,6 @@ public class AccountInfo {
 			try {
 				lock.lock();
 				this.price = price;
-			} finally {
-				lock.unlock();
-			}
-		}
-
-		public double getMargin() {
-			return margin;
-		}
-
-		public void setMargin(double margin) {
-			try {
-				lock.lock();
-				this.margin = margin;
 			} finally {
 				lock.unlock();
 			}
@@ -359,8 +315,6 @@ public class AccountInfo {
 		private String parentOrderID;
 		private String strategyID;
 		private String execID;
-		private String user;
-		private String account;
 
 		public Date getCreated() {
 			return created;
@@ -524,34 +478,6 @@ public class AccountInfo {
 			try {
 				lock.lock();
 				this.execID = execID;
-			} finally {
-				lock.unlock();
-			}
-
-		}
-
-		public String getUser() {
-			return user;
-		}
-
-		public void setUser(String user) {
-			try {
-				lock.lock();
-				this.user = user;
-			} finally {
-				lock.unlock();
-			}
-
-		}
-
-		public String getAccount() {
-			return account;
-		}
-
-		public void setAccount(String account) {
-			try {
-				lock.lock();
-				this.account = account;
 			} finally {
 				lock.unlock();
 			}

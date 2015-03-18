@@ -169,7 +169,6 @@ public final class LtsApi implements ITrade {
 
 	private void setExecutionData(Execution exe) {
 		AccountInfo.Execution newExe = accountInfo.new Execution();
-		newExe.setAccount(exe.getAccount());
 		newExe.setCreated(exe.getCreated());
 		newExe.setExecID(exe.getExecId());
 		newExe.setId(exe.getId());
@@ -182,22 +181,18 @@ public final class LtsApi implements ITrade {
 		newExe.setSide(exe.getSide().toString());
 		newExe.setStrategyID(exe.getStrategyId());
 		newExe.setSymbol(exe.getSymbol());
-		newExe.setUser(exe.getUser());
 		accountInfo.addExecution(exe.getSymbol(), exe.getOrderId(), newExe);
 	}
 
 	private void setOpenPositionData(OpenPosition oPosition) {
 		AccountInfo.OpenPosition newPosition = accountInfo.new OpenPosition();
-		newPosition.setAccount(oPosition.getAccount());
 		newPosition.setAcPnL(oPosition.getAcPnL());
 		newPosition.setCreated(oPosition.getCreated());
 		newPosition.setId(oPosition.getId());
-		newPosition.setMargin(oPosition.getMargin());
 		newPosition.setPnL(oPosition.getPnL());
 		newPosition.setPrice(oPosition.getPrice());
 		newPosition.setQty(oPosition.getQty());
 		newPosition.setSymbol(oPosition.getSymbol());
-		newPosition.setUser(oPosition.getUser());	
 		accountInfo.addOpenPosition(oPosition.getSymbol(), oPosition.getId(), newPosition);
 	}
 
