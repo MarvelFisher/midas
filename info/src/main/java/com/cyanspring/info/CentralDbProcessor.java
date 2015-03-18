@@ -62,6 +62,8 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.staticdata.TickTableManager;
 import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.info.util.DefPriceSetter;
+import com.cyanspring.info.util.FXPriceSetter;
 
 
 public class CentralDbProcessor implements IPlugin
@@ -991,10 +993,12 @@ public class CentralDbProcessor implements IPlugin
 		{
 		case "FC":
 			this.refSymbolInfo = new FCRefSymbolInfo(serverMarket);
+			SymbolData.setSetter(new DefPriceSetter());
 			break;
 		case "FX":
 		default:
 			this.refSymbolInfo = new FXRefSymbolInfo(serverMarket);
+			SymbolData.setSetter(new FXPriceSetter());
 			break;
 		}
 		if (getnChefCount() <= 1)
