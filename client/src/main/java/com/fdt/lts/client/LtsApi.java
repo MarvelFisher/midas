@@ -164,6 +164,7 @@ public final class LtsApi implements ITrade {
 		for (Execution exe : event.getExecutions()) {
 			setExecutionData(exe);
 		}
+		sendEvent(new StrategySnapshotRequestEvent(account, null, null));
 	}
 
 	private void setExecutionData(Execution exe) {
@@ -246,22 +247,21 @@ public final class LtsApi implements ITrade {
 	}
 
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
-
-		if (!event.isOk())
-			return;
 		log.info("Login is" + event.isOk() + ", " + event.getMessage()
 				+ ", Last login:" + event.getUser().getLastLogin());
-		for (String symbol : subQuoteLst) {
-			sendEvent(new QuoteSubEvent(getId(), null, symbol));
-		}
-
-		sendEvent(new StrategySnapshotRequestEvent(account, null, null));
+		if (!event.isOk())
+			return;
+			
 		sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
 	}
 
 	public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
 		for (ParentOrder order : event.getOrders()) {
 			orderMap.put(order.getId(), setOrderData(order));
+		}
+		tAdaptor.onStart();
+		for (String symbol : subQuoteLst) {
+			sendEvent(new QuoteSubEvent(getId(), null, symbol));
 		}
 	}
 
@@ -274,6 +274,8 @@ public final class LtsApi implements ITrade {
 		newOrder.setStopLossPrice(order.get(double.class, OrderField.STOP_LOSS_PRICE.value()));
 		newOrder.setSymbol(order.getSymbol());
 		newOrder.setType(order.getOrderType());
+		newOrder.setState(order.getState().toString());
+		newOrder.setStatus(order.getOrdStatus().toString());
 		return newOrder;
 	}
 
