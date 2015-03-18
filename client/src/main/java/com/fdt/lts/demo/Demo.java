@@ -1,4 +1,4 @@
-package com.fdt.lts.client;
+package com.fdt.lts.demo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
+import com.fdt.lts.client.LtsApi;
+import com.fdt.lts.client.TradeAdaptor;
 import com.fdt.lts.client.obj.AccountInfo.OpenPosition;
 import com.fdt.lts.client.obj.Order;
 import com.fdt.lts.client.obj.QuoteData;
