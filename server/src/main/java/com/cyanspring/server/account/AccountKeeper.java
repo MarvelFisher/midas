@@ -65,11 +65,13 @@ public class AccountKeeper {
 			throw new AccountException("Account id doesn't exist: " + account);
 		
 		AccountSetting setting = accountSettings.get(account);
+		AccountSetting empty = AccountSetting.createEmptySettings(account);
 		if(null == setting)
-			return AccountSetting.createEmptySettings(account);
+			return empty;
 		
 		synchronized(setting) {
-			return setting.clone();
+			empty.update(setting);
+			return empty;
 		}
 	}
 	

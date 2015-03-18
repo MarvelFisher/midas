@@ -58,6 +58,7 @@ import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.ForexTickTable;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.thoughtworks.xstream.XStream;
@@ -106,8 +107,33 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private Date chkDate;
 	private long chkTime;
 	boolean state = false;
+	private boolean quotePriceWarningIsOpen = false;
+	private int quotePriceWarningPercent = 99;
+	private boolean quoteLogIsOpen = false;
 
-	// AggregationTicks aggrTicks = null;
+	public boolean isQuoteLogIsOpen() {
+		return quoteLogIsOpen;
+	}
+
+	public void setQuoteLogIsOpen(boolean quoteLogIsOpen) {
+		this.quoteLogIsOpen = quoteLogIsOpen;
+	}
+	
+	public boolean isQuotePriceWarningIsOpen() {
+		return quotePriceWarningIsOpen;
+	}
+
+	public int getQuotePriceWarningPercent() {
+		return quotePriceWarningPercent;
+	}
+	
+	public void setQuotePriceWarningIsOpen(boolean quotePriceWarningIsOpen) {
+		this.quotePriceWarningIsOpen = quotePriceWarningIsOpen;
+	}
+
+	public void setQuotePriceWarningPercent(int quotePriceWarningPercent) {
+		this.quotePriceWarningPercent = quotePriceWarningPercent;
+	}
 
 	QuoteAggregator aggregator;
 
@@ -294,37 +320,88 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	}
 
 	// Check Quote Value
-	public Quote checkQuote(Quote prev, Quote quote) {
-		if (prev != null) {
-			// Close
-			if (quote.getClose() <= 0) {
+	public boolean checkQuote(Quote prev,Quote quote){
+		boolean IsCorrectQuote = true;
+		if(prev!=null){
+			if(quote.getClose()<=0){
 				quote.setClose(prev.getClose());
 			}
-			// Open
-			if (quote.getOpen() <= 0) {
+			if(quote.getOpen()<=0){
 				quote.setOpen(prev.getOpen());
 			}
-			// High
-			if (quote.getHigh() <= 0) {
+			if(quote.getHigh()<=0){
 				quote.setHigh(prev.getHigh());
 			}
-			// Low
-			if (quote.getLow() <= 0) {
+			if(quote.getLow()<=0){
 				quote.setLow(prev.getLow());
 			}
+			if(quote.getBid()<=0){
+				quote.setBid(prev.getBid());
+			}
+			if(quote.getAsk()<=0){
+				quote.setAsk(prev.getAsk());
+			}
 		}
-		return quote;
+		
+		if(isQuotePriceWarningIsOpen()){
+			if(quote.getClose()>0 && getQuotePriceWarningPercent()>0 && getQuotePriceWarningPercent() < 100){
+				double preCloseAddWarningPrice = quote.getClose() * (1.0 + getQuotePriceWarningPercent() / 100.0);
+				double preCloseSubtractWarningPrice = quote.getClose() * (1.0 - getQuotePriceWarningPercent() / 100.0);
+				if(quote.getAsk()>0 && (PriceUtils.GreaterThan(quote.getAsk(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getAsk(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getBid()>0 && (PriceUtils.GreaterThan(quote.getBid(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getBid(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getHigh()>0 && (PriceUtils.GreaterThan(quote.getHigh(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getHigh(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getLow()>0 && (PriceUtils.GreaterThan(quote.getLow(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getLow(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getOpen()>0 && (PriceUtils.GreaterThan(quote.getOpen(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getOpen(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}				
+			}
+		}
+		
+		return IsCorrectQuote;
 	}
-
 	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
-
-		checkQuote(prev, quote);
-
-		if (quote.getAsk() == -1 || quote.getBid() == -1) {
-			log.info("Quote Error: Symbol=" + quote.getSymbol() + ",Ask="
-					+ quote.getAsk() + ",Bid=" + quote.getBid());
+	
+		if(isQuoteLogIsOpen()){
+			log.info("Quote Receive : "
+					+"Source=" + inEvent.getSourceId()
+					+",Symbol="+ quote.getSymbol()
+					+",Ask=" + quote.getAsk() 
+					+",Bid=" + quote.getBid()
+					+",Close=" + quote.getClose()
+					+",Open=" + quote.getOpen()
+					+",High=" + quote.getHigh()
+					+",Low=" + quote.getLow()
+					+",Stale=" + quote.isStale() 
+					+",TimeStamp=" + quote.getTimeStamp().toString()
+					+",WarningPcnt=" + getQuotePriceWarningPercent()
+				);
+		}
+		
+		if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
+			log.debug("Quote BBBBB! : " 
+					+"Source=" + inEvent.getSourceId()
+					+",Symbol="+ quote.getSymbol()
+					+",Ask=" + quote.getAsk() 
+					+",Bid=" + quote.getBid()
+					+",Close=" + quote.getClose()
+					+",Open=" + quote.getOpen()
+					+",High=" + quote.getHigh()
+					+",Low=" + quote.getLow()
+					+",Stale=" + quote.isStale() 
+					+",TimeStamp=" + quote.getTimeStamp().toString()
+					+",WarningPcnt=" + getQuotePriceWarningPercent()
+			);
+			return;
 		}
 
 		if (null == prev) {
