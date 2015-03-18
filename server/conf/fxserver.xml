@@ -55,6 +55,9 @@
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
+		<property name="quotePriceWarningIsOpen" value="true"></property>
+		<property name="quotePriceWarningPercent" value="50"></property>
+		<property name="quoteLogIsOpen" value="true"></property>
 		
 		<property name="aggregator" >
 			<ref bean="quoteAggregator" />
@@ -83,7 +86,7 @@
 		<property name="port" value="4001" />
 		<property name="clientId" value="199" />
 		<property name="reqMarketDepth" value="false" />
-		<property name="logMarketData" value="true" />
+		<property name="logMarketData" value="false" />
 		<!--<property name="cancelOpenOrders" value="true" /> -->
 		<property name="refDataManager">
 			<ref bean="refDataManager" />

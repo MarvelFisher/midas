@@ -52,6 +52,7 @@
 				<ref bean="windAdaptor" />
 			</list>
 		</constructor-arg>
+		<property name="quoteLogIsOpen" value="true"></property>
 		<property name="preSubscriptionList">
 			<list>
 				<ref bean="preSubscriptionList" />
