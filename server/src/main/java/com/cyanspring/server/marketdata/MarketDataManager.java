@@ -12,6 +12,7 @@ package com.cyanspring.server.marketdata;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,6 +56,7 @@ import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.ForexTickTable;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.thoughtworks.xstream.XStream;
@@ -103,8 +105,33 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private Date chkDate;
 	private long chkTime;
 	boolean state = false;
+	private boolean quotePriceWarningIsOpen = false;
+	private int quotePriceWarningPercent = 99;
+	private boolean quoteLogIsOpen = false;
 
-	// AggregationTicks aggrTicks = null;
+	public boolean isQuoteLogIsOpen() {
+		return quoteLogIsOpen;
+	}
+
+	public void setQuoteLogIsOpen(boolean quoteLogIsOpen) {
+		this.quoteLogIsOpen = quoteLogIsOpen;
+	}
+	
+	public boolean isQuotePriceWarningIsOpen() {
+		return quotePriceWarningIsOpen;
+	}
+
+	public int getQuotePriceWarningPercent() {
+		return quotePriceWarningPercent;
+	}
+	
+	public void setQuotePriceWarningIsOpen(boolean quotePriceWarningIsOpen) {
+		this.quotePriceWarningIsOpen = quotePriceWarningIsOpen;
+	}
+
+	public void setQuotePriceWarningPercent(int quotePriceWarningPercent) {
+		this.quotePriceWarningPercent = quotePriceWarningPercent;
+	}
 
 	QuoteAggregator aggregator;
 
@@ -163,7 +190,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		}
 	};
 
-	public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
+	public void processMarketSessionEvent(MarketSessionEvent event)
+			throws Exception {
 		quoteChecker.setSession(event.getSession());
 		chkTime = sessionMonitor.get(event.getSession());
 		log.info("Get MarketSessionEvent: " + event.getSession()
@@ -171,13 +199,15 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ chkTime);
 		for (IMarketDataAdaptor adapter : adaptors) {
 			String adapterName = adapter.getClass().getSimpleName();
-			if(adapterName.equals("WindFutureDataAdaptor") && MarketSessionType.PREOPEN == event.getSession()){
+			if (adapterName.equals("WindFutureDataAdaptor")
+					&& MarketSessionType.PREOPEN == event.getSession()) {
 				log.debug("Process Wind Future PREOPEN resubscribe");
-				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter).clearSubscribeMarketData();
+				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
+						.clearSubscribeMarketData();
 				preSubscribe();
 			}
 		}
-		
+
 	}
 
 	public void processLastTradeDateQuotesRequestEvent(
@@ -233,7 +263,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		if (quote != null) {
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(),
 					event.getSender(), quote));
-		}		
+		}
 		if (quote == null || quote.isStale()) {
 			for (int i = 0; i < adaptors.size(); i++) {
 				IMarketDataAdaptor adaptor = adaptors.get(i);
@@ -287,39 +317,93 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ ", Prev: " + prev + ", New: " + quote);
 	}
 
-	//Check Quote Value
-	public Quote checkQuote(Quote prev,Quote quote){
+	// Check Quote Value
+	public boolean checkQuote(Quote prev,Quote quote){
+		boolean IsCorrectQuote = true;
 		if(prev!=null){
-			//Close
 			if(quote.getClose()<=0){
 				quote.setClose(prev.getClose());
 			}
-			//Open
 			if(quote.getOpen()<=0){
 				quote.setOpen(prev.getOpen());
 			}
-			//High
 			if(quote.getHigh()<=0){
 				quote.setHigh(prev.getHigh());
 			}
-			//Low
 			if(quote.getLow()<=0){
 				quote.setLow(prev.getLow());
 			}
+			if(quote.getBid()<=0){
+				quote.setBid(prev.getBid());
+			}
+			if(quote.getAsk()<=0){
+				quote.setAsk(prev.getAsk());
+			}
 		}
-		return quote;
+		
+		if(isQuotePriceWarningIsOpen()){
+			if(quote.getClose()>0 && getQuotePriceWarningPercent()>0 && getQuotePriceWarningPercent() < 100){
+				double preCloseAddWarningPrice = quote.getClose() * (1.0 + getQuotePriceWarningPercent() / 100.0);
+				double preCloseSubtractWarningPrice = quote.getClose() * (1.0 - getQuotePriceWarningPercent() / 100.0);
+				if(quote.getAsk()>0 && (PriceUtils.GreaterThan(quote.getAsk(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getAsk(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getBid()>0 && (PriceUtils.GreaterThan(quote.getBid(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getBid(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getHigh()>0 && (PriceUtils.GreaterThan(quote.getHigh(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getHigh(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getLow()>0 && (PriceUtils.GreaterThan(quote.getLow(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getLow(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}
+				if(quote.getOpen()>0 && (PriceUtils.GreaterThan(quote.getOpen(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getOpen(), preCloseSubtractWarningPrice))){
+					IsCorrectQuote = false;
+				}				
+			}
+		}
+		
+		return IsCorrectQuote;
 	}
+	
 	
 	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
-
-		checkQuote(prev, quote);
-		
-		if(quote.getAsk()	 == -1 || quote.getBid() == -1){
-			log.info("Quote Error: Symbol=" + quote.getSymbol() + ",Ask=" + quote.getAsk()+",Bid=" +quote.getBid());
+	
+		if(isQuoteLogIsOpen()){
+			log.info("Quote Receive : "
+					+"Source=" + inEvent.getSourceId()
+					+",Symbol="+ quote.getSymbol()
+					+",Ask=" + quote.getAsk() 
+					+",Bid=" + quote.getBid()
+					+",Close=" + quote.getClose()
+					+",Open=" + quote.getOpen()
+					+",High=" + quote.getHigh()
+					+",Low=" + quote.getLow()
+					+",Stale=" + quote.isStale() 
+					+",TimeStamp=" + quote.getTimeStamp().toString()
+					+",WarningPcnt=" + getQuotePriceWarningPercent()
+				);
 		}
 		
+		if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
+			log.debug("Quote BBBBB! : " 
+					+"Source=" + inEvent.getSourceId()
+					+",Symbol="+ quote.getSymbol()
+					+",Ask=" + quote.getAsk() 
+					+",Bid=" + quote.getBid()
+					+",Close=" + quote.getClose()
+					+",Open=" + quote.getOpen()
+					+",High=" + quote.getHigh()
+					+",Low=" + quote.getLow()
+					+",Stale=" + quote.isStale() 
+					+",TimeStamp=" + quote.getTimeStamp().toString()
+					+",WarningPcnt=" + getQuotePriceWarningPercent()
+			);
+			return;
+		}
+
 		if (null == prev) {
 			logStaleInfo(prev, quote, quote.isStale());
 			quotes.put(quote.getSymbol(), quote);
@@ -327,20 +411,21 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			return;
 		} else if (null != quoteChecker
 				&& !quoteChecker.checkWithSession(quote)) {
-			//if wind Adapter Quote always send,if other Adapter Quote prev not stale to send 
-			if( inEvent.getSourceId()>100){
-				//Stale continue send Quote
+			// if wind Adapter Quote always send,if other Adapter Quote prev not
+			// stale to send
+			if (inEvent.getSourceId() > 100) {
+				// Stale continue send Quote
 				quotes.put(quote.getSymbol(), quote);
 				clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-						quote));					
-			}else{
+						quote));
+			} else {
 				boolean prevStale = prev.isStale();
 				logStaleInfo(prev, quote, true);
 				prev.setStale(true); // just set the existing stale
-				if (!prevStale){
-					//Stale send prev Quote
-					clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-							prev));					
+				if (!prevStale) {
+					// Stale send prev Quote
+					clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(),
+							null, prev));
 				}
 			}
 			return;
@@ -414,9 +499,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("MarketDataManager");
 
-		//requestMarketSession
+		// requestMarketSession
 		requestMarketSession();
-		
+
 		// create tick directory
 		File file = new File(tickDir);
 		if (!file.isDirectory()) {
@@ -450,7 +535,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 		chkDate = Clock.getInstance().now();
 		for (IMarketDataAdaptor adaptor : adaptors) {
-			log.debug("IMarketDataAdaptor=" + adaptor.getClass() + " SubMarketDataState");
+			log.debug("IMarketDataAdaptor=" + adaptor.getClass()
+					+ " SubMarketDataState");
 			adaptor.subscribeMarketDataState(this);
 		}
 
@@ -478,13 +564,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 		boolean curState = false;
 		for (IMarketDataAdaptor adaptor : adaptors) {
-			log.debug(adaptor.getClass() + ", State=" + adaptor.getState()); 
+			log.debug(adaptor.getClass() + ", State=" + adaptor.getState());
 			if (adaptor.getState())
 				curState = true;
 		}
-		
+
 		if (curState) {
-			log.debug("Send PreSubScribeEvent..."); 
+			log.debug("Send PreSubScribeEvent...");
 			eventProcessor.onEvent(new PresubscribeEvent(null));
 		}
 		setState(curState);
@@ -637,7 +723,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				if (!adaptor.getState())
 					continue;
 
-				log.debug("Market data presubscribe adapter begin : " + adaptor.getState());
+				log.debug("Market data presubscribe adapter begin : "
+						+ adaptor.getState());
 
 				for (String symbol : preList) {
 					adaptor.subscribeMarketData(symbol, this);
@@ -691,7 +778,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void setTimerInterval(long timerInterval) {
 		this.timerInterval = timerInterval;
 	}
-
 
 	public void requestMarketSession() {
 		eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
