@@ -2,8 +2,6 @@ package com.fdt.lts.client.obj;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.type.OrderType;
 
 public class Order {
 	// for thread safe

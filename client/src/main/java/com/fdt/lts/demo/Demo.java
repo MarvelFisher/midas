@@ -9,12 +9,12 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.type.OrderType;
 import com.fdt.lts.client.LtsApi;
 import com.fdt.lts.client.TradeAdaptor;
 import com.fdt.lts.client.obj.AccountInfo.OpenPosition;
 import com.fdt.lts.client.obj.Order;
+import com.fdt.lts.client.obj.OrderSide;
+import com.fdt.lts.client.obj.OrderType;
 import com.fdt.lts.client.obj.QuoteData;
 
 public class Demo{

@@ -44,6 +44,8 @@ import com.cyanspring.transport.socket.ClientSocketService;
 import com.fdt.lts.client.error.Error;
 import com.fdt.lts.client.obj.AccountInfo;
 import com.fdt.lts.client.obj.Order;
+import com.fdt.lts.client.obj.OrderSide;
+import com.fdt.lts.client.obj.OrderType;
 import com.fdt.lts.client.obj.QuoteData;
 
 public final class LtsApi implements ITrade {
@@ -270,10 +272,10 @@ public final class LtsApi implements ITrade {
 		newOrder.setId(order.getId());
 		newOrder.setPrice(order.getPrice());
 		newOrder.setQuantity(new Double(order.getQuantity()).longValue());
-		newOrder.setSide(order.getSide());
+		newOrder.setSide(OrderSide.valueOf(order.getSide().toString()));
 		newOrder.setStopLossPrice(order.get(double.class, OrderField.STOP_LOSS_PRICE.value()));
 		newOrder.setSymbol(order.getSymbol());
-		newOrder.setType(order.getOrderType());
+		newOrder.setType(OrderType.valueOf(order.getOrderType().toString()));
 		newOrder.setState(order.getState().toString());
 		newOrder.setStatus(order.getOrdStatus().toString());
 		return newOrder;

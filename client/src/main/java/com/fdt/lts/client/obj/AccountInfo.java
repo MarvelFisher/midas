@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class AccountInfo {
 	private Account account;
@@ -51,7 +53,7 @@ public class AccountInfo {
 
 	public class Position {
 		// for thread safe
-		private final ReentrantLock lock = new ReentrantLock();
+		private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 		private String id;
 		private String account;
@@ -63,112 +65,152 @@ public class AccountInfo {
 		private double acPnL;
 
 		public String getId() {
-			return id;
+			try {
+				lock.readLock().lock();
+				return id;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setId(String id) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.id = id;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public String getAccount() {
-			return account;
+			try {
+				lock.readLock().lock();
+				return account;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setAccount(String account) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.account = account;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getUser() {
-			return user;
+			try {
+				lock.readLock().lock();
+				return user;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setUser(String user) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.user = user;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getSymbol() {
-			return symbol;
+			try {
+				lock.readLock().lock();
+				return symbol;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setSymbol(String symbol) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.symbol = symbol;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public double getQty() {
-			return qty;
+			try {
+				lock.readLock().lock();
+				return qty;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setQty(double qty) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.qty = qty;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public double getPnL() {
-			return PnL;
+			try {
+				lock.readLock().lock();
+				return PnL;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setPnL(double pnL) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				PnL = pnL;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public Date getCreated() {
-			return created;
+			try {
+				lock.readLock().lock();
+				return created;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setCreated(Date created) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.created = created;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public double getAcPnL() {
-			return acPnL;
+			try {
+				lock.readLock().lock();
+				return acPnL;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setAcPnL(double acPnL) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.acPnL = acPnL;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
@@ -193,7 +235,7 @@ public class AccountInfo {
 
 	public class OpenPosition extends Position {
 		// for thread safe
-		private final ReentrantLock lock = new ReentrantLock();
+		private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 		private double price;
 		private double margin;
@@ -204,32 +246,37 @@ public class AccountInfo {
 
 		public void setPrice(double price) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.price = price;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public double getMargin() {
-			return margin;
+			try {
+				lock.readLock().lock();
+				return margin;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setMargin(double margin) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.margin = margin;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 	}
 
 	public class Account {
 		// for thread safe
-		private final ReentrantLock lock = new ReentrantLock();
+		private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-		private double dailyPnL;		
+		private double dailyPnL;
 		private double PnL;
 		private double urPnL;
 		private double allTimePnL;
@@ -239,113 +286,153 @@ public class AccountInfo {
 		private double value;
 
 		public double getDailyPnL() {
-			return dailyPnL;
+			try {
+				lock.readLock().lock();
+				return dailyPnL;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setDailyPnL(double dailyPnL) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.dailyPnL = dailyPnL;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
-		
+
 		public double getMargin() {
-			return margin;
+			try {
+				lock.readLock().lock();
+				return margin;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setMargin(double margin) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.margin = margin;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public double getValue() {
-			return value;
+			try {
+				lock.readLock().lock();
+				return value;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setValue(double value) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.value = value;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public double getPnL() {
-			return PnL;
+			try {
+				lock.readLock().lock();
+				return PnL;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setPnL(double pnL) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				PnL = pnL;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public double getUrPnL() {
-			return urPnL;
+			try {
+				lock.readLock().lock();
+				return urPnL;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setUrPnL(double urPnL) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.urPnL = urPnL;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public double getAllTimePnL() {
-			return allTimePnL;
+			try {
+				lock.readLock().lock();
+				return allTimePnL;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setAllTimePnL(double allTimePnL) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.allTimePnL = allTimePnL;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public String getCurrency() {
-			return currency;
+			try {
+				lock.readLock().lock();
+				return currency;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setCurrency(String currency) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.currency = currency;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 
 		public double getCash() {
-			return cash;
+			try {
+				lock.readLock().lock();
+				return cash;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setCash(double cash) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.cash = cash;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 		}
 	}
 
 	public class Execution { // need to check the fields
 		// for thread safe
-		private final ReentrantLock lock = new ReentrantLock();
+		private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 		private Date created;
 		private Date modified;
@@ -363,199 +450,267 @@ public class AccountInfo {
 		private String account;
 
 		public Date getCreated() {
-			return created;
+			try {
+				lock.readLock().lock();
+				return created;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setCreated(Date created) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.created = created;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public Date getModified() {
-			return modified;
+			try {
+				lock.readLock().lock();
+				return modified;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setModified(Date modified) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.modified = modified;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getId() {
-			return id;
+			try {
+				lock.readLock().lock();
+				return id;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setId(String id) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.id = id;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
-
 		}
 
 		public String getServerID() {
-			return serverID;
+			try {
+				lock.readLock().lock();
+				return serverID;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setServerID(String serverID) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.serverID = serverID;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getSymbol() {
-			return symbol;
+			try {
+				lock.readLock().lock();
+				return symbol;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setSymbol(String symbol) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.symbol = symbol;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getSide() {
-			return side;
+			try {
+				lock.readLock().lock();
+				return side;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setSide(String side) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.side = side;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public long getQuantity() {
-			return quantity;
+			try {
+				lock.readLock().lock();
+				return quantity;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setQuantity(long quantity) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.quantity = quantity;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public double getPrice() {
-			return price;
+			try {
+				lock.readLock().lock();
+				return price;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setPrice(double price) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.price = price;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getOrderID() {
-			return orderID;
+			try {
+				lock.readLock().lock();
+				return orderID;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setOrderID(String orderID) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.orderID = orderID;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getParentOrderID() {
-			return parentOrderID;
+			try {
+				lock.readLock().lock();
+				return parentOrderID;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setParentOrderID(String parentOrderID) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.parentOrderID = parentOrderID;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getStrategyID() {
-			return strategyID;
+			try {
+				lock.readLock().lock();
+				return strategyID;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setStrategyID(String strategyID) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.strategyID = strategyID;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getExecID() {
-			return execID;
+			try {
+				lock.readLock().lock();
+				return execID;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setExecID(String execID) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.execID = execID;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getUser() {
-			return user;
+			try {
+				lock.readLock().lock();
+				return user;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setUser(String user) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.user = user;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
 
 		}
 
 		public String getAccount() {
-			return account;
+			try {
+				lock.readLock().lock();
+				return account;
+			} finally {
+				lock.readLock().unlock();
+			}
 		}
 
 		public void setAccount(String account) {
 			try {
-				lock.lock();
+				lock.writeLock().lock();
 				this.account = account;
 			} finally {
-				lock.unlock();
+				lock.writeLock().unlock();
 			}
-
 		}
 	}
 
