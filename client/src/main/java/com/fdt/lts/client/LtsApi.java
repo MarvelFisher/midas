@@ -205,11 +205,11 @@ public final class LtsApi implements ITrade {
 		accountInfo.getAccount().setAllTimePnL(account.getAllTimePnL());
 		accountInfo.getAccount().setCash(account.getCash());
 		accountInfo.getAccount().setCurrency(account.getCurrency());
-		accountInfo.getAccount().setId(account.getId());
-		accountInfo.getAccount().setMarket(account.getMarket());
+		accountInfo.getAccount().setDailyPnL(account.getDailyPnL());
+		accountInfo.getAccount().setMargin(account.getMargin());
 		accountInfo.getAccount().setPnL(account.getPnL());
 		accountInfo.getAccount().setUrPnL(account.getUrPnL());
-		accountInfo.getAccount().setUserId(account.getUserId());
+		accountInfo.getAccount().setValue(account.getValue());		
 	}
 
 	public void processAccountUpdateEvent(AccountUpdateEvent event) {
