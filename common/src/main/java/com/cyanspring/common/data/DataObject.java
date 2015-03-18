@@ -13,7 +13,9 @@ package com.cyanspring.common.data;
 import java.io.CharArrayWriter;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +82,17 @@ public class DataObject implements Cloneable, Serializable{
 	
 	public Object remove(String name) {
 		return fields.remove(name);
+	}
+	
+	public void update(DataObject from) {
+		if(null == from)
+			return;
+		
+		Iterator<Entry<String, Object>> it = from.fields.entrySet().iterator();
+		while(it.hasNext()) {
+			Entry<String, Object> entry = it.next();
+			fields.put(entry.getKey(), entry.getValue());
+		}
 	}
 	
 	public String toXML() {
