@@ -19,7 +19,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>2.5E-5</double>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -63,11 +63,11 @@
       </entry>
       <entry>
         <string>Maximum lot</string>
-        <double>0.0</double>
+        <int>0.0</int>
       </entry>
       <entry>
         <string>Maximum hold</string>
-        <double>2500</double>
+        <int>2500</int>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -127,7 +127,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>2.5E-5</double>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -171,11 +171,11 @@
       </entry>
       <entry>
         <string>Maximum lot</string>
-        <double>0.0</double>
+        <int>0.0</int>
       </entry>
       <entry>
         <string>Maximum hold</string>
-        <double>2500</double>
+        <int>2500</int>
       </entry>
       <entry>
         <string>Strategy</string>
