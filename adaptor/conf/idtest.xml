@@ -9,7 +9,7 @@
 
 	<context:annotation-config />
 
-	<bean id="idMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+	<bean id="IdMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>		
 		<property name="password" value="MFW9dC26"></property>	
 	<!--     
@@ -18,7 +18,8 @@
 		<property name="port" value="4001"></property>	
 	-->    
 		<property name="gateway" value="true"></property>		
-		<property name="reqIp" value="10.0.0.51"></property>		
+		<!-- property name="reqIp" value="10.0.0.51"></property -->		
+		<property name="reqIp" value="202.55.14.140"></property>
 		<property name="reqPort" value="6086"></property>
 	
 		<property name="exch" value="687"></property>
@@ -32,5 +33,5 @@
 				<entry key="XAGUSD" value="691" />
 			</map>
 		</property>	
-	</bean>
+	</bean >
 </beans>

@@ -1,13 +1,13 @@
 package com.cyanspring.server.marketdata;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.Quote;
 
 public class QuoteAggregator {
 	
 	
-	HashMap<String, AggrQuote> table = new HashMap<String, AggrQuote>(); 
+	ConcurrentHashMap<String, AggrQuote> table = new ConcurrentHashMap<String, AggrQuote>(); 
 	
 	AggrQuote getQuote(String symbol) {
 		if (table.containsKey(symbol)) {

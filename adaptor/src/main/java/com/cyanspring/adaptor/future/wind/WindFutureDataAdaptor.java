@@ -72,6 +72,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	String marketType = "";
 	MarketSessionUtil marketSessionUtil;
 	protected long timerInterval = 5000;
+	static final int AM10 = 100000000;
 
 	@Autowired
 	protected IRemoteEventManager eventManager;

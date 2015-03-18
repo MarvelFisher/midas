@@ -88,10 +88,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			if (e.state() == IdleState.READER_IDLE) {
 				if (IdMarketDataAdaptor.isConnecting == false) {
 					IdMarketDataAdaptor.instance.updateState(false);
-					if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
-						IdMarketDataAdaptor.instance.reconClient();
-					}
-					log.error("Read idle");
+					//if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
+					//	IdMarketDataAdaptor.instance.reconClient();
+					//}
+					log.error("Read idle , close channel.");
+					ctx.close();
 				}
 			}
 		}
@@ -105,7 +106,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * channel.ChannelHandlerContext)
 	 */
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) {
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		context = ctx;
 		IdMarketDataAdaptor adaptor = IdMarketDataAdaptor.instance;
 		adaptor.updateState(true);
@@ -125,7 +126,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * netty.channel.ChannelHandlerContext)
 	 */
 	@Override
-	public void channelUnregistered(ChannelHandlerContext ctx) {
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		IdMarketDataAdaptor.instance.updateState(false);
 		// IdMarketDataAdaptor.isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
