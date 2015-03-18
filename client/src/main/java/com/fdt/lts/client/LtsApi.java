@@ -101,6 +101,7 @@ public final class LtsApi implements ITrade {
 		tAdaptor.setAccountInfo(accountInfo);
 		orderMap = new ConcurrentHashMap<String, Order>();
 		tAdaptor.setOrderMap(orderMap);
+		tAdaptor.setAdaptor(this);
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null)
@@ -111,6 +112,11 @@ public final class LtsApi implements ITrade {
 
 	public void start(String user, String password,
 			List<String> subscribeSymbolList, TradeAdaptor tAct) {
+		if(user == null || password == null || subscribeSymbolList == null || tAct == null){
+			tAdaptor.onError(Error.INIT_ERROR.getCode(),
+					Error.INIT_ERROR.getMsg());
+			return;
+		}
 		this.user = user;
 		this.password = password;
 		this.account = user + suffix;
