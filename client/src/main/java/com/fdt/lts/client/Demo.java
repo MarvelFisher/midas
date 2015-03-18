@@ -39,7 +39,7 @@ public class Demo{
 		order.setSymbol(symbol);
 		order.setSide(OrderSide.Buy);
 		order.setPrice(price);
-		order.setQuantity(10000);
+		order.setQuantity(1000);
 		order.setType(OrderType.Limit);
 		return order;
 	}
@@ -49,7 +49,7 @@ public class Demo{
 		order.setSymbol(symbol);
 		order.setSide(OrderSide.Sell);
 		order.setPrice(price);
-		order.setQuantity(10000);
+		order.setQuantity(1000);
 		order.setType(OrderType.Limit);
 		return order;
 	}
@@ -376,11 +376,11 @@ public class Demo{
 		TradeAdaptor adaptor;
 		//Buy order
 		Order buyOrder = getBuyOrder("USDJPY",100);		
-		adaptor = getBuyTradeAdaptor(buyOrder);
+		//adaptor = getBuyTradeAdaptor(buyOrder);
 		
 		//Sell order
-		Order sellOrder = getSellOrder("USDJPY",130);		
-		//adaptor = getSellTradeAdaptor(sellOrder);
+		Order sellOrder = getSellOrder("USDJPY",150);		
+		adaptor = getSellTradeAdaptor(sellOrder);
 		
 		
 	
