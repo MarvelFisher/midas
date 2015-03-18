@@ -19,15 +19,18 @@
 	<bean id="IFcloseState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
 		<constructor-arg ref="IFcloseDays"></constructor-arg>
 		<property name="outState" ref="IFcloseWeekState"></property>
+		<property name="calTradeDate" value="false"></property>
 	</bean>
 	
 	<bean id="IFcloseWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
 		<constructor-arg ref="IFcloseWeekDays"></constructor-arg>
 		<property name="outState" ref="IFtimeState"></property>
+		<property name="calTradeDate" value="false"></property>
 	</bean>
 	
 	<bean id="IFtimeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
 		<constructor-arg ref="IFtiming"></constructor-arg>
+		<property name="calTradeDate" value="false"></property>
 	</bean>
 		
 	<bean id="IFtiming" class="com.cyanspring.common.marketsession.MarketSessionTime">
