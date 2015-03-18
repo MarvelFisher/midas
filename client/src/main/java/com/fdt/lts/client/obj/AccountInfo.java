@@ -10,7 +10,7 @@ public class AccountInfo {
 	private Account account;
 	// private List<ClosePosition> closePositions;
 	private ConcurrentHashMap<String, List<OpenPosition>> openPositions;
-//	private List<OpenPosition> openPositions;
+	// private List<OpenPosition> openPositions;
 	private ConcurrentHashMap<String, List<Execution>> executions;
 
 	public Account newAccount() {
@@ -18,16 +18,17 @@ public class AccountInfo {
 		return account;
 	}
 
-	public void addOpenPosition(String symbol, String orderID, OpenPosition oposition) {
+	public void addOpenPosition(String symbol, String orderID,
+			OpenPosition oposition) {
 		if (openPositions == null)
 			openPositions = new ConcurrentHashMap<String, List<OpenPosition>>();
 		List<OpenPosition> opList = openPositions.get(symbol);
-		if(opList == null){
+		if (opList == null) {
 			opList = new ArrayList<OpenPosition>();
 			openPositions.put(symbol, opList);
 		}
-		for(OpenPosition position : opList){
-			if(position.getId().equals(orderID))
+		for (OpenPosition position : opList) {
+			if (position.getId().equals(orderID))
 				opList.remove(orderID);
 		}
 		opList.add(oposition);
@@ -37,21 +38,21 @@ public class AccountInfo {
 		if (executions == null)
 			executions = new ConcurrentHashMap<String, List<Execution>>();
 		List<Execution> exeList = executions.get(symbol);
-		if(exeList == null){
+		if (exeList == null) {
 			exeList = new ArrayList<Execution>();
 			executions.put(symbol, exeList);
 		}
-		for(Execution exe : exeList){
-			if(exe.getId().equals(orderID))
+		for (Execution exe : exeList) {
+			if (exe.getId().equals(orderID))
 				exeList.remove(orderID);
 		}
 		exeList.add(e);
 	}
 
 	public class Position {
-		//for thread safe 
+		// for thread safe
 		private final ReentrantLock lock = new ReentrantLock();
-		
+
 		private String id;
 		private String account;
 		private String user;
@@ -62,99 +63,114 @@ public class AccountInfo {
 		private double acPnL;
 
 		public String getId() {
-			return id;		
+			return id;
 		}
+
 		public void setId(String id) {
-			try{
+			try {
 				lock.lock();
 				this.id = id;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
+
 		public String getAccount() {
-				return account;
+			return account;
 		}
+
 		public void setAccount(String account) {
-			try{
+			try {
 				lock.lock();
 				this.account = account;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getUser() {
-				return user;
+			return user;
 		}
+
 		public void setUser(String user) {
-			try{
+			try {
 				lock.lock();
 				this.user = user;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getSymbol() {
-				return symbol;
+			return symbol;
 		}
+
 		public void setSymbol(String symbol) {
-			try{
+			try {
 				lock.lock();
 				this.symbol = symbol;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public double getQty() {
-				return qty;
+			return qty;
 		}
+
 		public void setQty(double qty) {
-			try{
+			try {
 				lock.lock();
 				this.qty = qty;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public double getPnL() {
-				return PnL;
+			return PnL;
 		}
+
 		public void setPnL(double pnL) {
-			try{
+			try {
 				lock.lock();
 				PnL = pnL;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public Date getCreated() {
-				return created;
+			return created;
 		}
+
 		public void setCreated(Date created) {
-			try{
+			try {
 				lock.lock();
 				this.created = created;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public double getAcPnL() {
-				return acPnL;
+			return acPnL;
 		}
+
 		public void setAcPnL(double acPnL) {
-			try{
+			try {
 				lock.lock();
 				this.acPnL = acPnL;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
 	}
 
@@ -176,143 +192,161 @@ public class AccountInfo {
 	// }
 
 	public class OpenPosition extends Position {
-		//for thread safe 
+		// for thread safe
 		private final ReentrantLock lock = new ReentrantLock();
-		
+
 		private double price;
 		private double margin;
 
 		public double getPrice() {
-				return price;
+			return price;
 		}
+
 		public void setPrice(double price) {
-			try{
+			try {
 				lock.lock();
 				this.price = price;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
+
 		public double getMargin() {
-				return margin;
+			return margin;
 		}
+
 		public void setMargin(double margin) {
-			try{
+			try {
 				lock.lock();
 				this.margin = margin;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
 	}
 
 	public class Account {
-		//for thread safe 
+		// for thread safe
 		private final ReentrantLock lock = new ReentrantLock();
-		
-		private String id;
-		private String userId;
-		private String market;
+
+		private double dailyPnL;		
 		private double PnL;
 		private double urPnL;
 		private double allTimePnL;
 		private String currency;
 		private double cash;
+		private double margin;
+		private double value;
+
+		public double getDailyPnL() {
+			return dailyPnL;
+		}
+
+		public void setDailyPnL(double dailyPnL) {
+			try {
+				lock.lock();
+				this.dailyPnL = dailyPnL;
+			} finally {
+				lock.unlock();
+			}
+		}
 		
-		public String getId() {
-				return id;
+		public double getMargin() {
+			return margin;
 		}
-		public void setId(String id) {
-			try{
+
+		public void setMargin(double margin) {
+			try {
 				lock.lock();
-				this.id = id;
-			}finally{
+				this.margin = margin;
+			} finally {
 				lock.unlock();
 			}
 		}
-		public String getUserId() {
-				return userId;
+
+		public double getValue() {
+			return value;
 		}
-		public void setUserId(String userId) {
-			try{
+
+		public void setValue(double value) {
+			try {
 				lock.lock();
-				this.userId = userId;
-			}finally{
+				this.value = value;
+			} finally {
 				lock.unlock();
 			}
 		}
-		public String getMarket() {
-				return market;
-		}
-		public void setMarket(String market) {
-			try{
-				lock.lock();
-				this.market = market;
-			}finally{
-				lock.unlock();
-			}
-		}
+
 		public double getPnL() {
-				return PnL;
+			return PnL;
 		}
+
 		public void setPnL(double pnL) {
-			try{
+			try {
 				lock.lock();
 				PnL = pnL;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
+
 		public double getUrPnL() {
-				return urPnL;
+			return urPnL;
 		}
+
 		public void setUrPnL(double urPnL) {
-			try{
+			try {
 				lock.lock();
 				this.urPnL = urPnL;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
+
 		public double getAllTimePnL() {
-				return allTimePnL;
+			return allTimePnL;
 		}
+
 		public void setAllTimePnL(double allTimePnL) {
-			try{
+			try {
 				lock.lock();
 				this.allTimePnL = allTimePnL;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
+
 		public String getCurrency() {
-				return currency;
+			return currency;
 		}
+
 		public void setCurrency(String currency) {
-			try{
+			try {
 				lock.lock();
 				this.currency = currency;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
+
 		public double getCash() {
-				return cash;
+			return cash;
 		}
+
 		public void setCash(double cash) {
-			try{
+			try {
 				lock.lock();
 				this.cash = cash;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
 		}
 	}
 
 	public class Execution { // need to check the fields
-		//for thread safe 
+		// for thread safe
 		private final ReentrantLock lock = new ReentrantLock();
-		
+
 		private Date created;
 		private Date modified;
 		private String id;
@@ -327,174 +361,202 @@ public class AccountInfo {
 		private String execID;
 		private String user;
 		private String account;
+
 		public Date getCreated() {
 			return created;
 		}
+
 		public void setCreated(Date created) {
-			try{
+			try {
 				lock.lock();
 				this.created = created;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public Date getModified() {
 			return modified;
 		}
+
 		public void setModified(Date modified) {
-			try{
+			try {
 				lock.lock();
 				this.modified = modified;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getId() {
 			return id;
 		}
+
 		public void setId(String id) {
-			try{
+			try {
 				lock.lock();
 				this.id = id;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getServerID() {
 			return serverID;
 		}
+
 		public void setServerID(String serverID) {
-			try{
+			try {
 				lock.lock();
 				this.serverID = serverID;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getSymbol() {
 			return symbol;
 		}
+
 		public void setSymbol(String symbol) {
-			try{
+			try {
 				lock.lock();
 				this.symbol = symbol;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getSide() {
 			return side;
 		}
+
 		public void setSide(String side) {
-			try{
+			try {
 				lock.lock();
 				this.side = side;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public long getQuantity() {
 			return quantity;
 		}
+
 		public void setQuantity(long quantity) {
-			try{
+			try {
 				lock.lock();
 				this.quantity = quantity;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public double getPrice() {
 			return price;
 		}
+
 		public void setPrice(double price) {
-			try{
+			try {
 				lock.lock();
 				this.price = price;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getOrderID() {
 			return orderID;
 		}
+
 		public void setOrderID(String orderID) {
-			try{
+			try {
 				lock.lock();
 				this.orderID = orderID;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getParentOrderID() {
 			return parentOrderID;
 		}
+
 		public void setParentOrderID(String parentOrderID) {
-			try{
+			try {
 				lock.lock();
 				this.parentOrderID = parentOrderID;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getStrategyID() {
 			return strategyID;
 		}
+
 		public void setStrategyID(String strategyID) {
-			try{
+			try {
 				lock.lock();
 				this.strategyID = strategyID;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getExecID() {
 			return execID;
 		}
+
 		public void setExecID(String execID) {
-			try{
+			try {
 				lock.lock();
 				this.execID = execID;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getUser() {
 			return user;
 		}
+
 		public void setUser(String user) {
-			try{
+			try {
 				lock.lock();
 				this.user = user;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
+
 		}
+
 		public String getAccount() {
 			return account;
 		}
+
 		public void setAccount(String account) {
-			try{
+			try {
 				lock.lock();
 				this.account = account;
-			}finally{
+			} finally {
 				lock.unlock();
 			}
-			
-		}		
+
+		}
 	}
 
 	public Account getAccount() {
