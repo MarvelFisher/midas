@@ -88,7 +88,7 @@ public class DBHandler
         {
             reconnectSQL();
         }
-        createStatement();
+        Statement stat = null ;
         try {
         	connect.setAutoCommit(false);
 			stat = connect.createStatement();
@@ -103,8 +103,21 @@ public class DBHandler
 			} catch (SQLException se) {
 				log.error(se.getMessage(), se);
 			}
-		} finally {
-			closeStatement();
+		} 
+        finally 
+		{
+			if (stat != null)
+	    	{
+	    		try 
+	    		{
+					stat.close();
+					stat = null;
+				} 
+	    		catch (SQLException e) 
+				{
+					log.error(e.getMessage(), e);
+				}
+	    	}
 		}
     }
     public ResultSet querySQL(String sqlcmd)
@@ -135,9 +148,10 @@ public class DBHandler
     	{
             reconnectSQL();
     	}
-    	createStatement();
-    	try 
-    	{
+        Statement stat = null ;
+        try
+        {
+            stat = connect.createStatement();
 			stat.executeQuery("SELECT 1;");
 		} 
     	catch (SQLException e) 
@@ -146,7 +160,18 @@ public class DBHandler
 		}
     	finally
     	{
-    		closeStatement();
+			if (stat != null)
+	    	{
+	    		try 
+	    		{
+					stat.close();
+					stat = null;
+				} 
+	    		catch (SQLException e) 
+				{
+					log.error(e.getMessage(), e);
+				}
+	    	}
     	}
     }
     public void createStatement()
