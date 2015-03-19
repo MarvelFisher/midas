@@ -146,9 +146,11 @@ public class CentralDbConnector {
 		Statement stmt = null;
 
 		try {
+        	conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sUserSQL);
 			bIsSuccess = true;
+			conn.commit();
 		} catch (SQLException e) {
 			bIsSuccess = false;
 			log.warn("Cannot register user."+userId, e);
@@ -160,11 +162,6 @@ public class CentralDbConnector {
 		} finally {
 			if (stmt != null) {
 				closeStmt(stmt);
-			}
-			try {
-				conn.commit();
-			} catch (SQLException se) {
-				log.warn("Register User commit fail."+userId, se);
 			}
 		}
 		return bIsSuccess;
@@ -282,6 +279,7 @@ public class CentralDbConnector {
 		String salt = null;
 
 		try {
+        	conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sQuery);
 
@@ -311,6 +309,7 @@ public class CentralDbConnector {
 				closeStmt(stmt);
 				return false;
 			}
+			conn.commit();
 		} catch (SQLException e) {
 			closeStmt(stmt);
 			log.warn(e.getMessage(), e);
