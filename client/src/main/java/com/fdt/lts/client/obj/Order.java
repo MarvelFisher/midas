@@ -93,8 +93,8 @@ public class Order {
 		}
 	}
 
-	public OrderSide getSide() {
-		return side;
+	public com.cyanspring.common.type.OrderSide getSide() {
+		return com.cyanspring.common.type.OrderSide.valueOf(side.toString());
 	}
 
 	public void setSide(OrderSide side) {
@@ -106,8 +106,8 @@ public class Order {
 		}
 	}
 
-	public OrderType getType() {
-		return type;
+	public com.cyanspring.common.type.OrderType getType() {
+		return com.cyanspring.common.type.OrderType.valueOf(type.toString());
 	}
 
 	public void setType(OrderType type) {

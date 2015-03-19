@@ -42,6 +42,7 @@ import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.event.ClientSocketEventManager;
 import com.cyanspring.transport.socket.ClientSocketService;
 import com.fdt.lts.client.error.Error;
+import com.fdt.lts.client.error.OrderChecker;
 import com.fdt.lts.client.obj.AccountInfo;
 import com.fdt.lts.client.obj.Order;
 import com.fdt.lts.client.obj.OrderSide;
@@ -61,13 +62,19 @@ public final class LtsApi implements ITrade {
 
 	private IRemoteEventManager eventManager;
 	private AsyncEventProcessor eventProcessor;
-	
-	public LtsApi(String host, int port){
+
+	public LtsApi(String host, int port) {
+		if (host == null || host.trim() == "" || port == 0) {
+			tAdaptor.onError(Error.INVALID_INPUT.getCode(),
+					Error.INVALID_INPUT.getMsg());
+			return;
+		}
+
 		ClientSocketService socketService = new ClientSocketService();
 		socketService.setHost(host);
 		socketService.setPort(port);
 		eventManager = new ClientSocketEventManager(socketService);
-		
+
 		eventProcessor = new AsyncEventProcessor() {
 
 			@Override
@@ -93,8 +100,6 @@ public final class LtsApi implements ITrade {
 			}
 
 		};
-		
-		
 	}
 
 	private void init() throws Exception {
@@ -114,9 +119,11 @@ public final class LtsApi implements ITrade {
 
 	public void start(String user, String password,
 			List<String> subscribeSymbolList, TradeAdaptor tAct) {
-		if(user == null || password == null || subscribeSymbolList == null || tAct == null){
-			tAdaptor.onError(Error.INIT_ERROR.getCode(),
-					Error.INIT_ERROR.getMsg());
+		if (user == null || user.trim() == "" || password == null
+				|| password.trim() == "" || subscribeSymbolList == null
+				|| tAct == null) {
+			tAdaptor.onError(Error.INVALID_INPUT.getCode(),
+					Error.INVALID_INPUT.getMsg());
 			return;
 		}
 		this.user = user;
@@ -144,13 +151,8 @@ public final class LtsApi implements ITrade {
 	public void processServerReadyEvent(ServerReadyEvent event) {
 		if (event.isReady()) {
 			log.info("> Server is connected. Starting Login...");
-			if (user != null && password != null)
-				sendEvent(new UserLoginEvent(getId(), null, user, password,
-						IdGenerator.getInstance().getNextID()));
-			else {
-				tAdaptor.onError(Error.LOGIN_ERROR.getCode(),
-						Error.LOGIN_ERROR.getMsg());
-			}
+			sendEvent(new UserLoginEvent(getId(), null, user, password,
+					IdGenerator.getInstance().getNextID()));
 		} else {
 			tAdaptor.onError(Error.SERVER_ERROR.getCode(),
 					Error.SERVER_ERROR.getMsg());
@@ -199,8 +201,9 @@ public final class LtsApi implements ITrade {
 		newPosition.setPrice(oPosition.getPrice());
 		newPosition.setQty(oPosition.getQty());
 		newPosition.setSymbol(oPosition.getSymbol());
-		newPosition.setUser(oPosition.getUser());	
-		accountInfo.addOpenPosition(oPosition.getSymbol(), oPosition.getId(), newPosition);
+		newPosition.setUser(oPosition.getUser());
+		accountInfo.addOpenPosition(oPosition.getSymbol(), oPosition.getId(),
+				newPosition);
 	}
 
 	private void setAccountData(Account account) {
@@ -211,7 +214,7 @@ public final class LtsApi implements ITrade {
 		accountInfo.getAccount().setMargin(account.getMargin());
 		accountInfo.getAccount().setPnL(account.getPnL());
 		accountInfo.getAccount().setUrPnL(account.getUrPnL());
-		accountInfo.getAccount().setValue(account.getValue());		
+		accountInfo.getAccount().setValue(account.getValue());
 	}
 
 	public void processAccountUpdateEvent(AccountUpdateEvent event) {
@@ -224,12 +227,12 @@ public final class LtsApi implements ITrade {
 
 	public void processClosedPositionUpdateEvent(ClosedPositionUpdateEvent event) {
 		// No need implement in this version
-//		log.debug("Closed Position: " + event.getPosition());
+		// log.debug("Closed Position: " + event.getPosition());
 	}
 
 	public void processQuoteEvent(QuoteEvent event) {
 		QuoteData quote = setQuoteData(event.getQuote());
-		tAdaptor.onQuote(quote);		
+		tAdaptor.onQuote(quote);
 	}
 
 	private QuoteData setQuoteData(Quote iquote) {
@@ -249,11 +252,11 @@ public final class LtsApi implements ITrade {
 	}
 
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
-		log.info("Login is" + event.isOk() + ", " + event.getMessage()
-				+ ", Last login:" + event.getUser().getLastLogin());
-		if (!event.isOk())
+		if (!event.isOk()){
+			tAdaptor.onError(Error.LOGIN_ERROR.getCode(), Error.LOGIN_ERROR.getMsg());
 			return;
-			
+		}
+		log.info("Login Success.");
 		sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
 	}
 
@@ -273,7 +276,8 @@ public final class LtsApi implements ITrade {
 		newOrder.setPrice(order.getPrice());
 		newOrder.setQuantity(new Double(order.getQuantity()).longValue());
 		newOrder.setSide(OrderSide.valueOf(order.getSide().toString()));
-		newOrder.setStopLossPrice(order.get(double.class, OrderField.STOP_LOSS_PRICE.value()));
+		newOrder.setStopLossPrice(order.get(double.class,
+				OrderField.STOP_LOSS_PRICE.value()));
 		newOrder.setSymbol(order.getSymbol());
 		newOrder.setType(OrderType.valueOf(order.getOrderType().toString()));
 		newOrder.setState(order.getState().toString());
@@ -284,10 +288,11 @@ public final class LtsApi implements ITrade {
 	public void processEnterParentOrderReplyEvent(
 			EnterParentOrderReplyEvent event) {
 		if (!event.isOk()) {
-			tAdaptor.onError(Error.NEW_ORDER_ERROR.getCode(), Error.NEW_ORDER_ERROR.getMsg());			
+			tAdaptor.onError(Error.NEW_ORDER_ERROR.getCode(),
+					Error.NEW_ORDER_ERROR.getMsg());
 		} else {
 			Order newOrder = setOrderData(event.getOrder());
-			if(orderMap.containsKey(newOrder.getId()))
+			if (orderMap.containsKey(newOrder.getId()))
 				orderMap.remove(newOrder.getId());
 			orderMap.put(newOrder.getId(), newOrder);
 			tAdaptor.onNewOrderReply(newOrder);
@@ -297,10 +302,11 @@ public final class LtsApi implements ITrade {
 	public void processAmendParentOrderReplyEvent(
 			AmendParentOrderReplyEvent event) {
 		if (!event.isOk()) {
-			tAdaptor.onError(Error.AMEND_ORDER_ERROR.getCode(), Error.AMEND_ORDER_ERROR.getMsg());
+			tAdaptor.onError(Error.AMEND_ORDER_ERROR.getCode(),
+					Error.AMEND_ORDER_ERROR.getMsg());
 		} else {
 			Order amendOrder = setOrderData(event.getOrder());
-			if(orderMap.containsKey(amendOrder.getId()))
+			if (orderMap.containsKey(amendOrder.getId()))
 				orderMap.remove(amendOrder.getId());
 			orderMap.put(amendOrder.getId(), amendOrder);
 			tAdaptor.onAmendOrderReply(amendOrder);
@@ -310,10 +316,11 @@ public final class LtsApi implements ITrade {
 	public void processCancelParentOrderReplyEvent(
 			CancelParentOrderReplyEvent event) {
 		if (!event.isOk()) {
-			tAdaptor.onError(Error.CANCEL_ORDER_ERROR.getCode(), Error.CANCEL_ORDER_ERROR.getMsg());
+			tAdaptor.onError(Error.CANCEL_ORDER_ERROR.getCode(),
+					Error.CANCEL_ORDER_ERROR.getMsg());
 		} else {
 			Order cancelOrder = setOrderData(event.getOrder());
-			if(orderMap.containsKey(cancelOrder.getId()))
+			if (orderMap.containsKey(cancelOrder.getId()))
 				orderMap.remove(cancelOrder.getId());
 			tAdaptor.onCancelOrderReply(cancelOrder);
 		}
@@ -321,7 +328,7 @@ public final class LtsApi implements ITrade {
 
 	public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
 		Order updateOrder = setOrderData(event.getOrder());
-		if(orderMap.containsKey(updateOrder.getId()))
+		if (orderMap.containsKey(updateOrder.getId()))
 			orderMap.remove(updateOrder.getId());
 		orderMap.put(updateOrder.getId(), updateOrder);
 		tAdaptor.onOrderUpdate(updateOrder);
@@ -357,6 +364,10 @@ public final class LtsApi implements ITrade {
 
 	@Override
 	public void putNewOrder(Order order) {
+		if(!OrderChecker.checkNewOrder(order)){
+			tAdaptor.onError(Error.NEW_ORDER_VAR_ERROR.getCode(), Error.NEW_ORDER_VAR_ERROR.getMsg());
+			return;
+		}
 		HashMap<String, Object> fields;
 		EnterParentOrderEvent enterOrderEvent;
 		fields = new HashMap<String, Object>();
@@ -371,8 +382,7 @@ public final class LtsApi implements ITrade {
 		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
 		// fields.put(OrderField.TYPE.value(), OrderType.Limit);
 		// fields.put(OrderField.PRICE.value(), 0.700);
-		// fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must
-		// put xxx.0 to tell java this is a double type here!!
+		// fields.put(OrderField.QUANTITY.value(), 20000.0); 
 
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
 		fields.put(OrderField.USER.value(), user);
@@ -384,6 +394,10 @@ public final class LtsApi implements ITrade {
 
 	@Override
 	public void putStopOrder(Order order) {
+		if(!OrderChecker.checkStopOrder(order)){
+			tAdaptor.onError(Error.New_STOP_ORDER_VAR_ERROR.getCode(), Error.New_STOP_ORDER_VAR_ERROR.getMsg());
+			return;
+		}
 		// SDMA
 		HashMap<String, Object> fields;
 		EnterParentOrderEvent enterOrderEvent;
@@ -398,8 +412,7 @@ public final class LtsApi implements ITrade {
 		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
 		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
 		// fields.put(OrderField.TYPE.value(), OrderType.Market);
-		// fields.put(OrderField.QUANTITY.value(), 20000.0); // note: you must
-		// put xxx.0 to tell java this is a double type here!!
+		// fields.put(OrderField.QUANTITY.value(), 20000.0); 
 		// fields.put(OrderField.STOP_LOSS_PRICE.value(), 0.92);
 
 		fields.put(OrderField.STRATEGY.value(), "STOP");
@@ -412,20 +425,25 @@ public final class LtsApi implements ITrade {
 
 	@Override
 	public void putAmendOrder(Order order) {
+		if(!OrderChecker.checkAmendOrder(order)){
+			tAdaptor.onError(Error.AMEND_ORDER_VAR_ERROR.getCode(), Error.AMEND_ORDER_VAR_ERROR.getMsg());
+			return;
+		}
 		Map<String, Object> fields = new HashMap<String, Object>();
 		fields.put(OrderField.PRICE.value(), order.getPrice());
-		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity())); // note: you must put
-																			 // xxx.0 to tell
-																			 // java this is a
-																			 // double type
-																			 // here!!
+		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity())); 
 		AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(),
-				null, order.getId(), fields, IdGenerator.getInstance().getNextID());
+				null, order.getId(), fields, IdGenerator.getInstance()
+						.getNextID());
 		sendEvent(amendEvent);
 	}
 
 	@Override
 	public void putCancelOrder(Order order) {
+		if(!OrderChecker.checkCancelOrder(order)){
+			tAdaptor.onError(Error.CANCEL_ORDER_VAR_ERROR.getCode(), Error.CANCEL_ORDER_VAR_ERROR.getMsg());
+			return;
+		}
 		CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(
 				getId(), null, order.getId(), false, IdGenerator.getInstance()
 						.getNextID());

@@ -8,7 +8,12 @@ public enum Error {
 	INIT_ERROR(4, "Initial fail."),
 	NEW_ORDER_ERROR(5, "New order fail"),
 	AMEND_ORDER_ERROR(6, "Amend order fail"),
-	CANCEL_ORDER_ERROR(7, "Cancel order fail");
+	CANCEL_ORDER_ERROR(7, "Cancel order fail"),
+	INVALID_INPUT(8, "Invalid input"),
+	NEW_ORDER_VAR_ERROR(9, "Invalid input, please check order field (Symbol, Side, Type, Price and Quantity)"),
+	New_STOP_ORDER_VAR_ERROR(10, "Invalid input, please check order field (Symbol, Side, Type, StopLossPrice and Quantity)"),
+	AMEND_ORDER_VAR_ERROR(11,"Invalid input, please check order field (Id, Price and Quantity)"),
+	CANCEL_ORDER_VAR_ERROR(12,"Invalid input, please check order field (Id)");
 	
 	private Error(int code, String msg){
 		this.code = code;
