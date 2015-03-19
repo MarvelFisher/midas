@@ -65,8 +65,7 @@ public final class LtsApi implements ITrade {
 
 	public LtsApi(String host, int port) {
 		if (host == null || host.trim() == "" || port == 0) {
-			tAdaptor.onError(Error.INVALID_INPUT.getCode(),
-					Error.INVALID_INPUT.getMsg());
+			log.error("Error, null host or port!");
 			return;
 		}
 
@@ -122,8 +121,7 @@ public final class LtsApi implements ITrade {
 		if (user == null || user.trim() == "" || password == null
 				|| password.trim() == "" || subscribeSymbolList == null
 				|| tAct == null) {
-			tAdaptor.onError(Error.INVALID_INPUT.getCode(),
-					Error.INVALID_INPUT.getMsg());
+			log.error("Error, null user or password or subscribeSymbolList or tAct");
 			return;
 		}
 		this.user = user;

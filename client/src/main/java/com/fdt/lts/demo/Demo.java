@@ -25,6 +25,7 @@ public class Demo{
 	
 
 	public static void main(String[] args) {
+		DOMConfigurator.configure("conf/apilog4j.xml");
 		LtsApi api = new LtsApi(host, port);				
 		
 		ArrayList<String> symbolLst = new ArrayList<String>();
