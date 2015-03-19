@@ -42,7 +42,7 @@ public class FxUtils {
 					log.error(e.getMessage(), e);
 				}
 			} 
-			return qty * price;
+			return qty;
 		} else if(null != refData) {
 			double pricePerUnit = refData.getPricePerUnit();
 			if(!PriceUtils.isZero(pricePerUnit)) {
