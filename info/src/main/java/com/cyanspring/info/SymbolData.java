@@ -211,13 +211,13 @@ public class SymbolData implements Comparable<SymbolData>
 		String tradeDate = centralDB.getTradedate() ;
 		HistoricalPrice lastPrice;
 		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
-		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(market, getStrSymbol())));
+		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), getStrSymbol())));
 		String strSymbol = null;
 		if (symbolinfo != null)
 		{
 			if (symbolinfo.getHint() != null)
 			{
-				strSymbol = symbolinfo.getHint();
+				strSymbol = String.format("%s.%s", symbolinfo.getHint(), symbolinfo.getExchange());
 			}
 		}
 		if (strSymbol == null)
@@ -417,6 +417,11 @@ public class SymbolData implements Comparable<SymbolData>
 					if (price.getDatatime() == null)
 					{
 						continue ;
+					}
+					if (priceEmpty == null)
+					{
+						priceEmpty = (HistoricalPrice)price.clone();
+						continue;
 					}
 					if (priceEmpty.getDatatime() == null)
 					{
@@ -627,13 +632,13 @@ public class SymbolData implements Comparable<SymbolData>
 			return ;
 		}
 		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
-		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(market, getStrSymbol())));
+		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), getStrSymbol())));
 		String strSymbol = null;
 		if (symbolinfo != null)
 		{
 			if (symbolinfo.getHint() != null)
 			{
-				strSymbol = symbolinfo.getHint();
+				strSymbol = String.format("%s.%s", symbolinfo.getHint(), symbolinfo.getExchange());
 			}
 		}
 		if (strSymbol == null)
@@ -692,13 +697,13 @@ public class SymbolData implements Comparable<SymbolData>
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
 		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
-		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(market, symbol)));
+		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), symbol)));
 		String strSymbol = null;
 		if (symbolinfo != null)
 		{
 			if (symbolinfo.getHint() != null)
 			{
-				strSymbol = symbolinfo.getHint();
+				strSymbol = String.format("%s.%s", symbolinfo.getHint(), symbolinfo.getExchange());
 			}
 		}
 		if (strSymbol == null)
