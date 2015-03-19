@@ -102,9 +102,9 @@
 		<property name="reqIp" value="10.0.0.32"></property>
 		<property name="reqPort" value="6086"></property>
 		<property name="exch" value="687"></property>
-		<property name="preOpen" value="610"></property>
-		<property name="open" value="615"></property>
-		<property name="close" value="600"></property>
+		<property name="preOpen" value="510"></property>
+		<property name="open" value="515"></property>
+		<property name="close" value="500"></property>
 		<property name="nonFX">
 			<map>
 				<entry key="XAUUSD" value="691" />
