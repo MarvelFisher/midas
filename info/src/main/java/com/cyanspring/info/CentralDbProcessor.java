@@ -86,7 +86,6 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<String> preSubscriptionList;
 	private ArrayList<SymbolChef> SymbolChefList = new ArrayList<SymbolChef>();
 	private ChartCacheProc chartCacheProcessor;
-	private CentralDbEventProc centralDbEventProcessor;
 	
 	private int    nTickCount ;
 	private MarketSessionType sessionType = null ;
@@ -250,17 +249,76 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		log.info("Process MarketSession: " + event.getTradeDate() + " " + event.getSession());
+		this.tradedate = event.getTradeDate() ;
+		setSessionType(event.getSession(), event.getMarket()) ;
 	}
 	
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		log.info("Process Price High Low Request");
+		String sender = event.getSender() ;
+		List<String> symbolList = event.getSymbolList() ;
+//		Collections.sort(listSymbolData) ;
+		ArrayList<PriceHighLow> phlList = new ArrayList<PriceHighLow>() ;
+
+		int chefNum;
+		for (String symbol : symbolList)
+		{
+			chefNum = getChefNumber(symbol);
+			SymbolChefList.get(chefNum);
+			phlList.add(SymbolChefList.get(chefNum).retrievePriceHighLow(symbol, event.getType()));
+		}
+		PriceHighLowEvent retEvent = new PriceHighLowEvent(null, sender) ;
+		retEvent.setType(event.getType());
+		if (phlList.isEmpty())
+		{
+			retEvent.setOk(false);
+			retEvent.setMessage("No requested symbol is find");
+			log.debug("Process Price High Low Request fail: No requested symbol is find");
+		}
+		else
+		{
+			retEvent.setOk(true);
+			retEvent.setListHighLow(phlList);
+			log.info("Process Price High Low Request success Symbol: " + phlList.size());
+		}
+		sendEvent(retEvent) ;
 	}
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		String symbol = event.getSymbol() ;
+		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
+		retEvent.setSymbol(symbol);
+		log.info("Process Historical Price Request");
+		String type   = event.getHistoryType() ;
+		Date   start  = event.getStartDate() ;
+		Date   end    = event.getEndDate() ;
+		List<HistoricalPrice> listPrice = null;
+		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
+		
+		int chefNum = getChefNumber(symbol);
+		SymbolChefList.get(chefNum);
+		listPrice = SymbolChefList.get(chefNum).retrieveHistoricalPrice(type, symbol, start, end);
+		if (listPrice == null || listPrice.isEmpty())
+		{
+			retEvent.setOk(false) ;
+			retEvent.setMessage("Get price list fail");
+			sendEvent(retEvent) ;
+			log.debug("Process Historical Price Request fail: Get price list fail");
+			return ;
+		}
+		else
+		{
+			retEvent.setOk(true) ;
+			retEvent.setHistoryType(event.getHistoryType());
+			retEvent.setDataCount(listPrice.size());
+			retEvent.setPriceList(listPrice);
+			sendEvent(retEvent) ;
+			log.info("Process Historical Price Request success Symbol: " + listPrice.size());
+			return ;
+		}
 	}
 	
 	public void processSymbolEvent(SymbolEvent event)
@@ -287,7 +345,122 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		SymbolListSubscribeEvent retEvent = new SymbolListSubscribeEvent(null, event.getSender());
+		SymbolListSubscribeType type = event.getType() ;
+		retEvent.setUserID(event.getUserID());
+		retEvent.setGroup(event.getGroup());
+		retEvent.setMarket(event.getMarket());
+		retEvent.setTxId(event.getTxId());
+		retEvent.setType(event.getType());
+		retEvent.setQueryType(event.getQueryType());
+		String user = event.getUserID();
+		String market = event.getMarket();
+		String group = event.getGroup();
+		ArrayList<String> symbols = (ArrayList<String>) event.getSymbolList();
+		switch(type)
+		{
+		case DEFAULT:
+			log.info("Process Symbol List Subscribe Type: DEFAULT Market: " + market);
+			requestDefaultSymbol(retEvent, market);
+			break;
+		case ALLSYMBOL:
+			log.info("Process Symbol List Subscribe Type: ALLSYMBOL Market: " + market);
+			userRequestAllSymbol(retEvent, market);
+			break;
+		case GROUPSYMBOL:
+			log.info("Process Symbol List Subscribe Type: GROUPSYMBOL User: " + user + " Market: " + market + " Group: " + group);
+			userRequestGroupSymbol(retEvent, user, market, group);
+			break;
+		case SET:
+			log.info("Process Symbol List Subscribe Type: SET User: " + user + " Market: " + market + " Group: " + group);
+			userSetGroupSymbol(retEvent, user, market, group, symbols);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public void processSearchSymbolRequestEvent(SearchSymbolRequestEvent event)
+	{
+		SearchSymbolEvent retEvent = new SearchSymbolEvent(null, event.getSender(), event);
+		SearchSymbolType type = event.getType();
+		String sqlcmd = null;
+		String searchkey = event.getKeyword();
+		String strColumn = null;
+		int page = event.getPage();
+		int perpage = event.getSymbolPerPage();
+		int totalpage = 0;
+		int index;
+		log.info("Process Search Symbol Request Type: " + type + " Keyword: " + searchkey);
+		if (type == null)
+		{
+			retEvent.setOk(false);
+			retEvent.setMessage("Recieved null type");
+			sendEvent(retEvent);
+			log.debug("Process Search Symbol Request fail: Recieved null type");
+			return;
+		}
+		switch(type)
+		{
+		case CN_NAME:
+			strColumn = "CN_NAME";
+			break;
+		case CODE:
+			strColumn = "CODE";
+			break;
+		case EN_NAME:
+			strColumn = "EN_NAME";
+			break;
+		case TW_NAME:
+			strColumn = "TW_NAME";
+			break;
+		default:
+			break;
+		}
+		sqlcmd = String.format("SELECT * FROM `Symbol_Info` WHERE `%s` LIKE '%%%s%%' ORDER BY `CODE`;", strColumn, searchkey);
+		ResultSet rs = dbhnd.querySQL(sqlcmd);
+		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
+		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
+		try {
+			SymbolInfo symbolinfo = null;
+			while(rs.next())
+			{
+				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+				symbolinfo.setExchange(rs.getString("EXCHANGE"));
+				symbolinfo.setWindCode(rs.getString("WINDCODE"));
+				symbolinfo.setHint(rs.getString("HINT"));
+				symbolinfo.setCnName(rs.getString("CN_NAME"));
+				symbolinfo.setEnName(rs.getString("EN_NAME"));
+				symbolinfo.setTwName(rs.getString("TW_NAME"));
+				symbolinfo.setJpName(rs.getString("JP_NAME"));
+				symbolinfo.setKrName(rs.getString("KR_NAME"));
+				symbolinfo.setEsName(rs.getString("ES_NAME"));
+				symbolinfos.add(symbolinfo);
+											   
+			}
+			totalpage = symbolinfos.size() / perpage;
+			for (int ii = 0; ii < perpage; ii++)
+			{
+				index = (perpage * page + ii);
+				if (index >= symbolinfos.size())
+				{
+					break ;
+				}
+				retsymbollist.add(symbolinfos.get(index));
+			}
+			retEvent.setSymbolinfo(retsymbollist);
+			retEvent.setTotalpage(totalpage);
+			retEvent.setOk(true);
+			log.info("Process Search Symbol Request success Symbol: " + retsymbollist.size());
+			sendEvent(retEvent);
+		} catch (SQLException e) {
+
+			retEvent.setSymbolinfo(null);
+			retEvent.setOk(false);
+			retEvent.setMessage(e.toString());
+			log.debug("Process Search Symbol Request fail: " + e.toString());
+			sendEvent(retEvent);
+		}
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -775,7 +948,6 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		chartCacheProcessor = new ChartCacheProc();
-		centralDbEventProcessor = new CentralDbEventProc(this);
 		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;
