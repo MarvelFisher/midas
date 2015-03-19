@@ -52,4 +52,11 @@ public class MarketSessionStateDay extends MarketSessionState{
 			return true;
 		return false;
 	}
+
+	@Override
+	protected Date tradeDateInit(Date date, MarketSessionType type) throws ParseException {
+		if(type.equals(MarketSessionType.CLOSE))
+			return TimeUtil.getPreviousDay(date);
+		return date;
+	}
 }

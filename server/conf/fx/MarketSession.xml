@@ -19,7 +19,6 @@
 		<property name="inState" ref="ntState"></property>
 		<property name="outState" ref="closeState"></property>
 		<property name="calTradeDate" value="true"></property>
-		<property name="filePath" value="conf/common/tradedate.xml"></property>
 	</bean>
 		
 	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
@@ -162,7 +161,7 @@
 	</bean>	
 	
 	<bean id="monDBean" class="com.cyanspring.common.marketsession.MarketSessionTime">
-		<constructor-arg><value>CLOSE</value></constructor-arg>
+		<constructor-arg><value>OPEN</value></constructor-arg>
 		<constructor-arg>
 			<list>
 				<value>1</value>

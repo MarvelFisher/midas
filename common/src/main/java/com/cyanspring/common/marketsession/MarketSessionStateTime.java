@@ -16,6 +16,9 @@ import com.cyanspring.common.util.TimeUtil;
 public class MarketSessionStateTime extends MarketSessionState{
 //	private static final Logger log = LoggerFactory
 //			.getLogger(MarketSessionStateTime.class);
+	private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+	
+	
 	public MarketSessionStateTime(MarketSessionTime sessionTime){
 		super(sessionTime);
 	}
@@ -48,5 +51,23 @@ public class MarketSessionStateTime extends MarketSessionState{
 			return true;
 		}			
 		return false;
+	}
+
+	@Override
+	protected Date tradeDateInit(Date date, MarketSessionType type) throws ParseException {
+		for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
+			if(sessionData.session.equals(MarketSessionType.PREOPEN)){
+				String[] st = sessionData.start.split(":");				
+				int nHour = Integer.parseInt(st[0]);
+				int nMin = Integer.parseInt(st[1]);
+				int nSecond = Integer.parseInt(st[2]);
+				if(TimeUtil.getTimePass(Clock.getInstance().now(), TimeUtil.getScheduledDate(Calendar.getInstance(),
+						date, nHour, nMin, nSecond)) >= 0){
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					tradeDate = sdf.format(date);
+				}
+			}
+		}		
+		return date;
 	}
 }
