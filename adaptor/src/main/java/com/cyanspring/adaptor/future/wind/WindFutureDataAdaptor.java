@@ -7,6 +7,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -32,10 +33,12 @@ import cn.com.wind.td.tdf.TDF_OPTION_CODE;
 import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
 
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.marketdata.IMarketDataAdaptor;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.IMarketDataStateListener;
@@ -48,6 +51,7 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
@@ -73,6 +77,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	MarketSessionUtil marketSessionUtil;
 	protected long timerInterval = 5000;
 	static final int AM10 = 100000000;
+	static volatile boolean bigSessionIsClose = false;
+	static volatile int tradeDateForWindFormat = 0;
+	static volatile Date bigSessionCloseDate = Clock.getInstance().now();
+	static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
+	private boolean tradeDateControlIsOpen = true;
 
 	@Autowired
 	protected IRemoteEventManager eventManager;
@@ -87,6 +96,14 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
 		this.marketSessionUtil = marketSessionUtil;
+	}
+
+	public boolean isTradeDateControlIsOpen() {
+		return tradeDateControlIsOpen;
+	}
+
+	public void setTradeDateControlIsOpen(boolean tradeDateControlIsOpen) {
+		this.tradeDateControlIsOpen = tradeDateControlIsOpen;
 	}
 
 	public String getMarketType() {
@@ -252,6 +269,31 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		}
 	};
 
+	/**
+	 * process MarketDataManager Sent MarketSession
+	 * 
+	 * @param marketSessionType
+	 */
+	public void processMarketSession(MarketSessionEvent event) {
+		tradeDateForWindFormat = Integer.parseInt(event.getTradeDate().replace(
+				"-", ""));
+		LogUtil.logInfo(
+				log,
+				"ProcessMarketSession:" + event.getTradeDate() + ","
+						+ event.getSession() + ",Windformat="
+						+ tradeDateForWindFormat + "," + event.getStart() + ","
+						+ event.getEnd());
+		MarketSessionType marketSessionType = event.getSession();
+		if (marketSessionType == MarketSessionType.PREOPEN
+				|| marketSessionType == MarketSessionType.OPEN) {
+			bigSessionIsClose = false;
+		}
+		if (marketSessionType == MarketSessionType.CLOSE) {
+			bigSessionIsClose = true;
+			bigSessionCloseDate = event.getStart();
+		}
+	}
+
 	public static void info(String f, Object... args) {
 		LogUtil.logInfo(log, f, args);
 		FutureFeed.info(f, args);
@@ -362,13 +404,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		// process symbol Market Session
 		for (String symbol : strategyht.keySet()) {
 			if (isMarketDataLog()) {
-//				log.debug("ProcessAsyncTimerEvent Symbol="
-//						+ symbol
-//						+ ",Strategy="
-//						+ strategyht.get(symbol)
-//						+ ",MarketSessionType="
-//						+ getMarketSessionUtil().getCurrentMarketSessionType(
-//								strategyht.get(symbol), DateUtil.now()));
+				// log.debug("ProcessAsyncTimerEvent Symbol="
+				// + symbol
+				// + ",Strategy="
+				// + strategyht.get(symbol)
+				// + ",MarketSessionType="
+				// + getMarketSessionUtil().getCurrentMarketSessionType(
+				// strategyht.get(symbol), DateUtil.now()));
 			}
 			MarketSessionType marketSessionType = getMarketSessionUtil()
 					.getCurrentMarketSessionType(strategyht.get(symbol),
@@ -376,7 +418,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			if (marketSessionType == MarketSessionType.CLOSE) {
 				Quote lastQuote = lastquoteht.get(symbol);
 				if (lastQuote != null && !lastQuote.isStale()) {
-					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol=" + symbol);
+					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol="
+							+ symbol);
 					lastQuote.setStale(true);
 					sendQuote(lastQuote);
 				}
@@ -670,6 +713,14 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE:
 			TDF_FUTURE_DATA future = convertToFutureData(in_arr);
+			if (future.getTradingDay() != tradeDateForWindFormat) {
+				debug("No Use Future Quote:TradeDate Error");
+				return;
+			}
+			if(bigSessionIsClose && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval){
+				debug("No Use Future Quote:Close over 30 minutes" );
+				return;				
+			}
 			QuoteMgr.instance.AddRequest(new Object[] {
 					TDF_MSG_ID.MSG_DATA_FUTURE, future });
 			break;

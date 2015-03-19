@@ -17,9 +17,11 @@ import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
 
 public class FutureItem implements AutoCloseable {
+	
 
 	static Hashtable<String, FutureItem> symbolTable = new Hashtable<String, FutureItem>();
 	/**
@@ -172,6 +174,7 @@ public class FutureItem implements AutoCloseable {
 	static int lastShow = 0;
 
 	public static void processFutureData(TDF_FUTURE_DATA data) {
+				
 		String symbolId = data.getWindCode();
 		String windCode = data.getWindCode();
 
@@ -188,7 +191,7 @@ public class FutureItem implements AutoCloseable {
 		Quote quote = new Quote(symbolId, bids, asks);
 
 		// tick time
-		String timeStamp = String.format("%d-%d", data.getActionDay(),
+		String timeStamp = String.format("%d-%d", data.getTradingDay(),
 				data.getTime());
 		Date tickTime;
 		try {

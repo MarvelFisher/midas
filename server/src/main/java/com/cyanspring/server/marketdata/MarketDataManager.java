@@ -64,8 +64,10 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class MarketDataManager implements IPlugin, IMarketDataListener,
 		IMarketDataStateListener {
-	private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
-	private static final Logger quoteLog = LoggerFactory.getLogger(MarketDataManager.class.getName()+".QuoteLog");
+	private static final Logger log = LoggerFactory
+			.getLogger(MarketDataManager.class);
+	private static final Logger quoteLog = LoggerFactory
+			.getLogger(MarketDataManager.class.getName() + ".QuoteLog");
 
 	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
@@ -116,7 +118,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void setQuoteLogIsOpen(boolean quoteLogIsOpen) {
 		this.quoteLogIsOpen = quoteLogIsOpen;
 	}
-	
+
 	public boolean isQuotePriceWarningIsOpen() {
 		return quotePriceWarningIsOpen;
 	}
@@ -124,7 +126,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public int getQuotePriceWarningPercent() {
 		return quotePriceWarningPercent;
 	}
-	
+
 	public void setQuotePriceWarningIsOpen(boolean quotePriceWarningIsOpen) {
 		this.quotePriceWarningIsOpen = quotePriceWarningIsOpen;
 	}
@@ -199,12 +201,16 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ chkTime);
 		for (IMarketDataAdaptor adapter : adaptors) {
 			String adapterName = adapter.getClass().getSimpleName();
-			if (adapterName.equals("WindFutureDataAdaptor")
-					&& MarketSessionType.PREOPEN == event.getSession()) {
-				log.debug("Process Wind Future PREOPEN resubscribe");
+			if (adapterName.equals("WindFutureDataAdaptor")) {
 				((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
-						.clearSubscribeMarketData();
-				preSubscribe();
+				.processMarketSession(event);
+				if (MarketSessionType.PREOPEN == event.getSession()) {
+					log.debug("Process Wind Future PREOPEN resubscribe");
+					((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
+							.clearSubscribeMarketData();
+					eventProcessor.onEvent(new PresubscribeEvent(null));
+				}
+
 			}
 		}
 
@@ -318,89 +324,100 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	}
 
 	// Check Quote Value
-	public boolean checkQuote(Quote prev,Quote quote){
+	public boolean checkQuote(Quote prev, Quote quote) {
 		boolean IsCorrectQuote = true;
-		if(prev!=null){
-			if(quote.getClose()<=0){
+		if (prev != null) {
+			if (quote.getClose() <= 0) {
 				quote.setClose(prev.getClose());
 			}
-			if(quote.getOpen()<=0){
+			if (quote.getOpen() <= 0) {
 				quote.setOpen(prev.getOpen());
 			}
-			if(quote.getHigh()<=0){
+			if (quote.getHigh() <= 0) {
 				quote.setHigh(prev.getHigh());
 			}
-			if(quote.getLow()<=0){
+			if (quote.getLow() <= 0) {
 				quote.setLow(prev.getLow());
 			}
-			if(quote.getBid()<=0){
+			if (quote.getBid() <= 0) {
 				quote.setBid(prev.getBid());
 			}
-			if(quote.getAsk()<=0){
+			if (quote.getAsk() <= 0) {
 				quote.setAsk(prev.getAsk());
 			}
 		}
-		
-		if(isQuotePriceWarningIsOpen()){
-			if(quote.getClose()>0 && getQuotePriceWarningPercent()>0 && getQuotePriceWarningPercent() < 100){
-				double preCloseAddWarningPrice = quote.getClose() * (1.0 + getQuotePriceWarningPercent() / 100.0);
-				double preCloseSubtractWarningPrice = quote.getClose() * (1.0 - getQuotePriceWarningPercent() / 100.0);
-				if(quote.getAsk()>0 && (PriceUtils.GreaterThan(quote.getAsk(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getAsk(), preCloseSubtractWarningPrice))){
+
+		if (isQuotePriceWarningIsOpen()) {
+			if (quote.getClose() > 0 && getQuotePriceWarningPercent() > 0
+					&& getQuotePriceWarningPercent() < 100) {
+				double preCloseAddWarningPrice = quote.getClose()
+						* (1.0 + getQuotePriceWarningPercent() / 100.0);
+				double preCloseSubtractWarningPrice = quote.getClose()
+						* (1.0 - getQuotePriceWarningPercent() / 100.0);
+				if (quote.getAsk() > 0
+						&& (PriceUtils.GreaterThan(quote.getAsk(),
+								preCloseAddWarningPrice) || PriceUtils
+								.LessThan(quote.getAsk(),
+										preCloseSubtractWarningPrice))) {
 					IsCorrectQuote = false;
 				}
-				if(quote.getBid()>0 && (PriceUtils.GreaterThan(quote.getBid(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getBid(), preCloseSubtractWarningPrice))){
+				if (quote.getBid() > 0
+						&& (PriceUtils.GreaterThan(quote.getBid(),
+								preCloseAddWarningPrice) || PriceUtils
+								.LessThan(quote.getBid(),
+										preCloseSubtractWarningPrice))) {
 					IsCorrectQuote = false;
 				}
-				if(quote.getHigh()>0 && (PriceUtils.GreaterThan(quote.getHigh(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getHigh(), preCloseSubtractWarningPrice))){
+				if (quote.getHigh() > 0
+						&& (PriceUtils.GreaterThan(quote.getHigh(),
+								preCloseAddWarningPrice) || PriceUtils
+								.LessThan(quote.getHigh(),
+										preCloseSubtractWarningPrice))) {
 					IsCorrectQuote = false;
 				}
-				if(quote.getLow()>0 && (PriceUtils.GreaterThan(quote.getLow(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getLow(), preCloseSubtractWarningPrice))){
+				if (quote.getLow() > 0
+						&& (PriceUtils.GreaterThan(quote.getLow(),
+								preCloseAddWarningPrice) || PriceUtils
+								.LessThan(quote.getLow(),
+										preCloseSubtractWarningPrice))) {
 					IsCorrectQuote = false;
 				}
-				if(quote.getOpen()>0 && (PriceUtils.GreaterThan(quote.getOpen(), preCloseAddWarningPrice) || PriceUtils.LessThan(quote.getOpen(), preCloseSubtractWarningPrice))){
+				if (quote.getOpen() > 0
+						&& (PriceUtils.GreaterThan(quote.getOpen(),
+								preCloseAddWarningPrice) || PriceUtils
+								.LessThan(quote.getOpen(),
+										preCloseSubtractWarningPrice))) {
 					IsCorrectQuote = false;
-				}				
+				}
 			}
 		}
-		
+
 		return IsCorrectQuote;
 	}
-	
-	
+
 	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
-	
-		if(isQuoteLogIsOpen()){
-			quoteLog.info("Quote Receive : "
-					+"Source=" + inEvent.getSourceId()
-					+",Symbol="+ quote.getSymbol()
-					+",Ask=" + quote.getAsk() 
-					+",Bid=" + quote.getBid()
-					+",Close=" + quote.getClose()
-					+",Open=" + quote.getOpen()
-					+",High=" + quote.getHigh()
-					+",Low=" + quote.getLow()
-					+",Stale=" + quote.isStale() 
-					+",TimeStamp=" + quote.getTimeStamp().toString()
-					+",WarningPcnt=" + getQuotePriceWarningPercent()
-				);
+
+		if (isQuoteLogIsOpen()) {
+			quoteLog.info("Quote Receive : " + "Source="
+					+ inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
+					+ ",Ask=" + quote.getAsk() + ",Bid=" + quote.getBid()
+					+ ",Close=" + quote.getClose() + ",Open=" + quote.getOpen()
+					+ ",High=" + quote.getHigh() + ",Low=" + quote.getLow()
+					+ ",Stale=" + quote.isStale() + ",TimeStamp="
+					+ quote.getTimeStamp().toString() + ",WarningPcnt="
+					+ getQuotePriceWarningPercent());
 		}
-		
+
 		if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
-			quoteLog.warn("Quote BBBBB! : " 
-					+"Source=" + inEvent.getSourceId()
-					+",Symbol="+ quote.getSymbol()
-					+",Ask=" + quote.getAsk() 
-					+",Bid=" + quote.getBid()
-					+",Close=" + quote.getClose()
-					+",Open=" + quote.getOpen()
-					+",High=" + quote.getHigh()
-					+",Low=" + quote.getLow()
-					+",Stale=" + quote.isStale() 
-					+",TimeStamp=" + quote.getTimeStamp().toString()
-					+",WarningPcnt=" + getQuotePriceWarningPercent()
-			);
+			quoteLog.warn("Quote BBBBB! : " + "Source=" + inEvent.getSourceId()
+					+ ",Symbol=" + quote.getSymbol() + ",Ask=" + quote.getAsk()
+					+ ",Bid=" + quote.getBid() + ",Close=" + quote.getClose()
+					+ ",Open=" + quote.getOpen() + ",High=" + quote.getHigh()
+					+ ",Low=" + quote.getLow() + ",Stale=" + quote.isStale()
+					+ ",TimeStamp=" + quote.getTimeStamp().toString()
+					+ ",WarningPcnt=" + getQuotePriceWarningPercent());
 			return;
 		}
 
