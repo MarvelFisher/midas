@@ -66,8 +66,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class MarketDataManager implements IPlugin, IMarketDataListener,
 		IMarketDataStateListener {
-	private static final Logger log = LoggerFactory
-			.getLogger(MarketDataManager.class);
+	private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
+	private static final Logger quoteLog = LoggerFactory.getLogger(MarketDataManager.class.getName()+".QuoteLog");
 
 	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
@@ -372,7 +372,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		Quote prev = quotes.get(quote.getSymbol());
 	
 		if(isQuoteLogIsOpen()){
-			log.info("Quote Receive : "
+			quoteLog.info("Quote Receive : "
 					+"Source=" + inEvent.getSourceId()
 					+",Symbol="+ quote.getSymbol()
 					+",Ask=" + quote.getAsk() 
@@ -388,7 +388,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		}
 		
 		if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
-			log.debug("Quote BBBBB! : " 
+			quoteLog.warn("Quote BBBBB! : " 
 					+"Source=" + inEvent.getSourceId()
 					+",Symbol="+ quote.getSymbol()
 					+",Ask=" + quote.getAsk() 
