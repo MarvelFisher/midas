@@ -19,7 +19,6 @@
 		<property name="inState" ref="timeState"></property>
 		<property name="outState" ref="closeState"></property>
 		<property name="calTradeDate" value="true"></property>
-		<property name="filePath" value="conf/common/tradedate.xml"></property>
 	</bean>
 		
 	<bean id="closeState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">

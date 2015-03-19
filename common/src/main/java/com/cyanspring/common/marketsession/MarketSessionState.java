@@ -21,22 +21,20 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public abstract class MarketSessionState {
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionState.class);
-	private MarketSessionState outState;
-	private MarketSessionState inState;
-	private String filePath;	
+	protected MarketSessionState outState;
+	protected MarketSessionState inState;
 	protected MarketSessionEvent currentMarketSessionEvent;
 	protected MarketSessionTime sessionTime;
 //	protected static String nextTradeDate;
 	
 	protected static String tradeDate;
 	protected static boolean isHoliday;
-	private static XStream xstream;
-	private static File file;
 	protected boolean calTradeDate = true;
 	private static boolean tradeDateUpdate;
 		
 	protected abstract boolean checkState(MarketSessionTime sessionTime, MarketSessionTime.SessionData compare, Date date) throws ParseException;
 	protected abstract MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date) throws ParseException;
+	protected abstract Date tradeDateInit(Date date, MarketSessionType type) throws ParseException ;
 	
 	public MarketSessionState(MarketSessionTime sessionTime){
 		this.sessionTime = sessionTime;
@@ -44,16 +42,31 @@ public abstract class MarketSessionState {
 	
 	public void init() throws Exception{		
 		if(calTradeDate){
-			log.info("initialising with " + filePath);
-			xstream = new XStream(new DomDriver());
-			file = new File(filePath);
-			if(file.exists()){
-				tradeDate = (String) xstream.fromXML(file);
-				tradeDateUpdate = true;
-			}else{
-				throw new Exception("Missing trade date file: " + filePath);
-			}	
+			Date date = Clock.getInstance().now();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			while(tradeDate == null){				
+				init(cal.getTime());
+				cal.add(Calendar.DAY_OF_YEAR, -1);
+			}
+			tradeDateUpdate = true;
 		}
+	}
+	
+	protected void init(Date date) throws Exception{
+		if(sessionTime.lst != null){
+			for(MarketSessionTime.SessionData sessionData: sessionTime.lst){
+				if(checkState(sessionTime, sessionData, date)){
+					date = tradeDateInit(date, sessionData.session);
+					if(inState != null)
+						inState.init(date);
+				}
+			}
+		}else{
+			log.error("No MarketSessionTime data set in: " + sessionTime + "[" + sessionTime.hashCode() + "]");
+		}	
+		if(outState != null)
+			outState.init(date);
 	}
 	
 	protected void setTradeDate(Date date){
@@ -61,12 +74,7 @@ public abstract class MarketSessionState {
 		String newTradeDate = sdf.format(date);
 		if(!tradeDate.equals(newTradeDate)){
 			tradeDate = newTradeDate;
-			tradeDateUpdate = true;
-			try(FileOutputStream os = new FileOutputStream(file)) {
-				xstream.toXML(tradeDate, os);
-			} catch (IOException e) {
-				log.error(e.getMessage(), e);
-			}		
+			tradeDateUpdate = true;	
 		}
 	}	
 	
@@ -147,10 +155,6 @@ public abstract class MarketSessionState {
 	
 	public String getTradeDate(){
 		return tradeDate;
-	}
-	
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
 	}
 	
 	public void setCalTradeDate(boolean calTradeDate) {

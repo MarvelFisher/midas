@@ -53,4 +53,8 @@ public class MarketSessionStateHTime extends MarketSessionState {
 		return false;
 	}
 
+	@Override
+	protected Date tradeDateInit(Date date, MarketSessionType type) throws ParseException {
+		return date;
+	}
 }

@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionStateWeekDay extends MarketSessionState{
 //	private static final Logger log = LoggerFactory
@@ -17,7 +18,11 @@ public class MarketSessionStateWeekDay extends MarketSessionState{
 	
 	@Override
 	protected MarketSessionEvent createMarketSessionEvent(MarketSessionTime sessionTime, MarketSessionTime.SessionData sessionData, Date date){
-		isHoliday = false;
+		if(sessionData.session.equals(MarketSessionType.CLOSE))
+			isHoliday = true;
+		else
+			isHoliday = false;
+		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		
@@ -47,5 +52,12 @@ public class MarketSessionStateWeekDay extends MarketSessionState{
 		if(compare.weekDay.equals(String.valueOf(weekDay)))
 			return true;
 		return false;
+	}
+
+	@Override
+	protected Date tradeDateInit(Date date, MarketSessionType type) throws ParseException {
+		if(type.equals(MarketSessionType.CLOSE))
+			return TimeUtil.getPreviousDay(date);
+		return date;
 	}
 }
