@@ -2,32 +2,32 @@ package com.cyanspring.common.account;
 
 public class PremiumFollowInfo {
 	private String fdUser;
-	private String fdAccount;
+	private String market;
 
-	public PremiumFollowInfo(String fdUser, String fdAccount) {
+	public PremiumFollowInfo(String fdUser, String market) {
 		this.fdUser = fdUser;
-		this.fdAccount = fdAccount;
+		this.market = market;
 	}
 
 	public String getFdUser() {
 		return fdUser;
 	}
 
-	public String getFdAccount() {
-		return fdAccount;
+	public String getMarket() {
+		return market;
 	}
 
 	public void setFdUser(String fdUser) {
 		this.fdUser = fdUser;
 	}
 
-	public void setFdAccount(String fdAccount) {
-		this.fdAccount = fdAccount;
+	public void setMarket(String market) {
+		this.market = market;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + this.getFdUser() + "," + this.getFdAccount() + "]";
+		return "[" + this.getFdUser() + "," + this.getMarket() + "]";
 	}
 
 }
