@@ -5,6 +5,7 @@ public class News implements Comparable<News>{
 	private String PicturePath;
 	private String Article;
 	private String ChildSitePath;
+	private String PostTime;
 	
 	public void New()
 	{
@@ -12,17 +13,24 @@ public class News implements Comparable<News>{
 		setPicturePath("");
 		setArticle("");
 		setChildSitePath("");
+		setPostTime("");
 	}
+	
 	@Override
 	public int compareTo(News other) {
-		int compare = this.getChildSitePath().compareTo(other.getChildSitePath());
+		int compare = other.getPostTime().compareTo(this.getPostTime());
+		if (compare == 0)
+		{
+			compare = this.getTitle().compareTo(other.getTitle());
+		}
 		return compare;
 	}
 	
 	@Override
 	public boolean equals(Object obj){		
-		return this.getChildSitePath().equals(((News)obj).getChildSitePath());	
+		return this.getTitle().equals(((News)obj).getTitle());
 	}
+	
 	public String getTitle() {
 		return Title;
 	}
@@ -46,5 +54,13 @@ public class News implements Comparable<News>{
 	}
 	public void setChildSitePath(String childSitePath) {
 		ChildSitePath = childSitePath;
+	}
+
+	public String getPostTime() {
+		return PostTime;
+	}
+
+	public void setPostTime(String postTime) {
+		PostTime = postTime;
 	}
 }

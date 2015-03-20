@@ -46,7 +46,6 @@
         		<string>Decimal point</string>
         		<int>-1</int>
       		</entry>
-			
 			<entry>
 				<string>Symbol</string>
 				<string>CCH</string>
@@ -896,7 +895,7 @@
 			<entry>
         		<string>Decimal point</string>
         		<int>-1</int>
-      		</entry>
+      		</entry>	
 			<entry>
 				<string>Symbol</string>
 				<string>GBPNZD</string>
@@ -1436,7 +1435,6 @@
         		<string>Decimal point</string>
         		<int>-1</int>
       		</entry>
-
 			<entry>
 				<string>Symbol</string>
 				<string>DKKSEK</string>
