@@ -4116,7 +4116,7 @@
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
+<!-- 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
 			<entry>
        			<string>Price per unit</string>
@@ -4213,5 +4213,5 @@
 				</com.ib.client.Contract>
 			</entry>
 		</fields>
-	</com.cyanspring.common.staticdata.RefData>
+	</com.cyanspring.common.staticdata.RefData> -->
 </list>
