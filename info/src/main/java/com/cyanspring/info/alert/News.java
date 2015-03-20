@@ -26,11 +26,6 @@ public class News implements Comparable<News>{
 		return compare;
 	}
 	
-	@Override
-	public boolean equals(Object obj){		
-		return this.getTitle().equals(((News)obj).getTitle());
-	}
-	
 	public String getTitle() {
 		return Title;
 	}
