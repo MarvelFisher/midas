@@ -112,6 +112,7 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			cal.setTime(quote.getTimeStamp()) ;
 			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
 			HistoricalPrice price = priceData.get(cal.getTime()) ;
 			if (price == null)
 			{
