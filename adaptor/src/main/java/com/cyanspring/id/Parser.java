@@ -94,16 +94,16 @@ public class Parser implements IReqThreadCallback {
 				}
 
 				if (data[0] != SpecialCharDef.EOT) {
-					LogUtil.logError(log, 
-							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-							data[0]);
+//					LogUtil.logError(log, 
+//							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
+//							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
 				if (data[1] != SpecialCharDef.SPC) {
-					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
-					LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
-							data[0]);
+//					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
+//					LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
+//							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
@@ -112,8 +112,15 @@ public class Parser implements IReqThreadCallback {
 				try {
 					iDataLength = (int) BitConverter.toLong(data, 2,
 							data.length);
+					if(iDataLength < 0 || iDataLength>=MAX_COUNT){
+						LogUtil.logError(log, "DataLength : " + iDataLength);
+						buffer.purge(1); // Skip One Byte
+						continue;
+					}
 				} catch (Exception e) {
 					LogUtil.logException(log, e);
+					buffer.purge(1); // Skip One Byte
+					continue;
 				}
 
 				int iPacketDataLength = iDataLength + 7;
