@@ -146,6 +146,11 @@ public class UserManager implements IPlugin {
 				log.error(ee.getMessage());
 			}
 		}
+		finally
+		{
+			session.close();
+			sessionCentral.close();
+		}
 		return true;
 	}
 

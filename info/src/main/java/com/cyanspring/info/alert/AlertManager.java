@@ -21,13 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.alert.*;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.ResetAccountReplyEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyType;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.alert.AlertType;
 import com.cyanspring.common.event.alert.PriceAlertReplyEvent;
 import com.cyanspring.common.event.alert.QueryOrderAlertReplyEvent;
@@ -37,8 +39,6 @@ import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.AsyncEventProcessor;
 
@@ -92,6 +92,7 @@ public class AlertManager implements IPlugin {
 			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
 			subscribeToEvent(QueryPriceAlertRequestEvent.class, null);
 			subscribeToEvent(QueryOrderAlertRequestEvent.class, null);
+			subscribeToEvent(ResetAccountRequestEvent.class, null);
 		}
 
 		@Override
@@ -138,6 +139,38 @@ public class AlertManager implements IPlugin {
 			log.error("ParseDataQueue not ready!!");
 			return;
 		}
+	}
+
+	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+		ResetUser(event);
+	}
+
+	private void ResetUser(ResetAccountRequestEvent event) {
+		String UserId = event.getAccount();
+		try {
+			// Clear memory
+			userTradeAlerts.remove(UserId);
+			// Clear SQL
+
+			Session session = sessionFactory.openSession();
+			try {
+				String strCmd = "Delete from TRADEALERT_PAST where USER_ID='"
+						+ UserId + "'";
+				SQLQuery query = session.createSQLQuery(strCmd);
+				int Return = query.executeUpdate();
+			} catch (Exception ee) {
+				ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(), ResetAccountReplyType.LTSINFO_ALERTMANAGER, false, "Reset User " + UserId + "fail.");
+				eventManager.sendRemoteEvent(resetAccountReplyEvent);				
+				log.warn("[ResetUser] warn : " + ee.getMessage());
+			} finally {
+				session.close();
+			}
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(),ResetAccountReplyType.LTSINFO_ALERTMANAGER, true,"");
+			eventManager.sendRemoteEvent(resetAccountReplyEvent);
+			log.info("Reset User Success : " + UserId);
+		} catch (Exception e) {	
+			log.error("[ResetUser] error : " + e.getMessage());
+		}		
 	}
 
 	private void receiveChildOrderUpdateEvent(Execution execution) {
