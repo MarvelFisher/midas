@@ -55,7 +55,6 @@ public class NewsManager implements IPlugin {
 	};
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-
 		try
 		{
 			if(event == timerEvent) 
@@ -69,10 +68,6 @@ public class NewsManager implements IPlugin {
 		}
 	}
 	
-	public synchronized static boolean ContainNews(News nw)
-	{
-		return newsLst.contains(nw);
-	}
 	
 	@Override
 	public void init() throws Exception {
@@ -138,6 +133,136 @@ public class NewsManager implements IPlugin {
 		NewsManager.firstGetNews = firstGetNews;
 	}
 
+	public synchronized static void GetNews()
+	{		
+		try
+		{
+			URL obj = new URL("http://wallstreetcn.com/news?cid=6");
+			HttpURLConnection con = null;
+			con = (HttpURLConnection)obj.openConnection();
+			con.setRequestProperty("Content-Type", "");
+			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
+			con.setRequestMethod("GET");
+			
+			int responseCsode = con.getResponseCode();
+
+			Document doc = Jsoup.parse(con.getInputStream(), null, "http://wallstreetcn.com/news?cid=6");
+			
+			Elements links = doc.select("li[class$=news]");
+			log.info("[NewsManager] Load News... Start");
+			int Count =0;
+			for (Element element : links)
+			{
+				News news = new News() ;
+				String dwedf = element.toString() ;
+				
+				doc = Jsoup.parse(dwedf);
+				Elements ems = doc.select("a[href]");
+				String href = ems.get(0).attr("href"); //wallstreetcn child Site
+				news.setChildSitePath(href);
+				String PicturePath = ems.get(0).getElementsByAttribute("data-original").attr("data-original");//wallstreetcn Picture Path
+				news.setPicturePath(PicturePath);
+				String title = ems.get(1).text(); //wallstreetcn Title
+				news.setTitle(title);
+				
+				ems = doc.select("span[class$=meta time visible-lg-inline-block]");
+				String postTime = ems.get(0).text();
+				news.setPostTime(postTime);
+				
+				int iSearch = Collections.binarySearch(newsLst, news);
+				if (iSearch >= 0)
+				{						
+					continue;
+				}					
+				con.disconnect();
+				obj = new URL(href);
+				con = (HttpURLConnection)obj.openConnection();
+				con.setRequestProperty("Content-Type", "");
+				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
+				con.setRequestMethod("GET");
+				
+				responseCsode = con.getResponseCode();
+				
+				doc = Jsoup.parse(con.getInputStream(), null, href) ;
+				Elements childSite = doc.select("div[class$=article-content]");
+				doc = Jsoup.parse(childSite.toString()) ;
+				childSite = doc.select("p");
+				StringBuffer article = new StringBuffer();
+				article.append(title + " -- ");
+				for(Element em : childSite)
+				{
+					String ar = em.text();
+					if (null == ar)
+					{
+						continue ;
+					}
+					if (ar.length() > 5)
+					{
+						if (ar.substring(0, 5).equals(getEndString()))
+						{
+							continue;
+						}
+					}
+					article.append(ar + "\r\n");
+//					log.info(em.text());
+				}					
+				news.setArticle(article.toString());
+				newsLst.add(~iSearch, news);
+				Count++;
+				if (newsLst.size() > 35) {
+					newsLst.remove(35);
+				}
+				
+				if (isFirstGetNews())
+				{	
+					continue;
+				}
+				//Send to Social
+				obj = new URL(getSocialAPI());
+				HttpURLConnection httpCon = (HttpURLConnection) obj.openConnection();
+				
+//				String strPoststring = "data={\"photoUrl\":\"" + URLEncoder.encode(PicturePath,"UTF-8") + "\",\"postMessage\":\"" +  URLEncoder.encode(article.toString(),"UTF-8") +
+//						"\",\"userAccount\":\"" + getPostAccount() + "\"}";
+				String strPoststring = "photoUrl=" + PicturePath + "&postMessage=" + URLEncoder.encode(article.toString(), "UTF-8") + "&userAccount=" + getPostAccount() ;
+				
+				httpCon.setRequestMethod("POST");
+				httpCon.setRequestProperty("user-Agent","LTSInfo-NewsManager");
+				httpCon.setRequestProperty("Content-Length", Integer.toString(strPoststring.length()));
+				
+				httpCon.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(httpCon.getOutputStream());
+				wr.writeBytes(strPoststring);
+				wr.flush();
+				wr.close();					
+				con.disconnect();
+				int responseCode = httpCon.getResponseCode();
+				if (responseCode != 200)
+				{
+					log.warn("[Social API]Send to Social Error.");
+				}
+				else
+				{
+					log.info("Send to Social : Title=" + title + ", PostTime=" + postTime + ", photoUrl=" + PicturePath);
+				}
+				httpCon.disconnect();
+			}
+			if (isFirstGetNews())
+			{
+				setFirstGetNews(false) ;
+			}
+			if (Count > 0)
+			{
+				log.info("Get " + String.valueOf(Count) + " new News");	
+			}
+			log.info("[NewsManager] Load News... End");
+		}
+		catch (Exception e)
+		{
+			log.warn("[NewsThread] : " + e.getMessage());
+		}
+	}
+	
+	
 	public static class NewsThread extends Thread{
 				
 		public NewsThread()
@@ -147,140 +272,8 @@ public class NewsManager implements IPlugin {
 		}
 		@Override
 		public void run()
-		{			
-			try
-			{
-				URL obj = new URL("http://wallstreetcn.com/news?cid=6");
-				HttpURLConnection con = null;
-				con = (HttpURLConnection)obj.openConnection();
-				con.setRequestProperty("Content-Type", "");
-				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
-				con.setRequestMethod("GET");
-				
-				int responseCsode = con.getResponseCode();
-
-				Document doc = Jsoup.parse(con.getInputStream(), null, "http://wallstreetcn.com/news?cid=6");
-				
-				Elements links = doc.select("li[class$=news]");
-				log.info("[NewsManager] Load News... Start");
-				int Count =0;
-				for (Element element : links)
-				{
-					News news = new News() ;
-					String dwedf = element.toString() ;
-					
-					doc = Jsoup.parse(dwedf);
-					Elements ems = doc.select("a[href]");
-					String href = ems.get(0).attr("href"); //wallstreetcn child Site
-					news.setChildSitePath(href);
-					String PicturePath = ems.get(0).getElementsByAttribute("data-original").attr("data-original");//wallstreetcn Picture Path
-					news.setPicturePath(PicturePath);
-					String title = ems.get(1).text(); //wallstreetcn Title
-					news.setTitle(title);
-					
-					ems = doc.select("span[class$=meta time visible-lg-inline-block]");
-					String postTime = ems.get(0).text();
-					news.setPostTime(postTime);
-					
-					if (ContainNews(news))
-					{
-						continue;
-					}
-					con.disconnect();
-					obj = new URL(href);
-					con = (HttpURLConnection)obj.openConnection();
-					con.setRequestProperty("Content-Type", "");
-					con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
-					con.setRequestMethod("GET");
-					
-					responseCsode = con.getResponseCode();
-					
-					doc = Jsoup.parse(con.getInputStream(), null, href) ;
-					Elements childSite = doc.select("div[class$=article-content]");
-					doc = Jsoup.parse(childSite.toString()) ;
-					childSite = doc.select("p");
-					StringBuffer article = new StringBuffer();
-					article.append(title + " -- ");
-					for(Element em : childSite)
-					{
-						String ar = em.text();
-						if (null == ar)
-						{
-							continue ;
-						}
-						if (ar.length() > 5)
-						{
-							if (ar.substring(0, 5).equals(getEndString()))
-							{
-								continue;
-							}
-						}
-						article.append(ar + "\r\n");
-//						log.info(em.text());
-					}					
-					news.setArticle(article.toString());
-					int iSearch = Collections.binarySearch(newsLst, news);
-					if (iSearch < 0)
-					{
-						newsLst.add(~iSearch, news);
-						Count ++;
-						if (newsLst.size() > 35)
-						{
-							newsLst.remove(35);
-						}						
-					}
-					else
-					{
-						log.error("Add News binarySearch fail.");
-						continue;
-					}
-					if (isFirstGetNews())
-					{	
-						continue;
-					}
-					//Send to Social
-					obj = new URL(getSocialAPI());
-					HttpURLConnection httpCon = (HttpURLConnection) obj.openConnection();
-					
-//					String strPoststring = "data={\"photoUrl\":\"" + URLEncoder.encode(PicturePath,"UTF-8") + "\",\"postMessage\":\"" +  URLEncoder.encode(article.toString(),"UTF-8") +
-//							"\",\"userAccount\":\"" + getPostAccount() + "\"}";
-					String strPoststring = "photoUrl=" + PicturePath + "&postMessage=" + URLEncoder.encode(article.toString(), "UTF-8") + "&userAccount=" + getPostAccount() ;
-					
-					httpCon.setRequestMethod("POST");
-					httpCon.setRequestProperty("user-Agent","LTSInfo-NewsManager");
-					httpCon.setRequestProperty("Content-Length", Integer.toString(strPoststring.length()));
-					
-					httpCon.setDoOutput(true);
-					DataOutputStream wr = new DataOutputStream(httpCon.getOutputStream());
-					wr.writeBytes(strPoststring);
-					wr.flush();
-					wr.close();					
-					con.disconnect();
-					int responseCode = httpCon.getResponseCode();
-					if (responseCode != 200)
-					{
-						log.warn("[Social API]Send to Social Error.");
-					}
-					else
-					{
-						log.info("Send to Social : Title=" + title + ", PostTime=" + postTime + ", photoUrl=" + PicturePath);
-					}
-					httpCon.disconnect();
-				}
-				if (isFirstGetNews())
-				{
-					setFirstGetNews(false) ;
-				}
-				if (Count > 0)
-				{
-					log.info("Get " + String.valueOf(Count) + " new News");	
-				}
-				log.info("[NewsManager] Load News... End");
-			}
-			catch (Exception e)
-			{
-				log.warn("[NewsThread] : " + e.getMessage());
-			}
+		{
+			GetNews();
 		}
 	}
 }
