@@ -72,7 +72,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			.getLogger(MarketDataManager.class.getName() + ".QuoteLog");
 
 	private HashMap<String, Quote> quotes = new HashMap<String, Quote>();
+	private HashMap<String, DataObject> quoteExtends = new HashMap<String, DataObject>();
 	private Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
+	private Map<String, DataObject> lastTradeDateQuoteExtends = new HashMap<String, DataObject>();
 
 	private ForexTickTable forexTickTable = new ForexTickTable();
 
@@ -97,7 +99,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	private String tickDir = "ticks";
 	private String lastQuoteFile = "last.xml";
+	private String lastQuoteExtendFile = "lastExtend.xml";
 	private String lastTradeDateQuoteFile = "last_tdq.xml";
+	private String lastTradeDateQuoteExtendFile ="lastExtend_tdq.xml";
 	private long lastQuoteSaveInterval = 20000;
 	private Date lastQuoteSaveTime = Clock.getInstance().now();
 	private XStream xstream = new XStream(new DomDriver());
@@ -267,9 +271,14 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 				+ event.getReceiver());
 		String symbol = event.getSymbol();
 		Quote quote = quotes.get(symbol);
+		
 		if (quote != null) {
 			eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(),
 					event.getSender(), quote));
+			DataObject quoteExtend =quoteExtends.get(symbol);
+			if(quoteExtend!=null){
+				eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+			}
 		}
 		if (quote == null || quote.isStale()) {
 			for (int i = 0; i < adaptors.size(); i++) {
@@ -538,19 +547,40 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			log.info("Quotes Loaded Results [" + entry.getKey() + "] "
 					+ entry.getValue().toString());
 		}
+		
+		quoteExtends = loadExtendQuotes(tickDir + "/" + lastQuoteExtendFile);
+		log.info("QuoteExtends Loaded Counts [" + quoteExtends.size() + "] ");
+		for (Entry<String, DataObject> entry : quoteExtends.entrySet()) {
+			log.info("QuoteExtends Loaded Results [" + entry.getKey() + "] "
+					+ entry.getValue().toString());
+		}		
+		
 		lastTradeDateQuotes = loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
 		if (lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0) {
 			log.warn("No lastTradeDateQuotes values while initialing.");
 			lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
 		}
-
+		
 		log.info("LastTradeDateQuotes Loaded Counts ["
 				+ lastTradeDateQuotes.size() + "] ");
 		for (Entry<String, Quote> entry : lastTradeDateQuotes.entrySet()) {
 			log.info("LastTradeDateQuotes Loaded Results [" + entry.getKey()
 					+ "] " + entry.getValue().toString());
 		}
-
+		
+		lastTradeDateQuoteExtends = loadExtendQuotes(tickDir + "/" + lastTradeDateQuoteExtendFile);
+		if (lastTradeDateQuoteExtends == null || lastTradeDateQuoteExtends.size() <= 0) {
+			log.warn("No lastTradeDateQuoteExtends values while initialing.");
+			lastTradeDateQuoteExtends = (Map<String, DataObject>) quoteExtends.clone();
+		}
+		
+		log.info("LastTradeDateQuoteExtends Loaded Counts ["
+				+ lastTradeDateQuoteExtends.size() + "] ");
+		for (Entry<String, DataObject> entry : lastTradeDateQuoteExtends.entrySet()) {
+			log.info("LastTradeDateQuoteExtends Loaded Results [" + entry.getKey()
+					+ "] " + entry.getValue().toString());
+		}		
+		
 		chkDate = Clock.getInstance().now();
 		for (IMarketDataAdaptor adaptor : adaptors) {
 			log.debug("IMarketDataAdaptor=" + adaptor.getClass()
@@ -606,30 +636,38 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			return;
 
 		lastQuoteSaveTime = Clock.getInstance().now();
-		String fileName = tickDir + "/" + lastQuoteFile;
-		saveQuotesToFile(fileName);
+		String quoteFileName = tickDir + "/" + lastQuoteFile;
+		saveQuotesToFile(quoteFileName,false);
+		String quoteExtendFileName =  tickDir + "/" + lastQuoteExtendFile;
+		saveQuotesToFile(quoteExtendFileName,true);
 	}
 
 	private void saveLastTradeDateQuotes() {
 		if (lastTradeDateQuotes.size() <= 0 && quotes.size() <= 0)
 			return;
 		lastTradeDateQuotes = quotes;
-		String fileName = tickDir + "/" + lastTradeDateQuoteFile;
-		saveQuotesToFile(fileName);
+		lastTradeDateQuoteExtends = quoteExtends;
+		String lastTradeDateQuoteFileName = tickDir + "/" + lastTradeDateQuoteFile;
+		saveQuotesToFile(lastTradeDateQuoteFileName,false);
+		String lastTradeDateQuoteExtendFileName = tickDir + "/" + lastTradeDateQuoteExtendFile;
+		saveQuotesToFile(lastTradeDateQuoteExtendFileName,true);
 	}
 
-	private void saveQuotesToFile(String fileName) {
+	private void saveQuotesToFile(String fileName, boolean isExtend) {
 		File file = new File(fileName);
 		try {
 			file.createNewFile();
 			FileOutputStream os = new FileOutputStream(file);
-			xstream.toXML(quotes, os);
+			if(isExtend)
+				xstream.toXML(quoteExtends, os);
+			else
+				xstream.toXML(quotes, os);
 			os.close();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
-
+	
 	private void broadCastStaleQuotes() {
 		if (staleQuotesSent)
 			return;
@@ -645,6 +683,28 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		}
 	}
 
+	private HashMap<String, DataObject> loadExtendQuotes(String fileName) {
+		File file = new File(fileName);
+		HashMap<String, DataObject> quoteExtends = new HashMap<>();
+		if (file.exists() && quoteExtends.size() <= 0) {
+			try {
+				ClassLoader save = xstream.getClassLoader();
+				ClassLoader cl = HashMap.class.getClassLoader();
+				if (cl != null)
+					xstream.setClassLoader(cl);
+				quoteExtends = (HashMap<String, DataObject>) xstream.fromXML(file);
+				if (!(quoteExtends instanceof HashMap))
+					throw new Exception("Can't xstream load last quote: "
+							+ fileName);
+				xstream.setClassLoader(save);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+			log.info("QuoteExtends loaded: " + fileName);
+		}
+		return quoteExtends;
+	}
+	
 	private HashMap<String, Quote> loadQuotes(String fileName) {
 		File file = new File(fileName);
 		HashMap<String, Quote> quotes = new HashMap<>();
@@ -672,6 +732,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	public void reset() {
 		quotes.clear();
+		quoteExtends.clear();
 	}
 
 	@Override
@@ -706,10 +767,24 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	@Override
 	public void onQuoteExt(DataObject quoteExt, int sourceId) {
-		log.debug("Receiver Adapter QuoteExt!");
 		if (quoteExt != null) {
-			QuoteExtEvent event = new QuoteExtEvent(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value()), null, quoteExt, sourceId);
-//			System.out.println(quoteExt.toXML());
+			
+			StringBuffer sbQuoteExtendLog = new StringBuffer();
+			for(String key : quoteExt.getFields().keySet()){
+				sbQuoteExtendLog.append(","+ key +"=" + quoteExt.getFields().get(key));
+			}
+			quoteLog.info("QuoteExtend Receive : " + "Source=" + sourceId + sbQuoteExtendLog.toString());
+			
+			String symbol = quoteExt.get(String.class,QuoteExtDataField.SYMBOL.value());
+			quoteExt.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
+			quoteExtends.put(symbol, quoteExt);
+			QuoteExtEvent event = new QuoteExtEvent(quoteExt.get(String.class,
+					QuoteExtDataField.SYMBOL.value()), null, quoteExt, sourceId);
+			try {
+				eventManager.sendGlobalEvent(event);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
 		}
 	}
 

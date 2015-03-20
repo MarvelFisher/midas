@@ -7,6 +7,8 @@ public enum QuoteExtDataField {
 	SYMBOL("Symbol"),
 	CEIL("Ceil"),
 	FLOOR("Floor"),
+	SETTLEPRICE("SettlePrice"),
+	OPENINTEREST("OpenInterest"),
 	TIMESTAMP("TimeStamp"),
 	TIMESENT("TimeSent")
 	;

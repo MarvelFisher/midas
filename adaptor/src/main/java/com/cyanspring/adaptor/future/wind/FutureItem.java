@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
@@ -24,9 +25,8 @@ import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
 
 public class FutureItem implements AutoCloseable {
-	
 
-	static Hashtable<String, FutureItem> symbolTable = new Hashtable<String, FutureItem>();
+	static ConcurrentHashMap<String, FutureItem> symbolTable = new ConcurrentHashMap<String, FutureItem>();
 	/**
 	 * member
 	 */
@@ -35,7 +35,7 @@ public class FutureItem implements AutoCloseable {
 	long totalVolume = 0;
 	long volume = 0;
 
-	double preSettle = 0;
+	double settlePrice = 0;
 	long preOpenInterest = 0;
 	double highLimit = 0;
 	double lowLimit = 0;
@@ -241,18 +241,19 @@ public class FutureItem implements AutoCloseable {
 			quote.setStale(false);
 		}
 
-		// if (diff ) send info event
-		// ==================
-		// quote.setPresettlePrice((double) data.getSettlePrice() / 10000);
-		// //.getPreSettlePrice() / 10000);
-		// quote.setOpenInterest(data.getOpenInterest());
-
-		// QuoteExt quoteExt = new QuoteExt(item.symbolId, item.market);
 		boolean change = false;
-		double preSettle = (double) data.getPreSettlePrice() / 10000;
-		if (item.preSettle != preSettle) {
-			item.preSettle = preSettle;
-			change = true;
+		
+		
+//		double preSettle = (double) data.getPreSettlePrice() / 10000;
+//		if (item.preSettle != preSettle) {
+//			item.preSettle = preSettle;
+//			change = true;
+//		}
+		
+		double settlePrice = (double) data.getSettlePrice() /10000;
+		if(item.settlePrice != settlePrice){
+			item.settlePrice = settlePrice;
+			change = true;			
 		}
 
 		long preOpenInterest = data.getPreOpenInterest();
@@ -273,35 +274,28 @@ public class FutureItem implements AutoCloseable {
 			change = true;
 		}
 
-		// if (change) {
-		// // fire QuoteExt
-		// }
-
-		// update volume
+		//volume
 		long totalVolume = data.getVolume();
-
-		// if (item.totalVolume == 0) {
-		// item.totalVolume = totalVolume;
-		// return;
-		// }
 
 		if (totalVolume - item.totalVolume > 0) {
 			item.volume = totalVolume - item.volume;
 			item.totalVolume = totalVolume;
-
-			// quote.setTotalVolume(totalVolume);
-			// quote.setLastVol(item.volume);
 		}
 		quote.setTotalVolume(totalVolume);
 		quote.setLastVol(item.volume);
 
 		// process Ext field
-		DataObject quoteExt = new DataObject();
-		quoteExt.put(QuoteExtDataField.CEIL.value(), highLimit);
-		quoteExt.put(QuoteExtDataField.FLOOR.value(), lowLimit);
-		quoteExt.put(QuoteExtDataField.SYMBOL.value(), symbolId);
-		quoteExt.put(QuoteExtDataField.ID.value(), quote.getId());
-		quoteExt.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
+		DataObject quoteExt = null;
+		if(change){
+			quoteExt = new DataObject();
+			quoteExt.put(QuoteExtDataField.SYMBOL.value(), symbolId);
+			quoteExt.put(QuoteExtDataField.ID.value(), quote.getId());
+			quoteExt.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
+			quoteExt.put(QuoteExtDataField.CEIL.value(), highLimit);
+			quoteExt.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+			quoteExt.put(QuoteExtDataField.SETTLEPRICE.value(), settlePrice);
+		}
+
 		
 		// fire quote event
 		String s = quote.toString();
@@ -365,10 +359,9 @@ public class FutureItem implements AutoCloseable {
 	public void close() throws Exception {
 		FinalizeHelper.suppressFinalize(this);
 	}
-	
-	public static void main(String[] args){
-		String timeStamp = String.format("%d-%d", 20150318,
-				90000000);
+
+	public static void main(String[] args) {
+		String timeStamp = String.format("%d-%d", 20150318, 90000000);
 		Date tickTime;
 		try {
 			tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
@@ -376,7 +369,7 @@ public class FutureItem implements AutoCloseable {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-	
+
 	}
-	
+
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -238,18 +239,18 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
-	static Hashtable<String, TDF_FUTURE_DATA> futuredata = new Hashtable<String, TDF_FUTURE_DATA>(); // future
-	static Hashtable<String, TDF_MARKET_DATA> stockdata = new Hashtable<String, TDF_MARKET_DATA>(); // stock
-	static Hashtable<String, String> strategyht = new Hashtable<String, String>(); // SaveSymbolStrategy
-	static Hashtable<String, Quote> lastquoteht = new Hashtable<String, Quote>(); // LastQuoteData
-	static Hashtable<String, DataObject> lastQuoteExtht = new Hashtable<String, DataObject>(); // LastQuoteExt
+	static ConcurrentHashMap<String, TDF_FUTURE_DATA> futuredata = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
+	static ConcurrentHashMap<String, TDF_MARKET_DATA> stockdata = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
+	static ConcurrentHashMap<String, String> strategyht = new ConcurrentHashMap<String, String>(); // SaveSymbolStrategy
+	static ConcurrentHashMap<String, Quote> lastquoteht = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
+	static ConcurrentHashMap<String, DataObject> lastQuoteExtht = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
 
 	boolean isClosed = false;
 	RequestThread thread = null;
 
 	void initReqThread() {
 		if (thread == null) {
-			thread = new RequestThread(this, "Wind Index Future");
+			thread = new RequestThread(this, "Wind Adapter");
 		}
 		thread.start();
 	}
@@ -413,15 +414,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		// process symbol Market Session
 		for (String symbol : strategyht.keySet()) {
-			if (isMarketDataLog()) {
-				// log.debug("ProcessAsyncTimerEvent Symbol="
-				// + symbol
-				// + ",Strategy="
-				// + strategyht.get(symbol)
-				// + ",MarketSessionType="
-				// + getMarketSessionUtil().getCurrentMarketSessionType(
-				// strategyht.get(symbol), DateUtil.now()));
-			}
 			MarketSessionType marketSessionType = getMarketSessionUtil()
 					.getCurrentMarketSessionType(strategyht.get(symbol),
 							DateUtil.now());
@@ -743,8 +735,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			if (isCloseOverTimeControlIsOpen()
 					&& bigSessionIsClose
 					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-				debug(String.format("%s %s,Session Close Time=%s", this.TITLE_FUTURE,
-						this.ERR_CLOSE_OVER_TIME,bigSessionCloseDate.toString()));
+				debug(String.format("%s %s,Session Close Time=%s",
+						this.TITLE_FUTURE, this.ERR_CLOSE_OVER_TIME,
+						bigSessionCloseDate.toString()));
 				return;
 			}
 			QuoteMgr.instance.AddRequest(new Object[] {
@@ -1071,9 +1064,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			eventProcessor.getThread().setName("WindFutureDataAdaptor");
 
 		WindFutureDataAdaptor.instance = this;
-		getRefDataManager().init(); // init  RefDataManager
+		getRefDataManager().init(); // init RefDataManager
 		refTable.clear();
-		
+
 		QuoteMgr.instance.init();
 		initReqThread();
 		doConnect();
@@ -1271,20 +1264,23 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 */
 	public void saveLastQuote(Quote quote, DataObject quoteExt) {
 		lastquoteht.put(quote.getSymbol(), quote);
-//		lastQuoteExtht.put(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExt);
+		if (quoteExt != null ) {
+			lastQuoteExtht.put(quoteExt.get(String.class,
+					QuoteExtDataField.SYMBOL.value()), quoteExt);
+		}
 	}
 
 	boolean addSymbol(String symbol) {
 		if (false == refTable.containsKey(symbol)) {
-				refTable.put(symbol, 1);
-				return true;
+			refTable.put(symbol, 1);
+			return true;
 		} else {
-				synchronized (m_lock) {
-					int refCount = refTable.get(symbol);
-					refCount++;
-					refTable.put(symbol, refCount);
-					return false;				
-				}
+			synchronized (m_lock) {
+				int refCount = refTable.get(symbol);
+				refCount++;
+				refTable.put(symbol, refCount);
+				return false;
+			}
 		}
 	}
 
