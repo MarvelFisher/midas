@@ -84,7 +84,7 @@
 	
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>refdata/refData_fc.xml</value>
+			<value>refdata/refData_sc.xml</value>
 		</property>
 	</bean>
 	
