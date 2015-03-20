@@ -743,8 +743,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			if (isCloseOverTimeControlIsOpen()
 					&& bigSessionIsClose
 					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-				debug(String.format("%s %s,Session Close Time=%tD", this.TITLE_FUTURE,
-						this.ERR_CLOSE_OVER_TIME),bigSessionCloseDate);
+				debug(String.format("%s %s,Session Close Time=%s", this.TITLE_FUTURE,
+						this.ERR_CLOSE_OVER_TIME,bigSessionCloseDate.toString()));
 				return;
 			}
 			QuoteMgr.instance.AddRequest(new Object[] {

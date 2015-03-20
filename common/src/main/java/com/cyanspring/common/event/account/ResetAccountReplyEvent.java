@@ -7,13 +7,15 @@ public class ResetAccountReplyEvent extends RemoteAsyncEvent {
 	private String account;
 	private String txId;
 	private boolean ok;
+	private ResetAccountReplyType type;
 	private String message;
 	
 	public ResetAccountReplyEvent(String key, String receiver, String account,
-			String txId, boolean ok, String message) {
+			String txId, ResetAccountReplyType type, boolean ok, String message) {
 		super(key, receiver);
 		this.account = account;
 		this.txId = txId;
+		this.type = type;
 		this.ok = ok;
 		this.message = message;
 	}
@@ -29,6 +31,8 @@ public class ResetAccountReplyEvent extends RemoteAsyncEvent {
 	public String getMessage() {
 		return message;
 	}
-
+	public ResetAccountReplyType getType() {
+		return type;
+	}
 	
 }

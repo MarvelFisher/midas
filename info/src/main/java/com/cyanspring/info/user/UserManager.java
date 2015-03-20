@@ -16,6 +16,7 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.event.AsyncEventProcessor;
 
@@ -130,12 +131,12 @@ public class UserManager implements IPlugin {
 				Return = query.executeUpdate();	
 				
 			}			
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(), true,"");
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(),ResetAccountReplyType.LTSINFO_USERMANAGER, true,"");
 			eventManager.sendRemoteEvent(resetAccountReplyEvent);
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(), false, "Reset User " + UserId + "fail.");
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(), ResetAccountReplyType.LTSINFO_USERMANAGER, false, "Reset User " + UserId + "fail.");
 			try
 			{
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);
