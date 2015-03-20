@@ -41,11 +41,19 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
-	            <value>IFC1</value>
-	            <value>IFC2</value>
+				<value>601318.SH</value>
+				<value>600030.SH</value>
+				<value>601628.SH</value>
+				<value>601989.SH</value>
+				<value>600000.SH</value>
+				<value>000002.SZ</value>
+				<value>600016.SH</value>
+				<value>600837.SH</value>
+				<value>300104.SZ</value>
+				<value>002230.SZ</value>
 	        </list>    
 		</property>
-		<property name="subNameMap">
+<!-- 		<property name="subNameMap">
 			<map>
 		    	<entry key="IFC1">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
@@ -62,7 +70,7 @@
 		      		</bean>
 		    	</entry>
 		    </map>
-		</property>
+		</property> -->
 	</bean>
 	
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
