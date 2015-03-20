@@ -83,7 +83,14 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	static volatile int tradeDateForWindFormat = 0;
 	static volatile Date bigSessionCloseDate = Clock.getInstance().now();
 	static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
-	private boolean tradeDateControlIsOpen = true;
+	private boolean closeOverTimeControlIsOpen = true;
+	private final String TITLE_FUTURE = "FUTURE";
+	private final String TITLE_STOCK = "STOCK";
+	private final String ERR_LAST_LESS_THAN_ZERO = "QUOTE ERROR : Last less than Zero";
+	private final String ERR_TRADEDATE_NOT_MATCH = "QUOTE ERROR : Trade NOT match";
+	private final String ERR_TIME_FORMAT_ERROR = "QUOTE ERROR : Time format error";
+	private final String ERR_CLOSE_OVER_TIME = "QUOTE ERROR : Close Over "
+			+ ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 
 	@Autowired
 	protected IRemoteEventManager eventManager;
@@ -100,12 +107,12 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		this.marketSessionUtil = marketSessionUtil;
 	}
 
-	public boolean isTradeDateControlIsOpen() {
-		return tradeDateControlIsOpen;
+	public boolean isCloseOverTimeControlIsOpen() {
+		return closeOverTimeControlIsOpen;
 	}
 
-	public void setTradeDateControlIsOpen(boolean tradeDateControlIsOpen) {
-		this.tradeDateControlIsOpen = tradeDateControlIsOpen;
+	public void setCloseOverTimeControlIsOpen(boolean closeOverTimeControlIsOpen) {
+		this.closeOverTimeControlIsOpen = closeOverTimeControlIsOpen;
 	}
 
 	public String getMarketType() {
@@ -717,13 +724,28 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE:
 			TDF_FUTURE_DATA future = convertToFutureData(in_arr);
-			if (future.getTradingDay() != tradeDateForWindFormat) {
-				debug("No Use Future Quote:TradeDate Error");
+
+			if (future.getTime() >= 240000000) {
+				debug(String.format("%s %s", this.TITLE_FUTURE,
+						this.ERR_TIME_FORMAT_ERROR));
 				return;
 			}
-			if(bigSessionIsClose && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval){
-				debug("No Use Future Quote:Close over 30 minutes" );
-				return;				
+			if (future.getMatch() <= 0) {
+				debug(String.format("%s %s", this.TITLE_FUTURE,
+						this.ERR_LAST_LESS_THAN_ZERO));
+				return;
+			}
+			if (future.getTradingDay() != tradeDateForWindFormat) {
+				debug(String.format("%s %s", this.TITLE_FUTURE,
+						this.ERR_TRADEDATE_NOT_MATCH));
+				return;
+			}
+			if (isCloseOverTimeControlIsOpen()
+					&& bigSessionIsClose
+					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
+				debug(String.format("%s %s,Session Close Time=%tD", this.TITLE_FUTURE,
+						this.ERR_CLOSE_OVER_TIME),bigSessionCloseDate);
+				return;
 			}
 			QuoteMgr.instance.AddRequest(new Object[] {
 					TDF_MSG_ID.MSG_DATA_FUTURE, future });
