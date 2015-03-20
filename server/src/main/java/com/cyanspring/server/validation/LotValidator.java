@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class LotValidator implements IFieldValidator {
@@ -16,8 +17,9 @@ public class LotValidator implements IFieldValidator {
 	@Override
 	public void validate(String field, Object value, Map<String, Object> map,
 			ParentOrder order) throws OrderValidationException {
-		// TODO Auto-generated method stub
-
+		RefData refData = refDataManager.getRefData(order.getSymbol());
+		if(order.getQuantity() > refData.getMaximumLot())
+			throw new OrderValidationException("The order quantity is over maximun lot");
 	}
 
 }

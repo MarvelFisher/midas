@@ -24,7 +24,7 @@ public class AccountValidator implements IFieldValidator {
 			
 			Account account = accountKeeper.getAccount((String)value);
 			if(null == account) {
-				throw new OrderValidationException("Account doesn't exist: " + account.getId());
+				throw new OrderValidationException("Account doesn't exist: " + value.toString());
 			}
 			
 			String user = (String)map.get(OrderField.USER.value());
