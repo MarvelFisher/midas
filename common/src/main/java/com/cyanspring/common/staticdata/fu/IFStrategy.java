@@ -43,10 +43,11 @@ public class IFStrategy implements RefDataStrategy {
 			setStragetyData(cal);		
 		}
 
-		if(cal.compareTo(this.cal) > 0){
-			this.cal.add(Calendar.MONTH, 1);
-			setStragetyData(this.cal);								
-		}
+		if(cal.compareTo(this.cal) < 0 || marketSessionUtil.isHoliday(symbol, cal.getTime()))
+			return;		
+		cal.add(Calendar.DAY_OF_YEAR, 1);		
+		this.cal.add(Calendar.MONTH, 1);
+		setStragetyData(this.cal);
 	}
 	
 	@Override
@@ -77,9 +78,12 @@ public class IFStrategy implements RefDataStrategy {
 		n1ID = day.substring(2, 7);
 		n1ID = n1ID.replace("-", "");
 		
-		this.cal = Calendar.getInstance();
+		this.cal = Calendar.getInstance();		
 		try {
 			this.cal.setTime(sdf.parse(n0.getSettlementDate()));
+			this.cal.set(Calendar.HOUR_OF_DAY, 23);
+			this.cal.set(Calendar.MINUTE, 59);
+			this.cal.set(Calendar.SECOND, 59);
 		} catch (ParseException e) {
 			log.error(e.getMessage(), e);
 		}
