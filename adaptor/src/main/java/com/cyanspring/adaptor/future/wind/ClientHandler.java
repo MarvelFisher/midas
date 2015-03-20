@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 
+import java.awt.event.WindowAdapter;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Discard the received data silently.
 		lastRecv = DateUtil.now();
 		String in = (String) msg;
-//		System.out.println(in);
+		// System.out.println(in);
 		try {
 			String strHash = null;
 			String strDataType = null;
@@ -70,7 +71,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-												
+						if (WindFutureDataAdaptor.instance.isMarketDataLog()) {
+							LogUtil.logDebug(log, in);
+						}
 						if (strDataType.equals("DATA_FUTURE")) {
 							dataType = TDF_MSG_ID.MSG_DATA_FUTURE;
 						}
@@ -92,17 +95,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 							LogUtil.logDebug(log, in);
 						}
 
-						if(checkTime(dataType, in_arr)){
-							if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
-								LogUtil.logDebug(log, in);
-							}
-							WindFutureDataAdaptor.instance.processGateWayMessage(
-									dataType, in_arr);
-						}else{
-							if(WindFutureDataAdaptor.instance.isMarketDataLog()){ 
-								LogUtil.logDebug(log, "This Quote NOT USE-" + in);
-							}
-						}
+						WindFutureDataAdaptor.instance.processGateWayMessage(
+								dataType, in_arr);
+
 					}
 				}
 				System.out.flush();
@@ -110,38 +105,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		} finally {
 			ReferenceCountUtil.release(msg);
 		}
-	}
-	
-	/**
-	 * check wind quote time
-	 * @return
-	 */
-	public boolean checkTime(int dataType,String[] in_arr){
-		boolean result = true;
-			
-		//Check Future Time
-		if(dataType == TDF_MSG_ID.MSG_DATA_FUTURE){
-			
-			String key = null;
-			String value = null;
-			String[] kv_arr = null;
-
-			for (int i = 0; i < in_arr.length; i++) {
-				if (in_arr[i] != null && !"".equals(in_arr[i])) {
-					kv_arr = in_arr[i].split("=");
-					if (kv_arr.length > 1) {
-						key = kv_arr[0];
-						value = kv_arr[1];
-						// if Quote Time > 240000000 NOT use Quote
-						if (key.equals("Time") && Integer.parseInt(value) >= 240000000) {
-							result = false;
-						}			
-					}
-				}
-			}
-		}
-		
-		return result;
 	}
 
 	@Override
