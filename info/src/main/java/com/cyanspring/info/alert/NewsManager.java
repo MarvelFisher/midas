@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -176,6 +178,10 @@ public class NewsManager implements IPlugin {
 					String title = ems.get(1).text(); //wallstreetcn Title
 					news.setTitle(title);
 					
+					ems = doc.select("span[class$=meta time visible-lg-inline-block]");
+					String postTime = ems.get(0).text();
+					news.setPostTime(postTime);
+					
 					if (ContainNews(news))
 					{
 						continue;
@@ -213,11 +219,20 @@ public class NewsManager implements IPlugin {
 //						log.info(em.text());
 					}					
 					news.setArticle(article.toString());
-					newsLst.add(0,news);					
-					Count ++;
-					if (newsLst.size() > 35)
+					int iSearch = Collections.binarySearch(newsLst, news);
+					if (iSearch < 0)
 					{
-						newsLst.remove(34);
+						newsLst.add(~iSearch, news);
+						Count ++;
+						if (newsLst.size() > 35)
+						{
+							newsLst.remove(35);
+						}						
+					}
+					else
+					{
+						log.error("Add News binarySearch fail.");
+						continue;
 					}
 					if (isFirstGetNews())
 					{	
@@ -248,7 +263,7 @@ public class NewsManager implements IPlugin {
 					}
 					else
 					{
-						log.info("Send to Social : photoUrl=" + PicturePath);
+						log.info("Send to Social : Title=" + title + ", PostTime=" + postTime + ", photoUrl=" + PicturePath);
 					}
 					httpCon.disconnect();
 				}
