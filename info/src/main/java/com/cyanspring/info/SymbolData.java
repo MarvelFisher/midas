@@ -153,6 +153,7 @@ public class SymbolData implements Comparable<SymbolData>
 	        FileInputStream fis = new FileInputStream(file);
             FSTObjectInput in = new FSTObjectInput(fis);
             priceData = (TreeMap<Date, HistoricalPrice>) in.readObject(TreeMap.class);
+            in.close();
             fis.close();
 			isUpdating = false ;
         }
@@ -183,6 +184,7 @@ public class SymbolData implements Comparable<SymbolData>
 	            out.writeObject( priceData, TreeMap.class );
 	            // DON'T out.close() when using factory method;
 	            out.flush();
+	            out.close();
 	            fos.close();
     		}
         }
