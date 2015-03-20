@@ -96,12 +96,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 							LogUtil.logDebug(log, in);
 						}
 
-						if (checkQuote(dataType, in_arr)) {
-							WindFutureDataAdaptor.instance
-									.processGateWayMessage(dataType, in_arr);
-						}else{
-							LogUtil.logDebug(log, "Not Use:" + in);
-						}
+						WindFutureDataAdaptor.instance.processGateWayMessage(
+								dataType, in_arr);
+
 					}
 				}
 				System.out.flush();
@@ -109,45 +106,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		} finally {
 			ReferenceCountUtil.release(msg);
 		}
-	}
-
-	/**
-	 * check wind quote time
-	 * 
-	 * @return
-	 */
-	public boolean checkQuote(int dataType, String[] in_arr) {
-		boolean result = true;
-
-		// Check Future Time
-		if (dataType == TDF_MSG_ID.MSG_DATA_FUTURE) {
-
-			String key = null;
-			String value = null;
-			String[] kv_arr = null;
-
-			// Filter Error Quote
-			for (int i = 0; i < in_arr.length; i++) {
-				if (in_arr[i] != null && !"".equals(in_arr[i])) {
-					kv_arr = in_arr[i].split("=");
-					if (kv_arr.length > 1) {
-						key = kv_arr[0];
-						value = kv_arr[1];
-						if (key.equals("Time")
-								&& Integer.parseInt(value) >= 240000000) {
-							result = false;
-							break;
-						}
-						if (key.equals("Last") && Long.parseLong(value) <= 0) {
-							result = false;
-							break;
-						}						
-					}
-				}
-			}
-		}
-
-		return result;
 	}
 
 	@Override
