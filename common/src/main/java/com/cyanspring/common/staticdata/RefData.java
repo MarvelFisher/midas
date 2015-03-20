@@ -35,7 +35,7 @@ public class RefData extends DataObject {
 	}
 	
 	public int getLotSize() {
-		return this.get(Integer.class, RefDataField.LOT_SIZE.value());
+		return this.get(int.class, RefDataField.LOT_SIZE.value());
 	}
 	
 	public String getExchange() {
