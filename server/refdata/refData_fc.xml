@@ -6,12 +6,12 @@
         <int>2500</int>
       </entry>
       <entry>
-        <string>Type</string>
-        <string>INDEX_FU</string>
-      </entry>
-      <entry>
         <string>TWTrading unit</string>
         <string>人民幣/點</string>
+      </entry>
+      <entry>
+        <string>Type</string>
+        <string>INDEX_FU</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -114,12 +114,12 @@
         <int>2500</int>
       </entry>
       <entry>
-        <string>Type</string>
-        <string>INDEX_FU</string>
-      </entry>
-      <entry>
         <string>TWTrading unit</string>
         <string>人民幣/點</string>
+      </entry>
+      <entry>
+        <string>Type</string>
+        <string>INDEX_FU</string>
       </entry>
       <entry>
         <string>Price limit</string>

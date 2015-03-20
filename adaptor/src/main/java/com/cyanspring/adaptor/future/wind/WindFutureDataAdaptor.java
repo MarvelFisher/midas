@@ -1198,7 +1198,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 */
 	public void saveLastQuote(Quote quote, DataObject quoteExt) {
 		lastquoteht.put(quote.getSymbol(), quote);
-		lastQuoteExtht.put(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExt);
+//		lastQuoteExtht.put(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExt);
 	}
 
 	boolean addSymbol(String symbol) {
