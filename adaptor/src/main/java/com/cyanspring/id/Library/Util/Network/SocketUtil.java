@@ -66,14 +66,14 @@ public class SocketUtil {
 				}
 
 				if (data[0] != SpecialCharDef.STX) {
-					LogUtil.logError(log, "Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-							data[0]);
+//					LogUtil.logError(log, "Parser.Parse szTempBuf[0] != EOT [0x%02x]",
+//							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
 				if (data[1] != '0' && data[1] != '1') {
-					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
-					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
+//					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
+//					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}

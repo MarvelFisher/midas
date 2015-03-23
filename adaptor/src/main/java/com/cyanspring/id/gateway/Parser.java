@@ -77,16 +77,16 @@ public class Parser implements IReqThreadCallback {
 				}
 
 				if (pktHead[0] != SpecialCharDef.EOT) {
-					LogUtil.logError(log,
-							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-							pktHead[0]);
+//					LogUtil.logError(log,
+//							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
+//							pktHead[0]);
 					m_buffer.purge(1); // Skip One Byte
 					continue;
 				}
 
 				if (pktHead[1] != SpecialCharDef.SPC) {
-					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
-					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", pktHead[1]);
+//					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
+//					LogUtil.logError(log, "Parser.Parse pop [0x%02x]", pktHead[1]);
 					m_buffer.purge(1); // Skip One Byte
 					continue;
 				}
