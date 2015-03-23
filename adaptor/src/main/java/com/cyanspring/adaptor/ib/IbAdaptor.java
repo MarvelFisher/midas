@@ -627,6 +627,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
 	}
 
+	/**
+	 * IB tickPrice field ref : https://www.interactivebrokers.com/en/software/api/apiguide/tables/tick_types.htm
+	 */
 	@Override
 	public void tickPrice(int tickerId, int field, double price,
 			int canAutoExecute) {
