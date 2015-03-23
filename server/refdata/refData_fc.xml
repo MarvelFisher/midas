@@ -103,7 +103,7 @@
       </entry>
       <entry>
         <string>Maximum lot</string>
-        <int>0</int>
+        <int>499</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -211,7 +211,7 @@
       </entry>
       <entry>
         <string>Maximum lot</string>
-        <int>0</int>
+        <int>499</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
