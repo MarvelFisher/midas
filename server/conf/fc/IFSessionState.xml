@@ -9,77 +9,58 @@
 
 	<context:annotation-config />
 	
-	<bean id="IFsessionState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
-		<constructor-arg ref="IFopenDays"></constructor-arg>
-		<property name="inState" ref="IFtimeState"></property>
-		<property name="outState" ref="IFcloseState"></property>
-		<property name="calTradeDate" value="false"></property>
-	</bean>
-		
-	<bean id="IFcloseState" class="com.cyanspring.common.marketsession.MarketSessionStateDay">
-		<constructor-arg ref="IFcloseDays"></constructor-arg>
-		<property name="outState" ref="IFcloseWeekState"></property>
-		<property name="calTradeDate" value="false"></property>
+	<bean id="IFsessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+		<property name="stateMap">
+			<map>
+				<entry key="DEFAULT">
+					<ref bean="IFdefaultSession"/>
+				</entry>
+			</map>
+		</property>
 	</bean>
 	
-	<bean id="IFcloseWeekState" class="com.cyanspring.common.marketsession.MarketSessionStateWeekDay">
-		<constructor-arg ref="IFcloseWeekDays"></constructor-arg>
-		<property name="outState" ref="IFtimeState"></property>
-		<property name="calTradeDate" value="false"></property>
-	</bean>
-	
-	<bean id="IFtimeState" class="com.cyanspring.common.marketsession.MarketSessionStateTime">
-		<constructor-arg ref="IFtiming"></constructor-arg>
-		<property name="calTradeDate" value="false"></property>
-	</bean>
-		
-	<bean id="IFtiming" class="com.cyanspring.common.marketsession.MarketSessionTime">
+	<bean id="IFdefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
-				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
 		        	<constructor-arg><value>15:15:00</value></constructor-arg>
 		        	<constructor-arg><value>20:30:00</value></constructor-arg>
 				</bean>	
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
 		        	<constructor-arg><value>20:30:00</value></constructor-arg>
 		        	<constructor-arg><value>23:59:59</value></constructor-arg>
 				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
 		        	<constructor-arg><value>00:00:00</value></constructor-arg>
 		        	<constructor-arg><value>09:15:00</value></constructor-arg>
 				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>OPEN</value></constructor-arg>
 		        	<constructor-arg><value>09:15:00</value></constructor-arg>
 		        	<constructor-arg><value>11:30:00</value></constructor-arg>
 				</bean>
-				<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
 		        	<constructor-arg><value>11:30:00</value></constructor-arg>
 		        	<constructor-arg><value>13:00:00</value></constructor-arg>
 				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionTime$SessionData">
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>OPEN</value></constructor-arg>
 		        	<constructor-arg><value>13:00:00</value></constructor-arg>
-		        	<constructor-arg><value>15:15:00</value></constructor-arg> <!-- Make sure not restart Manager at the time -->
+		        	<constructor-arg><value>15:15:00</value></constructor-arg>
 				</bean>
-			</list>
-		</constructor-arg>
-	</bean>	
-		
-	<bean id="IFopenDays" class="com.cyanspring.common.marketsession.MarketSessionTime">
-		<constructor-arg><value>OPEN</value></constructor-arg>
-		<constructor-arg>
-			<list>				
 			</list>
 		</constructor-arg>
 	</bean>
 	
-	<bean id="IFcloseDays" class="com.cyanspring.common.marketsession.MarketSessionTime">
-		<constructor-arg><value>CLOSE</value></constructor-arg>
+	<bean id="IFtradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
+		<constructor-arg>
+			<list>
+			</list>
+		</constructor-arg>
 		<constructor-arg>
 			<list>
 				<value>2015-01-01</value>
@@ -100,15 +81,5 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	
-	<bean id="IFcloseWeekDays" class="com.cyanspring.common.marketsession.MarketSessionTime">
-		<constructor-arg><value>CLOSE</value></constructor-arg>
-		<constructor-arg>
-			<list>
-				<value>6</value>
-				<value>7</value>
-			</list>
-		</constructor-arg>
-	</bean>	
 
 </beans>

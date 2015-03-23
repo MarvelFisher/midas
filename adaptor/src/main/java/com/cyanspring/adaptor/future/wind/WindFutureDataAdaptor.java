@@ -50,6 +50,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolField;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -414,10 +415,15 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		// process symbol Market Session
 		for (String symbol : strategyht.keySet()) {
-			MarketSessionType marketSessionType = getMarketSessionUtil()
-					.getCurrentMarketSessionType(strategyht.get(symbol),
-							DateUtil.now());
-			if (marketSessionType == MarketSessionType.CLOSE) {
+			MarketSessionData marketSessionData = null;
+			try {
+				marketSessionData = getMarketSessionUtil()
+						.getCurrentMarketSessionType(strategyht.get(symbol),
+								DateUtil.now());
+			} catch (Exception e) {
+				continue;
+			}
+			if (marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
 				Quote lastQuote = lastquoteht.get(symbol);
 				DataObject lastQuoteExt = lastQuoteExtht.get(symbol);
 				if (lastQuote != null && !lastQuote.isStale()) {

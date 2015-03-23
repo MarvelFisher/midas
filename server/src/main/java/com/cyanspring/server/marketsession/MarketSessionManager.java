@@ -16,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import quickfix.field.TradeDate;
+
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -28,11 +31,8 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
-import com.cyanspring.common.marketsession.MarketSessionState;
-import com.cyanspring.common.marketsession.MarketSessionStateDay;
-import com.cyanspring.common.marketsession.MarketSessionStateTime;
-import com.cyanspring.common.marketsession.MarketSessionStateWeekDay;
-import com.cyanspring.common.marketsession.MarketSessionTime;
+import com.cyanspring.common.marketsession.MarketSessionChecker;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.event.AsyncEventProcessor;
 
@@ -50,8 +50,9 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	protected long timerInterval = 5*1000;
 	
 	private MarketSessionType currentSessionType;
+	private String currentTradeDate;
 	
-	private MarketSessionState sessionState;
+	private MarketSessionChecker sessionChecker;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -69,8 +70,10 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	
 	public void processTradeDateRequestEvent(TradeDateRequestEvent event){
 		try{
-			TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
+			String tradeDate = sessionChecker.getTradeDate();
+			TradeDateEvent tdEvent = new TradeDateEvent(null, null, tradeDate);
 			eventManager.sendEvent(tdEvent);
+			this.currentTradeDate = tradeDate;
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
 		} 
@@ -79,13 +82,16 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	public void processMarketSessionRequestEvent(MarketSessionRequestEvent event){
 		Date date = Clock.getInstance().now();
 		try {
-			MarketSessionEvent msEvent = sessionState.getCurrentMarketSessionEvent(date);
+			MarketSessionData sessionData = sessionChecker.getState(date);			
+			MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(), 
+					sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
 			msEvent.setKey(null);
 			msEvent.setReceiver(null);
 			if(event.isLocal())
 				eventManager.sendEvent(msEvent);
 			else
 				eventManager.sendRemoteEvent(msEvent);
+			currentSessionType = sessionData.getSessionType();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -94,21 +100,22 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		Date date = Clock.getInstance().now();
 		try {			
-			if(sessionState.isStateChanged(date)){				
-				MarketSessionEvent msEvent = sessionState.getCurrentMarketSessionEvent(date);
+			MarketSessionData sessionData = sessionChecker.getState(date);
+			if(currentSessionType == null || !currentSessionType.equals(sessionData.getSessionType())){				
+				MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(), 
+						sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
 				msEvent.setKey(null);
 				msEvent.setReceiver(null);
-				if(currentSessionType == null || !currentSessionType.equals(msEvent.getSession())){
-					log.info("Send MarketSessionEvent: " + msEvent);
-					eventManager.sendGlobalEvent(msEvent);	
-					currentSessionType = msEvent.getSession();
-				}
+				log.info("Send MarketSessionEvent: " + msEvent);
+				eventManager.sendGlobalEvent(msEvent);	
+				currentSessionType = sessionData.getSessionType();				
 			}
-			if(sessionState.isTradeDateChange()){
-				TradeDateEvent tdEvent = new TradeDateEvent(null, null, sessionState.getTradeDate());
-				log.info("Send TradeDateEvent: " + tdEvent.getTradeDate());
+			if(currentTradeDate == null || !currentTradeDate.equals(sessionChecker.getTradeDate())){
+				String tradeDate = sessionChecker.getTradeDate();
+				TradeDateEvent tdEvent = new TradeDateEvent(null, null, tradeDate);
+				log.info("Send TradeDateEvent: " + tradeDate);
 				eventManager.sendEvent(tdEvent);
-				sessionState.setTradeDateUpdated();
+				currentTradeDate = tradeDate;
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -119,7 +126,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	public void init() throws Exception {
 		log.info("initialising");
 
-		sessionState.init();
+		Date date = Clock.getInstance().now();
+		sessionChecker.init(date);
 		
 		// subscribe to events
 		eventProcessor.setHandler(this);
@@ -148,7 +156,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 		return currentSessionType;
 	}
 
-	public void setSessionState(MarketSessionState sessionState) {
-		this.sessionState = sessionState;
+	public void setSessionChecker(MarketSessionChecker sessionChecker) {
+		this.sessionChecker = sessionChecker;
 	}
 }

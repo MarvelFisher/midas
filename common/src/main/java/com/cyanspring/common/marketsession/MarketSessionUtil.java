@@ -1,30 +1,29 @@
 package com.cyanspring.common.marketsession;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-
 public class MarketSessionUtil {
-	private Map<String, MarketSessionState> map;
+	private Map<String, MarketSessionChecker> cMap;
+	private Map<String, TradeDateManager> tMap;
 	
-	public MarketSessionUtil(Map<String, MarketSessionState> map){
-		this.map = map;
+	public MarketSessionUtil(Map<String, MarketSessionChecker> cMap, Map<String, TradeDateManager> tMap){
+		this.cMap = cMap;
+		this.tMap = tMap;
 	}
 	
-	public MarketSessionType getCurrentMarketSessionType(String symbol, Date date){
-		MarketSessionState state = map.get(symbol);
-		return state.getCurrentMarketSession(date);
+	public MarketSessionData getCurrentMarketSessionType(String symbol, Date date) throws Exception{
+		MarketSessionChecker checker = cMap.get(symbol);
+		return checker.getState(date);
 	}
 	
-	public MarketSessionEvent getCurrentMarketSessionEvent(String symbol, Date date) throws ParseException{
-		MarketSessionState state = map.get(symbol);
-		return state.getCurrentMarketSessionEvent(date);
+	public MarketSessionData getCurrentMarketSessionEvent(String symbol, Date date) throws Exception{
+		MarketSessionChecker checker = cMap.get(symbol);
+		return checker.getState(date);
 	}
 	
 	public boolean isHoliday(String symbol, Date date){
-		MarketSessionState state = map.get(symbol);		
-		return state.isHoliday(date);
+		TradeDateManager checker = tMap.get(symbol);		
+		return checker.isHoliday(date);
 	}
 }

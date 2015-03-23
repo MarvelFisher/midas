@@ -206,7 +206,7 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
-				<entry key="IF"><ref bean="IFsessionState"/></entry>
+				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>

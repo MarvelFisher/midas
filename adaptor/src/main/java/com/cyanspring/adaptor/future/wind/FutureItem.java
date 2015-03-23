@@ -16,6 +16,7 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Util.DateUtil;
@@ -223,21 +224,26 @@ public class FutureItem implements AutoCloseable {
 
 		// check stale
 		String strategy = WindFutureDataAdaptor.strategyht.get(symbolId);
-		MarketSessionType marketSessionType = WindFutureDataAdaptor.instance
-				.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
-						DateUtil.now());
+		MarketSessionData marketSessionData = null;
+		try {
+			marketSessionData = WindFutureDataAdaptor.instance
+					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
+							DateUtil.now());
+		} catch (Exception e) {
+			return;
+		}
 
 		if (WindFutureDataAdaptor.instance.isMarketDataLog())
 			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
 					+ ",Symbol=" + symbolId + ",MarketSessionType="
-					+ marketSessionType + ",Time=" + DateUtil.now());
+					+ marketSessionData.getSessionType() + ",Time=" + DateUtil.now());
 
-		if (marketSessionType == MarketSessionType.PREOPEN
-				|| marketSessionType == MarketSessionType.CLOSE) {
+		if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+				|| marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
 			quote.setStale(true);
 		}
 
-		if (marketSessionType == MarketSessionType.OPEN) {
+		if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
 			quote.setStale(false);
 		}
 
