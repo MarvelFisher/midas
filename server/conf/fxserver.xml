@@ -31,7 +31,7 @@
 	</bean>
 	
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://1.0.0.51:60006"></property>
+		<property name="url" value="nio://10.0.0.51:60006"></property>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
