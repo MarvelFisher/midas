@@ -775,7 +775,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:
 				error("网路断开！");
 				isConnected = false;
-				updateState(false);
+				updateState(isConnected);
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -900,13 +900,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			// Channel channel = bootstrap.connect(ip, port).sync().channel();
 
 			if (fClient.isSuccess()) {
-				WindFutureDataAdaptor.instance.onConnected();
 				LogUtil.logInfo(log, "client socket connected : %s:%d", ip,
 						port);
 				Util.addLog("client socket connected : %s:%d", ip, port);
-
-				isConnecting = false;
-				isConnected = true;
 			} else {
 				LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
 				Util.addLog(InfoString.ALert, "Connect to %s:%d fail.", ip,
@@ -954,10 +950,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					"IMarketDataStateListener = " + listener.getClass());
 			listener.onState(on);
 		}
-	}
-
-	public void onConnected() {
-		ClientHandler.lastCheck = DateUtil.now();
 	}
 
 	public void closeClient() {
@@ -1051,7 +1043,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			} else {
 				isConnecting = false;
 				isConnected = true;
-				updateState(true);
+				updateState(isConnected);
 				break;
 			}
 		}
