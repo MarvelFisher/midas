@@ -159,13 +159,13 @@ public class AlertManager implements IPlugin {
 				SQLQuery query = session.createSQLQuery(strCmd);
 				int Return = query.executeUpdate();
 			} catch (Exception ee) {
-				ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(), ResetAccountReplyType.LTSINFO_ALERTMANAGER, false, "Reset User " + UserId + "fail.");
+				ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(),ResetAccountReplyType.LTSINFO_ALERTMANAGER, false, "Reset User " + UserId + "fail.");
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);				
 				log.warn("[ResetUser] warn : " + ee.getMessage());
 			} finally {
 				session.close();
 			}
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(),ResetAccountReplyType.LTSINFO_ALERTMANAGER, true,"");
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(),  event.getAccount(),event.getTxId(),  event.getUserId(), event.getMarket(), event.getCoinId(),ResetAccountReplyType.LTSINFO_ALERTMANAGER, true,"");
 			eventManager.sendRemoteEvent(resetAccountReplyEvent);
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {	
