@@ -38,11 +38,14 @@ import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
+import com.cyanspring.common.error.ErrorLookup;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
@@ -519,6 +522,17 @@ public class BusinessManager implements ApplicationContextAware {
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
 		String account = event.getAccount();
 		log.info("Received ResetAccountRequestEvent: " + account);
+		if(!accountKeeper.accountExists(account)){
+			try {
+				int code = 406;
+				String msg = ErrorLookup.lookup(code);
+				eventManager.sendRemoteEvent(new ResetAccountReplyEvent(event.getKey(), 
+						event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(), ResetAccountReplyType.LTSCORE, false, msg));
+				return;
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}
 		Map<String, ParentOrder> map = orders.getMap(account);
 		
 		List<ParentOrder> list = new LinkedList<ParentOrder>();
