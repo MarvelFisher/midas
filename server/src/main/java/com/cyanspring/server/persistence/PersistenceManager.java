@@ -654,7 +654,7 @@ public class PersistenceManager {
 				else 
 					log.error(e.getMessage(), e);
 				ok = false;
-				message = String.format("can't create user, err=[%s]", e.getMessage());
+				message = String.format("can't create user, err=[ %s ]", e.getMessage());
 			    if (tx!=null) 
 			    	tx.rollback();
 			}
