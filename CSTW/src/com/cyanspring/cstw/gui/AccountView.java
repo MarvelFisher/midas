@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.BeanHolder;
+import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.event.AsyncEvent;
@@ -188,7 +189,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					try {
 						Business.getInstance().getEventManager().
 							sendRemoteEvent(new ResetAccountRequestEvent(ID, 
-									Business.getInstance().getFirstServer(), account.getId(), IdGenerator.getInstance().getNextID()));
+									Business.getInstance().getFirstServer(), account.getId(), IdGenerator.getInstance().getNextID(), account.getUserId(), Default.getMarket(), null));
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
 					}
