@@ -119,7 +119,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		ctx.close();
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		WindFutureDataAdaptor.isConnected = false;
-		adaptor.updateState(false);
+		adaptor.updateState(WindFutureDataAdaptor.isConnected );
 		WindFutureDataAdaptor.instance.reconClient();
 
 	}
@@ -129,7 +129,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		LogUtil.logInfo(log, "Wind channel Active");
 		context = ctx;
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		adaptor.updateState(true);
+		WindFutureDataAdaptor.isConnected = true;
+		WindFutureDataAdaptor.isConnecting = false;
+		adaptor.updateState(WindFutureDataAdaptor.isConnected);
 
 		String[] arrSymbol = WindFutureDataAdaptor.instance.getRefSymbol();
 		if (arrSymbol.length > 0) {
@@ -190,7 +192,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		LogUtil.logInfo(log, "Wind channel InActive");
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		WindFutureDataAdaptor.isConnected = false;
-		adaptor.updateState(false);
+		adaptor.updateState(WindFutureDataAdaptor.isConnected );
 	}
 
 	@Override

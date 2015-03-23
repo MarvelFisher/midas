@@ -822,11 +822,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			for (int i = 0; i < preSubscriptionList.size(); i++) {
 				List<String> preList = preSubscriptionList.get(i);
 				IMarketDataAdaptor adaptor = adaptors.get(i);
-				if (!adaptor.getState())
-					continue;
-
 				log.debug("Market data presubscribe adapter begin : "
 						+ adaptor.getState());
+				if (!adaptor.getState())
+					continue;
 
 				for (String symbol : preList) {
 					adaptor.subscribeMarketData(symbol, this);
