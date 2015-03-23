@@ -698,7 +698,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 			break;
 
 		default:
-			log.debug("tickPrice: " + symbol + " undefined field type: "
+			if (logMarketData)
+			log.trace("tickPrice: " + symbol + " undefined field type: "
 					+ field + ", value: " + price);
 		}
 	}
@@ -744,7 +745,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 			publishQuote(quote);
 			break;
 		default:
-			log.debug("tickSize: " + symbol + " undefined field type: " + field
+			if (logMarketData)
+			log.trace("tickSize: " + symbol + " undefined field type: " + field
 					+ ", value: " + size);
 		}
 	}
