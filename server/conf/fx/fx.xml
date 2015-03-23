@@ -54,6 +54,13 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+		<constructor-arg>
+			<ref bean="globalTransportService" />
+		</constructor-arg>
+		<property name="embedBroker" value="false"></property>
+	</bean>	
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
 		<property name="socketService">
