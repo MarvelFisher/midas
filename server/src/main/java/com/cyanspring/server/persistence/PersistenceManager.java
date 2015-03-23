@@ -630,7 +630,11 @@ public class PersistenceManager {
 						    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
 						{
 							if(centralDbConnector.isEmailExist(user.getEmail()))
-								throw new CentralDbException("This email already exists: " + user.getEmail());
+							{
+								//fixed because of #3090
+//								throw new CentralDbException("This email already exists: " + user.getEmail());
+								throw new CentralDbException("Your "+ user.getUserType().name() +" account email has been used to register an FDT Account. Please login it with " + user.getEmail() + " now.");
+							}
 						}
 						if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
 									user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
@@ -650,7 +654,7 @@ public class PersistenceManager {
 				else 
 					log.error(e.getMessage(), e);
 				ok = false;
-				message = String.format("can't create user, err=[%s]", e.getMessage());
+				message = String.format("can't create user, err=[ %s ]", e.getMessage());
 			    if (tx!=null) 
 			    	tx.rollback();
 			}
