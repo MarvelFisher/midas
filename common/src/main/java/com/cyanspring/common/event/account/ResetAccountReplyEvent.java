@@ -4,23 +4,29 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class ResetAccountReplyEvent extends RemoteAsyncEvent {
-	private String account;
+	private String accountId;
 	private String txId;
+	private String userId;
+	private String market;
+	private String coinId;
 	private boolean ok;
 	private ResetAccountReplyType type;
 	private String message;
 	
 	public ResetAccountReplyEvent(String key, String receiver, String account,
-			String txId, ResetAccountReplyType type, boolean ok, String message) {
+			String txId, String userid, String market, String coinid, ResetAccountReplyType type, boolean ok, String message) {
 		super(key, receiver);
-		this.account = account;
+		this.accountId = account;
 		this.txId = txId;
+		this.userId = userid;
+		this.market = market;
+		this.coinId = coinid;
 		this.type = type;
 		this.ok = ok;
 		this.message = message;
 	}
 	public String getAccount() {
-		return account;
+		return accountId;
 	}
 	public String getTxId() {
 		return txId;
@@ -34,5 +40,15 @@ public class ResetAccountReplyEvent extends RemoteAsyncEvent {
 	public ResetAccountReplyType getType() {
 		return type;
 	}
-	
+	public String getUserId() {
+		return userId;
+	}
+
+	public String getMarket() {
+		return market;
+	}
+
+	public String getCoinId() {
+		return coinId;
+	}
 }

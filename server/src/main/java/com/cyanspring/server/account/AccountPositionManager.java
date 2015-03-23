@@ -722,7 +722,7 @@ public class AccountPositionManager implements IPlugin {
 		positionKeeper.resetAccount(evt.getAccount());
 		try {
 			eventManager.sendRemoteEvent(new ResetAccountReplyEvent(evt.getKey(), 
-					evt.getSender(), evt.getAccount(), evt.getTxId(), ResetAccountReplyType.LTSCORE, true, ""));
+					evt.getSender(), evt.getAccount(), evt.getTxId(), evt.getUserId(), evt.getMarket(), evt.getCoinId(), ResetAccountReplyType.LTSCORE, true, ""));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

@@ -131,12 +131,12 @@ public class UserManager implements IPlugin {
 				Return = query.executeUpdate();	
 				
 			}			
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(),ResetAccountReplyType.LTSINFO_USERMANAGER, true,"");
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(),ResetAccountReplyType.LTSINFO_USERMANAGER, true,"");
 			eventManager.sendRemoteEvent(resetAccountReplyEvent);
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), UserId, event.getTxId(), ResetAccountReplyType.LTSINFO_USERMANAGER, false, "Reset User " + UserId + "fail.");
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(), ResetAccountReplyType.LTSINFO_USERMANAGER, false, "Reset User " + UserId + "fail.");
 			try
 			{
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);
