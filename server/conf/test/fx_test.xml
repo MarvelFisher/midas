@@ -151,8 +151,8 @@
 					<value>USDRUB</value>
 					<value>USDSEK</value>
 					<value>USDSGD</value>
-					<value>XAUUSD</value>
-					<value>XAGUSD</value>
+					<!-- <value>XAUUSD</value> -->
+					<!-- <value>XAGUSD</value> -->
 			</list>
 		</constructor-arg>
 	</bean>
