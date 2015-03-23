@@ -114,8 +114,17 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	private long chkTime;
 	boolean state = false;
 	private boolean quotePriceWarningIsOpen = false;
+	private boolean quoteExtendEventIsSend = true;
 	private int quotePriceWarningPercent = 99;
 	private boolean quoteLogIsOpen = false;
+	
+	public boolean isQuoteExtendEventIsSend() {
+		return quoteExtendEventIsSend;
+	}
+
+	public void setQuoteExtendEventIsSend(boolean quoteExtendEventIsSend) {
+		this.quoteExtendEventIsSend = quoteExtendEventIsSend;
+	}
 
 	public boolean isQuoteLogIsOpen() {
 		return quoteLogIsOpen;
@@ -767,7 +776,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	@Override
 	public void onQuoteExt(DataObject quoteExt, int sourceId) {
-		if (quoteExt != null) {
+		
+		if (quoteExt != null && isQuoteExtendEventIsSend()) {
 			
 			StringBuffer sbQuoteExtendLog = new StringBuffer();
 			for(String key : quoteExt.getFields().keySet()){
