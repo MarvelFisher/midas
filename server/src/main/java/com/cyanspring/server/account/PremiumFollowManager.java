@@ -75,6 +75,7 @@ public class PremiumFollowManager implements IPlugin {
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(PremiumFollowGlobalRequestEvent.class, null);
+			subscribeToEvent(PremiumFollowGlobalReplyEvent.class, null);
 		}
 
 		@Override
@@ -201,7 +202,7 @@ public class PremiumFollowManager implements IPlugin {
 		
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
 				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
-		eventManager.sendRemoteEvent(reply);
+		globalEventManager.sendRemoteEvent(reply);
 	}
 
 	public void processPremiumFollowGlobalReplyEvent(PremiumFollowGlobalReplyEvent event) throws Exception {
