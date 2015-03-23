@@ -33,6 +33,7 @@
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
+				<ref bean="premiumFollowManager"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -61,6 +62,8 @@
 		</constructor-arg>
 		<property name="embedBroker" value="false"></property>
 	</bean>	
+	
+	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"></bean>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
 		<property name="socketService">
