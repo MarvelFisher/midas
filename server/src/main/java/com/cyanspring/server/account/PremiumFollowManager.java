@@ -97,7 +97,7 @@ public class PremiumFollowManager implements IPlugin {
 				String message = ErrorLookup.lookup(error) + " " + pf;
 				log.warn("PremiumFollowInfo: " + message);
 				PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-						request.getSender(), null, null, error, false, message, request.getTxId());
+						request.getSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getTxId());
 				
 				eventManager.sendRemoteEvent(reply);
 			}
@@ -141,7 +141,7 @@ public class PremiumFollowManager implements IPlugin {
 			String message = ErrorLookup.lookup(error) + " " + pf;
 			log.warn("PremiumFollowInfo: " + message);
 			PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(event.getKey(), 
-					event.getSender(), null, null, error, false, message, event.getTxId());
+					event.getSender(), null, null, error, false, message, event.getUserId(), event.getAccountId(), event.getTxId());
 			
 			eventManager.sendRemoteEvent(reply);
 		}
@@ -150,7 +150,7 @@ public class PremiumFollowManager implements IPlugin {
 		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
 				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
 			String txId = IdGenerator.getInstance().getNextID();
-			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, pf, txId);
+			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, pf, event.getUserId(), event.getAccountId(), txId);
 			request.setTime(Clock.getInstance().now());
 			pendingRequests.put(txId, request);
 			log.info("Fd account is not found in this server, sending global request: " + pf + ", " + txId);
@@ -171,7 +171,7 @@ public class PremiumFollowManager implements IPlugin {
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(event.getKey(), 
-				event.getSender(), account, positions, 0, true, null, event.getTxId());
+				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
 		eventManager.sendRemoteEvent(reply);
 	}
 	
@@ -200,7 +200,7 @@ public class PremiumFollowManager implements IPlugin {
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
-				event.getSender(), account, positions, 0, true, null, event.getTxId());
+				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
 		eventManager.sendRemoteEvent(reply);
 	}
 
@@ -212,7 +212,7 @@ public class PremiumFollowManager implements IPlugin {
 			log.info("processPremiumFollowGlobalReplyEvent found requester: " + request.getTxId());
 			
 			PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-					request.getSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getTxId());
+					request.getSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getTxId());
 			eventManager.sendRemoteEvent(reply);
 		}
 		
