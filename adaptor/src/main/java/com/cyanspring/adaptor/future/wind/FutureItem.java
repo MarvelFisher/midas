@@ -8,6 +8,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 
@@ -26,6 +29,9 @@ import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
 
 public class FutureItem implements AutoCloseable {
+	
+	private static final Logger log = LoggerFactory
+			.getLogger(FutureItem.class);
 
 	static ConcurrentHashMap<String, FutureItem> symbolTable = new ConcurrentHashMap<String, FutureItem>();
 	/**
@@ -230,6 +236,7 @@ public class FutureItem implements AutoCloseable {
 					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
 							DateUtil.now());
 		} catch (Exception e) {
+			LogUtil.logException(log, e);
 			return;
 		}
 
