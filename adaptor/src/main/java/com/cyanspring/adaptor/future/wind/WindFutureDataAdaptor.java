@@ -967,8 +967,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			clientGroup = null;
 		}
 
-		LogUtil.logInfo(log, "Wind initClient exit");
-		Util.addLog(InfoString.ALert, "Wind initClient exit");
+		LogUtil.logInfo(log, "Wind Close Client exit");
+		Util.addLog(InfoString.ALert, "Wind Close Client exit");
 	}
 
 	// API initial

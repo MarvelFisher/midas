@@ -37,7 +37,7 @@ public class FutureItem implements AutoCloseable {
 	long volume = 0;
 
 	double settlePrice = 0;
-	long preOpenInterest = 0;
+	long openInterest = 0;
 	double highLimit = 0;
 	double lowLimit = 0;
 
@@ -249,22 +249,15 @@ public class FutureItem implements AutoCloseable {
 
 		boolean change = false;
 		
-		
-//		double preSettle = (double) data.getPreSettlePrice() / 10000;
-//		if (item.preSettle != preSettle) {
-//			item.preSettle = preSettle;
-//			change = true;
-//		}
-		
 		double settlePrice = (double) data.getSettlePrice() /10000;
 		if(item.settlePrice != settlePrice){
 			item.settlePrice = settlePrice;
 			change = true;			
 		}
 
-		long preOpenInterest = data.getPreOpenInterest();
-		if (item.preOpenInterest != preOpenInterest) {
-			item.preOpenInterest = preOpenInterest;
+		long openInterest = data.getOpenInterest();
+		if (item.openInterest != openInterest) {
+			item.openInterest = openInterest;
 			change = true;
 		}
 
@@ -290,7 +283,7 @@ public class FutureItem implements AutoCloseable {
 		quote.setTotalVolume(totalVolume);
 		quote.setLastVol(item.volume);
 
-		// process Ext field
+		// process Extend field
 		DataObject quoteExt = null;
 		if(change){
 			quoteExt = new DataObject();
@@ -300,6 +293,7 @@ public class FutureItem implements AutoCloseable {
 			quoteExt.put(QuoteExtDataField.CEIL.value(), highLimit);
 			quoteExt.put(QuoteExtDataField.FLOOR.value(), lowLimit);
 			quoteExt.put(QuoteExtDataField.SETTLEPRICE.value(), settlePrice);
+			quoteExt.put(QuoteExtDataField.OPENINTEREST.value(), openInterest);
 		}
 
 		
