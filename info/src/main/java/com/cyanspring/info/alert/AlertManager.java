@@ -168,6 +168,7 @@ public class AlertManager implements IPlugin {
 	}
 
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + "Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
 
