@@ -212,5 +212,18 @@
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
+	
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="SHsessionChecker"/></entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="SHtradeDateManager"/></entry>
+			</map>
+		</constructor-arg>
+	</bean>	
 
 </beans>

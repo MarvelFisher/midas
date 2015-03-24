@@ -7,36 +7,31 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
-	<bean id="marketSessionManager" class="com.cyanspring.server.marketsession.MarketSessionManager">
-	    <property name="sessionChecker"> 
-        	<ref bean="sessionChecker"/>
-        </property>
-	</bean>
+	<context:annotation-config />
 	
-	<bean id="sessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+	<bean id="SHsessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>
 				<entry key="DEFAULT">
-					<ref bean="defaultSession"/>
+					<ref bean="SHdefaultSession"/>
 				</entry>
 			</map>
 		</property>
-		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
 	</bean>
 	
-	<bean id="defaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="SHdefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
 		        	<constructor-arg><value>15:00:00</value></constructor-arg>
 		        	<constructor-arg><value>23:59:59</value></constructor-arg>
-				</bean>	
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+				</bean>		
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
 		        	<constructor-arg><value>00:00:00</value></constructor-arg>
 		        	<constructor-arg><value>09:00:00</value></constructor-arg>
-				</bean>		
+				</bean>					
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
 		        	<constructor-arg><value>09:00:00</value></constructor-arg>
@@ -45,13 +40,23 @@
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>OPEN</value></constructor-arg>
 		        	<constructor-arg><value>09:30:00</value></constructor-arg>
+		        	<constructor-arg><value>11:30:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+		        	<constructor-arg><value>CLOSE</value></constructor-arg>
+		        	<constructor-arg><value>11:30:00</value></constructor-arg>
+		        	<constructor-arg><value>13:00:00</value></constructor-arg>
+				</bean>		
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+		        	<constructor-arg><value>OPEN</value></constructor-arg>
+		        	<constructor-arg><value>13:00:00</value></constructor-arg>
 		        	<constructor-arg><value>15:00:00</value></constructor-arg>
 				</bean>
 			</list>
 		</constructor-arg>
 	</bean>
 	
-	<bean id="tradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
+	<bean id="SHtradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
 			<list>
 			</list>
