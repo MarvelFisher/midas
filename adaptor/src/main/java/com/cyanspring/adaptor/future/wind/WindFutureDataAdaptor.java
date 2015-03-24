@@ -476,7 +476,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					key = kv_arr[0];
 					value = kv_arr[1];
 					if (key.equals("Symbol")) {
-						if (futuredata.containsKey(value)) {
+						if (stockdata.containsKey(value)) {
 							stock = stockdata.get(value);
 						} else {
 							// add future data
@@ -679,10 +679,15 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		return future;
 	}
 
-	public static long[] parseStringTolong(String[] arr) {
-		long[] long_arr = new long[arr.length];
-		for (int i = 0; i < arr.length; i++) {
-			long_arr[i] = Long.parseLong(arr[i]);
+	/**
+	 * Convert String Array To long Array
+	 * @param str_arr
+	 * @return long array
+	 */
+	public static long[] parseStringTolong(String[] str_arr) {
+		long[] long_arr = new long[str_arr.length];
+		for (int i = 0; i < str_arr.length; i++) {
+			long_arr[i] = Long.parseLong(str_arr[i]);
 		}
 		return long_arr;
 	}

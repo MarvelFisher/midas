@@ -424,6 +424,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 					+ ",Ask=" + quote.getAsk() + ",Bid=" + quote.getBid()
 					+ ",Close=" + quote.getClose() + ",Open=" + quote.getOpen()
 					+ ",High=" + quote.getHigh() + ",Low=" + quote.getLow()
+					+",Last=" + quote.getLast()
 					+ ",Stale=" + quote.isStale() + ",TimeStamp="
 					+ quote.getTimeStamp().toString() + ",WarningPcnt="
 					+ getQuotePriceWarningPercent());
@@ -434,7 +435,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 					+ ",Symbol=" + quote.getSymbol() + ",Ask=" + quote.getAsk()
 					+ ",Bid=" + quote.getBid() + ",Close=" + quote.getClose()
 					+ ",Open=" + quote.getOpen() + ",High=" + quote.getHigh()
-					+ ",Low=" + quote.getLow() + ",Stale=" + quote.isStale()
+					+ ",Low=" + quote.getLow() +",Last=" + quote.getLast() 
+					+  ",Stale=" + quote.isStale()
 					+ ",TimeStamp=" + quote.getTimeStamp().toString()
 					+ ",WarningPcnt=" + getQuotePriceWarningPercent());
 			return;

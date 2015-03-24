@@ -3,8 +3,8 @@ package com.cyanspring.adaptor.future.wind;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_MARKET_DATA;
@@ -17,11 +17,10 @@ import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.StringUtil;
-import com.cyanspring.id.Library.Util.TimeSpan;
 
 public class StockItem implements AutoCloseable{
 
-	static Hashtable<String, StockItem> symbolTable = new Hashtable<String, StockItem>();
+	static ConcurrentHashMap<String, StockItem> symbolTable = new ConcurrentHashMap<String, StockItem>();
 	/**
 	 * member
 	 */
@@ -144,64 +143,6 @@ public class StockItem implements AutoCloseable{
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
 	}
-
-	/************************************* Market Data ***************************************/
-	static void OutputDataMarket(TDF_MARKET_DATA data, int serverTime, String localCurrentTime) {
-		/*
-		 * 
-		 * String[] header ={"日期", "本地時間", "伺服器時間", "交易所時間", "萬得代碼", "原始代碼",
-		 * "業務發生日(自然日)", "交易日",
-		 * "狀態",
-		 * "前收","開盤價","最高價","最低價","最新價","申賣價",
-		 * "申賣量","申買價","申買量","成交筆數","	成交總量","成交總金額","委託買入總量","委託賣出總量",
-		 * "加權平均委買價格","加權平均委賣價格","IOPV淨值估值","到期收益率","漲停價","跌停價",
-		 * "證券資訊首碼","市盈率1","市盈率2","升跌2（對比上一筆）"};
-		 */
-
-/*		
-		String[] contents = { 
-				CurrrentDate, 
-				localCurrentTime, 
-				String.valueOf(serverTime),
-				String.valueOf(data.getTime()), 
-				data.getWindCode(), 
-				data.getCode(),
-				String.valueOf(data.getActionDay()), 
-				String.valueOf(data.getTradingDay()),
-				
-				String.valueOf(data.getStatus()), 
-				String.valueOf(data.getPreClose()), 
-				String.valueOf(data.getOpen()),
-				String.valueOf(data.getHigh()), 
-				String.valueOf(data.getLow()), 
-				String.valueOf(data.getMatch()),
-				
-				//arrayToStr(data.getAskPrice()), 
-				//arrayToStr(data.getAskVol()), 
-				//arrayToStr(data.getBidPrice()),				
-				//arrayToStr(data.getBidVol()), 
-				
-				String.valueOf(data.getNumTrades()), String.valueOf(data.getVolume()),
-				String.valueOf(data.getTurnover()), String.valueOf(data.getTotalBidVol()),
-				String.valueOf(data.getTotalAskVol()), String.valueOf(data.getWeightedAvgBidPrice()),
-				String.valueOf(data.getWeightedAvgAskPrice()), String.valueOf(data.getIOPV()),
-				String.valueOf(data.getYieldToMaturity()), String.valueOf(data.getHighLimited()),
-				String.valueOf(data.getLowLimited()), data.getPrefix(), 
-				
-				String.valueOf(data.getSyl1()),
-				String.valueOf(data.getSyl2()), 
-				
-				String.valueOf(data.getSD2())
-				
-
-		};
-		
-		
-		// wdhMarketData.WriteRecordToFile(contents);
-		//wdhMarketData.addRecord(contents);
-		 * 
-		 */
-	}
 	
 	public static SymbolInfo processCODE(TDF_CODE code) {
 		String symbolId = code.getCode();
@@ -217,23 +158,17 @@ public class StockItem implements AutoCloseable{
 		}
 		item.setEnName(enName);
 		
-		
-		//WindFutureDataAdaptor.info("%s, %s, %s, %s, %s", code.getMarket(),
-		//		code.getCode(), code.getWindCode(),
-		//		WindFutureDataAdaptor.convertGBString(code.getCNName()), code.getENName());
-		
 		return item.getSymbolInfo();
-		
 		
 	}
 	
 	static Date timeLast = DateUtil.now(); 
 	static int lastShow = 0;
 	public static void processMarketData(TDF_MARKET_DATA data) {
+		
+		
 		String symbolId = data.getWindCode();
 		String windCode = data.getWindCode();
-		//int status = data.getStatus();
-		//WindFutureDataAdaptor.info("%d %d", data.getSyl1(), data.getSyl2());
 		
 		
 		StockItem item = getItem(symbolId, windCode, true);
@@ -247,10 +182,15 @@ public class StockItem implements AutoCloseable{
 		Quote quote = new Quote(symbolId, bids, asks);
 
 		// tick time
-		String timeStamp = String.format("%d-%d", data.getActionDay(), data.getTime());
+		String timeStamp = String.format("%d-%d", data.getTradingDay(),
+				data.getTime());
 		Date tickTime;
 		try {
-			tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
+			if(data.getTime() < WindFutureDataAdaptor.AM10){
+				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
+			}else{
+				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
+			}
 		} catch (ParseException e) {
 			tickTime = DateUtil.now();
 		}
@@ -269,13 +209,7 @@ public class StockItem implements AutoCloseable{
 		quote.setLast((double) data.getMatch() / 10000);
 		quote.setClose((double) data.getPreClose() / 10000);
 
-		// if (diff ) send info event
-		// ==================
-		//quote.setPresettlePrice((double) data.getSettlePrice() / 10000); //.getPreSettlePrice() / 10000);
-		//quote.setOpenInterest(data.getOpenInterest());
-		
-		
-		//QuoteExt quoteExt = new QuoteExt(item.symbolId, item.market);
+
 		boolean change = false;
 		double highLimit = (double)data.getHighLimited() / 10000 ;
 		if (item.highLimit != highLimit) {
@@ -288,40 +222,25 @@ public class StockItem implements AutoCloseable{
 			item.lowLimit = lowLimit;
 			change = true;
 		}
-		
-		if (change) {
-			// fire QuoteExt
-		}
-		
-		
-		// settle price
-		// pre settle price
-		// high limit
-		// low limit
-		
-		// update volume
+
+		//volume
 		long totalVolume = data.getVolume();
-		
-		if (item.totalVolume == 0) {
-			item.totalVolume = totalVolume;			
-			return;
-		}
-			
+
 		if (totalVolume - item.totalVolume > 0) {
 			item.volume = totalVolume - item.volume;
 			item.totalVolume = totalVolume;
-
-			quote.setTotalVolume(totalVolume);
-			quote.setLastVol(item.volume);
 		}
-
-		Date now = DateUtil.now();
-		int timestamp = DateUtil.dateTime2Time(now);
+		quote.setTotalVolume(totalVolume);
+		quote.setLastVol(item.volume);
+		
 		// fire quote event
 		String s = quote.toString();
 		WindFutureDataAdaptor.instance.saveLastQuote(quote, null);
 		WindFutureDataAdaptor.instance.sendQuote(quote, null);
 
+		
+		Date now = DateUtil.now();
+		int timestamp = DateUtil.dateTime2Time(now);
 		// show quote
 		FutureFeed future = FutureFeed.instance;
 		if (future.isSelectAll || future.isWatchSymbol(symbolId)) {
@@ -333,13 +252,13 @@ public class StockItem implements AutoCloseable{
 		
 		// log quote as alive frame
 		
-		if(WindFutureDataAdaptor.instance.isMarketDataLog()){
-			TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
-			if (ts.getTotalSeconds() >= 20) {			
-				WindFutureDataAdaptor.info(s);
-				timeLast = now;
-			}		
-		}
+//		if(WindFutureDataAdaptor.instance.isMarketDataLog()){
+//			TimeSpan ts = TimeSpan.getTimeSpan(now, timeLast);
+//			if (ts.getTotalSeconds() >= 20) {			
+//				WindFutureDataAdaptor.info(s);
+//				timeLast = now;
+//			}		
+//		}
 	}
 	
 	public String windCode() {
