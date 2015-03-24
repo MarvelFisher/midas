@@ -15,11 +15,13 @@ public class Logger {
 	public final static int id_Alert = 0x11; 
 	public final static int id_Info =  0x02;
 	public final static int id_Debug = 0x01;
+	public final static int id_Trace = 0x00;
 	
 	public final static String constError = "ERROR"; 
 	public final static String constAlert = "ALERT";
 	public final static String constInfo = "INFO";
 	public final static String constDebug = "DEBUG";
+	public final static String constTrace = "TRACE";
 	
 	public final static int getLevel(String sLevel) {
 		switch (sLevel.toUpperCase().trim()) {
@@ -127,7 +129,23 @@ public class Logger {
 		log(String.format(f, args));
 	}
 
-	// Info
+	//Trace
+	public static void logTrace(String f, Object... args) {
+		if (defaultLevel > id_Trace)
+			return;
+
+		log(String.format("%-7s - %s", constTrace, String.format(f, args)));
+	}
+
+	public static void LogTrace(int nID, String f, Object... args) {
+		if (defaultLevel > id_Trace)
+			return;
+		
+		log(nID, String.format("%-7s - %s", constTrace, String.format(f, args)));
+	}	
+	
+	
+	// debug
 	public static void logDebug(int nID, String f, Object... args) {
 		if (defaultLevel > id_Debug)
 			return;
@@ -191,7 +209,7 @@ public class Logger {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Inner Log class
 	 */
