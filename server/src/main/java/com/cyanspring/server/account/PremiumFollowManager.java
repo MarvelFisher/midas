@@ -47,8 +47,8 @@ public class PremiumFollowManager implements IPlugin {
 	@Autowired
 	private AccountKeeper accountKeeper;
 	
-	private Map<String, PremiumFollowRequestEvent> pendingRequests = 
-				new HashMap<String, PremiumFollowRequestEvent>();
+	private Map<String, PremiumFollowGlobalRequestEvent> pendingRequests = 
+				new HashMap<String, PremiumFollowGlobalRequestEvent>();
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long timerInterval = 5000;
@@ -86,11 +86,11 @@ public class PremiumFollowManager implements IPlugin {
 	};
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) throws Exception {
-		Iterator<Entry<String, PremiumFollowRequestEvent>> it = pendingRequests.entrySet().iterator();
+		Iterator<Entry<String, PremiumFollowGlobalRequestEvent>> it = pendingRequests.entrySet().iterator();
 		
 		while(it.hasNext()) {
-			Entry<String, PremiumFollowRequestEvent> entry = it.next();
-			PremiumFollowRequestEvent request = entry.getValue();
+			Entry<String, PremiumFollowGlobalRequestEvent> entry = it.next();
+			PremiumFollowGlobalRequestEvent request = entry.getValue();
 			if(TimeUtil.getTimePass(request.getTime()) > timeout) {
 				pendingRequests.remove(entry.getKey());
 				PremiumFollowInfo pf = request.getInfo();
@@ -98,7 +98,7 @@ public class PremiumFollowManager implements IPlugin {
 				String message = ErrorLookup.lookup(error) + " " + pf;
 				log.warn("PremiumFollowInfo: " + message);
 				PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-						request.getSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getTxId());
+						request.getOrginSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getTxId());
 				
 				eventManager.sendRemoteEvent(reply);
 			}
@@ -148,15 +148,14 @@ public class PremiumFollowManager implements IPlugin {
 			return;
 		}
 		
-		//!!! TODO: also check expiry
 		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
 				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
 			String txId = IdGenerator.getInstance().getNextID();
-			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, pf, event.getUserId(), event.getAccountId(), txId);
+			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, event.getSender(), pf, event.getUserId(), event.getAccountId(), txId);
 			request.setTime(Clock.getInstance().now());
 			pendingRequests.put(txId, request);
 			log.info("Fd account is not found in this server, sending global request: " + pf + ", " + txId);
-			globalEventManager.sendGlobalEvent(request);
+			globalEventManager.sendRemoteEvent(request);
 			return;
 		}
 		
@@ -203,18 +202,18 @@ public class PremiumFollowManager implements IPlugin {
 		
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
 				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
-		globalEventManager.sendGlobalEvent(reply);
+		globalEventManager.sendRemoteEvent(reply);
 	}
 
 	public void processPremiumFollowGlobalReplyEvent(PremiumFollowGlobalReplyEvent event) throws Exception {
 		log.info("Received PremiumFollowGlobalRequestEvent: " + event.getTxId());
 		
-		PremiumFollowRequestEvent request = pendingRequests.remove(event.getTxId());
+		PremiumFollowGlobalRequestEvent request = pendingRequests.remove(event.getTxId());
 		if(null != request) {
 			log.info("processPremiumFollowGlobalReplyEvent found requester: " + request.getTxId());
 			
 			PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-					request.getSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getTxId());
+					request.getOrginSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getTxId());
 			eventManager.sendRemoteEvent(reply);
 		}
 		
