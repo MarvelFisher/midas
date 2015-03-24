@@ -61,7 +61,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createCountAccountAction;
 	private ImageRegistry imageRegistry;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long maxRefreshInterval = 500;
+	private long maxRefreshInterval = 2000;
 	private boolean show;
 	
 	@Override
