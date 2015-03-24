@@ -244,12 +244,12 @@ public class DBHandler
     	boolean getPrice = false;
     	if (dir)
     	{
-    		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `DATATIME` limit 1 ;", 
+    		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `KEYTIME` limit 1 ;", 
     				strTable, symbol) ;
     	}
     	else
     	{
-    		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `DATATIME` desc limit 1 ;", 
+    		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `KEYTIME` desc limit 1 ;", 
     				strTable, symbol) ;
     	}
     	ResultSet rs = querySQL(sqlcmd) ;
