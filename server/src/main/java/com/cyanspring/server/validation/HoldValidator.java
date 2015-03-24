@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import webcurve.util.PriceUtils;
+
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.business.ParentOrder;
@@ -41,6 +43,8 @@ public class HoldValidator implements IFieldValidator {
 		
 		RefData refData = refDataManager.getRefData(order.getSymbol());
 		double maxHold = refData.getMaximumHold();
+		if(PriceUtils.isZero(maxHold))
+			return;
 		if(order.getSide().equals(OrderSide.Buy)){
 			if(maxHold < Math.abs(qty + order.getQuantity()))
 				throw new OrderValidationException("The order quantity is over maximun hold.");			
