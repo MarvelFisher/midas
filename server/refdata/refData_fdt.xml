@@ -1,13 +1,25 @@
 <list>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -34,13 +46,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -67,13 +91,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -100,13 +136,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -149,13 +197,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -198,13 +258,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -247,13 +319,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -296,13 +380,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -345,13 +441,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -394,13 +502,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -443,13 +563,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -492,13 +624,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -541,13 +685,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -590,13 +746,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -639,13 +807,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -688,13 +868,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -737,13 +929,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -786,13 +990,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -835,13 +1051,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -884,13 +1112,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -933,13 +1173,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -982,13 +1234,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1031,13 +1295,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1080,13 +1356,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1129,13 +1417,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1178,13 +1478,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1227,13 +1539,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1276,13 +1600,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1325,13 +1661,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1374,13 +1722,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1423,13 +1783,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1472,13 +1844,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1521,13 +1905,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1570,13 +1966,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1619,13 +2027,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1668,13 +2088,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1717,13 +2149,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1766,13 +2210,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1815,13 +2271,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1864,13 +2332,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1913,13 +2393,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1962,13 +2454,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2011,13 +2515,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2060,13 +2576,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2109,13 +2637,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2158,13 +2698,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2207,13 +2759,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2256,13 +2820,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2305,13 +2881,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2354,13 +2942,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2403,13 +3003,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2452,13 +3064,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2501,13 +3125,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2550,13 +3186,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2599,13 +3247,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2648,13 +3308,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2697,13 +3369,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2746,13 +3430,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2795,13 +3491,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2844,13 +3552,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2893,13 +3613,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2942,13 +3674,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2991,13 +3735,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3040,13 +3796,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3089,13 +3857,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3138,13 +3918,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3187,13 +3979,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3236,13 +4040,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3285,13 +4101,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<!-- <com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3334,13 +4162,25 @@
 	</com.cyanspring.common.staticdata.RefData> -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3383,13 +4223,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3432,13 +4284,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3481,13 +4345,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3530,13 +4406,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3579,13 +4467,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3628,13 +4528,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3677,13 +4589,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3726,13 +4650,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3775,13 +4711,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3824,13 +4772,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3873,13 +4833,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3922,13 +4894,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3971,13 +4955,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4020,13 +5016,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4069,13 +5077,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4118,13 +5138,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 <!-- 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4167,13 +5199,25 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+		    <entry>
+        		<string>Maximum lot</string>
+        		<int>0</int>
+      		</entry>
+      		<entry>
+        		<string>Maximum hold</string>
+        		<int>0</int>
+      		</entry>
+			<entry>
+        		<string>Margin Rate</string>
+       		 	<double>0.025</double>
+      		</entry>
 			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>

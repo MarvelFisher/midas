@@ -6,12 +6,12 @@
         <int>2500</int>
       </entry>
       <entry>
-        <string>TWTrading unit</string>
-        <string>人民幣/點</string>
-      </entry>
-      <entry>
         <string>Type</string>
         <string>INDEX_FU</string>
+      </entry>
+      <entry>
+        <string>TWTrading unit</string>
+        <string>人民幣/點</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -103,7 +103,7 @@
       </entry>
       <entry>
         <string>Maximum lot</string>
-        <int>0</int>
+        <int>499</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -114,12 +114,12 @@
         <int>2500</int>
       </entry>
       <entry>
-        <string>TWTrading unit</string>
-        <string>人民幣/點</string>
-      </entry>
-      <entry>
         <string>Type</string>
         <string>INDEX_FU</string>
+      </entry>
+      <entry>
+        <string>TWTrading unit</string>
+        <string>人民幣/點</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -211,7 +211,7 @@
       </entry>
       <entry>
         <string>Maximum lot</string>
-        <int>0</int>
+        <int>499</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>

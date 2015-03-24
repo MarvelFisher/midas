@@ -1,6 +1,22 @@
 <list>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>601318.SH</string>
@@ -29,6 +45,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>600030.SH</string>
@@ -57,6 +89,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>601628.SH</string>
@@ -85,6 +133,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>601989.SH</string>
@@ -113,6 +177,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>600000.SH</string>
@@ -141,6 +221,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>000002.SZ</string>
@@ -169,6 +265,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>600016.SH</string>
@@ -197,6 +309,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>600837.SH</string>
@@ -225,6 +353,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>300104.SZ</string>
@@ -253,6 +397,22 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Lot size</string>
+        <int>100</int>
+     </entry>
+     <entry>
+        <string>Maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+     </entry>
+	 <entry>
+        <string>Margin Rate</string>
+       	<double>1.0</double>
+      </entry>
       <entry>
         <string>Symbol</string>
         <string>002230.SZ</string>
