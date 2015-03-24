@@ -37,8 +37,10 @@ import com.cyanspring.common.event.alert.QueryOrderAlertRequestEvent;
 import com.cyanspring.common.event.alert.QueryPriceAlertRequestEvent;
 import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.AsyncEventProcessor;
 
@@ -63,7 +65,10 @@ public class AlertManager implements IPlugin {
 	private int maxRetrytimes;
 	private long killTimeoutSecond;
 	private int maxNoOfAlerts;
+	private int getPremiumTableInterval;
+	private String PremiumFollowURL;
 
+	private boolean checkAlertstart = true ;
 	private boolean tradeAlert;
 	private boolean priceAlert;
 	private static final String MSG_TYPE_PRICE = "1";
@@ -73,6 +78,8 @@ public class AlertManager implements IPlugin {
 	private String parseRestApiId;
 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private AsyncTimerEvent PFTTimer = new AsyncTimerEvent();
+
 	private int CheckThreadStatusInterval = 60000; // 60 seconds
 
 	public ConcurrentLinkedQueue<ParseData> ParseDataQueue;
@@ -84,7 +91,8 @@ public class AlertManager implements IPlugin {
 	private Map<String, ArrayList<TradeAlert>> userTradeAlerts = new HashMap<String, ArrayList<TradeAlert>>();
 
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
-
+	private PremiumFollowThread PFT ;
+	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -107,6 +115,7 @@ public class AlertManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(ChildOrderUpdateEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
+			subscribeToEvent(MarketSessionEvent.class, null);
 		}
 
 		@Override
@@ -126,6 +135,23 @@ public class AlertManager implements IPlugin {
 			return eventManagerMD;
 		}
 	};
+	
+	public void processMarketSessionEvent(MarketSessionEvent event)	{
+		MarketSessionType mst = event.getSession();
+		
+		if (MarketSessionType.PREOPEN == mst)
+		{
+			log.info("[MarketSessionEvent] : " + mst);
+			checkAlertstart = true ;
+			PFT.getPremiumAll();
+			PFT.notifyQueState();
+		}
+		else if (MarketSessionType.CLOSE == mst)
+		{
+			log.info("[MarketSessionEvent] : " + mst);
+			checkAlertstart = false ;
+		}
+	}
 
 	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
 		Execution execution = event.getExecution();
@@ -185,7 +211,7 @@ public class AlertManager implements IPlugin {
 			String Datetime = dateFormat.format(execution.get(Date.class,
 					"Created"));
 			String tradeMessage = "Trade " + execution.getSymbol() + " "
-					+ execution.getSide().toString() + " " + strQty + "@"
+					+ execution.getSide().toString() + " " + strQty + " @ "
 					+ strPrice;
 			TradeAlert TA;
 			if (execution.getSide().toString().toLowerCase().equals("sell")) {
@@ -202,7 +228,18 @@ public class AlertManager implements IPlugin {
 					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
 			ParseDataQueue.add(new ParseData(execution.getUser(), tradeMessage,
 					TA.getId(), MSG_TYPE_ORDER, Datetime, keyValue));
-
+			//Premium Follow
+			ArrayList<PremiumUser> lstPU = PFT.findUser(execution.getAccount());			
+			if (null != lstPU)
+			{
+				String Msg = execution.getUser() + " made a new trade: " + tradeMessage;
+				for (PremiumUser user : lstPU)
+				{
+					//Send Notification to PremiumUser
+					ParseDataQueue.add(new ParseData(user.getUserId(),  Msg,
+							TA.getId(), MSG_TYPE_ORDER, Datetime, keyValue));
+				}
+			}
 			// save to Array
 			ArrayList<TradeAlert> list;
 			int search;
@@ -974,10 +1011,24 @@ public class AlertManager implements IPlugin {
 					}
 				}
 			} catch (Exception e) {
-				log.warn("[processAsyncTimerEvent] Exception : "
+				log.warn("[timerEvent] Exception : "
 						+ e.getMessage());
 			}
 		}
+		else if (event == PFTTimer) 
+		{
+			try
+			{
+				PFT.getPremiumUpdate();
+				PFT.notifyQueState();
+			}
+			catch (Exception e)
+			{
+				log.warn("[PFTTimer] Exception : "
+						+ e.getMessage());
+			}
+		}
+			
 	}
 
 	private void loadSQLdata() {
@@ -1056,8 +1107,13 @@ public class AlertManager implements IPlugin {
 				eventProcessorQuoMD.getThread().setName("AlertManager-Quo");
 
 			scheduleManager.scheduleRepeatTimerEvent(CheckThreadStatusInterval,
-					eventProcessorCHMD, timerEvent);
-
+					eventProcessorCHMD, timerEvent);			
+			scheduleManager.scheduleRepeatTimerEvent(getPremiumTableInterval,
+					eventProcessorCHMD, PFTTimer);
+			
+			PFT = new PremiumFollowThread(PremiumFollowURL);			
+			PFT.getPremiumAll();
+			
 			loadSQLdata();
 			if (getCreateThreadCount() > 0) {
 				for (int i = 0; i < getCreateThreadCount(); i++) {
@@ -1160,5 +1216,21 @@ public class AlertManager implements IPlugin {
 
 	public void setMaxNoOfAlerts(int maxNoOfAlerts) {
 		this.maxNoOfAlerts = maxNoOfAlerts;
+	}
+
+	public int getGetPremiumTableInterval() {
+		return getPremiumTableInterval;
+	}
+
+	public void setGetPremiumTableInterval(int getPremiumTableInterval) {
+		this.getPremiumTableInterval = getPremiumTableInterval;
+	}
+
+	public String getPremiumFollowURL() {
+		return PremiumFollowURL;
+	}
+
+	public void setPremiumFollowURL(String premiumFollowURL) {
+		PremiumFollowURL = premiumFollowURL;
 	}
 }
