@@ -209,8 +209,8 @@ public class NewsManager implements IPlugin {
 				news.setArticle(article.toString());
 				newsLst.add(~iSearch, news);
 				Count++;
-				if (newsLst.size() > 35) {
-					newsLst.remove(35);
+				if (newsLst.size() > 100) {
+					newsLst.remove(100);
 				}
 				
 				if (isFirstGetNews())
