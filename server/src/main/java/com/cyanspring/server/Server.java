@@ -333,8 +333,10 @@ public class Server implements ApplicationContextAware{
 		eventManager.init(channel, inbox);
 		eventManager.addEventChannel(nodeInfoChannel);
 		
-		if(null != globalEventManager)
+		if(null != globalEventManager){
 			globalEventManager.init(channel, inbox);
+			globalEventManager.addEventChannel(channel);
+		}
 		
 		// subscribe to events
 		eventProcessor.setHandler(this);
