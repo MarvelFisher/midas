@@ -156,7 +156,7 @@ public class PremiumFollowManager implements IPlugin {
 			request.setTime(Clock.getInstance().now());
 			pendingRequests.put(txId, request);
 			log.info("Fd account is not found in this server, sending global request: " + pf + ", " + txId);
-			globalEventManager.sendGlobalEvent(request);
+			globalEventManager.sendRemoteEvent(request);
 			return;
 		}
 		
@@ -203,7 +203,7 @@ public class PremiumFollowManager implements IPlugin {
 		
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
 				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
-		globalEventManager.sendGlobalEvent(reply);
+		globalEventManager.sendRemoteEvent(reply);
 	}
 
 	public void processPremiumFollowGlobalReplyEvent(PremiumFollowGlobalReplyEvent event) throws Exception {
