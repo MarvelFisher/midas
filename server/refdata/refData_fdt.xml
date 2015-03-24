@@ -19,7 +19,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -64,7 +64,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -109,7 +109,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -154,7 +154,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -215,7 +215,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -276,7 +276,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -337,7 +337,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -398,7 +398,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -459,7 +459,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -520,7 +520,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -581,7 +581,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -642,7 +642,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -703,7 +703,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -764,7 +764,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -825,7 +825,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -886,7 +886,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -947,7 +947,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1008,7 +1008,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1069,7 +1069,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1130,7 +1130,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1191,7 +1191,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1252,7 +1252,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1313,7 +1313,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1374,7 +1374,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1435,7 +1435,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1496,7 +1496,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1557,7 +1557,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1618,7 +1618,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1679,7 +1679,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1740,7 +1740,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1801,7 +1801,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1862,7 +1862,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1923,7 +1923,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -1984,7 +1984,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2045,7 +2045,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2106,7 +2106,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2167,7 +2167,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2228,7 +2228,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2289,7 +2289,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2350,7 +2350,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2411,7 +2411,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2472,7 +2472,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2533,7 +2533,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2594,7 +2594,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2655,7 +2655,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2716,7 +2716,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2777,7 +2777,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2838,7 +2838,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2899,7 +2899,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -2960,7 +2960,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3021,7 +3021,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3082,7 +3082,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3143,7 +3143,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3204,7 +3204,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3265,7 +3265,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3326,7 +3326,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3387,7 +3387,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3448,7 +3448,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3509,7 +3509,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3570,7 +3570,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3631,7 +3631,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3692,7 +3692,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3753,7 +3753,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3814,7 +3814,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3875,7 +3875,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3936,7 +3936,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -3997,7 +3997,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4058,7 +4058,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4119,7 +4119,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4180,7 +4180,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4241,7 +4241,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4302,7 +4302,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4363,7 +4363,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4424,7 +4424,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4485,7 +4485,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4546,7 +4546,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4607,7 +4607,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4668,7 +4668,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4729,7 +4729,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4790,7 +4790,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4851,7 +4851,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4912,7 +4912,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -4973,7 +4973,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -5034,7 +5034,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -5095,7 +5095,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -5156,7 +5156,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
@@ -5217,7 +5217,7 @@
       		</entry>
 			<entry>
 				<string>Lot size</string>
-				<int>1</int>
+				<int>1000</int>
 			</entry>
 			<entry>
         		<string>Decimal point</string>
