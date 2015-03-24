@@ -31,6 +31,16 @@ public class LogUtil {
 		}
 
 	}
+	
+	public static void logTrace(Logger log, String f, Object... args) {
+		if (log4J) {
+			log.trace(String.format(f, args));
+		} else {
+			com.cyanspring.id.Library.Util.Logger.logTrace(f, args);
+		}
+
+	}	
+	
 
 	public static void logException(Logger log, Exception e) {
 		if (log4J) {

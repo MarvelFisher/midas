@@ -94,16 +94,16 @@ public class Parser implements IReqThreadCallback {
 				}
 
 				if (data[0] != SpecialCharDef.EOT) {
-//					LogUtil.logError(log, 
-//							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
-//							data[0]);
+					LogUtil.logTrace(log, 
+							"Parser.Parse szTempBuf[0] != EOT [0x%02x]",
+							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
 				if (data[1] != SpecialCharDef.SPC) {
-//					LogUtil.logError(log, "Parser.Parse szTempBuf[1] != SPC");
-//					LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
-//							data[0]);
+					LogUtil.logTrace(log, "Parser.Parse szTempBuf[1] != SPC");
+					LogUtil.logTrace(log, "Parser.Parse pop [0x%02x]",
+							data[0]);
 					buffer.purge(1); // Skip One Byte
 					continue;
 				}
@@ -146,10 +146,10 @@ public class Parser implements IReqThreadCallback {
 					}
 
 					if (data[iPacketDataLength - 1] != SpecialCharDef.ETX) {
-						LogUtil.logError(log, 
+						LogUtil.logTrace(log, 
 								"Parser.Parse szTempBuf[iPacketDataLength - 1][0x%02x] != ETX iPacketDataLength = %d",
 								data[iPacketDataLength - 1], iPacketDataLength);
-						LogUtil.logError(log, "Parser.Parse pop [0x%02x]",
+						LogUtil.logTrace(log, "Parser.Parse pop [0x%02x]",
 								data[0]);
 						buffer.purge(1); // Skip One Byte
 						continue;
