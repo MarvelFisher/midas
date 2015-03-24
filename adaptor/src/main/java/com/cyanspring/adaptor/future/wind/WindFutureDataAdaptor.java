@@ -240,11 +240,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/*********************** configuration ***************************************/
 	TDFClient client = new TDFClient();
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
-	static ConcurrentHashMap<String, TDF_FUTURE_DATA> futuredata = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
-	static ConcurrentHashMap<String, TDF_MARKET_DATA> stockdata = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
-	static ConcurrentHashMap<String, String> strategyht = new ConcurrentHashMap<String, String>(); // SaveSymbolStrategy
-	static ConcurrentHashMap<String, Quote> lastquoteht = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
-	static ConcurrentHashMap<String, DataObject> lastQuoteExtht = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
+	static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
+	static ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
+	static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
+	static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
+	static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
 
 	boolean isClosed = false;
 	RequestThread thread = null;
@@ -414,18 +414,20 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		// process symbol Market Session
-		for (String symbol : strategyht.keySet()) {
+		for (String symbol : marketRuleBySymbolMap.keySet()) {
 			MarketSessionData marketSessionData = null;
 			try {
 				marketSessionData = getMarketSessionUtil()
-						.getCurrentMarketSessionType(strategyht.get(symbol),
+						.getCurrentMarketSessionType(
+								marketRuleBySymbolMap.get(symbol),
 								DateUtil.now());
 			} catch (Exception e) {
 				continue;
 			}
 			if (marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
-				Quote lastQuote = lastquoteht.get(symbol);
-				DataObject lastQuoteExt = lastQuoteExtht.get(symbol);
+				Quote lastQuote = lastQuoteBySymbolMap.get(symbol);
+				DataObject lastQuoteExt = lastQuoteExtendBySymbolMap
+						.get(symbol);
 				if (lastQuote != null && !lastQuote.isStale()) {
 					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol="
 							+ symbol);
@@ -476,14 +478,14 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					key = kv_arr[0];
 					value = kv_arr[1];
 					if (key.equals("Symbol")) {
-						if (stockdata.containsKey(value)) {
-							stock = stockdata.get(value);
+						if (stockDataBySymbolMap.containsKey(value)) {
+							stock = stockDataBySymbolMap.get(value);
 						} else {
 							// add future data
 							stock = new TDF_MARKET_DATA();
 							stock.setWindCode(value);
 							stock.setCode(value.split("\\.")[0]);
-							stockdata.put(value, stock);
+							stockDataBySymbolMap.put(value, stock);
 						}
 					}
 					switch (key) {
@@ -595,14 +597,14 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					key = kv_arr[0];
 					value = kv_arr[1];
 					if (key.equals("Symbol")) {
-						if (futuredata.containsKey(value)) {
-							future = futuredata.get(value);
+						if (futureDataBySymbolMap.containsKey(value)) {
+							future = futureDataBySymbolMap.get(value);
 						} else {
 							// add future data
 							future = new TDF_FUTURE_DATA();
 							future.setWindCode(value);
 							future.setCode(value.split("\\.")[0]);
-							futuredata.put(value, future);
+							futureDataBySymbolMap.put(value, future);
 						}
 					}
 					switch (key) {
@@ -681,6 +683,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	/**
 	 * Convert String Array To long Array
+	 * 
 	 * @param str_arr
 	 * @return long array
 	 */
@@ -719,6 +722,29 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			break;
 		case TDF_MSG_ID.MSG_DATA_MARKET:
 			TDF_MARKET_DATA stock = convertToStockData(in_arr);
+			if (stock.getTime() >= 240000000) {
+				debug(String.format("%s %s", this.TITLE_STOCK,
+						this.ERR_TIME_FORMAT_ERROR));
+				return;
+			}
+			if (stock.getMatch() <= 0) {
+				debug(String.format("%s %s", this.TITLE_STOCK,
+						this.ERR_LAST_LESS_THAN_ZERO));
+				return;
+			}
+			if (stock.getTradingDay() != tradeDateForWindFormat) {
+				debug(String.format("%s %s", this.TITLE_STOCK,
+						this.ERR_TRADEDATE_NOT_MATCH));
+				return;
+			}
+			if (isCloseOverTimeControlIsOpen()
+					&& bigSessionIsClose
+					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
+				debug(String.format("%s %s,Session Close Time=%s",
+						this.TITLE_STOCK, this.ERR_CLOSE_OVER_TIME,
+						bigSessionCloseDate.toString()));
+				return;
+			}
 			QuoteMgr.instance.AddRequest(new Object[] {
 					TDF_MSG_ID.MSG_DATA_MARKET, stock });
 			break;
@@ -727,7 +753,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE:
 			TDF_FUTURE_DATA future = convertToFutureData(in_arr);
-
 			if (future.getTime() >= 240000000) {
 				debug(String.format("%s %s", this.TITLE_FUTURE,
 						this.ERR_TIME_FORMAT_ERROR));
@@ -848,13 +873,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 				}
 				break;
 			case TDF_MSG_ID.MSG_DATA_INDEX:
-				// info("MSG_DATA_INDEX");
-				/*
-				 * for (int i = 0; i < msg.getAppHead().getItemCount(); i++) {
-				 * TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
-				 * TDF_INDEX_DATA index = data.getIndexData();
-				 * //FutureItem.processFutureData(data.getFutureData()); }
-				 */
 				break;
 			case TDF_MSG_ID.MSG_DATA_FUTURE:
 				for (int i = 0; i < msg.getAppHead().getItemCount(); i++) {
@@ -1152,43 +1170,56 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 		if (addSymbol(instrument) == true) {
 			if (WindFutureDataAdaptor.instance.isGateway()) {
-				// Future
-				if ("F".equals(WindFutureDataAdaptor.instance.getMarketType())) {
-					log.info("subscribeMarketData RefSymbol: " + instrument);
-					log.debug("Setting refDataManager: "
-							+ refDataManager.getClass());
-					RefData refData = null;
-					String targetField = "";
+				log.info("subscribeMarketData RefSymbol: " + instrument);
+				log.debug("Setting refDataManager: "
+						+ refDataManager.getClass());
+				RefData refData = null;
+				String targetField = "";
+				if ("F".equals(WindFutureDataAdaptor.instance
+						.getMarketType())) {
 					if (instrument.indexOf(".") == -1) {
-						refData = refDataManager
-								.getRefDataByRefSymbol(instrument);
+						refData = refDataManager.getRefDataByRefSymbol(instrument);
 						targetField = "RefSymbol ";
 					} else {
 						refData = refDataManager.getRefDataBySymbol(instrument);
 						targetField = "Symbol ";
 					}
-					if (refData == null) {
-						LogUtil.logError(log, targetField + instrument
-								+ " is not found in reference data");
-						throw new MarketDataException(targetField + instrument
-								+ " is not found in reference data");
-					} else {
-						LogUtil.logDebug(log, targetField + instrument
-								+ " Exchange=" + refData.getExchange()
-								+ ",Symbol=" + refData.getSymbol()
-								+ ",Strategy=" + refData.getStrategy());
-						instrument = refData.getSymbol();
-						strategyht.put(instrument, refData.getStrategy());
-						// subscribe
-						ClientHandler.subscribe(refData.getSymbol());
-						QuoteMgr.instance().addFutureSymbol(
-								refData.getSymbol(), refData.getExchange()); // future
-					}
 				}
-				// Stock
-				if ("S".equals(WindFutureDataAdaptor.instance.getMarketType())) {
-					ClientHandler.subscribe(instrument);
-					QuoteMgr.instance().addStockSymbol(instrument, null);
+				if ("S".equals(WindFutureDataAdaptor.instance
+						.getMarketType())) {
+						refData = refDataManager.getRefData(instrument);
+						targetField = "Symbol ";			
+				}
+				if (refData == null) {
+					LogUtil.logError(log, targetField + instrument
+							+ " is not found in reference data");
+					throw new MarketDataException(targetField + instrument
+							+ " is not found in reference data");
+				} else {
+					LogUtil.logDebug(
+							log,
+							targetField + instrument + " Exchange="
+									+ refData.getExchange() + ",Symbol="
+									+ refData.getSymbol() + ",Strategy="
+									+ refData.getStrategy());
+					instrument = refData.getSymbol();
+					// Future
+					if ("F".equals(WindFutureDataAdaptor.instance
+							.getMarketType())) {
+						marketRuleBySymbolMap.put(instrument,
+								refData.getStrategy());
+						QuoteMgr.instance().addFutureSymbol(
+								refData.getSymbol(), refData.getExchange());
+					}
+					// Stock
+					if ("S".equals(WindFutureDataAdaptor.instance
+							.getMarketType())) {
+						marketRuleBySymbolMap.put(instrument,
+								refData.getExchange());
+						QuoteMgr.instance().addStockSymbol(refData.getSymbol(),
+								refData.getExchange());
+					}
+					ClientHandler.subscribe(refData.getSymbol());
 				}
 			}
 		}
@@ -1266,9 +1297,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 * @param quote
 	 */
 	public void saveLastQuote(Quote quote, DataObject quoteExt) {
-		lastquoteht.put(quote.getSymbol(), quote);
-		if (quoteExt != null ) {
-			lastQuoteExtht.put(quoteExt.get(String.class,
+		lastQuoteBySymbolMap.put(quote.getSymbol(), quote);
+		if (quoteExt != null) {
+			lastQuoteExtendBySymbolMap.put(quoteExt.get(String.class,
 					QuoteExtDataField.SYMBOL.value()), quoteExt);
 		}
 	}
@@ -1345,9 +1376,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void clearSubscribeMarketData() throws Exception {
 		refDataManager.init();
 		refTable.clear();
-		strategyht.clear();
-		lastquoteht.clear();
-		lastQuoteExtht.clear();
+		marketRuleBySymbolMap.clear();
+		lastQuoteBySymbolMap.clear();
+		lastQuoteExtendBySymbolMap.clear();
 		ClientHandler.sendClearSubscribe();
 	}
 

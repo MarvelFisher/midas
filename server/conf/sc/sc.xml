@@ -217,11 +217,13 @@
 		<constructor-arg>
 			<map>
 				<entry key="SH"><ref bean="SHsessionChecker"/></entry>
+				<entry key="SZ"><ref bean="SZsessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
 				<entry key="SH"><ref bean="SHtradeDateManager"/></entry>
+				<entry key="SZ"><ref bean="SZtradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>	

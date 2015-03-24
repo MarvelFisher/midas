@@ -229,7 +229,7 @@ public class FutureItem implements AutoCloseable {
 		quote.setClose((double) data.getPreClose() / 10000);
 
 		// check stale
-		String strategy = WindFutureDataAdaptor.strategyht.get(symbolId);
+		String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
 		MarketSessionData marketSessionData = null;
 		try {
 			marketSessionData = WindFutureDataAdaptor.instance

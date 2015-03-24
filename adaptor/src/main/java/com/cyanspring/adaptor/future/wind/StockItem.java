@@ -6,20 +6,43 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_MARKET_DATA;
 
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketsession.MarketSessionData;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.LogUtil;
 import com.cyanspring.id.Library.Util.StringUtil;
+import com.google.common.base.CaseFormat;
 
 public class StockItem implements AutoCloseable{
-
+	
+	private static final Logger log = LoggerFactory
+			.getLogger(StockItem.class);
+	
+	private static final int STATUS_STOP_TRA_IN_OPEN = (int) 'R';
+	private static final int STATUS_SLEEP = (int) 'P';	
+	private static final int STATUS_STOP_SYMBOL = (int) 'B';	
+	private static final int STATUS_MARKET_CLOSE = (int) 'C';	
+	private static final int STATUS_STOP_SYMBOL_2 = (int) 'D';	
+	private static final int STATUS_NEW_SYMBOL = (int) 'Y';	
+	private static final int STATUS_PENDING = (int) 'W';	
+	private static final int STATUS_PENDING_2 = (int) 'X';		
+	private static final int STATUS_NOT_SERVICE = (int) 'S';	
+	private static final int STATUS_VAR_STOP = (int) 'Q';	
+	private static final int STATUS_MARKET_CLOSE_2 = (int) 'V';
+	
+	
 	static ConcurrentHashMap<String, StockItem> symbolTable = new ConcurrentHashMap<String, StockItem>();
 	/**
 	 * member
@@ -166,13 +189,10 @@ public class StockItem implements AutoCloseable{
 	static int lastShow = 0;
 	public static void processMarketData(TDF_MARKET_DATA data) {
 		
-		
 		String symbolId = data.getWindCode();
 		String windCode = data.getWindCode();
 		
-		
 		StockItem item = getItem(symbolId, windCode, true);
-		data.getStatus();
 
 		List<QtyPrice> bids = new ArrayList<QtyPrice>();
 		List<QtyPrice> asks = new ArrayList<QtyPrice>();
@@ -180,7 +200,43 @@ public class StockItem implements AutoCloseable{
 		makeBidAskList(data.getBidPrice(), data.getBidVol(), data.getAskPrice(), data.getAskVol(), bids, asks);
 
 		Quote quote = new Quote(symbolId, bids, asks);
-
+		
+		//Check Stale
+		String exchange = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
+		MarketSessionData marketSessionData = null;
+		try {
+			marketSessionData = WindFutureDataAdaptor.instance
+					.getMarketSessionUtil().getCurrentMarketSessionType(exchange,
+							DateUtil.now());
+		} catch (Exception e) {
+			LogUtil.logException(log, e);
+			return;
+		}
+		if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+				|| marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
+			quote.setStale(true);
+		}
+		if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
+			switch (data.getStatus()) {
+				case STATUS_MARKET_CLOSE: 
+				case STATUS_MARKET_CLOSE_2: 
+				case STATUS_NEW_SYMBOL:
+				case STATUS_NOT_SERVICE:
+				case STATUS_PENDING:
+				case STATUS_PENDING_2:
+				case STATUS_SLEEP:
+				case STATUS_STOP_SYMBOL:
+				case STATUS_STOP_SYMBOL_2:
+				case STATUS_STOP_TRA_IN_OPEN:
+				case STATUS_VAR_STOP:
+					quote.setStale(true);			
+					break;
+				default:
+					quote.setStale(false);
+					break;
+			}					
+		}
+		
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getTradingDay(),
 				data.getTime());
@@ -208,7 +264,6 @@ public class StockItem implements AutoCloseable{
 		quote.setLow((double) data.getLow() / 10000);
 		quote.setLast((double) data.getMatch() / 10000);
 		quote.setClose((double) data.getPreClose() / 10000);
-
 
 		boolean change = false;
 		double highLimit = (double)data.getHighLimited() / 10000 ;
