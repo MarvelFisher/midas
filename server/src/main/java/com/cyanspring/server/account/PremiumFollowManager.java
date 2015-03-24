@@ -145,6 +145,7 @@ public class PremiumFollowManager implements IPlugin {
 					event.getSender(), null, null, error, false, message, event.getUserId(), event.getAccountId(), event.getTxId());
 			
 			eventManager.sendRemoteEvent(reply);
+			return;
 		}
 		
 		//!!! TODO: also check expiry
