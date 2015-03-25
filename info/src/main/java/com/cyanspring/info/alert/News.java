@@ -21,7 +21,7 @@ public class News implements Comparable<News>{
 		int compare = other.getPostTime().compareTo(this.getPostTime());
 		if (compare == 0)
 		{
-			compare = this.getTitle().compareTo(other.getTitle());
+			compare = this.getChildSitePath().compareTo(other.getChildSitePath());			
 		}
 		return compare;
 	}
