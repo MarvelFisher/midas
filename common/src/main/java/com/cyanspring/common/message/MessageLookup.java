@@ -119,7 +119,7 @@ public class MessageLookup {
 			addAndCheck(Message.ANOTHER_DEVICE_ALREADY_LOGIN,getBean(602, "Another device login your ID"));
 			addAndCheck(Message.NEW_VERSION_NEED_DOWNLOAD,getBean(603, "New version is available now, please download it"));
 			addAndCheck(Message.NEW_VERSION_AVAILABLE,getBean(604, "New version is available now"));
-			addAndCheck(Message.MESSAGE_ARRIVED,getBean(605, "Message to Client , see http://forexmaster.io "));
+			addAndCheck(Message.MESSAGE_ARRIVED,getBean(605, "Message to Client , see http://forexmaster.io"));
 			addAndCheck(Message.CLIENT_NOT_CONNECT,getBean(606, "client didn't connect"));
 			addAndCheck(Message.CLIENT_NOT_DISCONNECT,getBean(607, "client didn't disconnect"));
 			addAndCheck(Message.CLIENT_PARAM_ERROR,getBean(608, "client parameter is wrong"));
