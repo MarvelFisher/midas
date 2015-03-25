@@ -72,6 +72,8 @@ import com.cyanspring.common.event.signal.CancelSignalEvent;
 import com.cyanspring.common.event.signal.SignalEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
+import com.cyanspring.common.message.Message;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.type.PersistType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
@@ -446,12 +448,15 @@ public class PersistenceManager {
 		if(null != userKeeper) {
 			Session session = sessionFactory.openSession();
 			Transaction tx = null;
+			Message msg = null;
+
 			try 
 			{
 				/*
 				if(!syncCentralDb || centralDbConnector.userLogin(userId, event.getOriginalEvent().getPassword()))
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 					*/
+
 				if(!syncCentralDb)
 				{
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
@@ -467,11 +472,16 @@ public class PersistenceManager {
 						
 						if(defaultAccount == null && (list == null || list.size() <= 0)) {
 							ok = false;
-							message = "No trading account available for this user";
+							//message = "No trading account available for this user";
+							message = MessageLookup.buildEventMessage(Message.NO_TRADING_ACCOUNT,"No trading account available for this user");
 						}
 					}
-					else
-						message = "userid or password invalid";
+					else{
+						
+						//message = "userid or password invalid";
+						message = MessageLookup.buildEventMessage(Message.INVALID_USER_ACCOUNT_PWD,"userid or password invalid");
+
+					}
 				}
 				else
 				{
@@ -479,7 +489,6 @@ public class PersistenceManager {
 					if(null != user) // login successful from mysql
 					{
 						ok = userKeeper.userExists(userId);
-						
 						if(!ok) // user created by another LTS, must be created here again
 						{
 							//generating default Account
@@ -490,6 +499,7 @@ public class PersistenceManager {
 								} else {
 									defaultAccountId = Default.getAccountPrefix() + IdGenerator.getInstance().getNextSimpleId();
 									if(accountKeeper.accountExists(defaultAccountId)) {
+										msg = Message.CREATE_USER_FAILED;
 										throw new UserException("[PmUserLoginEvent]Cannot create default account for user: " +
 												user.getId() + ", last try: " + defaultAccountId);
 									}
@@ -522,19 +532,29 @@ public class PersistenceManager {
 					else
 					{
 						ok = false;
-						message = "userid or password invalid";
+						//message = "userid or password invalid";
+						message = MessageLookup.buildEventMessage(Message.INVALID_USER_ACCOUNT_PWD,"userid or password invalid");
+
 					}
 				}
 				
 				if(ok == true && null == user.getDefaultAccount() ) {
 					ok = false;
+					msg = Message.NO_TRADING_ACCOUNT;
 					throw new UserException("[PmUserLoginEvent]No trading account available for this user: " + userId);
 				}
 
 			} catch (Exception ue) {
 				
 				log.error(ue.getMessage(), ue);
-				message = ue.getMessage();
+				//message = ue.getMessage();
+				if(ue instanceof UserException){
+					message = MessageLookup.buildEventMessage(msg,ue.getMessage());
+					if(msg==null)
+						message = MessageLookup.buildEventMessage(Message.INVALID_USER_ACCOUNT_PWD,ue.getMessage());					
+				}else{
+					message = MessageLookup.buildEventMessage(Message.EXCEPTION_MESSAGE,ue.getMessage());
+				}		
 				
 			    if (tx!=null) 
 			    	tx.rollback();
@@ -546,7 +566,9 @@ public class PersistenceManager {
 			
 		} else {
 			ok = false;
-			message = "Server is not set up for login";
+			//message = "Server is not set up for login";
+			message = MessageLookup.buildEventMessage(Message.SYSTEM_NOT_READY,"Server is not set up for login");
+
 		}
 		
 		try {
@@ -584,8 +606,10 @@ public class PersistenceManager {
 			list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
 			
 			if(defaultAccount == null && (list == null || list.size() <= 0)) {
-				ok = false;
-				message = "No trading account available for this user";
+				ok = false;				
+				//message = "No trading account available for this user";
+				message = MessageLookup.buildEventMessage(Message.NO_TRADING_ACCOUNT, "No trading account available for this user");
+
 			}
 
 			
@@ -610,7 +634,7 @@ public class PersistenceManager {
 			user = event.getUser();
 			Transaction tx = null;
 			ok = true;
-			
+			Message msg = null;
 			try 
 			{
 				if(syncCentralDb)
@@ -633,12 +657,15 @@ public class PersistenceManager {
 							{
 								//fixed because of #3090
 //								throw new CentralDbException("This email already exists: " + user.getEmail());
+								msg = Message.CREATE_USER_FAILED;
 								throw new CentralDbException("Your "+ user.getUserType().name() +" account email has been used to register an FDT Account. Please login it with " + user.getEmail() + " now.");
 							}
 						}
 						if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-									user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
+									user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage())){
+							msg = Message.CREATE_USER_FAILED;
 							throw new CentralDbException("can't create this user: " + user.getId());
+						}
 						
 					}
 				}
@@ -651,10 +678,17 @@ public class PersistenceManager {
 			catch (Exception e) {
 				if(e instanceof CentralDbException)
 					log.warn(e.getMessage(), e);
-				else 
+				else {
+					msg = Message.EXCEPTION_MESSAGE;
 					log.error(e.getMessage(), e);
+				}
 				ok = false;
+				
 				message = String.format("can't create user, err=[ %s ]", e.getMessage());
+				
+				message = MessageLookup.buildEventMessage(msg, message);
+				
+				
 			    if (tx!=null) 
 			    	tx.rollback();
 			}
