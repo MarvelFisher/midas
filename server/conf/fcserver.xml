@@ -26,7 +26,7 @@
 		</property>
 	</bean>
 	
-	<bean id=globalMQInfo class="com.cyanspring.common.SystemInfo">
+	<bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
 			<value>GLOBAL</value>
 		</property>
