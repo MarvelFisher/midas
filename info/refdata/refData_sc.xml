@@ -2,6 +2,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
+     <entry>
         <string>Lot size</string>
         <int>100</int>
      </entry>
@@ -45,6 +49,10 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
      <entry>
         <string>Lot size</string>
         <int>100</int>
@@ -90,6 +98,10 @@
    <com.cyanspring.common.staticdata.RefData>
     <fields>
      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
+     <entry>
         <string>Lot size</string>
         <int>100</int>
      </entry>
@@ -133,6 +145,10 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
      <entry>
         <string>Lot size</string>
         <int>100</int>
@@ -178,6 +194,10 @@
    <com.cyanspring.common.staticdata.RefData>
     <fields>
      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
+     <entry>
         <string>Lot size</string>
         <int>100</int>
      </entry>
@@ -221,6 +241,10 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
      <entry>
         <string>Lot size</string>
         <int>100</int>
@@ -266,6 +290,10 @@
    <com.cyanspring.common.staticdata.RefData>
     <fields>
      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
+     <entry>
         <string>Lot size</string>
         <int>100</int>
      </entry>
@@ -309,6 +337,10 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
      <entry>
         <string>Lot size</string>
         <int>100</int>
@@ -354,6 +386,10 @@
    <com.cyanspring.common.staticdata.RefData>
     <fields>
      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
+     <entry>
         <string>Lot size</string>
         <int>100</int>
      </entry>
@@ -397,6 +433,10 @@
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
     <fields>
+     <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+     </entry>
      <entry>
         <string>Lot size</string>
         <int>100</int>
