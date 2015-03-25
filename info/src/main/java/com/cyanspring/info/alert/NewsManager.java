@@ -242,7 +242,8 @@ public class NewsManager implements IPlugin {
 				}
 				else
 				{
-					log.info("Send to Social : Title=" + title + ", PostTime=" + postTime + ", photoUrl=" + PicturePath);
+					log.info("Send to Social : Title=" + URLEncoder.encode(title, "UTF-8")  + ", PostTime=" + URLEncoder.encode(postTime, "UTF-8")  + 
+							", ChildSite=" + href + ", photoUrl=" + PicturePath);
 				}
 				httpCon.disconnect();
 			}
