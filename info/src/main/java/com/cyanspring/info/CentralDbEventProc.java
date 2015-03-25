@@ -92,15 +92,23 @@ public class CentralDbEventProc implements Runnable
 		log.info("Process Price High Low Request");
 		String sender = event.getSender() ;
 		List<String> symbolList = event.getSymbolList() ;
-//		Collections.sort(listSymbolData) ;
+		PriceHighLowEvent retEvent = new PriceHighLowEvent(null, sender) ;
+		retEvent.setType(event.getType());
+		if (symbolList == null)
+		{
+			retEvent.setOk(false);
+			retEvent.setMessage("No requested symbol is find");
+			log.debug("Process Price High Low Request fail: No requested symbol is find");
+			centraldb.sendEvent(retEvent) ;
+			return;
+		}
+
 		ArrayList<PriceHighLow> phlList = new ArrayList<PriceHighLow>() ;
 
 		for (String symbol : symbolList)
 		{
 			phlList.add(centraldb.getChefBySymbol(symbol).retrievePriceHighLow(symbol, event.getType()));
 		}
-		PriceHighLowEvent retEvent = new PriceHighLowEvent(null, sender) ;
-		retEvent.setType(event.getType());
 		if (phlList.isEmpty())
 		{
 			retEvent.setOk(false);
@@ -158,7 +166,7 @@ public class CentralDbEventProc implements Runnable
 		centraldb.setTradedate(event.getTradeDate());
 		centraldb.setSessionType(event.getSession(), event.getMarket()) ;
 	}
-	public void parseEvent(RemoteAsyncEvent event)
+	public void parseEvent(RemoteAsyncEvent event) throws Exception
 	{
 		if (event instanceof HistoricalPriceRequestEvent)
 		{
@@ -196,7 +204,14 @@ public class CentralDbEventProc implements Runnable
 			}
             if (event != null)
             {
-            	parseEvent(event);
+            	try 
+            	{
+					parseEvent(event);
+				} 
+            	catch (Exception e) 
+				{
+					log.error(strName, e);
+				}
             }
 		}
 	}
