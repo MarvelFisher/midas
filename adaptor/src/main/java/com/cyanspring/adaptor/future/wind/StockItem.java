@@ -43,7 +43,7 @@ public class StockItem implements AutoCloseable {
 	private static final int STATUS_VAR_STOP = (int) 'Q';
 	private static final int STATUS_MARKET_CLOSE_2 = (int) 'V';
 
-	static ConcurrentHashMap<String, StockItem> symbolTable = new ConcurrentHashMap<String, StockItem>();
+	static ConcurrentHashMap<String, StockItem> stockItemBySymbolMap = new ConcurrentHashMap<String, StockItem>();
 	/**
 	 * member
 	 */
@@ -60,9 +60,9 @@ public class StockItem implements AutoCloseable {
 	public static StockItem getItem(String symbolId, String windCode,
 			boolean enableCreateNew) {
 
-		synchronized (symbolTable) {
-			if (symbolTable.containsKey(symbolId) == true) {
-				return symbolTable.get(symbolId);
+		synchronized (stockItemBySymbolMap) {
+			if (stockItemBySymbolMap.containsKey(symbolId) == true) {
+				return stockItemBySymbolMap.get(symbolId);
 			}
 
 			// else
@@ -70,7 +70,7 @@ public class StockItem implements AutoCloseable {
 				StockItem item = new StockItem(symbolId);
 				if (WindFutureDataAdaptor.instance.gateway)
 					item.setMarket(windCode.split("\\.")[1]);
-				symbolTable.put(symbolId, item);
+				stockItemBySymbolMap.put(symbolId, item);
 				return item;
 			}
 			return null;
@@ -79,8 +79,8 @@ public class StockItem implements AutoCloseable {
 
 	public static List<SymbolInfo> getSymbolInfoList() {
 		List<StockItem> list = new ArrayList<StockItem>();
-		synchronized (symbolTable) {
-			list.addAll(symbolTable.values());
+		synchronized (stockItemBySymbolMap) {
+			list.addAll(stockItemBySymbolMap.values());
 		}
 
 		List<SymbolInfo> outList = new ArrayList<SymbolInfo>();
@@ -95,9 +95,9 @@ public class StockItem implements AutoCloseable {
 
 	public static void clearSymbols() {
 		List<StockItem> list = new ArrayList<StockItem>();
-		synchronized (symbolTable) {
-			list.addAll(symbolTable.values());
-			symbolTable.clear();
+		synchronized (stockItemBySymbolMap) {
+			list.addAll(stockItemBySymbolMap.values());
+			stockItemBySymbolMap.clear();
 		}
 		for (StockItem item : list) {
 			try {

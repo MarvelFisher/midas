@@ -33,7 +33,7 @@ public class FutureItem implements AutoCloseable {
 	private static final Logger log = LoggerFactory
 			.getLogger(FutureItem.class);
 
-	static ConcurrentHashMap<String, FutureItem> symbolTable = new ConcurrentHashMap<String, FutureItem>();
+	static ConcurrentHashMap<String, FutureItem> futureItemBySymbolMap = new ConcurrentHashMap<String, FutureItem>();
 	/**
 	 * member
 	 */
@@ -50,9 +50,9 @@ public class FutureItem implements AutoCloseable {
 	public static FutureItem getItem(String symbolId, String windCode,
 			boolean enableCreateNew) {
 
-		synchronized (symbolTable) {
-			if (symbolTable.containsKey(symbolId) == true) {
-				return symbolTable.get(symbolId);
+		synchronized (futureItemBySymbolMap) {
+			if (futureItemBySymbolMap.containsKey(symbolId) == true) {
+				return futureItemBySymbolMap.get(symbolId);
 			}
 
 			// else
@@ -60,7 +60,7 @@ public class FutureItem implements AutoCloseable {
 				FutureItem item = new FutureItem(symbolId);
 				if (WindFutureDataAdaptor.instance.gateway)
 					item.setMarket(windCode.split("\\.")[1]);
-				symbolTable.put(symbolId, item);
+				futureItemBySymbolMap.put(symbolId, item);
 				return item;
 			}
 			return null;
@@ -69,8 +69,8 @@ public class FutureItem implements AutoCloseable {
 
 	public static List<SymbolInfo> getSymbolInfoList() {
 		List<FutureItem> list = new ArrayList<FutureItem>();
-		synchronized (symbolTable) {
-			list.addAll(symbolTable.values());
+		synchronized (futureItemBySymbolMap) {
+			list.addAll(futureItemBySymbolMap.values());
 		}
 
 		List<SymbolInfo> outList = new ArrayList<SymbolInfo>();
@@ -83,9 +83,9 @@ public class FutureItem implements AutoCloseable {
 
 	public static void clearSymbols() {
 		List<FutureItem> list = new ArrayList<FutureItem>();
-		synchronized (symbolTable) {
-			list.addAll(symbolTable.values());
-			symbolTable.clear();
+		synchronized (futureItemBySymbolMap) {
+			list.addAll(futureItemBySymbolMap.values());
+			futureItemBySymbolMap.clear();
 		}
 		for (FutureItem item : list) {
 			try {

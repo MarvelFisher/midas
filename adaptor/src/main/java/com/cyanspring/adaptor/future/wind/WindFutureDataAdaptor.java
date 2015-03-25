@@ -1083,7 +1083,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("WindFutureDataAdaptor");
+			eventProcessor.getThread().setName("WFDA eventProcessor");
 
 		WindFutureDataAdaptor.instance = this;
 		getRefDataManager().init(); // init RefDataManager
@@ -1103,6 +1103,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		isClose = true;
 		QuoteMgr.instance.uninit();
 		closeReqThread();
+		if (!eventProcessor.isSync())
+			scheduleManager.cancelTimerEvent(timerEvent);
 
 		LogUtil.logInfo(log, "WindFutureDataAdaptor exit");
 		closeClient();
@@ -1122,7 +1124,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	 * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#getState()
 	 */
 	@Override
-	public boolean getState() {
+	public synchronized boolean getState() {
 		return isConnected;
 	}
 

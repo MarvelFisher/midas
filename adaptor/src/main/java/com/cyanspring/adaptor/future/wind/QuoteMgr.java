@@ -38,7 +38,7 @@ public class QuoteMgr implements IReqThreadCallback {
 	}
 
 	public boolean checkFutureSymbol(String strSymbol) {
-		return FutureItem.symbolTable.containsKey(strSymbol); //Future
+		return FutureItem.futureItemBySymbolMap.containsKey(strSymbol); //Future
 	}
 
 	public void addFutureSymbol(String symbol, String exchange) {
@@ -47,13 +47,13 @@ public class QuoteMgr implements IReqThreadCallback {
 			item.setMarket(exchange);
 			// item
 			synchronized (m_lock) {
-				FutureItem.symbolTable.put(symbol, item);
+				FutureItem.futureItemBySymbolMap.put(symbol, item);
 			}
 		}
 	}
 	
 	public boolean checkStockSymbol(String strSymbol) {
-		return StockItem.symbolTable.containsKey(strSymbol); //Stock
+		return StockItem.stockItemBySymbolMap.containsKey(strSymbol); //Stock
 	}
 
 	public void addStockSymbol(String symbol, String exchange) {
@@ -62,7 +62,7 @@ public class QuoteMgr implements IReqThreadCallback {
 			item.setMarket(exchange);
 			// item
 			synchronized (m_lock) {
-				StockItem.symbolTable.put(symbol, item);
+				StockItem.stockItemBySymbolMap.put(symbol, item);
 			}
 		}
 	}	
