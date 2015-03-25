@@ -179,7 +179,7 @@ public class PremiumFollowManager implements IPlugin {
 	}
 
 	public void processPremiumFollowGlobalReplyEvent(PremiumFollowGlobalReplyEvent event) throws Exception {
-		log.info("Received PremiumFollowGlobalRequestEvent: " + event.getTxId());
+		log.info("Received PremiumFollowGlobalReplyEvent: " + event.getTxId());
 		
 		PremiumFollowGlobalRequestEvent request = pendingRequests.remove(event.getTxId());
 		if(null != request) {
