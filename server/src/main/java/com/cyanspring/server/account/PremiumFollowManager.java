@@ -1,13 +1,10 @@
 package com.cyanspring.server.account;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +45,7 @@ public class PremiumFollowManager implements IPlugin {
 	private AccountKeeper accountKeeper;
 	
 	private Map<String, PremiumFollowGlobalRequestEvent> pendingRequests = 
-				new HashMap<String, PremiumFollowGlobalRequestEvent>();
+				new ConcurrentHashMap<String, PremiumFollowGlobalRequestEvent>();
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long timerInterval = 5000;
@@ -167,6 +164,7 @@ public class PremiumFollowManager implements IPlugin {
 		Account account = accountList.get(0);		
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
+		log.info("Send Global reply event, key:" + event.getKey() + ", Sender: " + event.getSender());
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
 				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
 		globalEventManager.sendRemoteEvent(reply);
