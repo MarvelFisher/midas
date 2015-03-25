@@ -53,8 +53,6 @@ public class PremiumFollowManager implements IPlugin {
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long timerInterval = 5000;
 	private long timeout = 10000;
-//	private Map<String, Map<String, PremiumFollowInfo>> followers = 
-//			new HashMap<String, Map<String, PremiumFollowInfo>>(); // fdAccount/frAccount
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -66,8 +64,7 @@ public class PremiumFollowManager implements IPlugin {
 		@Override
 		public IAsyncEventManager getEventManager() {
 			return eventManager;
-		}
-		
+		}		
 	};
 	
 	private AsyncEventProcessor globalEventProcessor = new AsyncEventProcessor() {
@@ -81,8 +78,7 @@ public class PremiumFollowManager implements IPlugin {
 		@Override
 		public IAsyncEventManager getEventManager() {
 			return globalEventManager;
-		}
-		
+		}		
 	};
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) throws Exception {
@@ -98,7 +94,7 @@ public class PremiumFollowManager implements IPlugin {
 				String message = ErrorLookup.lookup(error) + " " + pf;
 				log.warn("PremiumFollowInfo: " + message);
 				PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-						request.getOrginSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getTxId());
+						request.getOrginSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getOrginTxId());
 				
 				eventManager.sendRemoteEvent(reply);
 			}
@@ -120,20 +116,7 @@ public class PremiumFollowManager implements IPlugin {
 
 		scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);
 	}
-	
-//	private void updateFollower(PremiumFollowInfo pf) {
-//		Map<String, PremiumFollowInfo> map = followers.get(pf.getFdAccount());
-//		if(null == map) {
-//			map = new HashMap<String, PremiumFollowInfo>();
-//			followers.put(pf.getFdAccount(), map);
-//		}
-//		
-//		PremiumFollowInfo existing = map.get(pf.getFrAccount());
-//		
-//		if(null == existing || pf.getExpiry() != null)
-//			map.put(pf.getFrAccount(), pf);
-//	}
-	
+		
 	public void processPremiumFollowRequestEvent(PremiumFollowRequestEvent event) throws Exception {
 		PremiumFollowInfo pf = event.getInfo();
 		log.info("Received PremiumFollowRequestEvent: " + pf + ", " + event.getTxId());
@@ -151,7 +134,7 @@ public class PremiumFollowManager implements IPlugin {
 		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
 				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
 			String txId = IdGenerator.getInstance().getNextID();
-			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, event.getSender(), pf, event.getUserId(), event.getAccountId(), txId);
+			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, event.getSender(), pf, event.getUserId(), event.getAccountId(), txId, event.getTxId());
 			request.setTime(Clock.getInstance().now());
 			pendingRequests.put(txId, request);
 			log.info("Fd account is not found in this server, sending global request: " + pf + ", " + txId);
@@ -159,12 +142,8 @@ public class PremiumFollowManager implements IPlugin {
 			return;
 		}
 		
-		// fd account is in this server
 		log.info("Fd account is found in this server: " + pf);
 
-//		 !!! TODO: send an event to persistence manager to persist premium info
-		
-//		updateFollower(pf);
 		Account account = accountKeeper.getAccount(pf.getFdUser() + "-" + pf.getMarket());
 		if(account == null)
 			account = accountKeeper.getAccounts(pf.getFdUser()).get(0);
@@ -180,20 +159,14 @@ public class PremiumFollowManager implements IPlugin {
 		PremiumFollowInfo pf = event.getInfo();
 		log.info("Received PremiumFollowGlobalRequestEvent: " + pf);
 		
-		//!!! TODO: also check expiry
 		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
 				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
 			log.info("Global Fd account is not found in this server: " + pf);
 			return;
 		}
 
-		// !!! TODO: send an event to persistence manager to persist premium info
-
-		// fd account is in this server
 		log.info("Global Fd account is found in this server: " + pf);
-
-//		updateFollower(pf);
-
+		
 		Account account = accountKeeper.getAccount(pf.getFdUser() + "-" + pf.getMarket());
 		if(account == null)
 			account = accountKeeper.getAccounts(pf.getFdUser()).get(0);
@@ -213,18 +186,14 @@ public class PremiumFollowManager implements IPlugin {
 			log.info("processPremiumFollowGlobalReplyEvent found requester: " + request.getTxId());
 			
 			PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-					request.getOrginSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getTxId());
+					request.getOrginSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getOrginTxId());
 			eventManager.sendRemoteEvent(reply);
-		}
-		
+		}		
 	}
 	
 	@Override
 	public void uninit() {
 		eventProcessor.uninit();
-		globalEventProcessor.uninit();
-		
-		
+		globalEventProcessor.uninit();	
 	}
-
 }

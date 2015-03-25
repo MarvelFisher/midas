@@ -72,6 +72,9 @@ public class Server implements ApplicationContextAware{
 	private SystemInfo systemInfo;
 	
 	@Autowired
+	private SystemInfo globalMQInfo;
+	
+	@Autowired
 	private OrderManager orderManager;
 	
 	@Autowired
@@ -334,8 +337,10 @@ public class Server implements ApplicationContextAware{
 		eventManager.addEventChannel(nodeInfoChannel);
 		
 		if(null != globalEventManager){
-			globalEventManager.init(channel, inbox);
-			globalEventManager.addEventChannel(channel);
+			String globalChannel = globalMQInfo.getEnv() + "." + globalMQInfo.getCategory() + "." + "channel";
+			String globalInbox = globalMQInfo.getEnv() + "." + globalMQInfo.getCategory() + "." + globalMQInfo.getId();
+			globalEventManager.init(globalChannel, globalInbox);
+			globalEventManager.addEventChannel(globalChannel);
 		}
 		
 		// subscribe to events

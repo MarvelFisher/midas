@@ -25,7 +25,19 @@
 			<value>S1</value>
 		</property>
 	</bean>
-
+	
+	<bean id=globalMQInfo class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>GLOBAL</value>
+		</property>
+		<property name="category">
+			<value>MQ</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+	
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://0.0.0.0:61616"></property>
 	</bean>
