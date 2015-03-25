@@ -4,7 +4,7 @@ public enum Message {
 	// exception start with 000
 	EXCEPTION_MESSAGE,
 	NONE_MATCHED_MESSAGE,
-	
+	EMPTY_MESSAGE,
 	// system errors start with 100
 	RECEIVE_HANDLE_ERROR,
 	ACTIVEMQ_CONNECT_FAILED,
