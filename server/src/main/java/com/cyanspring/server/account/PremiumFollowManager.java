@@ -1,13 +1,10 @@
 package com.cyanspring.server.account;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +45,7 @@ public class PremiumFollowManager implements IPlugin {
 	private AccountKeeper accountKeeper;
 	
 	private Map<String, PremiumFollowGlobalRequestEvent> pendingRequests = 
-				new HashMap<String, PremiumFollowGlobalRequestEvent>();
+				new ConcurrentHashMap<String, PremiumFollowGlobalRequestEvent>();
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long timerInterval = 5000;
@@ -131,8 +128,8 @@ public class PremiumFollowManager implements IPlugin {
 			return;
 		}
 		
-		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
-				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
+		List<Account> accountList = accountKeeper.getAccounts(pf.getFdUser());
+		if(accountList.size() == 0){
 			String txId = IdGenerator.getInstance().getNextID();
 			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, event.getSender(), pf, event.getUserId(), event.getAccountId(), txId, event.getTxId());
 			request.setTime(Clock.getInstance().now());
@@ -144,10 +141,7 @@ public class PremiumFollowManager implements IPlugin {
 		
 		log.info("Fd account is found in this server: " + pf);
 
-		Account account = accountKeeper.getAccount(pf.getFdUser() + "-" + pf.getMarket());
-		if(account == null)
-			account = accountKeeper.getAccounts(pf.getFdUser()).get(0);
-		
+		Account account = accountList.get(0);		
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(event.getKey(), 
@@ -159,27 +153,25 @@ public class PremiumFollowManager implements IPlugin {
 		PremiumFollowInfo pf = event.getInfo();
 		log.info("Received PremiumFollowGlobalRequestEvent: " + pf);
 		
-		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
-				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
+		List<Account> accountList = accountKeeper.getAccounts(pf.getFdUser());
+		if(accountList.size() == 0){
 			log.info("Global Fd account is not found in this server: " + pf);
 			return;
 		}
 
 		log.info("Global Fd account is found in this server: " + pf);
 		
-		Account account = accountKeeper.getAccount(pf.getFdUser() + "-" + pf.getMarket());
-		if(account == null)
-			account = accountKeeper.getAccounts(pf.getFdUser()).get(0);
-		
+		Account account = accountList.get(0);		
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
+		log.info("Send Global reply event, key:" + event.getKey() + ", Sender: " + event.getSender());
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
 				event.getSender(), account, positions, 0, true, null, event.getUserId(), event.getAccountId(), event.getTxId());
 		globalEventManager.sendRemoteEvent(reply);
 	}
 
 	public void processPremiumFollowGlobalReplyEvent(PremiumFollowGlobalReplyEvent event) throws Exception {
-		log.info("Received PremiumFollowGlobalRequestEvent: " + event.getTxId());
+		log.info("Received PremiumFollowGlobalReplyEvent: " + event.getTxId());
 		
 		PremiumFollowGlobalRequestEvent request = pendingRequests.remove(event.getTxId());
 		if(null != request) {

@@ -5,12 +5,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.error.ErrorLookup;
 
 public class MessageLookup {
 	private static final Logger log = LoggerFactory
-			.getLogger(ErrorLookup.class);
+			.getLogger(MessageLookup.class);
 	private static final Map<Message, MessageBean> map = new HashMap<Message, MessageBean>();
 	private	static final String MSG_SEPARATOR="|";
 
@@ -27,7 +28,7 @@ public class MessageLookup {
 			// exception messagg start with 900
 			addAndCheck(Message.EXCEPTION_MESSAGE,getBean(900,"Unrecognized Error"));
 			addAndCheck(Message.NONE_MATCHED_MESSAGE,getBean(901,"None matched message"));
-
+			addAndCheck(Message.EMPTY_MESSAGE,getBean(902,"Empty message"));
 			
 			// system errors start with 100
 			addAndCheck(Message.RECEIVE_HANDLE_ERROR,getBean(100,"Receive handle error"));
@@ -45,11 +46,8 @@ public class MessageLookup {
 			addAndCheck(Message.NONE_SET_USER,getBean(112, "doesn't set user"));
 			addAndCheck(Message.NONE_SET_CALLBACK,getBean(113, "doesn't set callback"));
 			addAndCheck(Message.NONE_SET_CONNECTION_CONFIG,getBean(114, "doesn't set connection configuration"));
-
-			
-			
-			
-			
+			addAndCheck(Message.SYSTEM_NOT_READY,getBean(115, "System not yet Ready"));
+			addAndCheck(Message.SERVER_NOT_READY_FOR_LOGIN,getBean(116, "Server is not set up for login"));
 			
 			
 			// business errors start with 200
@@ -76,12 +74,7 @@ public class MessageLookup {
 			addAndCheck(Message.EVENT_TYPE_NOT_SUPPORT,getBean(302, "Event type not support"));			
 			addAndCheck(Message.ACCOUNT_NOT_MATCH,getBean(303, "Account & user not match"));			
 			addAndCheck(Message.LOGIN_BLOCKED,getBean(304, "Can't login, blocked by existing connection"));
-
-			
-			
-			
-			
-			
+		
 			// order errors start with 400
 			addAndCheck(Message.ACTION_CANCELLED,getBean(400, "action is cancelled"));
 			addAndCheck(Message.ORDER_PROCESSING,getBean(401, "order is processing"));
@@ -109,9 +102,11 @@ public class MessageLookup {
 			addAndCheck(Message.WRONG_USER_TYPE,getBean(504, "Wrong User Type"));
 			addAndCheck(Message.EMPTY_PWD,getBean(505, "Passwrod null or empty"));
 			addAndCheck(Message.PREMIUM_FOLLOW_ERROR,getBean(506, "Premium follow error"));
-			addAndCheck(Message.PREMIUM_FOLLOW_ERROR,getBean(507, "Account Reset error"));
+			addAndCheck(Message.ACCOUNT_RESET_ERROR,getBean(507, "Account Reset error"));
 			addAndCheck(Message.INVALID_USER_INFO,getBean(508, "Invalid user information"));
-
+			addAndCheck(Message.NO_TRADING_ACCOUNT,getBean(509, "No trading account available"));
+			addAndCheck(Message.INVALID_USER_ACCOUNT_PWD,getBean(510, "userid or password invalid"));
+			
 			
 			// client errors start with 600
 			addAndCheck(Message.NEED_RESTART_APP,getBean(600, "Please restart your App"));			
@@ -154,10 +149,19 @@ public class MessageLookup {
 					String tempMsgs[] = eventMessage.split("\\"+MSG_SEPARATOR);
 					mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
 				}else{
-					mb = lookup(Message.NONE_MATCHED_MESSAGE);
+					if(!StringUtils.hasText(eventMessage)){
+						mb = lookup(Message.EMPTY_MESSAGE);
+						mb.setLocalMsg(eventMessage);
+						log.info("Empty event message");
+					}else{
+						mb = lookup(Message.NONE_MATCHED_MESSAGE);
+						mb.setLocalMsg(eventMessage);
+						log.warn("NONE MATCHED MESSAGE:"+eventMessage);
+					}
 				}
 			}catch(Exception e){
 				mb = lookup(Message.EXCEPTION_MESSAGE);
+				mb.setLocalMsg(e.getMessage());
 				log.error(e.getMessage(),e);
 			}
 		return mb;

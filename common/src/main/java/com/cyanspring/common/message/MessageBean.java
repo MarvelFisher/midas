@@ -19,6 +19,9 @@ public class MessageBean {
 	public String getLocalMsg() {
 		return localMsg;
 	}
-
+	public void setLocalMsg(String localMsg) {
+		this.localMsg = localMsg;
+	}
+	
 
 }
