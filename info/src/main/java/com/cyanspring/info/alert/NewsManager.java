@@ -209,8 +209,8 @@ public class NewsManager implements IPlugin {
 				news.setArticle(article.toString());
 				newsLst.add(~iSearch, news);
 				Count++;
-				if (newsLst.size() > 35) {
-					newsLst.remove(35);
+				if (newsLst.size() > 100) {
+					newsLst.remove(100);
 				}
 				
 				if (isFirstGetNews())
@@ -242,7 +242,8 @@ public class NewsManager implements IPlugin {
 				}
 				else
 				{
-					log.info("Send to Social : Title=" + title + ", PostTime=" + postTime + ", photoUrl=" + PicturePath);
+					log.info("Send to Social : Title=" + URLEncoder.encode(title, "UTF-8")  + ", PostTime=" + URLEncoder.encode(postTime, "UTF-8")  + 
+							", ChildSite=" + href + ", photoUrl=" + PicturePath);
 				}
 				httpCon.disconnect();
 			}
