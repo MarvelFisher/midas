@@ -38,7 +38,7 @@
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FX"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	</bean>
