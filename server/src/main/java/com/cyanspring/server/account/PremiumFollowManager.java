@@ -131,8 +131,8 @@ public class PremiumFollowManager implements IPlugin {
 			return;
 		}
 		
-		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
-				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
+		List<Account> accountList = accountKeeper.getAccounts(pf.getFdUser());
+		if(accountList.size() == 0){
 			String txId = IdGenerator.getInstance().getNextID();
 			PremiumFollowGlobalRequestEvent request = new PremiumFollowGlobalRequestEvent(event.getKey(), null, event.getSender(), pf, event.getUserId(), event.getAccountId(), txId, event.getTxId());
 			request.setTime(Clock.getInstance().now());
@@ -144,10 +144,7 @@ public class PremiumFollowManager implements IPlugin {
 		
 		log.info("Fd account is found in this server: " + pf);
 
-		Account account = accountKeeper.getAccount(pf.getFdUser() + "-" + pf.getMarket());
-		if(account == null)
-			account = accountKeeper.getAccounts(pf.getFdUser()).get(0);
-		
+		Account account = accountList.get(0);		
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(event.getKey(), 
@@ -159,18 +156,15 @@ public class PremiumFollowManager implements IPlugin {
 		PremiumFollowInfo pf = event.getInfo();
 		log.info("Received PremiumFollowGlobalRequestEvent: " + pf);
 		
-		if(!accountKeeper.accountExists(pf.getFdUser() + "-" + pf.getMarket())
-				&& accountKeeper.getAccounts(pf.getFdUser()).size() == 0) { // fd account doesn't exist in this server
+		List<Account> accountList = accountKeeper.getAccounts(pf.getFdUser());
+		if(accountList.size() == 0){
 			log.info("Global Fd account is not found in this server: " + pf);
 			return;
 		}
 
 		log.info("Global Fd account is found in this server: " + pf);
 		
-		Account account = accountKeeper.getAccount(pf.getFdUser() + "-" + pf.getMarket());
-		if(account == null)
-			account = accountKeeper.getAccounts(pf.getFdUser()).get(0);
-		
+		Account account = accountList.get(0);		
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
 		PremiumFollowGlobalReplyEvent reply = new PremiumFollowGlobalReplyEvent(event.getKey(), 
