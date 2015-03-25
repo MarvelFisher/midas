@@ -71,7 +71,8 @@ public class Server implements ApplicationContextAware{
 	@Autowired
 	private SystemInfo systemInfo;
 	
-	@Autowired
+	@Autowired(required=false)
+	@Qualifier("globalMQInfo")
 	private SystemInfo globalMQInfo;
 	
 	@Autowired
