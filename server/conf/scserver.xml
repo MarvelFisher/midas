@@ -100,7 +100,10 @@
 		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->		
 		<property name="refDataManager">
 			<ref bean="refDataManager" />
-		</property>			
+		</property>		
+		<property name="marketSessionUtil">
+			<ref bean="marketSessionUtil" />
+		</property>		
 	</bean>
 
 	<!-- Derby setting -->

@@ -100,6 +100,36 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 
 	protected ScheduleManager scheduleManager = new ScheduleManager();
+	
+
+	private static final Logger log = LoggerFactory
+			.getLogger(WindFutureDataAdaptor.class);
+
+	public static WindFutureDataAdaptor instance = null;
+
+	// private final boolean outputToScreen = true;
+	/*********************** configuration ***************************************/
+	private final String openMarket = "";
+	private final int openData = 0;
+	private final int openTime = 0;
+	private final String subscription = ""; // 000001.SZ;000002.SZ";
+	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
+	private static final int doConnect = 0;
+	static volatile boolean isConnected = false;
+	static volatile boolean isConnecting = false;
+
+	/*********************** configuration ***************************************/
+	TDFClient client = new TDFClient();
+	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
+	static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
+	static ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
+	static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
+	static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
+	static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
+
+	boolean isClosed = false;
+	RequestThread thread = null;	
+	
 
 	public MarketSessionUtil getMarketSessionUtil() {
 		return marketSessionUtil;
@@ -219,35 +249,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		list.clear();
 		return arr;
 	}
-
-	private static final Logger log = LoggerFactory
-			.getLogger(WindFutureDataAdaptor.class);
-
-	public static WindFutureDataAdaptor instance = null;
-
-	// private final boolean outputToScreen = true;
-	/*********************** configuration ***************************************/
-	// private final String openMarket = "CZC;SHF;DCE";
-	private final String openMarket = "";
-	private final int openData = 0;
-	private final int openTime = 0;
-	private final String subscription = ""; // 000001.SZ;000002.SZ";
-	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
-	private static final int doConnect = 0;
-	static volatile boolean isConnected = false;
-	static volatile boolean isConnecting = false;
-
-	/*********************** configuration ***************************************/
-	TDFClient client = new TDFClient();
-	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
-	static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
-	static ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
-	static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
-	static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
-	static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
-
-	boolean isClosed = false;
-	RequestThread thread = null;
 
 	void initReqThread() {
 		if (thread == null) {
@@ -426,13 +427,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			}
 			if (marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
 				Quote lastQuote = lastQuoteBySymbolMap.get(symbol);
-				DataObject lastQuoteExt = lastQuoteExtendBySymbolMap
+				DataObject lastQuoteExtend = lastQuoteExtendBySymbolMap
 						.get(symbol);
 				if (lastQuote != null && !lastQuote.isStale()) {
 					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol="
 							+ symbol);
 					lastQuote.setStale(true);
-					sendQuote(lastQuote, lastQuoteExt);
+					sendQuote(lastQuote, lastQuoteExtend);
 				}
 			}
 		}
@@ -1175,6 +1176,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						+ refDataManager.getClass());
 				RefData refData = null;
 				String targetField = "";
+				//Future
 				if ("F".equals(WindFutureDataAdaptor.instance
 						.getMarketType())) {
 					if (instrument.indexOf(".") == -1) {
@@ -1185,6 +1187,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						targetField = "Symbol ";
 					}
 				}
+				//Stock
 				if ("S".equals(WindFutureDataAdaptor.instance
 						.getMarketType())) {
 						refData = refDataManager.getRefData(instrument);
@@ -1252,15 +1255,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 			IMarketDataListener listener) {
 
 		if (removeSymbol(instrument) == true) {
-			// if(WindFutureDataAdaptor.instance.gateway){
-			// ClientHandler.unSubscribe(instrument);
-			// if(targetType==1){
-			// QuoteMgr.instance().addFutureSymbol(instrument); //future
-			// }
-			// if(targetType==2){
-			// QuoteMgr.instance().addStockSymbol(instrument); //stock
-			// }
-			// }
 		}
 
 		boolean bFound = false;
@@ -1384,24 +1378,19 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	public static String printSymbolInfo(SymbolInfo info) {
 		FixStringBuilder sb = new FixStringBuilder('=', '|');
-		// Hashtable<SymbolField, Object> table = info.getData();
 
 		SymbolField field = SymbolField.symbolId;
 		sb.append(field.toString());
 		sb.append(info.getCode());
-		// sb.append(table.get(field).toString());
 		field = SymbolField.market;
 		sb.append(field.toString());
 		sb.append(info.getMarket());
-		// sb.append(table.get(field).toString());
 		field = SymbolField.cnName;
 		sb.append(field.toString());
 		sb.append(info.getCnName());
-		// sb.append(table.get(field).toString());
 		field = SymbolField.enName;
 		sb.append(field.toString());
 		sb.append(info.getEnName());
-		// sb.append(table.get(field).toString());
 
 		return sb.toString();
 
