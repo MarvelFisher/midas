@@ -223,7 +223,7 @@ public class BusinessManager implements ApplicationContextAware {
 			order.setSender(event.getSender());
 
 			if(orders.containsKey(order.getId())) {
-				throw new OrderValidationException("Enter order: this order id already exists: " + order.getId());
+				throw new OrderValidationException("Enter order: this order id already exists: " + order.getId(),ErrorMessage.ORDER_ID_EXIST);
 			} 
 			
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
@@ -258,29 +258,37 @@ public class BusinessManager implements ApplicationContextAware {
 			
 		} catch (OrderValidationException e) {
 			failed = true;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
+
 			log.warn(e.getMessage(), e);
 		} catch (OrderException e) {
 			failed = true;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
 			log.warn(e.getMessage(), e);
 		} catch (DataConvertException e) {
 			failed = true;
-			message = "DataConvertException: " + e.getMessage();
+			//message = "DataConvertException: " + e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), "DataConvertException: " + e.getMessage());
 			log.warn(e.getMessage(), e);
 		} catch (DownStreamException e) {
 			failed = true;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
 			log.warn(e.getMessage(), e);
 		} catch (StrategyException e) {
 			failed = true;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
+
 			log.warn(e.getMessage(), e);
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
-			message = "Enter order failed, please check server log";
+			//message = "Enter order failed, please check server log";
+			message = MessageLookup.buildEventMessage(ErrorMessage.ENTER_ORDER_ERROR, "Enter order failed, please check server log");
 			log.warn(e.getMessage(), e);
 		}
 		
@@ -414,17 +422,20 @@ public class BusinessManager implements ApplicationContextAware {
 		log.debug("processCancelParentOrderEvent received: " + event.getTxId() + ", " + event.getOrderId());
 		ParentOrder order = orders.get(event.getOrderId());
 		if(null == order) {
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ORDER_ID_NOT_FOUND, "Cant find this order id: " + event.getOrderId());
 			CancelParentOrderReplyEvent reply = 
 				new CancelParentOrderReplyEvent(event.getKey(), event.getSender(), false, 
-						"Cant find this order id: " + event.getOrderId(), event.getTxId(), order);
+						msg, event.getTxId(), order);
 			eventManager.sendLocalOrRemoteEvent(reply);
 			return;
 		}
 		
 		if(order.getOrdStatus().isCompleted()) {
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ORDER_ALREADY_COMPLETED, "Order already completed: " + order.getId());
+
 			CancelParentOrderReplyEvent reply = 
 				new CancelParentOrderReplyEvent(event.getKey(), event.getSender(), false, 
-						"Order already completed: " + order.getId(), event.getTxId(), order);
+						msg, event.getTxId(), order);
 			eventManager.sendLocalOrRemoteEvent(reply);
 			return;
 		}
@@ -446,29 +457,36 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	private void checkClosePositionPending(String account, String symbol) throws OrderException {
 		if(positionKeeper.checkAccountPositionLock(account, symbol))
-			throw new OrderException("Account " + account + " has pending close position action on symbol " + symbol);
+			throw new OrderException("Account " + account + " has pending close position action on symbol " + symbol,ErrorMessage.POSITION_PENDING);
 	}
 
 	public void processClosePositionRequestEvent(ClosePositionRequestEvent event) {
 		boolean ok = true;
 		String message = null;
+		ErrorMessage clientMessage = null;
 		try {
 			Account account = accountKeeper.getAccount(event.getAccount());
-			if(null == account)
+			if(null == account){
+				clientMessage = ErrorMessage.ACCOUNT_NOT_EXIST;
 				throw new Exception("Cant find this account: " + account);
+			}
 			
 			String symbol = event.getSymbol();
 			RefData refData = refDataManager.getRefData(symbol);
-			if(null == refData)
+			if(null == refData){
+				clientMessage = ErrorMessage.SYMBOL_NOT_FOUND;
 				throw new Exception("Can't find this symbol: " + symbol);
-			
+			}
 			checkClosePositionPending(event.getAccount(), event.getSymbol());
 			
 			OpenPosition position = positionKeeper.getOverallPosition(account, symbol);
 			double qty =  Math.abs(position.getQty());
 
-			if(PriceUtils.isZero(qty))
+			if(PriceUtils.isZero(qty)){
+				clientMessage = ErrorMessage.POSITION_NOT_FOUND;
 				throw new Exception("Account doesn't have a position at this symbol");
+
+			}
 			
 			if(!PriceUtils.isZero(event.getQty()))
 				qty = Math.min(qty, event.getQty());
@@ -505,7 +523,8 @@ public class BusinessManager implements ApplicationContextAware {
 
 		} catch (Exception e) {
 			ok = false;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(clientMessage, e.getMessage());
 		}
 		
 		try {
@@ -538,8 +557,10 @@ public class BusinessManager implements ApplicationContextAware {
 		log.info("Received ResetAccountRequestEvent: " + account);
 		if(!accountKeeper.accountExists(account)){
 			try {
-				int code = 406;
-				String msg = ErrorLookup.lookup(code);
+				//int code = 406;
+				//String msg = ErrorLookup.lookup(code);
+				
+				String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "account doesn't exist");
 				eventManager.sendRemoteEvent(new ResetAccountReplyEvent(event.getKey(), 
 						event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(), ResetAccountReplyType.LTSCORE, false, msg));
 				return;
@@ -648,8 +669,9 @@ public class BusinessManager implements ApplicationContextAware {
 		String strategyName = "";
 		try {
 			strategyName = (String)event.getInstrument().get(OrderField.STRATEGY.value());
-			if(null == strategyName)
-				throw new StrategyException("Strategy field not present in NewSingleInstrumentStrategyEvent");
+			if(null == strategyName){
+				throw new StrategyException("Strategy field not present in NewSingleInstrumentStrategyEvent",ErrorMessage.STRATEGY_NOT_PRESENT_IN_SINGLE_INSTRUMENT);
+			}
 			IStrategy strategy = strategyFactory.createStrategy(
 					strategyName, 
 					new Object[]{refDataManager, tickTableManager, event.getInstrument()});
@@ -657,8 +679,14 @@ public class BusinessManager implements ApplicationContextAware {
 			log.debug("strategy " + strategy.getId() + " assigned to container " + container.getId());
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
 			eventManager.sendEvent(addStrategyEvent);
+		} catch (StrategyException e){
+			//message = strategyName + " " + e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), strategyName + " " + e.getMessage());
+			log.error(message, e);
+			failed = true;
 		} catch (Exception e) {
-			message = strategyName + " " + e.getMessage();
+			//message = strategyName + " " + e.getMessage();
+			message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, strategyName + " " + e.getMessage());
 			log.error(message, e);
 			failed = true;
 		} 

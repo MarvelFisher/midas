@@ -1,5 +1,9 @@
 package com.cyanspring.info.alert;
 
+import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,8 +72,9 @@ public class AlertManager implements IPlugin {
 	private long killTimeoutSecond;
 	private int maxNoOfAlerts;
 	private int getPremiumTableInterval;
-	private String PremiumFollowURL;
-
+	private String getPremiumFollowListURL;
+	private String SetInBoxURL;
+	
 	private boolean checkAlertstart = true ;
 	private boolean tradeAlert;
 	private boolean priceAlert;
@@ -243,14 +248,42 @@ public class AlertManager implements IPlugin {
 			//Premium Follow
 			ArrayList<PremiumUser> lstPU = PFT.findUser(execution.getAccount());			
 			if (null != lstPU)
-			{
+			{				
 				String Msg = execution.getUser() + " made a new trade: " + tradeMessage;
+				String SendtoSocial = "action=32&comment=" + Msg + "&userid=";
 				for (PremiumUser user : lstPU)
 				{
 					//Send Notification to PremiumUser
 					ParseDataQueue.add(new ParseData(user.getUserId(),  Msg,
 							TA.getId(), MSG_TYPE_ORDER, Datetime, keyValue));
+					SendtoSocial = SendtoSocial + user.getUserId() + ",";		
 				}
+				//Send to Social
+				SendtoSocial = SendtoSocial.substring(0, SendtoSocial.length() - 1);
+				
+				URL obj = new URL(getSetInBoxURL());
+				HttpURLConnection httpCon = (HttpURLConnection) obj.openConnection();
+				
+				httpCon.setRequestMethod("POST");
+				httpCon.setRequestProperty("user-Agent","LTSInfo-SetInBox-31");
+				httpCon.setRequestProperty("Content-Length", Integer.toString(SendtoSocial.length()));
+				
+				httpCon.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(httpCon.getOutputStream());
+				wr.writeBytes(SendtoSocial);
+				wr.flush();
+				wr.close();		
+				int responseCode = httpCon.getResponseCode();
+				if (responseCode != 200)
+				{
+					log.warn("[Social API]Send to Social Error. : " + responseCode);
+				}
+				else
+				{
+					log.info("Send to Social : PostMsg=" + Msg  + 
+							"to " + lstPU.size() + " users.");
+				}
+				httpCon.disconnect();
 			}
 			// save to Array
 			ArrayList<TradeAlert> list;
@@ -596,7 +629,8 @@ public class AlertManager implements IPlugin {
 			if (list.size() >= getMaxNoOfAlerts()) {
 				// reject
 				log.debug("[recevieAddPriceAlert] : UserAlert is Greater than maxNoOfAlerts -> reject");
-				Msg = "UserAlert is Greater than maxNoOfAlerts";
+				//Msg = "UserAlert is Greater than maxNoOfAlerts";
+				Msg =MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "UserAlert is Greater than maxNoOfAlerts");
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), null, event.getTxId(),
 						priceAlert.getUserId(), event.getType(), null, false,
@@ -1042,6 +1076,7 @@ public class AlertManager implements IPlugin {
 		{
 			try
 			{
+				//Check Thread survive
 				PFT.getPremiumUpdate();
 				PFT.notifyQueState();
 			}
@@ -1134,7 +1169,7 @@ public class AlertManager implements IPlugin {
 			scheduleManager.scheduleRepeatTimerEvent(getPremiumTableInterval,
 					eventProcessorCHMD, PFTTimer);
 			
-			PFT = new PremiumFollowThread(PremiumFollowURL);			
+			PFT = new PremiumFollowThread(getPremiumFollowListURL);			
 			PFT.getPremiumAll();
 			
 			loadSQLdata();
@@ -1249,11 +1284,19 @@ public class AlertManager implements IPlugin {
 		this.getPremiumTableInterval = getPremiumTableInterval;
 	}
 
-	public String getPremiumFollowURL() {
-		return PremiumFollowURL;
+	public String getSetInBoxURL() {
+		return SetInBoxURL;
 	}
 
-	public void setPremiumFollowURL(String premiumFollowURL) {
-		PremiumFollowURL = premiumFollowURL;
+	public void setSetInBoxURL(String setInBoxURL) {
+		SetInBoxURL = setInBoxURL;
+	}
+
+	public String getGetPremiumFollowListURL() {
+		return getPremiumFollowListURL;
+	}
+
+	public void setGetPremiumFollowListURL(String getPremiumFollowListURL) {
+		this.getPremiumFollowListURL = getPremiumFollowListURL;
 	}
 }

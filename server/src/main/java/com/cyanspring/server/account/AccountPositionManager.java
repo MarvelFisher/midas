@@ -397,7 +397,7 @@ public class AccountPositionManager implements IPlugin {
 			try {
 				user.setId(user.getId().toLowerCase());
 				if(userKeeper.userExists(user.getId()))
-					throw new UserException("User already exists: " + user.getId());
+					throw new UserException("User already exists: " + user.getId(),ErrorMessage.USER_ALREADY_EXIST);
 				//Account account = new Account(generateAccountId(), event.getUser().getId(), defaultCurrency);
 				String defaultAccountId = user.getDefaultAccount();
 				if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
@@ -407,7 +407,7 @@ public class AccountPositionManager implements IPlugin {
 						defaultAccountId = generateAccountId();
 						if(accountKeeper.accountExists(defaultAccountId)) {
 							throw new UserException("Cannot create default account for user: " +
-									user.getId() + ", last try: " + defaultAccountId);
+									user.getId() + ", last try: " + defaultAccountId,ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
 						}
 					}
 				}
@@ -420,15 +420,18 @@ public class AccountPositionManager implements IPlugin {
 				
 				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));
 			} catch (UserException ue) {
-				message = ue.getMessage();
+				//message = ue.getMessage();
+				message = MessageLookup.buildEventMessage(ue.getClientMessage(),ue.getMessage());
 				ok = false;
 			} catch (AccountException ae) {
-				message = ae.getMessage();
+				message = MessageLookup.buildEventMessage(ae.getClientMessage(),ae.getMessage());
+				//message = ae.getMessage();
 				ok = false;
 			} 
 		} else {
 			ok = false;
-			message = "System doesn't support user creation";
+			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,"System doesn't support user creation");
+			//message = "System doesn't support user creation";
 		}
 		
 		log.info("processCreateUserEvent: " + event.getUser() + ", " + ok + ", " + message);

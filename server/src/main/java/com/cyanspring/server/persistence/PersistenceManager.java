@@ -966,17 +966,17 @@ public class PersistenceManager {
 			if(syncCentralDb)
 			{
 				if(centralDbConnector.isUserExist(user.getId()))
-					throw new CentralDbException("This user already exists: " + user.getId());
+					throw new CentralDbException("This user already exists: " + user.getId(),ErrorMessage.USER_ALREADY_EXIST);
 				
 				if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
 					    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
 				{
 					if(centralDbConnector.isEmailExist(user.getEmail()))
-						throw new CentralDbException("This email already exists: " + user.getEmail());
+						throw new CentralDbException("This email already exists: " + user.getEmail(),ErrorMessage.USER_EMAIL_EXIST);
 				}
 				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
 							user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
-					throw new CentralDbException("can't create this user: " + user.getId());
+					throw new CentralDbException("can't create this user: " + user.getId(),ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
 			}
 			
 			tx = session.beginTransaction();
@@ -985,12 +985,15 @@ public class PersistenceManager {
 			log.info("Created user: " + event.getUser());
 		}
 		catch (Exception e) {
-			if(e instanceof CentralDbException)
+			if(e instanceof CentralDbException){
 				log.warn(e.getMessage(), e);
-			else 
+				message = MessageLookup.buildEventMessage(((CentralDbException) e).getClientMessage(), String.format("can't create user, err=[%s]", e.getMessage()));
+			}else {
+				message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, String.format("can't create user, err=[%s]", e.getMessage()));
 				log.error(e.getMessage(), e);
+			}
 			ok = false;
-			message = String.format("can't create user, err=[%s]", e.getMessage());
+			//message = String.format("can't create user, err=[%s]", e.getMessage());
 		    if (tx!=null) 
 		    	tx.rollback();
 		}
@@ -1200,14 +1203,18 @@ public class PersistenceManager {
 				ok = true;
 				log.info("Change password, user: " + event.getUser());
 			}
-			else
-				message = "can't change user's password";
+			else{				
+				//message = "can't change user's password";
+				message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_PWD_FAILED, "can't change user's password");
+			}
 		}
 		catch (Exception e) 
 		{
 			log.error(e.getMessage(), e);
 			ok = false;
-			message = String.format("can't change user's password, err=[%s]", e.getMessage());
+			//message = String.format("can't change user's password, err=[%s]", e.getMessage());
+			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_PWD_FAILED, String.format("can't change user's password, err=[%s]", e.getMessage()));
+
 		}
 		
 		try {

@@ -67,6 +67,14 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.SUBSCRIBE_LIMITATION,getBean(213, "Subscribe limitation"));
 			addAndCheck(ErrorMessage.SEQUENCE_NUMBER_ERROR,getBean(214, "Sequence number wrong"));
 			addAndCheck(ErrorMessage.NOT_SUPPORT_FREQUENCE,getBean(215, "Frequence is not Support"));
+			addAndCheck(ErrorMessage.SYMBOL_NOT_FOUND,getBean(216, "Can't find symbol"));
+			addAndCheck(ErrorMessage.POSITION_NOT_FOUND,getBean(217, "Can't find symbol"));
+			addAndCheck(ErrorMessage.POSITION_PENDING,getBean(218, "Can't find symbol"));
+			addAndCheck(ErrorMessage.STRATEGY_NOT_REGISTERD,getBean(219, "Strategy hasn't been registered"));
+			addAndCheck(ErrorMessage.STRATEGY_ERROR,getBean(220, "Strategy Error"));
+			addAndCheck(ErrorMessage.STRATEGY_NOT_PRESENT_IN_SINGLE_INSTRUMENT,getBean(221, "Strategy field not present in NewSingleInstrumentStrategyEvent"));
+
+			
 
 			// api errors start with 300
 			addAndCheck(ErrorMessage.SEVER_NOT_CONNECTED,getBean(300, "Server isn't connected"));
@@ -98,7 +106,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_ALREADY_TERMINATED,getBean(419, "Order already terminated"));
 			addAndCheck(ErrorMessage.ORDER_VALIDATION_ERROR,getBean(420, "Order Field Validation Error"));
 			addAndCheck(ErrorMessage.FIELD_DEFINITION_NOT_FOUND,getBean(421, "Can't find field definition for strategy"));
+			addAndCheck(ErrorMessage.CANCEL_ORDER_NOT_FOUND,getBean(422, "Can't find order to cancel"));
+			addAndCheck(ErrorMessage.ORDER_ID_EXIST,getBean(423, "this order id already exist"));
 
+			
 			
 			
 			// user errors start with 500
@@ -113,6 +124,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.INVALID_USER_INFO,getBean(508, "Invalid user information"));
 			addAndCheck(ErrorMessage.NO_TRADING_ACCOUNT,getBean(509, "No trading account available"));
 			addAndCheck(ErrorMessage.INVALID_USER_ACCOUNT_PWD,getBean(510, "userid or password invalid"));
+			addAndCheck(ErrorMessage.USER_ALREADY_EXIST,getBean(511, "User already exists"));
+			addAndCheck(ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR,getBean(512, "Cannot create default account for user"));
+			addAndCheck(ErrorMessage.USER_EMAIL_EXIST,getBean(513, "This email already exists"));
+
 			
 			
 			// client errors start with 600
@@ -182,7 +197,9 @@ public class MessageLookup {
 		if(null==localMessage){
 			localMessage = "";
 		}
-		return mb.getCode()+MSG_SEPARATOR+mb.getMsg()+MSG_SEPARATOR+localMessage;
+		String eventMsg = mb.getCode()+MSG_SEPARATOR+mb.getMsg()+MSG_SEPARATOR+localMessage;
+		log.info(eventMsg);
+		return eventMsg;
 		
 	}
 	public static MessageBean lookup(ErrorMessage m) {

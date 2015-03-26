@@ -91,7 +91,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 					if (IdMarketDataAdaptor.instance.getStatus() != MarketStatus.CLOSE) {
 						IdMarketDataAdaptor.instance.reconClient();
 					}
-					log.error("Read idle");
+					log.warn("Read idle");
 				}
 			}
 		}

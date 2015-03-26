@@ -144,8 +144,12 @@ public class NewsManager implements IPlugin {
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
 			con.setRequestMethod("GET");
 			
-			int responseCsode = con.getResponseCode();
-
+			int responseCode = con.getResponseCode();
+			if (responseCode != 200)
+			{
+				log.warn("Server returned HTTP response code: " + responseCode + " for URL: http://wallstreetcn.com/news?cid=6");
+				return ; 
+			}
 			Document doc = Jsoup.parse(con.getInputStream(), null, "http://wallstreetcn.com/news?cid=6");
 			
 			Elements links = doc.select("li[class$=news]");
@@ -181,7 +185,7 @@ public class NewsManager implements IPlugin {
 				con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36");
 				con.setRequestMethod("GET");
 				
-				responseCsode = con.getResponseCode();
+				responseCode = con.getResponseCode();
 				
 				doc = Jsoup.parse(con.getInputStream(), null, href) ;
 				Elements childSite = doc.select("div[class$=article-content]");
@@ -235,7 +239,7 @@ public class NewsManager implements IPlugin {
 				wr.flush();
 				wr.close();					
 				con.disconnect();
-				int responseCode = httpCon.getResponseCode();
+				responseCode = httpCon.getResponseCode();
 				if (responseCode != 200)
 				{
 					log.warn("[Social API]Send to Social Error.");

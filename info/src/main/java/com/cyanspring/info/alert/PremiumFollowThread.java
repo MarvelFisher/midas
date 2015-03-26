@@ -27,6 +27,7 @@ public class PremiumFollowThread extends Thread {
 	private Map<String, ArrayList<PremiumUser>> PremiumUserTable = new HashMap<String, ArrayList<PremiumUser>>();
 	private String lastUpdateTime ;
 	public PremiumFollowThread(String URL) {
+		log.info("PrimiumFollow Thread... Create.");
 		this.setPremiumFollowURL(URL);
 		setDaemon(true);
 		start();
@@ -302,8 +303,14 @@ public class PremiumFollowThread extends Thread {
 					}
 					log.info("[getPremiumUserTableAll] : GetSocialAPI All...End");	
 					lastUpdateTime = curTime ;
-					
-					PremiumUserTable = tempPremiumUserTable ;
+					if (null != tempPremiumUserTable && tempPremiumUserTable.size() >0)
+					{
+						PremiumUserTable = tempPremiumUserTable ;						
+					}
+					else
+					{
+						log.error("[PremiumFollowThread][ALL] error : GetPremiumFollowTable Fail.");
+					}
 				} catch (Exception ee) {
 					log.error("[PremiumFollowThread][ALL] error : " + ee.getMessage());
 				}

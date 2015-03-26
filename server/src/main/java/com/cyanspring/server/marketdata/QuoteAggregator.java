@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.Quote;
 
-public class QuoteAggregator {
+public class QuoteAggregator implements IQuoteAggregator {
 	
 	
 	ConcurrentHashMap<String, AggrQuote> table = new ConcurrentHashMap<String, AggrQuote>(); 
