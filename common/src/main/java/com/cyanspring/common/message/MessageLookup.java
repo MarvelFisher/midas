@@ -68,8 +68,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.SEQUENCE_NUMBER_ERROR,getBean(214, "Sequence number wrong"));
 			addAndCheck(ErrorMessage.NOT_SUPPORT_FREQUENCE,getBean(215, "Frequence is not Support"));
 			addAndCheck(ErrorMessage.SYMBOL_NOT_FOUND,getBean(216, "Can't find symbol"));
-			addAndCheck(ErrorMessage.POSITION_NOT_FOUND,getBean(217, "Can't find symbol"));
-			addAndCheck(ErrorMessage.POSITION_PENDING,getBean(218, "Can't find symbol"));
+			addAndCheck(ErrorMessage.POSITION_NOT_FOUND,getBean(217, "Account doesn't have a position at this symbol"));
+			addAndCheck(ErrorMessage.POSITION_PENDING,getBean(218, "pending close position action on symbol"));
 			addAndCheck(ErrorMessage.STRATEGY_NOT_REGISTERD,getBean(219, "Strategy hasn't been registered"));
 			addAndCheck(ErrorMessage.STRATEGY_ERROR,getBean(220, "Strategy Error"));
 			addAndCheck(ErrorMessage.STRATEGY_NOT_PRESENT_IN_SINGLE_INSTRUMENT,getBean(221, "Strategy field not present in NewSingleInstrumentStrategyEvent"));
