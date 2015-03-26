@@ -13,7 +13,7 @@ public class MessageLookup {
 	private static final Logger log = LoggerFactory
 			.getLogger(MessageLookup.class);
 	private static final Map<ErrorMessage, MessageBean> map = new HashMap<ErrorMessage, MessageBean>();
-	private	static final String MSG_SEPARATOR="|";
+	private	static final String MSG_SEPARATOR="|&|";
 
 	private static void addAndCheck(ErrorMessage m, MessageBean bean) throws Exception {
 		if(map.put(m, bean) != null)
@@ -178,8 +178,8 @@ public class MessageLookup {
 	public static MessageBean getMsgBeanFromEventMessage(String eventMessage){
 			MessageBean mb;
 			try{
-				if(null!= eventMessage && eventMessage.contains(MSG_SEPARATOR) && eventMessage.split("\\"+MSG_SEPARATOR).length>2){
-					String tempMsgs[] = eventMessage.split("\\"+MSG_SEPARATOR);
+				if(null!= eventMessage && eventMessage.contains(MSG_SEPARATOR) && eventMessage.split("\\|"+"&"+"\\|").length>2){
+					String tempMsgs[] = eventMessage.split("\\|"+"&"+"\\|");
 					mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
 				}else{
 					if(!StringUtils.hasText(eventMessage)){
