@@ -19,7 +19,8 @@
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
 		<property name="getPremiumTableInterval" value="300000" />		
-		<property name="PremiumFollowURL" value="http://r.forexmastergaedev.appspot.com/rest/getPremiumFollowList" />
+		<property name="getPremiumFollowListURL" value="http://r.forexmastergaedev.appspot.com/rest/getPremiumFollowList" />
+		<property name="SetInBoxURL" value="http://forexmastergaedev.appspot.com/rest/setInBoxMsg" />	
 	</bean>
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
