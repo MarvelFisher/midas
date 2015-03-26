@@ -429,8 +429,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 		ParentOrder prev = orders.get(event.getOrderId());
 		
 		if(null == prev) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.CANCEL_ORDER_NOT_FOUND, "Can't find order to cancel");
 			ctx.send(new CancelParentOrderReplyEvent(event.getKey(), null, false, 
-					"Can't find order to cancel", event.getTxId(), null));
+					message, event.getTxId(), null));
 		}
 		
 		if(!checkAccount(prev.getAccount(), ctx.getUser()))

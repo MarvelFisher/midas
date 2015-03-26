@@ -45,6 +45,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.strategy.GlobalStrategySettings;
 import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyFactory;
@@ -107,15 +108,16 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 			this.init();
 		
 		StrategyRecord strategyRecord = registry.get(name);
-		if (strategyRecord == null)
+		if (strategyRecord == null){
 			throw new StrategyException("Strategy hasn't been registered: "
-					+ name);
+					+ name,ErrorMessage.STRATEGY_NOT_REGISTERD);
+		}
 
 		IStrategy strategy;
 		try {
 			strategy = (IStrategy)strategyRecord.ac.getBean(strategyRecord.beanName);
 		} catch (BeansException e){
-			throw new StrategyException(e.getMessage());
+			throw new StrategyException(e.getMessage(),ErrorMessage.STRATEGY_ERROR);
 		}
 		strategy.create(objects);
 		

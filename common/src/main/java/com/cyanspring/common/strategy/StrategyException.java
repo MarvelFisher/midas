@@ -10,12 +10,23 @@
  ******************************************************************************/
 package com.cyanspring.common.strategy;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class StrategyException extends Exception {
 
 	private static final long serialVersionUID = 2420766365910872478L;
+	private ErrorMessage clientMessage;
 
 	public StrategyException(String message) {
 		super(message);
 	}
-
+	public StrategyException(String localMessage,ErrorMessage clientMessage) {
+		
+		super(localMessage);
+		this.clientMessage = clientMessage;
+		
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
+	}
 }

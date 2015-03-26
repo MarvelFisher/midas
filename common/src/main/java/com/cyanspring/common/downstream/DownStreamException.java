@@ -10,11 +10,22 @@
  ******************************************************************************/
 package com.cyanspring.common.downstream;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class DownStreamException extends Exception {
 	private static final long serialVersionUID = -8391613503025566757L;
+	private ErrorMessage clientMessage;
 
 	public DownStreamException(String message) {
 		super(message);
 	}
-	
+	public DownStreamException(String localMessage,ErrorMessage clientMessage) {
+		
+		super(localMessage);
+		this.clientMessage = clientMessage;
+		
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
+	}
 }

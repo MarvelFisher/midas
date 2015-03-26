@@ -32,6 +32,9 @@ import com.cyanspring.common.event.account.PremiumFollowPositionReplyEvent;
 import com.cyanspring.common.event.account.PremiumFollowPositionRequestEvent;
 import com.cyanspring.common.event.account.PremiumFollowReplyEvent;
 import com.cyanspring.common.event.account.PremiumFollowRequestEvent;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageBean;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
@@ -99,11 +102,15 @@ public class PremiumFollowManager implements IPlugin {
 			if(TimeUtil.getTimePass(request.getTime()) > timeout) {
 				pendingRequests.remove(entry.getKey());
 				PremiumFollowInfo pf = request.getInfo();
-				int error = 201;
-				String message = ErrorLookup.lookup(error) + " " + pf;
+				
+				//int error = 201;
+				MessageBean errorBean = MessageLookup.lookup(ErrorMessage.PREMIUM_FOLLOW_REQUEST_TIMEOUT);
+				String message = errorBean.getMsg()+ " " + pf;
 				log.warn("PremiumFollowInfo: " + message);
+				
+			    message = MessageLookup.buildEventMessage(ErrorMessage.PREMIUM_FOLLOW_REQUEST_TIMEOUT, message);				
 				PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-						request.getOriginSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getOriginTxId());
+						request.getOriginSender(), null, null, errorBean.getCode(), false, message, request.getUserId(), request.getAccountId(), request.getOriginTxId());
 				
 				eventManager.sendRemoteEvent(reply);
 			}
@@ -135,11 +142,15 @@ public class PremiumFollowManager implements IPlugin {
 		PremiumFollowInfo pf = event.getInfo();
 		log.info("Received PremiumFollowRequestEvent: " + pf + ", " + event.getTxId());
 		if(null == pf.getMarket()|| null == pf.getFdUser() || event.getTime() == null) {
-			int error = 200;
-			String message = ErrorLookup.lookup(error) + " " + pf;
+			//int error = 200;
+			MessageBean errorBean = MessageLookup.lookup(ErrorMessage.PREMIUM_FOLLOW_INFO_INCOMPLETE);
+			String message = errorBean.getMsg()+ " " + pf;
 			log.warn("PremiumFollowInfo: " + message);
+
+		    message = MessageLookup.buildEventMessage(ErrorMessage.PREMIUM_FOLLOW_INFO_INCOMPLETE, message );
+	
 			PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(event.getKey(), 
-					event.getSender(), null, null, error, false, message, event.getUserId(), event.getAccountId(), event.getTxId());
+					event.getSender(), null, null, errorBean.getCode(), false, message, event.getUserId(), event.getAccountId(), event.getTxId());
 			
 			eventManager.sendRemoteEvent(reply);
 			return;
