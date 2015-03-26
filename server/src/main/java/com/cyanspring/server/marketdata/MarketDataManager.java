@@ -150,13 +150,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		this.quotePriceWarningPercent = quotePriceWarningPercent;
 	}
 
-	QuoteAggregator aggregator;
+	IQuoteAggregator aggregator;
 
-	public QuoteAggregator getAggregator() {
+	public IQuoteAggregator getAggregator() {
 		return aggregator;
 	}
 
-	public void setAggregator(QuoteAggregator aggregator) {
+	public void setAggregator(IQuoteAggregator aggregator) {
 		this.aggregator = aggregator;
 	}
 
