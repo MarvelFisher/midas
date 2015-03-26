@@ -57,6 +57,8 @@ import com.cyanspring.common.event.strategy.StrategyStartTimerEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.staticdata.RefData;
@@ -390,8 +392,10 @@ public abstract class SingleOrderStrategy extends Strategy {
 	private boolean checkManualOverFill(double qty, String sender) {
 		double inMarketQty = getQtyInMarket() + qty;
 		if(PriceUtils.GreaterThan(inMarketQty, parentOrder.getRemainingQty())) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FILLED, "This would have overfilled parent order");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, sender, false, "This would have overfilled parent order"));
+					new ManualActionReplyEvent(null, sender, false, message));
 			return false;
 		}
 		return true;
@@ -399,8 +403,10 @@ public abstract class SingleOrderStrategy extends Strategy {
 	
 	private boolean checkManualOrderPrice(double p1, double p2, String sender) {
 		if(!OrderUtils.isBetterPrice(parentOrder.getSide(), p1, p2)){
+			String message = MessageLookup.buildEventMessage(ErrorMessage.PRICE_NOT_PERMITTED, "Price is not permitted by parentOrder");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, sender, false, "Price is not permitted by parentOrder"));
+					new ManualActionReplyEvent(null, sender, false, message));
 			return false;
 		}
 		return true;
@@ -415,8 +421,10 @@ public abstract class SingleOrderStrategy extends Strategy {
 		for(String childOrderId: event.getChildOrderIds()) {
 			ChildOrder order = getChildOrder(childOrderId);
 			if(order == null) {
+				String message = MessageLookup.buildEventMessage(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER, "cant find order in active child orders");
+
 				container.sendRemoteEvent(
-						new ManualActionReplyEvent(null, event.getSender(), false, "cant find order in active child orders"));
+						new ManualActionReplyEvent(null, event.getSender(), false, message));
 				return;
 			}
 			ei.add(new ExecutionInstruction(OrderAction.CANCEL, order, null));
@@ -452,14 +460,18 @@ public abstract class SingleOrderStrategy extends Strategy {
 		List<ExecutionInstruction> ei = new ArrayList<ExecutionInstruction>();
 		ChildOrder order = getChildOrder(event.getChildOrderId());
 		if(order == null) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER, "cant find order in active child orders");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, event.getSender(), false, "cant find order in active child orders"));
+					new ManualActionReplyEvent(null, event.getSender(), false, message));
 			return;
 		}
 		
 		if(PriceUtils.LessThan(event.getQuantity(), order.getCumQty())) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.CUM_QTY_GREATER_THAN_INTENTED_QTY, "CumQty is greater than intended quantity");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, event.getSender(), false, "CumQty is greater than intended quantity"));
+					new ManualActionReplyEvent(null, event.getSender(), false,message));
 			return;
 		}
 
@@ -570,16 +582,19 @@ public abstract class SingleOrderStrategy extends Strategy {
 	protected AmendParentOrderReplyEvent getImmediateAmendReply(AmendStrategyOrderEvent event) {
 		AmendParentOrderReplyEvent reply = null;
 		if( pendingAckHandler != null || pendingExecInstrEvent != null) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.ORDER_IS_PENDING, "Order is pending on instruction/amendment/cancellation");
+			
 			reply = new AmendParentOrderReplyEvent(
-					event.getSourceId(), event.getReceiver(), false, "Order is pending on instruction/amendment/cancellation", event.getTxId(), parentOrder);
+					event.getSourceId(), event.getReceiver(), false,message , event.getTxId(), parentOrder);
 			return reply;
 		} 
 		
 		Map<String, Object> fields = event.getFields();
 		Double qty = (Double)fields.get(OrderField.QUANTITY.value());
 		if(qty != null && PriceUtils.GreaterThan(parentOrder.getCumQty(), qty)) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FILLED,"This would cause overfilled");
 			reply = new AmendParentOrderReplyEvent(
-					event.getSourceId(), event.getReceiver(), false, "This would cause overfilled", event.getTxId(), parentOrder);
+					event.getSourceId(), event.getReceiver(), false,message, event.getTxId(), parentOrder);
 			return reply;
 		}
 
@@ -697,8 +712,10 @@ public abstract class SingleOrderStrategy extends Strategy {
 		}
 		
 		if( pendingAckHandler != null || pendingExecInstrEvent != null) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.ORDER_IS_PENDING, "Order has pending amendment/cancellation");
+
 			reply = new CancelParentOrderReplyEvent(
-					event.getSourceId(), event.getSender(), false, "Order has pending amendment/cancellation", event.getTxId(), parentOrder);
+					event.getSourceId(), event.getSender(), false, message, event.getTxId(), parentOrder);
 			container.sendLocalOrRemoteEvent(reply);
 			log.debug("Cancelling order with pending amendment/cancellation: " + event.getKey());
 			return;

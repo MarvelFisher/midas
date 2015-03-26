@@ -45,6 +45,8 @@ import com.cyanspring.common.event.strategy.StrategyEndTimerEvent;
 import com.cyanspring.common.event.strategy.StrategyStartTimerEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.staticdata.RefData;
@@ -362,8 +364,10 @@ public class SingleInstrumentStrategy extends Strategy {
 		for(String childOrderId: event.getChildOrderIds()) {
 			ChildOrder order = getChildOrder(childOrderId);
 			if(order == null) {
+				String message = MessageLookup.buildEventMessage(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER, "cant find order in active child orders");
+
 				container.sendRemoteEvent(
-						new ManualActionReplyEvent(null, event.getSender(), false, "cant find order in active child orders"));
+						new ManualActionReplyEvent(null, event.getSender(), false, message));
 				return;
 			}
 			ei.add(new ExecutionInstruction(OrderAction.CANCEL, order, null));
@@ -393,14 +397,18 @@ public class SingleInstrumentStrategy extends Strategy {
 		List<ExecutionInstruction> ei = new ArrayList<ExecutionInstruction>();
 		ChildOrder order = getChildOrder(event.getChildOrderId());
 		if(order == null) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER, "cant find order in active child orders");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, event.getSender(), false, "cant find order in active child orders"));
+					new ManualActionReplyEvent(null, event.getSender(), false, message));
 			return;
 		}
 		
 		if(PriceUtils.LessThan(event.getQuantity(), order.getCumQty())) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.CUM_QTY_GREATER_THAN_INTENTED_QTY, "CumQty is greater than intended quantity");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, event.getSender(), false, "CumQty is greater than intended quantity"));
+					new ManualActionReplyEvent(null, event.getSender(), false, message));
 			return;
 		}
 
