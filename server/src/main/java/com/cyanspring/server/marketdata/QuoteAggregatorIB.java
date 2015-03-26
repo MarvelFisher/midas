@@ -34,20 +34,20 @@ public class QuoteAggregatorIB implements IQuoteAggregator {
 class QuoteMS {
 	public Quote quote;
 	int sourceId = -1;
-	double open,high,low,close;
-	double last = 0;
+	double last; 
 	double gap = 0;
 	
 	QuoteMS(Quote quote,int sourceId) {
 		this.quote = quote;		
 		this.sourceId = sourceId;
+		last = (this.quote.getAsk() + this.quote.getBid()) / 2;
 	}
 	
 	public Quote update(Quote quote, int sourceId) {
 		
-		if(sourceId == 1 || this.sourceId == -1 || last == 0) {  // Major Quote or first quote
+		if(sourceId == 1 || this.sourceId == -1) {  // Major Quote or first quote
 			if(sourceId != 1) {  // not major quote , use only bid / ask. unless there is no pre-close in this.quote
-				if(quote.getLast() == 0) {  // getLast : get pre close at forex
+				if(quote.getClose() == 0) {  // getClose : get pre close at forex
 					this.quote = quote;
 				} else {
 					this.quote.setBid(quote.getBid());
@@ -57,7 +57,7 @@ class QuoteMS {
 				this.quote = quote;
 			}			
 			this.sourceId = sourceId;
-		} else {
+		} else  if(this.sourceId != 1 ) {		
 			if(quote.getAsk() == 0 || quote.getBid() == 0) {
 				return quote;
 			}
@@ -67,8 +67,7 @@ class QuoteMS {
 				this.quote.setBid(quote.getBid());
 				gap = diff;
 			} 
-		}			
-		last = (this.quote.getAsk() + this.quote.getBid()) / 2;
+		}					
 		return this.quote;
 	}
 	
