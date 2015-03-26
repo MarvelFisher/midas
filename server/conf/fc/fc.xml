@@ -72,6 +72,7 @@
 	</bean>
 
 	<bean id="socketService" class="com.cyanspring.transport.socket.ServerSocketService">
+		<property name="port" value="52324"></property>
 	</bean>
 
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
