@@ -43,6 +43,8 @@ import com.cyanspring.common.event.strategy.StrategyEndTimerEvent;
 import com.cyanspring.common.event.strategy.StrategyLogEvent;
 import com.cyanspring.common.event.strategy.StrategyStartTimerEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.strategy.ExecuteTiming;
 import com.cyanspring.common.strategy.ExecutionInstruction;
 import com.cyanspring.common.strategy.IExecutionAnalyzer;
@@ -483,8 +485,10 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	
 	protected boolean checkPendingAck(String id, String sender) {
 		if(null != pendingAckHandler) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.PARENT_ORDER_IS_PENDING, "Parent order is pending on action");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(id, sender, false, "Parent order is pending on action"));
+					new ManualActionReplyEvent(id, sender, false, message));
 			return false;
 		}
 		return true;

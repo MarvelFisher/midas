@@ -108,6 +108,17 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.FIELD_DEFINITION_NOT_FOUND,getBean(421, "Can't find field definition for strategy"));
 			addAndCheck(ErrorMessage.CANCEL_ORDER_NOT_FOUND,getBean(422, "Can't find order to cancel"));
 			addAndCheck(ErrorMessage.ORDER_ID_EXIST,getBean(423, "this order id already exist"));
+			addAndCheck(ErrorMessage.ORDER_IS_PENDING,getBean(424, "Order is pending on instruction/amendment/cancellation"));
+			addAndCheck(ErrorMessage.OVER_FILLED,getBean(425, "This would cause overfilled"));
+			addAndCheck(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER,getBean(426, "cant find order in active child orders"));
+			addAndCheck(ErrorMessage.CUM_QTY_GREATER_THAN_INTENTED_QTY,getBean(427, "CumQty is greater than intended quantity"));
+			addAndCheck(ErrorMessage.PRICE_NOT_PERMITTED,getBean(428, "Price is not permitted by parentOrder"));
+			addAndCheck(ErrorMessage.PARENT_ORDER_IS_PENDING,getBean(429, "Parent order is pending on action"));
+
+			
+			
+			
+			
 
 			
 			

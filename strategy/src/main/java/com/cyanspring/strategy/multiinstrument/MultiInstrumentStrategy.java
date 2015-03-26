@@ -57,6 +57,8 @@ import com.cyanspring.common.event.strategy.StopStrategyEvent;
 import com.cyanspring.common.event.strategy.StrategyEndTimerEvent;
 import com.cyanspring.common.event.strategy.StrategyStartTimerEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.TickTableManager;
@@ -268,7 +270,7 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 		for(Instrument instr: this.data.getInstrumentData().values()) {
 			RefData refData = refDataManager.getRefData(instr.getSymbol());
 			if(null == refData)
-				throw new StrategyException("Symbol not found: " + instr.getSymbol());
+				throw new StrategyException("Symbol not found: " + instr.getSymbol(),ErrorMessage.SYMBOL_NOT_FOUND);
 		}
 	}
 	
@@ -532,7 +534,8 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			failed = true;
-			message = e.getMessage();
+			message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, e.getMessage());
+			//message = e.getMessage();
 		}
 		
 		if(!failed) {
@@ -557,7 +560,9 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 			} catch (StrategyException e) {
 				log.error(e.getMessage(), e);
 				failed = true;
-				message = e.getMessage();
+				//message = e.getMessage();
+				message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
+
 				// roll back
 				data = backup;
 			}
@@ -585,8 +590,9 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 		for(String childOrderId: event.getChildOrderIds()) {
 			ChildOrder order = getChildOrder(childOrderId);
 			if(order == null) {
+				String message = MessageLookup.buildEventMessage(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER, "cant find order in active child orders");
 				container.sendRemoteEvent(
-						new ManualActionReplyEvent(null, event.getSender(), false, "cant find order in active child orders"));
+						new ManualActionReplyEvent(null, event.getSender(), false, message));
 				return;
 			}
 			ei.add(new ExecutionInstruction(OrderAction.CANCEL, order, null));
@@ -618,14 +624,18 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 		List<ExecutionInstruction> ei = new ArrayList<ExecutionInstruction>();
 		ChildOrder order = getChildOrder(event.getChildOrderId());
 		if(order == null) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.NO_ORDER_IN_ACTIVE_CHILD_ORDER, "cant find order in active child orders");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, event.getSender(), false, "cant find order in active child orders"));
+					new ManualActionReplyEvent(null, event.getSender(), false, message));
 			return;
 		}
 		
 		if(PriceUtils.LessThan(event.getQuantity(), order.getCumQty())) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.CUM_QTY_GREATER_THAN_INTENTED_QTY, "CumQty is greater than intended quantity");
+
 			container.sendRemoteEvent(
-					new ManualActionReplyEvent(null, event.getSender(), false, "CumQty is greater than intended quantity"));
+					new ManualActionReplyEvent(null, event.getSender(), false, message));
 			return;
 		}
 
