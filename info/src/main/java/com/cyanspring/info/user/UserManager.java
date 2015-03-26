@@ -59,38 +59,39 @@ public class UserManager implements IPlugin {
 		Iterator iterator ;
 		String strCmd = "";
 		int Return ;
-		String UserId = event.getAccount();
+		String UserId = event.getUserId();
+		String AccountId = event.getAccount();
 		ArrayList<String> ContestIdArray = new ArrayList<String>();
 		try {
 			// Local MYSQL	
-			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + UserId + "-FX-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + UserId + "-FX'" ;
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId + "-reset'" +
+					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();			
-			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + UserId + "-FX-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + UserId + "-FX'" ;
+			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId + "-reset'" +
+					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + UserId + "-FX-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + UserId + "-FX'" ;
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId + "-reset'" +
+					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + UserId + "-FX-reset'" +
-					 ",TRADER='" + UserId + "-reset' where ACCOUNT='" + UserId + "-FX'" ;
+			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId + "-reset'" +
+					 ",TRADER='" + UserId + "-reset' where ACCOUNT='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update EXECUTIONS set ACCOUNT='" + UserId + "-FX-reset'" +
-					 ",TRADER='" + UserId + "-reset' where ACCOUNT='" + UserId + "-FX'" ;
+			strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId + "-reset'" +
+					 ",TRADER='" + UserId + "-reset' where ACCOUNT='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
 
 			// Central MYSQL
-			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + UserId + "-FX-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + UserId + "-FX'" ;
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId + "-reset'" +
+					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = sessionCentral.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + UserId + "-FX-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + UserId + "-FX'" ;
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId + "-reset'" +
+					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = sessionCentral.createSQLQuery(strCmd);
 			Return = query.executeUpdate();			
 

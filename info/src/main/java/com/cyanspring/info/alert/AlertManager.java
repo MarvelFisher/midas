@@ -180,7 +180,7 @@ public class AlertManager implements IPlugin {
 	}
 
 	private void ResetUser(ResetAccountRequestEvent event) {
-		String UserId = event.getAccount();
+		String UserId = event.getUserId();
 		try {
 			// Clear memory
 			userTradeAlerts.remove(UserId);
