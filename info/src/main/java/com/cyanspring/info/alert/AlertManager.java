@@ -41,6 +41,8 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.AsyncEventProcessor;
 
@@ -186,7 +188,16 @@ public class AlertManager implements IPlugin {
 				SQLQuery query = session.createSQLQuery(strCmd);
 				int Return = query.executeUpdate();
 			} catch (Exception ee) {
-				ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(),ResetAccountReplyType.LTSINFO_ALERTMANAGER, false, "Reset User " + UserId + "fail.");
+				ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),
+						event.getSender(), 
+						event.getAccount(), 
+						event.getTxId(), 
+						event.getUserId(), 
+						event.getMarket(), 
+						event.getCoinId(),
+						ResetAccountReplyType.LTSINFO_ALERTMANAGER, 
+						false, //"Reset User " + UserId + "fail.");
+						MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + "fail."));
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);				
 				log.warn("[ResetUser] warn : " + ee.getMessage());
 			} finally {
@@ -368,7 +379,8 @@ public class AlertManager implements IPlugin {
 				Msg = "Event AlertTypeError.";
 				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null,
 						event.getSender(), null, event.getTxId(),
-						event.getuserId(), false, Msg);
+						event.getuserId(), false, //Msg);
+						MessageLookup.buildEventMessage(ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
 				log.warn("[processQueryOrderAlertRequestEvent][AlertTypeError]: "
 						+ event.toString());
 			}
@@ -496,7 +508,8 @@ public class AlertManager implements IPlugin {
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), null, event.getTxId(), event
 								.getPriceAlert().getUserId(), event.getType(),
-						null, false, Msg);
+						null, false, //Msg);
+						MessageLookup.buildEventMessage(ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
 				eventManager.sendRemoteEvent(pricealertreplyevent);
 			}
 		} catch (Exception e) {
@@ -521,7 +534,8 @@ public class AlertManager implements IPlugin {
 				String Msg = "Event AlertTypeError.";
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), null, event.getTxId(),
-						event.getUserId(), event.getType(), null, false, Msg);
+						event.getUserId(), event.getType(), null, false, //Msg);
+						MessageLookup.buildEventMessage(ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
 				eventManager.sendRemoteEvent(pricealertreplyevent);
 			}
 		} catch (Exception e) {
@@ -586,7 +600,8 @@ public class AlertManager implements IPlugin {
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), null, event.getTxId(),
 						priceAlert.getUserId(), event.getType(), null, false,
-						Msg);
+						//Msg);
+						MessageLookup.buildEventMessage(ErrorMessage.PRICE_ALERT_ERROR, Msg));
 				try {
 					eventManager.sendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveAddPriceAlert] : send reject User : "
@@ -603,7 +618,8 @@ public class AlertManager implements IPlugin {
 					pricealertreplyevent = new PriceAlertReplyEvent(null,
 							event.getSender(), null, event.getTxId(),
 							priceAlert.getUserId(), event.getType(), null,
-							false, Msg);
+							false, //Msg);
+							MessageLookup.buildEventMessage(ErrorMessage.PRICE_ALERT_ERROR, Msg));
 					try {
 						eventManager.sendRemoteEvent(pricealertreplyevent);
 						log.info("[receiveAddPriceAlert] : send reject User : "
@@ -668,7 +684,9 @@ public class AlertManager implements IPlugin {
 			Msg = "id isn't exists.";
 			pricealertreplyevent = new PriceAlertReplyEvent(null,
 					event.getSender(), priceAlert.getId(), event.getTxId(),
-					priceAlert.getUserId(), event.getType(), null, false, Msg);
+					priceAlert.getUserId(), event.getType(), null, false, 
+					//Msg);
+					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 			try {
 				eventManager.sendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveModifyPriceAlert] : send reject User : "
@@ -704,7 +722,8 @@ public class AlertManager implements IPlugin {
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), priceAlert.getId(), event.getTxId(),
 						priceAlert.getUserId(), event.getType(), null, false,
-						Msg);
+						//Msg);
+						MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 				try {
 					eventManager.sendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveModifyPriceAlert] : send reject User : "
@@ -744,7 +763,9 @@ public class AlertManager implements IPlugin {
 			Msg = "id isn't exists.";
 			pricealertreplyevent = new PriceAlertReplyEvent(null,
 					event.getSender(), priceAlert.getId(), event.getTxId(),
-					priceAlert.getUserId(), event.getType(), null, false, Msg);
+					priceAlert.getUserId(), event.getType(), null, false, 
+					//Msg);
+					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 			try {
 				eventManager.sendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveCancelPriceAlert] : send reject User : "
@@ -775,7 +796,8 @@ public class AlertManager implements IPlugin {
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), priceAlert.getId(), event.getTxId(),
 						priceAlert.getUserId(), event.getType(), null, false,
-						Msg);
+						//Msg);
+						MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 				try {
 					eventManager.sendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveCancelPriceAlert] : send reject User : "

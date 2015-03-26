@@ -18,6 +18,8 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.event.AsyncEventProcessor;
 
 public class UserManager implements IPlugin {
@@ -137,7 +139,17 @@ public class UserManager implements IPlugin {
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(), ResetAccountReplyType.LTSINFO_USERMANAGER, false, "Reset User " + UserId + "fail.");
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),
+					event.getSender(), 
+					event.getAccount(), 
+					event.getTxId(), 
+					event.getUserId(), 
+					event.getMarket(), 
+					event.getCoinId(), 
+					ResetAccountReplyType.LTSINFO_USERMANAGER, 
+					false, 
+					//"Reset User " + UserId + "fail.");
+					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + "fail."));
 			try
 			{
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);

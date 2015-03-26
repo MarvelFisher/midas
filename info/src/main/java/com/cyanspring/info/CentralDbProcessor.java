@@ -58,6 +58,8 @@ import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.staticdata.TickTableManager;
@@ -296,7 +298,8 @@ public class CentralDbProcessor implements IPlugin
 		if (defaultSymbol == null || defaultSymbol.isEmpty())
 		{
 			retEvent.setOk(false);
-			retEvent.setMessage("Can't find requested Market in default map");
+//			retEvent.setMessage("Can't find requested Market in default map");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.REF_SYMBOL_NOT_FOUND, "Can't find requested Market in default map"));
 			log.debug("Process Request Default Symbol fail: Can't find requested Market in default map");
 			sendEvent(retEvent);
 			return ;
@@ -305,7 +308,8 @@ public class CentralDbProcessor implements IPlugin
 		if (defaultSymbolInfo == null || defaultSymbolInfo.isEmpty())
 		{
 			retEvent.setOk(false);
-			retEvent.setMessage("Default SymbolInfo is empty");
+//			retEvent.setMessage("Default SymbolInfo is empty");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.REF_SYMBOL_NOT_FOUND, "Default SymbolInfo is empty"));
 			log.debug("Process Request Default Symbol fail: Default SymbolInfo is empty");
 			sendEvent(retEvent);
 			return ;
@@ -317,7 +321,8 @@ public class CentralDbProcessor implements IPlugin
 		if (retsymbollist.isEmpty())
 		{
 			retEvent.setOk(false);
-			retEvent.setMessage("Can't find requested symbol");
+//			retEvent.setMessage("Can't find requested symbol");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SEARCH_SYMBOL_ERROR, "Can't find requested symbol"));
 		}
 		else
 		{
@@ -379,7 +384,8 @@ public class CentralDbProcessor implements IPlugin
 		{
 			retEvent.setSymbolList(null);
 			retEvent.setOk(false);
-			retEvent.setMessage(e.toString());
+//			retEvent.setMessage(e.toString());
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SQL_SYNTAX_ERROR, e.toString()));
 			log.debug("Process Request Group Symbol fail: " + e.toString());
 			sendEvent(retEvent);
 		}
@@ -399,7 +405,8 @@ public class CentralDbProcessor implements IPlugin
 		if (user == null || market == null || group == null)
 		{
 			retEvent.setOk(false);
-			retEvent.setMessage("Recieved null argument");
+//			retEvent.setMessage("Recieved null argument");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Recieved null argument"));
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
 		String sqlcmd ;
@@ -441,7 +448,8 @@ public class CentralDbProcessor implements IPlugin
 			{
 				retEvent.setSymbolList(null);
 				retEvent.setOk(false);
-				retEvent.setMessage("Can't find requested symbol");
+//				retEvent.setMessage("Can't find requested symbol");
+				retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Can't find requested symbol"));
 				log.debug("Process Request Group Symbol fail: Can't find requested symbol");
 			}
 			else
@@ -487,7 +495,8 @@ public class CentralDbProcessor implements IPlugin
 		{
 			retEvent.setSymbolList(null);
 			retEvent.setOk(false);
-			retEvent.setMessage(e.toString());
+//			retEvent.setMessage(e.toString());
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SQL_SYNTAX_ERROR, e.toString()));
 			log.debug("Process Request Group Symbol fail: " + e.toString());
 			sendEvent(retEvent);
 		}

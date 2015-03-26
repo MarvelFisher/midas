@@ -21,6 +21,8 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 
 public class CentralDbEventProc implements Runnable 
 {
@@ -70,7 +72,8 @@ public class CentralDbEventProc implements Runnable
 		if (listPrice == null || listPrice.isEmpty())
 		{
 			retEvent.setOk(false) ;
-			retEvent.setMessage("Get price list fail");
+//			retEvent.setMessage("Get price list fail");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.DATA_NOT_FOUND, "Get price list fail"));
 			centraldb.sendEvent(retEvent) ;
 			log.debug("Process Historical Price Request fail: Get price list fail");
 			return ;
@@ -97,7 +100,8 @@ public class CentralDbEventProc implements Runnable
 		if (symbolList == null)
 		{
 			retEvent.setOk(false);
-			retEvent.setMessage("No requested symbol is find");
+//			retEvent.setMessage("No requested symbol is find");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.REF_SYMBOL_NOT_FOUND, "No requested symbol is find"));
 			log.debug("Process Price High Low Request fail: No requested symbol is find");
 			centraldb.sendEvent(retEvent) ;
 			return;
@@ -112,7 +116,8 @@ public class CentralDbEventProc implements Runnable
 		if (phlList.isEmpty())
 		{
 			retEvent.setOk(false);
-			retEvent.setMessage("No requested symbol is find");
+//			retEvent.setMessage("No requested symbol is find");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.REF_SYMBOL_NOT_FOUND, "No requested symbol is find"));
 			log.debug("Process Price High Low Request fail: No requested symbol is find");
 		}
 		else
