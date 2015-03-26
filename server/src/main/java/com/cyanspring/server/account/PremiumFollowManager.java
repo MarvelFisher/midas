@@ -283,7 +283,7 @@ public class PremiumFollowManager implements IPlugin {
 		log.info("Received PremiumFollowPositionGlobalReplyEvent: " + event.getTxId());
 		if(txIdMap.containsKey(event.getTxId())){
 			log.info("processPremiumFollowPositionGlobalReplyEvent found requester: " + event.getTxId());
-			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(), event.getPositionMap(), event.getSymbol(), event.getTxId());
+			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getOriginSender(), event.getPositionMap(), event.getSymbol(), event.getOriginTxId());
 			eventManager.sendRemoteEvent(reply);
 		}
 	}
