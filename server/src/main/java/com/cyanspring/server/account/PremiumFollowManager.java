@@ -1,9 +1,12 @@
 package com.cyanspring.server.account;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -22,6 +25,10 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.PremiumFollowGlobalReplyEvent;
 import com.cyanspring.common.event.account.PremiumFollowGlobalRequestEvent;
+import com.cyanspring.common.event.account.PremiumFollowPositionGlobalReplyEvent;
+import com.cyanspring.common.event.account.PremiumFollowPositionGlobalRequestEvent;
+import com.cyanspring.common.event.account.PremiumFollowPositionReplyEvent;
+import com.cyanspring.common.event.account.PremiumFollowPositionRequestEvent;
 import com.cyanspring.common.event.account.PremiumFollowReplyEvent;
 import com.cyanspring.common.event.account.PremiumFollowRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
@@ -46,6 +53,7 @@ public class PremiumFollowManager implements IPlugin {
 	
 	private Map<String, PremiumFollowGlobalRequestEvent> pendingRequests = 
 				new ConcurrentHashMap<String, PremiumFollowGlobalRequestEvent>();
+	private List<String> txIdList = new ArrayList<String>();
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long timerInterval = 5000;
@@ -56,6 +64,7 @@ public class PremiumFollowManager implements IPlugin {
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(PremiumFollowRequestEvent.class, null);
+			subscribeToEvent(PremiumFollowPositionRequestEvent.class, null);
 		}
 
 		@Override
@@ -70,6 +79,8 @@ public class PremiumFollowManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(PremiumFollowGlobalRequestEvent.class, null);
 			subscribeToEvent(PremiumFollowGlobalReplyEvent.class, null);
+			subscribeToEvent(PremiumFollowPositionGlobalRequestEvent.class, null);
+			subscribeToEvent(PremiumFollowPositionGlobalReplyEvent.class, null);
 		}
 
 		@Override
@@ -91,7 +102,7 @@ public class PremiumFollowManager implements IPlugin {
 				String message = ErrorLookup.lookup(error) + " " + pf;
 				log.warn("PremiumFollowInfo: " + message);
 				PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-						request.getOrginSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getOrginTxId());
+						request.getOriginSender(), null, null, error, false, message, request.getUserId(), request.getAccountId(), request.getOriginTxId());
 				
 				eventManager.sendRemoteEvent(reply);
 			}
@@ -149,6 +160,46 @@ public class PremiumFollowManager implements IPlugin {
 		eventManager.sendRemoteEvent(reply);
 	}
 	
+	public void processPremiumFollowPositionRequestEvent(PremiumFollowPositionRequestEvent event) throws Exception{
+		Map<String, OpenPosition> positionMap = null;
+		for(String fdUser : event.getFdUsers()){
+			OpenPosition position = getUserPositionBySymbol(fdUser, event.getSymbol());
+			if(position != null){
+				if(positionMap == null)
+					positionMap = new HashMap<String, OpenPosition>();
+				positionMap.put(fdUser, position);				
+			}
+		}
+		
+		if(positionMap != null){		
+			Set<String> findList = positionMap.keySet();
+			log.info("Fds position data are found: " + findList.toString());
+			if(findList.size() != event.getFdUsers().size()){
+				List<String> fdUsers = new ArrayList<String>();
+				for(String fdUser : event.getFdUsers()){
+					if(!findList.contains(fdUser)){
+						fdUsers.add(fdUser);
+					}
+				}
+				txIdList.add(event.getTxId());
+				String txId = IdGenerator.getInstance().getNextID();
+				log.info("Fds position data are not complete, send global request " + fdUsers.toString() + ", " + txId);
+				PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), 
+						fdUsers, event.getSymbol(), txId, event.getTxId());
+				globalEventManager.sendRemoteEvent(request);
+			}
+			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(), positionMap, event.getSymbol(), event.getTxId());
+			eventManager.sendRemoteEvent(reply);
+		}else{
+			txIdList.add(event.getTxId());
+			String txId = IdGenerator.getInstance().getNextID();
+			log.info("Fds position data are not found, send global request " + event.getFdUsers().toString() + ", " + txId);
+			PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), 
+					event.getFdUsers(), event.getSymbol(), txId, event.getTxId());
+			globalEventManager.sendRemoteEvent(request);
+		}
+	}
+	
 	public void processPremiumFollowGlobalRequestEvent(PremiumFollowGlobalRequestEvent event) throws Exception {
 		PremiumFollowInfo pf = event.getInfo();
 		log.info("Received PremiumFollowGlobalRequestEvent: " + pf);
@@ -178,9 +229,55 @@ public class PremiumFollowManager implements IPlugin {
 			log.info("processPremiumFollowGlobalReplyEvent found requester: " + request.getTxId());
 			
 			PremiumFollowReplyEvent reply = new PremiumFollowReplyEvent(request.getKey(), 
-					request.getOrginSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getOrginTxId());
+					request.getOriginSender(), event.getAccount(), event.getPositions(), 0, true, null, request.getUserId(), request.getAccountId(), request.getOriginTxId());
 			eventManager.sendRemoteEvent(reply);
 		}		
+	}
+	
+	public void processPremiumFollowPositionGlobalRequestEvent(PremiumFollowPositionGlobalRequestEvent event) throws Exception{
+		log.info("Received PremiumFollowPositionGlobalRequestEvent: " + event.getTxId());
+		Map<String, OpenPosition> positionMap = null;
+		for(String fdUser : event.getFdUsers()){
+			OpenPosition position = getUserPositionBySymbol(fdUser, event.getSymbol());
+			if(position != null){
+				if(positionMap == null)
+					positionMap = new HashMap<String, OpenPosition>();
+				positionMap.put(fdUser, position);				
+			}
+		}
+		
+		if(positionMap != null){		
+			log.info("Fds position data are found in global request: " + positionMap.keySet().toString());
+			PremiumFollowPositionGlobalReplyEvent reply = new PremiumFollowPositionGlobalReplyEvent(event.getKey(), event.getSender(), event.getOriginSender(), 
+					positionMap, event.getSymbol(), event.getTxId(), event.getOriginTxId());
+			globalEventManager.sendRemoteEvent(reply);
+		}else{
+			log.info("Fds position data are not found in global request");
+		}
+	}
+	
+	public void processPremiumFollowPositionGlobalReplyEvent(PremiumFollowPositionGlobalReplyEvent event) throws Exception{
+		log.info("Received PremiumFollowPositionGlobalReplyEvent: " + event.getTxId());
+		if(txIdList.contains(event.getTxId())){
+			txIdList.remove(event.getTxId());
+			log.info("processPremiumFollowPositionGlobalReplyEvent found requester: " + event.getTxId());
+			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(), event.getPositionMap(), event.getSymbol(), event.getTxId());
+			eventManager.sendRemoteEvent(reply);
+		}
+	}
+	
+	
+	private OpenPosition getUserPositionBySymbol(String userId, String symbol){
+		List<Account> accountList = accountKeeper.getAccounts(userId);
+		if(accountList.size() == 0)
+			return null;
+		Account account = accountList.get(0);
+		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+		for(OpenPosition position : positions){
+			if(position.getSymbol().equals(symbol))
+				return position;
+		}
+		return null;
 	}
 	
 	@Override

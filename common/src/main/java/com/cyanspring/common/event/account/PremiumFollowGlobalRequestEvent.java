@@ -4,21 +4,21 @@ import com.cyanspring.common.account.PremiumFollowInfo;
 
 public class PremiumFollowGlobalRequestEvent extends PremiumFollowRequestEvent {
 
-	public PremiumFollowGlobalRequestEvent(String key, String receiver, String orginSender,
-			PremiumFollowInfo info, String userId, String accountId, String txId, String orginTxId) {
+	public PremiumFollowGlobalRequestEvent(String key, String receiver, String originSender,
+			PremiumFollowInfo info, String userId, String accountId, String txId, String originTxId) {
 		super(key, receiver, info, userId, accountId, txId);
-		this.orginSender = orginSender;
-		this.orginTxId = orginTxId;
+		this.originSender = originSender;
+		this.originTxId = originTxId;
 	}
 	
-	private String orginSender;
-	private String orginTxId;
-	public String getOrginSender() {
-		return orginSender;
+	private String originSender;
+	private String originTxId;
+	public String getOriginSender() {
+		return originSender;
 	}
 	
-	public String getOrginTxId(){
-		return orginTxId;
+	public String getOriginTxId(){
+		return originTxId;
 	}
 
 }
