@@ -1,6 +1,7 @@
 package com.cyanspring.server.account;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +54,7 @@ public class PremiumFollowManager implements IPlugin {
 	
 	private Map<String, PremiumFollowGlobalRequestEvent> pendingRequests = 
 				new ConcurrentHashMap<String, PremiumFollowGlobalRequestEvent>();
-	private List<String> txIdList = new ArrayList<String>();
+	private Map<String, Tx> txIdMap = new HashMap<String, Tx>();
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long timerInterval = 5000;
@@ -106,6 +107,11 @@ public class PremiumFollowManager implements IPlugin {
 				
 				eventManager.sendRemoteEvent(reply);
 			}
+		}
+		
+		for(Tx tx : txIdMap.values()){
+			if(TimeUtil.getTimePass(tx.date) > timeout)
+				txIdMap.remove(tx.txId);
 		}
 	}
 
@@ -181,8 +187,11 @@ public class PremiumFollowManager implements IPlugin {
 						fdUsers.add(fdUser);
 					}
 				}
-				txIdList.add(event.getTxId());
 				String txId = IdGenerator.getInstance().getNextID();
+				Tx tx = new Tx();
+				tx.txId = txId;
+				tx.date = Clock.getInstance().now();
+				txIdMap.put(txId, tx);
 				log.info("Fds position data are not complete, send global request " + fdUsers.toString() + ", " + txId);
 				PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), 
 						fdUsers, event.getSymbol(), txId, event.getTxId());
@@ -191,8 +200,11 @@ public class PremiumFollowManager implements IPlugin {
 			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(), positionMap, event.getSymbol(), event.getTxId());
 			eventManager.sendRemoteEvent(reply);
 		}else{
-			txIdList.add(event.getTxId());
 			String txId = IdGenerator.getInstance().getNextID();
+			Tx tx = new Tx();
+			tx.txId = txId;
+			tx.date = Clock.getInstance().now();
+			txIdMap.put(txId, tx);
 			log.info("Fds position data are not found, send global request " + event.getFdUsers().toString() + ", " + txId);
 			PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), 
 					event.getFdUsers(), event.getSymbol(), txId, event.getTxId());
@@ -258,8 +270,7 @@ public class PremiumFollowManager implements IPlugin {
 	
 	public void processPremiumFollowPositionGlobalReplyEvent(PremiumFollowPositionGlobalReplyEvent event) throws Exception{
 		log.info("Received PremiumFollowPositionGlobalReplyEvent: " + event.getTxId());
-		if(txIdList.contains(event.getTxId())){
-			txIdList.remove(event.getTxId());
+		if(txIdMap.containsKey(event.getTxId())){
 			log.info("processPremiumFollowPositionGlobalReplyEvent found requester: " + event.getTxId());
 			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(), event.getPositionMap(), event.getSymbol(), event.getTxId());
 			eventManager.sendRemoteEvent(reply);
@@ -285,4 +296,10 @@ public class PremiumFollowManager implements IPlugin {
 		eventProcessor.uninit();
 		globalEventProcessor.uninit();	
 	}
+	
+	private class Tx{
+		private String txId;
+		private Date date;		
+	}
+	
 }
