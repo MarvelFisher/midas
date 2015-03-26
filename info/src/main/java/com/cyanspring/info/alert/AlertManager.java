@@ -250,7 +250,7 @@ public class AlertManager implements IPlugin {
 			if (null != lstPU)
 			{				
 				String Msg = execution.getUser() + " made a new trade: " + tradeMessage;
-				String SendtoSocial = "action=32&comment=" + Msg + "&userid=";
+				String SendtoSocial = "action=31&comment=" + Msg + "&userid=";
 				for (PremiumUser user : lstPU)
 				{
 					//Send Notification to PremiumUser
