@@ -89,7 +89,7 @@ import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.message.Message;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.FuRefDataManager;
@@ -449,13 +449,13 @@ public class AccountPositionManager implements IPlugin {
 		boolean ok = true;
 		User user = event.getUser();
 		String message = "";
-		Message errorMsg = null ; 
+		ErrorMessage errorMsg = null ; 
 		if(null != userKeeper && null != accountKeeper) {
 			try {
 				
 				if(null == user.getUserType() || (!user.getUserType().equals(UserType.FACEBOOK) && !user.getUserType().equals(UserType.QQ) && !user.getUserType().equals(UserType.WECHAT) && !user.getUserType().equals(UserType.TWITTER)))
 				{
-					errorMsg = Message.WRONG_USER_TYPE;
+					errorMsg = ErrorMessage.WRONG_USER_TYPE;
 					throw new UserException("Cannot create user by wrong UserType");
 					
 				}
@@ -471,7 +471,7 @@ public class AccountPositionManager implements IPlugin {
 						} else {
 							defaultAccountId = generateAccountId();
 							if(accountKeeper.accountExists(defaultAccountId)) {
-								errorMsg = Message.CREATE_USER_FAILED;
+								errorMsg = ErrorMessage.CREATE_USER_FAILED;
 								throw new UserException("Cannot create default account for user: " +
 										user.getId() + ", last try: " + defaultAccountId);
 							}
@@ -498,13 +498,13 @@ public class AccountPositionManager implements IPlugin {
 				ok = false;
 			} catch (AccountException ae) {
 				//message = ae.getMessage();
-				message = MessageLookup.buildEventMessage(Message.ACCOUNT_NOT_EXIST, ae.getMessage());
+				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, ae.getMessage());
 				ok = false;
 			} 
 		} else {
 			ok = false;			
 			//message = "System not yet Ready for Authentication";
-			message = MessageLookup.buildEventMessage(Message.SYSTEM_NOT_READY, "System not yet Ready for Authentication");
+			message = MessageLookup.buildEventMessage(ErrorMessage.SYSTEM_NOT_READY, "System not yet Ready for Authentication");
 
 		}
 		
@@ -543,14 +543,14 @@ public class AccountPositionManager implements IPlugin {
 				accountKeeper.createAccount(account);
 			} catch (AccountException ae) {
 				//message = ae.getMessage();
-				message = MessageLookup.buildEventMessage(Message.ACCOUNT_NOT_EXIST, ae.getMessage());
+				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, ae.getMessage());
 				
 				ok = false;
 			}
 		} else {
 			ok = false;
 			//message = "System doesn't support account creation";
-			message = MessageLookup.buildEventMessage(Message.CREATE_USER_FAILED, "System doesn't support account creation");
+			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED, "System doesn't support account creation");
 
 		}
 		
@@ -691,7 +691,9 @@ public class AccountPositionManager implements IPlugin {
 			accountSetting = accountKeeper.getAccountSetting(event.getAccountId());
 		} catch (AccountException e) {
 			ok = false;
-			message =  e.getMessage();
+			//message =  e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
+
 		}
 		
 		AccountSettingSnapshotReplyEvent reply = new AccountSettingSnapshotReplyEvent(event.getKey(), 
@@ -713,7 +715,9 @@ public class AccountPositionManager implements IPlugin {
 			accountSetting = accountKeeper.setAccountSetting(event.getAccountSetting());
 		} catch (AccountException e) {
 			ok = false;
-			message =  e.getMessage();
+			//message =  e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),e.getMessage());
+
 		}
 		
 		ChangeAccountSettingReplyEvent reply = new ChangeAccountSettingReplyEvent(event.getKey(), 

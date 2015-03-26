@@ -53,6 +53,8 @@ import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.system.SystemErrorEvent;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.transport.IServerSocketListener;
 import com.cyanspring.common.transport.IServerUserSocketService;
@@ -393,8 +395,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 		ParentOrder prev = orders.get(event.getId());
 		
 		if(null == prev) {
+			String message = MessageLookup.buildEventMessage(ErrorMessage.AMEND_ORDER_NOT_FOUND, "Can't find order to amend");
 			ctx.send(new AmendParentOrderReplyEvent(event.getKey(), null, false, 
-					"Can't find order to amend", event.getTxId(), null));
+					message, event.getTxId(), null));
 		}
 		
 		if(!checkAccount(prev.getAccount(), ctx.getUser()))

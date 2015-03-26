@@ -10,13 +10,24 @@
  ******************************************************************************/
 package com.cyanspring.common.validation;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class OrderValidationException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6994028859365422652L;
+	private ErrorMessage clientMessage;
 
 	public OrderValidationException(String message) {
 		super(message);
+	}
+	public OrderValidationException(String localMessage,ErrorMessage clientMessage) {
+		super(localMessage);
+		this.clientMessage = clientMessage;
+
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
 	}
 }

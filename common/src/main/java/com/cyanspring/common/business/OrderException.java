@@ -10,10 +10,20 @@
  ******************************************************************************/
 package com.cyanspring.common.business;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class OrderException extends Exception {
 	private static final long serialVersionUID = 8892272831263712497L;
+	private ErrorMessage clientMessage;
 
 	public OrderException(String message) {
 		super(message);
+	}
+	public OrderException(String localMessage,ErrorMessage clientMessage) {
+		super(localMessage);
+		this.clientMessage = clientMessage;
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
 	}
 }

@@ -68,6 +68,8 @@ import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.TickTableManager;
@@ -306,7 +308,7 @@ public class BusinessManager implements ApplicationContextAware {
 			String id = event.getId();
 			order = orders.get(id);
 			if(null == order)
-				throw new OrderException("Cant find this order id: " + id);
+				throw new OrderException("Cant find this order id: " + id,ErrorMessage.ORDER_ID_NOT_FOUND);
 			
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
 			
@@ -333,7 +335,7 @@ public class BusinessManager implements ApplicationContextAware {
 						add = !oldValue.equals(entry.getValue());
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
-						throw new OrderValidationException("Field " + entry.getKey() + " comparison exception: " + e.getMessage());
+						throw new OrderValidationException("Field " + entry.getKey() + " comparison exception: " + e.getMessage(),ErrorMessage.ORDER_VALIDATION_ERROR);
 					}
 					if(add)
 						changes.put(entry.getKey(), entry.getValue());
@@ -347,9 +349,11 @@ public class BusinessManager implements ApplicationContextAware {
 			
 			// order is already completed
 			if(order.getOrdStatus().isCompleted()) {
+				message = MessageLookup.buildEventMessage(ErrorMessage.ORDER_ALREADY_COMPLETED,"Order already completed");
+				
 				AmendParentOrderReplyEvent replyEvent = 
 					new AmendParentOrderReplyEvent(event.getKey(), event.getSender(), false, 
-							"Order already completed", event.getTxId(), order);
+							message, event.getTxId(), order);
 				eventManager.sendLocalOrRemoteEvent(replyEvent);
 				return;
 			}
@@ -358,9 +362,11 @@ public class BusinessManager implements ApplicationContextAware {
 			if(order.getState().equals(StrategyState.Terminated)) {
 				order.update(changes);
 				order.touch();
+				message = MessageLookup.buildEventMessage(ErrorMessage.ORDER_ALREADY_TERMINATED,"Order already terminated");
+
 				AmendParentOrderReplyEvent replyEvent = 
 					new AmendParentOrderReplyEvent(event.getKey(), event.getSender(), false, 
-							"Order already terminated", event.getTxId(), order);
+							message, event.getTxId(), order);
 				eventManager.sendLocalOrRemoteEvent(replyEvent);
 				
 				UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(order.getId(), ExecType.REPLACE, event.getTxId(), order, null);
@@ -373,18 +379,26 @@ public class BusinessManager implements ApplicationContextAware {
 			
 		} catch (OrderValidationException e) {
 			failed = true;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),e.getMessage());
+
 		} catch (OrderException e) {
 			failed = true;
-			message = e.getMessage();
+			//message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),e.getMessage());
+
 		} catch (DataConvertException e) {
 			failed = true;
-			message = "DataConvertException: " + e.getMessage();
+			//message = "DataConvertException: " + e.getMessage();			
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),"DataConvertException: " + e.getMessage());
+
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
-			message = "Amend order failed, please check server log";
+			//message = "Amend order failed, please check server log";
+			message = MessageLookup.buildEventMessage(ErrorMessage.AMEND_ORDER_ERROR,"Amend order failed, please check server log");
+
 		}
 		
 		if (failed) {
@@ -575,7 +589,7 @@ public class BusinessManager implements ApplicationContextAware {
 		
 		Map<String, FieldDef> fieldDefs = strategyFactory.getStrategyFieldDef(strategyName);
 		if(null == fieldDefs)
-			throw new DataConvertException("Cant find field definition for strategy: " + strategyName);
+			throw new DataConvertException("Cant find field definition for strategy: " + strategyName,ErrorMessage.FIELD_DEFINITION_NOT_FOUND);
 		for(Entry<String, Object> entry: fields.entrySet()) {
 			Object obj;
 			if(entry.getValue() instanceof String) {

@@ -1,6 +1,6 @@
 package com.cyanspring.common.message;
 
-public enum Message {
+public enum ErrorMessage {
 	// exception start with 000
 	EXCEPTION_MESSAGE,
 	NONE_MATCHED_MESSAGE,
@@ -68,7 +68,11 @@ public enum Message {
 	ORDER_REASON_NOT_SUPPORT,
 	ALERT_TYPE_NOT_SUPPORT,
 	NONE_ASSIGN_PRICE,
-	
+	AMEND_ORDER_NOT_FOUND,
+	ORDER_ALREADY_COMPLETED,
+	ORDER_ALREADY_TERMINATED,
+	ORDER_VALIDATION_ERROR,
+	FIELD_DEFINITION_NOT_FOUND,
 
 	// user errors start with 500
 	CREATE_USER_FAILED,

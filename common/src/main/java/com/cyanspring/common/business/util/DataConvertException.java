@@ -10,12 +10,23 @@
  ******************************************************************************/
 package com.cyanspring.common.business.util;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class DataConvertException extends Exception {
 
 	private static final long serialVersionUID = 822607914751302652L;
+	private ErrorMessage clientMessage;
 
 	public DataConvertException(String message) {
 		super(message);
 	}
-
+	public DataConvertException(String localMessage,ErrorMessage clientMessage) {
+		
+		super(localMessage);
+		this.clientMessage = clientMessage;
+		
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
+	}
 }

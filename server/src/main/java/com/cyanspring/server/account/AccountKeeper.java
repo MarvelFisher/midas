@@ -16,6 +16,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ILeverageManager;
+import com.cyanspring.common.message.ErrorMessage;
 
 public class AccountKeeper {
 	private static final Logger log = LoggerFactory
@@ -62,7 +63,7 @@ public class AccountKeeper {
 	
 	public AccountSetting getAccountSetting(String account) throws AccountException {
 		if(!accounts.containsKey(account))
-			throw new AccountException("Account id doesn't exist: " + account);
+			throw new AccountException("Account id doesn't exist: " + account,ErrorMessage.ACCOUNT_NOT_EXIST);
 		
 		AccountSetting setting = accountSettings.get(account);
 		AccountSetting empty = AccountSetting.createEmptySettings(account);
@@ -77,7 +78,7 @@ public class AccountKeeper {
 	
 	public AccountSetting setAccountSetting(AccountSetting setting) throws AccountException {
 		if(!accounts.containsKey(setting.getId()))
-			throw new AccountException("Account id doesn't exist: " + setting.getId());
+			throw new AccountException("Account id doesn't exist: " + setting.getId(),ErrorMessage.ACCOUNT_NOT_EXIST);
 		
 		AccountSetting existing = accountSettings.get(setting.getId());
 		if(null == existing) {
