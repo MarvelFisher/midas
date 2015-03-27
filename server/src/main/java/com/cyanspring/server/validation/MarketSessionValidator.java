@@ -23,11 +23,8 @@ public class MarketSessionValidator implements IOrderValidator{
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
-		log.info("validate market session now!");
 		try{
 			MarketSessionType sessionType =  marketSessionManager.getCurrentSessionType();
-			//sessionType = MarketSessionType.CLOSE;
-			log.info("sessionType:"+marketSessionManager.getCurrentSessionType());
 			
 			if(sessionType.equals(MarketSessionType.CLOSE)){
 				throw new OrderValidationException("Market closed,order couldn't be placed",ErrorMessage.MARKET_CLOSED);
