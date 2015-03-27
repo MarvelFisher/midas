@@ -116,9 +116,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.PARENT_ORDER_IS_PENDING,getBean(429, "Parent order is pending on action"));
 			addAndCheck(ErrorMessage.MARKET_CLOSED,getBean(430, "Market closed,order couldn't be placed"));
 			addAndCheck(ErrorMessage.MARKET_VALIDATION_ERROR,getBean(431, "Market validation error"));
+			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_HOLD,getBean(432, "The order quantity is over maximum hold."));
+			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_LOT,getBean(433, "The order quantity is over maximun lot"));
+			addAndCheck(ErrorMessage.VALIDATION_ERROR,getBean(434, "validation error"));
 
-			
-			
 			
 			
 
