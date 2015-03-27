@@ -1,6 +1,5 @@
 package com.cyanspring.server.api;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +53,7 @@ import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.system.SystemErrorEvent;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.transport.IServerSocketListener;
@@ -62,7 +62,6 @@ import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncPriorityEventThread;
-import com.cyanspring.common.error.ErrorLookup;
 
 public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEventListener {
 	private static Logger log = LoggerFactory.getLogger(ApiBridgeManager.class);
@@ -97,7 +96,8 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 			if(obj instanceof UserLoginEvent) {
 				processUserLoginEvent((UserLoginEvent)obj, ctx);
 			} else if (ctx.getUser() == null) {
-				ctx.send(new SystemErrorEvent(null, null, 301, ErrorLookup.lookup(301)));
+				
+				ctx.send(new SystemErrorEvent(null, null, 301, MessageLookup.buildEventMessage(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS, "")));
 			} else if(obj instanceof QuoteSubEvent) {
 				processQuoteSubEvent((QuoteSubEvent)obj, ctx);
 			} else if(obj instanceof StrategySnapshotRequestEvent) {
@@ -123,7 +123,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 			} else if(obj instanceof CancelMultiInstrumentStrategyEvent) {
 				processCancelMultiInstrumentStrategyEvent((CancelMultiInstrumentStrategyEvent)obj, ctx);
 			} else {
-				ctx.send(new SystemErrorEvent(null, null, 302, ErrorLookup.lookup(302) + " : " + obj.getClass()));
+				MessageBean messageBean =MessageLookup.lookup(ErrorMessage.EVENT_TYPE_NOT_SUPPORT);
+				String msg = MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, messageBean.getMsg() + " : " + obj.getClass());
+				ctx.send(new SystemErrorEvent(null, null, 302,msg));
 			}
 			
 		}
@@ -246,7 +248,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 						log.info("Terminate current connection since there is existing connection: " 
 								+ ctx.getUser() + ", " + ctx.getId());
 
-						record.ctx.send(new SystemErrorEvent(null, null, 301, ErrorLookup.lookup(301)));
+						record.ctx.send(new SystemErrorEvent(null, null, 301, MessageLookup.buildEventMessage(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS, "")));
 						record.ctx.close();
 					}
 				}
@@ -308,10 +310,13 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 
 	protected void processStrategySnapshotRequestEvent(
 			StrategySnapshotRequestEvent event, IUserSocketContext ctx) {
-		if(!checkAccount(event.getKey(), ctx.getUser()))
-			ctx.send(new SystemErrorEvent(null, null, 303, 
-					ErrorLookup.lookup(303) + ": " + event.getKey() + ", " + ctx.getUser()));
+		if(!checkAccount(event.getKey(), ctx.getUser())){
+			MessageBean messageBean =MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + event.getKey() + ", " + ctx.getUser());
 			
+			ctx.send(new SystemErrorEvent(null, null, 303, 
+					msg));
+		}
 		String txId = IdGenerator.getInstance().getNextID();
 		PendingRecord record = new PendingRecord(txId, event.getTxId(), ctx);
 		pendingRecords.put(record.txId, record);
@@ -331,10 +336,13 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 
 	protected void processAccountSnapshotRequestEvent(
 			AccountSnapshotRequestEvent event, IUserSocketContext ctx) {
-		if(!checkAccount(event.getAccountId(), ctx.getUser()))
+		if(!checkAccount(event.getAccountId(), ctx.getUser())){
+			MessageBean messageBean =MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + event.getKey() + ", " + ctx.getUser());
+		
 			ctx.send(new SystemErrorEvent(null, null, 303, 
-					ErrorLookup.lookup(303) + ": " + event.getKey() + ", " + ctx.getUser()));
-			
+					msg));
+		}
 		String txId = IdGenerator.getInstance().getNextID();
 		PendingRecord record = new PendingRecord(txId, event.getTxId(), ctx);
 		pendingRecords.put(record.txId, record);
@@ -361,9 +369,13 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 	protected void processEnterParentOrderEvent(EnterParentOrderEvent event,
 			IUserSocketContext ctx) {
 		String account = (String) event.getFields().get(OrderField.ACCOUNT.value());
-		if(!checkAccount(account, ctx.getUser()))
+		if(!checkAccount(account, ctx.getUser())){
+			MessageBean messageBean =MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + event.getKey() + ", " + ctx.getUser());
+		
 			ctx.send(new SystemErrorEvent(null, null, 303, 
-					ErrorLookup.lookup(303) + ": " + event.getKey() + ", " + ctx.getUser()));
+					msg));
+		}
 			
 		String txId = IdGenerator.getInstance().getNextID();
 		PendingRecord record = new PendingRecord(txId, event.getTxId(), ctx);
@@ -400,9 +412,13 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 					message, event.getTxId(), null));
 		}
 		
-		if(!checkAccount(prev.getAccount(), ctx.getUser()))
+		if(!checkAccount(prev.getAccount(), ctx.getUser())){
+			MessageBean messageBean =MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + event.getKey() + ", " + ctx.getUser());
+		
 			ctx.send(new SystemErrorEvent(null, null, 303, 
-					ErrorLookup.lookup(303) + ": " + event.getKey() + ", " + ctx.getUser()));
+					msg));
+		}
 		
 		String txId = IdGenerator.getInstance().getNextID();
 		PendingRecord record = new PendingRecord(txId, event.getTxId(), ctx);
@@ -434,10 +450,13 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 					message, event.getTxId(), null));
 		}
 		
-		if(!checkAccount(prev.getAccount(), ctx.getUser()))
-			ctx.send(new SystemErrorEvent(null, null, 303, 
-					ErrorLookup.lookup(303) + ": " + event.getKey() + ", " + ctx.getUser()));
+		if(!checkAccount(prev.getAccount(), ctx.getUser())){
+			MessageBean messageBean =MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
+			String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + event.getKey() + ", " + ctx.getUser());
 		
+			ctx.send(new SystemErrorEvent(null, null, 303, 
+					msg));
+		}
 		String txId = IdGenerator.getInstance().getNextID();
 		PendingRecord record = new PendingRecord(txId, event.getTxId(), ctx);
 		pendingRecords.put(record.txId, record);

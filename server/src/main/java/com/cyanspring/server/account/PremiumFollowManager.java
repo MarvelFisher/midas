@@ -19,7 +19,6 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PremiumFollowInfo;
-import com.cyanspring.common.error.ErrorLookup;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
