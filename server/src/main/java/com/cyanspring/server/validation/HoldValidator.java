@@ -12,11 +12,12 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 
-public class HoldValidator implements IFieldValidator {
+public class HoldValidator implements IOrderValidator {
 
 	@Autowired
 	AccountKeeper accountKeeper;
@@ -26,14 +27,14 @@ public class HoldValidator implements IFieldValidator {
 	
 	@Autowired
 	IRefDataManager refDataManager;
-	
+
 	@Override
-	public void validate(String field, Object value, Map<String, Object> map,
-			ParentOrder order) throws OrderValidationException {
+	public void validate(Map<String, Object> map, ParentOrder order)
+			throws OrderValidationException {
 		if(null == accountKeeper)
 			return;
 		
-		Account account = accountKeeper.getAccount((String)value);
+		Account account = accountKeeper.getAccount(order.getAccount());
 		if(null == account) {
 			return;
 		}
@@ -52,6 +53,7 @@ public class HoldValidator implements IFieldValidator {
 			if(maxHold < Math.abs(qty - order.getQuantity()))
 				throw new OrderValidationException("The order quantity is over maximum hold.");	
 		}
+		
 	}
 
 }
