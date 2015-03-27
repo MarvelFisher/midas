@@ -10,12 +10,12 @@ public class PremiumFollowGlobalRequestEvent extends PremiumFollowRequestEvent {
 		this.originSender = originSender;
 		this.originTxId = originTxId;
 	}
-	
+	 
 	private String originSender;
 	private String originTxId;
 	public String getOriginSender() {
 		return originSender;
-	}
+	} 
 	
 	public String getOriginTxId(){
 		return originTxId;

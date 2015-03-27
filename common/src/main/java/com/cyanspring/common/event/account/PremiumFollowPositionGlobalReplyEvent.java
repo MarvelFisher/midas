@@ -9,9 +9,9 @@ public class PremiumFollowPositionGlobalReplyEvent extends PremiumFollowPosition
 	private String originSender;
 	private String originTxId;
 	
-	public PremiumFollowPositionGlobalReplyEvent(String key, String receiver, String originSender,
+	public PremiumFollowPositionGlobalReplyEvent(String key, String receiver, String originSender, String user, String account, String market,
 			Map<String, OpenPosition> positionMap, String symbol, String txId, String originTxId) {
-		super(key, receiver, positionMap, symbol, txId);
+		super(key, receiver, user, account, market, positionMap, symbol, txId);
 		this.originSender = originSender;
 		this.originTxId = originTxId;
 		}	

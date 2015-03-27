@@ -204,11 +204,11 @@ public class PremiumFollowManager implements IPlugin {
 				tx.date = Clock.getInstance().now();
 				txIdMap.put(txId, tx);
 				log.info("Fds position data are not complete, send global request " + fdUsers.toString() + ", " + txId);
-				PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), 
-						fdUsers, event.getSymbol(), txId, event.getTxId());
+				PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), event.getReqUser(),
+						event.getReqAccount(), event.getMarket(), fdUsers, event.getSymbol(), txId, event.getTxId());
 				globalEventManager.sendRemoteEvent(request);
 			}
-			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(), positionMap, event.getSymbol(), event.getTxId());
+			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getSender(),event.getReqUser(), event.getReqAccount(), event.getMarket(), positionMap, event.getSymbol(), event.getTxId());
 			eventManager.sendRemoteEvent(reply);
 		}else{
 			String txId = IdGenerator.getInstance().getNextID();
@@ -217,8 +217,8 @@ public class PremiumFollowManager implements IPlugin {
 			tx.date = Clock.getInstance().now();
 			txIdMap.put(txId, tx);
 			log.info("Fds position data are not found, send global request " + event.getFdUsers().toString() + ", " + txId);
-			PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), 
-					event.getFdUsers(), event.getSymbol(), txId, event.getTxId());
+			PremiumFollowPositionGlobalRequestEvent request = new PremiumFollowPositionGlobalRequestEvent(event.getKey(), null, event.getSender(), event.getReqUser(),
+					event.getReqAccount(), event.getMarket(), event.getFdUsers(), event.getSymbol(), txId, event.getTxId());
 			globalEventManager.sendRemoteEvent(request);
 		}
 	}
@@ -272,7 +272,7 @@ public class PremiumFollowManager implements IPlugin {
 		if(positionMap != null){		
 			log.info("Fds position data are found in global request: " + positionMap.keySet().toString());
 			PremiumFollowPositionGlobalReplyEvent reply = new PremiumFollowPositionGlobalReplyEvent(event.getKey(), event.getSender(), event.getOriginSender(), 
-					positionMap, event.getSymbol(), event.getTxId(), event.getOriginTxId());
+					event.getReqUser(), event.getReqAccount(), event.getMarket(), positionMap, event.getSymbol(), event.getTxId(), event.getOriginTxId());
 			globalEventManager.sendRemoteEvent(reply);
 		}else{
 			log.info("Fds position data are not found in global request");
@@ -283,7 +283,7 @@ public class PremiumFollowManager implements IPlugin {
 		log.info("Received PremiumFollowPositionGlobalReplyEvent: " + event.getTxId());
 		if(txIdMap.containsKey(event.getTxId())){
 			log.info("processPremiumFollowPositionGlobalReplyEvent found requester: " + event.getTxId());
-			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getOriginSender(), event.getPositionMap(), event.getSymbol(), event.getOriginTxId());
+			PremiumFollowPositionReplyEvent reply = new PremiumFollowPositionReplyEvent(event.getKey(), event.getOriginSender(), event.getUser(), event.getAccount(), event.getMarket(), event.getPositionMap(), event.getSymbol(), event.getOriginTxId());
 			eventManager.sendRemoteEvent(reply);
 		}
 	}

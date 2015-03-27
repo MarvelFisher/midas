@@ -6,9 +6,9 @@ public class PremiumFollowPositionGlobalRequestEvent extends PremiumFollowPositi
 
 	private String originSender;
 	private String originTxId;
-	public PremiumFollowPositionGlobalRequestEvent(String key, String receiver, String originSender,
+	public PremiumFollowPositionGlobalRequestEvent(String key, String receiver, String originSender, String reqUser, String reqAccount, String market,
 			List<String> fdUser, String symbol, String txId, String originTxId) {
-		super(key, receiver, fdUser, symbol, txId);
+		super(key, receiver, reqUser, reqAccount, market, fdUser, symbol, txId);
 		this.originSender = originSender;
 		this.originTxId = originTxId;
 	}
