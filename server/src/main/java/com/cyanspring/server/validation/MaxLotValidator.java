@@ -11,7 +11,7 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 
-public class LotValidator implements IOrderValidator {
+public class MaxLotValidator implements IOrderValidator {
 	
 	@Autowired
 	IRefDataManager refDataManager;	
@@ -19,16 +19,13 @@ public class LotValidator implements IOrderValidator {
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
-		double qty;
+		double qty = (Double)map.get(OrderField.QUANTITY.value());
 		String symbol;
-		if(order == null){
-			qty = (Double)map.get(OrderField.QUANTITY.value());
-			symbol = (String)map.get(OrderField.SYMBOL.value());
-		}
-		else{
-			qty = order.getQuantity();
+		if(order == null)
+			symbol = (String)map.get(OrderField.SYMBOL.value());		
+		else
 			symbol = order.getSymbol();
-		}
+		
 		RefData refData = refDataManager.getRefData(symbol);
 		if(refData.getMaximumLot() == 0)
 			return;

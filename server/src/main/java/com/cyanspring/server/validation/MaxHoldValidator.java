@@ -18,7 +18,7 @@ import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 
-public class HoldValidator implements IOrderValidator {
+public class MaxHoldValidator implements IOrderValidator {
 
 	@Autowired
 	AccountKeeper accountKeeper;
@@ -38,39 +38,37 @@ public class HoldValidator implements IOrderValidator {
 		String orderAccount;
 		String symbol;
 		OrderSide side;
-		double quantity;
+		double quantity = (Double) map.get(OrderField.QUANTITY.value());
 		
 		if(order == null){
 			orderAccount = (String) map.get(OrderField.ACCOUNT.value());
 			symbol = (String) map.get(OrderField.SYMBOL.value());
 			side = (OrderSide) map.get(OrderField.SIDE.value());
-			quantity = (Double) map.get(OrderField.QUANTITY.value());
 		}else{
 			orderAccount = order.getAccount();
 			symbol = order.getSymbol();
 			side = order.getSide();
-			quantity = order.getQuantity();	
 		}		
 		
 		Account account = accountKeeper.getAccount(orderAccount);
 		if(null == account) {
 			return;
 		}
-				
-		OpenPosition positions = positionKeeper.getOverallPosition(account, symbol);
-		double qty = positions.getQty();
 		
 		RefData refData = refDataManager.getRefData(symbol);
 		double maxHold = refData.getMaximumHold();
 		if(PriceUtils.isZero(maxHold))
 			return;
-			
+				
+		OpenPosition positions = positionKeeper.getOverallPosition(account, symbol);
+		double qty = positions.getQty();
+					
 		if(side.equals(OrderSide.Buy)){
 			if(maxHold < Math.abs(qty + quantity))
-				throw new OrderValidationException("The order quantity is over maximun hold.");			
+				throw new OrderValidationException("The order would bring the position over maximum hold: " + maxHold);			
 		}else{
 			if(maxHold < Math.abs(qty - quantity))
-				throw new OrderValidationException("The order quantity is over maximum hold.");	
+				throw new OrderValidationException("The order would bring the position over maximum hold: " + maxHold);	
 		}		
 	}
 }
