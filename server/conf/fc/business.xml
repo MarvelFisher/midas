@@ -12,10 +12,13 @@
 	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
 	    <constructor-arg>
 	        <list>
+	        	<ref bean="marketSessionValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
 				<ref bean="creditValidator"/>
 				<ref bean="orderCountValidator"/>
+				<ref bean="lotValidator"/>
+				<ref bean="holdValidator"/>
 	        </list>
 	    </constructor-arg>
 	</bean>	
@@ -89,6 +92,10 @@
 	
 	<bean id="orderCountValidator" class="com.cyanspring.server.validation.OrderCountValidator">       
 	</bean>	
+	
+	<bean id="lotValidator" class="com.cyanspring.server.validation.LotValidator"></bean>
+	<bean id="holdValidator" class="com.cyanspring.server.validation.HoldValidator"></bean>
+	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.MarketSessionValidator"></bean>
 	
 	<bean id="fixToOrderMap" class="com.cyanspring.common.util.DualMap">
 	    <constructor-arg>

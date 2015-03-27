@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
@@ -18,10 +19,21 @@ public class LotValidator implements IOrderValidator {
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
-		RefData refData = refDataManager.getRefData(order.getSymbol());
+		double qty;
+		String symbol;
+		if(order == null){
+			qty = (Double)map.get(OrderField.QUANTITY.value());
+			symbol = (String)map.get(OrderField.SYMBOL.value());
+		}
+		else{
+			qty = order.getQuantity();
+			symbol = order.getSymbol();
+		}
+		RefData refData = refDataManager.getRefData(symbol);
 		if(refData.getMaximumLot() == 0)
 			return;
-		if(order.getQuantity() > refData.getMaximumLot())
+		
+		if(qty > refData.getMaximumLot())
 			throw new OrderValidationException("The order quantity is over maximun lot");
 		
 	}

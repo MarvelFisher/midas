@@ -8,6 +8,7 @@ import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
@@ -34,26 +35,42 @@ public class HoldValidator implements IOrderValidator {
 		if(null == accountKeeper)
 			return;
 		
-		Account account = accountKeeper.getAccount(order.getAccount());
+		String orderAccount;
+		String symbol;
+		OrderSide side;
+		double quantity;
+		
+		if(order == null){
+			orderAccount = (String) map.get(OrderField.ACCOUNT.value());
+			symbol = (String) map.get(OrderField.SYMBOL.value());
+			side = (OrderSide) map.get(OrderField.SIDE.value());
+			quantity = (Double) map.get(OrderField.QUANTITY.value());
+		}else{
+			orderAccount = order.getAccount();
+			symbol = order.getSymbol();
+			side = order.getSide();
+			quantity = order.getQuantity();	
+		}		
+		
+		Account account = accountKeeper.getAccount(orderAccount);
 		if(null == account) {
 			return;
 		}
-		
-		OpenPosition positions = positionKeeper.getOverallPosition(account, order.getSymbol());
+				
+		OpenPosition positions = positionKeeper.getOverallPosition(account, symbol);
 		double qty = positions.getQty();
 		
-		RefData refData = refDataManager.getRefData(order.getSymbol());
+		RefData refData = refDataManager.getRefData(symbol);
 		double maxHold = refData.getMaximumHold();
 		if(PriceUtils.isZero(maxHold))
 			return;
-		if(order.getSide().equals(OrderSide.Buy)){
-			if(maxHold < Math.abs(qty + order.getQuantity()))
+			
+		if(side.equals(OrderSide.Buy)){
+			if(maxHold < Math.abs(qty + quantity))
 				throw new OrderValidationException("The order quantity is over maximun hold.");			
 		}else{
-			if(maxHold < Math.abs(qty - order.getQuantity()))
+			if(maxHold < Math.abs(qty - quantity))
 				throw new OrderValidationException("The order quantity is over maximum hold.");	
-		}
-		
+		}		
 	}
-
 }
