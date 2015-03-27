@@ -6,6 +6,7 @@ import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.OrderUtils;
@@ -23,7 +24,7 @@ public class StopLossPriceValidator implements IFieldValidator {
 			
 			double stopLossPrice = (Double)obj;
 			if(PriceUtils.isZero(stopLossPrice))
-				throw new OrderValidationException("Stop loss price can't be 0");
+				throw new OrderValidationException("Stop loss price can't be 0",ErrorMessage.STOP_LOSS_PRICE_EMPTY);
 
 			OrderType orderType;
 			if(null != order) {
@@ -47,9 +48,11 @@ public class StopLossPriceValidator implements IFieldValidator {
 			
 			if(OrderUtils.isBetterPrice(orderSide, limitPrice, stopLossPrice))
 				throw new OrderValidationException("Stop loss price " + stopLossPrice + 
-						" can not be more aggressive than limit price " + limitPrice);
+						" can not be more aggressive than limit price " + limitPrice,ErrorMessage.STOP_LOSS_PRICE_CANT_OVER_THAN_LIMIT_PRICE);
+		} catch (OrderValidationException e){
+			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
 		} catch(Exception e) {
-			throw new OrderValidationException("Field " + field + " has caused exception: " + e.getMessage());
+			throw new OrderValidationException("Field " + field + " has caused exception: " + e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 
 	}

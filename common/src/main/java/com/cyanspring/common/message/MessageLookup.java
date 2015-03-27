@@ -72,7 +72,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.STRATEGY_NOT_REGISTERD,getBean(219, "Strategy hasn't been registered"));
 			addAndCheck(ErrorMessage.STRATEGY_ERROR,getBean(220, "Strategy Error"));
 			addAndCheck(ErrorMessage.STRATEGY_NOT_PRESENT_IN_SINGLE_INSTRUMENT,getBean(221, "Strategy field not present in NewSingleInstrumentStrategyEvent"));
+			addAndCheck(ErrorMessage.SNIPER_STRATEGY_PRICE_EMPTY,getBean(222, "price can not be empty for Sniper stratgy"));
+			addAndCheck(ErrorMessage.STRATEGY_NOT_DEFINED_IN_REGISTRY,getBean(223, "field not defined in registry"));
 
+			
 			
 
 			// api errors start with 300
@@ -118,8 +121,26 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_HOLD,getBean(432, "The order quantity is over maximum hold."));
 			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_LOT,getBean(433, "The order quantity is over maximun lot"));
 			addAndCheck(ErrorMessage.VALIDATION_ERROR,getBean(434, "validation error"));
+			addAndCheck(ErrorMessage.ORDER_FIELD_EMPTY,getBean(435, "order field empty"));
+			addAndCheck(ErrorMessage.ORDER_FIELD_MUST_GREATER_THAN_ZERO,getBean(436, "order field must be greater than 0"));
+			addAndCheck(ErrorMessage.ORDER_FIELD_MUST_BE_INTEGER,getBean(437, "order field must be must be an integer"));
+			addAndCheck(ErrorMessage.ORDER_SYMBOL_LOT_SIZE_ERROR,getBean(439, "Can not determine symbol for quantity lot size validation"));
+			addAndCheck(ErrorMessage.ORDER_SYMBOL_NOT_FOUND,getBean(440, "Can't find symbol in refdata"));
+			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity! Quantity should be the multiple of 1000."));
+			addAndCheck(ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT,getBean(442, "This order would have caused account over credit limit"));
+			addAndCheck(ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT,getBean(443, "Amendment would have caused the account over credit limit"));
+			addAndCheck(ErrorMessage.ENDTIME_IN_THE_PASS,getBean(444, "end time is in the pass"));
+			addAndCheck(ErrorMessage.STARTTIME_SAME_AS_ENDTIME,getBean(445, "end time is is the same or before start time"));
+			addAndCheck(ErrorMessage.ICEBERG_STRATEGY_QTY_EMPTY,getBean(446, "Display quantity can not be empty for Iceberg stratgy"));
+			addAndCheck(ErrorMessage.DAILY_ORDERS_EXCEED_LIMIT,getBean(447, "Daily allowed number of orders exceeded limit"));
+			addAndCheck(ErrorMessage.DAILY_ORDERS_EXCEED_LIMIT_CAN_AMEND_QTY,getBean(448, "Daily allowed number of orders exceeded limit, can only amend down qty"));
+			addAndCheck(ErrorMessage.STRATEGY_IS_NOT_DEFINED,getBean(449, "Strategy is not defined in strategyFields map"));
+			addAndCheck(ErrorMessage.STRATEGY_PARAMS_IS_MISSING,getBean(450, "Required parameter is missing for this strategy"));
+			addAndCheck(ErrorMessage.ORDER_FIELD_VALUE_IS_EMPTY,getBean(451, "order field value is null"));
+			addAndCheck(ErrorMessage.ORDER_FIELD_OUT_OF_RANGE,getBean(452, "order field out of range of (0, 100]"));
+			addAndCheck(ErrorMessage.STOP_LOSS_PRICE_EMPTY,getBean(453, "Stop Loss price can't be empty or 0"));
+			addAndCheck(ErrorMessage.STOP_LOSS_PRICE_CANT_OVER_THAN_LIMIT_PRICE,getBean(454, "Stop loss price can not be more aggressive than limit price"));
 
-			
 			
 
 			
@@ -140,7 +161,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.USER_ALREADY_EXIST,getBean(511, "User already exists"));
 			addAndCheck(ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR,getBean(512, "Cannot create default account for user"));
 			addAndCheck(ErrorMessage.USER_EMAIL_EXIST,getBean(513, "This email already exists"));
+			addAndCheck(ErrorMessage.ACCOUNT_AND_USER_NOT_MATCH,getBean(514, "Account and user not match"));
 
+			
 			
 			
 			// client errors start with 600

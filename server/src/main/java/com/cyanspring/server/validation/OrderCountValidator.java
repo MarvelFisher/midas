@@ -13,6 +13,7 @@ import webcurve.util.PriceUtils;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
@@ -69,14 +70,14 @@ public class OrderCountValidator implements IOrderValidator {
 				return;
 			
 			if(!checkThreshold(account)) {
-				throw new OrderValidationException("Daily allowed number of orders exceeded limit " + limit);
+				throw new OrderValidationException("Daily allowed number of orders exceeded limit " + limit,ErrorMessage.DAILY_ORDERS_EXCEED_LIMIT);
 			}
 			
 		} else {
 			if(!checkThreshold(order.getAccount())) {
 				Double qty = (Double)map.get(OrderField.QUANTITY.value());
 				if(null != qty && PriceUtils.GreaterThan(qty, order.getQuantity()))
-					throw new OrderValidationException("Daily allowed number of orders exceeded limit " + limit + ", can only amend down qty");
+					throw new OrderValidationException("Daily allowed number of orders exceeded limit " + limit + ", can only amend down qty",ErrorMessage.DAILY_ORDERS_EXCEED_LIMIT_CAN_AMEND_QTY);
 			}
 			
 		}

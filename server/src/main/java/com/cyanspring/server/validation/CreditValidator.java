@@ -12,6 +12,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.validation.IOrderValidator;
@@ -49,7 +50,7 @@ public class CreditValidator implements IOrderValidator {
 				double qty = (Double)map.get(OrderField.QUANTITY.value());
 				if(!positionKeeper.checkMarginDeltaByAccountAndSymbol(account, symbol, quote, 
 						side.isBuy()?qty:-qty))
-					throw new OrderValidationException("This order would have caused account over credit limit");
+					throw new OrderValidationException("This order would have caused account over credit limit",ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT);
 			} else { //amemnd order
 				Quote quote = positionKeeper.getQuote(order.getSymbol());
 				if(null == quote) {
@@ -70,12 +71,12 @@ public class CreditValidator implements IOrderValidator {
 				
 				if(!positionKeeper.checkMarginDeltaByAccountAndSymbol(account, order.getSymbol(), quote, 
 						order.getSide().isBuy()?qty:-qty))
-					throw new OrderValidationException("Amendment would have caused the account over credit limit");
+					throw new OrderValidationException("Amendment would have caused the account over credit limit",ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT);
 			}
 		} catch(OrderValidationException e) {
 			throw e;
 		} catch(Exception e) {
-			throw new OrderValidationException(e.getMessage());
+			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 	}
 

@@ -16,6 +16,7 @@ import java.util.Map;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class EndTimeValidator implements IFieldValidator {
@@ -29,7 +30,7 @@ public class EndTimeValidator implements IFieldValidator {
 		Date end = (Date)value;
 		Date now = Clock.getInstance().now();
 		if(end.before(now))
-			throw new OrderValidationException("end time " + end + " is in the pass");
+			throw new OrderValidationException("end time " + end + " is in the pass",ErrorMessage.ENDTIME_IN_THE_PASS);
 
 		Date start = (Date)map.get(OrderField.START_TIME.value());
 		if(null == start && null != order)
@@ -39,7 +40,7 @@ public class EndTimeValidator implements IFieldValidator {
 			return;
 		
 		if(end.equals(start ) || end.before(start))
-			throw new OrderValidationException("end time " + end + " is the same or before start time " + start);
+			throw new OrderValidationException("end time " + end + " is the same or before start time " + start,ErrorMessage.STARTTIME_SAME_AS_ENDTIME);
 	}
 
 }

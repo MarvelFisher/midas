@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 
@@ -24,15 +25,17 @@ public class AccountValidator implements IFieldValidator {
 			
 			Account account = accountKeeper.getAccount((String)value);
 			if(null == account) {
-				throw new OrderValidationException("Account doesn't exist: " + value.toString());
+				throw new OrderValidationException("Account doesn't exist: " + value.toString(),ErrorMessage.ACCOUNT_NOT_EXIST);
 			}
 			
 			String user = (String)map.get(OrderField.USER.value());
 			if(null != user && !user.equals(account.getUserId())) {
-				throw new OrderValidationException("Account and user not match: " + account.getId() + ", " + user);
+				throw new OrderValidationException("Account and user not match: " + account.getId() + ", " + user,ErrorMessage.ACCOUNT_AND_USER_NOT_MATCH);
 			}
+		} catch(OrderValidationException e)	{
+			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
 		} catch(Exception e) {
-			throw new OrderValidationException(e.getMessage());
+			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 	}
 

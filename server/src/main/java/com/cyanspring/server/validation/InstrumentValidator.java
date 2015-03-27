@@ -15,6 +15,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.validation.OrderValidationException;
@@ -28,7 +29,7 @@ public class InstrumentValidator implements IFieldValidator {
 			ParentOrder order) throws OrderValidationException {
 		RefData refData = refDataManager.getRefData((String)value);
 		if(null == refData)
-			throw new OrderValidationException("Can't find symbol in refdata: " + value);
+			throw new OrderValidationException("Can't find symbol in refdata: " + value,ErrorMessage.ORDER_SYMBOL_NOT_FOUND);
 		
 	}
 

@@ -13,6 +13,7 @@ package com.cyanspring.server.validation;
 import java.util.Map;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class PovValidator implements IFieldValidator {
@@ -23,10 +24,10 @@ public class PovValidator implements IFieldValidator {
 		Double pov = (Double)value;
 		
 		if(pov == null)
-			throw new OrderValidationException(field + "value is null");
+			throw new OrderValidationException(field + "value is null",ErrorMessage.ORDER_FIELD_VALUE_IS_EMPTY);
 
 		if (pov != null && (pov<=0 || pov > 100))
-			throw new OrderValidationException(field + "out of range of (0, 100]");
+			throw new OrderValidationException(field + "out of range of (0, 100]",ErrorMessage.ORDER_FIELD_OUT_OF_RANGE);
 		
 	}
 

@@ -16,6 +16,7 @@ import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 
@@ -27,13 +28,13 @@ public class SniperValidator implements IOrderValidator {
 		Object op = map.get(OrderField.PRICE.value());
 		if( (op == null) && map.containsKey(OrderField.PRICE.value()) || // price is specified with no value
 			(op == null && order == null)) // new order contains no price
-			throw new OrderValidationException("price can not be empty for Sniper stratgy");
+			throw new OrderValidationException("price can not be empty for Sniper stratgy",ErrorMessage.SNIPER_STRATEGY_PRICE_EMPTY);
 			
 		if(op !=  null && ((op instanceof String) && op.equals("")))
-			throw new OrderValidationException("price can not be empty for Sniper stratgy");
+			throw new OrderValidationException("price can not be empty for Sniper stratgy",ErrorMessage.SNIPER_STRATEGY_PRICE_EMPTY);
 		
 		if(op !=  null && op instanceof Double && PriceUtils.EqualLessThan((Double)op, 0)) {
-			throw new OrderValidationException("price can not be 0 for Sniper stratgy");
+			throw new OrderValidationException("price can not be 0 for Sniper stratgy",ErrorMessage.SNIPER_STRATEGY_PRICE_EMPTY);
 		}
 	}
 

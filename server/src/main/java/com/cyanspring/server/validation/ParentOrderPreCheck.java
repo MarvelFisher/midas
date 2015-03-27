@@ -11,10 +11,13 @@
 package com.cyanspring.server.validation;
 
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.strategy.IStrategyFactory;
 import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.type.OrderType;
@@ -44,13 +47,13 @@ public class ParentOrderPreCheck extends AbstractOrderValidator {
 		Map<String, FieldDef> fieldDefs = strategyFactory.getStrategyFieldDef(strategy);
 
 		if(null == fieldDefs)
-			throw new OrderValidationException("Strategy is not defined in strategyFields map: " + strategy);
+			throw new OrderValidationException("Strategy is not defined in strategyFields map: " + strategy,ErrorMessage.STRATEGY_IS_NOT_DEFINED);
 			
 		for(FieldDef fieldDef: fieldDefs.values()) {
 			if (fieldDef.isInput()) {
 				if (!map.containsKey(fieldDef.getName()))
 					throw new OrderValidationException("Required parameter [" + fieldDef.getName() + 
-							"] is missing for this strategy: " + strategy);
+							"] is missing for this strategy: " + strategy,ErrorMessage.STRATEGY_PARAMS_IS_MISSING);
 				fieldEmptyCheck(map, fieldDef.getName());
 			}
 		}

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
@@ -33,7 +34,7 @@ public abstract class AbstractOrderValidator implements IOrderValidator {
 	protected void fieldEmptyCheck(Map<String, Object> map, String field) throws OrderValidationException {
 		Object obj = map.get(field);
 		if(null == obj || (obj instanceof String && ((String)obj).equals(""))) {
-			throw new OrderValidationException("Required field [" + field + "] is empty");
+			throw new OrderValidationException("Required field [" + field + "] is empty",ErrorMessage.ORDER_FIELD_EMPTY);
 		}
 	}
 	
@@ -52,7 +53,7 @@ public abstract class AbstractOrderValidator implements IOrderValidator {
 			throw oe;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new OrderValidationException(e.getMessage());
+			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 	}
 	

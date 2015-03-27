@@ -15,6 +15,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.strategy.IStrategyFactory;
 import com.cyanspring.common.validation.OrderValidationException;
 
@@ -26,7 +27,7 @@ public class StrategyFieldValidator implements IFieldValidator {
 	public void validate(String field, Object value, Map<String, Object> map,
 			ParentOrder order) throws OrderValidationException {
 		if(!strategyFactory.validStrategy((String)value))
-				throw new OrderValidationException(field + " not defined in registry: " + value);
+				throw new OrderValidationException(field + " not defined in registry: " + value,ErrorMessage.STRATEGY_NOT_DEFINED_IN_REGISTRY);
 		
 	}
 

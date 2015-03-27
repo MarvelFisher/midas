@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class StartTimeValidator implements IFieldValidator {
@@ -34,7 +35,7 @@ public class StartTimeValidator implements IFieldValidator {
 			return;
 		
 		if(end.equals(start ) || end.before(start))
-			throw new OrderValidationException("end time " + end + " is the same or before start time " + start);
+			throw new OrderValidationException("end time " + end + " is the same or before start time " + start,ErrorMessage.STARTTIME_SAME_AS_ENDTIME);
 	}
 
 }

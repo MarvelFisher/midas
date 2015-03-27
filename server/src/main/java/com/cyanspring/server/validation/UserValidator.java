@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.UserKeeper;
 
@@ -18,10 +19,12 @@ public class UserValidator implements IFieldValidator {
 			ParentOrder order) throws OrderValidationException {
 		try {
 			if(null != userKeeper && !userKeeper.userExists((String)value)) {
-				throw new OrderValidationException("User doesn't exist: " + value);
+				throw new OrderValidationException("User doesn't exist: " + value,ErrorMessage.ACCOUNT_NOT_EXIST);
 			}
+		} catch(OrderValidationException e){
+			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
 		} catch(Exception e) {
-			throw new OrderValidationException(e.getMessage());
+			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 	}
 
