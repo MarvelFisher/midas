@@ -114,6 +114,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.CUM_QTY_GREATER_THAN_INTENTED_QTY,getBean(427, "CumQty is greater than intended quantity"));
 			addAndCheck(ErrorMessage.PRICE_NOT_PERMITTED,getBean(428, "Price is not permitted by parentOrder"));
 			addAndCheck(ErrorMessage.PARENT_ORDER_IS_PENDING,getBean(429, "Parent order is pending on action"));
+			addAndCheck(ErrorMessage.MARKET_CLOSED,getBean(430, "Market closed,order couldn't be placed"));
+			addAndCheck(ErrorMessage.MARKET_VALIDATION_ERROR,getBean(431, "Market validation error"));
 
 			
 			
