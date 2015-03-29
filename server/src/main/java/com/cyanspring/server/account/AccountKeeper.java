@@ -51,11 +51,13 @@ public class AccountKeeper {
 		public List<Account> getJobs() {
 			List<Account> result = new ArrayList<Account>();
 			int i = 0;
-			while(i < this.jobBatch && i < jobs.size()) {
-				result.add(jobs.get(this.jobIndex++));
-				if(this.jobIndex>=jobs.size())
-					this.jobIndex = 0;
-				i++;
+			synchronized(jobs) {
+				while(i < this.jobBatch && i < jobs.size()) {
+					result.add(jobs.get(this.jobIndex++));
+					if(this.jobIndex>=jobs.size())
+						this.jobIndex = 0;
+					i++;
+				}
 			}
 			return result;
 		}
@@ -104,7 +106,9 @@ public class AccountKeeper {
 		synchronized(list) {
 			list.add(account);
 		}
-		jobs.add(account);
+		synchronized(jobs) {
+			jobs.add(account);
+		}
 	}
 	
 	public void createAccount(Account account) throws AccountException {
@@ -147,9 +151,11 @@ public class AccountKeeper {
 	public List<Account> getAllAccounts() {
 		List<Account> result = new ArrayList<Account>();
 		int i=0;
-		while(i<jobs.size()) { //account should never be removed in real time so thread safe here
-			result.add(jobs.get(i));
-			i++;
+		synchronized(jobs) {
+			while(i<jobs.size()) {
+				result.add(jobs.get(i));
+				i++;
+			}
 		}
 		return result;
 	}
