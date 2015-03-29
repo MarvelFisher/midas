@@ -122,6 +122,11 @@ public class TrailingStopManager implements IPlugin {
 					ppp = new PositionPeakPrice(position.getAccount(), position.getSymbol(), position.getQty(), position.getPrice());
 					accountMap.put(position.getAccount(), ppp);
 				} else {
+					
+					if(ppp.getPosition() > 0 && position.getQty() < 0 || ppp.getPosition() < 0 && position.getQty() > 0) { //side changed
+						ppp.setPrice(position.getPrice());
+					}
+					
 					ppp.setPosition(position.getQty());
 					
 					double pnl = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
