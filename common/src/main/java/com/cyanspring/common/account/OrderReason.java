@@ -5,6 +5,7 @@ public enum OrderReason {
 	StopOrder(2),
 	StopLoss(3),
 	MarginCall(4),
+	TrailingStop(5),
 	;
 	
 	private final int value;

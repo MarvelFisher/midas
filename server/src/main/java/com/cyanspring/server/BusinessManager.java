@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContextAware;
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
@@ -503,8 +504,8 @@ public class BusinessManager implements ApplicationContextAware {
 			order.setReason(event.getReason());
 			
 			// add order to local map
-			orders.put(order.getId(), order.getAccount(), order);
 			positionKeeper.lockAccountPosition(order);
+			orders.put(order.getId(), order.getAccount(), order);
 			
 			// send to order manager
 			UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(order.getId(), ExecType.NEW, event.getTxId(), order, null);
@@ -520,6 +521,10 @@ public class BusinessManager implements ApplicationContextAware {
 			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(container.getId(), strategy, true);
 			eventManager.sendEvent(addStrategyEvent);
 
+		} catch (AccountException ae) {
+			ok = false;
+			message = MessageLookup.buildEventMessage(clientMessage, ae.getMessage());
+			log.warn(ae.getMessage());
 		} catch (Exception e) {
 			ok = false;
 			//message = e.getMessage();

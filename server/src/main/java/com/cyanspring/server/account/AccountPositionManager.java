@@ -895,14 +895,18 @@ public class AccountPositionManager implements IPlugin {
 							account.getMargin() + ", " + 
 							account.getCashAvailable() + ", " + quote);
 
-					positionKeeper.lockAccountPosition(order);
-					String source = order.get(String.class, OrderField.SOURCE.value());
-					String txId = order.get(String.class, OrderField.CLORDERID.value());
-					CancelStrategyOrderEvent cancel = 
-							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.MarginCall, false);
-					eventManager.sendEvent(cancel);
-					result = true;
-					break;
+					try {
+						positionKeeper.lockAccountPosition(order);
+						String source = order.get(String.class, OrderField.SOURCE.value());
+						String txId = order.get(String.class, OrderField.CLORDERID.value());
+						CancelStrategyOrderEvent cancel = 
+								new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.MarginCall, false);
+						eventManager.sendEvent(cancel);
+						result = true;
+						break;
+					} catch (AccountException e) {
+						log.warn("Try to cancel order but account is locked: " + e.getMessage());
+					}
 				}
 			} else {
 

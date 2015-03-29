@@ -23,6 +23,7 @@ public class AccountSetting extends DataObject {
 		settings.setCommission(0.0);
 		settings.setLeverageRate(0.0);
 		settings.setDailyStopLoss(0.0);
+		settings.setTrailingStop(0.0);
 
 		return settings;
 	}
@@ -84,6 +85,13 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.DAILY_STOPLOSS.value(), dailyStopLoss);
 	}
 	
+	public double getTrailingStop() {
+		return get(double.class, AccountSettingType.TRAILING_STOP.value());
+	}
+	
+	public void setTrailingStop(double trailingStop){
+		put(AccountSettingType.TRAILING_STOP.value(), trailingStop);
+	}
 	
 	public AccountSetting clone() {
 		return (AccountSetting)super.clone();

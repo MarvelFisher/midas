@@ -382,10 +382,12 @@ public class PositionKeeper {
 		if(null == ap)
 			return result;
 
-		for(String symbol: ap.keySet()) {
-			OpenPosition pos = getOverallPosition(account, symbol);
-			if(!PriceUtils.isZero(pos.getQty()))
-				result.add(pos);
+		synchronized(getSyncAccount(account.getId())) {
+			for(String symbol: ap.keySet()) {
+				OpenPosition pos = getOverallPosition(account, symbol);
+				if(!PriceUtils.isZero(pos.getQty()))
+					result.add(pos);
+			}
 		}
 		return result;
 	}
@@ -402,22 +404,24 @@ public class PositionKeeper {
 			return result;
 		
 		OpenPosition pos = null;
-		try {
-			pos = getOverallPosition(list);
-			if(null != quoteFeeder) {
-				Quote quote = quoteFeeder.getQuote(symbol);
-				if(null != quote && null != pos) {
-					double price = getMarketablePrice(quote, pos.getQty());
-					double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
-							(price-pos.getPrice()));
-					pos.setPnL(pnl);
-					double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
-							quote.getSymbol(), pos.getPnL());
-					pos.setAcPnL(urPnL);
+		synchronized(getSyncAccount(account.getId())) {
+			try {
+				pos = getOverallPosition(list);
+				if(null != quoteFeeder) {
+					Quote quote = quoteFeeder.getQuote(symbol);
+					if(null != quote && null != pos) {
+						double price = getMarketablePrice(quote, pos.getQty());
+						double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
+								(price-pos.getPrice()));
+						pos.setPnL(pnl);
+						double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+								quote.getSymbol(), pos.getPnL());
+						pos.setAcPnL(urPnL);
+					}
 				}
+			} catch (PositionException e) {
+				log.error(e.getMessage(), e);
 			}
-		} catch (PositionException e) {
-			log.error(e.getMessage(), e);
 		}
 		
 		return null == pos? result : pos;
@@ -735,7 +739,7 @@ public class PositionKeeper {
 		log.info("Resetting margin held done");
 	}
 	
-	public void lockAccountPosition(ParentOrder order) {
+	public void lockAccountPosition(ParentOrder order) throws AccountException {
 		closePositionLock.lockAccountPosition(order);
 	}
 	

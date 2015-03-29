@@ -1,6 +1,8 @@
 package com.cyanspring.server.account;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -210,5 +212,16 @@ public class AccountKeeper {
 		this.rmJobBatch = rmJobBatch;
 	}
 	
-	
+	public List<AccountSetting> getTrailingStopSettings() {
+		List<AccountSetting> result = new LinkedList<AccountSetting>();
+		Iterator<AccountSetting> it = accountSettings.values().iterator();
+		while(it.hasNext()) {
+			AccountSetting setting = it.next();
+			double trailingStop = setting.getTrailingStop();
+			if(PriceUtils.isZero(trailingStop))
+				continue;
+			result.add(setting);
+		}
+		return result;
+	}
 }

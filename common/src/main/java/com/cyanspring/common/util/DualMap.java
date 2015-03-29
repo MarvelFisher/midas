@@ -52,6 +52,13 @@ public class DualMap<T, U> {
 		map2.put(u, t);
 		return result; 
 	}
+	
+	synchronized public U putIfAbsent(T t, U u) {
+		if(map1.containsKey(t) || map2.containsKey(u))
+			return null;
+		put(t, u);
+		return u;
+	}
 
 	synchronized public U remove(T t) {
 		// first check whether value already exists

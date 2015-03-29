@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.OrdStatus;
@@ -41,9 +42,11 @@ public class ClosePositionLock {
 		return account + "-" + symbol;
 	}
 	
-	synchronized public void lockAccountPosition(ParentOrder order) {
+	synchronized public void lockAccountPosition(ParentOrder order) throws AccountException {
 		log.info("Lock postion: " + order.getAccount() + ", " + order.getSymbol() + ", " + order.getId());
-		closePositionActionMap.put(order.getId(), getClosePositionKey(order.getAccount(), order.getSymbol()));
+		String result = closePositionActionMap.putIfAbsent(order.getId(), getClosePositionKey(order.getAccount(), order.getSymbol()));
+		if(null == result)
+			throw new AccountException("Failed to lock account: " + getClosePositionKey(order.getAccount(), order.getSymbol()) + ", " + order.getId());
 		PendingClosePositionRecord record = 
 				new PendingClosePositionRecord(order);
 		recordMap.put(order.getId(), record);
