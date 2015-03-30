@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.validation.IOrderValidator;
@@ -31,7 +32,7 @@ public class MaxLotValidator implements IOrderValidator {
 			return;
 		
 		if(qty > refData.getMaximumLot())
-			throw new OrderValidationException("The order quantity is over maximun lot");
+			throw new OrderValidationException("The order quantity is over maximun lot",ErrorMessage.ORDER_QTY_OVER_MAX_LOT);
 		
 	}
 

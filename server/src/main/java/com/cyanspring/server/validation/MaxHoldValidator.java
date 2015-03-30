@@ -10,6 +10,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
@@ -65,10 +66,10 @@ public class MaxHoldValidator implements IOrderValidator {
 					
 		if(side.equals(OrderSide.Buy)){
 			if(maxHold < Math.abs(qty + quantity))
-				throw new OrderValidationException("The order would bring the position over maximum hold: " + maxHold);			
+				throw new OrderValidationException("The order would bring the position over maximum hold: " + maxHold,ErrorMessage.ORDER_QTY_OVER_MAX_HOLD);			
 		}else{
 			if(maxHold < Math.abs(qty - quantity))
-				throw new OrderValidationException("The order would bring the position over maximum hold: " + maxHold);	
+				throw new OrderValidationException("The order would bring the position over maximum hold: " + maxHold,ErrorMessage.ORDER_QTY_OVER_MAX_HOLD);	
 		}		
 	}
 }
