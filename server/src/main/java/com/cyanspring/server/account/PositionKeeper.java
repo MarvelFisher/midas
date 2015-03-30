@@ -28,6 +28,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
@@ -133,7 +134,7 @@ public class PositionKeeper {
 	
 	public void processExecution(Execution execution, Account account) throws PositionException {
 		if(null == execution.getAccount())
-			throw new PositionException("Execution has no account: " + execution);
+			throw new PositionException("Execution has no account: " + execution,ErrorMessage.ACCOUNT_NOT_EXIST);
 		
 		addExecution(execution);
 		
@@ -453,18 +454,18 @@ public class PositionKeeper {
 		for(OpenPosition pos: list) {
 			if(!pos.getAccount().equals(first.getAccount()))
 				throw new PositionException("Position list contains different account: " + 
-							first + " vs " + pos);
+							first + " vs " + pos,ErrorMessage.POSITION_CONTAINS_DIFF_ACCOUNT);
 			
 			if(!pos.getSymbol().equals(first.getSymbol()))
 				throw new PositionException("Position list contains different symbol: " + 
-							first + " vs " + pos);
+							first + " vs " + pos,ErrorMessage.POSITION_CONTAINS_DIFF_SYMBOL);
 			
 			if(first.oppositePosition(pos))
 				throw new PositionException("Position list contains different side: " + 
-							first + " vs " + pos);
+							first + " vs " + pos,ErrorMessage.POSITION_CONTAINS_DIFF_SIDE);
 			
 			if(PriceUtils.isZero(pos.getQty()))
-				throw new PositionException("Position list contains 0: " + pos); 
+				throw new PositionException("Position list contains 0: " + pos,ErrorMessage.POSITION_CONTAINS_ZERO); 
 		}
 	}
 	
