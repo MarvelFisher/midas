@@ -293,7 +293,7 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 		
 		if (failed) {
-			log.debug("Enter order failed: " + message);
+			log.debug("Enter order failed: " + message + ", " + user + ", " + account + ", " + event.getFields());
 			EnterParentOrderReplyEvent replyEvent = new EnterParentOrderReplyEvent(
 					event.getKey(), event.getSender(), false, message, event.getTxId(), order, 
 					user, account);
