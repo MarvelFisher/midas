@@ -201,6 +201,7 @@ public class TrailingStopManager implements IPlugin {
 	
 	public void processQuoteEvent(QuoteEvent event) {
 		Quote quote = event.getQuote();
+		quotes.put(quote.getSymbol(), quote);
 		Double high = highs.get(quote.getSymbol());
 		double refPrice = getRefPrice(quote);
 		if(null == high || (!PriceUtils.isZero(refPrice) && PriceUtils.GreaterThan(refPrice, high))) {
