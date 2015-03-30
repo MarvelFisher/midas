@@ -28,6 +28,7 @@ import quickfix.RejectLogon;
 import quickfix.SessionID;
 import quickfix.UnsupportedMessageType;
 
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.stream.IStreamAdaptor;
 
 public abstract class  FixAdaptor<T extends Application> implements Application, IStreamAdaptor<T> {
@@ -61,7 +62,7 @@ public abstract class  FixAdaptor<T extends Application> implements Application,
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
-			throw new FixException(e.getMessage());
+			throw new FixException(e.getMessage(),ErrorMessage.FIX_EXCEPTION);
 		}
 	}
 

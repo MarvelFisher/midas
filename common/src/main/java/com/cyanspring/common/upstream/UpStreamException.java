@@ -10,13 +10,25 @@
  ******************************************************************************/
 package com.cyanspring.common.upstream;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class UpStreamException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -226171384101946996L;
+	private ErrorMessage clientMessage;
 
 	public UpStreamException(String message) {
 		super(message);
+	}
+	public UpStreamException(String localMessage,ErrorMessage clientMessage) {
+		
+		super(localMessage);
+		this.clientMessage = clientMessage;
+		
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
 	}
 }

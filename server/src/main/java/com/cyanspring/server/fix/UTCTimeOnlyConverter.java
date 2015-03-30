@@ -19,6 +19,7 @@ import quickfix.field.converter.UtcTimeOnlyConverter;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.IDataConverter;
+import com.cyanspring.common.message.ErrorMessage;
 
 public class UTCTimeOnlyConverter implements IDataConverter {
 
@@ -46,7 +47,7 @@ public class UTCTimeOnlyConverter implements IDataConverter {
 		try {
 			return UtcTimeOnlyConverter.convert((Date)object, false);
 		} catch (Exception e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		}
 	}
 

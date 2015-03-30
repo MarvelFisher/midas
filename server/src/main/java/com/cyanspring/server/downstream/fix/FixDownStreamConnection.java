@@ -46,6 +46,7 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
@@ -81,7 +82,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	        } catch (Exception e) {
 				log.error(e.getMessage(), e);
 	            e.printStackTrace();
-	            throw new DownStreamException(e.getMessage());
+	            throw new DownStreamException(e.getMessage(),ErrorMessage.DOWN_STREAM_EXCEPTION);
 	        }
 		}
 
@@ -127,20 +128,21 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 		public void amendOrder(ChildOrder order, Map<String, Object> fields)
 				throws DownStreamException {
 			if (listener == null)
-				throw new DownStreamException("Null listener");
+				throw new DownStreamException("Null listener",ErrorMessage.DOWN_STREAM_NULL_LISTENER);
+			
 			
 			if (fields == null)
-				throw new DownStreamException("amendOrder: fields sent in null");
+				throw new DownStreamException("amendOrder: fields sent in null",ErrorMessage.DOWN_STREAM_NULL_FIELDS);
 			
 
 			String clOrdID = order.get(String.class, OrderField.CLORDERID.value());
 			ChildOrder existing = orders.get(clOrdID);
 			if (null == existing) {
-				throw new DownStreamException("Amend order id not found: " + order.getId());
+				throw new DownStreamException("Amend order id not found: " + order.getId(),ErrorMessage.ORDER_ID_NOT_FOUND);
 			}
 			
 			if (order.getOrdStatus().isPending() || order.getOrdStatus().isCompleted()) {
-				throw new DownStreamException("Amend order isn't in ready status: " + order.getId() + " - " + order.getOrdStatus());
+				throw new DownStreamException("Amend order isn't in ready status: " + order.getId() + " - " + order.getOrdStatus(),ErrorMessage.ORDER_NOT_IN_READY_STATUS);
 			}
 
 			OrdStatus ordStatus = order.getOrdStatus();
@@ -169,23 +171,23 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				order.setOrdStatus(ordStatus);
-				throw new DownStreamException("Exception caught in sending OrderCancelReplaceRequest: " + e.getMessage());
+				throw new DownStreamException("Exception caught in sending OrderCancelReplaceRequest: " + e.getMessage(),ErrorMessage.DOWN_STREAM_EXCEPTION);
 			}
 		}
 
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
 			if (listener == null)
-				throw new DownStreamException("Null listener");
+				throw new DownStreamException("Null listener",ErrorMessage.DOWN_STREAM_NULL_LISTENER);
 			
 			String clOrdID = order.get(String.class, OrderField.CLORDERID.value());
 			ChildOrder existing = orders.get(clOrdID);
 			if (null == existing) {
-				throw new DownStreamException("Cancel order id not found: " + order.getId());
+				throw new DownStreamException("Cancel order id not found: " + order.getId(),ErrorMessage.ORDER_ID_NOT_FOUND);
 			}
 			
 			if (order.getOrdStatus().isPending() || order.getOrdStatus().isCompleted()) {
-				throw new DownStreamException("Cancel order isn't in ready status: " + order.getId() + " - " + order.getOrdStatus());
+				throw new DownStreamException("Cancel order isn't in ready status: " + order.getId() + " - " + order.getOrdStatus(),ErrorMessage.ORDER_NOT_IN_READY_STATUS);
 			}
 
 			OrdStatus ordStatus = order.getOrdStatus();
@@ -204,7 +206,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				order.setOrdStatus(ordStatus);
-				throw new DownStreamException("Exception caught in sending OrderCancelRequest: " + e.getMessage());
+				throw new DownStreamException("Exception caught in sending OrderCancelRequest: " + e.getMessage(),ErrorMessage.DOWN_STREAM_EXCEPTION);
 			}
 		}
 

@@ -8,6 +8,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
+import com.cyanspring.common.message.ErrorMessage;
 
 public class UserKeeper {
 	private Map<String, User> users = new ConcurrentHashMap<String, User>();
@@ -15,7 +16,7 @@ public class UserKeeper {
 	public void createUser(User user) throws UserException {
 		String lowCases = user.getId().toLowerCase();
 		if(users.containsKey(lowCases))
-			throw new UserException("User already exists: " + lowCases);
+			throw new UserException("User already exists: " + lowCases,ErrorMessage.USER_ALREADY_EXIST);
 
 		user.setId(lowCases);
 		users.put(user.getId(), user);
@@ -33,7 +34,7 @@ public class UserKeeper {
 		String lowCases = userId.toLowerCase();
 		User user = getUser(lowCases);
 		if(null == user)
-			throw new UserException("Invalid user id or password");
+			throw new UserException("Invalid user id or password",ErrorMessage.INVALID_USER_ACCOUNT_PWD);
 		/*
 		synchronized(user) {
 			if(!user.getId().equals(lowCases) || !user.getPassword().equals(password))

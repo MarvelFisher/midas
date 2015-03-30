@@ -10,13 +10,25 @@
  ******************************************************************************/
 package com.cyanspring.server.fix;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class FixException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1336121645022059243L;
+	private ErrorMessage clientMessage;
 
 	public FixException(String message) {
 		super(message);
+	}
+	public FixException(String localMessage,ErrorMessage clientMessage) {
+		
+		super(localMessage);
+		this.clientMessage = clientMessage;
+		
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
 	}
 }

@@ -74,7 +74,30 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.STRATEGY_NOT_PRESENT_IN_SINGLE_INSTRUMENT,getBean(221, "Strategy field not present in NewSingleInstrumentStrategyEvent"));
 			addAndCheck(ErrorMessage.SNIPER_STRATEGY_PRICE_EMPTY,getBean(222, "price can not be empty for Sniper stratgy"));
 			addAndCheck(ErrorMessage.STRATEGY_NOT_DEFINED_IN_REGISTRY,getBean(223, "field not defined in registry"));
+			addAndCheck(ErrorMessage.FIX_EXCEPTION,getBean(224, "fix adaptor error"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_EXCEPTION,getBean(225, "down stream error"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_NULL_LISTENER,getBean(226, "down stream null listener"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_NULL_FIELDS,getBean(227, "down stream null fields"));
+			addAndCheck(ErrorMessage.FIX_FIELD_NOT_DEFINED_STRATEGY,getBean(228, "'Strategy' field is not defined in fixToOrderMap"));
+			addAndCheck(ErrorMessage.FIX_STRATEGY_FIELD_IS_NOT_PRESENTED,getBean(229, "Strategy field is not presented in this message"));
+			addAndCheck(ErrorMessage.FIX_SIDE_NOT_HANDLED,getBean(230, "Fix side not handled"));
+			addAndCheck(ErrorMessage.FIX_SIDE_CANT_CONVERT,getBean(231, "Can't convert value to FIX side"));
+			addAndCheck(ErrorMessage.FIX_CANT_MAP_SIDE,getBean(232, "cant map side"));
+			addAndCheck(ErrorMessage.FX_CONVERTER_CANT_FIND_SYMBOL,getBean(233, "FxConverter can not find symbol"));
+			addAndCheck(ErrorMessage.FX_CONVERTER_RATE_IS_ZERO,getBean(234, "FxConverter rate is 0"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_TOO_MANY_LISTENER,getBean(235, "Only support one listener per downstream connection"));
+			addAndCheck(ErrorMessage.POSITION_CONTAINS_DIFF_ACCOUNT,getBean(236, "Position list contains different account"));
+			addAndCheck(ErrorMessage.POSITION_CONTAINS_DIFF_SYMBOL,getBean(237, "Position list contains different symbol"));
+			addAndCheck(ErrorMessage.POSITION_CONTAINS_DIFF_SIDE,getBean(238, "Position list contains different side"));
+			addAndCheck(ErrorMessage.POSITION_CONTAINS_ZERO,getBean(239, "Position list contains 0"));
+			addAndCheck(ErrorMessage.UPSTREAM_EXCEPTION,getBean(240, "UpStream Exception"));
+			addAndCheck(ErrorMessage.UPSTREAM_CONNECTION_EXIST,getBean(241, "This connection id already exists"));
+			addAndCheck(ErrorMessage.DATA_CONVERT_EXCEPTION,getBean(242, "Data convert exception"));
 
+			
+			
+			
+			
 			
 			
 
@@ -140,9 +163,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_FIELD_OUT_OF_RANGE,getBean(452, "order field out of range of (0, 100]"));
 			addAndCheck(ErrorMessage.STOP_LOSS_PRICE_EMPTY,getBean(453, "Stop Loss price can't be empty or 0"));
 			addAndCheck(ErrorMessage.STOP_LOSS_PRICE_CANT_OVER_THAN_LIMIT_PRICE,getBean(454, "Stop loss price can not be more aggressive than limit price"));
+			addAndCheck(ErrorMessage.ORDER_NOT_IN_READY_STATUS,getBean(455, "order isn't in ready status"));
+			addAndCheck(ErrorMessage.ORDER_CANT_CONVERT_TO_FIX_TYPE,getBean(456, "Can't convert to FIX OrdType"));
 
 			
-
 			
 			
 			
@@ -186,7 +210,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.DATA_NOT_FOUND,getBean(701, "Data Not Found"));
 			addAndCheck(ErrorMessage.DATA_ALREADY_EXIST,getBean(702, "Data Already Exist"));
 			addAndCheck(ErrorMessage.WRONG_ACTION,getBean(703, "Wrong Action"));
+			addAndCheck(ErrorMessage.CANT_CONNECT_TO_CENTRAL_DATABASE,getBean(704, "can't connect to central database"));
 
+			
 
 			//quote errors start with 800
 			addAndCheck(ErrorMessage.INVALID_QUOTE_ID,getBean(800, "Quote id is not valid"));

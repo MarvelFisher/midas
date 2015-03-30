@@ -12,6 +12,7 @@ package com.cyanspring.server.downstream.fix.converter;
 
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.IDataConverter;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrderSide;
 
 public class FixSideConverter implements IDataConverter {
@@ -27,7 +28,7 @@ public class FixSideConverter implements IDataConverter {
     	if (value.equals("5"))
 			return OrderSide.SS;
 
-		throw new DataConvertException("Fix side not handdled: " + value);
+		throw new DataConvertException("Fix side not handdled: " + value,ErrorMessage.FIX_SIDE_NOT_HANDLED);
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class FixSideConverter implements IDataConverter {
 		if(side.equals(OrderSide.SS))
 			return "3";
 		
-		throw new DataConvertException("Can't convert value to FIX side: " + object);
+		throw new DataConvertException("Can't convert value to FIX side: " + object,ErrorMessage.FIX_SIDE_CANT_CONVERT);
 	}
 
 }

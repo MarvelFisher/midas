@@ -31,6 +31,7 @@ import com.cyanspring.common.event.order.CancelParentOrderReplyEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.upstream.IUpStreamConnection;
@@ -123,11 +124,11 @@ public class UpStreamManager implements IPlugin {
 				adaptor.init();
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
-				throw new UpStreamException(e.getMessage());
+				throw new UpStreamException(e.getMessage(),ErrorMessage.UPSTREAM_EXCEPTION);
 			}
 			for(IUpStreamConnection connection: adaptor.getConnections()) {
 				if(dupCheck.containsKey(connection.getId()))
-					throw new UpStreamException("This connection id already exists: " + connection.getId());
+					throw new UpStreamException("This connection id already exists: " + connection.getId(),ErrorMessage.UPSTREAM_CONNECTION_EXIST);
 					
 				dupCheck.put(connection.getId(), null);
 			}

@@ -10,6 +10,7 @@ import com.cyanspring.common.fx.FxException;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.message.ErrorMessage;
 public class FxConverter implements IFxConverter {
 	private Map<String, Double> fxRates = new HashMap<String, Double>();
 
@@ -27,10 +28,10 @@ public class FxConverter implements IFxConverter {
 		
 		Double result = fxRates.get(fromSymbol + toSymbol);
 		if(null == result)
-			throw new FxException("FxConverter can not find symbol: " + fromSymbol + toSymbol);
+			throw new FxException("FxConverter can not find symbol: " + fromSymbol + toSymbol,ErrorMessage.FX_CONVERTER_CANT_FIND_SYMBOL);
 		
 		if(PriceUtils.isZero(result))
-			throw new FxException("FxConverter rate is 0: " + fromSymbol + toSymbol);
+			throw new FxException("FxConverter rate is 0: " + fromSymbol + toSymbol,ErrorMessage.FX_CONVERTER_RATE_IS_ZERO);
 			
 		return result;
 	}
