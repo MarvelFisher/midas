@@ -16,10 +16,10 @@ public class DefPriceSetter implements IPriceSetter
 		double dPrice = quote.getLast();
 		boolean pricechanged = price.setPrice(dPrice);
 		price.setDatatime(quote.getTimeStamp()) ;
-		if (PriceUtils.Equal(quote.getTotalVolume(), LastVolume))
-		{
+//		if (PriceUtils.Equal(quote.getTotalVolume(), LastVolume))
+//		{
 			price.setVolume((int) (price.getVolume() + quote.getLastVol()));
-		}
+//		}
 		return pricechanged;
 	}
 
