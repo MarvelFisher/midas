@@ -44,6 +44,7 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.IdGenerator;
@@ -69,10 +70,10 @@ public class FixParentOrderConverter {
 	private void processCustomMap(quickfix.Message message, Map<String, Object> map) throws FieldNotFound, DataConvertException, FixConvertException, StrategyException {
 		Integer strategyNameTag = fixToOrderMap.getKeyByValue(OrderField.STRATEGY.value());
 		if(null == strategyNameTag)
-			throw new FixConvertException("'Strategy' field is not defined in fixToOrderMap");
+			throw new FixConvertException("'Strategy' field is not defined in fixToOrderMap",ErrorMessage.FIX_FIELD_NOT_DEFINED_STRATEGY);
 		
 		if(!message.isSetField(strategyNameTag)) {
-			throw new FixConvertException("Strategy field " + strategyNameTag + " is not presented in this message");
+			throw new FixConvertException("Strategy field " + strategyNameTag + " is not presented in this message",ErrorMessage.FIX_STRATEGY_FIELD_IS_NOT_PRESENTED);
 		}
 		String strategyName = message.getString(strategyNameTag);
 		 Map<String, FieldDef> fieldDefs = strategyFactory.getStrategyFieldDef(strategyName);

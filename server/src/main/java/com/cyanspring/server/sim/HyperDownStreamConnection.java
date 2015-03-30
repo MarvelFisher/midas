@@ -38,6 +38,7 @@ import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
@@ -199,7 +200,7 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	@Override
 	public IDownStreamSender setListener(IDownStreamListener listener) throws DownStreamException {
 		if(listener != null && this.listener != null)
-			throw new DownStreamException("Only support one listener per downstream connection");
+			throw new DownStreamException("Only support one listener per downstream connection",ErrorMessage.DOWN_STREAM_TOO_MANY_LISTENER);
 		
 		this.listener = listener;
 		if(null != this.listener)

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.server.downstream.fix;
 
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
@@ -24,7 +25,7 @@ public class FixUtils {
 		else if (side == OrderSide.SS)
 			return '5';
 		else
-			throw new FixConvertException("toFixOrderSide: cant map side " + side);
+			throw new FixConvertException("toFixOrderSide: cant map side " + side,ErrorMessage.FIX_CANT_MAP_SIDE);
 	}	
 	
 	public static OrderSide fromFixOrderSide(char side) throws FixConvertException
@@ -36,7 +37,7 @@ public class FixUtils {
 		else if (side == '5')
 			return OrderSide.SS;
     	else
-			throw new FixConvertException("fromFixOrderSide: cant map side " + side);
+			throw new FixConvertException("fromFixOrderSide: cant map side " + side,ErrorMessage.FIX_CANT_MAP_SIDE);
 	}	
 	
 	public static char toFixExchangeOrderType(ExchangeOrderType type) throws FixConvertException

@@ -10,15 +10,26 @@
  ******************************************************************************/
 package com.cyanspring.server.downstream.fix;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class FixConvertException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1124127814050065194L;
+	private ErrorMessage clientMessage;
 
 	public FixConvertException(String message) {
 		super(message);
 	}
-	
+	public FixConvertException(String localMessage,ErrorMessage clientMessage) {
+		
+		super(localMessage);
+		this.clientMessage = clientMessage;
+		
+	}
+	public ErrorMessage getClientMessage() {
+		return clientMessage;
+	}
 }

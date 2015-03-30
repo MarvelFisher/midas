@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserType;
+import com.cyanspring.common.message.ErrorMessage;
 
 public class CentralDbConnector {
 	protected Connection conn = null;
@@ -51,7 +52,7 @@ public class CentralDbConnector {
 		if (inst.isClosed()) {
 			if (!inst.connect())
 				throw new CentralDbException(
-						"can't connect to central database");
+						"can't connect to central database",ErrorMessage.CANT_CONNECT_TO_CENTRAL_DATABASE);
 		}
 
 		return inst;

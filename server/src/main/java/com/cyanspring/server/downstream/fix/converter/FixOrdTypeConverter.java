@@ -12,6 +12,7 @@ package com.cyanspring.server.downstream.fix.converter;
 
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.IDataConverter;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrderType;
 
 public class FixOrdTypeConverter implements IDataConverter {
@@ -24,7 +25,7 @@ public class FixOrdTypeConverter implements IDataConverter {
 		if (value.equals("2"))
 			return OrderType.Limit;
 		
-		throw new DataConvertException("Fix OrdType not supported: " + value);
+		throw new DataConvertException("Fix OrdType not supported: " + value,ErrorMessage.ORDER_TYPE_NOT_SUPPORT);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class FixOrdTypeConverter implements IDataConverter {
 		if(type.equals(OrderType.Limit))
 			return "2";
 		
-		throw new DataConvertException("Can't convert to FIX OrdType: " + object);
+		throw new DataConvertException("Can't convert to FIX OrdType: " + object,ErrorMessage.ORDER_CANT_CONVERT_TO_FIX_TYPE);
 	}
 
 }

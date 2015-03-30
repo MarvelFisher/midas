@@ -17,6 +17,7 @@ import quickfix.field.converter.UtcDateOnlyConverter;
 
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.IDataConverter;
+import com.cyanspring.common.message.ErrorMessage;
 
 public class UtcDateOnly implements IDataConverter {
 
@@ -24,7 +25,7 @@ public class UtcDateOnly implements IDataConverter {
 		try {
 			return UtcDateOnlyConverter.convert(value);
 		} catch (FieldConvertError e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		}
 	}
 
@@ -32,7 +33,7 @@ public class UtcDateOnly implements IDataConverter {
 		try {
 			return UtcDateOnlyConverter.convert((Date)object);
 		} catch (Exception e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		}
 	}
 
