@@ -14,6 +14,9 @@
 
 	<bean id="myTest" class="com.cyanspring.soak.MyTest">
 	</bean>
+	
+	<bean id="premiumFollowTest" class="com.cyanspring.soak.PremiumFollowTest">
+	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
@@ -31,12 +34,25 @@
 <!--
 		<property name="url" value="nio://54.169.33.151:61616"></property>
 -->
-		<property name="url" value="nio://localhost:61616"></property>
+		<property name="url" value="nio://10.0.0.51:61616"></property>
 	</bean>
 	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 	    <constructor-arg>
 	    	<ref bean="transportService"/>
+	    </constructor-arg>
+	</bean>
+	
+	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+<!--
+		<property name="url" value="nio://54.169.33.151:61616"></property>
+-->
+		<property name="url" value="nio://10.0.0.51:60006"></property>
+	</bean>
+	
+	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="globalTransportService"/>
 	    </constructor-arg>
 	</bean>
 	

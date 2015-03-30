@@ -8,3 +8,4 @@ public interface ITrade {
 	public void putAmendOrder(Order order);
 	public void putCancelOrder(Order order);
 }
+

@@ -451,4 +451,5 @@ public final class LtsApi implements ITrade {
 	private String getId() {
 		return user;
 	}
+
 }
