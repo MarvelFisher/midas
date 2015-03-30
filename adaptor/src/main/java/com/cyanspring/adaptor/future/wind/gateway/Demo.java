@@ -43,6 +43,10 @@ public class Demo {
 	private String ip,username,password;
 	private int port;
 	TDFClient client = new TDFClient();
+	
+	public int getPort() {
+		return this.port;
+	}
 	Demo(String ip, int port, String username, String password , WindGateway gateWay) {
 		this.ip = ip;
 		this.port = port;
@@ -51,13 +55,14 @@ public class Demo {
 		this.LastPrintTime = System.currentTimeMillis();
 		this.windGateway = gateWay;
 		this.quitFlag = true;
+		/*
 		int err = reconnect();
 		if( err != TDF_ERR.TDF_ERR_SUCCESS)
 		{
 			//System.out.printf("Can't connect to %s:%d. �����˳���\n", ip, port);
 			//System.exit(err);			
 		}
-
+		*/
 	}
 	
 	public int reconnect()
@@ -78,15 +83,17 @@ public class Demo {
 		setting.setTypeFlags(openTypeFlags);
 		setting.setConnectionID(0);
 		
+		log.info("try to connect : " + this.ip + " " + this.port );
 		int err = client.open(setting);
 		if (err == TDF_ERR.TDF_ERR_SUCCESS) {
 			this.quitFlag = false;
 		}		
 		else
 		{
-			String logstr = "Can't connect to " + ip + ":" + port + ". �����˳���";
-			System.out.println(logstr); 
+			String logstr = "Can't connect to " + ip + ":" + port  + " , err code : " + err;
+			//System.out.println(logstr); 
 			log.warn(logstr);
+			client.close();
 		}
 		return err;
 	}	
@@ -383,17 +390,17 @@ class DataHandler  implements Runnable {
 		while(quitFlag == false)
 		{
 			try {
+				demo.reconnect();
 				while(demo.quitFlag == false)
 				{
 					demo.run();
 				}
-				log.warn("Disconnect with Wind , try to reconnect after 5 seconds.");
+				log.warn("Disconnect with Wind , try to reconnect after 5 seconds. port : " +  demo.getPort());
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
-			demo.reconnect();
 		}
 	}
 }
