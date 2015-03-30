@@ -39,3 +39,4 @@ public abstract class TradeAdaptor implements IAdaptor {
 		this.orderMap = orderMap;
 	}
 }
+
