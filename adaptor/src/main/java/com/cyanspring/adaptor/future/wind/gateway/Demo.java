@@ -29,7 +29,7 @@ public class Demo {
 	private final int openData = 0;
 	private final int openTime = 0;
 	private final String subscription = "";
-	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_INDEX;
+	private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_ALL;
 	private TDF_CONNECT_RESULT connectResult = null;
 	private TDF_LOGIN_RESULT loginResult = null;
 	private TDF_CODE_RESULT codeTableResult = null;
