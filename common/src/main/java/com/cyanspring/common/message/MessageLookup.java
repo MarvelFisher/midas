@@ -93,6 +93,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.UPSTREAM_EXCEPTION,getBean(240, "UpStream Exception"));
 			addAndCheck(ErrorMessage.UPSTREAM_CONNECTION_EXIST,getBean(241, "This connection id already exists"));
 			addAndCheck(ErrorMessage.DATA_CONVERT_EXCEPTION,getBean(242, "Data convert exception"));
+			addAndCheck(ErrorMessage.OVER_SET_MAX_PRICEALERTS,getBean(242, "You can only set 20 Price Alerts"));
+			
 
 			
 			

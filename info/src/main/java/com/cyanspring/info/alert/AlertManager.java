@@ -630,7 +630,7 @@ public class AlertManager implements IPlugin {
 				// reject
 				log.debug("[recevieAddPriceAlert] : UserAlert is Greater than maxNoOfAlerts -> reject");
 				//Msg = "UserAlert is Greater than maxNoOfAlerts";
-				Msg =MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "UserAlert is Greater than maxNoOfAlerts");
+				Msg =MessageLookup.buildEventMessage(ErrorMessage.OVER_SET_MAX_PRICEALERTS, "You can only set 20 Price Alerts");
 				pricealertreplyevent = new PriceAlertReplyEvent(null,
 						event.getSender(), null, event.getTxId(),
 						priceAlert.getUserId(), event.getType(), null, false,
