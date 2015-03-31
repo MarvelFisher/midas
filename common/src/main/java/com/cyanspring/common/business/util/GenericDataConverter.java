@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.ReflectionUtil;
 import com.cyanspring.common.util.TimeUtil;
 
@@ -86,7 +87,7 @@ public class GenericDataConverter {
 			return null;
 		
 		if(null == t)
-			throw new DataConvertException("Class t is null");
+			throw new DataConvertException("Class t is null",ErrorMessage.DATA_CONVERT_CLASS_NULL);
 		
 		if(!t.equals(String.class) && value.equals(""))
 			return null;
@@ -105,9 +106,9 @@ public class GenericDataConverter {
 			}
 			
 		} catch (NumberFormatException e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		} catch (Exception e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		}
 
 
@@ -116,7 +117,7 @@ public class GenericDataConverter {
 				return ReflectionUtil.callStaticMethod(t, "valueOf", new String[]{value});
 			}
 		} catch (IllegalArgumentException e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		}
 		
 		try {
@@ -126,7 +127,7 @@ public class GenericDataConverter {
 				else if(value.length() == dateFormat.length())
 					return longFormat.parse(value);
 				throw new DataConvertException("Unknown date format: " + value + 
-						"; accepts only HH:mm:ss or yyyy/MM/dd HH:mm:ss");
+						"; accepts only HH:mm:ss or yyyy/MM/dd HH:mm:ss",ErrorMessage.DATA_CONVERT_UNKNOWN_DATE_FORMAT);
 			}
 			
 			if(t.equals(Short.class) || t.equals(Short.TYPE))
@@ -161,11 +162,11 @@ public class GenericDataConverter {
 				return value;
 			
 		} catch (NumberFormatException e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		} catch (ParseException e) {
-			throw new DataConvertException(e.getMessage());
+			throw new DataConvertException(e.getMessage(),ErrorMessage.DATA_CONVERT_EXCEPTION);
 		}
 
-		throw new DataConvertException("Cant convert this field: " + field + ", Class: " + t);
+		throw new DataConvertException("Cant convert this field: " + field + ", Class: " + t,ErrorMessage.DATA_CONVERT_CONVERT_FIELD_FAIL);
 	}
 }

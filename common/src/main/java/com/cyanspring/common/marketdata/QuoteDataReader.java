@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.QtyPrice;
 
 public class QuoteDataReader implements ITickDataReader {
@@ -13,6 +14,7 @@ public class QuoteDataReader implements ITickDataReader {
 	private final String tokenDelimiter = ",";
 
 	private class Pair {
+		
 		public Pair(String tag, String value) {
 			super();
 			this.tag = tag;
@@ -25,20 +27,20 @@ public class QuoteDataReader implements ITickDataReader {
 	public Quote stringToQuote(String str) throws TickDataException {
 		String[] tokens = str.split(tokenDelimiter);
 		if(tokens.length < 1)
-			throw new TickDataException("The tick data is less than one token");
+			throw new TickDataException("The tick data is less than one token",ErrorMessage.TICK_DATA_LESS_THAN_ONE_TOKEN);
 		
 		
 		List<Pair> pairs = new LinkedList<Pair>();
 		for(String token: tokens) {
 			String[] tagValue = token.split(fieldDelimiter);
 			if(tagValue.length != 2)
-				throw new TickDataException("Tag Value malformatted: " + tagValue);
+				throw new TickDataException("Tag Value malformatted: " + tagValue,ErrorMessage.TICK_DATA_TAG_VALUE_MALFORMATTED);
 			
 			pairs.add(new Pair(tagValue[0], tagValue[1]));
 		}
 		
 		if(!pairs.get(0).tag.equals(TickField.SYMBOL.value()))
-			throw new TickDataException("The first field must be symbol: " + str);
+			throw new TickDataException("The first field must be symbol: " + str,ErrorMessage.TICK_DATA_FIRST_FIELD_MUST_SYMBOL);
 		
 		String symbol = pairs.get(0).value;
 		Quote quote = new Quote(symbol, new LinkedList<QtyPrice>(), new LinkedList<QtyPrice>());
@@ -73,13 +75,13 @@ public class QuoteDataReader implements ITickDataReader {
 					String sub = pair.tag.substring(TickField.BID.value().length());
 					int pos = Integer.parseInt(sub);
 					if(pos != quote.getBids().size())
-						throw new TickDataException("depth bid out of sequence: " + pos);
+						throw new TickDataException("depth bid out of sequence: " + pos,ErrorMessage.TICK_DATA_BID_VOL_OUT_OF_SEQ);
 					quote.getBids().add(new QtyPrice(0, Double.parseDouble(pair.value)));
 				} else if(pair.tag.indexOf(TickField.BID_VOL.value()) == 0) {
 					String sub = pair.tag.substring(TickField.BID_VOL.value().length());
 					int pos = Integer.parseInt(sub);
 					if(pos != quote.getBids().size()-1)
-						throw new TickDataException("depth bid vol out of sequence: " + pos);
+						throw new TickDataException("depth bid vol out of sequence: " + pos,ErrorMessage.TICK_DATA_BID_VOL_OUT_OF_SEQ);
 					double price = quote.getBids().get(pos).getPrice();
 					quote.getBids().set(pos, new QtyPrice(Double.parseDouble(pair.value), price));
 				} else if(pair.tag.indexOf(TickField.ASK.value()) == 0 &&
@@ -87,21 +89,21 @@ public class QuoteDataReader implements ITickDataReader {
 					String sub = pair.tag.substring(TickField.ASK.value().length());
 					int pos = Integer.parseInt(sub);
 					if(pos != quote.getAsks().size())
-						throw new TickDataException("depth ask out of sequence: " + pos);
+						throw new TickDataException("depth ask out of sequence: " + pos,ErrorMessage.TICK_DATA_ASK_VOL_OUT_OF_SEQ);
 					quote.getAsks().add(new QtyPrice(0, Double.parseDouble(pair.value)));
 				} else if(pair.tag.indexOf(TickField.ASK_VOL.value()) == 0) {
 					String sub = pair.tag.substring(TickField.ASK_VOL.value().length());
 					int pos = Integer.parseInt(sub);
 					if(pos != quote.getAsks().size()-1)
-						throw new TickDataException("depth ask vol out of sequence: " + pos);
+						throw new TickDataException("depth ask vol out of sequence: " + pos,ErrorMessage.TICK_DATA_ASK_VOL_OUT_OF_SEQ);
 					double price = quote.getAsks().get(pos).getPrice();
 					quote.getAsks().set(pos, new QtyPrice(Double.parseDouble(pair.value), price));
 				}
 			}
 		} catch (NumberFormatException e) {
-			throw new TickDataException(e.getMessage());
+			throw new TickDataException(e.getMessage(),ErrorMessage.TICK_DATA_EXCEPTION);
 		} catch (ParseException e) {
-			throw new TickDataException(e.getMessage());
+			throw new TickDataException(e.getMessage(),ErrorMessage.TICK_DATA_EXCEPTION);
 		}
 		return quote;
 	}

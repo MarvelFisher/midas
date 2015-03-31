@@ -27,6 +27,7 @@ import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.server.event.DownStreamReadyEvent;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.ExecType;
@@ -62,7 +63,7 @@ public class DownStreamManager implements IPlugin {
 			}
 			for(IDownStreamConnection connection: adaptor.getConnections()) {
 				if(senders.containsKey(connection.getId()))
-					throw new DownStreamException("This connection id already exists: " + connection.getId());
+					throw new DownStreamException("This connection id already exists: " + connection.getId(),ErrorMessage.DOWN_STREAM_CONN_ID_EXIST);
 				IDownStreamSender sender = connection.setListener(new DownStreamListener(connection));
 				senders.put(connection.getId(), sender);
 			}
@@ -72,11 +73,11 @@ public class DownStreamManager implements IPlugin {
 				adaptor.init();
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
-				throw new DownStreamException(e.getMessage());
+				throw new DownStreamException(e.getMessage(),ErrorMessage.DOWN_STREAM_EXCEPTION);
 			}
 			for(IDownStreamConnection connection: adaptor.getConnections()) {
 				if(senders.containsKey(connection.getId()))
-					throw new DownStreamException("This connection id already exists: " + connection.getId());
+					throw new DownStreamException("This connection id already exists: " + connection.getId(),ErrorMessage.DOWN_STREAM_CONN_ID_EXIST);
 				IDownStreamSender sender = connection.setListener(new DownStreamListener(connection));
 				specialSenders.put(connection.getId(), sender);
 			}
@@ -122,7 +123,7 @@ public class DownStreamManager implements IPlugin {
 		@Override
 		public void onState(boolean on) {
 			if (!on) {
-				log.warn("Down Stream connection is down: " + connection.getId());
+				log.warn("Down Stream connection is down: " + connection.getId(),ErrorMessage.DOWN_STREAM_CONN_DOWN);
 			} else {
 				if(allReady()) {
 					eventManager.sendEvent(new DownStreamReadyEvent(null, true));
@@ -153,13 +154,13 @@ public class DownStreamManager implements IPlugin {
 	public IDownStreamSender getSender() throws DownStreamException {
 		ArrayList<IDownStreamSender> list = new ArrayList<IDownStreamSender>();
 		if(senders.size() == 0)
-			throw new DownStreamException("There are no DownStreamSender available");
+			throw new DownStreamException("There are no DownStreamSender available",ErrorMessage.DOWN_STREAM_SENDER_NOT_AVAILABLE);
 		
 		for(Entry<String, IDownStreamSender> entry: senders.entrySet()) {
 			list.add(entry.getValue());
 		}
 		if(list.size() == 0)
-			throw new DownStreamException("There are no DownStreamSender available yet");
+			throw new DownStreamException("There are no DownStreamSender available yet",ErrorMessage.DOWN_STREAM_SENDER_NOT_AVAILABLE);
 		int i = new Random().nextInt(list.size());
 		return list.get(i);
 	}
@@ -173,7 +174,7 @@ public class DownStreamManager implements IPlugin {
 			sender = specialSenders.get(dest);
 		
 		if(null == sender)
-			throw new DownStreamException("Can't find this sender: " + dest);
+			throw new DownStreamException("Can't find this sender: " + dest,ErrorMessage.DOWN_STREAM_SENDER_NOT_AVAILABLE);
 		return sender;
 	}
 	

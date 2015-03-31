@@ -93,6 +93,19 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.UPSTREAM_EXCEPTION,getBean(240, "UpStream Exception"));
 			addAndCheck(ErrorMessage.UPSTREAM_CONNECTION_EXIST,getBean(241, "This connection id already exists"));
 			addAndCheck(ErrorMessage.DATA_CONVERT_EXCEPTION,getBean(242, "Data convert exception"));
+			addAndCheck(ErrorMessage.OVER_SET_MAX_PRICEALERTS,getBean(243, "You can only set 20 Price Alerts"));
+			addAndCheck(ErrorMessage.DATA_CONVERT_CLASS_NULL,getBean(244, "Data convert fail"));
+			addAndCheck(ErrorMessage.DATA_CONVERT_UNKNOWN_DATE_FORMAT,getBean(245, "Unknown date format"));
+			addAndCheck(ErrorMessage.DATA_CONVERT_CONVERT_FIELD_FAIL,getBean(246, "Cant convert field"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_CONN_ID_EXIST,getBean(247, "This connection id already exists"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_CONN_DOWN,getBean(248, "Down Stream connection is down"));
+			addAndCheck(ErrorMessage.DOWN_STREAM_SENDER_NOT_AVAILABLE,getBean(249, "DownStreamSender not available"));
+			addAndCheck(ErrorMessage.TICK_DATA_LESS_THAN_ONE_TOKEN,getBean(250, "The tick data is less than one token"));
+			addAndCheck(ErrorMessage.TICK_DATA_TAG_VALUE_MALFORMATTED,getBean(251, "Tag Value malformatted"));
+			addAndCheck(ErrorMessage.TICK_DATA_FIRST_FIELD_MUST_SYMBOL,getBean(252, "The first field must be symbol"));
+			addAndCheck(ErrorMessage.TICK_DATA_EXCEPTION,getBean(253, "tick data error"));
+			addAndCheck(ErrorMessage.TICK_DATA_ASK_VOL_OUT_OF_SEQ,getBean(254, "depth ask vol out of sequence"));
+			addAndCheck(ErrorMessage.TICK_DATA_BID_VOL_OUT_OF_SEQ,getBean(255, "depth bid vol out of sequence"));
 
 			
 			
