@@ -895,5 +895,13 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void requestMarketSession() {
 		eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
 	}
-
+	
+	public DataObject getQuoteExtendBySymbol(String symbol){
+		return quoteExtends.get(symbol);
+	}
+	
+	public HashMap<String, DataObject> getQuoteExtends(){
+		return quoteExtends;
+	}	
+	
 }
