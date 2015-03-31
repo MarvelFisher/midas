@@ -128,7 +128,6 @@ public class PersistenceManager {
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(SingleInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(MultiInstrumentStrategyUpdateEvent.class, null);
-			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUpdateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmCreateAccountEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUpdateAccountEvent.class, PersistenceManager.ID);
@@ -137,10 +136,6 @@ public class PersistenceManager {
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
-			subscribeToEvent(ChangeUserPasswordEvent.class, null);
-			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 
 			if(persistSignal) {
@@ -153,6 +148,24 @@ public class PersistenceManager {
 		public IAsyncEventManager getEventManager() {
 			return eventManager;
 		}
+	};
+	
+	private AsyncEventProcessor userEventProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(AsyncTimerEvent.class, null);
+			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
+			subscribeToEvent(ChangeUserPasswordEvent.class, null);			
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+		
 	};
 	
 	
@@ -178,7 +191,12 @@ public class PersistenceManager {
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("PersistenceManager");
 		
-		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
+		userEventProcessor.setHandler(this);
+		userEventProcessor.init();
+		if(userEventProcessor.getThread() != null)
+			userEventProcessor.getThread().setName("PersistenceManager(Users)");
+		
+		scheduleManager.scheduleRepeatTimerEvent(timeInterval, userEventProcessor, timerEvent);
 
 	}
 
