@@ -36,7 +36,9 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private int DecimalPoint = 0;
 	private double MinimalCF = 0.0;
 	private double PricePerUnit = 0.0;
-	private int MaximumLot = 0;
+//	private int MaximumLot = 0;
+	private int LimitMaximumLot = 0;
+	private int MarketMaximumLot = 0;
 	private int MaximumHold = 0;
 	private String Strategy = null;
 	private double MarginRate = 0.0;
@@ -321,11 +323,18 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setPricePerUnit(double pricePerUnit) {
 		PricePerUnit = pricePerUnit;
 	}
-	public int getMaximumLot() {
-		return MaximumLot;
+	
+	public int getLimitMaximumLot() {
+		return LimitMaximumLot;
 	}
-	public void setMaximumLot(int maximalLot) {
-		MaximumLot = maximalLot;
+	public void setLimitMaximumLot(int limitMaximumLot) {
+		LimitMaximumLot = limitMaximumLot;
+	}
+	public int getMarketMaximumLot() {
+		return MarketMaximumLot;
+	}
+	public void setMarketMaximumLot(int marketMaximumLot) {
+		MarketMaximumLot = marketMaximumLot;
 	}
 	public String getStrategy() {
 		return Strategy;

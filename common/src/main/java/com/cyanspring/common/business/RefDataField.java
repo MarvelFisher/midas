@@ -34,7 +34,9 @@ public enum RefDataField {
 	MARGIN_RATE("Margin Rate"),          // 保證金 %%
 	COMMISSION_FEE("Commission fee"),    // 手續費
 	MINIMAL_COMMISSION_FEE("Minimal CF"),// 最低收續費
-	MAXIMUM_LOT("Maximum lot"),     // 最大下單手數
+	//MAXIMUM_LOT("Maximum lot"),     // 最大下單手數
+	LIMIT_MAXIMUM_LOT("Limit maximum lot"),
+	MARKET_MAXIMUM_LOT("Market maximum lot"), 
 	MAXIMUM_HOLD("Maximum hold"),
 	PRICE_LIMIT("Price limit"),     // 帳跌停板幅度 %
 	DECIMALPOINT("Decimal point"),  // 小數位數	

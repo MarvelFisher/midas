@@ -62,7 +62,11 @@
         <double>300.0</double>
       </entry>
       <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>499</int>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
         <int>499</int>
       </entry>
       <entry>
@@ -170,7 +174,11 @@
         <double>300.0</double>
       </entry>
       <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>499</int>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
         <int>499</int>
       </entry>
       <entry>

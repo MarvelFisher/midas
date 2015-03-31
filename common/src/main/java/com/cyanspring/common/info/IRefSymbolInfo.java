@@ -50,7 +50,9 @@ public abstract class IRefSymbolInfo {
 			symbolinfo.setDecimalPoint(refdata.getDeciamlPoint());
 			symbolinfo.setMinimalCF(refdata.getMinimalCommissionFee());
 			symbolinfo.setPricePerUnit(refdata.getPricePerUnit());
-			symbolinfo.setMaximumLot(refdata.getMaximumLot());
+			symbolinfo.setLimitMaximumLot(refdata.getLimitMaximumLot());
+			symbolinfo.setMarketMaximumLot(refdata.getMarketMaximumLot());
+//			symbolinfo.setMaximumLot(refdata.getMaximumLot());
 			symbolinfo.setMaximumHold(refdata.getMaximumHold());
 			symbolinfo.setStrategy(refdata.getStrategy());
 			symbolinfo.setMarginRate(refdata.getMarginRate());

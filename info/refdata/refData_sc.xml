@@ -10,7 +10,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -58,7 +62,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -106,7 +114,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -154,7 +166,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -202,7 +218,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -250,7 +270,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -298,7 +322,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -346,7 +374,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -394,7 +426,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
@@ -442,7 +478,11 @@
         <int>100</int>
      </entry>
      <entry>
-        <string>Maximum lot</string>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+     </entry>
+     <entry>
+        <string>Market maximum lot</string>
         <int>0</int>
      </entry>
      <entry>
