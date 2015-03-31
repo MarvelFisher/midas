@@ -4,13 +4,17 @@ import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.cyanspring.common.alert.ParseData;
 
 public class ParseThread extends Thread{
 	private String strThreadId = "";
 	private String strParseApplicationId = "";
 	private String strParseRESTAPIKey = "";
+	private String ParseAction = "";
 	ThreadStatus threadStatus ;
 	private int timeoutSecond;
 	private int retryTimes;
@@ -35,7 +39,7 @@ public class ParseThread extends Thread{
     //X-Parse-REST-API-KEY = asld9nAPrLLPJQM9qlS3SegDE4sTkMfroUEVqBEp
     //********************************************************************************************	
 	
-	public ParseThread(String strThreadId, ConcurrentLinkedQueue<ParseData> parseDataQueue, int timeoutSecond, int retryTimes, String ParseApplicationId, String ParseRESTAPIKey)	
+	public ParseThread(String strThreadId, ConcurrentLinkedQueue<ParseData> parseDataQueue, int timeoutSecond, int retryTimes, String ParseApplicationId, String ParseRESTAPIKey, String parseAction)	
 	{
 		try
 		{
@@ -50,6 +54,7 @@ public class ParseThread extends Thread{
 	        this.timeoutSecond = timeoutSecond;
 	        this.strThreadId = strThreadId;
 	        this.retryTimes = retryTimes ;
+	        this.setParseAction(parseAction);
 	        this.threadStatus = new ThreadStatus();
 			setDaemon(true);
 		}
@@ -95,14 +100,14 @@ public class ParseThread extends Thread{
 					iRetrytimes ++ ;
 					if (iRetrytimes <= retryTimes)
 					{
-						log.warn("[ParseThread "+strThreadId+"] sending again "+PD.strpushMessage);
+						log.warn("[ParseThread "+strThreadId+"] sending again "+PD.getStrpushMessage());
 						threadStatus.setThreadState(ThreadState.SENDDING) ;
 						threadStatus.UpdateTime();
 						bReSend = true ;
 					}
 					else
 					{
-						log.warn(strThreadId + " Retrytimes out : " + PD.getMsg());
+						log.warn(strThreadId + " Retrytimes out : " + PD.getStrpushMessage());
 					}
 				}
 			}
@@ -117,11 +122,11 @@ public class ParseThread extends Thread{
 	{   	 		
 		URL obj = new URL("https://api.parse.com/1/push") ;
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		
-		String strPoststring = "{ \"where\": {\"userId\": \"" + PD.strUserId + "\" , \"deviceType\": { \"$in\": [ \"ios\", \"android\", \"winphone\", \"js\" ] }}, " +
-                "\"data\": {\"alert\": \"" + PD.strpushMessage + "\",\"msgid\":\"" + PD.strMsgId + "\",\"msgType\":\"" + PD.strMsgType +
-                "\",\"action\":\"" + "com.hkfdt.activity.UPDATE_STATUS" + ((PD.strLocalTime.length() > 0) ? ("\",\"datetime\":\"" + PD.strLocalTime) : "") + 
-                ((PD.strKeyValue.length() > 0) ? ("\",\"KeyValue\":\"" + PD.strKeyValue) : "") + "\"" +
+		 
+		String strPoststring = "{ \"where\": {\"userId\": \"" + PD.getStrUserId() + "\" , \"deviceType\": { \"$in\": [ \"ios\", \"android\", \"winphone\", \"js\" ] }}, " +
+                "\"data\": {\"alert\": \"" + PD.getStrpushMessage() + "\",\"msgid\":\"" + PD.getStrMsgId() + "\",\"msgType\":\"" + PD.getStrMsgType() +
+                "\",\"action\":\"" + ParseAction + ((PD.getStrLocalTime().length() > 0) ? ("\",\"datetime\":\"" + PD.getStrLocalTime()) : "") + 
+                (((PD.getStrKeyValue()).length() > 0) ? ("\",\"KeyValue\":\"" + PD.getStrKeyValue()) : "") + "\"" +
                 ", \"badge\": \"Increment\"}}";
  
 		log.info("Parse message: " + strPoststring);
@@ -159,5 +164,13 @@ public class ParseThread extends Thread{
 	public ThreadStatus getThreadStatus()
 	{
 		return threadStatus ;
+	}
+
+	public String getParseAction() {
+		return ParseAction;
+	}
+
+	public void setParseAction(String parseAction) {
+		ParseAction = parseAction;
 	}	
 }

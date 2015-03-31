@@ -105,7 +105,7 @@ public class UserManager implements IPlugin {
 			
 			
 			while (iterator.hasNext()) {	
-				Object[] rows = (Object[]) iterator.next();				
+				Object[] rows = (Object[]) iterator.next();	
 				String StartDate = (String) rows[2].toString();
 			    String EndDate = rows[3].toString();
 			    
@@ -149,7 +149,6 @@ public class UserManager implements IPlugin {
 					event.getCoinId(), 
 					ResetAccountReplyType.LTSINFO_USERMANAGER, 
 					false, 
-					//"Reset User " + UserId + "fail.");
 					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + "fail."));
 			try
 			{
@@ -160,7 +159,7 @@ public class UserManager implements IPlugin {
 				log.error(ee.getMessage());
 			}
 		}
-		finally
+		finally 
 		{
 			session.close();
 			sessionCentral.close();

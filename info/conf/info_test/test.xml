@@ -10,10 +10,11 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
-<!-- 	        	<ref bean="newsManager"/> -->
-<!--             	<ref bean="alertManager"/> -->
-<!--             	<ref bean="centralDbProcessor"/> -->
+	        	<ref bean="newsManager"/>
+            	<ref bean="alertManager"/>
+            	<ref bean="centralDbProcessor"/>
             	<ref bean="userManager"/>
+            	<ref bean="ParseManager"/>
 	        </list>
 		</property>
 	</bean>

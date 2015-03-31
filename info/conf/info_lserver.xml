@@ -10,33 +10,34 @@
 	<context:annotation-config />
 	<import resource="info_test/*"/>
 	
-	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
+		<property name="maxNoOfAlerts" value="20" />		
+		<property name="getPremiumTableInterval" value="300000" />		
+		<property name="getPremiumFollowListURL" value="http://r.forexmastergaedev.appspot.com/rest/getPremiumFollowList" />
+		<property name="SetInBoxURL" value="http://forexmastergaedev.appspot.com/rest/setInBoxMsg" />
+	</bean>	
+	<bean id="ParseManager" class="com.cyanspring.info.alert.ParseManager">
 		<property name="timeoutSecond" value="3000" />
 		<property name="createThreadCount" value="5" />
 		<property name="maxRetrytimes" value="3" />
 		<property name="killTimeoutSecond" value="60000" />
-		<property name="maxNoOfAlerts" value="20" />
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
-		<property name="getPremiumTableInterval" value="300000" />		
-		<property name="getPremiumFollowListURL" value="http://r.forexmastergaedev.appspot.com/rest/getPremiumFollowList" />
-		<property name="SetInBoxURL" value="http://forexmastergaedev.appspot.com/rest/setInBoxMsg" />
-	</bean>
+		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS"/>
+	</bean>	
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
 		<property name="endString" value="（更多精彩" />
 		<property name="CheckThreadStatusInterval" value="300000" />
 		<property name="SocialAPI" value="http://forexmastergaedev.appspot.com/rest/appSendPost"/>
 		<property name="PostAccount" value="fxmcn003"/>		
-	</bean>
-	
+	</bean>	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
-	</bean>
-	
+	</bean>	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
