@@ -14,13 +14,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.cyanspring.common.message.ErrorMessage;
+
 public class TimeDataConverter implements IDataConverter {
 
 	public Object fromString(String value) throws DataConvertException {
 		try {
 			return new SimpleDateFormat("HH:mm:ss").parse(value);
 		} catch (ParseException e) {
-			throw new DataConvertException("Date covert error: should be in format of 'HH:mm:ss'");
+			throw new DataConvertException("Date covert error: should be in format of 'HH:mm:ss'",ErrorMessage.DATA_CONVERT_UNKNOWN_DATE_FORMAT);
 		}
 	}
 

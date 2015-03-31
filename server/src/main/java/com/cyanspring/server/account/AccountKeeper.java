@@ -120,7 +120,7 @@ public class AccountKeeper {
 	
 	public void setupAccount(Account account) throws AccountException {
 		if(accounts.containsKey(account.getId()))
-			throw new AccountException("Account already exists: " + account.getId());
+			throw new AccountException("Account already exists: " + account.getId(),ErrorMessage.USER_ALREADY_EXIST);
 		if(null == account.getCurrency())
 			account.setCurrency(Default.getCurrency());
 		if(PriceUtils.isZero(account.getCash()))

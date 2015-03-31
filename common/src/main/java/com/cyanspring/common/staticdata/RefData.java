@@ -114,12 +114,16 @@ public class RefData extends DataObject {
 	
 	public double getMinimalCommissionFee(){
 		return this.get(double.class, RefDataField.MINIMAL_COMMISSION_FEE.value());
+	}	
+//	public int getMaximumLot(){
+//		return this.get(int.class, RefDataField.MAXIMUM_LOT.value());
+//	}
+	public int getLimitMaximumLot(){
+		return this.get(int.class, RefDataField.LIMIT_MAXIMUM_LOT.value());
 	}
-	
-	public int getMaximumLot(){
-		return this.get(int.class, RefDataField.MAXIMUM_LOT.value());
+	public int getMarketMaximumLot(){
+		return this.get(int.class, RefDataField.MARKET_MAXIMUM_LOT.value());
 	}
-	
 	public int getMaximumHold(){
 		return this.get(int.class, RefDataField.MAXIMUM_HOLD.value());
 	}
