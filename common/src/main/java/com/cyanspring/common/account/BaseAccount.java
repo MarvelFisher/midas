@@ -22,6 +22,7 @@ public abstract class BaseAccount implements Serializable {
 	private double margin;
 	private double cashAvailable;
 	private double marginHeld;
+	private double cashDeduct;
 
 	private Date created;
 	
@@ -187,9 +188,12 @@ public abstract class BaseAccount implements Serializable {
 	}
 
 	public double getCashDeduct() {
-		return this.cash - this.marginHeld;
+		return this.cashDeduct;
 	}
 
+	public void setCashDeduct(double cashDeduct) {
+		this.cashDeduct = cashDeduct;
+	}
 	// end of getters/setters
 	
 	public synchronized void addMargin(double value) {
