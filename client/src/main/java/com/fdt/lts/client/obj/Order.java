@@ -1,11 +1,6 @@
 package com.fdt.lts.client.obj;
 
-import java.util.concurrent.locks.ReentrantLock;
-
-
 public class Order {
-	// for thread safe
-	private final ReentrantLock lock = new ReentrantLock();
 
 	private String id;
 	private String symbol;
@@ -22,12 +17,7 @@ public class Order {
 	}
 
 	public void setStatus(String status) {
-		try {
-			lock.lock();
-			this.status = status;
-		} finally {
-			lock.unlock();
-		}
+		this.status = status;
 	}
 
 	public String getState() {
@@ -35,12 +25,7 @@ public class Order {
 	}
 
 	public void setState(String state) {
-		try {
-			lock.lock();
-			this.state = state;
-		} finally {
-			lock.unlock();
-		}
+		this.state = state;
 	}
 
 	public String getId() {
@@ -48,12 +33,7 @@ public class Order {
 	}
 
 	public void setId(String id) {
-		try {
-			lock.lock();
-			this.id = id;
-		} finally {
-			lock.unlock();
-		}
+		this.id = id;
 	}
 
 	public double getPrice() {
@@ -61,36 +41,19 @@ public class Order {
 	}
 
 	public void setPrice(double price) {
-		try {
-			lock.lock();
-			this.price = price;
-		} finally {
-			lock.unlock();
-		}
+		this.price = price;
 	}
 
 	public void setQuantity(long quantity) {
-		try {
-			lock.lock();
-			this.quantity = quantity;
-		} finally {
-			lock.unlock();
-		}
+		this.quantity = quantity;
 	}
 
 	public String getSymbol() {
-
 		return symbol;
-
 	}
 
 	public void setSymbol(String symbol) {
-		try {
-			lock.lock();
-			this.symbol = symbol;
-		} finally {
-			lock.unlock();
-		}
+		this.symbol = symbol;
 	}
 
 	public com.cyanspring.common.type.OrderSide getSide() {
@@ -98,12 +61,7 @@ public class Order {
 	}
 
 	public void setSide(OrderSide side) {
-		try {
-			lock.lock();
-			this.side = side;
-		} finally {
-			lock.unlock();
-		}
+		this.side = side;
 	}
 
 	public com.cyanspring.common.type.OrderType getType() {
@@ -111,12 +69,7 @@ public class Order {
 	}
 
 	public void setType(OrderType type) {
-		try {
-			lock.lock();
-			this.type = type;
-		} finally {
-			lock.unlock();
-		}
+		this.type = type;
 	}
 
 	public long getQuantity() {
@@ -124,12 +77,7 @@ public class Order {
 	}
 
 	public void setQuantity(int quantity) {
-		try {
-			lock.lock();
-			this.quantity = quantity;
-		} finally {
-			lock.unlock();
-		}
+		this.quantity = quantity;
 	}
 
 	public double getStopLossPrice() {
@@ -137,12 +85,6 @@ public class Order {
 	}
 
 	public void setStopLossPrice(double stopLossPrice) {
-		try {
-			lock.lock();
-			this.stopLossPrice = stopLossPrice;
-		} finally {
-			lock.unlock();
-		}
+		this.stopLossPrice = stopLossPrice;
 	}
 }
-
