@@ -10,7 +10,7 @@ public abstract class AbstractTickTable implements ITickTable {
 	public abstract double[][] getTickTable();
 	
 	private double roundPrice(double price) {
-		return ((int)((price + getDelta()) * getScale()))/(double)getScale();
+		return ((long)((price + getDelta()) * getScale()))/(double)getScale();
 	}
 	
 	@Override
@@ -33,10 +33,10 @@ public abstract class AbstractTickTable implements ITickTable {
 			//find the right range
 			if(PriceUtils.EqualGreaterThan(price, band[0]) && 
 					PriceUtils.LessThan(price, band[1])) {
-				int lprice = (int)(price * getScale());
-				int lbase = (int)(band[0] * getScale());
-				int ltick = (int)(band[2] * getScale());
-				int ticks = (lprice - lbase) / ltick;
+				long lprice = (long)(price * getScale());
+				long lbase = (long)(band[0] * getScale());
+				long ltick = (long)(band[2] * getScale());
+				long ticks = (lprice - lbase) / ltick;
 				rounded = ((double)(lbase + ticks * ltick))/getScale();
 				if(up && PriceUtils.GreaterThan(price, rounded))
 					rounded += band[2];
@@ -54,10 +54,10 @@ public abstract class AbstractTickTable implements ITickTable {
 			if(PriceUtils.EqualGreaterThan(price, band[1]))
 				continue;
 
-			int llow = (int)(price * getScale());
-			int lhigh = (int)(band[1] * getScale());
-			int ltick = (int)(band[2] * getScale());
-			int totalTicks = (lhigh - llow) / ltick;
+			long llow = (long)(price * getScale());
+			long lhigh = (long)(band[1] * getScale());
+			long ltick = (long)(band[2] * getScale());
+			long totalTicks = (lhigh - llow) / ltick;
 			if(totalTicks >= ticks) {
 				return roundPrice(price + ticks * band[2]);
 			} else {
@@ -76,10 +76,10 @@ public abstract class AbstractTickTable implements ITickTable {
 			if(PriceUtils.EqualLessThan(price, band[0]))
 				continue;
 
-			int llow = (int)(band[0] * getScale());
-			int lhigh = (int)(price * getScale());
-			int ltick = (int)(band[2] * getScale());
-			int totalTicks = (lhigh - llow) / ltick;
+			long llow = (long)(band[0] * getScale());
+			long lhigh = (long)(price * getScale());
+			long ltick = (long)(band[2] * getScale());
+			long totalTicks = (lhigh - llow) / ltick;
 			if(totalTicks >= ticks) {
 				return roundPrice(price - ticks * band[2]);
 			} else {
