@@ -7,7 +7,7 @@
 		<entry key="Wind Merchandise Server Port">10050</entry>  
 		<entry key="Wind Merchandise User Id">TD1001888002</entry>  
 		<entry key="Wind Merchandise User Pwd">35328058</entry>
-		<entry key="Wind Stock Server IP">114.80.154.34</entry>
+		<!-- entry key="Wind Stock Server IP">114.80.154.34</entry -->
 		<entry key="Wind Stock Server Port">10051</entry>  
 		<entry key="Wind Stock User Id">TD1001888001</entry>  
 		<entry key="Wind Stock User Pwd">62015725</entry> 
