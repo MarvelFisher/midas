@@ -489,6 +489,7 @@ public class PositionKeeper {
 
 	public void updateAccountDynamicData(Account account) {
 		double accountUrPnL = 0;
+		double leverageUrPnL = 0;
 		double marginValue = 0;
 		double marginHeld = 0;
 		if(null == quoteFeeder)
@@ -514,6 +515,9 @@ public class PositionKeeper {
 					continue;
 				}
 
+				RefData refData = refDataManager.getRefData(symbol);
+				double lev = leverageManager.getLeverage(refData, accountSetting);
+
 				Map<String, List<OpenPosition>> symbolPositions = accountPositions.get(account.getId());
 				if(null != symbolPositions) {
 					List<OpenPosition> list = symbolPositions.get(symbol);
@@ -527,14 +531,12 @@ public class PositionKeeper {
 						
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
+						leverageUrPnL += overallPosition.getAcPnL() * (1-1/lev);
 					}
 				}
 				
 				double value = getMarginValueByAccountAndSymbol(account, symbol, quote);
 				marginValue += value;
-				
-				RefData refData = refDataManager.getRefData(symbol);
-				double lev = leverageManager.getLeverage(refData, accountSetting);
 				marginHeld += value / lev;
 			}
 			account.setUrPnL(accountUrPnL);
@@ -543,7 +545,8 @@ public class PositionKeeper {
 			if(PriceUtils.GreaterThan(accountSetting.getMargin(), 0))
 				accountMargin = (account.getCash() +  account.getUrPnL()) * accountSetting.getMargin();
 			account.setMargin(accountMargin - marginValue);
-			account.setCashAvailable(account.getCash()  +  account.getUrPnL() - marginHeld);
+			account.setCashDeduct(account.getCash() - account.getMarginHeld() + leverageUrPnL);
+			account.setCashAvailable(account.getCash() - marginHeld + leverageUrPnL);
 		}
 	}
 	
@@ -613,7 +616,7 @@ public class PositionKeeper {
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
 		double commission = commissionManager.getCommission(refData, accountSetting, deltaValue);
-		deltaValue += commission ;
+		deltaValue += commission * leverage ;
 		
 		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {
 			return true;
