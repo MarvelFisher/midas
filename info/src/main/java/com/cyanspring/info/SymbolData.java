@@ -204,7 +204,14 @@ public class SymbolData implements Comparable<SymbolData>
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		Date currentDate = cal.getTime();
-		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		if (strType.equals("W"))
+		{
+			cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		}
+		else if (strType.equals("M"))
+		{
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+		}
 		Date keyDate = cal.getTime();
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String strTable = String.format("%s_%s", prefix, strType) ;
