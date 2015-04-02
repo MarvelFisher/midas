@@ -17,7 +17,7 @@ public class ForexTickTable extends AbstractTickTable{
 	private final static double maxPrice = 1000000000.0;
 	private final int scale = 10000000;
 	private final double delta = 0.0000001;
-	private final static double tickTable[][] = { 
+	private double tickTable[][] = { 
 		{0,		0.1,		0.0000001},
 		{0.1,			10,			0.00005},
 		{10,			20,			0.0001},
@@ -25,6 +25,7 @@ public class ForexTickTable extends AbstractTickTable{
 		{50,		Double.MAX_VALUE,		0.005}
 	};
 
+	
 	private double getTick(double price) {
 		
 		for (double[] arr : tickTable) {
@@ -69,4 +70,7 @@ public class ForexTickTable extends AbstractTickTable{
 		return tickTable;
 	}
 
+	public void setTickTable(double[][] tickTable) {
+		this.tickTable = tickTable;
+	}
 }
