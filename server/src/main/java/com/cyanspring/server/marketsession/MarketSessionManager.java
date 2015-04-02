@@ -10,13 +10,18 @@
  ******************************************************************************/
 package com.cyanspring.server.marketsession;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import com.cyanspring.common.event.marketsession.*;
+import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.TimeUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import quickfix.field.TradeDate;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
@@ -27,10 +32,6 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateEvent;
-import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionChecker;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -45,6 +46,11 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
+
+	@Autowired
+	private IRefDataManager refDataManager;
+
+	private Date chkDate;
 	
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	protected long timerInterval = 5*1000;
@@ -116,6 +122,19 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 				log.info("Send TradeDateEvent: " + tradeDate);
 				eventManager.sendEvent(tdEvent);
 				currentTradeDate = tradeDate;
+			}
+			if (chkDate == null || (!TimeUtil.sameDate(chkDate, date) && currentSessionType.equals(MarketSessionType.CLOSE))){
+				chkDate = date;
+				for(RefData refData : refDataManager.getRefDataList()){
+					if (refData.getSettlementDate() != null){
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+						Date settlementDate = sdf.parse(refData.getSettlementDate());
+						if (TimeUtil.sameDate(settlementDate, chkDate)){
+							SettlementDayEvent sdEvent = new SettlementDayEvent(null, null, refData);
+							eventManager.sendEvent(sdEvent);
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
