@@ -4,7 +4,7 @@ public class IFTickTable extends AbstractTickTable {
 	private final static double maxPrice = 1000000000.0;
 	private final int scale = 5;
 	private final double delta = 0.0000001;
-	private final static double tickTable[][] = {
+	private double tickTable[][] = {
 		{0,		Double.MAX_VALUE,		0.2}
 	};
 	
@@ -28,4 +28,7 @@ public class IFTickTable extends AbstractTickTable {
 		return tickTable;
 	}
 	
+	public void setTickTable(double[][] tickTable) {
+		this.tickTable = tickTable;
+	}
 }
