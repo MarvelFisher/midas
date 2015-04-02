@@ -178,6 +178,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.STOP_LOSS_PRICE_CANT_OVER_THAN_LIMIT_PRICE,getBean(454, "Stop loss price can not be more aggressive than limit price"));
 			addAndCheck(ErrorMessage.ORDER_NOT_IN_READY_STATUS,getBean(455, "order isn't in ready status"));
 			addAndCheck(ErrorMessage.ORDER_CANT_CONVERT_TO_FIX_TYPE,getBean(456, "Can't convert to FIX OrdType"));
+			addAndCheck(ErrorMessage.ORDER_OVER_CEIL_PRICE,getBean(457, "Order price over than ceil price"));
+			addAndCheck(ErrorMessage.ORDER_LOWER_FLOOR_PRICE,getBean(458, "Order price lower than floor price"));
+			addAndCheck(ErrorMessage.ORDER_CANT_FIND_QUOTEEXT_FILE,getBean(459, "Missing QuoteExt file"));
 
 			
 			
@@ -262,6 +265,19 @@ public class MessageLookup {
 				log.error(e.getMessage(),e);
 			}
 		return mb;
+		
+	}
+	public static String buildEventMessageWithCode(ErrorMessage m,String localMessage){
+		MessageBean mb = lookup(m);
+		if(null==mb){			
+			mb = lookup(ErrorMessage.NONE_MATCHED_MESSAGE);
+		}
+		if(null==localMessage){
+			localMessage = "";
+		}
+		String eventMsg = mb.getCode()+MSG_SEPARATOR+localMessage+MSG_SEPARATOR+localMessage;
+		log.info(eventMsg);
+		return eventMsg;
 		
 	}
 	public static String buildEventMessage(ErrorMessage m,String localMessage){
