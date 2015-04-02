@@ -30,7 +30,19 @@ public class MessageLookupTest {
 
 		
 	}
+	@Test
+	public void testBuildEventMessageWithCode() {
+		String msg = MessageLookup.buildEventMessageWithCode(ErrorMessage.ACCOUNT_NOT_EXIST, "account not exist");
+		assertNotNull(msg);
+		String msgs[] = msg.split("\\|"+"&"+"\\|");
+		assertEquals(3, msgs.length);
+		assertEquals("406", msgs[0]);
+		assertEquals("account not exist", msgs[1]);
+		assertEquals("account not exist", msgs[2] );
+		System.out.println("msg:"+msgs[2]+msg);
 
+		
+	}
 	@Test
 	public void testLookup() {
 		MessageBean bean = MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_EXIST);

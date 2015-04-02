@@ -702,9 +702,9 @@ public class PersistenceManager {
 				}
 				ok = false;
 				
-				message = String.format("can't create user, err=[ %s ]", e.getMessage());
+				//message = String.format("can't create user, err=[ %s ]", e.getMessage());
 				
-				message = MessageLookup.buildEventMessage(msg, message);
+				message = MessageLookup.buildEventMessageWithCode(msg, message);
 				
 				
 			    if (tx!=null) 
