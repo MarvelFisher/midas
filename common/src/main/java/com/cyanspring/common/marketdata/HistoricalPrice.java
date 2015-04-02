@@ -20,7 +20,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	double high ;
 	double low ;
 	double close ;
-	int    volume ;
+	long   volume ;
 	
 	public HistoricalPrice()
 	{
@@ -141,10 +141,10 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	public void setClose(double close) {
 		this.close = close;
 	}
-	public int getVolume() {
+	public long getVolume() {
 		return volume;
 	}
-	public void setVolume(int volume) {
+	public void setVolume(long volume) {
 		this.volume = volume;
 	}
 
