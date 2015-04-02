@@ -268,11 +268,11 @@ public class SymbolData implements Comparable<SymbolData>
 				{
 					lastPrice.setOpen(getdOpen());
 				}
-				lastPrice.setVolume((int)dCurVolume);
+				lastPrice.setVolume((long)dCurVolume);
 			}
 			else
 			{
-				lastPrice.setVolume(lastPrice.getVolume() + (int)dCurVolume);
+				lastPrice.setVolume(lastPrice.getVolume() + (long)dCurVolume);
 			}
 			if (PriceUtils.isZero(lastPrice.getHigh()) 
 					|| (lastPrice.getHigh() < getdCurHigh() && PriceUtils.isZero(getdCurHigh()) == false))
@@ -739,7 +739,7 @@ public class SymbolData implements Comparable<SymbolData>
 				strtmp = rs.getString("VOLUME") ;
 				if (strtmp != null && !strtmp.toLowerCase().equals("null"))
 				{
-					price.setVolume(Integer.parseInt(strtmp));
+					price.setVolume(Long.parseLong(strtmp));
 				}
 				listPrice.add(price) ;
 			}

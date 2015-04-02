@@ -266,7 +266,7 @@ public class DBHandler
 				price.setClose(rs.getDouble("CLOSE_PRICE"));
 				price.setHigh(rs.getDouble("HIGH_PRICE"));
 				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setVolume(rs.getInt("VOLUME"));
+				price.setVolume(rs.getLong("VOLUME"));
 				getPrice = true;
 			}
 			if (getPrice)

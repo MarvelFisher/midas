@@ -20,7 +20,7 @@ public class DefPriceSetter implements IPriceSetter
 		{
 			double lastVolume = quote.getTotalVolume() - LastVolume;
 			if (PriceUtils.GreaterThan(lastVolume, 0))
-				price.setVolume((int) (price.getVolume() + lastVolume));
+				price.setVolume((long) (price.getVolume() + lastVolume));
 		}
 		return pricechanged;
 	}
