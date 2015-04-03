@@ -794,8 +794,8 @@ public class AccountPositionManager implements IPlugin {
 			List<Account> accounts = accountKeeper.getRmJobs().getJobs();
 			for(Account account: accounts) {
 				positionKeeper.updateAccountDynamicData(account);
-				if(!checkMarginCall(account))
-					checkStopLoss(account);
+				if(!checkStopLoss(account))
+					checkMarginCall(account);
 			}
 			perfDataRm.end();
 		}
@@ -821,13 +821,13 @@ public class AccountPositionManager implements IPlugin {
 		return !quote.isStale();
 	}
 	
-	private void checkStopLoss(Account account) {
+	private boolean checkStopLoss(Account account) {
 		AccountSetting accountSetting = null;
 		try {
 			accountSetting = accountKeeper.getAccountSetting(account.getId());
 		} catch (AccountException e) {
 			log.error(e.getMessage(), e);
-			return;
+			return false;
 		}
 		
 		Double positionStopLoss = Default.getPositionStopLoss();
@@ -847,10 +847,10 @@ public class AccountPositionManager implements IPlugin {
 		}
 		
 		if(PriceUtils.isZero(positionStopLoss))
-			return;
+			return false;
 		
-		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
-		
+		boolean result = false;
+		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);	
 		for(OpenPosition position: positions) {
 			Quote quote = marketData.get(position.getSymbol());
 			if(PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) && 
@@ -859,7 +859,7 @@ public class AccountPositionManager implements IPlugin {
 						if(positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
 							log.debug("Position stop loss over threshold but account is locked: " + 
 								account.getId() + ", " + position.getSymbol());
-							return;
+							continue;
 						}
 				log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
 						position.getSymbol() + ", " + position.getAcPnL() + ", " + 
@@ -869,8 +869,10 @@ public class AccountPositionManager implements IPlugin {
 						IdGenerator.getInstance().getNextID());
 				
 				eventManager.sendEvent(event);
+				result = true;
 			}
 		}
+		return result;
 	}
 	
 	private boolean checkMarginCall(Account account) {
