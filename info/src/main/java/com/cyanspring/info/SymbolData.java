@@ -196,7 +196,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void insertSQLDate(String strType)
 	{
-    	if (market == null)
+    	if (market == null || PriceUtils.isZero(dOpen))
     	{
     		return;
     	}
