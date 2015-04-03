@@ -23,7 +23,7 @@
 				<ref bean="upStreamManager" />
 				<ref bean="accountPositionManager" />
 				<ref bean="apiBridgeManager" />
-				<!-- <ref bean="alertManager" /> -->
+				<ref bean="trailingStopManager" />
 				<ref bean="autoRunner" />
 			</list>
 		</property>
@@ -53,6 +53,9 @@
 	</bean>
 
 	<bean id="socketService" class="com.cyanspring.transport.socket.ServerSocketService">
+	</bean>
+	
+	<bean id="trailingStopManager" class="com.cyanspring.server.account.TrailingStopManager">
 	</bean>
 
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">

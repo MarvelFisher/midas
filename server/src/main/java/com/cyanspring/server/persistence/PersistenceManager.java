@@ -32,6 +32,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
+import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
@@ -969,6 +970,12 @@ public class PersistenceManager {
 			session.close();
 		}
 		
+		return result;
+	}
+	
+	public List<PositionPeakPrice> recoverPositionPeakPrices() {
+		List<PositionPeakPrice> result = new ArrayList<PositionPeakPrice>();
+		// TODO: load it from DB
 		return result;
 	}
 	

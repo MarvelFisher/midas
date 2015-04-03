@@ -324,7 +324,7 @@ public class AccountPositionManager implements IPlugin {
 		public void onOpenPositionUpdate(OpenPosition position) {
 			try {
 				positionUpdates.put(position.getId(), position);
-				eventManager.sendRemoteEvent(new OpenPositionUpdateEvent(position.getAccount(), null, position));
+				eventManager.sendGlobalEvent(new OpenPositionUpdateEvent(position.getAccount(), null, position));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}

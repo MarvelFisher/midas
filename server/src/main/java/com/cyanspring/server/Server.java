@@ -40,6 +40,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
+import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.OrderField;
@@ -62,6 +63,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountPositionManager;
+import com.cyanspring.server.account.TrailingStopManager;
 import com.cyanspring.server.persistence.PersistenceManager;
 
 public class Server implements ApplicationContextAware{
@@ -114,6 +116,9 @@ public class Server implements ApplicationContextAware{
 	
 	@Autowired(required=false)
 	PositionRecoveryProcessor positionRecoveryProcessor;
+	
+	@Autowired(required=false)
+	TrailingStopManager trailingStopManager;
 	
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -306,6 +311,10 @@ public class Server implements ApplicationContextAware{
 			log.info("Strategies recovered: " + list.size());
 		}
 		
+		if(null != trailingStopManager) {
+			List<PositionPeakPrice> list = persistenceManager.recoverPositionPeakPrices();
+			trailingStopManager.injectPositionPeakPrices(list);
+		}
 	}
 
 	private void registerShutdownTime() throws ParseException{

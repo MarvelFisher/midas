@@ -28,6 +28,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
@@ -411,7 +412,7 @@ public class PositionKeeper {
 				if(null != quoteFeeder) {
 					Quote quote = quoteFeeder.getQuote(symbol);
 					if(null != quote && null != pos) {
-						double price = getMarketablePrice(quote, pos.getQty());
+						double price = QuoteUtils.getMarketablePrice(quote, pos.getQty());
 						double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
 								(price-pos.getPrice()));
 						pos.setPnL(pnl);
@@ -527,7 +528,7 @@ public class PositionKeeper {
 					List<OpenPosition> list = symbolPositions.get(symbol);
 					if(null != list) {
 						for(OpenPosition position: list) {
-							double price = getMarketablePrice(quote, position.getQty());
+							double price = QuoteUtils.getMarketablePrice(quote, position.getQty());
 							double pnl = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
 									(price-position.getPrice()));
 							position.setPnL(pnl);
@@ -594,7 +595,7 @@ public class PositionKeeper {
 	
 	private double getMarginValueByAccountAndSymbol(Account account, String symbol, Quote quote) {
 		double marginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
-		double price = getMarketablePrice(quote, marginQty);
+		double price = QuoteUtils.getMarketablePrice(quote, marginQty);
 		return Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), quote.getSymbol(), 
 				marginQty, price));
 	}
@@ -610,7 +611,7 @@ public class PositionKeeper {
 			deltaQty = -deltaQty;
 		}
 
-		double price = getMarketablePrice(quote, deltaQty);
+		double price = QuoteUtils.getMarketablePrice(quote, deltaQty);
 		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter,
 				account.getCurrency(), quote.getSymbol(), 
 				deltaQty, price));
@@ -636,10 +637,6 @@ public class PositionKeeper {
 		if(null != exes)
 			list.addAll(exes);
 		return list;
-	}
-	
-	private double getMarketablePrice(Quote quote, double qty) {
-		return PriceUtils.GreaterThan(qty, 0)?quote.getBid():quote.getAsk();
 	}
 	
 	protected IQuoteFeeder getQuoteFeeder() {
