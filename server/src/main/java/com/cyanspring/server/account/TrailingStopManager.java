@@ -21,6 +21,8 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
+import com.cyanspring.common.event.account.PmPositionPeakPriceDeleteEvent;
+import com.cyanspring.common.event.account.PmPositionPeakPriceUpdateEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.fx.FxUtils;
@@ -29,6 +31,7 @@ import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
+import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.event.AsyncEventProcessor;
 
 public class TrailingStopManager implements IPlugin {
@@ -53,6 +56,9 @@ public class TrailingStopManager implements IPlugin {
 	
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Map<String, PositionPeakPrice>> prices = new HashMap<String, Map<String, PositionPeakPrice>>(); // symbol/account
+	private Map<String, PositionPeakPrice> pendingUpdate = new HashMap<String, PositionPeakPrice>();
+	private TimeThrottler throttler;
+	private long persistInterval = 5000;
 	private long timerInterval = 1000;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private int refPriceType = 0; // 0 marketable price; 1 last price; 2 mid price;
@@ -75,6 +81,7 @@ public class TrailingStopManager implements IPlugin {
 	@Override
 	public void init() throws Exception {
 		perfCounter = new PerfDurationCounter("trailing stop processing", perfUpdateInterval);
+		throttler = new TimeThrottler(persistInterval);
 		
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
@@ -92,7 +99,16 @@ public class TrailingStopManager implements IPlugin {
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		perfCounter.start();
 		workTrailingStop();
+		if(throttler.check()) {
+			persistPositionPeakPrices();
+		}
 		perfCounter.end();
+	}
+	
+	private void persistPositionPeakPrices() {
+		Map<String, PositionPeakPrice> sendingUpdate = pendingUpdate;
+		pendingUpdate = new HashMap<String, PositionPeakPrice>();
+		eventManager.sendEvent(new PmPositionPeakPriceUpdateEvent(sendingUpdate.values()));
 	}
 	
 	public void processOpenPositionUpdateEvent(OpenPositionUpdateEvent event) {
@@ -102,8 +118,11 @@ public class TrailingStopManager implements IPlugin {
 			if(null == accountMap) {
 				return;
 			}
-			accountMap.remove(position.getAccount());
-			log.debug("Reseting trailing stop record: " + position.getAccount() + position.getSymbol());
+			PositionPeakPrice ppp = accountMap.remove(position.getAccount());
+			if(null != ppp) {
+				eventManager.sendEvent(new PmPositionPeakPriceDeleteEvent(ppp));
+				log.debug("Reseting trailing stop record: " + position.getAccount() + position.getSymbol());
+			}
 		}
 	}
 	
@@ -199,6 +218,7 @@ public class TrailingStopManager implements IPlugin {
 			if(PriceUtils.GreaterThan(ppp.getPosition(), 0) && PriceUtils.GreaterThan(refPrice, ppp.getPrice()) ||
 			   PriceUtils.LessThan(ppp.getPosition(), 0) && PriceUtils.LessThan(refPrice, ppp.getPrice())) {
 				ppp.setPrice(refPrice);
+				pendingUpdate.put(ppp.getAccount() + "-" + ppp.getSymbol(), ppp);
 				log.debug("PositionPeakPrice updated: " + ppp.getAccount() + ", " + ppp.getSymbol() + ", " + refPrice + "," + accountMap.size());
 			}
 		}
@@ -240,6 +260,13 @@ public class TrailingStopManager implements IPlugin {
 	public void setPerfUpdateInterval(long perfUpdateInterval) {
 		this.perfUpdateInterval = perfUpdateInterval;
 	}
-	
+
+	public long getPersistInterval() {
+		return persistInterval;
+	}
+
+	public void setPersistInterval(long persistInterval) {
+		this.persistInterval = persistInterval;
+	}
 	
 }

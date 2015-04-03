@@ -58,6 +58,8 @@ import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
+import com.cyanspring.common.event.account.PmPositionPeakPriceDeleteEvent;
+import com.cyanspring.common.event.account.PmPositionPeakPriceUpdateEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
@@ -138,6 +140,8 @@ public class PersistenceManager {
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
+			subscribeToEvent(PmPositionPeakPriceUpdateEvent.class, null);
+			subscribeToEvent(PmPositionPeakPriceDeleteEvent.class, null);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -973,6 +977,15 @@ public class PersistenceManager {
 		return result;
 	}
 	
+	public void processPmPositionPeakPriceDeleteEvent(PmPositionPeakPriceDeleteEvent event) {
+		//TODO: delete PositionPeakPrice
+	}
+	
+	public void processPmPositionPeakPriceUpdate(PmPositionPeakPriceUpdateEvent event) {
+		for(PositionPeakPrice ppp: event.getUpdates()) {
+			//TODO: persist it
+		}
+	}
 	public List<PositionPeakPrice> recoverPositionPeakPrices() {
 		List<PositionPeakPrice> result = new ArrayList<PositionPeakPrice>();
 		// TODO: load it from DB
