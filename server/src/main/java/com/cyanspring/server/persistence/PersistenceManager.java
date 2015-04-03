@@ -981,7 +981,7 @@ public class PersistenceManager {
 		//TODO: delete PositionPeakPrice
 	}
 	
-	public void processPmPositionPeakPriceUpdate(PmPositionPeakPriceUpdateEvent event) {
+	public void processPmPositionPeakPriceUpdateEvent(PmPositionPeakPriceUpdateEvent event) {
 		for(PositionPeakPrice ppp: event.getUpdates()) {
 			//TODO: persist it
 		}
