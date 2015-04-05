@@ -325,7 +325,7 @@
 
 	<bean id="businessManager" class="com.cyanspring.server.BusinessManager">
 		<property name="noOfContainers">
-			<value>10</value>
+			<value>20</value>
 		</property>
 		<property name="autoStartStrategy">
 			<value>true</value>

@@ -83,8 +83,12 @@ import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.event.order.EnterParentOrderEvent;
+import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
+import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
@@ -101,6 +105,7 @@ import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.event.AsyncEventMultiProcessor;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.persistence.PersistenceManager;
 
@@ -175,11 +180,9 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(UserLoginEvent.class, null);
 			subscribeToEvent(CreateUserEvent.class, null);
 			subscribeToEvent(CreateAccountEvent.class, null);
-			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(AccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(MarketDataReadyEvent.class, null);
-			subscribeToEvent(UpdateParentOrderEvent.class, null);
 			subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
 			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
@@ -195,6 +198,21 @@ public class AccountPositionManager implements IPlugin {
 		
 	};
 	
+	private AsyncEventMultiProcessor eventMultiProcessor = new AsyncEventMultiProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(UpdateParentOrderEvent.class, null);
+			subscribeToEvent(UpdateChildOrderEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+		
+	};
+
 	private AsyncEventProcessor timerProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -263,12 +281,17 @@ public class AccountPositionManager implements IPlugin {
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("UserAccountManager");
+			eventProcessor.getThread().setName("AccountPositionManager");
 		
+		eventMultiProcessor.setHandler(this);
+		eventMultiProcessor.setHash(true);
+		eventMultiProcessor.init();
+		eventMultiProcessor.setName("AccountPositionTP");
+
 		timerProcessor.setHandler(this);
 		timerProcessor.init();
 		if(timerProcessor.getThread() != null)
-			timerProcessor.getThread().setName("UserAccountManager-Timer");
+			timerProcessor.getThread().setName("AccountPositionManager-Timer");
 
 		if(tradeDate == null){
 			try{

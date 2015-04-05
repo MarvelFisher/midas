@@ -50,7 +50,7 @@ public class PerfTest extends ClientAdaptor {
 		"GBPJPY",
 	};
 	private PerfRecord tranPerf = new PerfRecord();
-	private int baseInterval = 20;
+	private int baseInterval = 10;
 	private List<ParentOrder> openPositionOrders = new LinkedList<ParentOrder>();
 	private boolean ready = false;
 	private int count;
@@ -106,7 +106,7 @@ public class PerfTest extends ClientAdaptor {
 			count++;
 			doJob();
 		}
-		if(count > 2000) {
+		if(count > 10000) {
 			log.info("############ THE END #############");
 			System.exit(0);
 		}
