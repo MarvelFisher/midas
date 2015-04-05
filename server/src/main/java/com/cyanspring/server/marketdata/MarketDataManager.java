@@ -209,7 +209,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 	public void processMarketSessionEvent(MarketSessionEvent event)
 			throws Exception {
-		quoteChecker.setSession(event.getSession());
+		if(null != quoteChecker)
+			quoteChecker.setSession(event.getSession());
 		chkTime = sessionMonitor.get(event.getSession());
 		log.info("Get MarketSessionEvent: " + event.getSession()
 				+ ", map size: " + sessionMonitor.size() + ", checkTime: "

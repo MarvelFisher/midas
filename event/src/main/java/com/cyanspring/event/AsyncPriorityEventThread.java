@@ -191,4 +191,8 @@ public abstract class AsyncPriorityEventThread {
 		return thread.isAlive();
 	}
 	
+	public int getQueueCount() {
+		return highEvents.size() + normalEvents.size();
+	}
+	
 }

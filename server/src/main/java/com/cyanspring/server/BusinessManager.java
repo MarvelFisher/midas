@@ -60,6 +60,7 @@ import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
+import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
@@ -85,6 +86,7 @@ import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.validation.OrderValidationException;
+import com.cyanspring.event.AsyncEventMultiProcessor;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
@@ -160,17 +162,13 @@ public class BusinessManager implements ApplicationContextAware {
 	public BusinessManager() {
 	}
 	
-	AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(InitClientRequestEvent.class, null);
-			subscribeToEvent(EnterParentOrderEvent.class, null);
 			subscribeToEvent(AmendParentOrderEvent.class, null);
 			subscribeToEvent(CancelParentOrderEvent.class, null);
-			subscribeToEvent(NewSingleInstrumentStrategyEvent.class, null);
-			subscribeToEvent(NewMultiInstrumentStrategyEvent.class, null);
-			subscribeToEvent(ClosePositionRequestEvent.class, null);
 			subscribeToEvent(ResetAccountRequestEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 		}
@@ -182,6 +180,23 @@ public class BusinessManager implements ApplicationContextAware {
 		
 	};
 	
+	private AsyncEventMultiProcessor eventMultiProcessor = new AsyncEventMultiProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(EnterParentOrderEvent.class, null);
+			subscribeToEvent(NewSingleInstrumentStrategyEvent.class, null);
+			subscribeToEvent(NewMultiInstrumentStrategyEvent.class, null);
+			subscribeToEvent(ClosePositionRequestEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+		
+	};
+
 	public void processEnterParentOrderEvent(EnterParentOrderEvent event) throws Exception {
 		Map<String, Object> fields = event.getFields();
 		log.info("Received EnterParentOrderEvent: " + fields);
@@ -864,6 +879,10 @@ public class BusinessManager implements ApplicationContextAware {
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("BusinessManager");
 		
+		eventMultiProcessor.setHandler(this);
+		eventMultiProcessor.init();
+		eventMultiProcessor.setName("BusinessTP");
+
 		scheduleManager.scheduleRepeatTimerEvent(closePositionCheckInterval, eventProcessor, closePositionCheckEvent);
 	}
 

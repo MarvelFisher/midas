@@ -22,7 +22,7 @@ public abstract class AsyncEventProcessor implements IAsyncEventListener {
 	private Object handler;
 	private Exception lastException;
 	private List<AsyncEventSub> subs = new ArrayList<AsyncEventSub>();
-	private boolean sync;
+	protected boolean sync;
 	private Map<Class<? extends AsyncEvent>, Method> methodMap = new HashMap<Class<? extends AsyncEvent>, Method>();
 	private AsyncPriorityEventThread thread;
 	
@@ -66,7 +66,10 @@ public abstract class AsyncEventProcessor implements IAsyncEventListener {
 			createThread();
 		
 		subscribeToEvents();
-
+		doSubscription();
+	}
+	
+	protected void doSubscription() throws Exception {
 		if(null == subs || subs.size() == 0) {
 			log.warn("Event subscription list is null or empty, nothing to work on");
 			return;
@@ -89,6 +92,7 @@ public abstract class AsyncEventProcessor implements IAsyncEventListener {
 			}
 			eventManager.subscribe(sub.getEventClass(), sub.getKey(), this);
 		}
+		
 	}
 	
 	public void uninit() {
@@ -104,7 +108,7 @@ public abstract class AsyncEventProcessor implements IAsyncEventListener {
 		}
 	}
 	
-	private void onAsyncEvent(AsyncEvent event) {
+	protected void onAsyncEvent(AsyncEvent event) {
 		try {
 			Method method = methodMap.get(event.getClass());
 			if(method == null) { 
@@ -150,7 +154,7 @@ public abstract class AsyncEventProcessor implements IAsyncEventListener {
 		return sync;
 	}
 	
-	private void createThread() {
+	protected void createThread() {
 		thread = new AsyncPriorityEventThread() {
 
 			@Override

@@ -10,7 +10,7 @@
 	<context:annotation-config />
 
 	<bean id="perfTest" class="com.cyanspring.soak.PerfTest">
-		<property name="baseInterval" value="20"></property>
+		<!--  <property name="baseInterval" value="20"></property>-->
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
