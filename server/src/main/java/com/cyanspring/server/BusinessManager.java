@@ -184,6 +184,7 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	public void processEnterParentOrderEvent(EnterParentOrderEvent event) throws Exception {
 		Map<String, Object> fields = event.getFields();
+		log.info("Received EnterParentOrderEvent: " + fields);
 
 		boolean failed = false;
 		String message = "";

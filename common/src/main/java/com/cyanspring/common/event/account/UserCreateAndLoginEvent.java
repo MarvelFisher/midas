@@ -1,6 +1,7 @@
 package com.cyanspring.common.event.account;
 
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.event.EventPriority;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 //Third-Party Authentication
@@ -18,6 +19,7 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 		this.language = language;
 		this.txId = txId;
 		this.original_id = org_id;
+		setPriority(EventPriority.HIGH);
 	}
 	
 	public String getOriginalID()
