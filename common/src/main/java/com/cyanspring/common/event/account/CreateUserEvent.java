@@ -1,6 +1,7 @@
 package com.cyanspring.common.event.account;
 
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.event.EventPriority;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class CreateUserEvent extends RemoteAsyncEvent {
@@ -15,6 +16,7 @@ public class CreateUserEvent extends RemoteAsyncEvent {
 		this.country = country;
 		this.language = language;
 		this.txId = txId;
+		setPriority(EventPriority.HIGH);
 	}
 
 	public User getUser() {

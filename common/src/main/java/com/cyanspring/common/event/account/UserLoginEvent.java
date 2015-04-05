@@ -1,5 +1,6 @@
 package com.cyanspring.common.event.account;
 
+import com.cyanspring.common.event.EventPriority;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public final class UserLoginEvent extends RemoteAsyncEvent {
@@ -13,6 +14,7 @@ public final class UserLoginEvent extends RemoteAsyncEvent {
 		this.userId = userId;
 		this.password = password;
 		this.txId = txId;
+		setPriority(EventPriority.HIGH);
 	}
 
 	public String getUserId() {

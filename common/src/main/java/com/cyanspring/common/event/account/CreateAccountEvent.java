@@ -1,6 +1,7 @@
 package com.cyanspring.common.event.account;
 
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.event.EventPriority;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class CreateAccountEvent extends RemoteAsyncEvent {
@@ -12,6 +13,7 @@ public class CreateAccountEvent extends RemoteAsyncEvent {
 		super(key, receiver);
 		this.account = account;
 		this.txId = txId;
+		setPriority(EventPriority.HIGH);
 	}
 	public Account getAccount() {
 		return account;

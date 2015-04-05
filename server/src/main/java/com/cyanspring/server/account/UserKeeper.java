@@ -11,7 +11,7 @@ import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.message.ErrorMessage;
 
 public class UserKeeper {
-	private Map<String, User> users = new ConcurrentHashMap<String, User>();
+	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();
 
 	public void createUser(User user) throws UserException {
 		String lowCases = user.getId().toLowerCase();
@@ -44,12 +44,12 @@ public class UserKeeper {
 		return true;
 	}
 	
-	public synchronized User tryCreateDefaultUser() {
+	public User tryCreateDefaultUser() {
 		if(!userExists(Default.getUser())) {
 			User user = new User(Default.getUser(), "guess?");
 			user.setDefaultAccount(Default.getAccount());
 			user.setUserType(UserType.SUPPORT);
-			this.users.put(user.getId(), user);
+			this.users.putIfAbsent(user.getId(), user);
 			return user;
 		}
 		return null;

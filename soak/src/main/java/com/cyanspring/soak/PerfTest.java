@@ -106,7 +106,7 @@ public class PerfTest extends ClientAdaptor {
 			count++;
 			doJob();
 		}
-		if(count > 10000) {
+		if(count > 2000) {
 			log.info("############ THE END #############");
 			System.exit(0);
 		}
