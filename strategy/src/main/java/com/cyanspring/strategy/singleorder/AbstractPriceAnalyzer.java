@@ -60,7 +60,8 @@ public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
 			}
 
 			// round to ticks
-			pa.setPrice(tickTable.getRoundedPrice(pa.getPrice(), order.getSide().isSell()));
+			if(strategy.isRoundPrice())
+				pa.setPrice(tickTable.getRoundedPrice(pa.getPrice(), order.getSide().isSell()));
 		}
 		
 		// there are chances that more than one entries have the same price after adjusted so

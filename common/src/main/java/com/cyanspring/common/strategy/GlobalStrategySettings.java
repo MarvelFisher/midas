@@ -6,6 +6,7 @@ import com.cyanspring.common.business.FieldDef;
 public class GlobalStrategySettings {
 	private boolean checkAdjQuote = true;
 	private boolean validateQuote = false;
+	private boolean roundPrice = false;
 	private List<String> singleOrderCommonDisplayFields;
 	private List<FieldDef> singleOrderCommonFieldDefs;
 	private List<String> singleInstrumentCommonDisplayFields;
@@ -101,6 +102,14 @@ public class GlobalStrategySettings {
 	public void setSingleInstrumentCommonFieldDefs(
 			List<FieldDef> singleInstrumentCommonFieldDefs) {
 		this.singleInstrumentCommonFieldDefs = singleInstrumentCommonFieldDefs;
+	}
+
+	public boolean isRoundPrice() {
+		return roundPrice;
+	}
+
+	public void setRoundPrice(boolean roundPrice) {
+		this.roundPrice = roundPrice;
 	}
 	
 }
