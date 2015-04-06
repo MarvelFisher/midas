@@ -131,6 +131,7 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 		
 		strategy.setCheckAdjQuote(globalStrategySettings.isCheckAdjQuote());
 		strategy.setValidateQuote(globalStrategySettings.isValidateQuote());
+		strategy.setRoundPrice(globalStrategySettings.isRoundPrice());
 		return strategy;
 	}
 

@@ -309,6 +309,18 @@ public class DefaultExecutionAnalyzerTest {
 			
 		}
 
+		@Override
+		public boolean isRoundPrice() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void setRoundPrice(boolean roundPrice) {
+			// TODO Auto-generated method stub
+			
+		}
+
 
 	}
 	

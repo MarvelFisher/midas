@@ -71,6 +71,8 @@ public interface IStrategy extends Serializable{
 	public void setSender(IDownStreamSender sender);
 	public boolean isValidateQuote();
 	public void setValidateQuote(boolean validateQuote);
+	public boolean isRoundPrice();
+	public void setRoundPrice(boolean roundPrice);
 	public String getAccount();
 	public DataObject getDataObject();
 }

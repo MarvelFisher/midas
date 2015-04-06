@@ -93,6 +93,7 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	private boolean checkAdjQuote;
 	private boolean validateQuote;
 	protected boolean quoteRequired = true;
+	private boolean roundPrice;
 	protected boolean timerEventRequired = true;
 
 	private List<FieldDef> strategyFieldDefs;
@@ -698,6 +699,14 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	@Override
 	public void setValidateQuote(boolean validateQuote) {
 		this.validateQuote = validateQuote;
+	}
+
+	public boolean isRoundPrice() {
+		return roundPrice;
+	}
+
+	public void setRoundPrice(boolean roundPrice) {
+		this.roundPrice = roundPrice;
 	}
 
 	public Map<Class<? extends AsyncEvent>, ExecuteTiming> getEventExecuteTiming() {
