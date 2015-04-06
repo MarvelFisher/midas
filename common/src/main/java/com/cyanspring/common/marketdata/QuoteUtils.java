@@ -26,4 +26,12 @@ public class QuoteUtils {
 		
 		return getMidPrice(quote);
 	}
+	
+	public static boolean validQuote(Quote quote) {
+		if(PriceUtils.EqualLessThan(quote.getBid(), 0.0) && PriceUtils.EqualLessThan(quote.getAsk(), 0.0))
+			return false;
+		
+		return true;
+	}
+
 }

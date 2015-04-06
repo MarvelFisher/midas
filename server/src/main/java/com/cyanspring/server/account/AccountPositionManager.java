@@ -29,6 +29,7 @@ import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
+import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
@@ -79,6 +80,7 @@ import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
+import com.cyanspring.common.event.marketsession.SettlementDayEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
@@ -93,6 +95,7 @@ import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
@@ -100,6 +103,7 @@ import com.cyanspring.common.staticdata.FuRefDataManager;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
+import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
@@ -189,6 +193,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(OnUserCreatedEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);		
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
+			subscribeToEvent(SettlementDayEvent.class, null);
 		}
 
 		@Override
@@ -1035,6 +1040,35 @@ public class AccountPositionManager implements IPlugin {
 	public void endAcountPositionRecovery() {
 		recoveryDone = true;
 		log.info("Account position recovery done");
+	}
+	
+	public void processSettlementDayEvent(SettlementDayEvent event) {
+		String symbol  = event.getRefData().getSymbol();
+		log.info("Received SettlementEvent: " + symbol);
+		Quote quote = marketData.get(symbol);
+		if(null == quote && QuoteUtils.validQuote(quote)) {
+			log.error("processSettlementDayEvent quote is null or invalid: " + symbol + ", " + quote);
+			return;
+		}
+		List<Account> accounts = accountKeeper.getAllAccounts();
+		for(Account account: accounts) {
+			OpenPosition position = positionKeeper.getOverallPosition(account, symbol);
+			if(!PriceUtils.isZero(position.getQty())) {
+				Execution exec = new Execution(symbol, position.getQty()>0?OrderSide.Sell:OrderSide.Buy,
+						Math.abs(position.getQty()),
+						QuoteUtils.getMarketablePrice(quote, position.getQty()),
+						"", "", 
+						"", "Settlement",
+						position.getUser(), position.getAccount(), "Settlement");
+				exec.put(OrderField.ID.value(), IdGenerator.getInstance().getNextID() + "STLM");
+				try {
+					log.debug("Settling position: " + position + "  with " + quote);
+					positionKeeper.processExecution(exec, account);
+				} catch (PositionException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
 	}
 
 	// getters and setters
