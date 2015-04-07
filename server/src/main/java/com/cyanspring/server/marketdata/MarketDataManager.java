@@ -768,7 +768,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	@Override
 	public void onQuote(Quote quote, int sourceId) {
 		if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
-			log.error("Quotes receive time large than excepted.");
+			log.warn("Quotes receive time large than excepted.");
 		}
 
 		chkDate = Clock.getInstance().now();
