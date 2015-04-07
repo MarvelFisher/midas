@@ -9,6 +9,7 @@
 
 	<context:annotation-config />
 	<import resource="info_sc/*"/>
+	<import resource="common/ticktable_sc.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />		

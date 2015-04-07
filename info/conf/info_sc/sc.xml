@@ -79,18 +79,4 @@
 		</property>
 	</bean>
 	
-	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
-	</bean>
-	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
-	</bean>
-	
-	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
-		<property name="tickTables">
-			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
-				<entry key="DEFAULT" value-ref="hkexTickTable" />
-				<entry key="IF" value-ref="ifTickTable" />
-			</map>
-		</property>
-	</bean>
-	
 </beans>
