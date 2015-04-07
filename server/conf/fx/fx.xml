@@ -293,11 +293,7 @@
 	<bean id="eurrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>0.1</value><value>0.0000001</value></array>
-				<array><value>0.1</value><value>10</value><value>0.00005</value></array>
-				<array><value>10</value><value>20</value><value>0.0001</value></array>
-				<array><value>20</value><value>50</value><value>0.0005</value></array>
-				<array><value>50</value><value>1000000</value><value>0.5</value></array>
+				<array><value>0</value><value>1000000</value><value>0.0001</value></array>
 			</array>
 		</property>
 	</bean>
@@ -305,11 +301,7 @@
 	<bean id="usdrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>0.1</value><value>0.0000001</value></array>
-				<array><value>0.1</value><value>10</value><value>0.00005</value></array>
-				<array><value>10</value><value>20</value><value>0.0001</value></array>
-				<array><value>20</value><value>50</value><value>0.0005</value></array>
-				<array><value>50</value><value>1000000</value><value>0.5</value></array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
 			</array>
 		</property>
 	</bean>
@@ -319,6 +311,8 @@
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
+				<entry key="EURRUB" value-ref="eurrubForexTickTable" />
+				<entry key="USDRUB" value-ref="usdrubForexTickTable" />
 			</map>
 		</property>
 	</bean>
