@@ -3108,7 +3108,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>EURRUB</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -5661,7 +5661,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>USDRUB</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
