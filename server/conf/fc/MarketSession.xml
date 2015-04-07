@@ -13,6 +13,7 @@
 	    <property name="sessionChecker"> 
         	<ref bean="sessionChecker"/>
         </property>
+        <property name="settlementDelay"><value>10</value></property>
 	</bean>
 	
 	<bean id="sessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">

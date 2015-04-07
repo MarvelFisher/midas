@@ -80,7 +80,7 @@ import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
-import com.cyanspring.common.event.marketsession.SettlementDayEvent;
+import com.cyanspring.common.event.marketsession.SettlementEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
@@ -193,7 +193,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(OnUserCreatedEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);		
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
-			subscribeToEvent(SettlementDayEvent.class, null);
+			subscribeToEvent(SettlementEvent.class, null);
 		}
 
 		@Override
@@ -1042,8 +1042,8 @@ public class AccountPositionManager implements IPlugin {
 		log.info("Account position recovery done");
 	}
 	
-	public void processSettlementDayEvent(SettlementDayEvent event) {
-		String symbol  = event.getRefData().getSymbol();
+	public void processSettlementEvent(SettlementEvent event) {
+		String symbol  = event.getSymbol();
 		log.info("Received SettlementEvent: " + symbol);
 		Quote quote = marketData.get(symbol);
 		if(null == quote && QuoteUtils.validQuote(quote)) {
