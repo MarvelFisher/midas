@@ -671,7 +671,7 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			strKeyTime = sdf.format(price.getKeytime()) ;
 			sqlcmd = String.format(insertPrice, 
-					strTable, strKeyTime, strKeyTime, sdf.format(price.getDatatime()), 
+					strTable, price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 					getStrSymbol(), price.getOpen(), price.getClose(), 
 					price.getHigh(), price.getLow(), price.getVolume(), 
 					strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
@@ -680,7 +680,7 @@ public class SymbolData implements Comparable<SymbolData>
 			if (strSymbol.equals(getStrSymbol()) == false)
 			{
 				sqlcmd = String.format(insertPrice, 
-						strTable, strKeyTime, strKeyTime, sdf.format(price.getDatatime()), 
+						strTable, price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 						strSymbol, price.getOpen(), price.getClose(), 
 						price.getHigh(), price.getLow(), price.getVolume(), 
 						strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
