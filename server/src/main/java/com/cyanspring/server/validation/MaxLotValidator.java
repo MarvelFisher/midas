@@ -17,8 +17,6 @@ import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class MaxLotValidator implements IOrderValidator {
-	private static final Logger log = LoggerFactory
-			.getLogger(MaxLotValidator.class);
 	
 	@Autowired
 	IRefDataManager refDataManager;	
@@ -28,44 +26,30 @@ public class MaxLotValidator implements IOrderValidator {
 			throws OrderValidationException {
 		try{
 			double qty = (Double)map.get(OrderField.QUANTITY.value());
+			OrderType type = (OrderType)map.get(OrderField.TYPE.value());
+
 			String symbol;
 			if(order == null)
 				symbol = (String)map.get(OrderField.SYMBOL.value());		
 			else
 				symbol = order.getSymbol();
-			
-			OrderType type = (OrderType)map.get(OrderField.TYPE.value());
-//			log.info("qty:"+qty+" symbol:"+symbol+" order type:"+type);
-			
 			RefData refData = refDataManager.getRefData(symbol);
-//			List <RefData> datas = refDataManager.getRefDataList();
-//			for(RefData d: datas){
-//				log.info("ref data symbol:"+d.getSymbol());
-//			}
+			
 			if(OrderType.Limit.equals(type)){
-				//log.info(" enter limit:"+refData.getLimitMaximumLot());
+				
 				if(refData.getLimitMaximumLot() == 0)
-					return;
+					return;				
 				
 				if(qty > refData.getLimitMaximumLot())
-					throw new OrderValidationException("The order quantity is over maximun lot",ErrorMessage.ORDER_QTY_OVER_MAX_LOT);
-			
-				
+					throw new OrderValidationException("The order quantity is over maximun lot",ErrorMessage.ORDER_QTY_OVER_MAX_LOT);			
 			}else{
-//				log.info(" enter market:"+refData.getMarketMaximumLot());
-
+				
 				if(refData.getMarketMaximumLot() == 0)
-					return;
+					return;		
 				
 				if(qty > refData.getMarketMaximumLot())
-					throw new OrderValidationException("The order quantity is over maximun lot",ErrorMessage.ORDER_QTY_OVER_MAX_LOT);
-			
-			}
-			
-			
-			
-	
-			
+					throw new OrderValidationException("The order quantity is over maximun lot",ErrorMessage.ORDER_QTY_OVER_MAX_LOT);			
+			}			
 		}catch(OrderValidationException e){
 			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
 
@@ -73,13 +57,7 @@ public class MaxLotValidator implements IOrderValidator {
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 
 		}
-		
-		
-		
 
-		
-		
-		
 	}
 
 }
