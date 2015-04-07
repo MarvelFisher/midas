@@ -11,17 +11,21 @@
 
 	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
 	    <constructor-arg>
-	        <list>
-	        	<ref bean="marketSessionValidator"/>
+	        <list>	        
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
 				<ref bean="creditValidator"/>
 				<ref bean="orderCountValidator"/>
-				<ref bean="maxLotValidator"/>
+				<ref bean="maxLotValidator"/>			
+				<ref bean="ceilFloorValidator"/>
 	        </list>
 	    </constructor-arg>
 	</bean>	
-	
+    <bean id="ceilFloorValidator" class="com.cyanspring.server.validation.CeilFloorValidator">  
+    	<property name="quoteExtendFile">
+			<value>ticks/lastExtend.xml</value>
+		</property>   
+	</bean>
 	<!-- field specific validation -->
 	<bean id="orderFieldValidator" class="com.cyanspring.server.validation.OrderFieldValidator">       
 	    <property name="fieldValidators">
