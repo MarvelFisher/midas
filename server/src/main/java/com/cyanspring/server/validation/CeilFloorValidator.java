@@ -105,6 +105,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		}catch(OrderValidationException e){	
 			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
 		}catch(Exception e){
+			log.error(e.getMessage(),e);
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 			
@@ -140,8 +141,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			}
 
 		}catch(Exception e){
-			log.warn(e.getMessage());
-			e.printStackTrace();
+			log.warn(e.getMessage(),e);
 		}
 		
 	}
@@ -183,8 +183,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			}
 				
 		}catch(Exception e){
-			e.printStackTrace();
-			log.warn("validation : read QuoteExtend file fail:"+e.getMessage());		
+			log.warn("validation : read QuoteExtend file fail:"+e.getMessage(),e);		
 		}
 		return isMapCreated;
 	
