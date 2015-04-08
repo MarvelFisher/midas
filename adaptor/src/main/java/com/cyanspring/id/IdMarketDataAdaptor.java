@@ -52,6 +52,15 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 	static RequestThread thread = null;
 	
 	public static IdMarketDataAdaptor instance = null;
+	public int sendHeartBeat = 0;
+
+	public int getSendHeartBeat() {
+		return sendHeartBeat;
+	}
+
+	public void setSendHeartBeat(int sendHeartBeat) {
+		this.sendHeartBeat = sendHeartBeat;
+	}
 
 	Date time = new Date(0);
 	String account = "";
@@ -300,7 +309,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 						public void initChannel(SocketChannel ch)
 								throws Exception {
 							ChannelPipeline p = ch.pipeline();
-							 p.addLast("idleStateHandler", new IdleStateHandler(20, 0, 0));
+							 p.addLast("idleStateHandler", new IdleStateHandler(20, instance.getSendHeartBeat(), 0));
 							p.addLast(new ClientHandler());
 						}
 					});
