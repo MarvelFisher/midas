@@ -11,6 +11,7 @@
 package com.cyanspring.server.marketsession;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	private IRefDataManager refDataManager;
 
 	private Date chkDate;
+	private int settlementDelay = 10;
 	
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	protected long timerInterval = 5*1000;
@@ -102,6 +104,11 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 			log.error(e.getMessage(), e);
 		}
 	}
+
+	public void processPmSettlementEvent(PmSettlementEvent event){
+		log.info("Receive PmSettlementEvent, symbol: " + event.getEvent().getSymbol());
+		eventManager.sendEvent(event.getEvent());
+	}
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		Date date = Clock.getInstance().now();
@@ -123,19 +130,26 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 				eventManager.sendEvent(tdEvent);
 				currentTradeDate = tradeDate;
 			}
-			if (chkDate == null || (!TimeUtil.sameDate(chkDate, date) && currentSessionType.equals(MarketSessionType.CLOSE))){
-				chkDate = date;
-				for(RefData refData : refDataManager.getRefDataList()){
-					if (refData.getSettlementDate() != null){
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-						Date settlementDate = sdf.parse(refData.getSettlementDate());
-						if (TimeUtil.sameDate(settlementDate, chkDate)){
-							SettlementDayEvent sdEvent = new SettlementDayEvent(null, null, refData);
-							eventManager.sendEvent(sdEvent);
-						}
+			
+			if(refDataManager.getRefDataList().size() <= 0)
+				return;
+			if(TimeUtil.sameDate(chkDate, date) && currentSessionType.equals(MarketSessionType.CLOSE))
+				return;
+			chkDate = date;
+			for(RefData refData : refDataManager.getRefDataList()){
+				if (refData.getSettlementDate() != null){
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					Date settlementDate = sdf.parse(refData.getSettlementDate());
+					if (TimeUtil.sameDate(settlementDate, chkDate)){
+						Calendar cal = Calendar.getInstance();
+						cal.add(Calendar.MINUTE, settlementDelay);
+						SettlementEvent sdEvent = new SettlementEvent(null, null, refData.getSymbol());
+						PmSettlementEvent pmSDEvent = new PmSettlementEvent(null, null, sdEvent);
+						scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
+						log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
 					}
 				}
-			}
+			}			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -147,6 +161,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
 		Date date = Clock.getInstance().now();
 		sessionChecker.init(date);
+		
+		chkDate = TimeUtil.getPreviousDay(date);
 		
 		// subscribe to events
 		eventProcessor.setHandler(this);
@@ -177,5 +193,9 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
 	public void setSessionChecker(MarketSessionChecker sessionChecker) {
 		this.sessionChecker = sessionChecker;
+	}
+
+	public void setSettlementDelay(int settlementDelay) {
+		this.settlementDelay = settlementDelay;
 	}
 }
