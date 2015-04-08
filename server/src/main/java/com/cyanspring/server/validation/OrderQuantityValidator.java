@@ -12,6 +12,8 @@ package com.cyanspring.server.validation;
 
 import java.util.Map;
 
+import com.cyanspring.common.Default;
+import com.cyanspring.server.account.PositionKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import webcurve.util.PriceUtils;
@@ -26,6 +28,9 @@ import com.cyanspring.common.validation.OrderValidationException;
 public class OrderQuantityValidator implements IFieldValidator {
 	@Autowired
 	IRefDataManager refDataManager;
+
+	@Autowired
+	PositionKeeper positionKeeper;
 
 	@Override
 	public void validate(String field, Object value, Map<String, Object> map,
@@ -55,6 +60,19 @@ public class OrderQuantityValidator implements IFieldValidator {
 			if(qty.longValue() % refData.getLotSize() != 0)
 				throw new OrderValidationException("Invalid Quantity! Quantity should be the multiple of 1000.",ErrorMessage.INVALID_QUANTITY);
 //				throw new OrderValidationException(field + " not in round lot of " + refData.getLotSize() +": " + qty.longValue());
+
+			if (Default.getSettlementDays() > 0)
+			{
+				String accountId = (String)map.get(OrderField.ACCOUNT.value());
+				double availableQty = positionKeeper.getAvailableQty(accountId, symbol);
+
+				// TODO: Consider the pending orders
+				if (qty > availableQty)
+				{
+					throw new OrderValidationException("Quantity exceeded available quantity", ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY);
+				}
+			}
+
 		} catch (OrderValidationException e){
 			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
 		} catch (Exception e) {

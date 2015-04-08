@@ -2,8 +2,13 @@ package com.cyanspring.server.account;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.util.TimeUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -44,7 +49,32 @@ public class TestPositionKeeper {
 		keeper.leverageManager = new LeverageManager();
 		keeper.commissionManager = new CommissionManager();
 	}
-	
+
+	@Test
+	public void testGetOverallPosition() throws Exception {
+		List<OpenPosition> openPositions = keeper.getOpenPositions(Default.getAccount());
+		assertEquals(null, openPositions);
+		Execution execution = createExecution(OrderSide.Buy, 2000, 0.8);
+		keeper.processExecution(execution, account);
+		openPositions = keeper.getOverallPosition(account);
+		assertEquals(2000.0, openPositions.get(0).getAvailableQty(), epsilon);
+
+		Field field = Default.class.getDeclaredField("settlementDays");
+		field.setAccessible(true);
+		field.set(null, 1);
+
+		openPositions = keeper.getOverallPosition(account);
+		assertEquals(0.0, openPositions.get(0).getAvailableQty(), epsilon);
+
+		Clock.getInstance().setMode(Clock.Mode.MANUAL);
+		Clock.getInstance().setManualClock(TimeUtil.getNextDay(new Date()));
+		log.debug(Clock.getInstance().now().toString());
+
+		openPositions = keeper.getOverallPosition(account);
+		log.debug(openPositions.get(0).toString());
+		assertEquals(2000.0, openPositions.get(0).getAvailableQty(), epsilon);
+	}
+
 	@Test
 	public void testBuyPosition() throws PositionException {
 		List<OpenPosition> openPositions = keeper.getOpenPositions(Default.getAccount());
