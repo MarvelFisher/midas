@@ -716,10 +716,14 @@ public class AccountInfo {
 	// }
 
 	public List<OpenPosition> getOpenPositions() {
+		if (openPositions == null)
+			openPositions = new ConcurrentHashMap<String, OpenPosition>();
 		return new ArrayList<OpenPosition>(openPositions.values());
 	}
 
 	public List<Execution> getExecutions(String symbol) {
+		if (executions == null)
+			executions = new ConcurrentHashMap<String, List<Execution>>();
 		return executions.get(symbol);
 	}
 }
