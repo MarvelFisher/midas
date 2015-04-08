@@ -1,0 +1,58 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+
+	<bean id="sender" class="com.cyanspring.soak.EventSender">
+		<property name="eventClass">
+			<value>com.cyanspring.common.event.info.HistoricalPriceRequestEvent</value>
+		</property>
+	</bean>
+
+	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>Test</value>
+		</property>
+		<property name="category">
+			<value>Info</value>
+		</property>
+		<property name="id">
+			<value>I1</value>
+		</property>
+	</bean>	
+	
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+<!--
+		<property name="url" value="nio://54.169.33.151:61616"></property>
+-->
+		<property name="url" value="nio://10.0.0.51:61627"></property>
+	</bean>
+	
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportService"/>
+	    </constructor-arg>
+	</bean>
+	
+	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+<!--
+		<property name="url" value="nio://54.169.33.151:61616"></property>
+-->
+		<property name="url" value="nio://localhost:60006"></property>
+	</bean>
+	
+	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="globalTransportService"/>
+	    </constructor-arg>
+	</bean>
+	
+	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
+	</bean>
+</beans>
