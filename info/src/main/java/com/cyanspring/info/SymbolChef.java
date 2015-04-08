@@ -115,7 +115,7 @@ public class SymbolChef implements Runnable{
     	}
     	else
     	{
-    		symboldata.setPrice(quote);
+    		symboldata.parseQuote(quote);
     	}
 		log.debug("Quote: " + quote);
     }

@@ -101,8 +101,8 @@ public class SymbolData implements Comparable<SymbolData>
 			while ((q = quoteTmp.poll()) != null)
 			{
 				setPrice(q) ;
+				dCurVolume = q.getTotalVolume() ;
 			}
-			dCurVolume = quote.getTotalVolume() ;
 		}
 	}
 	public boolean setPrice(Quote quote)
