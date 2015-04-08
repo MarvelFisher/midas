@@ -18,6 +18,7 @@ public class Default {
 	private static double orderQuantity = 100000;
 	private static double positionStopLoss = 1000.0;
 	private static double marginCall = 0.95;
+	private static int settlementDays = 0;
 	
 	protected static void setValues(
 		String user,  
@@ -33,7 +34,8 @@ public class Default {
 		TimeZone timeZone,
 		double orderQuantity,
 		double positionStopLoss,
-		double marginCall
+		double marginCall,
+		int settlementDays
 							) {
 		Default.user = user;
 		Default.account = account;
@@ -49,6 +51,7 @@ public class Default {
 		Default.orderQuantity = orderQuantity;
 		Default.positionStopLoss = positionStopLoss;
 		Default.marginCall = marginCall;
+		Default.settlementDays = settlementDays;
 	}
 	
 	static public String getUser() {
@@ -118,6 +121,8 @@ public class Default {
 	public static double getMarginCut() {
 		return marginCut;
 	}
-	
-	
+
+	public static int getSettlementDays() {
+		return settlementDays;
+	}
 }

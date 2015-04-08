@@ -1,15 +1,23 @@
 package com.cyanspring.common.account;
 
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.Default;
+import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.business.Execution;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class OpenPosition extends Position implements Cloneable {
+
 	private static final Logger log = LoggerFactory
 			.getLogger(OpenPosition.class);
 	private double price;
 	private double margin;
+	private double availableQty;
 	
 	public double getPrice() {
 		return price;
@@ -25,6 +33,35 @@ public class OpenPosition extends Position implements Cloneable {
 
 	public void setMargin(double margin) {
 		this.margin = margin;
+	}
+
+	public double getAvailableQty() {
+		return this.availableQty;
+	}
+
+	public void setAvailableQty(double availableQty) {
+		this.availableQty = availableQty;
+	}
+
+	public double getDetailAvailableQty() {
+
+		if (Default.getSettlementDays() == 0) {
+			availableQty = getQty();
+			return availableQty;
+		}
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(TimeUtil.getOnlyDate(getCreated()));
+		cal.add(Calendar.DATE, Default.getSettlementDays());
+		Date settlementDate = cal.getTime();
+
+		if (Clock.getInstance().now().compareTo(settlementDate) >= 0) {
+			availableQty = getQty();
+			return availableQty;
+		}
+
+		availableQty = 0;
+		return availableQty;
 	}
 
 	protected OpenPosition() {
@@ -58,7 +95,7 @@ public class OpenPosition extends Position implements Cloneable {
 	 
 	@Override
 	protected String formatString() {
-		 return super.formatString() + ", " + this.price;
+		 return super.formatString() + ", " + this.price + ", " + this.getAvailableQty();
 	}
 
 	@Override

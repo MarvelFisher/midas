@@ -87,4 +87,10 @@ public class Order {
 	public void setStopLossPrice(double stopLossPrice) {
 		this.stopLossPrice = stopLossPrice;
 	}
+
+	public String toString(){
+		double price = this.price != 0 ? this.price : this.stopLossPrice;
+		return id + ", " + symbol + ", " + side.toString() + ", " + type.toString() + ", " + price
+		+ ", " + quantity + ", " + status + ", " + state;
+	}
 }

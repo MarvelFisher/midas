@@ -393,7 +393,7 @@ public class PositionKeeper {
 		}
 		return result;
 	}
-	
+
 	// this one gives the overall positions for a specific account and symbol
 	public OpenPosition getOverallPosition(Account account, String symbol) {
 		OpenPosition result = new OpenPosition(account.getUserId(), account.getId(), symbol, 0, 0, 0);
@@ -438,16 +438,19 @@ public class PositionKeeper {
 		double amount = 0;
 		double PnL = 0;
 		double margin = 0;
+		double availableQty = 0;
 		for(OpenPosition pos: list) {
 			qty += pos.getQty();
 			amount += pos.getQty() * pos.getPrice();
 			PnL += pos.getPnL();
 			margin += pos.getMargin();
+			availableQty += pos.getDetailAvailableQty();
 		}
 		double price = amount / qty;
-		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(), 
+		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(),
 				list.get(0).getSymbol(), qty, price, margin);
 		result.setPnL(PnL);
+		result.setAvailableQty(availableQty);
 		return result;
 	}
 	
