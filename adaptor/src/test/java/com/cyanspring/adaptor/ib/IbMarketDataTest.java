@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
+import com.cyanspring.common.marketdata.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,10 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.staticdata.IRefDataManager;
 
 // set to ignore since we need IB connection to hand run this
@@ -76,10 +73,10 @@ public class IbMarketDataTest implements IMarketDataListener {
 	}
 	
 	@Override
-	public void onQuote(Quote quote, int sourceId) {
-		log.debug("Quote: " + quote);
+	public void onQuote(InnerQuote innerQuote) {
+		log.debug("Quote: " + innerQuote);
 		quoteCount++;
-		quote.print();
+		innerQuote.getQuote().print();
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cyanspring.common.marketdata.IMarketDataListener;
+import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 
@@ -19,7 +20,7 @@ public class UserClient implements AutoCloseable {
 
 	/**
 	 * 
-	 * @param listener
+	 * @param mdListener
 	 */
 	public UserClient(IMarketDataListener mdListener) {
 		listener = mdListener;
@@ -67,12 +68,12 @@ public class UserClient implements AutoCloseable {
 	/**
 	 * send quote info to listener
 	 * 
-	 * @param quote
+	 * @param innerQuote
 	 */
-	public void sendQuote(Quote quote) {
+	public void sendInnerQuote(InnerQuote innerQuote) {
 
-		if (isMySymbol(quote.getSymbol())) {
-			listener.onQuote(quote, 2); //use in MDM proceessInnerQuoteEvent , Id Adapter sourceid=2
+		if (isMySymbol(innerQuote.getSymbol())) {
+			listener.onQuote(innerQuote); //use in MDM proceessInnerQuoteEvent , Id Adapter sourceid=2
 		}
 	}
 

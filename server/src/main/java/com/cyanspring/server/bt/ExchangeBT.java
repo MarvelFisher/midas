@@ -21,16 +21,7 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.ISymbolDataListener;
-import com.cyanspring.common.marketdata.ITickDataReader;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.QuoteDataReader;
-import com.cyanspring.common.marketdata.TickDataException;
-import com.cyanspring.common.marketdata.Trade;
+import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
@@ -179,7 +170,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		
 		// call back listener
 		if(null != mdListener) {
-			mdListener.onQuote(quote, 1);
+			mdListener.onQuote(new InnerQuote(1, quote));
 			//work out trade
 			if(null != prevQuote && quote.getTotalVolume() > prevQuote.getTotalVolume()) {
 				Trade trade = new Trade();
@@ -549,7 +540,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		this.mdListener = listener; // supports only one listener
 		Quote quote = currentQuotes.get(instrument);
 		if(null != quote && null!= mdListener)
-			mdListener.onQuote(quote, 1);
+			mdListener.onQuote(new InnerQuote(1, quote));
 	}
 
 	@Override

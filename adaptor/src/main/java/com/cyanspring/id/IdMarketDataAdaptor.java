@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.cyanspring.common.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +24,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.ISymbolDataListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
@@ -507,14 +502,14 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
 	/**
 	 * Send Quote 
-	 * @param quote
+	 * @param innerQuote
 	 */
-	public void sendQuote(Quote quote) {
+	public void sendInnerQuote(InnerQuote innerQuote) {
 		//UserClient[] clients = new UserClient[clientsList.size()];
 		//clients = clientsList.toArray(clients);
 		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
 		for (UserClient client : clients) {
-			client.sendQuote(quote);
+			client.sendInnerQuote(innerQuote);
 		}
 	}
 	

@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.marketdata.InnerQuote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,7 +308,7 @@ public class FutureItem implements AutoCloseable {
 		// fire quote event
 		String s = quote.toString();
 		WindFutureDataAdaptor.instance.saveLastQuote(quote, quoteExt);
-		WindFutureDataAdaptor.instance.sendQuote(quote, quoteExt);
+		WindFutureDataAdaptor.instance.sendInnerQuote(new InnerQuote(101,quote), quoteExt);
 
 		Date now = DateUtil.now();
 		int timestamp = DateUtil.dateTime2Time(now);

@@ -17,17 +17,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.cyanspring.common.marketdata.*;
 import webcurve.common.ExchangeListener;
 import webcurve.common.Order;
 import webcurve.common.Trade;
 import webcurve.exchange.Exchange;
 import webcurve.exchange.OrderBook;
 
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.ISymbolDataListener;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.QtyPrice;
 
 public class SimMarketDataAdaptor implements IMarketDataAdaptor {
@@ -71,9 +67,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 			List<IMarketDataListener> list = subs.get(book.getCode());
 			if(null != list)
 				for(IMarketDataListener listener: list)
-					listener.onQuote((Quote)quote.clone(), 1);
-			
-			
+					listener.onQuote(new InnerQuote(1, (Quote)quote.clone()));
 		}
 		
 	};
@@ -131,7 +125,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		if(book != null) {
 			Quote quote = bookToQuote(book);
 			cache.put(instrument, quote);
-			listener.onQuote((Quote)quote.clone(), 1);
+			listener.onQuote(new InnerQuote(1, (Quote)quote.clone()));
 		}
 			
 	}

@@ -1,5 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
+import com.cyanspring.common.marketdata.*;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -41,15 +42,6 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.ISymbolDataListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.QuoteExtDataField;
-import com.cyanspring.common.marketdata.SymbolField;
-import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -285,7 +277,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/**
 	 * process MarketDataManager Sent MarketSession
 	 * 
-	 * @param marketSessionType
+	 * @param event
 	 */
 	public void processMarketSession(MarketSessionEvent event) {
 		tradeDateForWindFormat = Integer.parseInt(event.getTradeDate().replace(
@@ -433,7 +425,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol="
 							+ symbol);
 					lastQuote.setStale(true);
-					sendQuote(lastQuote, lastQuoteExtend);
+					sendInnerQuote(new InnerQuote(101,lastQuote), lastQuoteExtend);
 				}
 			}
 		}
@@ -1278,12 +1270,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/**
 	 * Send Quote
 	 * 
-	 * @param quote
+	 * @param innerQuote inner Quote Data
+	 * @param quoteExtend Quote Extend Data
 	 */
-	public void sendQuote(Quote quote, DataObject quoteExt) {
+	public void sendInnerQuote(InnerQuote innerQuote, DataObject quoteExtend) {
 		List<UserClient> clients = new ArrayList<UserClient>(clientsList);
 		for (UserClient client : clients) {
-			client.sendQuote(quote, quoteExt);
+			client.sendInnerQuote(innerQuote, quoteExtend);
 		}
 	}
 

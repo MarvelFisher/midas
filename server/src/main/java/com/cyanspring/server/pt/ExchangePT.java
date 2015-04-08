@@ -2,16 +2,11 @@ package com.cyanspring.server.pt;
 
 import java.util.HashMap;
 
+import com.cyanspring.common.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.server.bt.ExchangeBT;
 
 public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMarketDataStateListener {
@@ -40,8 +35,8 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 	}
 
 	@Override
-	public void onQuote(Quote quote, int sourceId) {
-		super.processQuote(quote);
+	public void onQuote(InnerQuote innerQuote) {
+		super.processQuote(innerQuote.getQuote());
 	}
 
 	@Override
@@ -57,7 +52,7 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 		if(quote == null)
 			mdAdaptor.subscribeMarketData(instrument, this);
 		if(null != quote && null!= mdListener)
-			mdListener.onQuote(quote, 1);
+			mdListener.onQuote(new InnerQuote(1, quote));
 	}
 	
 	public IMarketDataAdaptor getMdAdaptor() {

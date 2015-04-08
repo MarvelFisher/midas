@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.cyanspring.common.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,16 +46,6 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.IQuoteChecker;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.PriceSessionQuoteChecker;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.QuoteExtDataField;
-import com.cyanspring.common.marketdata.TickDataException;
-import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.ForexTickTable;
@@ -766,14 +757,14 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	}
 
 	@Override
-	public void onQuote(Quote quote, int sourceId) {
+	public void onQuote(InnerQuote innerQuote) {
 		if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
 			log.warn("Quotes receive time large than excepted.");
 		}
 
 		chkDate = Clock.getInstance().now();
-		InnerQuoteEvent event = new InnerQuoteEvent(quote.getSymbol(), null,
-				quote, sourceId);
+		InnerQuoteEvent event = new InnerQuoteEvent(innerQuote.getSymbol(), null,
+				innerQuote.getQuote(), innerQuote.getSourceId());
 		eventProcessor.onEvent(event);
 	}
 

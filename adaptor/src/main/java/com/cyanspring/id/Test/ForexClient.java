@@ -9,15 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
+import com.cyanspring.common.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
@@ -88,11 +84,11 @@ public class ForexClient implements IMarketDataListener,
 	 * @see com.cyanspring.common.marketdata.IMarketDataListener#onQuote(com.cyanspring.common.marketdata.Quote)
 	 */
 	@Override
-	public void onQuote(Quote quote, int sourceId) {
+	public void onQuote(InnerQuote innerQuote) {
 		//dialog.addLog(quote.toString());
-		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f", quote.getSymbol(),
-				DateUtil.formatDate(DateUtil.toGmt(quote.getTimeStamp()), "HH:mm:ss.SSS"),
-				quote.getBid(), quote.getAsk());
+		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f", innerQuote.getSymbol(),
+				DateUtil.formatDate(DateUtil.toGmt(innerQuote.getQuote().getTimeStamp()), "HH:mm:ss.SSS"),
+				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk());
 
 	}
 

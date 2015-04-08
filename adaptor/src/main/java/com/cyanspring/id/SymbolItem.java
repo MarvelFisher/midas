@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.cyanspring.common.marketdata.InnerQuote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,7 +283,7 @@ public class SymbolItem implements AutoCloseable {
 		}
 
 		Quote quote = getQuote();
-		IdMarketDataAdaptor.instance.sendQuote(quote);
+		IdMarketDataAdaptor.instance.sendInnerQuote(new InnerQuote(2, quote)); //Id Adapter soureid = 2
 	}
 
 	/**
