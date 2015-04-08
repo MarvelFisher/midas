@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+import com.cyanspring.common.marketdata.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,11 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.TickDataException;
-import com.cyanspring.common.marketdata.Trade;
 
 import static org.junit.Assert.assertTrue;
 
@@ -45,13 +41,13 @@ public class ExchangeBtLoadTickTest implements IMarketDataListener {
 	}
 
 	@Override
-	public void onQuote(Quote quote, int sourceId) {
-		log.info("Quote: " + quote.getSymbol() + ", " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(quote.getTimeStamp()));
+	public void onQuote(InnerQuote innerQuote) {
+		log.info("Quote: " + innerQuote.getSymbol() + ", " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(innerQuote.getQuote().getTimeStamp()));
 		if(null != currentQuote) {
-			assertTrue( quote.getTimeStamp().equals(currentQuote.getTimeStamp()) ||  
-					quote.getTimeStamp().after(currentQuote.getTimeStamp()) );
+			assertTrue(innerQuote.getQuote().getTimeStamp().equals(currentQuote.getTimeStamp()) ||
+					innerQuote.getQuote().getTimeStamp().after(currentQuote.getTimeStamp()));
 		}
-		currentQuote = quote;
+		currentQuote = innerQuote.getQuote();
 	}
 
 	@Override

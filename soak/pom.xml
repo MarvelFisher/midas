@@ -133,7 +133,12 @@
 			<artifactId>activemq-core</artifactId>
 			<version>5.5.0</version>
 			<scope>runtime</scope>
-		</dependency>	
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.1</version>
+		</dependency>
 		<dependency>
 		    <groupId>kxml2</groupId>
 		    <artifactId>kxml2</artifactId>
