@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class AccountInfo {
 	private Account account;
 	// private List<ClosePosition> closePositions;
-	private ConcurrentHashMap<String, List<OpenPosition>> openPositions;
+	private ConcurrentHashMap<String, OpenPosition> openPositions;
 	// private List<OpenPosition> openPositions;
 	private ConcurrentHashMap<String, List<Execution>> executions;
 
@@ -23,17 +23,10 @@ public class AccountInfo {
 	public void addOpenPosition(String symbol, String orderID,
 			OpenPosition oposition) {
 		if (openPositions == null)
-			openPositions = new ConcurrentHashMap<String, List<OpenPosition>>();
-		List<OpenPosition> opList = openPositions.get(symbol);
-		if (opList == null) {
-			opList = new ArrayList<OpenPosition>();
-			openPositions.put(symbol, opList);
-		}
-		for (OpenPosition position : opList) {
-			if (position.getId().equals(orderID))
-				opList.remove(orderID);
-		}
-		opList.add(oposition);
+			openPositions = new ConcurrentHashMap<String, OpenPosition>();
+		if (openPositions.get(symbol) != null)
+			openPositions.remove(symbol);
+		openPositions.put(symbol, oposition);
 	}
 
 	public void addExecution(String symbol, String orderID, Execution e) {
@@ -722,8 +715,8 @@ public class AccountInfo {
 	// return closePositions;
 	// }
 
-	public List<OpenPosition> getOpenPositions(String symbol) {
-		return openPositions.get(symbol);
+	public List<OpenPosition> getOpenPositions() {
+		return new ArrayList<OpenPosition>(openPositions.values());
 	}
 
 	public List<Execution> getExecutions(String symbol) {
