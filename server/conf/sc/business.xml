@@ -19,6 +19,7 @@
 				<ref bean="orderCountValidator"/>
 				<ref bean="maxLotValidator"/>
 				<ref bean="ceilFloorValidator"/>
+				<ref bean="availablePositionValidator"/>
 	        </list>
 	    </constructor-arg>
 	</bean>	
@@ -99,6 +100,8 @@
 	
 	<bean id="maxLotValidator" class="com.cyanspring.server.validation.MaxLotValidator"></bean>
 	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.MarketSessionValidator"></bean>
+
+	<bean id="availablePositionValidator" class="com.cyanspring.server.validation.AvailablePositionValidator" />
 	
 	<bean id="fixToOrderMap" class="com.cyanspring.common.util.DualMap">
 	    <constructor-arg>

@@ -13,28 +13,11 @@ import java.util.Date;
 
 public class OpenPosition extends Position implements Cloneable {
 
-	public static class AvailablePosition extends OpenPosition {
-
-		private double availableQty;
-
-		@Override
-		public double getAvailableQty() {
-			return this.availableQty;
-		}
-
-		public void setAvailableQty(double availableQty) {
-			this.availableQty = availableQty;
-		}
-
-		public AvailablePosition(String user, String account, String symbol, double qty, double price, double margin) {
-			super(user, account, symbol, qty, price, margin);
-		}
-	}
-
 	private static final Logger log = LoggerFactory
 			.getLogger(OpenPosition.class);
 	private double price;
 	private double margin;
+	private double availableQty;
 	
 	public double getPrice() {
 		return price;
@@ -52,11 +35,19 @@ public class OpenPosition extends Position implements Cloneable {
 		this.margin = margin;
 	}
 
-	public double getAvailableQty()
-	{
-		if (Default.getSettlementDays() == 0)
-		{
-			return getQty();
+	public double getAvailableQty() {
+		return this.availableQty;
+	}
+
+	public void setAvailableQty(double availableQty) {
+		this.availableQty = availableQty;
+	}
+
+	public double getDetailAvailableQty() {
+
+		if (Default.getSettlementDays() == 0) {
+			availableQty = getQty();
+			return availableQty;
 		}
 
 		Calendar cal = Calendar.getInstance();
@@ -64,12 +55,13 @@ public class OpenPosition extends Position implements Cloneable {
 		cal.add(Calendar.DATE, Default.getSettlementDays());
 		Date settlementDate = cal.getTime();
 
-		if (Clock.getInstance().now().compareTo(settlementDate) >= 0)
-		{
-			return getQty();
+		if (Clock.getInstance().now().compareTo(settlementDate) >= 0) {
+			availableQty = getQty();
+			return availableQty;
 		}
 
-		return 0;
+		availableQty = 0;
+		return availableQty;
 	}
 
 	protected OpenPosition() {

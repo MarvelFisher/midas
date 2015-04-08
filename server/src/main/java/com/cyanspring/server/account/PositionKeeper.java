@@ -428,14 +428,6 @@ public class PositionKeeper {
 		
 		return null == pos? result : pos;
 	}
-
-	public double getAvailableQty(String accountId, String symbol)
-	{
-		Account account = accountKeeper.getAccount(accountId);
-		OpenPosition position = getOverallPosition(account, symbol);
-
-		return position.getAvailableQty();
-	}
 	
 	private OpenPosition getOverallPosition(List<OpenPosition> list) throws PositionException {
 		if(null == list || list.size() <= 0)
@@ -452,10 +444,10 @@ public class PositionKeeper {
 			amount += pos.getQty() * pos.getPrice();
 			PnL += pos.getPnL();
 			margin += pos.getMargin();
-			availableQty += pos.getAvailableQty();
+			availableQty += pos.getDetailAvailableQty();
 		}
 		double price = amount / qty;
-		OpenPosition.AvailablePosition result = new OpenPosition.AvailablePosition(list.get(0).getUser(), list.get(0).getAccount(),
+		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(),
 				list.get(0).getSymbol(), qty, price, margin);
 		result.setPnL(PnL);
 		result.setAvailableQty(availableQty);
