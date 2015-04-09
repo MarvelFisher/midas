@@ -8,6 +8,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
+import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public class AvailablePositionValidator implements IOrderValidator {
+
+    @Autowired
+    AccountKeeper accountKeeper;
 
     @Autowired
     PositionKeeper positionKeeper;
@@ -27,7 +31,10 @@ public class AvailablePositionValidator implements IOrderValidator {
 
             if (Default.getSettlementDays() > 0 && orderSide.isSell()) {
 
-                double qty = (Double) map.get(OrderField.QUANTITY.value());
+                Double qty = (Double) map.get(OrderField.QUANTITY.value());
+                if (null == qty) {
+                    return;
+                }
 
                 String symbol;
                 if(order == null) {
@@ -37,14 +44,13 @@ public class AvailablePositionValidator implements IOrderValidator {
                 }
 
                 String accountId = (String)map.get(OrderField.ACCOUNT.value());
-                String userId = (String)map.get(OrderField.USER.value());
 
-                Account account = new Account(accountId, userId);
+                Account account = accountKeeper.getAccount(accountId);
 
                 double availableQty = positionKeeper.getOverallPosition(account, symbol).getAvailableQty();
 
                 if (!checkQty(account, symbol, qty, availableQty, order)) {
-                    throw new OrderValidationException("Quantity exceeded available quantity", ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY);
+                    throw new OrderValidationException("Sell quantity exceeded available position quantity", ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY);
                 }
             }
 
@@ -75,7 +81,6 @@ public class AvailablePositionValidator implements IOrderValidator {
             oldQty = order.getRemainingQty();
         }
 
-        // Sell quantity is negative value.
-        return availableQty + pendingSellQty - oldQty + qty >= 0;
+        return availableQty - pendingSellQty + oldQty - qty >= 0;
     }
 }

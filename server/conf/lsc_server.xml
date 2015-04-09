@@ -9,7 +9,8 @@
 
 	<import resource="test/sc_test.xml" />
 	<import resource="sc/MarketSession.xml" />
-	<import resource="sc/IFSessionState.xml" />
+	<import resource="sc/SHSessionState.xml" />
+	<import resource="sc/SZSessionState.xml" />
 	<import resource="sc/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />

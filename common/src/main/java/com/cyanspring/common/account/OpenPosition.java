@@ -46,8 +46,7 @@ public class OpenPosition extends Position implements Cloneable {
 	public double getDetailAvailableQty() {
 
 		if (Default.getSettlementDays() == 0) {
-			availableQty = getQty();
-			return availableQty;
+			return getQty();
 		}
 
 		Calendar cal = Calendar.getInstance();
@@ -56,12 +55,10 @@ public class OpenPosition extends Position implements Cloneable {
 		Date settlementDate = cal.getTime();
 
 		if (Clock.getInstance().now().compareTo(settlementDate) >= 0) {
-			availableQty = getQty();
-			return availableQty;
+			return getQty();
 		}
 
-		availableQty = 0;
-		return availableQty;
+		return 0;
 	}
 
 	protected OpenPosition() {

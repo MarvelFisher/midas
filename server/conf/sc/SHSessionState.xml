@@ -9,11 +9,11 @@
 
 	<context:annotation-config />
 	
-	<bean id="SHsessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+	<bean id="shSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>
 				<entry key="DEFAULT">
-					<ref bean="SHdefaultSession"/>
+					<ref bean="shDefaultSession"/>
 				</entry>
 				<entry key="HOLIDAY_AFTER_WOERKDAY">
 					<ref bean="holidaySession"/>
@@ -25,7 +25,7 @@
 		</property>
 	</bean>
 	
-	<bean id="SHdefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="shDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
@@ -74,7 +74,7 @@
 		</constructor-arg>
 	</bean>	
 	
-	<bean id="SHtradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
+	<bean id="shTradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
 			<list>
 			</list>

@@ -239,9 +239,14 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
-				<entry key="IF">
-					<ref bean="IFsessionState" />
-				</entry>
+				<entry key="SH"><ref bean="shSessionChecker"/></entry>
+				<entry key="SZ"><ref bean="szSessionChecker"/></entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="shTradeDateManager"/></entry>
+				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>

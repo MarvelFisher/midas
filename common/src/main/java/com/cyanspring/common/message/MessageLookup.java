@@ -181,7 +181,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_OVER_CEIL_PRICE,getBean(457, "Order price over than ceil price"));
 			addAndCheck(ErrorMessage.ORDER_LOWER_FLOOR_PRICE,getBean(458, "Order price lower than floor price"));
 			addAndCheck(ErrorMessage.ORDER_CANT_FIND_QUOTEEXT_FILE,getBean(459, "Missing QuoteExt file"));
-			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Quantity exceeded available quantity"));
+			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Sell quantity exceeded available position quantity"));
 
 			
 			
