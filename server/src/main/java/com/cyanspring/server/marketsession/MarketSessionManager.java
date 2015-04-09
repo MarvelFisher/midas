@@ -133,7 +133,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 			
 			if(refDataManager.getRefDataList().size() <= 0)
 				return;
-			if(TimeUtil.sameDate(chkDate, date) && currentSessionType.equals(MarketSessionType.CLOSE))
+			if(TimeUtil.sameDate(chkDate, date) || currentSessionType.equals(MarketSessionType.CLOSE))
 				return;
 			chkDate = date;
 			for(RefData refData : refDataManager.getRefDataList()){
