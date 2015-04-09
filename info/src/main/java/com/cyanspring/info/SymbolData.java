@@ -1,9 +1,12 @@
 package com.cyanspring.info;
 
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.Map;
@@ -140,9 +144,9 @@ public class SymbolData implements Comparable<SymbolData>
 			isUpdating = false ;
 			return;
 		}
-		String strFile = String.format("./DAT/%s/%s.1M", 
+		String strFile = String.format("./DAT/%s/%s", 
 				centralDB.getTradedate(), getStrSymbol()) ;
-		File file = new File(strFile);
+		File file = new File(strFile + ".1M");
 		if (file.exists() == false)
 		{
 			isUpdating = false ;
@@ -156,6 +160,24 @@ public class SymbolData implements Comparable<SymbolData>
             in.close();
             fis.close();
 			isUpdating = false ;
+			
+			Scanner data = new Scanner(new File(strFile + ".Ch"));
+			data.useDelimiter(";");
+			String str = data.next();
+			dOpen = Double.parseDouble(str);
+			str = data.next();
+			dCurHigh = Double.parseDouble(str);
+			str = data.next();
+			dCurLow = Double.parseDouble(str);
+			str = data.next();
+			dClose = Double.parseDouble(str);
+			str = data.next();
+			d52WHigh = Double.parseDouble(str);
+			str = data.next();
+			d52WLow = Double.parseDouble(str);
+			str = data.next();
+			dCurVolume = (double)Integer.parseInt(str);
+			data.close();
         }
         catch (Exception e)
         {
@@ -171,15 +193,19 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			return;
 		}
-		String strFile = String.format("./DAT/%s/%s.1M", 
+		String strFile = String.format("./DAT/%s/%s", 
 				centralDB.getTradedate(), getStrSymbol()) ;
-		File file = new File(strFile) ;
-        file.getParentFile().mkdirs();
+		File fileMins = new File(strFile + ".1M") ;
+        fileMins.getParentFile().mkdirs();
         try
         {
+        	FileWriter fwrite = new FileWriter(strFile + ".Ch");
+        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));
+        	fwrite.flush();
+        	fwrite.close();
         	synchronized(priceData)
     		{
-	            FileOutputStream fos = new FileOutputStream(file, false);
+	            FileOutputStream fos = new FileOutputStream(fileMins, false);
 	            FSTObjectOutput out = new FSTObjectOutput(fos);
 	            out.writeObject( priceData, TreeMap.class );
 	            // DON'T out.close() when using factory method;
