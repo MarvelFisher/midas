@@ -25,7 +25,9 @@ public class MaxLotValidator implements IOrderValidator {
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
 		try{
-			double qty = (Double)map.get(OrderField.QUANTITY.value());
+			Double qty = (Double)map.get(OrderField.QUANTITY.value());
+			if (qty == null)
+				return;
 			OrderType type = (OrderType)map.get(OrderField.TYPE.value());
 
 			String symbol;
@@ -57,7 +59,5 @@ public class MaxLotValidator implements IOrderValidator {
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 
 		}
-
 	}
-
 }
