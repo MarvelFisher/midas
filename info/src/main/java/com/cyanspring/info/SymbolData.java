@@ -146,22 +146,23 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		String strFile = String.format("./DAT/%s/%s", 
 				centralDB.getTradedate(), getStrSymbol()) ;
-		File file = new File(strFile + ".1M");
-		if (file.exists() == false)
+		File fileMins = new File(strFile + ".1M");
+		File fileCache = new File(strFile + ".Ch");
+		if (fileMins.exists() == false || fileCache.exists() == false)
 		{
 			isUpdating = false ;
 			return;
 		}
 	    try
         {
-	        FileInputStream fis = new FileInputStream(file);
+	        FileInputStream fis = new FileInputStream(fileMins);
             FSTObjectInput in = new FSTObjectInput(fis);
             priceData = (TreeMap<Date, HistoricalPrice>) in.readObject(TreeMap.class);
             in.close();
             fis.close();
 			isUpdating = false ;
 			
-			Scanner data = new Scanner(new File(strFile + ".Ch"));
+			Scanner data = new Scanner(fileCache);
 			data.useDelimiter(";");
 			String str = data.next();
 			dOpen = Double.parseDouble(str);
