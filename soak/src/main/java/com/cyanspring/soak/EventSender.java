@@ -11,6 +11,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
+import com.cyanspring.common.server.event.ServerReadyEvent;
 
 public class EventSender extends ClientAdaptor {
 	private static Logger log = LoggerFactory.getLogger(ClientAdaptor.class);
@@ -20,7 +21,7 @@ public class EventSender extends ClientAdaptor {
 	@Override
 	public void subscribeToEvents() {
 		super.subscribeToEvents();
-		subscribeToEvent(HistoricalPriceEvent.class, null);
+		subscribeToEvent(ServerReadyEvent.class, null);
 	}
 
 	@Override
@@ -30,6 +31,9 @@ public class EventSender extends ClientAdaptor {
 	@Override
 	public void processNodeInfoEvent(NodeInfoEvent event) {
 		super.processNodeInfoEvent(event);
+	}
+	
+	public void processServerReadyEvent(ServerReadyEvent event) {
 		try 
 		{
 			this.event = (AsyncEvent)XMLUtils.eventFromXML("events\\" + getEventClass() + ".xml");
@@ -39,12 +43,17 @@ public class EventSender extends ClientAdaptor {
 		{
 			e.printStackTrace();
 		}
+		try {
+			Thread.sleep(5000);
+		} 
+		catch (InterruptedException e) {
+			log.error(e.getMessage(), e);
+		}
+		finally {
+			System.exit(0);
+		}
 	}
 	
-	public void processHistoricalPriceEvent(HistoricalPriceEvent event) {
-		log.info("HistoricalPriceEvent");
-	}
-
 	public AsyncEvent getEvent() {
 		return event;
 	}
