@@ -81,6 +81,11 @@ public class Demo{
 			}
 
 			@Override
+			public void onAccountUpdate() {
+
+			}
+
+			@Override
 			public void onQuote(QuoteData quote) {
 				List <Order>orders = getOrders();
 				//AUDUSD

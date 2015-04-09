@@ -217,6 +217,7 @@ public final class LtsApi implements ITrade {
 
 	public void processAccountUpdateEvent(AccountUpdateEvent event) {
 		setAccountData(event.getAccount());
+		tAdaptor.onAccountUpdate();
 	}
 
 	public void processOpenPositionUpdateEvent(OpenPositionUpdateEvent event) {

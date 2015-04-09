@@ -6,6 +6,7 @@ import com.fdt.lts.client.obj.QuoteData;
 public interface IAdaptor {
 
 	public void onStart();
+	public void onAccountUpdate();
 	public void onQuote(QuoteData quote);
 	public void onNewOrderReply(Order order);
 	public void onAmendOrderReply(Order order);

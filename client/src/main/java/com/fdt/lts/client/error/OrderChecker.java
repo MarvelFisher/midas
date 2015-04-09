@@ -1,6 +1,7 @@
 package com.fdt.lts.client.error;
 
 import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.type.OrderType;
 import com.fdt.lts.client.obj.Order;
 
 public class OrderChecker {
@@ -11,7 +12,7 @@ public class OrderChecker {
 			return false;
 		if(order.getType() == null)
 			return false;
-		if(!checkDouble(order.getPrice()))
+		if(!checkDouble(order.getPrice()) && order.getType().equals(OrderType.Limit))
 			return false;
 		if(!checkDouble(new Double(order.getQuantity())))
 			return false;
