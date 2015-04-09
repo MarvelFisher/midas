@@ -22,7 +22,7 @@ public class UserValidator implements IFieldValidator {
 				throw new OrderValidationException("User doesn't exist: " + value,ErrorMessage.ACCOUNT_NOT_EXIST);
 			}
 		} catch(OrderValidationException e){
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 		} catch(Exception e) {
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}

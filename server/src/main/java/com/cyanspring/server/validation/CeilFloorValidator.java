@@ -103,7 +103,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			}
 		
 		}catch(OrderValidationException e){	
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 		}catch(Exception e){
 			log.error(e.getMessage(),e);
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);

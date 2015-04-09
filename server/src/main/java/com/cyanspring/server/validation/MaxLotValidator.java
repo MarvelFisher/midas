@@ -53,7 +53,7 @@ public class MaxLotValidator implements IOrderValidator {
 					throw new OrderValidationException("The order quantity is over maximun lot",ErrorMessage.ORDER_QTY_OVER_MAX_LOT);			
 			}			
 		}catch(OrderValidationException e){
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 
 		}catch(Exception e){
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);

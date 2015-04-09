@@ -33,7 +33,7 @@ public class AccountValidator implements IFieldValidator {
 				throw new OrderValidationException("Account and user not match: " + account.getId() + ", " + user,ErrorMessage.ACCOUNT_AND_USER_NOT_MATCH);
 			}
 		} catch(OrderValidationException e)	{
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 		} catch(Exception e) {
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}

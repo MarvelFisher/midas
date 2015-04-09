@@ -30,7 +30,7 @@ public class MarketSessionValidator implements IOrderValidator{
 				throw new OrderValidationException("Market closed,order couldn't be placed",ErrorMessage.MARKET_CLOSED);
 			 }
 		}catch(OrderValidationException e){			
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 		}catch(Exception e){
 			throw new OrderValidationException(e.getMessage(),ErrorMessage.MARKET_VALIDATION_ERROR);
 		}

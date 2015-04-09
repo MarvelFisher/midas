@@ -50,7 +50,7 @@ public class StopLossPriceValidator implements IFieldValidator {
 				throw new OrderValidationException("Stop loss price " + stopLossPrice + 
 						" can not be more aggressive than limit price " + limitPrice,ErrorMessage.STOP_LOSS_PRICE_CANT_OVER_THAN_LIMIT_PRICE);
 		} catch (OrderValidationException e){
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 		} catch(Exception e) {
 			throw new OrderValidationException("Field " + field + " has caused exception: " + e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}

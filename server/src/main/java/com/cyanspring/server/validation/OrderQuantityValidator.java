@@ -56,7 +56,7 @@ public class OrderQuantityValidator implements IFieldValidator {
 				throw new OrderValidationException("Invalid Quantity! Quantity should be the multiple of 1000.",ErrorMessage.INVALID_QUANTITY);
 //				throw new OrderValidationException(field + " not in round lot of " + refData.getLotSize() +": " + qty.longValue());
 		} catch (OrderValidationException e){
-			throw new OrderValidationException(e.getMessage(),e.getClientMessage());
+			throw e;
 		} catch (Exception e) {
 			throw new OrderValidationException(field + " has caused exception: " + e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
