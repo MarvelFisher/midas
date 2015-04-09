@@ -27,6 +27,11 @@ public class AvailablePositionValidator implements IOrderValidator {
     public void validate(Map<String, Object> map, ParentOrder order) throws OrderValidationException {
 
         try {
+            Double qty = (Double) map.get(OrderField.QUANTITY.value());
+            if (null == qty) {
+                return;
+            }
+
             OrderSide orderSide;
             String symbol;
             String accountId;
@@ -42,11 +47,6 @@ public class AvailablePositionValidator implements IOrderValidator {
             }
 
             if (Default.getSettlementDays() > 0 && orderSide.isSell()) {
-
-                Double qty = (Double) map.get(OrderField.QUANTITY.value());
-                if (null == qty) {
-                    return;
-                }
 
                 Account account = accountKeeper.getAccount(accountId);
 
