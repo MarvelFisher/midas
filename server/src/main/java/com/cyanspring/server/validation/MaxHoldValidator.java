@@ -39,8 +39,10 @@ public class MaxHoldValidator implements IOrderValidator {
 		String orderAccount;
 		String symbol;
 		OrderSide side;
-		double quantity = (Double) map.get(OrderField.QUANTITY.value());
-		
+		Double quantity = (Double) map.get(OrderField.QUANTITY.value());
+		if (quantity == null)
+			return;
+
 		if(order == null){
 			orderAccount = (String) map.get(OrderField.ACCOUNT.value());
 			symbol = (String) map.get(OrderField.SYMBOL.value());
@@ -49,7 +51,7 @@ public class MaxHoldValidator implements IOrderValidator {
 			orderAccount = order.getAccount();
 			symbol = order.getSymbol();
 			side = order.getSide();
-		}		
+		}
 		
 		Account account = accountKeeper.getAccount(orderAccount);
 		if(null == account) {
