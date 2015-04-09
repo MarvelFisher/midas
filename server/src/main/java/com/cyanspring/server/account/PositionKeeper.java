@@ -262,9 +262,7 @@ public class PositionKeeper {
 		if(null != symbolMap) {
 			for(Map<String, ParentOrder> orderMap: symbolMap.values()) {
 				if(null != orderMap) {
-					for(ParentOrder order: orderMap.values()) {
-						orders.add(order);
-					}
+					orders.addAll(orderMap.values());
 				}
 			}
 		}
@@ -278,9 +276,7 @@ public class PositionKeeper {
 		if(null != symbolMap) {
 			Map<String, ParentOrder> orderMap = symbolMap.get(symbol);
 			if(null != orderMap) {
-				for(ParentOrder order: orderMap.values()) {
-					orders.add(order);
-				}
+				orders.addAll(orderMap.values());
 			}
 		}
 		return orders;
