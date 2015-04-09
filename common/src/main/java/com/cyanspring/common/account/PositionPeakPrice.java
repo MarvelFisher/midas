@@ -1,11 +1,17 @@
 package com.cyanspring.common.account;
 
-public class PositionPeakPrice {
+import java.io.Serializable;
+
+public class PositionPeakPrice implements Serializable{
 	private String account;
 	private String symbol;
 	private double position;
 	private double price;
 
+	public PositionPeakPrice() {
+		
+	}
+	
 	public PositionPeakPrice(String account, String symbol, double position,
 			double price) {
 		super();
@@ -15,6 +21,14 @@ public class PositionPeakPrice {
 		this.price = price;
 	}
 	
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
 	public double getPosition() {
 		return position;
 	}

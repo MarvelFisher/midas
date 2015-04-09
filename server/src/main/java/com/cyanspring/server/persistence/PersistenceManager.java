@@ -978,17 +978,76 @@ public class PersistenceManager {
 	}
 	
 	public void processPmPositionPeakPriceDeleteEvent(PmPositionPeakPriceDeleteEvent event) {
-		//TODO: delete PositionPeakPrice
+		Session session = null;
+		try{
+			
+			session = sessionFactory.openSession();
+
+			PositionPeakPrice ppp =  event.getItem();
+					
+			session.delete(ppp);
+			
+			session.flush();
+			
+		}catch(Exception e){
+			
+			log.error(e.getMessage(),e);
+					
+		}finally{
+		
+			if(null != session)
+				session.close();
+		}	
 	}
 	
 	public void processPmPositionPeakPriceUpdateEvent(PmPositionPeakPriceUpdateEvent event) {
-		for(PositionPeakPrice ppp: event.getUpdates()) {
-			//TODO: persist it
+		Session session = null;
+		Transaction tx = null;
+		try{
+			
+			session = sessionFactory.openSession();
+			tx = session.beginTransaction();
+			tx.begin();
+			for(PositionPeakPrice ppp: event.getUpdates()) {				
+				session.saveOrUpdate(ppp);
+			}
+			tx.commit();
+			
+		}catch(Exception e){
+			
+			log.error(e.getMessage(),e);
+			
+			if(null != tx )
+				tx.rollback();
+			
+		}finally{
+		
+			if(null != session)
+				session.close();
 		}
+
 	}
+	@SuppressWarnings("unchecked")
 	public List<PositionPeakPrice> recoverPositionPeakPrices() {
+		
 		List<PositionPeakPrice> result = new ArrayList<PositionPeakPrice>();
-		// TODO: load it from DB
+		Session session = null;
+		try {
+			
+			session = sessionFactory.openSession();
+			result = (List<PositionPeakPrice>)session.createCriteria(PositionPeakPrice.class)
+				.list();
+			
+		} catch (HibernateException e) {
+			
+			log.error(e.getMessage(), e);
+			
+		} finally {
+			
+			if(session!=null)
+				session.close();
+			
+		}
 		return result;
 	}
 	

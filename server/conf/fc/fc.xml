@@ -34,6 +34,7 @@
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
 				<ref bean="premiumFollowManager"/>
+				<ref bean="trailingStopManager"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -43,7 +44,8 @@
 			</map>
 		</property>
 	</bean>
-
+	<bean id="trailingStopManager" class="com.cyanspring.server.account.TrailingStopManager">
+	</bean>
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="transportService" />
@@ -194,7 +196,8 @@
 
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
-
+	
+	
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
