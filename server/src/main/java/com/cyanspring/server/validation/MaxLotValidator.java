@@ -20,7 +20,9 @@ public class MaxLotValidator implements IOrderValidator {
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
-		double qty = (Double)map.get(OrderField.QUANTITY.value());
+		Double qty = (Double)map.get(OrderField.QUANTITY.value());
+		if (qty == null)
+			return;
 		String symbol;
 		if(order == null)
 			symbol = (String)map.get(OrderField.SYMBOL.value());		
