@@ -23,6 +23,9 @@ public abstract class TradeAdaptor implements IAdaptor {
 	public void cancelOrder(Order order){
 		adaptor.putCancelOrder(order);
 	}
+	public void terminate(){
+		adaptor.terminate();
+	}
 	public void setAdaptor(ITrade adaptor){
 		this.adaptor = adaptor;
 	}	

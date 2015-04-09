@@ -448,6 +448,12 @@ public final class LtsApi implements ITrade {
 		sendEvent(cancelEvent);
 	}
 
+	@Override
+	public void terminate() {
+		eventProcessor.uninit();
+		eventManager.uninit();
+	}
+
 	private String getId() {
 		return user;
 	}
