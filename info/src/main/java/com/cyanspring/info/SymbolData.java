@@ -148,7 +148,7 @@ public class SymbolData implements Comparable<SymbolData>
 				centralDB.getTradedate(), getStrSymbol()) ;
 		File fileMins = new File(strFile + ".1M");
 		File fileCache = new File(strFile + ".Ch");
-		if (fileMins.exists() == false || fileCache.exists() == false)
+		if (fileMins.exists() == false)
 		{
 			isUpdating = false ;
 			return;
@@ -162,23 +162,26 @@ public class SymbolData implements Comparable<SymbolData>
             fis.close();
 			isUpdating = false ;
 			
-			Scanner data = new Scanner(fileCache);
-			data.useDelimiter(";");
-			String str = data.next();
-			dOpen = Double.parseDouble(str);
-			str = data.next();
-			dCurHigh = Double.parseDouble(str);
-			str = data.next();
-			dCurLow = Double.parseDouble(str);
-			str = data.next();
-			dClose = Double.parseDouble(str);
-			str = data.next();
-			d52WHigh = Double.parseDouble(str);
-			str = data.next();
-			d52WLow = Double.parseDouble(str);
-			str = data.next();
-			dCurVolume = (double)Integer.parseInt(str);
-			data.close();
+			if (fileCache.exists())
+			{
+				Scanner data = new Scanner(fileCache);
+				data.useDelimiter(";");
+				String str = data.next();
+				dOpen = Double.parseDouble(str);
+				str = data.next();
+				dCurHigh = Double.parseDouble(str);
+				str = data.next();
+				dCurLow = Double.parseDouble(str);
+				str = data.next();
+				dClose = Double.parseDouble(str);
+				str = data.next();
+				d52WHigh = Double.parseDouble(str);
+				str = data.next();
+				d52WLow = Double.parseDouble(str);
+				str = data.next();
+				dCurVolume = (double)Integer.parseInt(str);
+				data.close();
+			}
         }
         catch (Exception e)
         {
