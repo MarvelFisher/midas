@@ -27,7 +27,19 @@ public class AvailablePositionValidator implements IOrderValidator {
     public void validate(Map<String, Object> map, ParentOrder order) throws OrderValidationException {
 
         try {
-            OrderSide orderSide = (OrderSide) map.get(OrderField.SIDE.value());
+            OrderSide orderSide;
+            String symbol;
+            String accountId;
+
+            if(order == null) {
+                orderSide = (OrderSide) map.get(OrderField.SIDE.value());
+                symbol = (String) map.get(OrderField.SYMBOL.value());
+                accountId = (String)map.get(OrderField.ACCOUNT.value());
+            } else {
+                orderSide = order.getSide();
+                symbol = order.getSymbol();
+                accountId = order.getAccount();
+            }
 
             if (Default.getSettlementDays() > 0 && orderSide.isSell()) {
 
@@ -35,15 +47,6 @@ public class AvailablePositionValidator implements IOrderValidator {
                 if (null == qty) {
                     return;
                 }
-
-                String symbol;
-                if(order == null) {
-                    symbol = (String) map.get(OrderField.SYMBOL.value());
-                } else {
-                    symbol = order.getSymbol();
-                }
-
-                String accountId = (String)map.get(OrderField.ACCOUNT.value());
 
                 Account account = accountKeeper.getAccount(accountId);
 

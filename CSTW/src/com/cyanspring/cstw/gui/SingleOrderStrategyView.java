@@ -237,7 +237,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		lb2.setText("Price: ");
 		lb2.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
 
-		txtPrice = new Text(panelComposite, SWT.BORDER | SWT.SEARCH);
+		txtPrice = new Text(panelComposite, SWT.BORDER);
 		gridData = new GridData(SWT.RIGHT, SWT.FILL, false, true);
 		gridData.widthHint = 100;
 		txtPrice.setLayoutData(gridData);
@@ -246,7 +246,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		lb3.setText("Quantity: ");
 		lb3.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
 
-		txtQuantity = new Text(panelComposite, SWT.BORDER | SWT.SEARCH);
+		txtQuantity = new Text(panelComposite, SWT.BORDER);
 		gridData = new GridData(SWT.RIGHT, SWT.FILL, false, true);
 		gridData.widthHint = 100;
 		txtQuantity.setLayoutData(gridData);
