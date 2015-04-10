@@ -1,1 +1,1 @@
-java -cp jars/* com.cyanspring.soak.EventSender
+java -cp "jars/*" com.cyanspring.soak.EventSender
