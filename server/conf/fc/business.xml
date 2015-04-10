@@ -17,7 +17,7 @@
 				<ref bean="creditValidator"/>
 				<ref bean="orderCountValidator"/>
 				<ref bean="maxLotValidator"/>			
-				<ref bean="ceilFloorValidator"/>
+				<!-- <ref bean="ceilFloorValidator"/> -->
 	        </list>
 	    </constructor-arg>
 	</bean>	
