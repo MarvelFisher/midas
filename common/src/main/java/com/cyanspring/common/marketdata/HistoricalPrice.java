@@ -92,6 +92,8 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	}
 	public void update(HistoricalPrice price)
 	{
+		this.setTradedate(price.getTradedate());
+		this.setDatatime(price.getDatatime());
 		if (PriceUtils.isZero(this.open))
 		{
 			this.open = price.open ;
