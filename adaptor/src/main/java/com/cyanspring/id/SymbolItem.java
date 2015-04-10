@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.InnerQuote;
 import org.slf4j.Logger;
@@ -211,26 +212,27 @@ public class SymbolItem implements AutoCloseable {
 	 * @param timeRev
 	 * @param timeTick
 	 * @param nDP
-	 * @param table
+	 * @param dataByFieldIdMap
 	 */
 	public void parseTick(Date timeRev, Date timeTick, int nDP,
-			Hashtable<Integer, String> table) {
+			ConcurrentHashMap<Integer, String> dataByFieldIdMap) {
 
 		// Date timeGmt = DateUtil.toGmt(timeTick);
 
+
 		dp = nDP;
 		boolean bTick = false;
-		if (table.containsKey(FieldID.AskPrice)
-				&& table.containsKey(FieldID.BidPrice)) {
+		if (dataByFieldIdMap.containsKey(FieldID.AskPrice)
+				&& dataByFieldIdMap.containsKey(FieldID.BidPrice)) {
 			bTick = true;
 			tick.setValue(FieldID.LastTradeTime, timeTick);
 		}
 
-		Set<Integer> set = table.keySet();
+		Set<Integer> set = dataByFieldIdMap.keySet();
 		Iterator<Integer> itr = set.iterator();
 		while (itr.hasNext()) {
 			int nField = itr.next();
-			String strValue = table.get(nField);
+			String strValue = dataByFieldIdMap.get(nField);
 			if (strValue.isEmpty())
 				continue;
 

@@ -111,13 +111,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void channelActive(ChannelHandlerContext ctx) {
 		context = ctx;
 		IdMarketDataAdaptor adaptor = IdMarketDataAdaptor.instance;
-		adaptor.updateState(true);
-
 		logOn(adaptor.getAccount(), adaptor.getPassword());
 		String[] arrSymbol = IdMarketDataAdaptor.instance.getRefSymbol();
 		if (arrSymbol.length > 0) {
 			subscribe(arrSymbol);
 		}
+		adaptor.updateState(true);
 	}
 
 	/*
@@ -132,7 +131,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		IdMarketDataAdaptor.instance.updateState(false);
 		// IdMarketDataAdaptor.isConnected = false;
 		IdMarketDataAdaptor.instance.reconClient();
-
 	}
 
 	/*
