@@ -668,6 +668,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 			if (quote.getOpen() == 0) {
 				if (PriceUtils.Equal(quote.getHigh(), quote.getLow())) {
 					quote.setOpen(price);
+					log.debug("Symbol=" + quote.getSymbol() +",OpenPrice=" + price);
 				}
 			}
 
@@ -679,6 +680,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 			if (quote.getOpen() == 0) {
 				if (PriceUtils.Equal(quote.getHigh(), quote.getLow())) {
 					quote.setOpen(price);
+					log.debug("Symbol=" + quote.getSymbol() + ",OpenPrice=" + price);
 				}
 			}
 			publishQuote(quote);
@@ -690,6 +692,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 			}
 			if (quote.getBid() == -1 && quote.getAsk() == -1) {
 				quote.setOpen(0);
+				log.debug("Symbol=" + quote.getSymbol() +",OpenPrice=" + price + " Trade Close");
 			}
 
 			publishQuote(quote);

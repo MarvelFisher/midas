@@ -7,11 +7,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -38,7 +36,6 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
@@ -75,20 +72,14 @@ import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
-import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
-import com.cyanspring.common.event.marketdata.TradeDateUpdateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
-import com.cyanspring.common.event.order.EnterParentOrderEvent;
-import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
-import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
-import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
@@ -99,7 +90,6 @@ import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.FuRefDataManager;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
@@ -302,7 +292,7 @@ public class AccountPositionManager implements IPlugin {
 			}
 		}
 		
-		scheduleManager.scheduleRepeatTimerEvent(jobInterval, eventProcessor, timerEvent);
+		scheduleManager.scheduleRepeatTimerEvent(jobInterval, timerProcessor, timerEvent);
 		
 		scheduleDayEndEvent();
 	}

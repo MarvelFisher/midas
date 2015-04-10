@@ -94,6 +94,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 					log.warn("Read idle");
 				}
 			}
+			if(e.state() == IdleState.WRITER_IDLE){
+				sendHeartBeat();
+			}
 		}
 	}
 
@@ -340,6 +343,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		byte[] arrData = makeFrame(strSetCTFOn);
 
 		sendData(arrData);
+	}
+
+	public static void sendHeartBeat(){
+		sendData(makeFrame("5022=HeartBeat"));
 	}
 
 	@Override
