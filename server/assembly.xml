@@ -42,6 +42,7 @@
 			<directory>${basedir}/../soak/</directory>
 			<includes>
 				<include>conf/**</include>
+				<include>events/*</include>
 				<include>*.bat</include>
 				<include>*.sh</include>
 			</includes>

@@ -1,0 +1,4 @@
+<com.cyanspring.common.server.event.ServerShutdownEvent>
+  <priority>NORMAL</priority>
+  <receiver>Test.Info.I1</receiver>
+</com.cyanspring.common.server.event.ServerShutdownEvent>
