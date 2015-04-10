@@ -211,5 +211,10 @@
 			<version>${project.parent.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.cyanspring.soak</groupId>
+			<artifactId>cyanspring-soak</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 	</dependencies>
 </project>
