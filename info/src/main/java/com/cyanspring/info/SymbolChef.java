@@ -173,7 +173,7 @@ public class SymbolChef implements Runnable{
 		}
 	}
 	
-	public void insertSQL(String market)
+	public void insertSQL()
 	{
 		Iterator<Entry<String, SymbolData>> itr = mapSymboldata.entrySet().iterator();
 		SymbolData symboldata;

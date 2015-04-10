@@ -11,16 +11,11 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.TimeZone;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +29,10 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.info.CentralDbReadyEvent;
 import com.cyanspring.common.event.info.CentralDbSubscribeEvent;
-import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
-import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
-import com.cyanspring.common.event.info.SearchSymbolEvent;
-import com.cyanspring.common.event.info.SearchSymbolRequestEvent;
-import com.cyanspring.common.event.info.SearchSymbolType;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
-import com.cyanspring.common.event.info.SymbolListSubscribeType;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.SymbolEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
@@ -53,8 +42,6 @@ import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.info.RefSubName;
-import com.cyanspring.common.marketdata.HistoricalPrice;
-import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -77,12 +64,6 @@ public class CentralDbProcessor implements IPlugin
 
 	private String driverClass;
 	private String jdbcUrl;
-	private int open ;
-	private int preopen ;
-	private int close ;
-	private int    nOpen ;
-	private int    nClose ;
-	private int    nPreOpen ;
 	private String serverMarket;
 	private int nChefCount = 5;
 	private ArrayList<String> preSubscriptionList;
@@ -90,18 +71,20 @@ public class CentralDbProcessor implements IPlugin
 	private ChartCacheProc chartCacheProcessor;
 	private CentralDbEventProc centralDbEventProcessor;
 	
-	private int    nTickCount ;
 	private MarketSessionType sessionType = null ;
 	private String tradedate ;
 	static boolean isStartup = true;
 	private boolean calledRefdata = false;
+	private boolean processQuote = false;
 	private Queue<QuoteEvent> quoteBuffer;
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private AsyncTimerEvent checkEvent = new AsyncTimerEvent();
+	private AsyncTimerEvent insertEvent = new AsyncTimerEvent();
+	private long SQLDelayInterval = 1;
 	private long timeInterval = 600000;
 	private long checkSQLInterval = 10 * 60 * 1000;
-	private long checkSQLTimer = 0;
 	
 //	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 //	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
@@ -160,48 +143,6 @@ public class CentralDbProcessor implements IPlugin
 		}
 
 	};
-	
-	public int getTickCount()
-	{
-		int nOpen = this.nOpen ;
-		int nClose = (this.nClose < this.nOpen) ? (this.nClose + 1440) : this.nClose ;
-		return nClose - nOpen ;
-	}
-	
-	public int getPosByTime(int inputTime)
-	{
-		boolean overDay = (this.nClose < this.nOpen) ;
-		int nOpen = this.nOpen ;
-		int nClose = (overDay) ? (this.nClose + 1440) : this.nClose ;
-		int nPreOpen = (overDay) ? (this.nPreOpen + 1440) : this.nPreOpen ;
-		int curTime = (inputTime < this.nOpen) ? inputTime + 1440 : inputTime ;
-		if (overDay)
-		{
-			if (curTime < nPreOpen && curTime >= nClose)
-			{
-				return nTickCount - 1;
-			}
-			else if (curTime >= nPreOpen)
-			{
-				return 0 ;
-			}
-			else
-			{
-				return curTime - nOpen ;
-			}
-		}
-		else
-		{
-			if (curTime >= nClose)
-			{
-				return nTickCount - 1;
-			}
-			else 
-			{
-				return curTime - nOpen ;
-			}
-		}
-	}
 
 	public void processCentralDbSubscribeEvent(CentralDbSubscribeEvent event) 
 	{
@@ -216,15 +157,18 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) 
 	{
-		if (!isStartup)
+		if (event == timerEvent && !isStartup)
 		{
-			checkSQLTimer += timeInterval;
-			if (checkSQLTimer >= checkSQLInterval)
-			{
-				dbhnd.checkSQLConnect();
-				checkSQLTimer = 0;
-			}
 			resetSymbolDataStat();
+		}
+		else if (event == checkEvent)
+		{
+			dbhnd.checkSQLConnect();
+		}
+		else if (event == insertEvent)
+		{
+			insertSQL();
+//			System.out.println("insert");
 		}
 	}
 	
@@ -242,7 +186,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			return;
 		}
-		if (sessionType == MarketSessionType.CLOSE)
+		if (processQuote == false)
 		{
 			return;
 		}
@@ -665,25 +609,24 @@ public class CentralDbProcessor implements IPlugin
 			getRefSymbolInfo().reset();
 			calledRefdata = false;
 		}
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
-		cal.add(Calendar.HOUR_OF_DAY, -2);
-		nOpen = (open/100) * 60 + (open%100) ;
-		nPreOpen = (preopen/100) * 60 + (preopen%100) ;
-		nClose = (close/100) * 60 + (close%100) ;
-		nTickCount = getTickCount() ;
 	}
 	
-	public void setSessionType(MarketSessionType sessionType, String market) {
+	public void setSessionType(MarketSessionType sessionType, String market) 
+	{
+		boolean insert = false;
+		boolean reset = false;
 		if (this.sessionType == MarketSessionType.OPEN)
 		{
 			if (sessionType == MarketSessionType.CLOSE)
 			{
-				insertSQL(market);
+//				insertSQL(market);
+				insert = true;
 			}
 			else if (sessionType == MarketSessionType.PREOPEN)
 			{
-				resetStatement() ;
-				onCallRefData();
+//				resetStatement() ;
+//				onCallRefData();
+				reset = true;
 			}
 		}
 		else if (this.sessionType == MarketSessionType.CLOSE)
@@ -691,15 +634,30 @@ public class CentralDbProcessor implements IPlugin
 			if (sessionType == MarketSessionType.OPEN 
 					|| sessionType == MarketSessionType.PREOPEN)
 			{
-				resetStatement() ;
-				onCallRefData();
+//				resetStatement() ;
+//				onCallRefData();
+				reset = true;
 			}
 		}
 		else if (this.sessionType == null)
 		{
+//			onCallRefData();
+			reset = true;
+		}
+		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
+			processQuote = true;
+		this.sessionType = sessionType;
+		
+		if (insert)
+		{
+//			insertSQL();
+			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
+		}
+		if (reset)
+		{
+			resetStatement() ;
 			onCallRefData();
 		}
-		this.sessionType = sessionType;
 	}
 	public void sendCentralReady(String appserv)
 	{
@@ -790,6 +748,7 @@ public class CentralDbProcessor implements IPlugin
 		requestMarketSession() ;
 
 		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
+		scheduleManager.scheduleRepeatTimerEvent(checkSQLInterval, eventProcessor, checkEvent);
 	}
 	@Override
 	public void uninit() {
@@ -797,25 +756,7 @@ public class CentralDbProcessor implements IPlugin
 		eventProcessorMD.uninit();
 		eventProcessor.uninit();
 	}
-
-	public int getOpen() {
-		return open;
-	}
-	public void setOpen(int open) {
-		this.open = open;
-	}
-	public int getPreopen() {
-		return preopen;
-	}
-	public void setPreopen(int preopen) {
-		this.preopen = preopen;
-	}
-	public int getClose() {
-		return close;
-	}
-	public void setClose(int close) {
-		this.close = close;
-	}
+	
 	public String getTradedate() {
 		return tradedate;
 	}
@@ -884,11 +825,12 @@ public class CentralDbProcessor implements IPlugin
 		}
 	}
 	
-	public void insertSQL(String market)
+	public void insertSQL()
 	{
+		processQuote = false;
 		for (SymbolChef chef : SymbolChefList)
 		{
-			chef.insertSQL(market);
+			chef.insertSQL();
 		}
 	}
 
@@ -914,6 +856,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public IRefSymbolInfo getRefSymbolInfo() {
 		return refSymbolInfo;
+	}
+
+	public long getSQLDelayInterval() {
+		return SQLDelayInterval;
+	}
+
+	public void setSQLDelayInterval(long interval) {
+		SQLDelayInterval = (interval > 0) ? interval : 1;
 	}
 	
 }
