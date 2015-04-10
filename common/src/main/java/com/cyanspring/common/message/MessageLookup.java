@@ -181,6 +181,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_OVER_CEIL_PRICE,getBean(457, "Order price over than ceil price"));
 			addAndCheck(ErrorMessage.ORDER_LOWER_FLOOR_PRICE,getBean(458, "Order price lower than floor price"));
 			addAndCheck(ErrorMessage.ORDER_CANT_FIND_QUOTEEXT_FILE,getBean(459, "Missing QuoteExt file"));
+			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Sell quantity exceeded available position quantity"));
 
 			
 			
@@ -245,9 +246,20 @@ public class MessageLookup {
 	public static MessageBean getMsgBeanFromEventMessage(String eventMessage){
 			MessageBean mb;
 			try{
-				if(null!= eventMessage && eventMessage.contains(MSG_SEPARATOR) && eventMessage.split("\\|"+"&"+"\\|").length>2){
+				if(null!= eventMessage && eventMessage.contains(MSG_SEPARATOR) && eventMessage.split("\\|"+"&"+"\\|").length>1){
+					int length = eventMessage.split("\\|"+"&"+"\\|").length;
 					String tempMsgs[] = eventMessage.split("\\|"+"&"+"\\|");
-					mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
+					if(length==2){
+						
+						mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],"");
+
+					}else{
+						
+						mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
+
+					}
+					
+					
 				}else{
 					if(!StringUtils.hasText(eventMessage)){
 						mb = lookup(ErrorMessage.EMPTY_MESSAGE);
