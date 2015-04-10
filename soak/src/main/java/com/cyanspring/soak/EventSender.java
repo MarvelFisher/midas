@@ -37,6 +37,7 @@ public class EventSender extends ClientAdaptor {
 		try 
 		{
 			this.event = (AsyncEvent)XMLUtils.eventFromXML("events\\" + getEventClass() + ".xml");
+			log.info("load event : " + this.event.getClass().getName());
 			sendEvent(this.event);
 		} 
 		catch (Exception e) 
