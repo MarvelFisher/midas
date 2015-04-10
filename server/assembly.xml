@@ -39,6 +39,15 @@
 			<outputDirectory></outputDirectory>
 		</fileSet>
 		<fileSet>
+			<directory>${basedir}/../soak/</directory>
+			<includes>
+				<include>conf/**</include>
+				<include>*.bat</include>
+				<include>*.sh</include>
+			</includes>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+		<fileSet>
 			<outputDirectory></outputDirectory> 
 			<includes>
 				<include>*.bat</include>
