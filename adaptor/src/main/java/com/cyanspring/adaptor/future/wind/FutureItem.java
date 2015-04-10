@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import com.cyanspring.common.marketdata.InnerQuote;
 import org.slf4j.Logger;
@@ -201,10 +202,34 @@ public class FutureItem implements AutoCloseable {
 
 		Quote quote = new Quote(symbolId, bids, asks);
 
+		//Get MarketSession
+		String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
+		MarketSessionData marketSessionData = null;
+		Date endDate;
+		Date startDate;
+		try {
+			marketSessionData = WindFutureDataAdaptor.instance
+					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
+							DateUtil.now());
+			endDate = marketSessionData.getEndDate();
+			startDate = marketSessionData.getStartDate();
+		} catch (Exception e) {
+			LogUtil.logException(log, e);
+			return;
+		}
+
+		if (WindFutureDataAdaptor.instance.isMarketDataLog())
+			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
+							+ ",Symbol=" + symbolId + ",MarketSessionType="
+							+ marketSessionData.getSessionType() + ",Time=" + DateUtil.now()
+							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
+			);
+
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getTradingDay(),
 				data.getTime());
 		Date tickTime;
+
 		try {
 			if(data.getTime() < WindFutureDataAdaptor.AM10){
 				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
@@ -214,6 +239,18 @@ public class FutureItem implements AutoCloseable {
 		} catch (ParseException e) {
 			tickTime = DateUtil.now();
 		}
+
+		//modify tick Time
+		if(marketSessionData.getSessionType()==MarketSessionType.PREOPEN
+				&& DateUtil.compareDate(tickTime, endDate)<0){
+			tickTime = endDate;
+		}
+
+		if(marketSessionData.getSessionType()==MarketSessionType.CLOSE
+				&& DateUtil.compareDate(tickTime, startDate)>=0){
+			tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
+		}
+
 		quote.setTimeStamp(tickTime);
 
 		// bid/ask
@@ -229,23 +266,8 @@ public class FutureItem implements AutoCloseable {
 		quote.setLast((double) data.getMatch() / 10000);
 		quote.setClose((double) data.getPreClose() / 10000);
 
-		// check stale
-		String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
-		MarketSessionData marketSessionData = null;
-		try {
-			marketSessionData = WindFutureDataAdaptor.instance
-					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
-							DateUtil.now());
-		} catch (Exception e) {
-			LogUtil.logException(log, e);
-			return;
-		}
 
-		if (WindFutureDataAdaptor.instance.isMarketDataLog())
-			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
-					+ ",Symbol=" + symbolId + ",MarketSessionType="
-					+ marketSessionData.getSessionType() + ",Time=" + DateUtil.now());
-
+		//Check Stale
 		if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
 				|| marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
 			quote.setStale(true);
