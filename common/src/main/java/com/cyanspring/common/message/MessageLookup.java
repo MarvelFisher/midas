@@ -246,9 +246,20 @@ public class MessageLookup {
 	public static MessageBean getMsgBeanFromEventMessage(String eventMessage){
 			MessageBean mb;
 			try{
-				if(null!= eventMessage && eventMessage.contains(MSG_SEPARATOR) && eventMessage.split("\\|"+"&"+"\\|").length>2){
+				if(null!= eventMessage && eventMessage.contains(MSG_SEPARATOR) && eventMessage.split("\\|"+"&"+"\\|").length>1){
+					int length = eventMessage.split("\\|"+"&"+"\\|").length;
 					String tempMsgs[] = eventMessage.split("\\|"+"&"+"\\|");
-					mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
+					if(length==2){
+						
+						mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],"");
+
+					}else{
+						
+						mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
+
+					}
+					
+					
 				}else{
 					if(!StringUtils.hasText(eventMessage)){
 						mb = lookup(ErrorMessage.EMPTY_MESSAGE);

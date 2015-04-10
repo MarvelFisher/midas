@@ -15,6 +15,15 @@ public class MessageLookupTest {
 		assertEquals("account doesn't exist", bean.getMsg());
 		assertEquals("account not exist", bean.getLocalMsg() );
 		
+		String msg2 = "434|&|validation error|&|";
+		
+		MessageBean bean2 = MessageLookup.getMsgBeanFromEventMessage(msg2);
+		
+		assertEquals(434, bean2.getCode());
+		assertEquals("validation error", bean2.getMsg());
+		assertEquals("", bean2.getLocalMsg() );
+
+		
 	}
 
 	@Test
@@ -27,7 +36,7 @@ public class MessageLookupTest {
 		assertEquals("account doesn't exist", msgs[1]);
 		assertEquals("account not exist", msgs[2] );
 
-
+		
 		
 	}
 	@Test
