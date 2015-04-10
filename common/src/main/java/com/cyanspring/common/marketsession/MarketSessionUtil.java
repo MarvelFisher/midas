@@ -17,11 +17,6 @@ public class MarketSessionUtil {
 		return checker.getState(date);
 	}
 	
-	public MarketSessionData getCurrentMarketSessionEvent(String symbol, Date date) throws Exception{
-		MarketSessionChecker checker = cMap.get(symbol);
-		return checker.getState(date);
-	}
-	
 	public boolean isHoliday(String symbol, Date date){
 		TradeDateManager checker = tMap.get(symbol);		
 		return checker.isHoliday(date);
