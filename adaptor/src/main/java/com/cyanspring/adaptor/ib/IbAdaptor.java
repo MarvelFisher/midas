@@ -555,14 +555,15 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 + EWrapperMsgGenerator.error(id, errorCode, errorMsg));
         ChildOrder order = idToOrder.get(id);
         if (null != order) {
-            if (errorCode == 201) {
-                order.setOrdStatus(OrdStatus.REJECTED);
-            } else if (order.getOrdStatus().isPending() && errorCode != 202
-                    && (errorCode != 399 || !errorMsg.contains("Warning"))) {
+        	if (order.getOrdStatus().equals(OrdStatus.PENDING_NEW) && 
+                (errorCode == 399 && errorMsg.contains("Warning"))) {
                 order.setOrdStatus(autoStatus(order));
-            }
-            downStreamListener.onOrder(ExecType.REJECTED, order, null,
+                downStreamListener.onOrder(ExecType.NEW, order, null, "");
+            } else {
+                order.setOrdStatus(OrdStatus.REJECTED);
+                downStreamListener.onOrder(ExecType.REJECTED, order, null,
                     "IB error: " + errorCode + ", " + errorMsg);
+            }
         }
         if (id == -1) {
             if (errorCode == 1100) {

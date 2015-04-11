@@ -179,6 +179,9 @@
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
 	</bean>
 
+	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
+	</bean>
+
 	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
 	</bean>
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
@@ -371,6 +374,7 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
+				<ref bean="ibAdaptor" />
 			</list>
 		</constructor-arg>
 	</bean>
