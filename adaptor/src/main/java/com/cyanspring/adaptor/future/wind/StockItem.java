@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import com.cyanspring.common.marketdata.InnerQuote;
 import org.slf4j.Logger;
@@ -207,18 +208,58 @@ public class StockItem implements AutoCloseable {
 
 		Quote quote = new Quote(symbolId, bids, asks);
 
-		// Check Stale
-		String exchange = WindFutureDataAdaptor.marketRuleBySymbolMap
-				.get(symbolId);
+		//Get MarketSession
+		String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
 		MarketSessionData marketSessionData = null;
+		Date endDate;
+		Date startDate;
 		try {
 			marketSessionData = WindFutureDataAdaptor.instance
-					.getMarketSessionUtil().getCurrentMarketSessionType(
-							exchange, DateUtil.now());
+					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
+							DateUtil.now());
+			endDate = marketSessionData.getEndDate();
+			startDate = marketSessionData.getStartDate();
 		} catch (Exception e) {
 			LogUtil.logException(log, e);
 			return;
 		}
+
+		if (WindFutureDataAdaptor.instance.isMarketDataLog())
+			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
+							+ ",Symbol=" + symbolId + ",MarketSessionType="
+							+ marketSessionData.getSessionType() + ",Time=" + DateUtil.now()
+							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
+			);
+
+		// tick time
+		String timeStamp = String.format("%d-%d", data.getTradingDay(),
+				data.getTime());
+		Date tickTime;
+		try {
+			if (data.getTime() < WindFutureDataAdaptor.AM10) {
+				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
+			} else {
+				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
+			}
+		} catch (ParseException e) {
+			tickTime = DateUtil.now();
+		}
+
+		//modify tick Time
+		if(marketSessionData.getSessionType()==MarketSessionType.PREOPEN
+				&& DateUtil.compareDate(tickTime, endDate)<0){
+			tickTime = endDate;
+		}
+
+		if(marketSessionData.getSessionType()==MarketSessionType.CLOSE
+				&& DateUtil.compareDate(tickTime, startDate)>=0){
+			tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
+		}
+
+		quote.setTimeStamp(tickTime);
+
+
+		//Check Stale
 		if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
 				|| marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
 			quote.setStale(true);
@@ -243,21 +284,6 @@ public class StockItem implements AutoCloseable {
 				break;
 			}
 		}
-
-		// tick time
-		String timeStamp = String.format("%d-%d", data.getTradingDay(),
-				data.getTime());
-		Date tickTime;
-		try {
-			if (data.getTime() < WindFutureDataAdaptor.AM10) {
-				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
-			} else {
-				tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
-			}
-		} catch (ParseException e) {
-			tickTime = DateUtil.now();
-		}
-		quote.setTimeStamp(tickTime);
 
 		// bid/ask
 		QtyPrice bid = bids.size() > 0 ? bids.get(0) : null;
