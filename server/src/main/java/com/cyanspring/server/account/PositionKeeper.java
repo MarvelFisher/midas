@@ -32,10 +32,8 @@ import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.StrategyState;
-import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 
@@ -183,7 +181,7 @@ public class PositionKeeper {
 				this.notifyUpdateDetailOpenPosition(position);
 			} else {
 			
-				OpenPosition overallPosition = getOverallPosition(list);
+				OpenPosition overallPosition = getOverallPosition(list, account, execution.getSymbol());
 		
 				double execPos = execution.toPostion();
 				if(overallPosition.oppositePosition(execPos)) {
@@ -404,7 +402,7 @@ public class PositionKeeper {
 		OpenPosition pos = null;
 		synchronized(getSyncAccount(account.getId())) {
 			try {
-				pos = getOverallPosition(list);
+				pos = getOverallPosition(list, account, symbol);
 				if(null != quoteFeeder) {
 					Quote quote = quoteFeeder.getQuote(symbol);
 					if(null != quote && null != pos) {
@@ -424,18 +422,18 @@ public class PositionKeeper {
 		
 		return null == pos? result : pos;
 	}
-	
-	private OpenPosition getOverallPosition(List<OpenPosition> list) throws PositionException {
-		if(null == list || list.size() <= 0)
+
+	private OpenPosition getOverallPosition(List<OpenPosition> list, Account account, String symbol) throws PositionException {
+		if (null == list || list.size() <= 0)
 			return null;
-		
+
 		checkOverallPosition(list);
 		double qty = 0;
 		double amount = 0;
 		double PnL = 0;
 		double margin = 0;
 		double availableQty = 0;
-		for(OpenPosition pos: list) {
+		for (OpenPosition pos : list) {
 			qty += pos.getQty();
 			amount += pos.getQty() * pos.getPrice();
 			PnL += pos.getPnL();
@@ -443,11 +441,30 @@ public class PositionKeeper {
 			availableQty += pos.getDetailAvailableQty();
 		}
 		double price = amount / qty;
+		availableQty -= GetPendingSellQty(account, symbol);
+
 		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(),
 				list.get(0).getSymbol(), qty, price, margin);
 		result.setPnL(PnL);
 		result.setAvailableQty(availableQty);
 		return result;
+	}
+
+	private double GetPendingSellQty(Account account, String symbol) {
+		double pendingSellQty = 0;
+
+		List<ParentOrder> orders = getParentOrders(account.getId(), symbol);
+
+		for (ParentOrder o : orders) {
+
+			if (o.getOrdStatus().isCompleted() || !o.getSide().isSell()) {
+				continue;
+			}
+
+			pendingSellQty += o.getRemainingQty();
+		}
+
+		return pendingSellQty;
 	}
 	
 	private void checkOverallPosition(List<OpenPosition> list) throws PositionException {

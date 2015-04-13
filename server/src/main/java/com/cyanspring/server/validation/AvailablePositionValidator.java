@@ -12,7 +12,6 @@ import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.Map;
 
 public class AvailablePositionValidator implements IOrderValidator {
@@ -52,7 +51,7 @@ public class AvailablePositionValidator implements IOrderValidator {
 
                 double availableQty = positionKeeper.getOverallPosition(account, symbol).getAvailableQty();
 
-                if (!checkQty(account, symbol, qty, availableQty, order)) {
+                if (!checkQty(qty, availableQty, order)) {
                     throw new OrderValidationException("Sell quantity exceeded available position quantity", ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY);
                 }
             }
@@ -64,26 +63,13 @@ public class AvailablePositionValidator implements IOrderValidator {
         }
     }
 
-    private boolean checkQty(Account account, String symbol, double qty, double availableQty, ParentOrder order) {
-
-        List<ParentOrder> orders = positionKeeper.getParentOrders(account.getId(), symbol);
-
-        double pendingSellQty = 0;
-
-        for (ParentOrder o : orders) {
-
-            if (o.getOrdStatus().isCompleted() || !o.getSide().isSell()) {
-                continue;
-            }
-
-            pendingSellQty += o.getRemainingQty();
-        }
+    private boolean checkQty(double qty, double availableQty, ParentOrder order) {
 
         double oldQty = 0;
         if (null != order) {
             oldQty = order.getRemainingQty();
         }
 
-        return availableQty - pendingSellQty + oldQty - qty >= 0;
+        return availableQty + oldQty - qty >= 0;
     }
 }
