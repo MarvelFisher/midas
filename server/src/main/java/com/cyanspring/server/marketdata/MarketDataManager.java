@@ -105,6 +105,15 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
     private boolean quoteExtendEventIsSend = true;
     private int quotePriceWarningPercent = 99;
     private boolean quoteLogIsOpen = false;
+    private int quoteExtendSegmentSize = 300;
+
+    public int getQuoteExtendSegmentSize() {
+        return quoteExtendSegmentSize;
+    }
+
+    public void setQuoteExtendSegmentSize(int quoteExtendSegmentSize) {
+        this.quoteExtendSegmentSize = quoteExtendSegmentSize;
+    }
 
     public boolean isQuoteExtendEventIsSend() {
         return quoteExtendEventIsSend;
@@ -295,7 +304,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
         log.debug("QuoteExtSubEvent:" + event.getKey() + ", "
                 + event.getReceiver() + ",tradeDate=" + tradeDate );
 
-        int dataSegmentSize = 5;
+        int dataSegmentSize = getQuoteExtendSegmentSize();
         int transQuoteExtendOffset = 0;
 
         if (quoteExtends != null && quoteExtends.size() > 0) {
