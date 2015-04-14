@@ -47,6 +47,9 @@
 	</bean>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
+	</bean>
+
+	<bean id="resourceManager" class="com.cyanspring.common.api.ApiResourceManager">
 		<property name="socketService">
 			<ref bean="socketService" />
 		</property>

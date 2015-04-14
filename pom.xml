@@ -22,7 +22,8 @@
 		<module>client</module>
 		<module>soak</module>
 		<module>info</module>
- 	</modules>
+		<module>apievent</module>
+	</modules>
 	
 	<repositories>
 		<repository>
