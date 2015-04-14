@@ -197,7 +197,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
             subscribeToEvent(LastTradeDateQuotesRequestEvent.class, null);
             subscribeToEvent(TradeDateEvent.class, null);
             subscribeToEvent(MarketSessionEvent.class, null);
-            subscribeToEvent(MultiQuoteExtendEvent.class, null);
         }
 
         @Override
@@ -303,10 +302,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
     public void processQuoteExtSubEvent(QuoteExtSubEvent event) throws Exception {
         log.debug("QuoteExtSubEvent:" + event.getKey() + ", "
-                + event.getReceiver() + ",tradeDate=" + tradeDate );
+                + event.getReceiver() + ",tradeDate=" + tradeDate);
 
         int dataSegmentSize = getQuoteExtendSegmentSize();
         int transQuoteExtendOffset = 0;
+        int totalQuoteExtendCount = 0;
 
         if (quoteExtends != null && quoteExtends.size() > 0) {
             HashMap<String, DataObject> quoteExtendSegmentMap = null;
@@ -320,10 +320,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                 transQuoteExtendOffset = transQuoteExtendOffset + 1;
                 if (transQuoteExtendOffset % dataSegmentSize == 1) {
                     if (transQuoteExtendOffset != 1) {
+                        totalQuoteExtendCount = totalQuoteExtendCount + quoteExtendSegmentMap.size();
                         MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
                                 , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
                         multiQuoteExtendEvent.setOffSet(transQuoteExtendOffset - dataSegmentSize);
-                        multiQuoteExtendEvent.setTotalDataCount(quoteExtendSegmentMap.size());
+                        multiQuoteExtendEvent.setTotalDataCount(-1);
                         eventManager.sendEvent(multiQuoteExtendEvent);
                     }
                     quoteExtendSegmentMap = new HashMap<String, DataObject>();
@@ -331,26 +332,18 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                 quoteExtendSegmentMap.put(symbol, quoteExtends.get(symbol));
             }
             //Check Last Send
-            MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
-                    , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
-            multiQuoteExtendEvent.setOffSet(
-                    transQuoteExtendOffset < dataSegmentSize ? 1
-                            : transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1);
-            multiQuoteExtendEvent.setTotalDataCount(quoteExtendSegmentMap != null ? quoteExtendSegmentMap.size() : 0);
-            eventManager.sendEvent(multiQuoteExtendEvent);
+            if (quoteExtendSegmentMap != null && quoteExtendSegmentMap.size() > 0) {
+                totalQuoteExtendCount = totalQuoteExtendCount + quoteExtendSegmentMap.size();
+                MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
+                        , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
+                multiQuoteExtendEvent.setOffSet(
+                        transQuoteExtendOffset < dataSegmentSize ? 1
+                                : transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1);
+                multiQuoteExtendEvent.setTotalDataCount(totalQuoteExtendCount);
+                eventManager.sendEvent(multiQuoteExtendEvent);
+            }
         }
     }
-
-    public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event){
-        HashMap<String,DataObject> hm = event.getMutilQuoteExtend();
-        System.out.println("OffSet:" + event.getOffSet() + ",TotalCount:" + event.getTotalDataCount()
-        );
-        for(String symbol: hm.keySet()){
-            System.out.println("symbol:" + symbol + ",DataObject:" + hm.get(symbol));
-        }
-
-    }
-
 
     public void processTradeSubEvent(TradeSubEvent event)
             throws MarketDataException {

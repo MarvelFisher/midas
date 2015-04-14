@@ -2,8 +2,6 @@ package com.cyanspring.common.event.marketdata;
 
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.RemoteAsyncEvent;
-
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.HashMap;
 
