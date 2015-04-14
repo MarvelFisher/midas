@@ -473,7 +473,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                     + ",Last=" + quote.getLast()
                     + ",Stale=" + quote.isStale() + ",ts="
                     + quote.getTimeStamp().toString() + ",wPcnt="
-                    + getQuotePriceWarningPercent());
+                    + getQuotePriceWarningPercent()
+					+ ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+			);
         }
 
         if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
@@ -484,7 +486,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                     + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                     + ",Stale=" + quote.isStale()
                     + ",ts=" + quote.getTimeStamp().toString()
-                    + ",wPcnt=" + getQuotePriceWarningPercent());
+                    + ",wPcnt=" + getQuotePriceWarningPercent() + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+			);
             return;
         }
 
