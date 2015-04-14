@@ -420,26 +420,28 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 		Quote prev = quotes.get(quote.getSymbol());
 
 		if (isQuoteLogIsOpen()) {
-			quoteLog.info("Quote Receive : " + "Source="
+			quoteLog.info("Quote Receive : " + "Sou="
 					+ inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
-					+ ",Ask=" + quote.getAsk() + ",Bid=" + quote.getBid()
-					+ ",Close=" + quote.getClose() + ",Open=" + quote.getOpen()
-					+ ",High=" + quote.getHigh() + ",Low=" + quote.getLow()
+					+ ",A=" + quote.getAsk() + ",B=" + quote.getBid()
+					+ ",C=" + quote.getClose() + ",O=" + quote.getOpen()
+					+ ",H=" + quote.getHigh() + ",L=" + quote.getLow()
 					+",Last=" + quote.getLast()
-					+ ",Stale=" + quote.isStale() + ",TimeStamp="
-					+ quote.getTimeStamp().toString() + ",WarningPcnt="
-					+ getQuotePriceWarningPercent());
+					+ ",Stale=" + quote.isStale() + ",ts="
+					+ quote.getTimeStamp().toString() + ",wPcnt="
+					+ getQuotePriceWarningPercent() + ",lsV=" + quote.getLastVol()
+					+ ",tV=" + quote.getTotalVolume()
+			);
 		}
 
 		if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
-			quoteLog.warn("Quote BBBBB! : " + "Source=" + inEvent.getSourceId()
-					+ ",Symbol=" + quote.getSymbol() + ",Ask=" + quote.getAsk()
-					+ ",Bid=" + quote.getBid() + ",Close=" + quote.getClose()
-					+ ",Open=" + quote.getOpen() + ",High=" + quote.getHigh()
-					+ ",Low=" + quote.getLow() +",Last=" + quote.getLast() 
-					+  ",Stale=" + quote.isStale()
-					+ ",TimeStamp=" + quote.getTimeStamp().toString()
-					+ ",WarningPcnt=" + getQuotePriceWarningPercent());
+			quoteLog.warn("Quote BBBBB! : " + "Sou=" + inEvent.getSourceId()
+					+ ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
+					+ ",B=" + quote.getBid() + ",C=" + quote.getClose()
+					+ ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
+					+ ",L=" + quote.getLow() +",Last=" + quote.getLast()
+					+  ",Stale=" + quote.isStale() + ",ts=" + quote.getTimeStamp().toString()
+					+ ",wPcnt=" + getQuotePriceWarningPercent()+ ",lsV=" + quote.getLastVol()
+					+ ",tV=" + quote.getTotalVolume());
 			return;
 		}
 

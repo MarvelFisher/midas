@@ -1,5 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
+import com.cyanspring.common.util.TimeUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,6 +9,8 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.awt.event.WindowAdapter;
 import java.util.Date;
+import java.util.LongSummaryStatistics;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +32,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	private static final Logger log = LoggerFactory
 			.getLogger(WindFutureDataAdaptor.class);
+	private static final Logger flowCalculateLog = LoggerFactory.getLogger(ClientHandler.class.getName() + ".FlowCalculateLog");
 
 	public static Date lastRecv = DateUtil.now();
 	public static Date lastCheck = DateUtil.now();
 	static TimerThread timer = null;
 	static ChannelHandlerContext context; // context deal with server
+	private int bufLenMin = 0,bufLenMax = 0,dataReceived = 0,blockCount = 0;
+	private long msDiff = 0,msLastTime = 0,throughput = 0;
 
 	public ClientHandler() {
 		if (timer == null) {
@@ -100,10 +106,47 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					}
 				}
-				System.out.flush();
+//				System.out.flush();
 			}
 		} finally {
+			if(WindFutureDataAdaptor.instance.isMarketDataLog()) calculateMessageFlow(in.length());
 			ReferenceCountUtil.release(msg);
+		}
+
+	}
+
+	public void calculateMessageFlow(int rBytes){
+
+		if(bufLenMin > rBytes)
+		{
+			bufLenMin = rBytes;
+		} else {
+			if(bufLenMin == 0) {
+				bufLenMin = rBytes;
+				flowCalculateLog.debug("WindC-first time recv len from id : " + bufLenMin);
+			}
+		}
+
+		if(bufLenMax < rBytes) {
+			bufLenMax = rBytes;
+		}
+
+		dataReceived += rBytes;
+		blockCount += 1;
+		msDiff = System.currentTimeMillis() - msLastTime;
+		if(msDiff > 1000) {
+			msLastTime = System.currentTimeMillis();
+			if(throughput < dataReceived * 1000 / msDiff) {
+				throughput = dataReceived * 1000 / msDiff;
+				if (throughput < 1024) {
+					flowCalculateLog.debug("WindC-maximal throughput : " + throughput + " Bytes/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
+				} else {
+					flowCalculateLog.debug("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
+
+				}
+			}
+			dataReceived = 0;
+			blockCount = 0;
 		}
 	}
 
@@ -139,6 +182,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 				subscribe(symbol);
 			}
 		}
+
+		msLastTime = System.currentTimeMillis();
 
 		// sendRequestCodeTable("CF");
 
@@ -247,7 +292,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	/**
 	 * get exchange symbol list
 	 * 
-	 * @param exchange
+	 * @param market
 	 */
 	public static void sendRequestCodeTable(String market) {
 		FixStringBuilder fsb = new FixStringBuilder('=', '|');

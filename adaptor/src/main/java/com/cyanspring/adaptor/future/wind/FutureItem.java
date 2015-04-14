@@ -306,8 +306,10 @@ public class FutureItem implements AutoCloseable {
 		long totalVolume = data.getVolume();
 
 		if (totalVolume - item.totalVolume > 0) {
-			item.volume = totalVolume - item.volume;
+			item.volume = totalVolume - item.totalVolume;
 			item.totalVolume = totalVolume;
+		}else{
+			item.volume = 0;
 		}
 		quote.setTotalVolume(totalVolume);
 		quote.setLastVol(item.volume);
