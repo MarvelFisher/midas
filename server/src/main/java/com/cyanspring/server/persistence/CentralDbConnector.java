@@ -145,7 +145,7 @@ public class CentralDbConnector {
 		
 		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, userType, country, language);
 		Statement stmt = null;
-
+		log.debug("[registerUser] SQL:" + sUserSQL);
 		try {
         	conn.setAutoCommit(false);
 			stmt = conn.createStatement();
@@ -173,6 +173,7 @@ public class CentralDbConnector {
 			return false;
 
 		String sQuery = String.format(isUserExist, sUser);
+		log.debug("[isUserExist] SQL:" + sQuery);
 		Statement stmt = null;
 		int nCount = 0;
 
@@ -198,6 +199,7 @@ public class CentralDbConnector {
 			return false;
 
 		String sQuery = String.format(isEmailExist, sEmail);
+		log.debug("[isEmailExist] SQL:" + sQuery);
 		Statement stmt = null;
 		int nCount = 0;
 
@@ -223,9 +225,13 @@ public class CentralDbConnector {
 	}
 	public User userLoginEx(String sUser, String sPassword) {
 		if (!checkConnected())
+		{
+			log.debug("[userLoginEx] Connection is lost ,could not process userLogin :"+sUser);
 			return null;
+		}
 
 		String sQuery = String.format(getUserAllInfo, sUser);
+		log.debug("[userLoginEx] SQL:" + sQuery);
 		Statement stmt = null;
 
 		String md5Password = null;
@@ -247,16 +253,33 @@ public class CentralDbConnector {
 				phone = rs.getString("PHONE");
 				userType = UserType.fromCode(rs.getInt("USERTYPE"));
 			}
+			log.debug(String.format("[userLoginEx] user[%s] queried: PASSWROD[%s] SALT[%s] USERNAME[%s] EMAIL[%s] PHONE[%s] USERTYPE[%s]",
+					sUser == null ? "null" : sUser,
+					md5Password == null ? "null": md5Password,
+					salt == null ? "null": salt,
+					username == null ? "null": username,
+					email == null ? "null": email,
+					phone == null ? "null": phone,
+					userType == null ? "null": userType.name()));
 			
 			if(md5Password == null){
 				closeStmt(stmt);
+				log.debug("[userLoginEx] db lost md5Password for user:" + sUser);
 				return null;
 			}
 
 			String fullPassword = (salt == null)? sPassword : sPassword + salt;
+			log.debug(String.format("[userLoginEx] user[%s] md5(fullPassword)[%s] fullPassword[%s] sPassword[%s] salt[%s] md5Password[%s]",
+					sUser == null ? "null" : sUser,
+					fullPassword == null ? "null": md5(fullPassword),
+					fullPassword == null ? "null": fullPassword,
+					sPassword == null ? "null": sPassword,
+					salt == null ? "null": salt,
+					md5Password == null ? "null": md5Password));
 			
 			if(md5Password.equals(md5(fullPassword))){
 				closeStmt(stmt);
+				log.debug("[userLoginEx] password OK :" + sUser);
 				return new User(sUser, username, sPassword, email, phone, userType);
 			}
 
@@ -267,6 +290,7 @@ public class CentralDbConnector {
 				closeStmt(stmt);
 			}
 		}
+		log.debug("[userLoginEx] password not match :" + sUser);
 		return null;
 	}	
 	public boolean changePassword(String sUser, String originalPass, String newPass) {
