@@ -1,8 +1,8 @@
 .classpath
 .project
 .settings
-/bin
-/target
-/log
+bin
+target
+log
 .idea
 **/*.iml
