@@ -10,11 +10,11 @@
  ******************************************************************************/
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.Map;
 
-public class EnterParentOrderEvent extends ClientEvent {
+public class EnterParentOrderEvent extends RemoteAsyncEvent {
 	private Map<String, Object> fields;
 	private String txId;
 	private boolean fix;

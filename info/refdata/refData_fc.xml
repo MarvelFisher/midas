@@ -2,6 +2,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Maximum hold</string>
+        <int>2500</int>
+      </entry>
+      <entry>
         <string>Type</string>
         <string>INDEX_FU</string>
       </entry>
@@ -15,7 +19,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-03-20</string>
+        <string>2015-03-20</string>cn
       </entry>
       <entry>
         <string>Commission fee</string>
@@ -42,12 +46,12 @@
         <double>0.0</double>
       </entry>
       <entry>
-        <string>Tick table</string>
-        <string>IF</string>
-      </entry>
-      <entry>
         <string>Decimal point</string>
         <int>1</int>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -62,24 +66,12 @@
         <double>300.0</double>
       </entry>
       <entry>
-        <string>Limit maximum lot</string>
-        <int>499</int>
-      </entry>
-      <entry>
-        <string>Market maximum lot</string>
-        <int>499</int>
-      </entry>
-      <entry>
-        <string>Maximum hold</string>
-        <int>2500</int>
-      </entry>
-      <entry>
         <string>Strategy</string>
         <string>IF</string>
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -109,10 +101,22 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>499</int>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>499</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+      <entry>
+        <string>Maximum hold</string>
+        <int>2500</int>
+      </entry>
       <entry>
         <string>Type</string>
         <string>INDEX_FU</string>
@@ -154,12 +158,12 @@
         <double>0.0</double>
       </entry>
       <entry>
-        <string>Tick table</string>
-        <string>IF</string>
-      </entry>
-      <entry>
         <string>Decimal point</string>
         <int>1</int>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Minimal CF</string>
@@ -174,24 +178,12 @@
         <double>300.0</double>
       </entry>
       <entry>
-        <string>Limit maximum lot</string>
-        <int>499</int>
-      </entry>
-      <entry>
-        <string>Market maximum lot</string>
-        <int>499</int>
-      </entry>
-      <entry>
-        <string>Maximum hold</string>
-        <int>2500</int>
-      </entry>
-      <entry>
         <string>Strategy</string>
         <string>IF</string>
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -221,10 +213,18 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>499</int>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>499</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
-  
-   <com.cyanspring.common.staticdata.RefData>
+
+  <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
         <string>Maximum hold</string>
@@ -296,7 +296,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -336,7 +336,7 @@
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
-  
+
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
@@ -409,7 +409,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -449,7 +449,7 @@
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
-  
+
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
@@ -522,7 +522,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -562,8 +562,8 @@
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
-  
-  
+
+
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
@@ -636,7 +636,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -677,4 +677,3 @@
     </fields>
   </com.cyanspring.common.staticdata.RefData>
 </list>
-

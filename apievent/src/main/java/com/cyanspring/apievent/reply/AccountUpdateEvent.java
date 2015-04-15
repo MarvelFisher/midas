@@ -1,9 +1,9 @@
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 import com.cyanspring.apievent.obj.Account;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class AccountUpdateEvent extends ClientEvent {
+public class AccountUpdateEvent extends RemoteAsyncEvent {
 	private Account account;
 
 	public AccountUpdateEvent(String key, String receiver, Account account) {

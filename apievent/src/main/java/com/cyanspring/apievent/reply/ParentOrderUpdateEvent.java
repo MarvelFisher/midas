@@ -12,10 +12,10 @@
  */
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 import com.cyanspring.apievent.obj.Order;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class ParentOrderUpdateEvent extends ClientEvent {
+public class ParentOrderUpdateEvent extends RemoteAsyncEvent {
     private String txId;
     private Order order;
     private String info;

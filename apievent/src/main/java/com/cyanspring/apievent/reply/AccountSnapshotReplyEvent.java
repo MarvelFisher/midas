@@ -1,14 +1,13 @@
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 import com.cyanspring.apievent.obj.Account;
-import com.cyanspring.apievent.obj.AccountInfo;
 import com.cyanspring.apievent.obj.Execution;
 import com.cyanspring.apievent.obj.OpenPosition;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.List;
 
-public class AccountSnapshotReplyEvent extends ClientEvent {
+public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	private Account account;
 	private List<OpenPosition> openPositions;
 //	private List<ClosedPosition> closedPositions;

@@ -10,12 +10,12 @@
  ******************************************************************************/
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 import com.cyanspring.apievent.obj.Order;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.List;
 
-public class StrategySnapshotEvent extends ClientEvent {
+public class StrategySnapshotEvent extends RemoteAsyncEvent {
 	private List<Order> orders;
 	private String txId;
 

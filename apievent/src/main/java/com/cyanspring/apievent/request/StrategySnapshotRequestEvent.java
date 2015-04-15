@@ -1,6 +1,6 @@
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
  * Description....
@@ -18,7 +18,7 @@ import com.cyanspring.apievent.ClientEvent;
  * @version %I%, %G%
  * @since 1.0
  */
-public class StrategySnapshotRequestEvent extends ClientEvent{
+public class StrategySnapshotRequestEvent extends RemoteAsyncEvent {
     private String txId;
 
     public StrategySnapshotRequestEvent(String key, String receiver, String txId) {

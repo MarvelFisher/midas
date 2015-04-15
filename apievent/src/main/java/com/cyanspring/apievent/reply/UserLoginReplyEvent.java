@@ -1,6 +1,6 @@
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * @version %I%, %G%
  * @since 1.0
  */
-public class UserLoginReplyEvent extends ClientEvent {
+public class UserLoginReplyEvent extends RemoteAsyncEvent {
     private boolean ok;
     private String message;
     private String txId;

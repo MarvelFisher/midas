@@ -1,10 +1,10 @@
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.Map;
 
-public class NewSingleInstrumentStrategyEvent extends ClientEvent {
+public class NewSingleInstrumentStrategyEvent extends RemoteAsyncEvent {
 	private String txId;
 	private Map<String, Object> instrument;
 	public NewSingleInstrumentStrategyEvent(String key, String receiver,

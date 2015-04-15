@@ -1,6 +1,6 @@
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
  * Description....
@@ -18,7 +18,7 @@ import com.cyanspring.apievent.ClientEvent;
  * @version %I%, %G%
  * @since 1.0
  */
-public class SystemErrorEvent extends ClientEvent {
+public class SystemErrorEvent extends RemoteAsyncEvent {
     private int errorCode;
     private String message;
 
