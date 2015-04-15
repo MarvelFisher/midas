@@ -25,6 +25,7 @@
 				<ref bean="apiBridgeManager" />
 				<!-- <ref bean="alertManager" /> -->
 				<ref bean="autoRunner" />
+				<ref bean="ceilFloorValidator"/>
 			</list>
 		</property>
 		<property name="readyMap">

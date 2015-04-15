@@ -1,6 +1,9 @@
 package com.cyanspring.server.validation;
 
-import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,23 +12,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import webcurve.util.PriceUtils;
+
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.type.OrderType;
+import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventProcessor;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.cyanspring.id.Library.Util.DateUtil;
 /**
  * 
  * @author Jimmy
@@ -37,8 +49,13 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	private static final Logger log = LoggerFactory
 			.getLogger(CeilFloorValidator.class);
 	
-	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = null;
-	private String quoteExtendFile;
+	private static final String ID="CFValidator-"+IdGenerator.getInstance().getNextID();
+	private static final String SENDER=CeilFloorValidator.class.getSimpleName();
+	
+	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap <String, DataObject>();
+	private Date tradeDate = null;
+	private String tradeDateFormat="yyyy-MM-dd";
+	
 	@Autowired
 	protected IRemoteEventManager eventManager;
 	
@@ -46,9 +63,16 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
-		public void subscribeToEvents() {			
+		public void subscribeToEvents() {		
+			/**
+			 * @Purpose : Building QuoteExt Map from MarketDataManager
+			 * 			  to validate order ceil and floor price.
+			 */
 			subscribeToEvent(QuoteExtEvent.class, null);
-			subscribeToEvent(MarketSessionEvent.class, null);	
+			subscribeToEvent(MarketSessionEvent.class, null);
+			subscribeToEvent(TradeDateEvent.class,null);
+			subscribeToEvent(MultiQuoteExtendEvent.class, null);
+
 		}
 
 		@Override
@@ -63,40 +87,66 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {		
-		//when order incoming, check the quote ext file whether created. 
-		if(quoteExtendsMap==null && !buildQuoteExtFile()){	
+		
+		if(quoteExtendsMap.size()==0){		
+			
 			log.warn("validation : No quoteExtends info");
 			return;
+			
 		}
+		
+		log.info("quoteExtendsMap size:"+quoteExtendsMap.size());
+		
 		
 		try{
 			
 			String symbol;
 			Double price;
-			DataObject data=null;
-
+			DataObject data = null;
+			OrderType type = null;
+			
 			if(order == null){
+				
 				symbol = (String)map.get(OrderField.SYMBOL.value());
+				type =(OrderType) map.get(OrderField.TYPE.value());
+				
 			}
 			else{
+				
 				symbol = order.getSymbol();
+				type = order.getOrderType();
+				
 			}
 			
-			if(null!=quoteExtendsMap){
+			if(OrderType.Market == type){
+				
+				log.warn("this is market order");
+				return;
+				
+			}
+			
+			
+			
+			if(null!=quoteExtendsMap && quoteExtendsMap.size()!=0){
 				data = quoteExtendsMap.get(symbol);
 			}
 			 
-			if(null==data){
+			if(null == data){
 				log.warn("validation : QuoteExtend symbol not exist - "+symbol);
 			}else{
 				
-				price =(Double) map.get(OrderField.PRICE.value());
+				price = (Double) map.get(OrderField.PRICE.value());
+				if(null == price){					
+					return;						
+				}
+								
 				Double ceil = data.get(Double.class, QuoteExtDataField.CEIL.value());
 				Double floor = data.get(Double.class, QuoteExtDataField.FLOOR.value());				
-				if(ceil<price ){
+	
+				if(PriceUtils.GreaterThan(price, ceil)){
 					throw new OrderValidationException("Order price over than ceil price:"+ceil,ErrorMessage.ORDER_OVER_CEIL_PRICE);
 				}
-				if(floor>price){
+				if(PriceUtils.LessThan(price,floor)){
 					throw new OrderValidationException("Order price lower than floor price:"+floor,ErrorMessage.ORDER_LOWER_FLOOR_PRICE);
 				}
 				
@@ -106,23 +156,22 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			throw e;
 		}catch(Exception e){
 			log.error(e.getMessage(),e);
-			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 			
 	}
+	
+	
 	@Override
 	public void init() throws Exception {
+
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null){
 			eventProcessor.getThread().setName("CeilFloorValidator");
 		}
 		
-		requestMarketSession();	
-		
-		buildQuoteExtFile();
-		
-		
+		requestMarketSession();
+
 	}
 	@Override
 	public void uninit() {
@@ -130,13 +179,47 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		eventProcessor.uninit();
 		eventManager.uninit();
 	}
+	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event){
+
+		Map <String,DataObject> receiveDataMap = event.getMutilQuoteExtend();
+		int offset = event.getOffSet();
+		int total = event.getTotalDataCount();
+		Date eventTradeDate = event.getTradeDate();
+
+		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){
+			
+			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
+			return;
+			
+		}
+		
+		if(null == quoteExtendsMap ){
+			quoteExtendsMap = new <String, DataObject>ConcurrentHashMap();
+		}
+		
+		quoteExtendsMap.putAll(receiveDataMap);
+
+	}
+	public void sendQuoteExtSubEvent(){
+		
+		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
+		QuoteExtSubEvent event = new QuoteExtSubEvent(CeilFloorValidator.ID, CeilFloorValidator.SENDER);
+		log.info("send QuoteExtSub event");
+		eventManager.sendEvent(event);
+		
+	}
+	
+
 	public void processQuoteExtEvent(QuoteExtEvent event){
 		//if quoteExt changed ,quoteExtMap needs to renew 
 		try{
 			
 			DataObject updateObj = event.getQuoteExt();
 			String symbol = updateObj.get(String.class, QuoteExtDataField.SYMBOL.value());
-			if(null!=quoteExtendsMap){
+			if(null == quoteExtendsMap){				
+				quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
+			}
+			if(null != symbol){
 				quoteExtendsMap.put(symbol, updateObj);
 			}
 
@@ -145,58 +228,89 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		}
 		
 	}
+
+	public void processTradeDateEvent(TradeDateEvent event){
+		log.info("into trade date event");
+		try{
+			String eventTradeDate = event.getTradeDate();
+			if(null == eventTradeDate){
+				return;
+			}
+			if(null == tradeDate
+					|| !isSameTradeDate(eventTradeDate))
+			{
+				
+				setTradeDate(eventTradeDate);
+				sendQuoteExtSubEvent();
+				
+			}
+
+		}catch(Exception e){
+			log.warn(e.getMessage(),e);
+		}
+
+		
+	}
 	
 	public void processMarketSessionEvent(MarketSessionEvent event){
 		//ceil and floor price need to be renew on preopen
-		if (MarketSessionType.PREOPEN == event.getSession()) {
-			quoteExtendsMap = null;			
-		}else if(MarketSessionType.OPEN == event.getSession() && quoteExtendsMap==null){
-			buildQuoteExtFile();
+		
+		try{
+			
+			Date oldTradeDate = tradeDate;
+			String td = event.getTradeDate();
+			
+			if( null == oldTradeDate
+					|| MarketSessionType.PREOPEN == event.getSession())
+			{// if oldTradeDate ==  null means reboot
+				
+				setTradeDate(td);
+				sendQuoteExtSubEvent();
+	
+			}
+			
+		} catch (ParseException e) {
+			
+			log.warn("Trade date parse error:"+event.getTradeDate(),e);
+			
+		}catch(Exception e){
+			
+			log.warn(e.getMessage(),e);
+			
 		}
 	}
 	public void requestMarketSession() {
-		eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
+		eventManager.sendEvent(new MarketSessionRequestEvent(CeilFloorValidator.ID, CeilFloorValidator.SENDER, true));
+	}
+
+
+	public ConcurrentHashMap<String, DataObject> getQuoteExtendsMap() {
+		return quoteExtendsMap;
+	}
+
+
+	public void setQuoteExtendsMap(
+			ConcurrentHashMap<String, DataObject> quoteExtendsMap) {
+		this.quoteExtendsMap = quoteExtendsMap;
 	}
 	
-	
-	@SuppressWarnings("unchecked")
-	public boolean buildQuoteExtFile() {
-		boolean isMapCreated = false;
-		try{
-			
-			
-			XStream xstream = new XStream(new DomDriver());
-			File file = new File(getQuoteExtendFile());
-			Map<String,DataObject> xmlMap;
-			if (file.exists()) {
-				xmlMap = (Map)xstream.fromXML(file);
-				if(xmlMap.size()==0){
-					log.warn("Quote Extends file(lastExtend.xml) has no data");					
-					return false;
-				}
-				quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
-				quoteExtendsMap.putAll(xmlMap);
+	private boolean isSameTradeDate(String date)throws ParseException{
+		
+		Date dateC = DateUtil.parseDate(date, tradeDateFormat);
+		return TimeUtil.sameDate(tradeDate, dateC);
+		
+	}
+	private boolean isSameTradeDate(Date date){
+		return TimeUtil.sameDate(tradeDate, date);
+	}
 
-				isMapCreated = true;
-			} else {
-				log.warn("Missing lastExtend(QuoteExt) file: " + getQuoteExtendFile());
-			}
-				
-		}catch(Exception e){
-			log.warn("validation : read QuoteExtend file fail:"+e.getMessage(),e);		
+	
+	private void setTradeDate(String td) throws ParseException{
+
+		if(null != td && !"".equals(td)){
+			tradeDate = DateUtil.parseDate(td, tradeDateFormat);
 		}
-		return isMapCreated;
-	
+		
 	}
 	
-	
-	public String getQuoteExtendFile() {
-		return quoteExtendFile;
-	}
-	public void setQuoteExtendFile(String quoteExtendFile) {
-		this.quoteExtendFile = quoteExtendFile;
-	}
-	
-	
-
 }
