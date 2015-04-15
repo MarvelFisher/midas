@@ -298,6 +298,7 @@ public class CentralDbConnector {
 			return false;
 
 		String sQuery = String.format(getUserPasswordSalt, sUser);
+		log.debug("[changePassword] SQL:" + sQuery);
 		Statement stmt = null;
 
 		String md5Password = null;
