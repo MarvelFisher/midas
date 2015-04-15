@@ -35,6 +35,7 @@
 				<ref bean="accountPositionManager" />
 				<ref bean="premiumFollowManager"/>
 				<ref bean="trailingStopManager"/>
+				<ref bean="ceilFloorValidator"/>
 			</list>
 		</property>
 		<property name="readyMap">
