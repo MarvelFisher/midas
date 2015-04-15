@@ -54,8 +54,9 @@
 				<ref bean="simMarketDataAdaptor" />
 			</list>
 		</constructor-arg>
-		<property name="quoteThrottle" value="1000"></property>
-		<property name="timerInterval" value="1000"></property>
+		<property name="quoteLogIsOpen" value="true"></property>
+		<property name="quoteExtendEventIsSend" value="true"></property>
+		<property name="quoteExtendSegmentSize" value="300"></property>
 		<property name="preSubscriptionList">
 			<list>
 				<ref bean="preSubscriptionList" />
@@ -71,6 +72,6 @@
 	</bean>
 	
 	<!-- Derby setting -->
-	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
+	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1529" /></bean>
 
 </beans>
