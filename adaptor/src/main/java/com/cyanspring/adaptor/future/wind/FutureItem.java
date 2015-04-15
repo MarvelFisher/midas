@@ -246,6 +246,11 @@ public class FutureItem implements AutoCloseable {
 			tickTime = endDate;
 		}
 
+		if(marketSessionData.getSessionType()==MarketSessionType.OPEN
+				&& DateUtil.compareDate(tickTime, endDate)>=0){
+			tickTime = DateUtil.subDate(endDate,1, TimeUnit.SECONDS);
+		}
+
 		if(marketSessionData.getSessionType()==MarketSessionType.CLOSE
 				&& DateUtil.compareDate(tickTime, startDate)>=0){
 			tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
@@ -393,11 +398,13 @@ public class FutureItem implements AutoCloseable {
 	}
 
 	public static void main(String[] args) {
-		String timeStamp = String.format("%d-%d", 20150318, 90000000);
+		String timeStamp = String.format("%d-%d", 20150318, 113000);
 		Date tickTime;
 		try {
-			tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
+			tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmss");
+			tickTime = DateUtil.subDate(tickTime, 1, TimeUnit.SECONDS);
 			System.out.println(tickTime);
+			System.out.println(DateUtil.formatDate(tickTime,"yyyy-MM-dd"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

@@ -1368,6 +1368,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		marketRuleBySymbolMap.clear();
 		lastQuoteBySymbolMap.clear();
 		lastQuoteExtendBySymbolMap.clear();
+		futureDataBySymbolMap.clear();
+		stockDataBySymbolMap.clear();
+		FutureItem.futureItemBySymbolMap.clear();
+		StockItem.stockItemBySymbolMap.clear();
 		ClientHandler.sendClearSubscribe();
 	}
 
