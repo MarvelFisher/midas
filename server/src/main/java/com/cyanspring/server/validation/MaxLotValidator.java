@@ -17,9 +17,10 @@ import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class MaxLotValidator implements IOrderValidator {
-	
+	private static final Logger log = LoggerFactory
+			.getLogger(MaxLotValidator.class);
 	@Autowired
-	IRefDataManager refDataManager;	
+	private IRefDataManager refDataManager;	
 
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
@@ -35,8 +36,12 @@ public class MaxLotValidator implements IOrderValidator {
 				symbol = (String)map.get(OrderField.SYMBOL.value());		
 			else
 				symbol = order.getSymbol();
+
 			RefData refData = refDataManager.getRefData(symbol);
-			
+			if( null == refData ){
+				log.warn("This symbol doesn't exist in refData :"+symbol);
+				return;
+			}
 			if(OrderType.Limit.equals(type)){
 				
 				if(refData.getLimitMaximumLot() == 0)
@@ -54,10 +59,18 @@ public class MaxLotValidator implements IOrderValidator {
 			}			
 		}catch(OrderValidationException e){
 			throw e;
-
 		}catch(Exception e){
-			throw new OrderValidationException(e.getMessage(),ErrorMessage.VALIDATION_ERROR);
-
+			log.error(e.getMessage(),e);
 		}
 	}
+
+	public IRefDataManager getRefDataManager() {
+		return refDataManager;
+	}
+
+	public void setRefDataManager(IRefDataManager refDataManager) {
+		this.refDataManager = refDataManager;
+	}
+	
+	
 }

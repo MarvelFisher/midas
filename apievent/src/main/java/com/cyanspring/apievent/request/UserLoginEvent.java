@@ -1,6 +1,6 @@
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
  * Description....
@@ -18,7 +18,7 @@ import com.cyanspring.apievent.ClientEvent;
  * @version %I%, %G%
  * @since 1.0
  */
-public class UserLoginEvent extends ClientEvent {
+public class UserLoginEvent extends RemoteAsyncEvent {
     private String userId;
     private String password;
     private String txId;

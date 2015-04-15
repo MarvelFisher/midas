@@ -10,9 +10,10 @@
  ******************************************************************************/
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 
-public abstract class StrategyChangeReplyEvent extends ClientEvent {
+import com.cyanspring.common.event.RemoteAsyncEvent;
+
+public abstract class StrategyChangeReplyEvent extends RemoteAsyncEvent {
 	private String txId;
 	private boolean success;
 	private String message;

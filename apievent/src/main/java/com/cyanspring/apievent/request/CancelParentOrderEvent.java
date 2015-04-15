@@ -10,9 +10,9 @@
  ******************************************************************************/
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public final class CancelParentOrderEvent extends ClientEvent {
+public final class CancelParentOrderEvent extends RemoteAsyncEvent {
 	private String orderId;
 	private String txId;
 	private boolean force;

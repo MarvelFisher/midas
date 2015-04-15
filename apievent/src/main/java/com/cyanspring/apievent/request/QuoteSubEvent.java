@@ -1,6 +1,6 @@
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
  * Description....
@@ -18,7 +18,7 @@ import com.cyanspring.apievent.ClientEvent;
  * @version %I%, %G%
  * @since 1.0
  */
-public class QuoteSubEvent extends ClientEvent{
+public class QuoteSubEvent extends RemoteAsyncEvent {
     String symbol;
 
     public QuoteSubEvent(String key, String receiver, String symbol) {

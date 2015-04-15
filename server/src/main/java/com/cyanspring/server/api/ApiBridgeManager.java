@@ -1,14 +1,13 @@
 package com.cyanspring.server.api;
 
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.apievent.reply.ServerReadyEvent;
 import com.cyanspring.apievent.reply.SystemErrorEvent;
-import com.cyanspring.common.api.ApiEventTranslator;
-import com.cyanspring.common.api.ApiResourceManager;
-import com.cyanspring.common.api.obj.reply.IApiReply;
-import com.cyanspring.common.api.obj.request.IApiRequest;
+import com.cyanspring.event.api.ApiEventTranslator;
+import com.cyanspring.event.api.ApiResourceManager;
+import com.cyanspring.event.api.obj.reply.IApiReply;
+import com.cyanspring.event.api.obj.request.IApiRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +19,8 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.transport.IServerSocketListener;
-import com.cyanspring.common.transport.IServerUserSocketService;
 import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.event.AsyncPriorityEventThread;
 
@@ -56,9 +52,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
         public void onMessage(Object obj, IUserSocketContext ctx) {
             IApiRequest tranObject = translator.translateRequest(obj);
             if (tranObject == null) {
-                MessageBean messageBean = MessageLookup.lookup(ErrorMessage.EVENT_TYPE_NOT_SUPPORT);
-                String msg = MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, messageBean.getMsg() + " : " + obj.getClass());
-                ctx.send(new SystemErrorEvent(null, null, 302, msg));
+                ctx.send(new SystemErrorEvent(null, null, 302, MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, obj.getClass().toString())));
             } else if (ctx.getUser() == null) {
                 ctx.send(new SystemErrorEvent(null, null, 301, MessageLookup.buildEventMessage(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS, "")));
             } else {

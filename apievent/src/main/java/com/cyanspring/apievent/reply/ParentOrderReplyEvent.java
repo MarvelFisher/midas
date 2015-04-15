@@ -10,10 +10,10 @@
  ******************************************************************************/
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 import com.cyanspring.apievent.obj.Order;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public abstract class ParentOrderReplyEvent extends ClientEvent {
+public abstract class ParentOrderReplyEvent extends RemoteAsyncEvent {
 	private boolean ok;
 	private String message;
 	private String txId;

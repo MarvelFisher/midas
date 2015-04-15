@@ -12,12 +12,12 @@
  */
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.List;
 import java.util.Map;
 
-public class NewMultiInstrumentStrategyEvent extends ClientEvent {
+public class NewMultiInstrumentStrategyEvent extends RemoteAsyncEvent {
     private String txId;
     private Map<String, Object> strategy;
     private List<Map<String, Object>> instruments;

@@ -1,7 +1,7 @@
 package com.cyanspring.apievent.reply;
 
-import com.cyanspring.apievent.ClientEvent;
 import com.cyanspring.apievent.obj.Quote;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
  * Description....
@@ -19,7 +19,7 @@ import com.cyanspring.apievent.obj.Quote;
  * @version %I%, %G%
  * @since 1.0
  */
-public class QuoteEvent extends ClientEvent {
+public class QuoteEvent extends RemoteAsyncEvent {
     private Quote quote;
     public QuoteEvent(String key, String receiver, Quote quote) {
         super(key, receiver);

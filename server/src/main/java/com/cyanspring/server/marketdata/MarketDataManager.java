@@ -276,7 +276,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
     public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
         log.debug("QuoteSubEvent: " + event.getSymbol() + ", "
-                + event.getReceiver());
+				+ event.getReceiver());
         String symbol = event.getSymbol();
         Quote quote = quotes.get(symbol);
 
@@ -305,10 +305,12 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                 + event.getReceiver() + ",tradeDate=" + tradeDate);
 
         int dataSegmentSize = getQuoteExtendSegmentSize();
+		if(dataSegmentSize <= 1) return;
+
         int transQuoteExtendOffset = 0;
         int totalQuoteExtendCount = 0;
 
-        if (quoteExtends != null && quoteExtends.size() > 0) {
+        if (quoteExtends != null && quoteExtends.size() > 0 ) {
             HashMap<String, DataObject> quoteExtendSegmentMap = null;
 
             for (String symbol : quoteExtends.keySet()) {
@@ -332,18 +334,23 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                 quoteExtendSegmentMap.put(symbol, quoteExtends.get(symbol));
             }
             //Check Last Send
-            if (quoteExtendSegmentMap != null && quoteExtendSegmentMap.size() > 0) {
-                totalQuoteExtendCount = totalQuoteExtendCount + quoteExtendSegmentMap.size();
-                MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
-                        , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
-                multiQuoteExtendEvent.setOffSet(
-                        transQuoteExtendOffset < dataSegmentSize ? 1
-                                : transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1);
-                multiQuoteExtendEvent.setTotalDataCount(totalQuoteExtendCount);
-                eventManager.sendEvent(multiQuoteExtendEvent);
-            }
+			//if count = 0 , send Null Map
+			if((quoteExtendSegmentMap != null && quoteExtendSegmentMap.size()>0) || (quoteExtendSegmentMap==null && transQuoteExtendOffset==0)) {
+				totalQuoteExtendCount = totalQuoteExtendCount + (quoteExtendSegmentMap != null ? quoteExtendSegmentMap.size() : 0);
+				MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
+						, quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
+				if(quoteExtendSegmentMap != null) {
+					multiQuoteExtendEvent.setOffSet(
+							transQuoteExtendOffset < dataSegmentSize ?
+									1 : transQuoteExtendOffset % dataSegmentSize != 0?
+									transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1: transQuoteExtendOffset - dataSegmentSize + 1);
+					multiQuoteExtendEvent.setTotalDataCount(totalQuoteExtendCount);
+				}
+				eventManager.sendEvent(multiQuoteExtendEvent);
+			}
         }
     }
+
 
     public void processTradeSubEvent(TradeSubEvent event)
             throws MarketDataException {
@@ -473,7 +480,9 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                     + ",Last=" + quote.getLast()
                     + ",Stale=" + quote.isStale() + ",ts="
                     + quote.getTimeStamp().toString() + ",wPcnt="
-                    + getQuotePriceWarningPercent());
+                    + getQuotePriceWarningPercent()
+					+ ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+			);
         }
 
         if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
@@ -484,7 +493,8 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                     + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                     + ",Stale=" + quote.isStale()
                     + ",ts=" + quote.getTimeStamp().toString()
-                    + ",wPcnt=" + getQuotePriceWarningPercent());
+                    + ",wPcnt=" + getQuotePriceWarningPercent() + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+			);
             return;
         }
 

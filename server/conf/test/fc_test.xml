@@ -25,6 +25,7 @@
 				<ref bean="apiBridgeManager" />
 				<!-- <ref bean="alertManager" /> -->
 				<ref bean="autoRunner" />
+				<ref bean="ceilFloorValidator"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -49,7 +50,7 @@
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
 	</bean>
 
-	<bean id="resourceManager" class="com.cyanspring.common.api.ApiResourceManager">
+	<bean id="resourceManager" class="com.cyanspring.event.api.ApiResourceManager">
 		<property name="socketService">
 			<ref bean="socketService" />
 		</property>

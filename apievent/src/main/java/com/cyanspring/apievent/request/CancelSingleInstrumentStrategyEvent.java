@@ -1,8 +1,8 @@
 package com.cyanspring.apievent.request;
 
-import com.cyanspring.apievent.ClientEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class CancelSingleInstrumentStrategyEvent extends ClientEvent {
+public class CancelSingleInstrumentStrategyEvent extends RemoteAsyncEvent {
 	private String txId;
 	
 	public CancelSingleInstrumentStrategyEvent(String key, String receiver,

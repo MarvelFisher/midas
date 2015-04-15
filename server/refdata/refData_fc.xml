@@ -19,7 +19,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-03-20</string>
+        <string>2015-03-20</string>cn
       </entry>
       <entry>
         <string>Commission fee</string>
@@ -71,7 +71,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -183,7 +183,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -296,7 +296,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -409,7 +409,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -522,7 +522,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
@@ -636,7 +636,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.08</double>
+        <double>0.12</double>
       </entry>
       <entry>
         <string>Category</string>
