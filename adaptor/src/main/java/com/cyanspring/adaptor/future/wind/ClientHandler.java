@@ -20,7 +20,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	private static final Logger log = LoggerFactory
 			.getLogger(WindFutureDataAdaptor.class);
-	private static final Logger flowCalculateLog = LoggerFactory.getLogger(ClientHandler.class.getName() + ".FlowCalculateLog");
 
 	public static Date lastRecv = DateUtil.now();
 	public static Date lastCheck = DateUtil.now();
@@ -108,15 +107,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		if(bufLenMin > rBytes)
 		{
 			bufLenMin = rBytes;
+			log.info("WindC-minimal recv len from id : " + bufLenMin);
 		} else {
 			if(bufLenMin == 0) {
 				bufLenMin = rBytes;
-				flowCalculateLog.debug("WindC-first time recv len from id : " + bufLenMin);
+				log.info("WindC-first time recv len from id : " + bufLenMin);
 			}
 		}
 
 		if(bufLenMax < rBytes) {
 			bufLenMax = rBytes;
+			log.info("WindC-maximal recv len from id : " + bufLenMax);
 		}
 
 		dataReceived += rBytes;
@@ -127,9 +128,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			if(throughput < dataReceived * 1000 / msDiff) {
 				throughput = dataReceived * 1000 / msDiff;
 				if (throughput < 1024) {
-					flowCalculateLog.debug("WindC-maximal throughput : " + throughput + " Bytes/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
+					log.info("WindC-maximal throughput : " + throughput + " Bytes/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
 				} else {
-					flowCalculateLog.debug("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
+					log.info("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
 
 				}
 			}
