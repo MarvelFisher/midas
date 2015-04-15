@@ -67,6 +67,7 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="quoteChecker"><null/></property>
 	</bean>
 	
 	<!-- Derby setting -->
