@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.cyanspring.id.Library.Util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -418,6 +419,15 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 	public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
 		Quote quote = inEvent.getQuote();
 		Quote prev = quotes.get(quote.getSymbol());
+
+		//Calculate Future Quote last Volume
+		if(inEvent.getSourceId() > 100) {
+			if (prev != null && DateUtil.formatDate(prev.getTimeStamp(), "yyyy-MM-dd").equals(tradeDate)) {
+				quote.setLastVol(quote.getTotalVolume() - prev.getTotalVolume());
+			} else {
+				quote.setLastVol(quote.getTotalVolume());
+			}
+		}
 
 		if (isQuoteLogIsOpen()) {
 			quoteLog.info("Quote Receive : " + "Sou="

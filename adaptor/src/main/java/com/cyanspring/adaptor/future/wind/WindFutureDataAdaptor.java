@@ -285,7 +285,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	/**
 	 * process MarketDataManager Sent MarketSession
 	 * 
-	 * @param marketSessionType
+	 * @param event
 	 */
 	public void processMarketSession(MarketSessionEvent event) {
 		tradeDateForWindFormat = Integer.parseInt(event.getTradeDate().replace(
@@ -1375,6 +1375,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		marketRuleBySymbolMap.clear();
 		lastQuoteBySymbolMap.clear();
 		lastQuoteExtendBySymbolMap.clear();
+		futureDataBySymbolMap.clear();
+		stockDataBySymbolMap.clear();
+		FutureItem.futureItemBySymbolMap.clear();
+		StockItem.stockItemBySymbolMap.clear();
 		ClientHandler.sendClearSubscribe();
 	}
 
