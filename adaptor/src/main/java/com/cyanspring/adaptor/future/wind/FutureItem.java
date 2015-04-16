@@ -4,6 +4,7 @@ import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolInfo;
