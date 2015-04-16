@@ -29,24 +29,23 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version %I%, %G%
  * @since 1.0
  */
-public class ApiCancelParentOrderEvent implements IApiRequest{
+public class ApiCancelParentOrderEvent implements IApiRequest {
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
         CancelParentOrderEvent orderEvent = (CancelParentOrderEvent) event;
         ParentOrder prev = resourceManager.getOrder(orderEvent.getOrderId());
 
-        if(null == prev) {
+        if (null == prev) {
             String message = MessageLookup.buildEventMessage(ErrorMessage.CANCEL_ORDER_NOT_FOUND, "Can't find order to cancel");
             ctx.send(new CancelParentOrderReplyEvent(orderEvent.getKey(), null, false,
                     message, orderEvent.getTxId(), null));
         }
 
-        if(!resourceManager.checkAccount(prev.getAccount(), ctx.getUser())){
-            MessageBean messageBean =MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
+        if (!resourceManager.checkAccount(prev.getAccount(), ctx.getUser())) {
+            MessageBean messageBean = MessageLookup.lookup(ErrorMessage.ACCOUNT_NOT_MATCH);
             String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + orderEvent.getKey() + ", " + ctx.getUser());
 
             ctx.send(new SystemErrorEvent(null, null, 303,
@@ -60,5 +59,10 @@ public class ApiCancelParentOrderEvent implements IApiRequest{
                         orderEvent.getReceiver(), orderEvent.getOrderId(), false, txId);
         request.setPriority(EventPriority.HIGH);
         resourceManager.sendEventToManager(request);
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

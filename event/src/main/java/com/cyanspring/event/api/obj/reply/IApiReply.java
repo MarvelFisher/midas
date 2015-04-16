@@ -1,5 +1,7 @@
 package com.cyanspring.event.api.obj.reply;
 
+import com.cyanspring.event.api.ApiResourceManager;
+
 /**
  * Description....
  * <ul>
@@ -18,4 +20,5 @@ package com.cyanspring.event.api.obj.reply;
  */
 public interface IApiReply {
     void sendEventToClient(Object event);
+    void setResourceManager(ApiResourceManager resourceManager);
 }

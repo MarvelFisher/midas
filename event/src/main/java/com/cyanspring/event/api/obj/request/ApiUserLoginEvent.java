@@ -7,7 +7,6 @@ import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.common.util.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Description....
@@ -27,8 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiUserLoginEvent implements IApiRequest {
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
@@ -42,5 +40,10 @@ public class ApiUserLoginEvent implements IApiRequest {
         request.setPriority(EventPriority.HIGH);
         request.setSender(resourceManager.getBridgeId());
         resourceManager.sendEventToManager(request);
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

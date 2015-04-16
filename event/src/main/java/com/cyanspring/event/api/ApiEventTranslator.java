@@ -44,9 +44,6 @@ public class ApiEventTranslator implements IEventTranslatror{
             String clzName = object.getClass().getSimpleName();
             if (!requestMap.containsKey(clzName))
                 return null;
-            log.info("Class name: " + clzName);
-//            Class<IApiRequest> clz = (Class<IApiRequest>)Class.forName("Api" + clzName);
-//            Constructor<IApiRequest> constructor = clz.getConstructor();
             tranObject = (IApiRequest)Class.forName(requestMap.get(clzName)).newInstance();
         } catch (Exception e){
             log.info(e.getMessage());
@@ -62,9 +59,7 @@ public class ApiEventTranslator implements IEventTranslatror{
             String clzName = object.getClass().getSimpleName();
             if (!replyMap.containsKey(clzName))
                 return null;
-            Class<IApiReply> clz = (Class<IApiReply>)Class.forName("Api" + clzName);
-            Constructor<IApiReply> constructor = clz.getConstructor();
-            tranObject = constructor.newInstance();
+            tranObject = (IApiReply)Class.forName(replyMap.get(clzName)).newInstance();
         } catch (Exception e){
             return null;
         }

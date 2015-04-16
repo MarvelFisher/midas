@@ -1,6 +1,7 @@
 package com.cyanspring.event.api.obj.request;
 
 import com.cyanspring.common.transport.IUserSocketContext;
+import com.cyanspring.event.api.ApiResourceManager;
 
 /**
  * Description....
@@ -20,5 +21,5 @@ import com.cyanspring.common.transport.IUserSocketContext;
  */
 public interface IApiRequest {
     void sendEventToLts(Object event, IUserSocketContext ctx);
-
+    void setResourceManager(ApiResourceManager resourceManager);
 }

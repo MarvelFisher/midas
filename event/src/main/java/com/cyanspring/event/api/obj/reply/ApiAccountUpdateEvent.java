@@ -23,8 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiAccountUpdateEvent implements  IApiReply {
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToClient(Object event) {
@@ -47,5 +46,10 @@ public class ApiAccountUpdateEvent implements  IApiReply {
         eventAccount.setUrPnL(account.getUrPnL());
         eventAccount.setValue(account.getValue());
         return eventAccount;
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

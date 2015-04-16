@@ -1,8 +1,11 @@
 package com.cyanspring.event.api.obj.request;
 
+import com.cyanspring.apievent.obj.OrderSide;
+import com.cyanspring.apievent.obj.OrderType;
 import com.cyanspring.apievent.reply.AmendParentOrderReplyEvent;
 import com.cyanspring.apievent.reply.SystemErrorEvent;
 import com.cyanspring.apievent.request.AmendParentOrderEvent;
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.event.api.ApiResourceManager;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.EventPriority;
@@ -12,6 +15,8 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.common.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 /**
  * Description....
@@ -31,8 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiAmendParentOrderEvent implements IApiRequest{
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
@@ -58,10 +62,28 @@ public class ApiAmendParentOrderEvent implements IApiRequest{
         String txId = IdGenerator.getInstance().getNextID();
         resourceManager.putPendingRecord(txId, orderEvent.getTxId(), ctx);
 
+        translateOrder(orderEvent.getFields());
         com.cyanspring.common.event.order.AmendParentOrderEvent request =
                 new com.cyanspring.common.event.order.AmendParentOrderEvent(orderEvent.getKey(),
                 orderEvent.getReceiver(), orderEvent.getId(), orderEvent.getFields(), txId);
         request.setPriority(EventPriority.HIGH);;
         resourceManager.sendEventToManager(request);
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
+
+    private void translateOrder(Map<String, Object> order){
+        Long qty = (Long) order.get(OrderField.QUANTITY.value());
+        if (qty != null)
+            order.replace(OrderField.QUANTITY.value(), qty.doubleValue());
+        OrderSide side = (OrderSide) order.get(OrderField.SIDE.value());
+        if (side != null)
+            order.replace(OrderField.SIDE.value(), com.cyanspring.common.type.OrderSide.valueOf(side.toString()));
+        OrderType type = (OrderType) order.get(OrderField.TYPE.value());
+        if (type != null)
+            order.replace(OrderField.TYPE.value(), com.cyanspring.common.type.OrderType.valueOf(type.toString()));
     }
 }

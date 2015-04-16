@@ -33,10 +33,8 @@ import java.util.List;
  */
 public class ApiUserLoginReplyEvent implements IApiReply {
     private static Logger log = LoggerFactory.getLogger(ApiUserLoginReplyEvent.class);
-    @Autowired
-    ApiResourceManager resourceManager;
 
-
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToClient(Object event) {
@@ -87,5 +85,10 @@ public class ApiUserLoginReplyEvent implements IApiReply {
             record.ctx.send(reply);
 
         log.info("API user login: " + loginReplyEvent.getUser().getId() + ", " + loginReplyEvent.isOk());
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

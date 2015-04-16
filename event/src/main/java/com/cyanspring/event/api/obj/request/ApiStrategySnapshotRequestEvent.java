@@ -28,8 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiStrategySnapshotRequestEvent implements IApiRequest {
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
@@ -45,5 +44,10 @@ public class ApiStrategySnapshotRequestEvent implements IApiRequest {
         resourceManager.putPendingRecord(txId, snapshotRequestEvent.getTxId(), ctx);
 
         resourceManager.sendEventToManager(new com.cyanspring.common.event.order.StrategySnapshotRequestEvent(snapshotRequestEvent.getKey(), snapshotRequestEvent.getReceiver(), txId));
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

@@ -27,8 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 1.0
  */
 public class ApiParentOrderUpdateEvent implements IApiReply{
-    @Autowired
-    ApiResourceManager resourceManager;
+
+    private ApiResourceManager resourceManager;
     @Override
     public void sendEventToClient(Object event) {
         ParentOrderUpdateEvent updateEvent = (ParentOrderUpdateEvent) event;
@@ -58,5 +58,10 @@ public class ApiParentOrderUpdateEvent implements IApiReply{
                         updateEvent.getInfo()
                 );
         resourceManager.sendEventToUser(parentOrder.getUser(), sendEvent);
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

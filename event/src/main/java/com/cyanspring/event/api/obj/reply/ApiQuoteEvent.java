@@ -25,7 +25,6 @@ import java.util.Map;
  */
 public class ApiQuoteEvent implements IApiReply {
 
-    @Autowired
     private ApiResourceManager resourceManager;
 
     @Override
@@ -53,5 +52,10 @@ public class ApiQuoteEvent implements IApiReply {
                     resourceManager.sendEventToUser(user, sendEvent);
             }
         }
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

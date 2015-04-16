@@ -29,8 +29,7 @@ import java.util.List;
  */
 public class ApiAccountSnapshotReplyEvent implements IApiReply {
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToClient(Object event) {
@@ -109,5 +108,10 @@ public class ApiAccountSnapshotReplyEvent implements IApiReply {
             eventExecutions.add(newExe);
         }
         return eventExecutions;
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

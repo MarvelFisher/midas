@@ -30,8 +30,8 @@ import java.util.List;
  * @since 1.0
  */
 public class ApiStrategySnapshotEvent implements IApiReply{
-    @Autowired
-    ApiResourceManager resourceManager;
+
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToClient(Object event) {
@@ -61,5 +61,10 @@ public class ApiStrategySnapshotEvent implements IApiReply{
                     snapshotEvent.getKey(), snapshotEvent.getReceiver(),
                     orders, record.origTxId));
         }
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

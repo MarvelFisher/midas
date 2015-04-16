@@ -24,8 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiNewMultiInstrumentStrategyEvent implements IApiRequest{
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
@@ -39,5 +38,10 @@ public class ApiNewMultiInstrumentStrategyEvent implements IApiRequest{
                         strategyEvent.getStrategy(), strategyEvent.getInstruments());
 
         resourceManager.sendEventToManager(request);
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

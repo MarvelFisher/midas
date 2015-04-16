@@ -58,12 +58,13 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
             IApiRequest tranObject = translator.translateRequest(obj);
             if (tranObject == null) {
                 ctx.send(new SystemErrorEvent(null, null, 302, MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, obj.getClass().toString())));
-            } else if (tranObject instanceof ApiUserLoginEvent){
+            } else if (tranObject instanceof ApiUserLoginEvent) {
+                tranObject.setResourceManager(resourceManager);
                 tranObject.sendEventToLts(obj, ctx);
-            }
-            else if (ctx.getUser() == null) {
+            } else if (ctx.getUser() == null) {
                 ctx.send(new SystemErrorEvent(null, null, 301, MessageLookup.buildEventMessage(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS, "")));
             } else {
+                tranObject.setResourceManager(resourceManager);
                 tranObject.sendEventToLts(obj, ctx);
             }
         }
@@ -75,8 +76,10 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
         @Override
         public void onEvent(AsyncEvent event) {
             IApiReply tranObject = translator.translateReply(event);
-            if (tranObject != null)
+            if (tranObject != null){
+                tranObject.setResourceManager(resourceManager);
                 tranObject.sendEventToClient(event);
+            }
         }
 
     };

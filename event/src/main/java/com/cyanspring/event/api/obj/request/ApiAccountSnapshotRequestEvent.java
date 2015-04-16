@@ -28,8 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiAccountSnapshotRequestEvent implements IApiRequest {
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
@@ -51,5 +50,10 @@ public class ApiAccountSnapshotRequestEvent implements IApiRequest {
                         requestEvent.getKey(),
                         requestEvent.getReceiver(), requestEvent.getAccountId(), txId
                 ));
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

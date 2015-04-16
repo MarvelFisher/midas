@@ -23,8 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ApiAmendMultiInstrumentStrategyReplyEvent implements IApiReply{
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToClient(Object event) {
@@ -37,5 +36,10 @@ public class ApiAmendMultiInstrumentStrategyReplyEvent implements IApiReply{
             record.ctx.send(new com.cyanspring.apievent.reply.AmendMultiInstrumentStrategyReplyEvent(
                     replyEvent.getKey(), replyEvent.getReceiver(), record.origTxId,
                     replyEvent.isSuccess(), replyEvent.getMessage()));
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

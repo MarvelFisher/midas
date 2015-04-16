@@ -29,8 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ApiQuoteSubEvent implements IApiRequest {
     private Logger log = LoggerFactory.getLogger(ApiQuoteSubEvent.class);
 
-    @Autowired
-    ApiResourceManager resourceManager;
+    private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
@@ -50,5 +49,10 @@ public class ApiQuoteSubEvent implements IApiRequest {
 
         resourceManager.sendEventToManager(
                 new com.cyanspring.common.event.marketdata.QuoteSubEvent(ctx.getUser(), resourceManager.getBridgeId(), subEvent.getSymbol()));
+    }
+
+    @Override
+    public void setResourceManager(ApiResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }
