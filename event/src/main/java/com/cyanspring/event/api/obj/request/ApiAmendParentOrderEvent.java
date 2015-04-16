@@ -78,12 +78,12 @@ public class ApiAmendParentOrderEvent implements IApiRequest{
     private void translateOrder(Map<String, Object> order){
         Long qty = (Long) order.get(OrderField.QUANTITY.value());
         if (qty != null)
-            order.replace(OrderField.QUANTITY.value(), qty.doubleValue());
+            order.put(OrderField.QUANTITY.value(), qty.doubleValue());
         OrderSide side = (OrderSide) order.get(OrderField.SIDE.value());
         if (side != null)
-            order.replace(OrderField.SIDE.value(), com.cyanspring.common.type.OrderSide.valueOf(side.toString()));
+            order.put(OrderField.SIDE.value(), com.cyanspring.common.type.OrderSide.valueOf(side.toString()));
         OrderType type = (OrderType) order.get(OrderField.TYPE.value());
         if (type != null)
-            order.replace(OrderField.TYPE.value(), com.cyanspring.common.type.OrderType.valueOf(type.toString()));
+            order.put(OrderField.TYPE.value(), com.cyanspring.common.type.OrderType.valueOf(type.toString()));
     }
 }
