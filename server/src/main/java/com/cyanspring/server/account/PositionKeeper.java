@@ -636,13 +636,14 @@ public class PositionKeeper {
 
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
-		double commission = commissionManager.getCommission(refData, accountSetting, deltaValue);
-		deltaValue += commission * leverage ;
+//		double commission = commissionManager.getCommission(refData, accountSetting, deltaValue);
+//		deltaValue += commission * leverage ;
 		
 		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {
 			return true;
 		} else {
-			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage + ", " + commission);
+//			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage + ", " + commission);
+			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage);
 			return false;
 		}
 	}
