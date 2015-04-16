@@ -12,11 +12,15 @@
 	<import resource="common/ticktable_fc.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
-		<property name="maxNoOfAlerts" value="20" />		
-		<property name="getPremiumTableInterval" value="300000" />		
+		<property name="maxNoOfAlerts" value="20" />
+	</bean>	
+	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
+		<property name="getPremiumTableInterval" value="300000" />
+<!-- 	##b$$ = <b> -->
+		<property name="PremiumFollowHtmlFormat" value="##b$$%UserName%##/b$$ %Side% ##b$$%Currency%##/b$$ %Quantity%@%Price%" />
 		<property name="getPremiumFollowListURL" value="http://r.forexmastergaedev.appspot.com/rest/getPremiumFollowList" />
 		<property name="SetInBoxURL" value="http://forexmastergaedev.appspot.com/rest/setInBoxMsg" />
-	</bean>	
+	</bean>
 	<bean id="ParseManager" class="com.cyanspring.info.alert.ParseManager">
 		<property name="timeoutSecond" value="3000" />
 		<property name="createThreadCount" value="5" />

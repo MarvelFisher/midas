@@ -4,91 +4,179 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.common.alert.ParseData;
+import com.cyanspring.common.alert.SendNotificationRequestEvent;
+import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
-public class PremiumFollowThread extends Thread {
+public class PremiumFollowManager extends Compute {
 	private static final Logger log = LoggerFactory
-			.getLogger(PremiumFollowThread.class);
-
-	private String PremiumFollowURL;
-	private ConcurrentLinkedQueue<PremiumRequestType> QueryTypeQueue = new ConcurrentLinkedQueue<PremiumRequestType>();
+			.getLogger(PremiumFollowManager.class);
+	private String getPremiumFollowListURL;
+	private int getPremiumTableInterval;
+	private String SetInBoxURL;
+	private String PremiumFollowHtmlFormat;
 	private Map<String, ArrayList<PremiumUser>> PremiumUserTable = new HashMap<String, ArrayList<PremiumUser>>();
-	private String lastUpdateTime ;
-	public PremiumFollowThread(String URL) {
-		log.info("PrimiumFollow Thread... Create.");
-		this.setPremiumFollowURL(URL);
-		setDaemon(true);
-		start();
-	}
-
-	protected void getPremiumUpdate() {
-		QueryTypeQueue.add(PremiumRequestType.QUERY_UPDATE);
-		notifyQueState();
-	}
-
-	protected void getPremiumAll() {
-		QueryTypeQueue.add(PremiumRequestType.QUERY_All);
-		notifyQueState();
-	}
-
-	protected ArrayList<PremiumUser> findUser(String followedUser) {
-		return PremiumUserTable.get(followedUser);
+	private String lastUpdateTime;
+	
+	@Autowired
+	ScheduleManager scheduleManager;
+	
+	@Override
+	public void SubscirbetoEvents() {
 	}
 
 	@Override
-	public void run() {
-		while (true) {
-			PremiumRequestType PRT = QueryTypeQueue.poll();
-			if (PRT == null) {
-				waitQueState();
-				continue;
-			}
-			try {
-				if (PRT == PremiumRequestType.QUERY_UPDATE) {
-					getPremiumUserTableUpdate();
-				} else if (PRT == PremiumRequestType.QUERY_All) {
-					getPremiumUserTableAll();
-				}
-			} catch (Exception e) {
-				log.error("[PremiumFollowThread] : " + e.getMessage());
-			}
+	public void SubscribetoEventsMD() {
+		SubscirbetoEvent(ChildOrderUpdateEvent.class);
+		SubscirbetoEvent(AsyncTimerEvent.class);
+		SubscirbetoEvent(MarketSessionEvent.class);
+	}
+	
+	@Override
+	public void init() {
+		AsyncTimerEvent getPremiumTableUpdate = new AsyncTimerEvent();
+		getPremiumTableUpdate.setKey("getPremiumTableUpdate");
+		setPremiumFollowHtmlFormat(getPremiumFollowHtmlFormat().replace("##", "<"));		
+		setPremiumFollowHtmlFormat(getPremiumFollowHtmlFormat().replace("$$", ">"));
+		getPremiumUserTableAll();
+		scheduleManager.scheduleRepeatTimerEvent(getGetPremiumTableInterval(), getEventProcessorMD(), getPremiumTableUpdate);
+		
+	}
+
+
+	@Override
+	public void processMarketSessionEvent(MarketSessionEvent event,
+			List<Compute> computes) {
+		MarketSessionType mst = event.getSession();
+		if (MarketSessionType.PREOPEN == mst) {
+			// Get All
+			getPremiumUserTableAll();
+		} else if (MarketSessionType.CLOSE == mst) {
+
 		}
 	}
 
-	protected synchronized void waitQueState() {
+	@Override
+	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event,
+			List<Compute> computes) {
+		Execution execution = event.getExecution();
+		if (null == execution)
+			return;		
 		try {
-			wait();
-		} catch (InterruptedException e) {
-			log.error("[PremiumFollowThread] : " + e.getMessage());
+			ArrayList<PremiumUser> lstPU = PremiumUserTable.get(execution
+					.getAccount());
+			if (null != lstPU) {
+				DecimalFormat qtyFormat = new DecimalFormat("#0");
+				String strQty = qtyFormat.format(execution.getQuantity());
+				DecimalFormat priceFormat = new DecimalFormat("#0.#####");
+				String strPrice = priceFormat.format(execution.getPrice());
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						"yyyy-MM-dd HH:mm:ss");
+				String Datetime = dateFormat.format(execution.get(Date.class,
+						"Created"));
+//				String tradeMessage = "Trade " + execution.getSymbol() + " "
+//						+ execution.getSide().toString() + " " + strQty + " @ "
+//						+ strPrice;
+				String keyValue = execution.getSymbol() + "," + strPrice + ","
+						+ strQty + ","
+						+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");				
+//				String Msg = execution.getUser() + (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
+				//##b$$%UserName%##/b$$ %Side% ##b$$%Currency%##/b$$ %Quantity% @ %Price%
+				String htmlFormat = getPremiumFollowHtmlFormat().replace("%UserName%", execution.getUser());
+				htmlFormat = htmlFormat.replace("%Currency%", execution.getSymbol());
+				htmlFormat = htmlFormat.replace("%Quantity%", strQty);
+				htmlFormat = htmlFormat.replace("%Price%", strPrice);
+				htmlFormat = htmlFormat.replace("%Side%", (execution.getSide().isBuy() ? "BOUGHT" : "SOLD"));
+				String SendtoSocial = "action=31&comment=" + htmlFormat + "&userid=";
+				for (PremiumUser user : lstPU) {
+					// Send Notification to PremiumUser
+					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+							null, null, "txId", new ParseData(user.getUserId(),
+									htmlFormat, "", AlertMsgType.MSG_TYPE_PREMIUMORDER.getType(),
+									Datetime, keyValue));
+//					eventManagerMD.sendEvent(sendNotificationRequestEvent);
+					SendEvent(sendNotificationRequestEvent);
+					// Send RemoteEvent
+					SendtoSocial = SendtoSocial + user.getUserId() + ",";
+				}
+				// Send to Social
+				SendtoSocial = SendtoSocial.substring(0,
+						SendtoSocial.length() - 1);
+
+				URL obj = new URL(getSetInBoxURL());
+				HttpURLConnection httpCon = (HttpURLConnection) obj
+						.openConnection();
+
+				httpCon.setRequestMethod("POST");
+				httpCon.setRequestProperty("user-Agent", "LTSInfo-SetInBox-31");
+				httpCon.setRequestProperty("Content-Length",
+						Integer.toString(SendtoSocial.length()));
+
+				httpCon.setDoOutput(true);
+				DataOutputStream wr = new DataOutputStream(
+						httpCon.getOutputStream());
+				wr.writeBytes(SendtoSocial);
+				wr.flush();
+				wr.close();
+				int responseCode = httpCon.getResponseCode();
+				if (responseCode != 200) {
+					log.warn("[Social API]Send to Social Error. : "
+							+ responseCode);
+				} else {
+					log.info("Send to Social : PostMsg=" + htmlFormat + " to "
+							+ lstPU.size() + " users.");
+				}
+				httpCon.disconnect();
+			}
+		} catch (Exception e) {
+			log.error("[processChildOrderUpdateEvent]" + e.getMessage());
 		}
 	}
 
-	protected synchronized void notifyQueState() {
-		notify();
+	@Override
+	@SuppressWarnings("deprecation")
+	public void processAsyncTimerEvent(AsyncTimerEvent event,
+			List<Compute> computes) {
+		if (event.getKey() == "getPremiumTableUpdate") {
+			try {
+				//Get PremiumFollow Update List	
+				getPremiumUserTableUpdate();
+			} catch (Exception e) {
+				log.warn("[SendSQLHeartBeat] Exception : " + e.getMessage());
+			}
+		}
 	}
-
+	
 	private void getPremiumUserTableUpdate() {
 
 		try {
-			URL obj = new URL(PremiumFollowURL);
+			URL obj = new URL(getPremiumFollowListURL);
 			HttpURLConnection httpCon = (HttpURLConnection) obj
 					.openConnection();
 			if (null == lastUpdateTime || lastUpdateTime.equals(""))
 			{
 				log.warn("[getPremiumUserTableUpdate] : lastUpdateTime is emtpy.");
-				getPremiumUserTableAll();
 				return;
 			}
 			String strPoststring = "Time=" + lastUpdateTime;
@@ -203,7 +291,7 @@ public class PremiumFollowThread extends Thread {
 			String curTime = format.format(cd.getTime());
 			Map<String, ArrayList<PremiumUser>> tempPremiumUserTable = new HashMap<String, ArrayList<PremiumUser>>();
 			
-			URL obj = new URL(PremiumFollowURL);
+			URL obj = new URL(getPremiumFollowListURL);
 			HttpURLConnection httpCon = (HttpURLConnection) obj
 					.openConnection();
 			String strPoststring = "Time=" + "";
@@ -321,11 +409,37 @@ public class PremiumFollowThread extends Thread {
 		}
 	}
 
-	public String getPremiumFollowURL() {
-		return PremiumFollowURL;
+	public String getSetInBoxURL() {
+		return SetInBoxURL;
 	}
 
-	public void setPremiumFollowURL(String premiumFollowURL) {
-		PremiumFollowURL = premiumFollowURL;
+	public void setSetInBoxURL(String setInBoxURL) {
+		SetInBoxURL = setInBoxURL;
 	}
+
+	public String getGetPremiumFollowListURL() {
+		return getPremiumFollowListURL;
+	}
+
+	public void setGetPremiumFollowListURL(String getPremiumFollowListURL) {
+		this.getPremiumFollowListURL = getPremiumFollowListURL;
+	}
+
+	public int getGetPremiumTableInterval() {
+		return getPremiumTableInterval;
+	}
+
+	public void setGetPremiumTableInterval(int getPremiumTableInterval) {
+		this.getPremiumTableInterval = getPremiumTableInterval;
+	}
+
+	public String getPremiumFollowHtmlFormat() {
+		return PremiumFollowHtmlFormat;
+	}
+
+	public void setPremiumFollowHtmlFormat(String premiumFollowHtmlFormat) {
+		PremiumFollowHtmlFormat = premiumFollowHtmlFormat;
+	}
+
+
 }

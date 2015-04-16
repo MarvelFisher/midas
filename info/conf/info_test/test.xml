@@ -10,12 +10,21 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
-	        	<ref bean="newsManager"/>
-            	<ref bean="alertManager"/>
+	        	<ref bean="InfoGateway" />
             	<ref bean="centralDbProcessor"/>
             	<ref bean="userManager"/>
             	<ref bean="ParseManager"/>
 	        </list>
+		</property>
+	</bean>
+	<bean id="InfoGateway" class="com.cyanspring.info.InfoGateway">
+		<property name="createThreadCount" value="100" />
+		<property name="Computes">
+			<list>
+				<!-- <ref bean="newsManager"/> -->
+				<ref bean="premiumFollowManager" />
+				<ref bean="alertManager" />
+			</list>
 		</property>
 	</bean>
 	
@@ -25,15 +34,6 @@
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
-		<property name="open">
-			<value>2115</value>
-		</property>
-		<property name="preopen">
-			<value>2110</value>
-		</property>
-		<property name="close">
-			<value>2100</value>
-		</property>
 		<property name="serverMarket">
 			<value>FX</value>
 		</property>

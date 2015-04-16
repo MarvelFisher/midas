@@ -134,7 +134,7 @@ public class ParseManager implements IPlugin {
 			
 			if (getCreateThreadCount() > 0) {
 				for (int i = 0; i < getCreateThreadCount(); i++) {
-					strThreadId = "Thread" + String.valueOf(i);
+					strThreadId = "ParseThread" + String.valueOf(i);
 					ParseThread PT = new ParseThread(strThreadId,
 							ParseDataQueue, timeoutSecond, maxRetrytimes,
 							parseApplicationId, parseRestApiId, ParseAction);

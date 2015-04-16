@@ -1,8 +1,5 @@
 package com.cyanspring.info.alert;
 
-import java.io.DataOutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Query;
@@ -22,13 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
-import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.alert.*;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
@@ -46,99 +40,54 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.PriceUtils;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.info.alert.Compute;
 
-public class AlertManager implements IPlugin {
+public class AlertManager extends Compute {
 	private static final Logger log = LoggerFactory
 			.getLogger(AlertManager.class);
-	@Autowired
-	private IRemoteEventManager eventManager;
-
-	@Autowired
-	ScheduleManager scheduleManager;
-
-	@Autowired
-	private IRemoteEventManager eventManagerMD;
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
-	private int maxNoOfAlerts;
-	private int getPremiumTableInterval;
-	private String getPremiumFollowListURL;
-	private String SetInBoxURL;
 
+	private int maxNoOfAlerts;
 	private boolean checkAlertstart = true;
-	private boolean tradeAlert;
-	private boolean priceAlert;
-	
-	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private AsyncTimerEvent PFTTimer = new AsyncTimerEvent();
-	
+
 	private Map<String, ArrayList<BasePriceAlert>> symbolPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
 	private Map<String, ArrayList<BasePriceAlert>> userPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
 	private Map<String, ArrayList<BasePriceAlert>> userPastPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
 	private Map<String, ArrayList<TradeAlert>> userTradeAlerts = new HashMap<String, ArrayList<TradeAlert>>();
 
-
-	private static final String MSG_TYPE_PRICE = "1";
-	private static final String MSG_TYPE_ORDER = "2";
-	private static final String MSG_TYPE_PREMIUMORDER = "3";
-	
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
-	private PremiumFollowThread PFT;
 
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+	@Override
+	public void SubscirbetoEvents() {
+		SubscirbetoEvent(SetPriceAlertRequestEvent.class);
+		SubscirbetoEvent(QueryPriceAlertRequestEvent.class);
+		SubscirbetoEvent(QueryOrderAlertRequestEvent.class);
+		SubscirbetoEvent(ResetAccountRequestEvent.class);
+	}
 
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(SetPriceAlertRequestEvent.class, null);
-			subscribeToEvent(QueryPriceAlertRequestEvent.class, null);
-			subscribeToEvent(QueryOrderAlertRequestEvent.class, null);
-			subscribeToEvent(ResetAccountRequestEvent.class, null);
-		}
+	@Override
+	public void SubscribetoEventsMD() {
+		SubscirbetoEvent(ChildOrderUpdateEvent.class);
+		SubscirbetoEvent(AsyncTimerEvent.class);
+		SubscirbetoEvent(MarketSessionEvent.class);
+		SubscirbetoEvent(QuoteEvent.class);
+	}	
 
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
-	};
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		loadSQLdata();
+	}
 
-	private AsyncEventProcessor eventProcessorCHMD = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(ChildOrderUpdateEvent.class, null);
-			subscribeToEvent(AsyncTimerEvent.class, null);
-			subscribeToEvent(MarketSessionEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManagerMD;
-		}
-	};
-
-	private AsyncEventProcessor eventProcessorQuoMD = new AsyncEventProcessor() {
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(QuoteEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManagerMD;
-		}
-	};
-
-	public void processMarketSessionEvent(MarketSessionEvent event) {
+	@Override
+	public void processMarketSessionEvent(MarketSessionEvent event,
+			List<Compute> computes) {
 		MarketSessionType mst = event.getSession();
-
 		if (MarketSessionType.PREOPEN == mst) {
 			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = true;
-			PFT.getPremiumAll();
-			PFT.notifyQueState();
 			// AlertManager Clear expired alert
 		} else if (MarketSessionType.CLOSE == mst) {
 			log.info("[MarketSessionEvent] : " + mst);
@@ -146,16 +95,20 @@ public class AlertManager implements IPlugin {
 		}
 	}
 
-	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event) {
+	@Override
+	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event,
+			List<Compute> computes) {
 		Execution execution = event.getExecution();
 		if (null == execution)
 			return;
 
 		log.info("[processUpdateChildOrderEvent] " + execution.toString());
-			receiveChildOrderUpdateEvent(execution);		
+		receiveChildOrderUpdateEvent(execution);
 	}
 
-	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+	@Override
+	public void processResetAccountRequestEvent(ResetAccountRequestEvent event,
+			List<Compute> computes) {
 		log.info("[processResetAccountRequestEvent] : AccountId :"
 				+ event.getAccount() + "Coinid : " + event.getCoinId());
 		ResetUser(event);
@@ -187,7 +140,8 @@ public class AlertManager implements IPlugin {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User "
 										+ UserId + "fail."));
-				eventManager.sendRemoteEvent(resetAccountReplyEvent);
+				// eventManager.sendRemoteEvent(resetAccountReplyEvent);				
+				SendRemoteEvent(resetAccountReplyEvent) ;
 				log.warn("[ResetUser] warn : " + ee.getMessage());
 			} finally {
 				session.close();
@@ -197,7 +151,8 @@ public class AlertManager implements IPlugin {
 					event.getTxId(), event.getUserId(), event.getMarket(),
 					event.getCoinId(),
 					ResetAccountReplyType.LTSINFO_ALERTMANAGER, true, "");
-			eventManager.sendRemoteEvent(resetAccountReplyEvent);
+			// eventManager.sendRemoteEvent(resetAccountReplyEvent);
+			SendRemoteEvent(resetAccountReplyEvent) ;
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
 			log.error("[ResetUser] error : " + e.getMessage());
@@ -216,7 +171,8 @@ public class AlertManager implements IPlugin {
 			String Datetime = dateFormat.format(execution.get(Date.class,
 					"Created"));
 			String tradeMessage = "Trade " + execution.getSymbol() + " "
-					+ execution.getSide().toString() + " " + strQty + " @ "
+					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD") + " " + strQty + "@"
+//					+ "SOLD" + " " + strQty + "@"
 					+ strPrice;
 			TradeAlert TA;
 			if (execution.getSide().toString().toLowerCase().equals("sell")) {
@@ -230,54 +186,14 @@ public class AlertManager implements IPlugin {
 			}
 			String keyValue = execution.getSymbol() + "," + strPrice + ","
 					+ strQty + ","
-					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");			
-			//SendEvent
-			SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(null, 
-					null,"txId", new ParseData(execution.getUser(), tradeMessage, TA.getId(), MSG_TYPE_ORDER, Datetime, keyValue));
-			eventManagerMD.sendEvent(sendNotificationRequestEvent);
-			// Premium Follow
-			ArrayList<PremiumUser> lstPU = PFT.findUser(execution.getAccount());
-			if (null != lstPU) {
-				String Msg = execution.getUser() + " made a new trade: "
-						+ tradeMessage;
-				String SendtoSocial = "action=31&comment=" + Msg + "&userid=";
-				for (PremiumUser user : lstPU) {
-					// Send Notification to PremiumUser
-					sendNotificationRequestEvent = new SendNotificationRequestEvent(null, 
-							null,"txId", new ParseData(user.getUserId(), Msg, TA.getId(), MSG_TYPE_PREMIUMORDER, Datetime, keyValue));
-					eventManagerMD.sendEvent(sendNotificationRequestEvent);
-					//Send RemoteEvent
-					SendtoSocial = SendtoSocial + user.getUserId() + ",";
-				}
-				// Send to Social
-				SendtoSocial = SendtoSocial.substring(0,
-						SendtoSocial.length() - 1);
-
-				URL obj = new URL(getSetInBoxURL());
-				HttpURLConnection httpCon = (HttpURLConnection) obj
-						.openConnection();
-
-				httpCon.setRequestMethod("POST");
-				httpCon.setRequestProperty("user-Agent", "LTSInfo-SetInBox-31");
-				httpCon.setRequestProperty("Content-Length",
-						Integer.toString(SendtoSocial.length()));
-
-				httpCon.setDoOutput(true);
-				DataOutputStream wr = new DataOutputStream(
-						httpCon.getOutputStream());
-				wr.writeBytes(SendtoSocial);
-				wr.flush();
-				wr.close();
-				int responseCode = httpCon.getResponseCode();
-				if (responseCode != 200) {
-					log.warn("[Social API]Send to Social Error. : "
-							+ responseCode);
-				} else {
-					log.info("Send to Social : PostMsg=" + Msg + "to "
-							+ lstPU.size() + " users.");
-				}
-				httpCon.disconnect();
-			}
+					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
+			// SendEvent
+			SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+					null, null, "txId", new ParseData(execution.getUser(),
+							tradeMessage, TA.getId(), AlertMsgType.MSG_TYPE_ORDER.getType(), Datetime,
+							keyValue));
+			// eventManagerMD.sendEvent(sendNotificationRequestEvent);
+			SendEvent(sendNotificationRequestEvent) ;
 			// save to Array
 			ArrayList<TradeAlert> list;
 			list = userTradeAlerts.get(execution.getUser());
@@ -328,8 +244,9 @@ public class AlertManager implements IPlugin {
 		}
 	}
 
+	@Override
 	public void processQueryOrderAlertRequestEvent(
-			QueryOrderAlertRequestEvent event) {
+			QueryOrderAlertRequestEvent event, List<Compute> computes) {
 		try {
 			log.info("[receiveQueryOrderAlertRequestEvent]");
 			AlertType type = event.getType();
@@ -362,7 +279,7 @@ public class AlertManager implements IPlugin {
 							queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
 									null, event.getSender(), list,
 									event.getTxId(), event.getuserId(), true,
-									Msg);
+									Msg);							
 						} else {
 							queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
 									null, event.getSender(), list,
@@ -405,7 +322,8 @@ public class AlertManager implements IPlugin {
 			}
 			try {
 				// log.info("Before sendRemoteEvent" + event.getuserId());
-				eventManager.sendRemoteEvent(queryorderalertreplyevent);
+				// eventManager.sendRemoteEvent(queryorderalertreplyevent);
+				SendRemoteEvent(queryorderalertreplyevent) ;
 				log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "
 						+ queryorderalertreplyevent.getUserId() + " : " + Msg);
 			} catch (Exception e) {
@@ -417,7 +335,8 @@ public class AlertManager implements IPlugin {
 		}
 	}
 
-	public void processQuoteEvent(QuoteEvent event) {
+	@Override
+	public void processQuoteEvent(QuoteEvent event, List<Compute> computes) {
 		Quote quote = event.getQuote();
 
 		if (quotes.get(quote.getSymbol()) == null) {
@@ -435,11 +354,11 @@ public class AlertManager implements IPlugin {
 				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()),
 						quote)) {
 					String setDateTime = alert.getDateTime();
-					//SendEvent
-					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(null, 
-							null,"txId", PackPriceAlert(alert));
-					eventManagerMD.sendEvent(sendNotificationRequestEvent);
-					
+					// SendEvent
+					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+							null, null, "txId", PackPriceAlert(alert));
+					// eventManagerMD.sendEvent(sendNotificationRequestEvent);
+					SendEvent(sendNotificationRequestEvent);
 					// Add Alert to PastSQL
 					PastPriceAlert pastPriceAlert = new PastPriceAlert(
 							alert.getUserId(), alert.getSymbol(),
@@ -509,7 +428,9 @@ public class AlertManager implements IPlugin {
 		return false;
 	}
 
-	public void processSetPriceAlertRequestEvent(SetPriceAlertRequestEvent event) {
+	@Override
+	public void processSetPriceAlertRequestEvent(
+			SetPriceAlertRequestEvent event, List<Compute> computes) {
 		try {
 			AlertType type = event.getType();
 			log.info("[processSetPriceAlertRequestEvent] " + event.toString());
@@ -531,15 +452,17 @@ public class AlertManager implements IPlugin {
 						null, false, // Msg);
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
-				eventManager.sendRemoteEvent(pricealertreplyevent);
+				// eventManager.sendRemoteEvent(pricealertreplyevent);
+				SendRemoteEvent(pricealertreplyevent);
 			}
 		} catch (Exception e) {
 			log.warn("Exception : " + e.getMessage());
 		}
 	}
 
+	@Override
 	public void processQueryPriceAlertRequestEvent(
-			QueryPriceAlertRequestEvent event) {
+			QueryPriceAlertRequestEvent event, List<Compute> computes) {
 		try {
 			AlertType type = event.getType();
 			log.info("[processQueryPriceAlertRequestEvent] " + event.toString());
@@ -558,7 +481,8 @@ public class AlertManager implements IPlugin {
 						event.getUserId(), event.getType(), null, false, // Msg);
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
-				eventManager.sendRemoteEvent(pricealertreplyevent);
+				// eventManager.sendRemoteEvent(pricealertreplyevent);
+				SendRemoteEvent(pricealertreplyevent);
 			}
 		} catch (Exception e) {
 			log.warn("Exception : " + e.getMessage());
@@ -629,7 +553,8 @@ public class AlertManager implements IPlugin {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.PRICE_ALERT_ERROR, Msg));
 				try {
-					eventManager.sendRemoteEvent(pricealertreplyevent);
+					// eventManager.sendRemoteEvent(pricealertreplyevent);
+					SendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveAddPriceAlert] : send reject User : "
 							+ pricealertreplyevent.getUserId() + " : " + Msg);
 				} catch (Exception e) {
@@ -648,7 +573,8 @@ public class AlertManager implements IPlugin {
 							MessageLookup.buildEventMessage(
 									ErrorMessage.PRICE_ALERT_ERROR, Msg));
 					try {
-						eventManager.sendRemoteEvent(pricealertreplyevent);
+						// eventManager.sendRemoteEvent(pricealertreplyevent);
+						SendRemoteEvent(pricealertreplyevent);
 						log.info("[receiveAddPriceAlert] : send reject User : "
 								+ pricealertreplyevent.getUserId() + " : "
 								+ Msg);
@@ -689,7 +615,8 @@ public class AlertManager implements IPlugin {
 			}
 		}
 		try {
-			eventManager.sendRemoteEvent(pricealertreplyevent);
+			// eventManager.sendRemoteEvent(pricealertreplyevent);
+			SendRemoteEvent(pricealertreplyevent);
 			log.info("[receiveAddPriceAlert] : send reply User : "
 					+ pricealertreplyevent.getUserId() + " : " + Msg);
 		} catch (Exception e) {
@@ -716,7 +643,8 @@ public class AlertManager implements IPlugin {
 					MessageLookup.buildEventMessage(
 							ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 			try {
-				eventManager.sendRemoteEvent(pricealertreplyevent);
+				// eventManager.sendRemoteEvent(pricealertreplyevent);
+				SendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveModifyPriceAlert] : send reject User : "
 						+ pricealertreplyevent.getUserId() + " : " + Msg);
 			} catch (Exception e) {
@@ -754,7 +682,8 @@ public class AlertManager implements IPlugin {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 				try {
-					eventManager.sendRemoteEvent(pricealertreplyevent);
+					// eventManager.sendRemoteEvent(pricealertreplyevent);
+					SendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveModifyPriceAlert] : send reject User : "
 							+ pricealertreplyevent.getUserId() + " : " + Msg);
 				} catch (Exception e) {
@@ -770,7 +699,8 @@ public class AlertManager implements IPlugin {
 			list.get(search).modifyPriceAlert(priceAlert);
 		}
 		try {
-			eventManager.sendRemoteEvent(pricealertreplyevent);
+			// eventManager.sendRemoteEvent(pricealertreplyevent);
+			SendRemoteEvent(pricealertreplyevent);
 			log.info("[receiveModifyPriceAlert] : send reply User : "
 					+ pricealertreplyevent.getUserId() + " : " + Msg);
 		} catch (Exception e) {
@@ -797,7 +727,8 @@ public class AlertManager implements IPlugin {
 					MessageLookup.buildEventMessage(
 							ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 			try {
-				eventManager.sendRemoteEvent(pricealertreplyevent);
+				// eventManager.sendRemoteEvent(pricealertreplyevent);
+				SendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveCancelPriceAlert] : send reject User : "
 						+ pricealertreplyevent.getUserId());
 			} catch (Exception e) {
@@ -830,7 +761,8 @@ public class AlertManager implements IPlugin {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 				try {
-					eventManager.sendRemoteEvent(pricealertreplyevent);
+					// eventManager.sendRemoteEvent(pricealertreplyevent);
+					SendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveCancelPriceAlert] : send reject User : "
 							+ pricealertreplyevent.getUserId() + " : " + Msg);
 				} catch (Exception e) {
@@ -846,7 +778,8 @@ public class AlertManager implements IPlugin {
 			list.remove(priceAlert);
 		}
 		try {
-			eventManager.sendRemoteEvent(pricealertreplyevent);
+			// eventManager.sendRemoteEvent(pricealertreplyevent);
+			SendRemoteEvent(pricealertreplyevent);
 			log.info("[receiveCancelPriceAlert] : send reply User : "
 					+ pricealertreplyevent.getUserId() + " : " + Msg);
 		} catch (Exception e) {
@@ -874,7 +807,8 @@ public class AlertManager implements IPlugin {
 						event.getSender(), null, event.getTxId(),
 						event.getUserId(), event.getType(), list, true, null);
 			}
-			eventManager.sendRemoteEvent(priceAlertReplyEvent);
+			// eventManager.sendRemoteEvent(priceAlertReplyEvent);
+			SendRemoteEvent(priceAlertReplyEvent);
 			log.info("[receiveQueryCurPriceAlert] : send reply User : "
 					+ priceAlertReplyEvent.getUserId() + " : " + Msg);
 		} catch (Exception e) {
@@ -920,7 +854,8 @@ public class AlertManager implements IPlugin {
 							null);
 				}
 			}
-			eventManager.sendRemoteEvent(priceAlertReplyEvent);
+			// eventManager.sendRemoteEvent(priceAlertReplyEvent);
+			SendRemoteEvent(priceAlertReplyEvent);
 			log.info("[receiveQueryPastPriceAlert] : send reply User : "
 					+ priceAlertReplyEvent.getUserId() + " : " + Msg);
 		} catch (Exception e) {
@@ -996,23 +931,23 @@ public class AlertManager implements IPlugin {
 		return (quote.getBid() + quote.getAsk()) / 2;
 	}
 
-//	public ParseData PackTradeAlert(Execution execution, String MsgId) {
-//		DecimalFormat qtyFormat = new DecimalFormat("#0");
-//		String strQty = qtyFormat.format(execution.getQuantity());
-//		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
-//		String strPrice = priceFormat.format(execution.getPrice());
-//		String tradeMessage = "Trade " + execution.getSymbol() + " "
-//				+ execution.getSide().toString() + " " + strQty + "@"
-//				+ strPrice;
-//		String user = execution.getUser();
-//		SimpleDateFormat dateFormat = new SimpleDateFormat(
-//				"yyyy-MM-dd HH:mm:ss");
-//		String strDate = dateFormat.format(Clock.getInstance().now());
-//		String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty
-//				+ "," + (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
-//		return new ParseData(user, tradeMessage, MsgId, MSG_TYPE_ORDER,
-//				strDate, keyValue);
-//	}
+	// public ParseData PackTradeAlert(Execution execution, String MsgId) {
+	// DecimalFormat qtyFormat = new DecimalFormat("#0");
+	// String strQty = qtyFormat.format(execution.getQuantity());
+	// DecimalFormat priceFormat = new DecimalFormat("#0.#####");
+	// String strPrice = priceFormat.format(execution.getPrice());
+	// String tradeMessage = "Trade " + execution.getSymbol() + " "
+	// + execution.getSide().toString() + " " + strQty + "@"
+	// + strPrice;
+	// String user = execution.getUser();
+	// SimpleDateFormat dateFormat = new SimpleDateFormat(
+	// "yyyy-MM-dd HH:mm:ss");
+	// String strDate = dateFormat.format(Clock.getInstance().now());
+	// String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty
+	// + "," + (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
+	// return new ParseData(user, tradeMessage, MsgId, MSG_TYPE_ORDER,
+	// strDate, keyValue);
+	// }
 
 	public ParseData PackPriceAlert(BasePriceAlert priceAlert) {
 		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
@@ -1026,27 +961,20 @@ public class AlertManager implements IPlugin {
 		priceAlert.setContent(PriceAlertMessage);
 		priceAlert.setDateTime(strDate);
 		return new ParseData(priceAlert.getUserId(), PriceAlertMessage,
-				priceAlert.getId(), MSG_TYPE_PRICE, strDate, keyValue);
+				priceAlert.getId(), AlertMsgType.MSG_TYPE_PRICE.getType(), strDate, keyValue);
 	}
 
+	@Override
 	@SuppressWarnings("deprecation")
-	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		if (event == timerEvent) {
+	public void processAsyncTimerEvent(AsyncTimerEvent event,
+			List<Compute> computes) {
+		if (event.getKey() == "1min") {
 			try {
 				SendSQLHeartBeat();
 			} catch (Exception e) {
 				log.warn("[SendSQLHeartBeat] Exception : " + e.getMessage());
 			}
-		} else if (event == PFTTimer) {
-			try {
-				// Check Thread survive
-				PFT.getPremiumUpdate();
-				PFT.notifyQueState();
-			} catch (Exception e) {
-				log.warn("[PFTTimer] Exception : " + e.getMessage());
-			}
 		}
-
 	}
 
 	private void loadSQLdata() {
@@ -1097,66 +1025,8 @@ public class AlertManager implements IPlugin {
 		return;
 	}
 
-	@Override
-	public void init() throws Exception {
-		try {
-			log.info("Initialising...");
-			// subscribe to events
-			eventProcessor.setHandler(this);
-			eventProcessor.init();
-			if (eventProcessor.getThread() != null)
-				eventProcessor.getThread().setName("AlertManager");
-
-			// subscribe to events
-			eventProcessorCHMD.setHandler(this);
-			eventProcessorCHMD.init();
-			if (eventProcessorCHMD.getThread() != null)
-				eventProcessorCHMD.getThread().setName("AlertManager-MD");
-
-			// subscribe to events
-			eventProcessorQuoMD.setHandler(this);
-			eventProcessorQuoMD.init();
-			if (eventProcessorQuoMD.getThread() != null)
-				eventProcessorQuoMD.getThread().setName("AlertManager-Quo");
-
-			scheduleManager.scheduleRepeatTimerEvent(60000,
-					eventProcessorCHMD, timerEvent);
-			scheduleManager.scheduleRepeatTimerEvent(getPremiumTableInterval,
-					eventProcessorCHMD, PFTTimer);
-
-			PFT = new PremiumFollowThread(getPremiumFollowListURL);
-			PFT.getPremiumAll();
-
-			loadSQLdata();			
-		} catch (Exception e) {
-			log.warn("Exception : " + e.getMessage());
-		}
-	}
-
-	@Override
-	public void uninit() {
-		log.info("Uninitialising...");
-		eventProcessor.uninit();
-		eventProcessorCHMD.uninit();
-		eventProcessorQuoMD.uninit();		
-	}
 	// getters and setters
-	public boolean isTradeAlert() {
-		return tradeAlert;
-	}
 
-	public void setTradeAlert(boolean tradeAlert) {
-		this.tradeAlert = tradeAlert;
-	}
-
-	public boolean isPriceAlert() {
-		return priceAlert;
-	}
-
-	public void setPriceAlert(boolean priceAlert) {
-		this.priceAlert = priceAlert;
-	}
-	
 	public int getMaxNoOfAlerts() {
 		return maxNoOfAlerts;
 	}
@@ -1165,27 +1035,4 @@ public class AlertManager implements IPlugin {
 		this.maxNoOfAlerts = maxNoOfAlerts;
 	}
 
-	public int getGetPremiumTableInterval() {
-		return getPremiumTableInterval;
-	}
-
-	public void setGetPremiumTableInterval(int getPremiumTableInterval) {
-		this.getPremiumTableInterval = getPremiumTableInterval;
-	}
-
-	public String getSetInBoxURL() {
-		return SetInBoxURL;
-	}
-
-	public void setSetInBoxURL(String setInBoxURL) {
-		SetInBoxURL = setInBoxURL;
-	}
-
-	public String getGetPremiumFollowListURL() {
-		return getPremiumFollowListURL;
-	}
-
-	public void setGetPremiumFollowListURL(String getPremiumFollowListURL) {
-		this.getPremiumFollowListURL = getPremiumFollowListURL;
-	}
 }
