@@ -89,6 +89,7 @@ public class AlertManager extends Compute {
 			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = true;
 			// AlertManager Clear expired alert
+			clearExpiredData() ;
 		} else if (MarketSessionType.CLOSE == mst) {
 			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = false;
@@ -112,6 +113,11 @@ public class AlertManager extends Compute {
 		log.info("[processResetAccountRequestEvent] : AccountId :"
 				+ event.getAccount() + "Coinid : " + event.getCoinId());
 		ResetUser(event);
+	}
+	
+	private void clearExpiredData()
+	{
+		
 	}
 
 	private void ResetUser(ResetAccountRequestEvent event) {
@@ -139,8 +145,7 @@ public class AlertManager extends Compute {
 																			// "fail.");
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User "
-										+ UserId + "fail."));
-				// eventManager.sendRemoteEvent(resetAccountReplyEvent);				
+										+ UserId + "fail."));			
 				SendRemoteEvent(resetAccountReplyEvent) ;
 				log.warn("[ResetUser] warn : " + ee.getMessage());
 			} finally {
@@ -151,7 +156,6 @@ public class AlertManager extends Compute {
 					event.getTxId(), event.getUserId(), event.getMarket(),
 					event.getCoinId(),
 					ResetAccountReplyType.LTSINFO_ALERTMANAGER, true, "");
-			// eventManager.sendRemoteEvent(resetAccountReplyEvent);
 			SendRemoteEvent(resetAccountReplyEvent) ;
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
@@ -201,12 +205,20 @@ public class AlertManager extends Compute {
 				session = sessionFactory.openSession();
 				Query query = session.getNamedQuery("LoadPastTradeAlert");
 				query.setString(0, execution.getUser());
-				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
 				Iterator iterator = query.list().iterator();
 				list = new ArrayList<TradeAlert>();
+				ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
 				while (iterator.hasNext()) {
 					TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
-					list.add(pastTradeAlert);
+					if (list.size() < 20)
+					{
+						list.add(pastTradeAlert);
+					}
+					else
+					{
+						lstExpired.add(pastTradeAlert);
+					}
 				}
 				if (list.size() == 0) {
 					list.add(TA);
@@ -217,6 +229,19 @@ public class AlertManager extends Compute {
 					list.add(0, TA);
 				}
 				userTradeAlerts.put(execution.getUser(), list);
+				if (lstExpired.size() > 0)
+				{
+					try {
+						Transaction tx = session.beginTransaction();
+						for (TradeAlert tradealert : lstExpired)
+						{
+							session.delete(tradealert);
+						}
+						tx.commit();
+					} catch (Exception e) {
+						log.warn("[SQLDelete] : " + e.getMessage());
+					}
+				}
 			} else {
 				if (list.indexOf(TA) != -1) {
 					log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
@@ -257,20 +282,27 @@ public class AlertManager extends Compute {
 						.getuserId());
 				if (null == list) {
 					Session session = null;
-					// log.info("List Null " + event.getuserId());
 					try {
 						session = sessionFactory.openSession();
 
 						Query query = session
 								.getNamedQuery("LoadPastTradeAlert");
 						query.setString(0, event.getuserId());
-						query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+//						query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
 						Iterator iterator = query.list().iterator();
 						list = new ArrayList<TradeAlert>();
+						ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
 						while (iterator.hasNext()) {
 							TradeAlert pastTradeAlert = (TradeAlert) iterator
 									.next();
-							list.add(pastTradeAlert);
+							if (list.size() < 20)
+							{
+								list.add(pastTradeAlert);
+							}
+							else
+							{
+								lstExpired.add(pastTradeAlert);
+							}
 						}
 						if (list.size() == 0) {
 							log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.");
@@ -286,10 +318,21 @@ public class AlertManager extends Compute {
 									event.getTxId(), event.getuserId(), true,
 									null);
 						}
+						if (lstExpired.size() > 0)
+						{
+							try {
+								Transaction tx = session.beginTransaction();
+								for (TradeAlert TA : lstExpired)
+								{
+									session.delete(TA);
+								}
+								tx.commit();
+							} catch (Exception e) {
+								log.warn("[SQLDelete] : " + e.getMessage());
+							}
+						}						
 					} catch (Throwable t) {
-						log.warn(
-								"[processQueryOrderAlertRequestEvent] Exceptions : ",
-								t);
+						log.warn("[processQueryOrderAlertRequestEvent] Exceptions : ",t);
 					} finally {
 						if (null != session) {
 							session.close();
@@ -321,8 +364,6 @@ public class AlertManager extends Compute {
 						+ event.toString());
 			}
 			try {
-				// log.info("Before sendRemoteEvent" + event.getuserId());
-				// eventManager.sendRemoteEvent(queryorderalertreplyevent);
 				SendRemoteEvent(queryorderalertreplyevent) ;
 				log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "
 						+ queryorderalertreplyevent.getUserId() + " : " + Msg);
@@ -357,7 +398,6 @@ public class AlertManager extends Compute {
 					// SendEvent
 					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 							null, null, "txId", PackPriceAlert(alert));
-					// eventManagerMD.sendEvent(sendNotificationRequestEvent);
 					SendEvent(sendNotificationRequestEvent);
 					// Add Alert to PastSQL
 					PastPriceAlert pastPriceAlert = new PastPriceAlert(
@@ -452,7 +492,6 @@ public class AlertManager extends Compute {
 						null, false, // Msg);
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
-				// eventManager.sendRemoteEvent(pricealertreplyevent);
 				SendRemoteEvent(pricealertreplyevent);
 			}
 		} catch (Exception e) {
@@ -481,7 +520,6 @@ public class AlertManager extends Compute {
 						event.getUserId(), event.getType(), null, false, // Msg);
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
-				// eventManager.sendRemoteEvent(pricealertreplyevent);
 				SendRemoteEvent(pricealertreplyevent);
 			}
 		} catch (Exception e) {
@@ -495,16 +533,33 @@ public class AlertManager extends Compute {
 		try {
 			session = sessionFactory.openSession();
 			ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
+			ArrayList<PastPriceAlert> PastPriceAlertlist = new ArrayList<PastPriceAlert>();
 			Query query = session.getNamedQuery("LoadPastPriceAlert");
 			query.setString(0, userId);
-			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+//			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
 			Iterator iterator = query.list().iterator();
 			while (iterator.hasNext()) {
 				PastPriceAlert pastPriceAlert = (PastPriceAlert) iterator
 						.next();
-				BasePriceAlertlist.add(pastPriceAlert);
+				if (BasePriceAlertlist.size() < 20)
+				{
+					BasePriceAlertlist.add(pastPriceAlert);
+				}
+				else
+				{
+					PastPriceAlertlist.add(pastPriceAlert);
+				}
 			}
 			userPastPriceAlerts.put(userId, BasePriceAlertlist);
+			if (PastPriceAlertlist.size() > 0)
+			{
+				Transaction tx = session.getTransaction();
+				for (PastPriceAlert PPT : PastPriceAlertlist)
+				{
+					session.delete(PPT);
+				}
+				tx.commit();
+			}
 		} catch (Exception e) {
 			log.warn("Exception : " + e.getMessage());
 		} finally {
@@ -553,7 +608,6 @@ public class AlertManager extends Compute {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.PRICE_ALERT_ERROR, Msg));
 				try {
-					// eventManager.sendRemoteEvent(pricealertreplyevent);
 					SendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveAddPriceAlert] : send reject User : "
 							+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -573,7 +627,6 @@ public class AlertManager extends Compute {
 							MessageLookup.buildEventMessage(
 									ErrorMessage.PRICE_ALERT_ERROR, Msg));
 					try {
-						// eventManager.sendRemoteEvent(pricealertreplyevent);
 						SendRemoteEvent(pricealertreplyevent);
 						log.info("[receiveAddPriceAlert] : send reject User : "
 								+ pricealertreplyevent.getUserId() + " : "
@@ -615,7 +668,6 @@ public class AlertManager extends Compute {
 			}
 		}
 		try {
-			// eventManager.sendRemoteEvent(pricealertreplyevent);
 			SendRemoteEvent(pricealertreplyevent);
 			log.info("[receiveAddPriceAlert] : send reply User : "
 					+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -643,7 +695,6 @@ public class AlertManager extends Compute {
 					MessageLookup.buildEventMessage(
 							ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 			try {
-				// eventManager.sendRemoteEvent(pricealertreplyevent);
 				SendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveModifyPriceAlert] : send reject User : "
 						+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -682,7 +733,6 @@ public class AlertManager extends Compute {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 				try {
-					// eventManager.sendRemoteEvent(pricealertreplyevent);
 					SendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveModifyPriceAlert] : send reject User : "
 							+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -699,7 +749,6 @@ public class AlertManager extends Compute {
 			list.get(search).modifyPriceAlert(priceAlert);
 		}
 		try {
-			// eventManager.sendRemoteEvent(pricealertreplyevent);
 			SendRemoteEvent(pricealertreplyevent);
 			log.info("[receiveModifyPriceAlert] : send reply User : "
 					+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -727,7 +776,6 @@ public class AlertManager extends Compute {
 					MessageLookup.buildEventMessage(
 							ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 			try {
-				// eventManager.sendRemoteEvent(pricealertreplyevent);
 				SendRemoteEvent(pricealertreplyevent);
 				log.info("[receiveCancelPriceAlert] : send reject User : "
 						+ pricealertreplyevent.getUserId());
@@ -761,7 +809,6 @@ public class AlertManager extends Compute {
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_NOT_EXIST, Msg));
 				try {
-					// eventManager.sendRemoteEvent(pricealertreplyevent);
 					SendRemoteEvent(pricealertreplyevent);
 					log.info("[receiveCancelPriceAlert] : send reject User : "
 							+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -778,7 +825,6 @@ public class AlertManager extends Compute {
 			list.remove(priceAlert);
 		}
 		try {
-			// eventManager.sendRemoteEvent(pricealertreplyevent);
 			SendRemoteEvent(pricealertreplyevent);
 			log.info("[receiveCancelPriceAlert] : send reply User : "
 					+ pricealertreplyevent.getUserId() + " : " + Msg);
@@ -807,7 +853,6 @@ public class AlertManager extends Compute {
 						event.getSender(), null, event.getTxId(),
 						event.getUserId(), event.getType(), list, true, null);
 			}
-			// eventManager.sendRemoteEvent(priceAlertReplyEvent);
 			SendRemoteEvent(priceAlertReplyEvent);
 			log.info("[receiveQueryCurPriceAlert] : send reply User : "
 					+ priceAlertReplyEvent.getUserId() + " : " + Msg);
@@ -930,24 +975,6 @@ public class AlertManager extends Compute {
 	private double getAlertPrice(Quote quote) {
 		return (quote.getBid() + quote.getAsk()) / 2;
 	}
-
-	// public ParseData PackTradeAlert(Execution execution, String MsgId) {
-	// DecimalFormat qtyFormat = new DecimalFormat("#0");
-	// String strQty = qtyFormat.format(execution.getQuantity());
-	// DecimalFormat priceFormat = new DecimalFormat("#0.#####");
-	// String strPrice = priceFormat.format(execution.getPrice());
-	// String tradeMessage = "Trade " + execution.getSymbol() + " "
-	// + execution.getSide().toString() + " " + strQty + "@"
-	// + strPrice;
-	// String user = execution.getUser();
-	// SimpleDateFormat dateFormat = new SimpleDateFormat(
-	// "yyyy-MM-dd HH:mm:ss");
-	// String strDate = dateFormat.format(Clock.getInstance().now());
-	// String keyValue = execution.getSymbol() + "," + strPrice + "," + strQty
-	// + "," + (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
-	// return new ParseData(user, tradeMessage, MsgId, MSG_TYPE_ORDER,
-	// strDate, keyValue);
-	// }
 
 	public ParseData PackPriceAlert(BasePriceAlert priceAlert) {
 		DecimalFormat priceFormat = new DecimalFormat("#0.#####");

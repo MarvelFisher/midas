@@ -8,7 +8,7 @@
 >
 
 	<context:annotation-config />
-	<import resource="info_test/*"/>
+	<import resource="info_test/*"/>	
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
@@ -38,7 +38,7 @@
 	</bean>	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FX"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	</bean>	
@@ -88,5 +88,33 @@
 <!-- 		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDuration=86400000"></property> -->
 	</bean>
 	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	  <property name="dataSource" ref="dataSource"/>
+	  <property name="mappingResources">
+	    <list>
+	      <value>conf/info_test/object.hbm.xml</value>
+	    </list>
+	  </property>
+	  <property name="hibernateProperties">
+      	<props>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.show_sql">false</prop>
+         <prop key="hibernate.format_sql">false</prop>
+         <prop key="hibernate.connection.autocommit">false</prop>
+       	</props>
+       </property>
+	</bean>
+	
+	<bean id="sessionFactoryCentral" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	  <property name="dataSource" ref="dataSourceCentral"/>
+	  <property name="hibernateProperties">
+      	<props>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.show_sql">false</prop>
+         <prop key="hibernate.format_sql">false</prop>
+         <prop key="hibernate.connection.autocommit">false</prop>
+       	</props>
+       </property>
+	</bean>
 	
 </beans>

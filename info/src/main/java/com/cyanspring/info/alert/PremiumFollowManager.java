@@ -101,21 +101,23 @@ public class PremiumFollowManager extends Compute {
 				String keyValue = execution.getSymbol() + "," + strPrice + ","
 						+ strQty + ","
 						+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");				
-//				String Msg = execution.getUser() + (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
+				String Msg = execution.getUser() + (execution.getSide().isBuy() ? " BOUGHT " : " SOLD ")
+						+ execution.getSymbol() + " " + strQty + "@" + strPrice;
+				
 				//##b$$%UserName%##/b$$ %Side% ##b$$%Currency%##/b$$ %Quantity% @ %Price%
 				String htmlFormat = getPremiumFollowHtmlFormat().replace("%UserName%", execution.getUser());
+				htmlFormat = htmlFormat.replace("%Side%", (execution.getSide().isBuy() ? "BOUGHT" : "SOLD"));
 				htmlFormat = htmlFormat.replace("%Currency%", execution.getSymbol());
 				htmlFormat = htmlFormat.replace("%Quantity%", strQty);
 				htmlFormat = htmlFormat.replace("%Price%", strPrice);
-				htmlFormat = htmlFormat.replace("%Side%", (execution.getSide().isBuy() ? "BOUGHT" : "SOLD"));
+				
 				String SendtoSocial = "action=31&comment=" + htmlFormat + "&userid=";
 				for (PremiumUser user : lstPU) {
 					// Send Notification to PremiumUser
 					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 							null, null, "txId", new ParseData(user.getUserId(),
-									htmlFormat, "", AlertMsgType.MSG_TYPE_PREMIUMORDER.getType(),
+									Msg, "", AlertMsgType.MSG_TYPE_PREMIUMORDER.getType(),
 									Datetime, keyValue));
-//					eventManagerMD.sendEvent(sendNotificationRequestEvent);
 					SendEvent(sendNotificationRequestEvent);
 					// Send RemoteEvent
 					SendtoSocial = SendtoSocial + user.getUserId() + ",";
