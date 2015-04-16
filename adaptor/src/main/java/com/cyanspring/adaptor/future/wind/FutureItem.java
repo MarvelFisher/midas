@@ -218,12 +218,12 @@ public class FutureItem implements AutoCloseable {
 			return;
 		}
 
-		if (WindFutureDataAdaptor.instance.isMarketDataLog())
-			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
-							+ ",Symbol=" + symbolId + ",MarketSessionType="
-							+ marketSessionData.getSessionType() + ",Time=" + DateUtil.now()
-							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
-			);
+//		if (WindFutureDataAdaptor.instance.isMarketDataLog())
+//			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
+//							+ ",Symbol=" + symbolId + ",Mst="
+//							+ marketSessionData.getSessionType() + ",t=" + DateUtil.now()
+//							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
+//			);
 
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getTradingDay(),

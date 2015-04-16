@@ -226,8 +226,8 @@ public class StockItem implements AutoCloseable {
 
 		if (WindFutureDataAdaptor.instance.isMarketDataLog())
 			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
-							+ ",Symbol=" + symbolId + ",MarketSessionType="
-							+ marketSessionData.getSessionType() + ",Time=" + DateUtil.now()
+							+ ",Symbol=" + symbolId + ",mst="
+							+ marketSessionData.getSessionType() + ",t=" + DateUtil.now()
 							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
 			);
 
@@ -249,6 +249,11 @@ public class StockItem implements AutoCloseable {
 		if(marketSessionData.getSessionType()==MarketSessionType.PREOPEN
 				&& DateUtil.compareDate(tickTime, endDate)<0){
 			tickTime = endDate;
+		}
+
+		if(marketSessionData.getSessionType()==MarketSessionType.OPEN
+				&& DateUtil.compareDate(tickTime, endDate)>=0){
+			tickTime = DateUtil.subDate(endDate,1, TimeUnit.SECONDS);
 		}
 
 		if(marketSessionData.getSessionType()==MarketSessionType.CLOSE
