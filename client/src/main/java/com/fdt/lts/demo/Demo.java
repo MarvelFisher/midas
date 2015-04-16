@@ -5,17 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.cyanspring.apievent.obj.Order;
+import com.cyanspring.apievent.obj.OrderSide;
+import com.cyanspring.apievent.obj.OrderType;
+import com.cyanspring.apievent.obj.Quote;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fdt.lts.client.LtsApi;
 import com.fdt.lts.client.TradeAdaptor;
-import com.fdt.lts.client.obj.AccountInfo.OpenPosition;
-import com.fdt.lts.client.obj.Order;
-import com.fdt.lts.client.obj.OrderSide;
-import com.fdt.lts.client.obj.OrderType;
-import com.fdt.lts.client.obj.QuoteData;
 
 public class Demo{
 	public static String host ="";	
@@ -33,7 +32,7 @@ public class Demo{
 		symbolLst.add("AUDUSD");
 		
 		TradeAdaptor adaptor;		
-		Order buyOrder = getBuyOrder("USDJPY",20);		
+		Order buyOrder = getBuyOrder("USDJPY",20);
 		adaptor = getBuyTradeAdaptor(buyOrder);
 		
 		api.start(user, pwd, symbolLst, adaptor);	
@@ -86,7 +85,7 @@ public class Demo{
 			}
 
 			@Override
-			public void onQuote(QuoteData quote) {
+			public void onQuote(Quote quote) {
 				List <Order>orders = getOrders();
 				//AUDUSD
 				if(quote.getSymbol().equals(buyOrder.getSymbol())){

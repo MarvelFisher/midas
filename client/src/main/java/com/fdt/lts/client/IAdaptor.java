@@ -1,13 +1,14 @@
 package com.fdt.lts.client;
 
-import com.fdt.lts.client.obj.Order;
-import com.fdt.lts.client.obj.QuoteData;
+
+import com.cyanspring.apievent.obj.Order;
+import com.cyanspring.apievent.obj.Quote;
 
 public interface IAdaptor {
 
 	public void onStart();
 	public void onAccountUpdate();
-	public void onQuote(QuoteData quote);
+	public void onQuote(Quote quote);
 	public void onNewOrderReply(Order order);
 	public void onAmendOrderReply(Order order);
 	public void onCancelOrderReply(Order order);

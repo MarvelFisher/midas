@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 /**
  * Description....
@@ -25,30 +26,42 @@ import java.lang.reflect.Constructor;
  * @since 1.0
  */
 
-public class ApiEventTranslator {
+public class ApiEventTranslator implements IEventTranslatror{
     private Logger log = LoggerFactory.getLogger(ApiEventTranslator.class);
+    private Map<String, String> requestMap;
+    private Map<String, String> replyMap;
+
+    @Override
+    public void init(Map<String, String> requestMap, Map<String, String> replyMap) {
+        this.requestMap = requestMap;
+        this.replyMap = replyMap;
+    }
+
+    @Override
     public IApiRequest translateRequest(Object object){
         IApiRequest tranObject;
         try {
-            String clzName = object.getClass().getName();
-            Class<IApiRequest> clz = (Class<IApiRequest>)Class.forName("Api" + clzName);
-            Constructor<IApiRequest> constructor = clz.getConstructor();
-            tranObject = constructor.newInstance();
+            String clzName = object.getClass().getSimpleName();
+            if (!requestMap.containsKey(clzName))
+                return null;
+            log.info("Class name: " + clzName);
+//            Class<IApiRequest> clz = (Class<IApiRequest>)Class.forName("Api" + clzName);
+//            Constructor<IApiRequest> constructor = clz.getConstructor();
+            tranObject = (IApiRequest)Class.forName(requestMap.get(clzName)).newInstance();
         } catch (Exception e){
-            tranObject = new IApiRequest() {
-                @Override
-                public void sendEventToLts(Object event, IUserSocketContext ctx) {
-                    log.warn("Unknow class from client");
-                }
-            };
+            log.info(e.getMessage());
+            return null;
         }
         return tranObject;
     }
 
+    @Override
     public IApiReply translateReply(Object object){
         IApiReply tranObject;
         try {
-            String clzName = object.getClass().getName();
+            String clzName = object.getClass().getSimpleName();
+            if (!replyMap.containsKey(clzName))
+                return null;
             Class<IApiReply> clz = (Class<IApiReply>)Class.forName("Api" + clzName);
             Constructor<IApiReply> constructor = clz.getConstructor();
             tranObject = constructor.newInstance();

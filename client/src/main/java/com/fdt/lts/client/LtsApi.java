@@ -5,49 +5,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.apievent.obj.*;
+import com.cyanspring.apievent.reply.*;
+import com.cyanspring.apievent.request.*;
+import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.event.RemoteAsyncEvent;
+//import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.account.Account;
-import com.cyanspring.common.account.OpenPosition;
-import com.cyanspring.common.business.Execution;
-import com.cyanspring.common.business.OrderField;
-import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
-import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
-import com.cyanspring.common.event.account.AccountUpdateEvent;
-import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
-import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
-import com.cyanspring.common.event.account.UserLoginEvent;
-import com.cyanspring.common.event.account.UserLoginReplyEvent;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
-import com.cyanspring.common.event.marketdata.QuoteSubEvent;
-import com.cyanspring.common.event.order.AmendParentOrderEvent;
-import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
-import com.cyanspring.common.event.order.CancelParentOrderEvent;
-import com.cyanspring.common.event.order.CancelParentOrderReplyEvent;
-import com.cyanspring.common.event.order.EnterParentOrderEvent;
-import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
-import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
-import com.cyanspring.common.event.order.StrategySnapshotEvent;
-import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
-import com.cyanspring.common.event.system.SystemErrorEvent;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.event.ClientSocketEventManager;
 import com.cyanspring.transport.socket.ClientSocketService;
 import com.fdt.lts.client.error.Error;
 import com.fdt.lts.client.error.OrderChecker;
-import com.fdt.lts.client.obj.AccountInfo;
-import com.fdt.lts.client.obj.Order;
-import com.fdt.lts.client.obj.OrderSide;
-import com.fdt.lts.client.obj.OrderType;
-import com.fdt.lts.client.obj.QuoteData;
 
 public final class LtsApi implements ITrade {
 	private static Logger log = LoggerFactory.getLogger(LtsApi.class);
@@ -64,7 +38,7 @@ public final class LtsApi implements ITrade {
 	private AsyncEventProcessor eventProcessor;
 
 	public LtsApi(String host, int port) {
-		if (host == null || host.trim() == "" || port == 0) {
+		if (host == null || host.trim().equals("") || port == 0) {
 			log.error("Error, null host or port!");
 			return;
 		}
@@ -89,7 +63,7 @@ public final class LtsApi implements ITrade {
 				subscribeToEvent(AccountSnapshotReplyEvent.class, null);
 				subscribeToEvent(AccountUpdateEvent.class, null);
 				subscribeToEvent(OpenPositionUpdateEvent.class, null);
-				subscribeToEvent(ClosedPositionUpdateEvent.class, null);
+//				subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 				subscribeToEvent(SystemErrorEvent.class, null);
 			}
 
@@ -118,8 +92,8 @@ public final class LtsApi implements ITrade {
 
 	public void start(String user, String password,
 			List<String> subscribeSymbolList, TradeAdaptor tAct) {
-		if (user == null || user.trim() == "" || password == null
-				|| password.trim() == "" || subscribeSymbolList == null
+		if (user == null || user.trim().equals("") || password == null
+				|| password.trim().equals("") || subscribeSymbolList == null
 				|| tAct == null) {
 			log.error("Error, null user or password or subscribeSymbolList or tAct");
 			return;
@@ -170,26 +144,26 @@ public final class LtsApi implements ITrade {
 	}
 
 	private void setExecutionData(Execution exe) {
-		AccountInfo.Execution newExe = accountInfo.new Execution();
+		Execution newExe = new Execution();
 		newExe.setAccount(exe.getAccount());
 		newExe.setCreated(exe.getCreated());
-		newExe.setExecID(exe.getExecId());
+		newExe.setExecID(exe.getExecID());
 		newExe.setId(exe.getId());
 		newExe.setModified(exe.getModified());
-		newExe.setOrderID(exe.getOrderId());
-		newExe.setParentOrderID(exe.getParentOrderId());
+		newExe.setOrderID(exe.getOrderID());
+		newExe.setParentOrderID(exe.getParentOrderID());
 		newExe.setPrice(exe.getPrice());
-		newExe.setQuantity(new Double(exe.getQuantity()).longValue());
-		newExe.setServerID(exe.getServerId());
-		newExe.setSide(exe.getSide().toString());
-		newExe.setStrategyID(exe.getStrategyId());
+		newExe.setQuantity(exe.getQuantity());
+		newExe.setServerID(exe.getServerID());
+		newExe.setSide(exe.getSide());
+		newExe.setStrategyID(exe.getStrategyID());
 		newExe.setSymbol(exe.getSymbol());
 		newExe.setUser(exe.getUser());
-		accountInfo.addExecution(exe.getSymbol(), exe.getOrderId(), newExe);
+		accountInfo.addExecution(exe.getSymbol(), exe.getOrderID(), newExe);
 	}
 
 	private void setOpenPositionData(OpenPosition oPosition) {
-		AccountInfo.OpenPosition newPosition = accountInfo.new OpenPosition();
+		OpenPosition newPosition = new OpenPosition();
 		newPosition.setAccount(oPosition.getAccount());
 		newPosition.setAcPnL(oPosition.getAcPnL());
 		newPosition.setCreated(oPosition.getCreated());
@@ -224,30 +198,13 @@ public final class LtsApi implements ITrade {
 		setOpenPositionData(event.getPosition());
 	}
 
-	public void processClosedPositionUpdateEvent(ClosedPositionUpdateEvent event) {
-		// No need implement in this version
-		// log.debug("Closed Position: " + event.getPosition());
-	}
+//	public void processClosedPositionUpdateEvent(ClosedPositionUpdateEvent event) {
+//		// No need implement in this version
+//		// log.debug("Closed Position: " + event.getPosition());
+//	}
 
 	public void processQuoteEvent(QuoteEvent event) {
-		QuoteData quote = setQuoteData(event.getQuote());
-		tAdaptor.onQuote(quote);
-	}
-
-	private QuoteData setQuoteData(Quote iquote) {
-		QuoteData quote = new QuoteData();
-		quote.setSymbol(iquote.getSymbol());
-		quote.setBid(iquote.getBid());
-		quote.setAsk(iquote.getAsk());
-		quote.setLast(iquote.getLast());
-		quote.setHigh(iquote.getHigh());
-		quote.setLow(iquote.getLow());
-		quote.setOpen(iquote.getOpen());
-		quote.setClose(iquote.getClose());
-		quote.setTimeStamp(iquote.getTimeStamp());
-		quote.setTimeSent(iquote.getTimeSent());
-		quote.setStale(iquote.isStale());
-		return quote;
+		tAdaptor.onQuote(event.getQuote());
 	}
 
 	public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
@@ -260,7 +217,7 @@ public final class LtsApi implements ITrade {
 	}
 
 	public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
-		for (ParentOrder order : event.getOrders()) {
+		for (Order order : event.getOrders()) {
 			orderMap.put(order.getId(), setOrderData(order));
 		}
 		tAdaptor.onStart();
@@ -269,18 +226,17 @@ public final class LtsApi implements ITrade {
 		}
 	}
 
-	private Order setOrderData(ParentOrder order) {
+	private Order setOrderData(Order order) {
 		Order newOrder = new Order();
 		newOrder.setId(order.getId());
 		newOrder.setPrice(order.getPrice());
-		newOrder.setQuantity(new Double(order.getQuantity()).longValue());
+		newOrder.setQuantity(order.getQuantity());
 		newOrder.setSide(OrderSide.valueOf(order.getSide().toString()));
-		newOrder.setStopLossPrice(order.get(double.class,
-				OrderField.STOP_LOSS_PRICE.value()));
+		newOrder.setStopLossPrice(order.getStopLossPrice());
 		newOrder.setSymbol(order.getSymbol());
-		newOrder.setType(OrderType.valueOf(order.getOrderType().toString()));
-		newOrder.setState(order.getState().toString());
-		newOrder.setStatus(order.getOrdStatus().toString());
+		newOrder.setType(order.getType());
+		newOrder.setState(order.getState());
+		newOrder.setStatus(order.getStatus());
 		return newOrder;
 	}
 
@@ -375,7 +331,7 @@ public final class LtsApi implements ITrade {
 		fields.put(OrderField.SIDE.value(), order.getSide());
 		fields.put(OrderField.TYPE.value(), order.getType());
 		fields.put(OrderField.PRICE.value(), order.getPrice());
-		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity()));
+		fields.put(OrderField.QUANTITY.value(), order.getQuantity());
 
 		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
 		// fields.put(OrderField.SIDE.value(), OrderSide.Buy);
@@ -405,7 +361,7 @@ public final class LtsApi implements ITrade {
 		fields.put(OrderField.SYMBOL.value(), order.getSymbol());
 		fields.put(OrderField.SIDE.value(), order.getSide());
 		fields.put(OrderField.TYPE.value(), order.getType());
-		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity()));
+		fields.put(OrderField.QUANTITY.value(), order.getQuantity());
 		fields.put(OrderField.STOP_LOSS_PRICE.value(), order.getStopLossPrice());
 
 		// fields.put(OrderField.SYMBOL.value(), "AUDUSD");
@@ -430,7 +386,7 @@ public final class LtsApi implements ITrade {
 		}
 		Map<String, Object> fields = new HashMap<String, Object>();
 		fields.put(OrderField.PRICE.value(), order.getPrice());
-		fields.put(OrderField.QUANTITY.value(), new Double(order.getQuantity())); 
+		fields.put(OrderField.QUANTITY.value(), order.getQuantity());
 		AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(getId(),
 				null, order.getId(), fields, IdGenerator.getInstance()
 						.getNextID());

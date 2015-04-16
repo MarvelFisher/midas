@@ -145,8 +145,8 @@
 
 		<!-- cyan spring dependencies -->
 		<dependency>
-			<groupId>com.cyanspring.common</groupId>
-			<artifactId>cyanspring-common</artifactId>
+			<groupId>com.cyanspring.apievent</groupId>
+			<artifactId>api-event</artifactId>
 			<version>${cyanspring.version}</version>
 		</dependency>
 		<dependency>

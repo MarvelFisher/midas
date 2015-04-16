@@ -1,8 +1,7 @@
 package com.fdt.lts.client.error;
 
-import com.cyanspring.common.business.OrderField;
+import com.cyanspring.apievent.obj.Order;
 import com.cyanspring.common.type.OrderType;
-import com.fdt.lts.client.obj.Order;
 
 public class OrderChecker {
 	public static boolean checkNewOrder(Order order){

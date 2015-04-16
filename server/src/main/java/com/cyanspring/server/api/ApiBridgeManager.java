@@ -1,12 +1,15 @@
 package com.cyanspring.server.api;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.cyanspring.apievent.reply.ServerReadyEvent;
 import com.cyanspring.apievent.reply.SystemErrorEvent;
 import com.cyanspring.event.api.ApiEventTranslator;
 import com.cyanspring.event.api.ApiResourceManager;
+import com.cyanspring.event.api.IEventTranslatror;
 import com.cyanspring.event.api.obj.reply.IApiReply;
+import com.cyanspring.event.api.obj.request.ApiUserLoginEvent;
 import com.cyanspring.event.api.obj.request.IApiRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +36,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
     @Autowired
     private ApiResourceManager resourceManager;
 
-    private ApiEventTranslator translator = new ApiEventTranslator();
+    private IEventTranslatror translator = new ApiEventTranslator();
+    private Map<String, String> requestMap = new HashMap<String, String>();
+    private Map<String, String> replyMap = new HashMap<String, String>();
 
     private IServerSocketListener listener = new IServerSocketListener() {
         @Override
@@ -53,7 +58,10 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
             IApiRequest tranObject = translator.translateRequest(obj);
             if (tranObject == null) {
                 ctx.send(new SystemErrorEvent(null, null, 302, MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, obj.getClass().toString())));
-            } else if (ctx.getUser() == null) {
+            } else if (tranObject instanceof ApiUserLoginEvent){
+                tranObject.sendEventToLts(obj, ctx);
+            }
+            else if (ctx.getUser() == null) {
                 ctx.send(new SystemErrorEvent(null, null, 301, MessageLookup.buildEventMessage(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS, "")));
             } else {
                 tranObject.sendEventToLts(obj, ctx);
@@ -110,10 +118,19 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
         thread.start();
 
         resourceManager.init(this.listener);
+        translator.init(requestMap, replyMap);
     }
 
     @Override
     public void uninit() {
         thread.exit();
+    }
+
+    public void setReplyMap(Map<String, String> replyMap) {
+        this.replyMap = replyMap;
+    }
+
+    public void setRequestMap(Map<String, String> requestMap) {
+        this.requestMap = requestMap;
     }
 }

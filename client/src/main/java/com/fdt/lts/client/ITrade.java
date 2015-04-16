@@ -1,6 +1,7 @@
 package com.fdt.lts.client;
 
-import com.fdt.lts.client.obj.Order;
+
+import com.cyanspring.apievent.obj.Order;
 
 public interface ITrade {
 	public void putNewOrder(Order order);

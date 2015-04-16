@@ -5,6 +5,8 @@ import com.cyanspring.event.api.ApiResourceManager;
 import com.cyanspring.common.event.EventPriority;
 import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.common.util.IdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,7 +35,10 @@ public class ApiUserLoginEvent implements IApiRequest {
         UserLoginEvent loginEvent = (UserLoginEvent) event;
         String txId = IdGenerator.getInstance().getNextID();
         resourceManager.putPendingRecord(txId, loginEvent.getTxId(), ctx);
-        com.cyanspring.common.event.account.UserLoginEvent request = new com.cyanspring.common.event.account.UserLoginEvent(loginEvent.getKey(), null, loginEvent.getUserId(), loginEvent.getPassword(), txId);
+        com.cyanspring.common.event.account.UserLoginEvent request =
+                new com.cyanspring.common.event.account.UserLoginEvent(
+                        loginEvent.getKey(), null, loginEvent.getUserId(),
+                        loginEvent.getPassword(), txId);
         request.setPriority(EventPriority.HIGH);
         request.setSender(resourceManager.getBridgeId());
         resourceManager.sendEventToManager(request);
