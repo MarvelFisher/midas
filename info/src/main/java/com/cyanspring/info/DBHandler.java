@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.marketdata.HistoricalPrice;
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 public class DBHandler 
 {
@@ -103,7 +104,9 @@ public class DBHandler
 			} catch (SQLException se) {
 				log.error(se.getMessage(), se);
 			}
-		} 
+            this.reconnectSQL();
+//            this.updateSQL(sqlcmd);
+        }
         finally 
 		{
 			if (stat != null)
@@ -139,6 +142,8 @@ public class DBHandler
         {
             log.error(se.getMessage(), se);
             log.trace(sqlcmd);
+            this.reconnectSQL();
+//            rs = this.querySQL(sqlcmd);
         }
         return rs;
     }
@@ -157,7 +162,9 @@ public class DBHandler
     	catch (SQLException e) 
     	{
             log.error(e.getMessage(), e) ;
-		}
+            this.reconnectSQL();
+//            this.checkSQLConnect();
+        }
     	finally
     	{
 			if (stat != null)
@@ -218,6 +225,7 @@ public class DBHandler
     }
     public void executeBatch()
     {
+    	this.checkSQLConnect();
         try 
         {
 			stat.executeBatch();
