@@ -1,38 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import cn.com.wind.td.tdf.DATA_TYPE_FLAG;
-import cn.com.wind.td.tdf.TDFClient;
-import cn.com.wind.td.tdf.TDF_CODE;
-import cn.com.wind.td.tdf.TDF_CONNECT_RESULT;
-import cn.com.wind.td.tdf.TDF_ERR;
-import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
-import cn.com.wind.td.tdf.TDF_LOGIN_RESULT;
-import cn.com.wind.td.tdf.TDF_MARKET_CLOSE;
-import cn.com.wind.td.tdf.TDF_MARKET_DATA;
-import cn.com.wind.td.tdf.TDF_MSG;
-import cn.com.wind.td.tdf.TDF_MSG_DATA;
-import cn.com.wind.td.tdf.TDF_MSG_ID;
-import cn.com.wind.td.tdf.TDF_OPEN_SETTING;
-import cn.com.wind.td.tdf.TDF_OPTION_CODE;
-import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
-
+import cn.com.wind.td.tdf.*;
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
@@ -41,15 +9,7 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.ISymbolDataListener;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.QuoteExtDataField;
-import com.cyanspring.common.marketdata.SymbolField;
-import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -57,13 +17,28 @@ import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.id.Util;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
+import com.cyanspring.id.Util;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 		IReqThreadCallback {
@@ -80,6 +55,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	String marketType = "";
 	MarketSessionUtil marketSessionUtil;
 	protected long timerInterval = 5000;
+	static final long SmallSessionTimeInterval = 30 * 60 * 1000;
 	static final int AM10 = 100000000;
 	static volatile boolean bigSessionIsClose = false;
 	static volatile int tradeDateForWindFormat = 0;
@@ -93,6 +69,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	private final String ERR_TIME_FORMAT_ERROR = "QUOTE ERROR : Time format error";
 	private final String ERR_CLOSE_OVER_TIME = "QUOTE ERROR : Close Over "
 			+ ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
+
+
 
 	@Autowired
 	protected IRemoteEventManager eventManager;
