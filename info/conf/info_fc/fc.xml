@@ -66,6 +66,34 @@
 		      			<property name="ENSubName" value="IFC2"/>
 		      		</bean>
 		    	</entry>
+		    	<entry key="ICC1">
+		      		<bean class="com.cyanspring.common.info.RefSubName">
+		      			<property name="CNSubName" value="当月"/>
+		      			<property name="TWSubName" value="當月"/>
+		      			<property name="ENSubName" value="ICC1"/>
+		      		</bean>
+		    	</entry>
+		    	<entry key="ICC2">
+		      		<bean class="com.cyanspring.common.info.RefSubName">
+		      			<property name="CNSubName" value="次月"/>
+		      			<property name="TWSubName" value="次月"/>
+		      			<property name="ENSubName" value="ICC2"/>
+		      		</bean>
+		    	</entry>
+		    	<entry key="IHC1">
+		      		<bean class="com.cyanspring.common.info.RefSubName">
+		      			<property name="CNSubName" value="当月"/>
+		      			<property name="TWSubName" value="當月"/>
+		      			<property name="ENSubName" value="IHC1"/>
+		      		</bean>
+		    	</entry>
+		    	<entry key="IHC2">
+		      		<bean class="com.cyanspring.common.info.RefSubName">
+		      			<property name="CNSubName" value="次月"/>
+		      			<property name="TWSubName" value="次月"/>
+		      			<property name="ENSubName" value="IHC2"/>
+		      		</bean>
+		    	</entry>
 		    </map>
 		</property>
 		<property name="SQLDelayInterval">
