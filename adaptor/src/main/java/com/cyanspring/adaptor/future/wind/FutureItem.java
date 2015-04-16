@@ -1,21 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
-import com.cyanspring.common.marketdata.InnerQuote;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
-
 import com.cyanspring.adaptor.future.wind.test.FutureFeed;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.Quote;
@@ -24,11 +10,17 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
-import com.cyanspring.id.Library.Util.DateUtil;
-import com.cyanspring.id.Library.Util.FinalizeHelper;
-import com.cyanspring.id.Library.Util.FixStringBuilder;
-import com.cyanspring.id.Library.Util.LogUtil;
-import com.cyanspring.id.Library.Util.StringUtil;
+import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.id.Library.Util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class FutureItem implements AutoCloseable {
 	
@@ -253,7 +245,10 @@ public class FutureItem implements AutoCloseable {
 
 		if(marketSessionData.getSessionType()==MarketSessionType.CLOSE
 				&& DateUtil.compareDate(tickTime, startDate)>=0){
-			tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
+			if(TimeUtil.getTimePass(tickTime, startDate) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+				tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
+			if(TimeUtil.getTimePass(endDate, tickTime) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+				tickTime = endDate;
 		}
 
 		quote.setTimeStamp(tickTime);
@@ -405,6 +400,7 @@ public class FutureItem implements AutoCloseable {
 			tickTime = DateUtil.subDate(tickTime, 1, TimeUnit.SECONDS);
 			System.out.println(tickTime);
 			System.out.println(DateUtil.formatDate(tickTime,"yyyy-MM-dd"));
+			System.out.println(TimeUtil.getTimePass(DateUtil.parseDate("20150318-120000", "yyyyMMdd-HHmmss"), tickTime));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
