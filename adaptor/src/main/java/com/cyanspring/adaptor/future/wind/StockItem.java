@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.cyanspring.common.marketdata.InnerQuote;
+import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,7 +259,10 @@ public class StockItem implements AutoCloseable {
 
 		if(marketSessionData.getSessionType()==MarketSessionType.CLOSE
 				&& DateUtil.compareDate(tickTime, startDate)>=0){
-			tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
+			if(TimeUtil.getTimePass(tickTime, startDate) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+				tickTime = DateUtil.subDate(startDate,1, TimeUnit.SECONDS);
+			if(TimeUtil.getTimePass(endDate, tickTime) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+				tickTime = endDate;
 		}
 
 		quote.setTimeStamp(tickTime);
