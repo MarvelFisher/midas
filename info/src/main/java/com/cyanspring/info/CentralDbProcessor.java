@@ -163,6 +163,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		else if (event == checkEvent)
 		{
+			log.info("Check SQL connection");
 			dbhnd.checkSQLConnect();
 		}
 		else if (event == insertEvent)
