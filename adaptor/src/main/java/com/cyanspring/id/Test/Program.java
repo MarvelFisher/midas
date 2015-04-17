@@ -50,7 +50,7 @@ public class Program implements IFrameClose, TimerEventHandler {
 	public static void setStatus(boolean connected) {
 		if (isConnected != connected) {
 			isConnected = connected;
-			adapter.updateState(connected);
+			adapter.updateState();
 		}
 	}
 
@@ -208,7 +208,7 @@ public class Program implements IFrameClose, TimerEventHandler {
 
 	public void reconClient() {
 		if (adapter != null) {
-			adapter.reconClient();
+//			adapter.reconClient();
 		}
 	}
 

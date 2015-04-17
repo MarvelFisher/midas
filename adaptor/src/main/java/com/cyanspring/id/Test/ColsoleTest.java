@@ -34,7 +34,7 @@ public class ColsoleTest {
 	public static void setStatus(boolean connected) {
 		if (isConnected != connected) {
 			isConnected = connected;
-			adapter.updateState(connected);
+			adapter.updateState();
 		}
 	}
 
@@ -78,7 +78,7 @@ public class ColsoleTest {
 	}
 
 	public void reconClient() {
-		adapter.reconClient();
+//		adapter.reconClient();
 	}
 
 	public void addClient(ForexClient client) {

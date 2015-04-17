@@ -1,35 +1,26 @@
 package com.cyanspring.id;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import com.cyanspring.common.marketdata.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.timeout.IdleStateHandler;
-
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FileMgr;
 import com.cyanspring.id.Library.Util.LogUtil;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * implement IMarketDataAdaptor
@@ -41,8 +32,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     private static final Logger log = LoggerFactory
             .getLogger(IdMarketDataAdaptor.class);
 
-    public static boolean isConnected = false;
-    static ChannelFuture fClient = null;
+    static volatile boolean isConnected = false;
+    static NioEventLoopGroup nioEventLoopGroup = null;
     static RequestThread thread = null;
 
     public static IdMarketDataAdaptor instance = null;
@@ -200,8 +191,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     @Override
     public void init() throws Exception {
 
+        log.debug("Id Adapter init begin");
+
         if (thread == null) {
-            thread = new RequestThread(this, "initClient");
+            thread = new RequestThread(this, "Id init");
         }
         thread.start();
 
@@ -239,18 +232,21 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      */
     @Override
     public void uninit() {
+        LogUtil.logInfo(log, "Id Adapter init begin");
         isClose = true;
         if (thread != null) {
             thread.close();
             thread = null;
         }
-        LogUtil.logInfo(log, "IdMarketDataAdaptor exit");
+
         closeClient();
 
         QuoteMgr.instance().close();
         FileMgr.instance().close();
 
         isClose = true;
+
+        LogUtil.logInfo(log, "Id Adapter uninit end");
     }
 
     /*
@@ -263,127 +259,99 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         return isConnected;
     }
 
-    public void updateState(boolean connected) {
-        if (isConnected != connected) {
-            isConnected = connected;
-            sendState(connected);
-        }
-    }
-
-    public void onConnected() {
-        ClientHandler.lastCheck = DateUtil.now();
+    public void updateState() {
+        sendState(getState());
     }
 
     void connect() {
         thread.addRequest(new Object());
     }
 
-    static boolean isConnecting = false;
-    static NioEventLoopGroup clientGroup = null;
 
     /**
-     * initClient
+     * connect to Id GateWay
      *
-     * @param HOST connect Host IP
-     * @param PORT connect Host Port
+     * @param host connect Host IP
+     * @param port connect Host Port
      * @throws Exception
      */
-    public static void onInitClient(final String HOST, final int PORT) throws Exception {
+    public static void connectGateWay(String host, int port) throws Exception {
 
         IdMarketDataAdaptor.instance.closeClient();
-        Util.addLog(InfoString.ALert, "Id Adapter initClient enter %s:%d", HOST, PORT);
-        LogUtil.logInfo(log, "Id Adapter initClient enter %s:%d", HOST, PORT);
+        Util.addLog(InfoString.ALert, "Id Adapter connect Id GW begin %s:%d", host, port);
+        LogUtil.logInfo(log, "Id Adapter connect Id GW begin %s:%d", host, port);
 
-        // Configure the client.
-        clientGroup = new NioEventLoopGroup();
-        try {
-            Bootstrap _clientBootstrap = new Bootstrap();
-            _clientBootstrap.group(clientGroup).channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch)
-                                throws Exception {
-                            ChannelPipeline p = ch.pipeline();
-                            p.addLast("idleStateHandler", new IdleStateHandler(20, instance.getSendHeartBeat(), 0));
-                            p.addLast(new ClientHandler());
-                        }
-                    });
 
-            // connect
-            ChannelFuture fClient = _clientBootstrap.connect(HOST, PORT).sync();
-            if (fClient.isSuccess()) {
-                IdMarketDataAdaptor.instance.onConnected();
-                LogUtil.logInfo(log, "Id client socket connected : %s:%d", HOST, PORT);
-                Util.addLog("Id client socket connected : %s:%d", HOST, PORT);
-
-                isConnecting = false;
-                //isConnected = true;
-//                IdMarketDataAdaptor.instance.updateState(true);
-            } else {
-                LogUtil.logInfo(log, "Id Connect to %s:%d fail.", HOST, PORT);
-                Util.addLog(InfoString.ALert, "Id Connect to %s:%d fail.", HOST, PORT);
-                isConnecting = true;
-                io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
-                f.await();
-                clientGroup = null;
-
-                fClient.channel().eventLoop().schedule(new Runnable() {
+        nioEventLoopGroup = new NioEventLoopGroup();
+        ChannelFuture channelFuture;
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(nioEventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+                .handler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
-                    public void run() {
-                        try {
-                            IdMarketDataAdaptor.instance.connect();
-                        } catch (Exception e) {
-                            LogUtil.logException(log, e);
-                        }
+                    public void initChannel(NioSocketChannel nioSocketChannel)
+                            throws Exception {
+                        ChannelPipeline channelPipeline = nioSocketChannel.pipeline();
+                        channelPipeline.addLast("idleStateHandler", new IdleStateHandler(20, instance.getSendHeartBeat(), 0));
+                        channelPipeline.addLast(new ClientHandler());
                     }
-                }, 10, TimeUnit.SECONDS);
+                });
+
+
+        while (true) {
+            channelFuture = bootstrap.connect(host, port);
+            channelFuture.awaitUninterruptibly();
+            try {
+                if (channelFuture.isCancelled()) {
+                    log.info("Connection attempt cancelled by user");
+                } else if (!channelFuture.isSuccess()) {
+                    log.warn(channelFuture.cause().getMessage());
+                } else {
+                    channelFuture.channel().closeFuture().sync();
+                }
+
+            } catch (InterruptedException e) {
+                log.warn(e.getMessage(), e);
             }
-        } catch (Exception e) {
-            isConnecting = false;
-            // Shut down the event loop to terminate all threads.
-            IdMarketDataAdaptor.instance.closeClient();
-            LogUtil.logException(log, e);
-            Util.addLog(InfoString.Error, "Id Connect to %s:%d fail.[%s]", HOST,
-                    PORT, e.getMessage());
+
+            log.info("id Data client can not connect with - " + host + " : " + port + " , will try again after 3 seconds.");
+
+            try {
+                Thread.sleep(3000);
+                if (IdMarketDataAdaptor.instance.getStatus() == MarketStatus.CLOSE) {
+                    log.info("Market is Closed , wait for pre-open");
+                    while (IdMarketDataAdaptor.instance.getStatus() == MarketStatus.CLOSE) {
+                        Thread.sleep(1000);
+                        continue;
+                    }
+                }
+            } catch (InterruptedException e) {
+            }
         }
     }
 
     /**
      *
      */
+
     public void closeClient() {
-        if (clientGroup != null) {
-            io.netty.util.concurrent.Future<?> f = clientGroup.shutdownGracefully();
+        if (nioEventLoopGroup != null) {
+            io.netty.util.concurrent.Future<?> f = nioEventLoopGroup.shutdownGracefully();
             try {
                 f.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            clientGroup = null;
+            nioEventLoopGroup = null;
         }
 
         Parser.instance().clearRingbuffer();
-        LogUtil.logInfo(log, "Id Adapter initClient exit");
-        Util.addLog(InfoString.ALert, "Id Adapter initClient exit");
+        LogUtil.logInfo(log, "Id Adapter init exit");
+        Util.addLog(InfoString.ALert, "Id Adapter init exit");
     }
 
-    /**
-     *
-     */
-    public void reconClient() {
-
-        if (isClose || isConnecting)
-            return;
-
-        try {
-            Thread.sleep(1000);
-            LogUtil.logInfo(log, "Id reconnect %s:%d", getReqIp(), getReqPort());
-            connect();
-        } catch (Exception e) {
-            LogUtil.logException(log, e);
-        }
-    }
 
     /*
      * (non-Javadoc)
@@ -395,7 +363,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     @Override
     public void subscribeMarketDataState(IMarketDataStateListener listener) {
         if (!stateList.contains(listener)) {
-            listener.onState(isConnected);
+            listener.onState(getState());
             stateList.add(listener);
         }
     }
@@ -508,8 +476,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      * @param innerQuote
      */
     public void sendInnerQuote(InnerQuote innerQuote) {
-        //UserClient[] clients = new UserClient[clientsList.size()];
-        //clients = clientsList.toArray(clients);
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients) {
             client.sendInnerQuote(innerQuote);
@@ -520,7 +486,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         List<String> list = new ArrayList<String>();
 
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
-        //clients = clientsList.toArray(clients);
         for (UserClient client : clients) {
             List<String> listClient = client.getList();
             list.addAll(listClient);
@@ -681,10 +646,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         reqObj = null;
         try {
             thread.removeAllRequest();
-            if (isConnected == true)
-                return;
-
-            onInitClient(getReqIp(), getReqPort());
+            if (!getState()) connectGateWay(getReqIp(), getReqPort());
         } catch (Exception e) {
             LogUtil.logException(log, e);
         }
