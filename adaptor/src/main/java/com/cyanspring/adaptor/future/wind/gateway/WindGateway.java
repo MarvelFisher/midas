@@ -2,21 +2,15 @@ package com.cyanspring.adaptor.future.wind.gateway;
 
 import java.util.HashMap;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
-
-
-
-
-
-
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -42,6 +36,10 @@ public class WindGateway {
 	private static String windSFServerPort = "10051";
 	private static String windSFServerUserId = "TD1001888001";
 	private static String windSFServerUserPwd = "62015725";
+	public static boolean cascading = false;
+	public static String upstreamIp = "202.55.14.140";
+	public static int upstreamPort = 10049;
+	public static WindGateway instance = null;
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);	
@@ -335,63 +333,61 @@ public class WindGateway {
 		return sb.toString();		
 	}
 	
-	private void publishWindData(String str,String symbol)
-	{
-		if(windGatewayInitializer != null )
-		{
+	void publishWindData(String str,String symbol) {	
+		if(windGatewayInitializer != null )	{
 			WindGatewayHandler.publishWindData(str,symbol);
 		}		
 	}
 	
-	public void receiveHeartBeat()
-	{
+	public void receiveHeartBeat() {	
 		publishWindData("API=Heart Beat",null);
 	}
 	
-	public void receiveFutureData(TDF_FUTURE_DATA futureData)
-	{
+	public void receiveFutureData(TDF_FUTURE_DATA futureData) {	
+		if(futureData == null) {
+			return;
+		}
 		String symbol = futureData.getWindCode();
 		TDF_FUTURE_DATA data = mapFutureData.get(symbol);
 		mapFutureData.put(futureData.getWindCode(),futureData);
-		if(WindGatewayHandler.isRegisteredByClient(symbol))
-		{			
+		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishFutureChanges(data,futureData);
 			publishWindData(str,symbol);
 		}
-		if(data != null)
-		{			
+		if(data != null) {		
 			data = null;
-		}		
-			
+		}					
 	}
 	
 	public void receiveMarketData(TDF_MARKET_DATA marketData) {
+		if(marketData == null) {
+			return;
+		}
 		String symbol = marketData.getWindCode();
 		TDF_MARKET_DATA data = mapMarketData.get(symbol);
 		mapMarketData.put(marketData.getWindCode(),marketData);		
-		if(WindGatewayHandler.isRegisteredByClient(symbol))
-		{			
+		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishMarketDataChanges(data,marketData);
 			publishWindData(str,symbol);
 		}
-		if(data != null)
-		{			
+		if(data != null) {		
 			data = null;
 		}		
 	}
 	
 	public void receiveIndexData(TDF_INDEX_DATA indexData)
 	{
+		if(indexData == null) {
+			return;
+		}
 		String symbol = indexData.getWindCode();
 		TDF_INDEX_DATA data = mapIndexData.get(symbol);
 		mapIndexData.put(indexData.getWindCode(),indexData);
-		if(WindGatewayHandler.isRegisteredByClient(symbol))
-		{			
+		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishIndexDataChanges(data,indexData);
 			publishWindData(str,symbol);
 		}
-		if(data != null)
-		{			
+		if(data != null) {		
 			data = null;
 		}		
 	}
@@ -410,59 +406,62 @@ public class WindGateway {
 		publishWindData(str,null);			
 	}
 	
-	public void receiveCodeTable(String strMarket,TDF_CODE[] codes)
-	{
+	public void receiveCodeTable(String strMarket,TDF_CODE[] codes) {	
 		ArrayList<TDF_CODE> lst;
 		if(mapCodeTable.containsKey(strMarket))
 		{
 			lst = mapCodeTable.get(strMarket);
-		}
-		else
-		{
+		}	else	{
 			lst = new ArrayList<TDF_CODE>();
 			mapCodeTable.put(strMarket, lst);
 		}
-		synchronized(lst)
-		{
+		synchronized(lst) {		
 			lst.clear();
-			for(TDF_CODE code : codes)
-			{
+			for(TDF_CODE code : codes) {			
 				lst.add(code);
 			}
 		}
-	}
+	}	
 	
 	public void run() throws InterruptedException
-	{
+	{	
 		Demo demo = null,demoStock = null;
-		Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null;
+		Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null;
 		DataWrite dw = null,dwStock = null;
-
-		if(windMFServerIP != null && windMFServerIP != "")
-		{
-			demo = new Demo(windMFServerIP, Integer.parseInt(windMFServerPort) , windMFServerUserId, windMFServerUserPwd ,this);
-			DataHandler dh = new DataHandler (demo);
-			t1 = new Thread(dh);
-			t1.start();
-			dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
-			t2 = new Thread ( dw );
-			t2.start();
-		}
+		WindDataClient windDataClient = null;
 		
-		if(windSFServerIP != null && windSFServerIP != "")
-		{
-			demoStock = new Demo(windSFServerIP, Integer.parseInt(windSFServerPort) , windSFServerUserId, windSFServerUserPwd ,this);
-			DataHandler dhStock = new DataHandler (demoStock);
-			t1Stock = new Thread(dhStock);
-			t1Stock.start();
-			dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
-			t2Stock = new Thread ( dwStock );
-			t2Stock.start();
+
+		if(cascading) {
+			windDataClient = new WindDataClient();
+			clientThread = new Thread(windDataClient,"windDataClient");
+			clientThread.start();						
+		} else {
+			if(windMFServerIP != null && windMFServerIP != "")
+			{
+				demo = new Demo(windMFServerIP, Integer.parseInt(windMFServerPort) , windMFServerUserId, windMFServerUserPwd ,this);
+				DataHandler dh = new DataHandler (demo);
+				t1 = new Thread(dh);
+				t1.start();
+				dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
+				t2 = new Thread ( dw );
+				t2.start();
+			}
+			
+			if(windSFServerIP != null && windSFServerIP != "")
+			{
+				demoStock = new Demo(windSFServerIP, Integer.parseInt(windSFServerPort) , windSFServerUserId, windSFServerUserPwd ,this);
+				DataHandler dhStock = new DataHandler (demoStock);
+				t1Stock = new Thread(dhStock);
+				t1Stock.start();
+				dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
+				t2Stock = new Thread ( dwStock );
+				t2Stock.start();
+			}
 		}
 
 	
-		EventLoopGroup bossGroup   = new NioEventLoopGroup();
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
+		EventLoopGroup workerGroup = new NioEventLoopGroup(8);
 		
 		try
 		{
@@ -496,6 +495,10 @@ public class WindGateway {
 				System.out.println("Thread1 for Stock Quit!");
 				t2Stock.join();			
 				System.out.println("Thread2 for Stock Quit!");			
+			}
+			if(clientThread != null) {
+				windDataClient.stop();
+				clientThread.join();				
 			}
 			
 			bossGroup.shutdownGracefully();
@@ -536,15 +539,20 @@ public class WindGateway {
 	        WindGateway.windSFServerIP = props.getProperty("Wind Stock Server IP");
 	        WindGateway.windSFServerPort = props.getProperty("Wind Stock Server Port");
 	        WindGateway.windSFServerUserId = props.getProperty("Wind Stock User Id");
-	        WindGateway.windSFServerUserPwd = props.getProperty("Wind Stock User Pwd");	        
+	        WindGateway.windSFServerUserPwd = props.getProperty("Wind Stock User Pwd");
+	        
+	        WindGateway.cascading = props.getProperty("Cascading","true").equalsIgnoreCase("true");  
+	        WindGateway.upstreamIp = props.getProperty("Upstream IP","202.55.14.140");
+	        WindGateway.upstreamPort = Integer.parseInt(props.getProperty("Upstream Port","100"));
 	     		
 		} catch (InvalidPropertiesFormatException e) {
-			e.printStackTrace();			
+			log.error(e.getMessage(),e);		
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
-
-		new WindGateway(Integer.parseInt(serverPort)).run();
+        
+        instance = new WindGateway(Integer.parseInt(serverPort));
+        instance.run();
 	}
 
 		

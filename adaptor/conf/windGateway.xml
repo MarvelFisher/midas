@@ -11,4 +11,7 @@
 		<entry key="Wind Stock Server Port">10051</entry>  
 		<entry key="Wind Stock User Id">TD1001888001</entry>  
 		<entry key="Wind Stock User Pwd">62015725</entry> 
+		<entry key="Cascading">true</entry>
+		<entry key="Upstream IP">202.55.14.140</entry>
+		<entry key="Upstream Port">10049</entry>
    </properties>

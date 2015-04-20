@@ -11,7 +11,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 public class WindGatewayInitializer extends ChannelInitializer<SocketChannel> {
 
-	//public static WindGatewayHandler windGatewayHandler = new WindGatewayHandler();
 	@Override
 	protected void initChannel(SocketChannel arg0) throws Exception {
 		// TODO Auto-generated method stub
@@ -21,8 +20,7 @@ public class WindGatewayInitializer extends ChannelInitializer<SocketChannel> {
 		pipeline.addLast("decoder",new StringDecoder());
 		pipeline.addLast("encoder",new StringEncoder());
 
-		//windGatewayHandler = new WindGatewayHandler();
-		pipeline.addLast("handler", new WindGatewayHandler()); // new WindGatewayHandler()); // windGatewayHandler);
+		pipeline.addLast("handler", new WindGatewayHandler());
 		
 	}
 

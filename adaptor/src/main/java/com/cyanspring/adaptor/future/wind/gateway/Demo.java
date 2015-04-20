@@ -178,7 +178,7 @@ public class Demo {
 			case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT:{
 				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
 				loginResult = data.getLoginResult();
-				PrintHelper.printLoginResult(data.getLoginResult());				
+				PrintHelper.printLoginResult(data.getLoginResult());
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT:{
