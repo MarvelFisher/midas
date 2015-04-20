@@ -28,7 +28,7 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 	Map<String, RefData> refSymbolMap;
 	Map<String, RefData> symbolMap;
 	private String market = Default.getMarket();
-	private XStream xstream = new XStream(new DomDriver());
+	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String,RefDataStrategy> strategyMap = new HashMap<>();
 	private MarketSessionUtil marketSessionUtil;
 
