@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
+import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.SymbolEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
@@ -75,7 +77,7 @@ public class CentralDbProcessor implements IPlugin
 	private String tradedate ;
 	static boolean isStartup = true;
 	private boolean calledRefdata = false;
-	private boolean processQuote = false;
+	private boolean isProcessQuote = false;
 	private Queue<QuoteEvent> quoteBuffer;
 
 	// for checking SQL connect 
@@ -111,6 +113,9 @@ public class CentralDbProcessor implements IPlugin
 	@Autowired
 	ScheduleManager scheduleManager;
 	
+	@Autowired
+	private Boolean useLocalMdManager;
+	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor(){
 
 		@Override
@@ -120,6 +125,8 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
+			if (useLocalMdManager == true) 
+				subscribeToEvent(QuoteEvent.class, null);
 		}
 
 		@Override
@@ -133,8 +140,11 @@ public class CentralDbProcessor implements IPlugin
 
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(QuoteEvent.class, null);
+//			subscribeToEvent(QuoteEvent.class, null);
+			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
+			if (useLocalMdManager == false) 
+				subscribeToEvent(QuoteEvent.class, null);
 		}
 
 		@Override
@@ -183,15 +193,24 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processQuoteEvent(QuoteEvent event)
 	{
+		Quote quote = event.getQuote();
+		processQuote(quote);
+	}
+	public void processInnerQuoteEvent(InnerQuoteEvent event)
+	{
+		Quote quote = event.getQuote();
+		processQuote(quote);
+	}
+	public void processQuote(Quote quote)
+	{
 		if (SymbolChefList.size() != nChefCount)
 		{
 			return;
 		}
-		if (processQuote == false)
+		if (isProcessQuote == false)
 		{
 			return;
 		}
-		Quote quote = event.getQuote();
 		getChefBySymbol(quote.getSymbol()).onQuote(quote);
 	}
 	
@@ -646,7 +665,7 @@ public class CentralDbProcessor implements IPlugin
 			reset = true;
 		}
 		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
-			processQuote = true;
+			isProcessQuote = true;
 		this.sessionType = sessionType;
 		
 		if (insert)
@@ -828,7 +847,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void insertSQL()
 	{
-		processQuote = false;
+		isProcessQuote = false;
 		for (SymbolChef chef : SymbolChefList)
 		{
 			chef.insertSQL();

@@ -90,7 +90,7 @@
 		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDuration=86400000"></property>
 	</bean>
 	
-		<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 	  <property name="dataSource" ref="dataSource"/>
 	  <property name="mappingResources">
 	    <list>
@@ -118,4 +118,94 @@
        	</props>
        </property>
 	</bean>
+	
+	<!-- MarketDataManager setting -->
+	<bean id="mdManager" class="com.cyanspring.info.marketdata.InfoMarketDataManager">
+		<constructor-arg>
+			<list>
+				<ref bean="idAdaptor" />
+				<ref bean="ibAdaptor" />
+			</list>		 
+		</constructor-arg>
+		<property name="quoteThrottle" value="1000"></property>
+		<property name="timerInterval" value="1000"></property>
+		<property name="quotePriceWarningIsOpen" value="true"></property>
+		<property name="quotePriceWarningPercent" value="50"></property>
+		<property name="quoteLogIsOpen" value="true"></property>
+		<property name="quoteExtendEventIsSend" value="false"></property>
+
+		<property name="aggregator" >
+			<ref bean="quoteAggregator" />
+		</property>
+
+		<property name="preSubscriptionList">
+			<list>
+				<ref bean="preSubscriptionList" />
+				<ref bean="preSubscriptionList2" />
+			</list>
+		</property>
+		<property name="sessionMonitor">
+			<map>
+				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+				<entry key="PREOPEN" value="0" />
+				<entry key="CLOSE" value="0" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- IBAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+		<property name="id" value="IB01" />
+		<property name="host" value="10.0.0.20" />
+		<property name="port" value="4001" />
+		<property name="clientId" value="198" />
+		<property name="reqMarketDepth" value="false" />
+		<property name="logMarketData" value="false" />
+		<!--<property name="cancelOpenOrders" value="true" /> -->
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>
+	</bean>
+
+	<!-- IDAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+		<property name="account" value="fdtcanned"></property>
+		<property name="password" value="MFW9dC26"></property>
+		<property name="gateway" value="false"></property>
+		<property name="reqIp" value="10.0.0.32"></property>
+		<property name="reqPort" value="6086"></property>
+		<property name="exch" value="687"></property>
+		<property name="preOpen" value="510"></property>
+		<property name="open" value="515"></property>
+		<property name="close" value="500"></property>
+		<property name="sendHeartBeat" value="5"></property>
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- WindAdaptor setting (Setting can be marked if not used) -->
+	<!-- 
+	<bean id="windAdaptor"
+		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
+		<property name="showGui" value="true"></property>
+		<property name="reqIp" value="114.80.154.34"></property>
+		<property name="reqPort" value="10051"></property>
+		<property name="userName" value="TD1001888001"></property>
+		<property name="password" value="62015725"></property>
+		<property name="gateway" value="true"></property> 
+		<property name="gatewayIp" value="202.55.14.140"></property> 
+		<property name="gatewayPort" value="10049"></property>
+		<property name="marketDataLog" value="false"></property>
+		<property name="marketType" value="F"></property> 
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>					
+	</bean>
+	 -->
 </beans>

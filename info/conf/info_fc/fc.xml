@@ -31,6 +31,10 @@
 	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
+	<bean id="useLocalMdManager" class="java.lang.Boolean">
+		<constructor-arg value="false"/>
+	</bean>
+	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
@@ -122,6 +126,32 @@
 		<property name="refDataFile">
 			<value>refdata/refData_fc.xml</value>
 		</property>
+	</bean>
+
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>IFC1</value>
+				<value>IFC2</value>
+				<value>IHC1</value>
+				<value>IHC2</value>
+				<value>ICC1</value>
+				<value>ICC2</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<map>
+				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg>
+			<map>
+				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
+			</map>
+		</constructor-arg>
 	</bean>
 	
 </beans>

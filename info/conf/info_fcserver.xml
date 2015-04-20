@@ -118,4 +118,84 @@
        	</props>
        </property>
 	</bean>
+
+	<!-- MarketDataManager setting -->
+	<bean id="mdManager" class="com.cyanspring.info.marketdata.InfoMarketDataManager">
+		<constructor-arg>
+			<list>
+				<ref bean="windAdaptor" />
+			</list>
+		</constructor-arg>
+		<property name="quoteLogIsOpen" value="true"></property>
+		<property name="quoteExtendEventIsSend" value="false"></property>
+		<property name="preSubscriptionList">
+			<list>
+				<ref bean="preSubscriptionList" />
+			</list>
+		</property>
+		<property name="sessionMonitor">
+			<map>
+				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+				<entry key="PREOPEN" value="0" />
+				<entry key="CLOSE" value="0" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- IBAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+		<property name="id" value="IB01" />
+		<property name="host" value="10.0.0.20" />
+		<property name="port" value="4001" />
+		<property name="clientId" value="152" />
+		<property name="reqMarketDepth" value="false" />
+		<property name="logMarketData" value="false" />
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>
+	</bean>
+
+	<!-- IDAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+		<property name="account" value="fdtcanned"></property>
+		<property name="password" value="MFW9dC26"></property>
+		<property name="gateway" value="true"></property>
+		<property name="reqIp" value="10.0.0.32"></property>
+		<property name="reqPort" value="6086"></property>
+		<property name="exch" value="687"></property>
+		<property name="preOpen" value="610"></property>
+		<property name="open" value="615"></property>
+		<property name="close" value="600"></property>
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- WindAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="windAdaptor"
+		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
+		<property name="showGui" value="true"></property>
+		<property name="reqIp" value="114.80.154.34"></property>
+		<property name="reqPort" value="10051"></property>
+		<property name="userName" value="TD1001888001"></property>
+		<property name="password" value="62015725"></property>
+		<property name="gateway" value="true"></property> 
+		<property name="gatewayIp" value="202.55.14.140"></property> 
+		<property name="gatewayPort" value="10049"></property>	
+		<property name="marketDataLog" value="true"></property>
+		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->		
+		<property name="closeOverTimeControlIsOpen" value="true"></property>
+		<property name="marketSessionUtil">
+			<ref bean="marketSessionUtil" />
+		</property>	
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>			
+	</bean>
 </beans>

@@ -31,6 +31,10 @@
 	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
+	<bean id="useLocalMdManager" class="java.lang.Boolean">
+		<constructor-arg value="false"/>
+	</bean>
+	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
@@ -81,5 +85,37 @@
 			<value>refdata/refData_sc.xml</value>
 		</property>
 	</bean>
+
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>601318.SH</value>
+				<value>600030.SH</value>
+				<value>601628.SH</value>
+				<value>601989.SH</value>
+				<value>600000.SH</value>
+				<value>000002.SZ</value>
+				<value>600016.SH</value>
+				<value>600837.SH</value>
+				<value>300104.SZ</value>
+				<value>002230.SZ</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="shSessionChecker"/></entry>
+				<entry key="SZ"><ref bean="szSessionChecker"/></entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="shTradeDateManager"/></entry>
+				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
+			</map>
+		</constructor-arg>
+	</bean>	
 	
 </beans>

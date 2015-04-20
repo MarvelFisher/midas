@@ -28,6 +28,7 @@ import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.info.marketdata.InfoMarketDataManager;
 
 public class InfoServer 
 {
@@ -60,6 +61,12 @@ public class InfoServer
 	
 	@Autowired
 	private ScheduleManager scheduleManager;
+	
+//	@Autowired
+//	InfoMarketDataManager mdManager;
+	
+	@Autowired
+	private Boolean useLocalMdManager;
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<IPlugin> plugins;
@@ -177,6 +184,9 @@ public class InfoServer
 				plugin.init();
 			}
 		}
+		
+//		if (useLocalMdManager == true)
+//			mdManager.init();
 
 	}
 	
