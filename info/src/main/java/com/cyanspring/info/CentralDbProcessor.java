@@ -290,6 +290,7 @@ public class CentralDbProcessor implements IPlugin
 	public void userRequestGroupSymbol(SymbolListSubscribeEvent retEvent, String user, String market, String group)
 	{
 		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
+		ArrayList<SymbolInfo> symbolinfoTmp = new ArrayList<SymbolInfo>();
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, group, market) ;
 		ResultSet rs = dbhnd.querySQL(sqlcmd);
@@ -299,22 +300,24 @@ public class CentralDbProcessor implements IPlugin
 			SymbolInfo symbolinfo = null;
 			while(rs.next())
 			{
-//				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
-//				symbolinfo.setWindCode(rs.getString("WINDCODE"));
-//				symbolinfo.setHint(rs.getString("HINT"));
-//				symbolinfo.setCnName(rs.getString("CN_NAME"));
-//				symbolinfo.setEnName(rs.getString("EN_NAME"));
-//				symbolinfo.setTwName(rs.getString("TW_NAME"));
-//				symbolinfo.setJpName(rs.getString("JP_NAME"));
-//				symbolinfo.setKrName(rs.getString("KR_NAME"));
-//				symbolinfo.setEsName(rs.getString("ES_NAME"));
-				index = getRefSymbolInfo().at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
-				if (index >= 0)
-				{
-					symbolinfo = getRefSymbolInfo().get(index);
-					symbolinfos.add(symbolinfo);
-				}
+				symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+				symbolinfo.setWindCode(rs.getString("WINDCODE"));
+				symbolinfo.setHint(rs.getString("HINT"));
+				symbolinfo.setCnName(rs.getString("CN_NAME"));
+				symbolinfo.setEnName(rs.getString("EN_NAME"));
+				symbolinfo.setTwName(rs.getString("TW_NAME"));
+				symbolinfo.setJpName(rs.getString("JP_NAME"));
+				symbolinfo.setKrName(rs.getString("KR_NAME"));
+				symbolinfo.setEsName(rs.getString("ES_NAME"));
+				symbolinfoTmp.add(symbolinfo);
+//				index = getRefSymbolInfo().at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+//				if (index >= 0)
+//				{
+//					symbolinfo = getRefSymbolInfo().get(index);
+//					symbolinfos.add(symbolinfo);
+//				}
 			}
+			symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolInfos(symbolinfoTmp);
 			if (symbolinfos.isEmpty())
 			{
 				requestDefaultSymbol(retEvent, market);
