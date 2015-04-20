@@ -3,7 +3,9 @@ package com.cyanspring.common.staticdata;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -102,7 +104,8 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
 		try {
 			file.createNewFile();
 			FileOutputStream os = new FileOutputStream(file);
-			xstream.toXML(list, os);
+			OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+			xstream.toXML(list, writer);
 			os.close();
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
