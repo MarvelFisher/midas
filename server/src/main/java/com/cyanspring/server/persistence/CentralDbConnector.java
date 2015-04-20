@@ -36,7 +36,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
-	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL` FROM AUTH WHERE `USERID` = '%s'";
+	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
 	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
 	private ComboPooledDataSource cpds;	
@@ -240,6 +240,7 @@ public class CentralDbConnector {
 		String email = null;
 		String phone = null;
 		UserType userType = null;
+		boolean isTerminated = false;
 
 		try {
 			stmt = conn.createStatement();
@@ -252,15 +253,17 @@ public class CentralDbConnector {
 				email = rs.getString("EMAIL");
 				phone = rs.getString("PHONE");
 				userType = UserType.fromCode(rs.getInt("USERTYPE"));
+				isTerminated = rs.getBoolean("ISTERMINATED");
 			}
-			log.debug(String.format("[userLoginEx] user[%s] queried: PASSWROD[%s] SALT[%s] USERNAME[%s] EMAIL[%s] PHONE[%s] USERTYPE[%s]",
+			log.debug(String.format("[userLoginEx] user[%s] queried: PASSWROD[%s] SALT[%s] USERNAME[%s] EMAIL[%s] PHONE[%s] USERTYPE[%s] ISTERMINATED[%s]",
 					sUser == null ? "null" : sUser,
 					md5Password == null ? "null": md5Password,
 					salt == null ? "null": salt,
 					username == null ? "null": username,
 					email == null ? "null": email,
 					phone == null ? "null": phone,
-					userType == null ? "null": userType.name()));
+					userType == null ? "null": userType.name(),
+					isTerminated));
 			
 			if(md5Password == null){
 				closeStmt(stmt);
@@ -280,7 +283,7 @@ public class CentralDbConnector {
 			if(md5Password.equals(md5(fullPassword))){
 				closeStmt(stmt);
 				log.debug("[userLoginEx] password OK :" + sUser);
-				return new User(sUser, username, sPassword, email, phone, userType);
+				return new User(sUser, username, sPassword, email, phone, userType, isTerminated);
 			}
 
 		} catch (SQLException e) {
@@ -292,7 +295,8 @@ public class CentralDbConnector {
 		}
 		log.debug("[userLoginEx] password not match :" + sUser);
 		return null;
-	}	
+	}
+
 	public boolean changePassword(String sUser, String originalPass, String newPass) {
 		if (!checkConnected())
 			return false;

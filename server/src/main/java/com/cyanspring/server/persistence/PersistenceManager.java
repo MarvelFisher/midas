@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.event.account.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -47,28 +48,6 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.account.AccountUpdateEvent;
-import com.cyanspring.common.event.account.ChangeUserPasswordEvent;
-import com.cyanspring.common.event.account.ChangeUserPasswordReplyEvent;
-import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
-import com.cyanspring.common.event.account.CreateUserReplyEvent;
-import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
-import com.cyanspring.common.event.account.OnUserCreatedEvent;
-import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
-import com.cyanspring.common.event.account.PmCreateAccountEvent;
-import com.cyanspring.common.event.account.PmCreateUserEvent;
-import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
-import com.cyanspring.common.event.account.PmPositionPeakPriceDeleteEvent;
-import com.cyanspring.common.event.account.PmPositionPeakPriceUpdateEvent;
-import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
-import com.cyanspring.common.event.account.PmUpdateAccountEvent;
-import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
-import com.cyanspring.common.event.account.PmUpdateUserEvent;
-import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
-import com.cyanspring.common.event.account.PmUserLoginEvent;
-import com.cyanspring.common.event.account.ResetAccountRequestEvent;
-import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
-import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.signal.CancelSignalEvent;
@@ -163,7 +142,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
-			subscribeToEvent(ChangeUserPasswordEvent.class, null);			
+			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 		}
 
 		@Override
@@ -468,6 +447,7 @@ public class PersistenceManager {
 		User user = null;
 		Account defaultAccount = null;
 		List<Account> list = null;
+
 		if(null != userKeeper) {
 			Session session = sessionFactory.openSession();
 			Transaction tx = null;
@@ -486,7 +466,7 @@ public class PersistenceManager {
 					if(ok)
 					{
 						user = userKeeper.getUser(userId);
-						
+
 						if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
 							defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
 						} 
@@ -511,6 +491,12 @@ public class PersistenceManager {
 					user = centralDbConnector.userLoginEx(userId, event.getOriginalEvent().getPassword());
 					if(null != user) // login successful from mysql
 					{
+						if (user.isTerminated()) {
+							ok = false;
+							msg = ErrorMessage.USER_IS_TERMINATED;
+							throw new UserException("User is terminated");
+						}
+
 						ok = userKeeper.userExists(userId);
 						if(!ok) // user created by another LTS, must be created here again
 						{
@@ -619,25 +605,26 @@ public class PersistenceManager {
 		User user = null;
 		Account defaultAccount = null;
 		List<Account> list = null;
+
 		if(null == event.getUser())	//user exist , getAccount
 		{
 			user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
-			if(null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+
+			if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
 				defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
-			} 
-			
+			}
+
 			list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
-			
-			if(defaultAccount == null && (list == null || list.size() <= 0)) {
-				ok = false;				
+
+			if (defaultAccount == null && (list == null || list.size() <= 0)) {
+				ok = false;
 				//message = "No trading account available for this user";
 				message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
 
 			}
-
 			
 			try {
-				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
+				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
 						event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
 						message, event.getOriginalEvent().getTxId(), false));
 				if(ok) {
@@ -894,7 +881,7 @@ public class PersistenceManager {
 		try {
 			result = (List<Execution>)session.createCriteria(Execution.class)
 				.add( Restrictions.eq("serverId", IdGenerator.getInstance().getSystemId()))
-				.add( Restrictions.gt("created", todayOnly?TimeUtil.getOnlyDate(Clock.getInstance().now()):new Date(0)))
+				.add(Restrictions.gt("created", todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
 				.addOrder(Order.asc("created"))
 				.list();
 		} catch (HibernateException e) {
@@ -1315,7 +1302,7 @@ public class PersistenceManager {
 		}
 		
 		try {
-			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(), 
+			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
 					event.getSender(), event.getUser(), ok, message, event.getTxId()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
