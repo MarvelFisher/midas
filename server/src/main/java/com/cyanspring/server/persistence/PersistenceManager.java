@@ -128,7 +128,6 @@ public class PersistenceManager {
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
 			subscribeToEvent(SingleInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(MultiInstrumentStrategyUpdateEvent.class, null);
-			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUpdateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmCreateAccountEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUpdateAccountEvent.class, PersistenceManager.ID);
@@ -137,10 +136,6 @@ public class PersistenceManager {
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
-			subscribeToEvent(ChangeUserPasswordEvent.class, null);
-			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 
 			if(persistSignal) {
@@ -154,8 +149,26 @@ public class PersistenceManager {
 			return eventManager;
 		}
 	};
-	
-	
+
+	private AsyncEventProcessor userEventProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(AsyncTimerEvent.class, null);
+			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
+			subscribeToEvent(ChangeUserPasswordEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+
+	};
+
+
 	public PersistenceManager() {
 	}
 	
@@ -177,8 +190,13 @@ public class PersistenceManager {
 		eventProcessor.init();
 		if(eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("PersistenceManager");
-		
-		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
+
+		userEventProcessor.setHandler(this);
+		userEventProcessor.init();
+		if(userEventProcessor.getThread() != null)
+			userEventProcessor.getThread().setName("PersistenceManager(Users)");
+
+		scheduleManager.scheduleRepeatTimerEvent(timeInterval, userEventProcessor, timerEvent);
 
 	}
 
@@ -191,7 +209,7 @@ public class PersistenceManager {
 	
 	private void startEmbeddedSQLServer() throws UnknownHostException, Exception {
 		server = new NetworkServerControl
-				(InetAddress.getByName(embeddedHost),embeddedPort);
+				(InetAddress.getByName(embeddedHost), embeddedPort);
 		server.start(null);
 		log.info("Embedded SQL server started");	
 	}
@@ -387,7 +405,7 @@ public class PersistenceManager {
 	        
 	        List<TextObject> list2 = TextObject.createTextObjects(id, persistType, state, user, account, route, xml, textSize);
 		    for(TextObject obj: list2) {
-		    	session.save(obj);
+				session.save(obj);
 		    }
 	        
 		    tx.commit();
@@ -430,7 +448,7 @@ public class PersistenceManager {
 	}
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		if(syncCentralDb)
+		if (syncCentralDb)
 			log.debug("Received AsyncTimerEvent, connection:" + centralDbConnector.updateConnection());
 	}
 		
