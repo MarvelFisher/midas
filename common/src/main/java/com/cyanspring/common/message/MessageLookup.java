@@ -204,6 +204,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.USER_EMAIL_EXIST,getBean(513, "This email already exists"));
 			addAndCheck(ErrorMessage.ACCOUNT_AND_USER_NOT_MATCH,getBean(514, "Account and user not match"));
 			addAndCheck(ErrorMessage.USER_IS_TERMINATED, getBean(515, "User is terminated"));
+			addAndCheck(ErrorMessage.TERMINATE_USER_FAILED, getBean(516, "Change user termination status failed"));
 
 			
 			

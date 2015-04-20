@@ -143,6 +143,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
+			subscribeToEvent(UserTerminateEvent.class, null);
 		}
 
 		@Override
@@ -1304,6 +1305,36 @@ public class PersistenceManager {
 		try {
 			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
 					event.getSender(), event.getUser(), ok, message, event.getTxId()));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+
+	public void processUserTerminateEvent(UserTerminateEvent event) {
+
+		boolean ok = false;
+		String message = "";
+
+		try {
+
+			if (!syncCentralDb || centralDbConnector.changeTermination(event.getUserId(), event.isTerminate())) {
+
+				ok = true;
+				log.info("Change user termination status, user: {} terminate: {}", event.getUserId(), event.isTerminate());
+
+			} else {
+				MessageLookup.buildEventMessage(ErrorMessage.TERMINATE_USER_FAILED, String.format("Can't change user termination status"));
+			}
+
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			ok = false;
+			message = MessageLookup.buildEventMessage(ErrorMessage.TERMINATE_USER_FAILED, String.format("Can't change user termination status, err=[%s]", e.getMessage()));
+		}
+
+		try {
+			eventManager.sendRemoteEvent(new UserTerminateReplyEvent(event.getKey(), event.getSender(), ok, message, event.getUserId(), event.isTerminate()));
+			eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.isTerminate()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

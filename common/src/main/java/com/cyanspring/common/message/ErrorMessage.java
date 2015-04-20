@@ -167,6 +167,7 @@ public enum ErrorMessage {
 	ACCOUNT_AND_USER_NOT_MATCH,
 	QUANTITY_EXCEED_AVAILABLE_QUANTITY,
 	USER_IS_TERMINATED,
+	TERMINATE_USER_FAILED,
 	
 	
 	// client errors start with 600

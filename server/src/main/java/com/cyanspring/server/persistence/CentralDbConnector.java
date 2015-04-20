@@ -38,6 +38,7 @@ public class CentralDbConnector {
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
+	private static String setUserTermination = "UPDATE AUTH SET `ISTERMINATED` =  '%s' WHERE `USERID` = '%s'";
 	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
 	private ComboPooledDataSource cpds;	
 
@@ -349,6 +350,42 @@ public class CentralDbConnector {
 				closeStmt(stmt);
 			}
 		}
+		return true;
+	}
+
+	public boolean changeTermination(String userId, boolean terminate) {
+
+		if (!checkConnected()) {
+			return false;
+		}
+
+		Statement stmt = null;
+
+		try {
+			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
+
+			String sql = String.format(setUserTermination, userId, terminate ? 1 : 0);
+
+			int result = stmt.executeUpdate(sql);
+			if (1 != result) {
+				closeStmt(stmt);
+				return false;
+			}
+
+			conn.commit();
+
+		} catch (SQLException e) {
+			closeStmt(stmt);
+			log.warn(e.getMessage(), e);
+			return false;
+
+		} finally {
+			if (stmt != null) {
+				closeStmt(stmt);
+			}
+		}
+
 		return true;
 	}
 
