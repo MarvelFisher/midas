@@ -54,44 +54,44 @@
 			<map>
 		    	<entry key="IFC1">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
-		      			<property name="CNSubName" value="当月"/>
-		      			<property name="TWSubName" value="當月"/>
-		      			<property name="ENSubName" value="IFC1"/>
+		      			<property name="CNSubName" value="C1"/>
+		      			<property name="TWSubName" value="C1"/>
+		      			<property name="ENSubName" value="C1"/>
 		      		</bean>
 		    	</entry>
 		    	<entry key="IFC2">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
-		      			<property name="CNSubName" value="次月"/>
-		      			<property name="TWSubName" value="次月"/>
-		      			<property name="ENSubName" value="IFC2"/>
+		      			<property name="CNSubName" value="C2"/>
+		      			<property name="TWSubName" value="C2"/>
+		      			<property name="ENSubName" value="C2"/>
 		      		</bean>
 		    	</entry>
 		    	<entry key="ICC1">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
-		      			<property name="CNSubName" value="当月"/>
-		      			<property name="TWSubName" value="當月"/>
-		      			<property name="ENSubName" value="ICC1"/>
+		      			<property name="CNSubName" value="C1"/>
+		      			<property name="TWSubName" value="C1"/>
+		      			<property name="ENSubName" value="C1"/>
 		      		</bean>
 		    	</entry>
 		    	<entry key="ICC2">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
-		      			<property name="CNSubName" value="次月"/>
-		      			<property name="TWSubName" value="次月"/>
-		      			<property name="ENSubName" value="ICC2"/>
+		      			<property name="CNSubName" value="C2"/>
+		      			<property name="TWSubName" value="C2"/>
+		      			<property name="ENSubName" value="C2"/>
 		      		</bean>
 		    	</entry>
 		    	<entry key="IHC1">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
-		      			<property name="CNSubName" value="当月"/>
-		      			<property name="TWSubName" value="當月"/>
-		      			<property name="ENSubName" value="IHC1"/>
+		      			<property name="CNSubName" value="C1"/>
+		      			<property name="TWSubName" value="C1"/>
+		      			<property name="ENSubName" value="C1"/>
 		      		</bean>
 		    	</entry>
 		    	<entry key="IHC2">
 		      		<bean class="com.cyanspring.common.info.RefSubName">
-		      			<property name="CNSubName" value="次月"/>
-		      			<property name="TWSubName" value="次月"/>
-		      			<property name="ENSubName" value="IHC2"/>
+		      			<property name="CNSubName" value="C2"/>
+		      			<property name="TWSubName" value="C2"/>
+		      			<property name="ENSubName" value="C2"/>
 		      		</bean>
 		    	</entry>
 		    </map>
