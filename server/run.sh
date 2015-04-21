@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # fix Apps could not login between LTS restart - AppServer restart
+export LC_ALL="en_US.UTF-8"
 WORKDIR=$PWD
 cd ../appServer
 ./run.sh stop
