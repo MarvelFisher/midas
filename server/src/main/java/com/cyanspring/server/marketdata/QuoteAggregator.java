@@ -3,6 +3,7 @@ package com.cyanspring.server.marketdata;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketsession.MarketSessionType;
 
 public class QuoteAggregator implements IQuoteAggregator {
 	
@@ -31,5 +32,9 @@ public class QuoteAggregator implements IQuoteAggregator {
 		AggrQuote aggrQuote = getQuote(symbol);
 		return aggrQuote.update(quote, sourceId);
 		
+	}
+
+	public void onMarketSession(MarketSessionType marketSessionType){
+
 	}
 }

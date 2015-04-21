@@ -1,24 +1,16 @@
 package com.cyanspring.id;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.cyanspring.id.Library.Threading.IReqThreadCallback;
+import com.cyanspring.id.Library.Threading.RequestThread;
+import com.cyanspring.id.Library.Util.*;
+import com.cyanspring.id.Library.Util.Network.SocketUtil;
+import com.cyanspring.id.Library.Util.Network.SpecialCharDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.id.Library.Threading.IReqThreadCallback;
-import com.cyanspring.id.Library.Threading.RequestThread;
-import com.cyanspring.id.Library.Util.IdSymbolUtil;
-import com.cyanspring.id.Library.Util.LogUtil;
-import com.cyanspring.id.Library.Util.RingBuffer;
-import com.cyanspring.id.Library.Util.BitConverter;
-import com.cyanspring.id.Library.Util.StringUtil;
-import com.cyanspring.id.Library.Util.TimeSpan;
-import com.cyanspring.id.Library.Util.Network.SocketUtil;
-import com.cyanspring.id.Library.Util.Network.SpecialCharDef;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Parser implements IReqThreadCallback {
 
@@ -209,7 +201,6 @@ public class Parser implements IReqThreadCallback {
                 case FieldID.Contributecode: {
                     nContributeCode = new String(vec2[1]);
                     dataByFieldIdMap.put(nField, vec2[1]);
-//                    log.trace("Id Contribute:" + nContributeCode);
                 }
                 break;
 
@@ -291,6 +282,23 @@ public class Parser implements IReqThreadCallback {
                 }
             }
             return false;
+        }
+
+        //check Contribute
+        List<String> contributeList = adaptor.getContributeList();
+        List<String> unContributeList = adaptor.getUnContributeList();
+
+
+        if (contributeList != null && contributeList.size() > 0) {
+            if (Collections.binarySearch(contributeList, nContributeCode) < 0) {
+                return false;
+            }
+        } else {
+            if (unContributeList != null && unContributeList.size() > 0) {
+                if (Collections.binarySearch(unContributeList, nContributeCode) >= 0) {
+                    return false;
+                }
+            }
         }
 
         if (true == adaptor.getIsClose()) {
