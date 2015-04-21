@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.cyanspring.common.account.TerminationStatus;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import org.slf4j.Logger;
@@ -241,7 +242,7 @@ public class CentralDbConnector {
 		String email = null;
 		String phone = null;
 		UserType userType = null;
-		boolean isTerminated = false;
+		int isTerminated = 0;
 
 		try {
 			stmt = conn.createStatement();
@@ -254,7 +255,7 @@ public class CentralDbConnector {
 				email = rs.getString("EMAIL");
 				phone = rs.getString("PHONE");
 				userType = UserType.fromCode(rs.getInt("USERTYPE"));
-				isTerminated = rs.getBoolean("ISTERMINATED");
+				isTerminated = rs.getInt("ISTERMINATED");
 			}
 			log.debug(String.format("[userLoginEx] user[%s] queried: PASSWROD[%s] SALT[%s] USERNAME[%s] EMAIL[%s] PHONE[%s] USERTYPE[%s] ISTERMINATED[%s]",
 					sUser == null ? "null" : sUser,
@@ -284,7 +285,7 @@ public class CentralDbConnector {
 			if(md5Password.equals(md5(fullPassword))){
 				closeStmt(stmt);
 				log.debug("[userLoginEx] password OK :" + sUser);
-				return new User(sUser, username, sPassword, email, phone, userType, isTerminated);
+				return new User(sUser, username, sPassword, email, phone, userType, TerminationStatus.fromInt(isTerminated));
 			}
 
 		} catch (SQLException e) {
@@ -353,7 +354,7 @@ public class CentralDbConnector {
 		return true;
 	}
 
-	public boolean changeTermination(String userId, boolean terminate) {
+	public boolean changeTermination(String userId, TerminationStatus terminationStatus) {
 
 		if (!checkConnected()) {
 			return false;
@@ -365,7 +366,7 @@ public class CentralDbConnector {
 			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 
-			String sql = String.format(setUserTermination, userId, terminate ? 1 : 0);
+			String sql = String.format(setUserTermination, userId, terminationStatus.getValue());
 
 			int result = stmt.executeUpdate(sql);
 			if (1 != result) {

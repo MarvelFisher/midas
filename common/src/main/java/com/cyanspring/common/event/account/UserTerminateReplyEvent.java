@@ -1,5 +1,6 @@
 package com.cyanspring.common.event.account;
 
+import com.cyanspring.common.account.TerminationStatus;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 public class UserTerminateReplyEvent extends RemoteAsyncEvent {
@@ -7,14 +8,14 @@ public class UserTerminateReplyEvent extends RemoteAsyncEvent {
     private boolean ok;
     private String message;
     private String userId;
-    private boolean terminate;
+    private TerminationStatus terminationStatus;
 
-    public UserTerminateReplyEvent(String key, String receiver, boolean ok, String message, String userId, boolean terminate) {
+    public UserTerminateReplyEvent(String key, String receiver, boolean ok, String message, String userId, TerminationStatus terminationStatus) {
         super(key, receiver);
         this.ok = ok;
         this.message = message;
         this.userId = userId;
-        this.terminate = terminate;
+        this.terminationStatus = terminationStatus;
     }
 
     public boolean isOk() {
@@ -29,7 +30,7 @@ public class UserTerminateReplyEvent extends RemoteAsyncEvent {
         return userId;
     }
 
-    public boolean isTerminate() {
-        return terminate;
+    public TerminationStatus getTerminationStatus() {
+        return terminationStatus;
     }
 }

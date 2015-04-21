@@ -492,7 +492,7 @@ public class PersistenceManager {
 					user = centralDbConnector.userLoginEx(userId, event.getOriginalEvent().getPassword());
 					if(null != user) // login successful from mysql
 					{
-						if (user.isTerminated()) {
+						if (user.getTerminationStatus().isTerminated()) {
 							ok = false;
 							msg = ErrorMessage.USER_IS_TERMINATED;
 							throw new UserException("User is terminated");
@@ -1317,10 +1317,10 @@ public class PersistenceManager {
 
 		try {
 
-			if (!syncCentralDb || centralDbConnector.changeTermination(event.getUserId(), event.isTerminate())) {
+			if (!syncCentralDb || centralDbConnector.changeTermination(event.getUserId(), event.getTerminationStatus())) {
 
 				ok = true;
-				log.info("Change user termination status, user: {} terminate: {}", event.getUserId(), event.isTerminate());
+				log.info("Change user termination status, user: {} terminate: {}", event.getUserId(), event.getTerminationStatus());
 
 			} else {
 				MessageLookup.buildEventMessage(ErrorMessage.TERMINATE_USER_FAILED, String.format("Can't change user termination status"));
@@ -1333,8 +1333,8 @@ public class PersistenceManager {
 		}
 
 		try {
-			eventManager.sendRemoteEvent(new UserTerminateReplyEvent(event.getKey(), event.getSender(), ok, message, event.getUserId(), event.isTerminate()));
-			eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.isTerminate()));
+			eventManager.sendRemoteEvent(new UserTerminateReplyEvent(event.getKey(), event.getSender(), ok, message, event.getUserId(), event.getTerminationStatus()));
+			eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.getTerminationStatus()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
