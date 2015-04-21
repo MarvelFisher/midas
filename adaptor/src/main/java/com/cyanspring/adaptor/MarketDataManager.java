@@ -121,6 +121,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
         log.info("Get MarketSessionEvent: " + event.getSession()
                 + ", map size: " + sessionMonitor.size() + ", checkTime: "
                 + chkTime);
+
+        if(aggregator!=null){
+            aggregator.onMarketSession(event.getSession());
+        }
+
         for (IMarketDataAdaptor adapter : adaptors) {
             String adapterName = adapter.getClass().getSimpleName();
             if (adapterName.equals("WindFutureDataAdaptor")) {
