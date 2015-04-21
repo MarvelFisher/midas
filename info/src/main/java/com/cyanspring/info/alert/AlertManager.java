@@ -175,7 +175,7 @@ public class AlertManager implements IPlugin {
 	}
 
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
-		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + "Coinid : " + event.getCoinId());
+		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
 
@@ -202,7 +202,7 @@ public class AlertManager implements IPlugin {
 						event.getCoinId(),
 						ResetAccountReplyType.LTSINFO_ALERTMANAGER, 
 						false, //"Reset User " + UserId + "fail.");
-						MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + "fail."));
+						MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + " fail."));
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);				
 				log.warn("[ResetUser] warn : " + ee.getMessage());
 			} finally {

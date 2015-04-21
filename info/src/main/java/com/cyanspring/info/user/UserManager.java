@@ -1,7 +1,9 @@
 package com.cyanspring.info.user;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -48,7 +50,7 @@ public class UserManager implements IPlugin {
 	};
 
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
-		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + "Coinid : " + event.getCoinId());
+		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
 
@@ -61,37 +63,43 @@ public class UserManager implements IPlugin {
 		int Return ;
 		String UserId = event.getUserId();
 		String AccountId = event.getAccount();
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyyMMddHHmmss");
+		Calendar cal = Calendar.getInstance();
+		String ddateFormat = "-R" + dateFormat.format(cal.getTime());
+		
 		ArrayList<String> ContestIdArray = new ArrayList<String>();
 		try {
 			// Local MYSQL	
-			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId + "-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId + ddateFormat + "'" +
+					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();			
-			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId + "-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
+			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
+					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId + "-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
+					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId + "-reset'" +
-					 ",TRADER='" + UserId + "-reset' where ACCOUNT='" + AccountId + "'" ;
+			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId  + ddateFormat + "'" +
+					 ",TRADER='" + UserId  + ddateFormat + "' where ACCOUNT='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId + "-reset'" +
-					 ",TRADER='" + UserId + "-reset' where ACCOUNT='" + AccountId + "'" ;
+			strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId  + ddateFormat + "'" +
+					 ",TRADER='" + UserId  + ddateFormat + "' where ACCOUNT='" + AccountId + "'" ;
 			query = session.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
 
 			// Central MYSQL
-			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId + "-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
+					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = sessionCentral.createSQLQuery(strCmd);
 			Return = query.executeUpdate();
-			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId + "-reset'" +
-					 ",USER_ID='" + UserId + "-reset' where ACCOUNT_ID='" + AccountId + "'" ;
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
+					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
 			query = sessionCentral.createSQLQuery(strCmd);
 			Return = query.executeUpdate();			
 
@@ -99,9 +107,9 @@ public class UserManager implements IPlugin {
 			query = sessionCentral.createSQLQuery(strCmd);
 			iterator = query.list().iterator();
 			Date DateTime = new Date();
-			SimpleDateFormat dateFormat = new SimpleDateFormat(
+			SimpleDateFormat cdateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd HH:mm:ss.0");
-			String CurTime = dateFormat.format(DateTime);
+			String CurTime = cdateFormat.format(DateTime);
 			
 			
 			while (iterator.hasNext()) {	
@@ -150,7 +158,7 @@ public class UserManager implements IPlugin {
 					ResetAccountReplyType.LTSINFO_USERMANAGER, 
 					false, 
 					//"Reset User " + UserId + "fail.");
-					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + "fail."));
+					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "[UserManager]: Reset User " + UserId + " fail."));
 			try
 			{
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);
