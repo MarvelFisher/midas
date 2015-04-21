@@ -5,7 +5,7 @@
         <string>Maximum hold</string>
         <int>2500</int>
       </entry>
-      <entry>
+      <entry>f
         <string>Type</string>
         <string>INDEX_FU</string>
       </entry>
@@ -300,7 +300,7 @@
       </entry>
       <entry>
         <string>Category</string>
-        <string>IF</string>
+        <string>IH</string>
       </entry>
       <entry>
         <string>Denominator</string>
@@ -413,7 +413,7 @@
       </entry>
       <entry>
         <string>Category</string>
-        <string>IF</string>
+        <string>IH</string>
       </entry>
       <entry>
         <string>Denominator</string>
@@ -526,7 +526,7 @@
       </entry>
       <entry>
         <string>Category</string>
-        <string>IF</string>
+        <string>IC</string>
       </entry>
       <entry>
         <string>Denominator</string>
@@ -640,7 +640,7 @@
       </entry>
       <entry>
         <string>Category</string>
-        <string>IF</string>
+        <string>IC</string>
       </entry>
       <entry>
         <string>Denominator</string>

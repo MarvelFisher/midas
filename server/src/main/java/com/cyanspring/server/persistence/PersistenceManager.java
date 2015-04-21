@@ -359,6 +359,11 @@ public class PersistenceManager {
 	        query.setParameter("account", account);
 	        rowCount = query.executeUpdate();
 	        log.info("Execution Records deleted: " + rowCount);
+	        
+	        query = session.getNamedQuery("cleanAccountsDailyByAccount");
+		    query.setParameter("account", account);
+	        rowCount = query.executeUpdate();
+	        log.info("AccountsDaily Records deleted: " + rowCount);
 
 	        tx.commit();
 		}
