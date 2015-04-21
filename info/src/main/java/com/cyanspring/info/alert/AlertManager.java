@@ -107,11 +107,8 @@ public class AlertManager extends Compute {
 		receiveChildOrderUpdateEvent(execution);
 	}
 
-	@Override
-	public void processResetAccountRequestEvent(ResetAccountRequestEvent event,
-			List<Compute> computes) {
-		log.info("[processResetAccountRequestEvent] : AccountId :"
-				+ event.getAccount() + "Coinid : " + event.getCoinId());
+	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
 	
@@ -145,7 +142,7 @@ public class AlertManager extends Compute {
 																			// "fail.");
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User "
-										+ UserId + "fail."));			
+										+ UserId + " fail."));			
 				SendRemoteEvent(resetAccountReplyEvent) ;
 				log.warn("[ResetUser] warn : " + ee.getMessage());
 			} finally {
