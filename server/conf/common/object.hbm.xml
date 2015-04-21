@@ -241,6 +241,11 @@
     UPDATE ANYONE.ACCOUNTS SET PNL = 0  
     ]]>
   </sql-query>    
+  <sql-query name="cleanAccountsDailyByAccount">
+    <![CDATA[
+    DELETE FROM ANYONE.ACCOUNTS_DAILY WHERE ACCOUNT_ID = :account
+    ]]>
+  </sql-query>
 
 
 
