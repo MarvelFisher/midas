@@ -90,10 +90,29 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     private Map<String, Integer> nonFX;
 
+    private List<String> contributeList;
+
+    private List<String> unContributeList;
+
     public Map<String, Integer> getNonFX() {
         return nonFX;
     }
 
+    public List<String> getContributeList() {
+        return contributeList;
+    }
+
+    public void setContributeList(List<String> contributeList) {
+        this.contributeList = contributeList;
+    }
+
+    public List<String> getUnContributeList() {
+        return unContributeList;
+    }
+
+    public void setUnContributeList(List<String> unContributeList) {
+        this.unContributeList = unContributeList;
+    }
 
     public void setNonFX(Map<String, Integer> nonFX) {
         this.nonFX = nonFX;
@@ -204,6 +223,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         QuoteMgr.instance().init();
 
         FileMgr.instance().init();
+
+        Collections.sort(contributeList);
+        Collections.sort(unContributeList);
 
         connect();
 

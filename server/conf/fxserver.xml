@@ -129,6 +129,15 @@
 				<entry key="XAGUSD" value="691" />
 			</map>
 		</property>
+		<property name="contributeList">
+			<list>
+				<value>AXI</value>
+			</list>
+		</property>
+		<property name="unContributeList">
+			<list>
+			</list>
+		</property>
 	</bean>
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->

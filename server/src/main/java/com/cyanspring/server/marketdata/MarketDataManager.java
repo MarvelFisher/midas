@@ -210,6 +210,11 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
         log.info("Get MarketSessionEvent: " + event.getSession()
                 + ", map size: " + sessionMonitor.size() + ", checkTime: "
                 + chkTime);
+
+        if(aggregator!=null){
+            aggregator.onMarketSession(event.getSession());
+        }
+
         for (IMarketDataAdaptor adapter : adaptors) {
             String adapterName = adapter.getClass().getSimpleName();
             if (adapterName.equals("WindFutureDataAdaptor")) {
@@ -831,7 +836,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
         if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
             log.warn("Quotes receive time large than excepted.");
         }
-
         chkDate = Clock.getInstance().now();
         InnerQuoteEvent event = new InnerQuoteEvent(innerQuote.getSymbol(), null,
                 innerQuote.getQuote(), innerQuote.getSourceId());
