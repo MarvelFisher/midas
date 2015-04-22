@@ -628,7 +628,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					case "OI":
 						future.setOpenInterest(Long.parseLong(value));
 						break;
-					case "PreClose":
+//					case "PreClose":
+					case "PreSettlePrice":
 						future.setPreClose(Long.parseLong(value));
 						break;
 					case "SettlePrice":
