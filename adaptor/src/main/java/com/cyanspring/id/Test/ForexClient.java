@@ -118,7 +118,7 @@ public class ForexClient implements IMarketDataListener,
 			if (contribArray.contains(innerQuote.getContributor()) == false)
 				return;
 		}
-		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f con:%s", innerQuote.getSymbol(),
+		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f %s", innerQuote.getSymbol(),
 				DateUtil.formatDate(DateUtil.toGmt(innerQuote.getQuote().getTimeStamp()), "HH:mm:ss.SSS"),
 				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk(), innerQuote.getContributor());
 

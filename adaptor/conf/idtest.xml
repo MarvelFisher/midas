@@ -17,8 +17,8 @@
 		<property name="host" value="198.190.11.31"></property>		
 		<property name="port" value="4001"></property>	
 	-->    
-		<property name="gateway" value="true"></property>		
-		<property name="reqIp" value="10.0.0.51"></property>		
+		<property name="gateway" value="false"></property>		
+		<property name="reqIp" value="10.0.0.32"></property>		
 		<property name="reqPort" value="6086"></property>
 	
 		<property name="exch" value="687"></property>
@@ -32,5 +32,13 @@
 				<entry key="XAGUSD" value="691" />
 			</map>
 		</property>	
+		<property name="contributeList">
+			<list>
+			</list>
+		</property>
+		<property name="unContributeList">
+			<list>
+			</list>
+		</property>
 	</bean>
 </beans>
