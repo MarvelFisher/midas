@@ -90,10 +90,11 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	private Map<String, ChildOrder> childOrders = new HashMap<String, ChildOrder>();
 	protected PendingAckHandler pendingAckHandler;
 	protected MarketSessionType marketSession;
-	private boolean checkAdjQuote;
-	private boolean validateQuote;
+	private Boolean checkAdjQuote;
+	private Boolean validateQuote;
 	protected boolean quoteRequired = true;
-	private boolean roundPrice;
+	private Boolean roundPrice;
+	private Boolean roundQty;
 	protected boolean timerEventRequired = true;
 
 	private List<FieldDef> strategyFieldDefs;
@@ -666,20 +667,15 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	}
 
 	@Override
-	public boolean isCheckAdjQuote() {
+	public Boolean isCheckAdjQuote() {
 		return checkAdjQuote;
 	}
 
 	@Override
-	public void setCheckAdjQuote(boolean checkAdjQuote) {
+	public void setCheckAdjQuote(Boolean checkAdjQuote) {
 		this.checkAdjQuote = checkAdjQuote;
 	}
 
-	@Override
-	public boolean isValidateQuote() {
-		return validateQuote;
-	}
-	
 	public boolean isQuoteRequired() {
 		return quoteRequired;
 	}
@@ -697,16 +693,29 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	}
 
 	@Override
-	public void setValidateQuote(boolean validateQuote) {
+	public Boolean isValidateQuote() {
+		return validateQuote;
+	}
+	
+	@Override
+	public void setValidateQuote(Boolean validateQuote) {
 		this.validateQuote = validateQuote;
 	}
 
-	public boolean isRoundPrice() {
+	public Boolean isRoundPrice() {
 		return roundPrice;
 	}
 
-	public void setRoundPrice(boolean roundPrice) {
+	public void setRoundPrice(Boolean roundPrice) {
 		this.roundPrice = roundPrice;
+	}
+
+	public Boolean isRoundQty() {
+		return roundQty;
+	}
+
+	public void setRoundQty(Boolean roundQty) {
+		this.roundQty = roundQty;
 	}
 
 	public Map<Class<? extends AsyncEvent>, ExecuteTiming> getEventExecuteTiming() {

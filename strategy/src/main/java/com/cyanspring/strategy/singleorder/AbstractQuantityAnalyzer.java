@@ -32,14 +32,16 @@ public abstract class AbstractQuantityAnalyzer implements IQuantityAnalyzer {
 			strategy.logDebug("Capping passive quantity to: " + qi.getPassiveQty());
 		}
 		
-		// round again incase any odd lots left from calculation
-		double aggressiveQty = qi.getAggresiveQty();
-		qi.setAggresiveQty(refData.roundToLots(qi.getAggresiveQty()));
-		//strategy.logDebug("Round aggressive qty from " + aggressiveQty + " to " + qi.getAggresiveQty());
-		
-		double passiveQty = qi.getPassiveQty();
-		qi.setPassiveQty(refData.roundToLots(qi.getPassiveQty()));
-		//strategy.logDebug("Round passive qty from " + passiveQty + " to " + qi.getPassiveQty());
+		if(null != strategy.isRoundQty() && strategy.isRoundQty()) {
+			// round again incase any odd lots left from calculation
+			double aggressiveQty = qi.getAggresiveQty();
+			qi.setAggresiveQty(refData.roundToLots(qi.getAggresiveQty()));
+			//strategy.logDebug("Round aggressive qty from " + aggressiveQty + " to " + qi.getAggresiveQty());
+			
+			double passiveQty = qi.getPassiveQty();
+			qi.setPassiveQty(refData.roundToLots(qi.getPassiveQty()));
+			//strategy.logDebug("Round passive qty from " + passiveQty + " to " + qi.getPassiveQty());
+		}
 	}
 	
 	abstract protected QuantityInstruction calculate(SingleOrderStrategy strategy);

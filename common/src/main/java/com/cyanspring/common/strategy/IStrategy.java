@@ -60,8 +60,8 @@ public interface IStrategy extends Serializable{
 
 	public IExecutionManager getExecutionManager();
 
-	public boolean isCheckAdjQuote();
-	public void setCheckAdjQuote(boolean checkAdjQuote);
+	public Boolean isCheckAdjQuote();
+	public void setCheckAdjQuote(Boolean checkAdjQuote);
 	public boolean isQuoteRequired();
 	public void setQuoteRequired(boolean checkQuote);
 
@@ -69,10 +69,12 @@ public interface IStrategy extends Serializable{
 
 	public List<FieldDef> getStrategyFieldDefs();
 	public void setSender(IDownStreamSender sender);
-	public boolean isValidateQuote();
-	public void setValidateQuote(boolean validateQuote);
-	public boolean isRoundPrice();
-	public void setRoundPrice(boolean roundPrice);
+	public Boolean isValidateQuote();
+	public void setValidateQuote(Boolean validateQuote);
+	public Boolean isRoundPrice();
+	public void setRoundPrice(Boolean roundPrice);
+	public Boolean isRoundQty();
+	public void setRoundQty(Boolean roundQty);
 	public String getAccount();
 	public DataObject getDataObject();
 }
