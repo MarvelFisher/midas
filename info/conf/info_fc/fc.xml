@@ -42,10 +42,10 @@
 		<property name="preSubscriptionList">
 			<list>
 	            <value>IFC1</value>
-	            <value>IFC2</value>
 				<value>IHC1</value>
-				<value>IHC2</value>
 				<value>ICC1</value>
+	            <value>IFC2</value>
+				<value>IHC2</value>
 				<value>ICC2</value>
 	        </list>    
 		</property>
