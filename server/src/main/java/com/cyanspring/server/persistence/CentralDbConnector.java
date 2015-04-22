@@ -366,7 +366,7 @@ public class CentralDbConnector {
 			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 
-			String sql = String.format(setUserTermination, userId, terminationStatus.getValue());
+			String sql = String.format(setUserTermination, terminationStatus.getValue(), userId);
 
 			int result = stmt.executeUpdate(sql);
 			if (1 != result) {

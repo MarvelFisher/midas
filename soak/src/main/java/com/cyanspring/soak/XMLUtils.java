@@ -19,8 +19,7 @@ public class XMLUtils
 	public static void eventToXML(AsyncEvent event) throws FileNotFoundException, IOException
 	{
 		XStream xstream = new XStream(new DomDriver());
-		;
-		File file = new File("events\\" + event.getClass().getName() + ".xml");
+		File file = new File("events" + File.separator + event.getClass().getName() + ".xml");
 		try {
 			file.getParentFile().mkdirs();
 			file.createNewFile();
