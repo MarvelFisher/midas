@@ -69,7 +69,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
     protected ScheduleManager scheduleManager = new ScheduleManager();
 
     // private IQuoteChecker quoteChecker = new PriceQuoteChecker();
-    private PriceSessionQuoteChecker quoteChecker = new PriceSessionQuoteChecker();
+    private QuoteChecker quoteChecker = new QuoteChecker();
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected Date lastQuoteSent = Clock.getInstance().now();
@@ -515,7 +515,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
             clearAndSendQuoteEvent(inEvent.getQuoteEvent());
             return;
         } else if (null != quoteChecker
-                && !quoteChecker.checkWithSession(quote)) {
+                && !quoteChecker.check(quote)) {
             // if wind Adapter Quote always send,if other Adapter Quote prev not
             // stale to send
             if (inEvent.getSourceId() > 100) {
@@ -943,7 +943,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
     }
 
     public void setQuoteChecker(IQuoteChecker quoteChecker) {
-        this.quoteChecker = (PriceSessionQuoteChecker) quoteChecker;
+        this.quoteChecker = (QuoteChecker) quoteChecker;
     }
 
     public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
