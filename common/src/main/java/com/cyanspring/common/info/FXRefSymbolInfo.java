@@ -33,12 +33,14 @@ public class FXRefSymbolInfo extends IRefSymbolInfo
 	@Override
 	public List<SymbolInfo> getBySymbolInfos(List<SymbolInfo> inputInfoList) 
 	{
+		int index;
 		ArrayList<SymbolInfo> infoList = new ArrayList<SymbolInfo>();
 		for (SymbolInfo symbolinfo : inputInfoList)
 		{
-			if (Collections.binarySearch(refSymbolInfo, symbolinfo) >= 0)
+			index = Collections.binarySearch(refSymbolInfo, symbolinfo); 
+			if (index >= 0)
 			{
-				infoList.add(symbolinfo);
+				infoList.add(refSymbolInfo.get(index));
 			}
 		}
 		return infoList;
