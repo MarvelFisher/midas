@@ -2,6 +2,7 @@ package com.cyanspring.id.Test;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -10,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 import com.cyanspring.common.marketdata.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,8 @@ public class ForexClient implements IMarketDataListener,
 	
 	public static ForexClient instance = null;
 	public static Hashtable<String, ForexClient> clientsMap = new Hashtable<String, ForexClient>();
+	
+	public static ArrayList<String> contribArray = new ArrayList<String>();
 
 	Program parent = null;
 	boolean isConnected = false;
@@ -63,6 +67,30 @@ public class ForexClient implements IMarketDataListener,
 			}
 		});
 		dialog.addButton(button);
+		final JTextField textCon = new JTextField();
+		dialog.addTextField(textCon);
+
+		final JCheckBox checkBoxCon = new JCheckBox("remove");
+		checkBoxCon.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		dialog.addCheckBox(checkBoxCon);
+		JButton buttonT = new JButton("add Contribute");
+		buttonT.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				boolean isRemove = checkBoxCon.isSelected();
+				if (isRemove) {
+					ForexClient.instance.onRemoveContributor(textCon.getText()
+							.toUpperCase());
+				} else {
+					ForexClient.instance.onAddContributor(textCon.getText()
+							.toUpperCase());
+				}
+			}
+		});
+		dialog.addButton(buttonT);
 		srcParent.addState(this);
 	}
 
@@ -86,9 +114,13 @@ public class ForexClient implements IMarketDataListener,
 	@Override
 	public void onQuote(InnerQuote innerQuote) {
 		//dialog.addLog(quote.toString());
-		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f", innerQuote.getSymbol(),
+		if (contribArray.isEmpty() == false){
+			if (contribArray.contains(innerQuote.getContributor()) == false)
+				return;
+		}
+		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f con:%s", innerQuote.getSymbol(),
 				DateUtil.formatDate(DateUtil.toGmt(innerQuote.getQuote().getTimeStamp()), "HH:mm:ss.SSS"),
-				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk());
+				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk(), innerQuote.getContributor());
 
 	}
 
@@ -146,6 +178,15 @@ public class ForexClient implements IMarketDataListener,
 			parent.onRemoveSymbol(Symbol, this);
 		} catch (MarketDataException e) {
 			LogUtil.logException(log, e);
+		}
+	}
+	
+	public void onAddContributor(String contribute){
+		contribArray.add(contribute);
+	}
+	public void onRemoveContributor(String contribute){
+		if (contribArray.contains(contribute)){
+			contribArray.remove(contribute);
 		}
 	}
 

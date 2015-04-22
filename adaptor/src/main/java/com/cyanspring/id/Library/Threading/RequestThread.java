@@ -109,21 +109,22 @@ public class RequestThread implements AutoCloseable {
 		}
 
 		if (m_thread != null && m_thread.isAlive()) {
-			try {
-				// m_eventExit.set();
-				try {
-					m_eventExited.waitOne();
+//			try {
+////				 m_eventExit.set();
+//				try {
+//					m_eventExited.waitOne();
 					LogUtil.logInfo(log, String.format("RequestThread %s exit",
 							m_thread == null ? "null" : m_thread.getName()));
-				} catch (InterruptedException e) {
-					LogUtil.logException(log, e);
-				}
-			} catch (RuntimeException ex) {
-				LogUtil.logError(log, "RequestThread Stop Exception: %s",
-						ex.getMessage());
-			} finally {
+//				} catch (InterruptedException e) {
+//					LogUtil.logException(log, e);
+//				}
+//			} catch (RuntimeException ex) {
+//				LogUtil.logError(log, "RequestThread Stop Exception: %s",
+//						ex.getMessage());
+//			} finally {
+				m_thread.interrupt();
 				m_thread = null;
-			}
+//			}
 		}
 	}
 
