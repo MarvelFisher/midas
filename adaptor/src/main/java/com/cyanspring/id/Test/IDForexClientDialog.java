@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat;
 @SuppressWarnings("serial")
 public class IDForexClientDialog extends JFrame {
 
-	final static int FRAME_WIDTH = 350;
+	final static int FRAME_WIDTH = 700;
 	final static int FRAME_HEIGHT = 400;
 	final static int FRAME_UI_01_HEIGHT = 60;
 	
