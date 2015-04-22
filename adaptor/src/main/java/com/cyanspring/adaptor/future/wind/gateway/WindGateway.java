@@ -12,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+
+
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -25,6 +28,7 @@ public class WindGateway {
 	public static HashMap<String,TDF_FUTURE_DATA> mapFutureData = new HashMap<String,TDF_FUTURE_DATA>(); 
 	public static HashMap<String,TDF_MARKET_DATA> mapMarketData = new HashMap<String,TDF_MARKET_DATA>();
 	public static HashMap<String,TDF_INDEX_DATA>  mapIndexData  = new HashMap<String,TDF_INDEX_DATA>();
+	public static HashMap<String,TDF_TRANSACTION> mapTransaction = new HashMap<String,TDF_TRANSACTION>();
 	public static HashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new HashMap<String,ArrayList<TDF_CODE>>();
 	
 	private static String windMFServerIP = "114.80.154.34";
@@ -40,6 +44,7 @@ public class WindGateway {
 	public static String upstreamIp = "202.55.14.140";
 	public static int upstreamPort = 10049;
 	public static WindGateway instance = null;
+	private static int typeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);	
@@ -47,7 +52,7 @@ public class WindGateway {
 	public WindGateway(int port)
 	{
 		this.port = port;
-	}
+	}	
 	
 	public static boolean compareArrays(long[] array1, long[] array2) {
         if (array1 != null && array2 != null){
@@ -78,7 +83,17 @@ public class WindGateway {
 		}
 		return sb.append("]").toString();
 	}
-		
+	
+	static public String publishTransactionChanges(TDF_TRANSACTION dirty,TDF_TRANSACTION data) {
+		StringBuilder sb = new StringBuilder("API=TRANSACTION|Symbol=" + data.getWindCode());
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {
+			sb.append("|ActionDay=" + data.getActionDay()); 
+		}
+		if(dirty == null || dirty.getAskOrder() != data.getAskOrder()) {
+
+		}
+		return sb.toString();
+	}
 	
 	static public String publishFutureChanges(TDF_FUTURE_DATA dirty,TDF_FUTURE_DATA data)
 	{
@@ -141,9 +156,13 @@ public class WindGateway {
 			sb.append("|PreClose=" + data.getPreClose());
 		}
 		if(dirty == null || dirty.getSettlePrice() != data.getSettlePrice())
-		{
+		{		
 			sb.append("|SettlePrice=" + data.getSettlePrice());
 		}
+		if(dirty == null || dirty.getPreSettlePrice() != data.getPreSettlePrice())
+		{		
+			sb.append("|PreSettlePrice=" + data.getPreSettlePrice());
+		}		
 		if(dirty == null || dirty.getStatus() != data.getStatus())
 		{
 			sb.append("|Status=" + data.getStatus());
@@ -335,12 +354,27 @@ public class WindGateway {
 	
 	void publishWindData(String str,String symbol) {	
 		if(windGatewayInitializer != null )	{
-			WindGatewayHandler.publishWindData(str,symbol);
+			WindGatewayHandler.publishWindData(str,symbol,true);
 		}		
 	}
 	
 	public void receiveHeartBeat() {	
 		publishWindData("API=Heart Beat",null);
+	}
+	
+	public void receiveTransaction(TDF_TRANSACTION transactionData) {
+		if(transactionData == null) {
+			return;
+		}
+		String symbol = transactionData.getWindCode();
+		TDF_TRANSACTION data = mapTransaction.get(symbol);
+		mapTransaction.put(symbol,transactionData);
+		String str = publishTransactionChanges(data,transactionData);
+		publishWindData(str,symbol);
+		if(data != null) {
+			data = null;
+		}
+		
 	}
 	
 	public void receiveFutureData(TDF_FUTURE_DATA futureData) {	
@@ -349,7 +383,7 @@ public class WindGateway {
 		}
 		String symbol = futureData.getWindCode();
 		TDF_FUTURE_DATA data = mapFutureData.get(symbol);
-		mapFutureData.put(futureData.getWindCode(),futureData);
+		mapFutureData.put(symbol,futureData);
 		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishFutureChanges(data,futureData);
 			publishWindData(str,symbol);
@@ -438,7 +472,7 @@ public class WindGateway {
 		} else {
 			if(windMFServerIP != null && windMFServerIP != "")
 			{
-				demo = new Demo(windMFServerIP, Integer.parseInt(windMFServerPort) , windMFServerUserId, windMFServerUserPwd ,this);
+				demo = new Demo(windMFServerIP, Integer.parseInt(windMFServerPort) , windMFServerUserId, windMFServerUserPwd , typeFlags, this);
 				DataHandler dh = new DataHandler (demo);
 				t1 = new Thread(dh);
 				t1.start();
@@ -449,7 +483,7 @@ public class WindGateway {
 			
 			if(windSFServerIP != null && windSFServerIP != "")
 			{
-				demoStock = new Demo(windSFServerIP, Integer.parseInt(windSFServerPort) , windSFServerUserId, windSFServerUserPwd ,this);
+				demoStock = new Demo(windSFServerIP, Integer.parseInt(windSFServerPort) , windSFServerUserId, windSFServerUserPwd , typeFlags, this);
 				DataHandler dhStock = new DataHandler (demoStock);
 				t1Stock = new Thread(dhStock);
 				t1Stock.start();
@@ -461,7 +495,7 @@ public class WindGateway {
 
 	
 		EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(8);
+		EventLoopGroup workerGroup = new NioEventLoopGroup(16);
 		
 		try
 		{
@@ -469,6 +503,9 @@ public class WindGateway {
 			ServerBootstrap  bootstrap = new ServerBootstrap()
 			.group(bossGroup,workerGroup)
 			.channel(NioServerSocketChannel.class)
+			.option(ChannelOption.SO_KEEPALIVE, true)
+			.option(ChannelOption.TCP_NODELAY, true)
+			.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
 			.childHandler(windGatewayInitializer);
 		
 			bootstrap.bind(port).sync().channel().closeFuture().sync();
@@ -544,6 +581,8 @@ public class WindGateway {
 	        WindGateway.cascading = props.getProperty("Cascading","true").equalsIgnoreCase("true");  
 	        WindGateway.upstreamIp = props.getProperty("Upstream IP","202.55.14.140");
 	        WindGateway.upstreamPort = Integer.parseInt(props.getProperty("Upstream Port","100"));
+	        
+	        WindGateway.typeFlags = Integer.parseInt(props.getProperty("Type Flags","17")); // DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX
 	     		
 		} catch (InvalidPropertiesFormatException e) {
 			log.error(e.getMessage(),e);		

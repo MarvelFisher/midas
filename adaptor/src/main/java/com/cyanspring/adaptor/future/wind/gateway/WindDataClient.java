@@ -24,6 +24,7 @@ public class WindDataClient implements Runnable {
 	}
 	
 	private void runNetty() {
+		log.debug("Run Netty Data Client");
 		EventLoopGroup group = new NioEventLoopGroup(2);
 		ChannelFuture f;
 		Bootstrap bootstrap = new Bootstrap()

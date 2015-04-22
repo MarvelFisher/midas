@@ -30,7 +30,7 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 		
 		msLastTime = System.currentTimeMillis();
 		ctx = arg0;
-		ctx.channel().write(WindGatewayHandler.addHashTail("API=ReqHeartBeat"));
+		ctx.channel().write(WindGatewayHandler.addHashTail("API=ReqHeartBeat",true));
 		WindGatewayHandler.resubscribe(ctx.channel());
 		ctx.channel().flush();
 		log.info(ctx.channel().localAddress().toString() + " Connected with data server : " + ctx.channel().remoteAddress().toString());
@@ -138,13 +138,13 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 			// Compare hash code
 			if (hascode == Integer.parseInt(strHash)) {
 				if (strDataType.equals("DATA_FUTURE")) {
-					WindGateway.instance.receiveFutureData(convertFutureData(in_arr,in));					
+					convertFutureData(in_arr,in);					
 				}
 				if (strDataType.equals("DATA_MARKET")) {
-					WindGateway.instance.receiveMarketData(convertMarketData(in_arr,in));
+					convertMarketData(in_arr,in);
 				}
 				if (strDataType.equals("DATA_INDEX")) {
-					WindGateway.instance.receiveIndexData(convertIndexData(in_arr,in));
+					convertIndexData(in_arr,in);
 				}
 				if (strDataType.equals("Heart Beat")) {
 					WindGateway.instance.publishWindData(in, null);
@@ -172,11 +172,11 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 		return long_arr;
 	}	
 	
-	private TDF_FUTURE_DATA convertFutureData(String[] in_arr,String in) {
-		TDF_FUTURE_DATA future = new TDF_FUTURE_DATA();
+	private void convertFutureData(String[] in_arr,String in) {
 		String key = null;
 		String value = null;
 		String[] kv_arr = null;
+		String symbol;
 
 		try {
 			for (int i = 0; i < in_arr.length; i++) {
@@ -187,73 +187,9 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 						value = kv_arr[1];
 						switch (key) {
 						case "Symbol" :
-							future.setWindCode(value);
-							future.setCode(value.split("\\.")[0]);
-							break;
-						case "ActionDay":
-							future.setActionDay(Integer.parseInt(value));
-							break;
-						case "AskPrice":
-							future.setAskPrice(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "AskVol":
-							future.setAskVol(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "BidPrice":
-							future.setBidPrice(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "BidVol":
-							future.setBidVol(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "Close":
-							future.setClose(Long.parseLong(value));
-							break;
-						case "High":
-							future.setHigh(Long.parseLong(value));
-							break;
-						case "Ceil":
-							future.setHighLimited(Long.parseLong(value));
-							break;
-						case "Low":
-							future.setLow(Long.parseLong(value));
-							break;
-						case "Floor":
-							future.setLowLimited(Long.parseLong(value));
-							break;
-						case "Last":
-							future.setMatch(Long.parseLong(value));
-							break;
-						case "Open":
-							future.setOpen(Long.parseLong(value));
-							break;
-						case "OI":
-							future.setOpenInterest(Long.parseLong(value));
-							break;
-						case "PreClose":
-							future.setPreClose(Long.parseLong(value));
-							break;
-						case "SettlePrice":
-							future.setSettlePrice(Long.parseLong(value));
-							break;
-						case "Status":
-							future.setStatus(Integer.parseInt(value));
-							break;
-						case "Time":
-							future.setTime(Integer.parseInt(value));
-							break;
-						case "TradingDay":
-							future.setTradingDay(Integer.parseInt(value));
-							break;
-						case "Turnover":
-							future.setTurnover(Long.parseLong(value));
-							break;
-						case "Volume":
-							future.setVolume(Long.parseLong(value));
-							break;
+							symbol = value;
+							WindGatewayHandler.publishWindData(in,symbol,false);
+							return;
 						default:
 							break;
 						}
@@ -262,17 +198,14 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 			}	
 		} catch(Exception e) {
 			log.error(e.getMessage() + " => " + in);
-			return null;
 		}
-		
-		return (future.getWindCode() == null ) ? null : future;
 	}
 	
-	private TDF_MARKET_DATA convertMarketData(String[] in_arr,String in) {
-		TDF_MARKET_DATA stock = new TDF_MARKET_DATA();
+	private void convertMarketData(String[] in_arr,String in) {
 		String key = null;
 		String value = null;
 		String[] kv_arr = null;
+		String symbol;
 
 		try {
 			for (int i = 0; i < in_arr.length; i++) {
@@ -283,95 +216,9 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 						value = kv_arr[1];
 						switch (key) {
 						case "Symbol" :
-							stock.setWindCode(value);
-							stock.setCode(value.split("\\.")[0]);
-							break;
-							
-						case "ActionDay":
-							stock.setActionDay(Integer.parseInt(value));
-							break;
-						case "AskPrice":
-							stock.setAskPrice(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "AskVol":
-							stock.setAskVol(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "BidPrice":
-							stock.setBidPrice(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "BidVol":
-							stock.setBidVol(parseStringTolong(value.substring(1,
-									value.length() - 1).split("\\s")));
-							break;
-						case "High":
-							stock.setHigh(Long.parseLong(value));
-							break;
-						case "Ceil":
-							stock.setHighLimited(Long.parseLong(value));
-							break;
-						case "Low":
-							stock.setLow(Long.parseLong(value));
-							break;
-						case "Floor":
-							stock.setLowLimited(Long.parseLong(value));
-							break;
-						case "Last":
-							stock.setMatch(Long.parseLong(value));
-							break;
-						case "Open":
-							stock.setOpen(Long.parseLong(value));
-							break;
-						case "IOPV":
-							stock.setIOPV(Integer.parseInt(value));
-							break;
-						case "PreClose":
-							stock.setPreClose(Long.parseLong(value));
-							break;
-						case "Status":
-							stock.setStatus(Integer.parseInt(value));
-							break;
-						case "Time":
-							stock.setTime(Integer.parseInt(value));
-							break;
-						case "TradingDay":
-							stock.setTradingDay(Integer.parseInt(value));
-							break;
-						case "Turnover":
-							stock.setTurnover(Long.parseLong(value));
-							break;
-						case "Volume":
-							stock.setVolume(Long.parseLong(value));
-							break;
-						case "NumTrades":
-							stock.setNumTrades(Long.parseLong(value));
-							break;
-						case "TotalBidVol":
-							stock.setTotalBidVol(Long.parseLong(value));
-							break;
-						case "WgtAvgAskPrice":
-							stock.setWeightedAvgAskPrice(Long.parseLong(value));
-							break;
-						case "WgtAvgBidPrice":
-							stock.setWeightedAvgBidPrice(Long.parseLong(value));
-							break;
-						case "YieldToMaturity":
-							stock.setYieldToMaturity(Integer.parseInt(value));
-							break;
-						case "Prefix":
-							stock.setPrefix(value);
-							break;
-						case "Syl1":
-							stock.setSyl1(Integer.parseInt(value));
-							break;
-						case "Syl2":
-							stock.setSyl2(Integer.parseInt(value));
-							break;
-						case "SD2":
-							stock.setSD2(Integer.parseInt(value));
-							break;
+							symbol = value;
+							WindGatewayHandler.publishWindData(in,symbol,false);
+							return;
 						default:
 							break;
 						}
@@ -379,17 +226,15 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 				}
 			}
 		} catch (Exception e) {
-			log.error(e.getMessage() + " => " + in);
-			return null;
-		}
-		return (stock.getWindCode() == null) ? null : stock;		
+			log.error(e.getMessage() + " => " + in);			
+		}		
 	}	
 	
-	private TDF_INDEX_DATA convertIndexData(String[] in_arr,String in) {
-		TDF_INDEX_DATA index = new TDF_INDEX_DATA();
+	private void convertIndexData(String[] in_arr,String in) {
 		String key = null;
 		String value = null;
 		String[] kv_arr = null;
+		String symbol;
 
 		try {
 			for (int i = 0; i < in_arr.length; i++) {
@@ -400,39 +245,9 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 						value = kv_arr[1];
 						switch (key) {
 						case "Symbol" :
-							index.setWindCode(value);
-							index.setCode(value.split("\\.")[0]);
-							break;						
-						case "ActionDay":
-							index.setActionDay(Integer.parseInt(value));
-							break;
-						case "HighIndex":
-							index.setHighIndex(Integer.parseInt(value));
-							break;
-						case "LastIndex" :
-							index.setLastIndex(Integer.parseInt(value));
-							break;
-						case "LowIndex":
-							index.setLowIndex(Integer.parseInt(value));
-							break;
-						case "OpenIndex":
-							index.setOpenIndex(Integer.parseInt(value));
-							break;
-						case "PrevIndex":
-							index.setPreCloseIndex(Integer.parseInt(value));
-							break;
-						case "Time":
-							index.setTime(Integer.parseInt(value));
-							break;
-						case "TotalVolume":
-							index.setTotalVolume(Long.parseLong(value));
-							break;
-						case "TradingDay" :
-							index.setTradingDay(Integer.parseInt(value));
-							break;
-						case "Turnover" :
-							index.setTurnover(Long.parseLong(value));
-							break;
+							symbol = value;
+							WindGatewayHandler.publishWindData(in,symbol,false);
+							return;
 						default:
 							break;
 						}
@@ -441,8 +256,6 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage() + " => " + in);
-			return null;
-		}
-		return (index.getWindCode() == null) ? null : index;		
+		}	
 	}	
 }
