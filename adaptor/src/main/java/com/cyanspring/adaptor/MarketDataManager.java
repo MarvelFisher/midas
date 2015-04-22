@@ -1,8 +1,11 @@
 package com.cyanspring.adaptor;
 
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.marketdata.*;
+import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.id.Library.Util.DateUtil;
@@ -108,17 +111,18 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     @Override
-    protected List<Class> subscuribeEvent() {
-        ArrayList<Class> clzList = new ArrayList<Class>();
+    protected List<Class<? extends AsyncEvent>> subscribeEvent() {
+        ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
         clzList.add(QuoteRequestEvent.class);
         clzList.add(TradeSubEvent.class);
         clzList.add(QuoteExtSubEvent.class);
         clzList.add(QuoteSubEvent.class);
+        clzList.add(TradeDateEvent.class);
         return clzList;
     }
 
     @Override
-    protected void sendQuoteEvent(QuoteEvent event) {
+    protected void sendQuoteEvent(RemoteAsyncEvent event) {
         try {
             eventManager.sendGlobalEvent(event);
 
@@ -175,15 +179,22 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
-    @Override
-    public boolean processTradeDateEvent(TradeDateEvent event){
-        if (super.processTradeDateEvent(event)){
-            if (quoteSaver != null) {
-                quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
-                quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
+    public void processTradeDateEvent(TradeDateEvent event){
+        String newTradeDate = event.getTradeDate();
+        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
+            tradeDate = newTradeDate;
+            try {
+                List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+                log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
+                if (quoteSaver != null) {
+                    quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
+                    quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
+                }
+                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
             }
         }
-        return true;
     }
 
     public void processQuoteExtSubEvent(QuoteExtSubEvent event) throws Exception {
@@ -234,6 +245,15 @@ public class MarketDataManager extends MarketDataReceiver {
                 }
                 eventManager.sendEvent(multiQuoteExtendEvent);
             }
+        }
+    }
+
+    @Override
+    protected void requestMarketSession(){
+        try {
+            eventManager.sendRemoteEvent(new MarketSessionRequestEvent(null, null, true));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 

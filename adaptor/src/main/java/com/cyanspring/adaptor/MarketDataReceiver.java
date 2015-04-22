@@ -15,14 +15,10 @@ package com.cyanspring.adaptor;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
@@ -79,11 +75,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         @Override
         public void subscribeToEvents() {
-            subscribeToEvent(TradeDateEvent.class, null);
+
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(QuoteReplyEvent.class, null);
 
-            for (Class clz : subscuribeEvent()) {
+            for (Class<? extends AsyncEvent> clz : subscribeEvent()) {
                 subscribeToEvent(clz, null);
             }
         }
@@ -94,8 +90,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
     };
 
-    protected List<Class> subscuribeEvent() {
-        return new ArrayList<Class>();
+    protected List<Class<? extends AsyncEvent>> subscribeEvent() {
+        return null;
     }
 
     public void processQuoteReplyEvent(QuoteReplyEvent event) {
@@ -134,25 +130,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     }
 
-    public boolean processTradeDateEvent(TradeDateEvent event) {
-        String newTradeDate = event.getTradeDate();
-        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
-            tradeDate = newTradeDate;
-            try {
-                List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-                log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
-                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                return false;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    protected void sendQuoteEvent(QuoteEvent event) {
+    protected void sendQuoteEvent(RemoteAsyncEvent event) {
         try {
             eventManager.sendEvent(event);
 
@@ -219,8 +197,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             quotes.put(quote.getSymbol(), quote);
             clearAndSendQuoteEvent(inEvent.getQuoteEvent());
             return;
-        } else if (null != quoteChecker
-                && !quoteChecker.check(quote)) {
+        } else if (null != quoteChecker && !quoteChecker.check(quote)) {
             // if wind Adapter Quote always send,if other Adapter Quote prev not
             // stale to send
             if (inEvent.getSourceId() > 100) {
@@ -300,7 +277,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             eventProcessor.getThread().setName("MarketDataManager");
 
         // requestMarketSession
-        eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
+        requestMarketSession();
 
         chkDate = Clock.getInstance().now();
         for (IMarketDataAdaptor adaptor : adaptors) {
@@ -415,11 +392,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             quoteExtends.put(symbol, quoteExt);
             QuoteExtEvent event = new QuoteExtEvent(quoteExt.get(String.class,
                     QuoteExtDataField.SYMBOL.value()), null, quoteExt, sourceId);
-            try {
-                eventManager.sendGlobalEvent(event);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
+            sendQuoteEvent(event);
         }
     }
 
@@ -446,6 +419,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             setState(false);
             eventManager.sendEvent(new MarketDataReadyEvent(null, false));
         }
+    }
+
+    protected void requestMarketSession(){
+        eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
     }
 
     private void preSubscribe() {
