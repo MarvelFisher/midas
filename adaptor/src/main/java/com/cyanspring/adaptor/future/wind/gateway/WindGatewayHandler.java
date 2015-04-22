@@ -33,11 +33,11 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	static public void resubscribe(Channel channel) {
 		String strSubscribe = registrationGlobal.getSubscribeMarket();
 		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe));
+			channel.write(addHashTail(strSubscribe,true));
 		}
 		strSubscribe = registrationGlobal.getSubscribeSymbol();
 		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe));
+			channel.write(addHashTail(strSubscribe,true));
 		}
 	}
 	
@@ -46,13 +46,16 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 		return registrationGlobal.hadSymbol(symbol);
 	}
 	
-	public static String addHashTail(String str)
+	public static String addHashTail(String str,boolean bAddHash)
 	{
-		return str + "|Hash=" + str.hashCode() + "\r\n";
+		if(bAddHash) {
+			return str + "|Hash=" + str.hashCode() + "\r\n";
+		}
+		return str + "\r\n";
 	}
 	
-	synchronized static public void publishWindData(String str,String symbol) {	
-		str = addHashTail(str);
+	synchronized static public void publishWindData(String str,String symbol,boolean bAddHash) {	
+		String outString = addHashTail(str,bAddHash);
 		synchronized(channels) {		
 			Iterator<?> it = channels.entrySet().iterator();			
 			while (it.hasNext()) {
@@ -64,7 +67,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 						continue;
 					}
 				}
-				((Channel)pairs.getKey()).writeAndFlush(str);
+				((Channel)pairs.getKey()).writeAndFlush(outString);
 			}
 		}		
 	}
@@ -120,7 +123,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 					if(sendIndexData(channel,str) == false)
 					{	
 						if(WindGateway.cascading) {
-							WindDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Symbol=" + str));
+							WindDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
 						} else {
 							log.error("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
 						}
@@ -132,16 +135,10 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			// 加到 Client 的 Registration
 			if(lst.addSymbol(str) == false) {								
 				log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
-				continue;
 			}					
 		}    	
     }
     
-    public static void addMarketFromWind(String market) {
-    	synchronized(registrationGlobal) {
-    		registrationGlobal.addMarket(market);
-    	}
-    }
     
     private static void subscribeMarkets(Channel channel , String markets, Registration lst) {
 		String[] market_arr = markets.split(";");
@@ -151,7 +148,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			weDontHave = registrationGlobal.addMarket(market);
 			log.info((newlyAdded ? "Subscribe Makret : " : "Re-subscribe Market : " ) + market + " , from " + channel.remoteAddress().toString());
 			if(weDontHave && WindGateway.cascading) {				
-				WindDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Market=" + market));			
+				WindDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Market=" + market,true));			
 			} else {				
 				sendDataByMarket(channel,market);				
 			}
@@ -236,42 +233,37 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 							lst.clear();
 							rearrangeRegistration();
 							log.info("Clear Subscribe from : " + channel.remoteAddress().toString());							
-						}
-						else if(strDataType.equals("GetMarkets")) {						
+						}	else if(strDataType.equals("GetMarkets")) {						
 							if(WindGateway.cascading) {
 								WindDataClientHandler.sendRequest(msg);
 							} else {
 								sendMarkets(channel);
 							}
-						}
-						else if(strDataType.equals("GetCodeTable")) {						
+						}	else if(strDataType.equals("GetCodeTable")) {						
 							if(WindGateway.cascading) {
 								WindDataClientHandler.sendRequest(msg);
 							} else {
 								sendCodeTable(channel,strMarket);
 							}
-						}
-						else if(strDataType.equals("ReqHeartBeat")) {						
+						}	else if(strDataType.equals("ReqHeartBeat")) {						
 							if(ctx.pipeline().get("idleHandler") == null) {							
 								ctx.pipeline().addAfter("encoder", "idleStateHandler", new IdleStateHandler(25, 10, 0));
 								ctx.pipeline().addBefore("handler", "idleHandler", new IdleHandler());
 							}
 							String logstr = "Request HeartBeat : " + channel.remoteAddress();						
-							log.info(logstr);
-							System.out.println(logstr);						
+							log.info(logstr);											
 						}
 					}	
 				}	else	{
-					String logstr = "Missing HashCode  : " + msg + " , from : " + channel.remoteAddress();
-					System.out.println(logstr);
+					String logstr = "Missing HashCode  : " + msg + " , from : " + channel.remoteAddress();					
 					log.warn(logstr);
 				}				
 			}
 		}	catch (Exception e) {
-    		e.printStackTrace();
-    		log.warn("Exception during parseRequest : " + e.getMessage() );
+
+    		log.warn(e.getMessage(),e);
     	}	finally	{
-    		System.out.flush();    		
+ 	
     	}
 	}
     public static void sendMarkets(Channel channel)
@@ -293,7 +285,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
     			markets.append(market + ",");
     		}
     	}
-    	channel.writeAndFlush(addHashTail(markets.toString()));
+    	channel.writeAndFlush(addHashTail(markets.toString(),true));
     }
     
     public static void sendCodeTable(Channel channel,String market)
@@ -320,7 +312,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
     			}	else	{
     				strCode = strCode + "|Ser=" + i;
     			}
-    			channel.writeAndFlush(addHashTail(strCode));
+    			channel.writeAndFlush(addHashTail(strCode,true));
     		}
     	}    	
     }
@@ -340,7 +332,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
     	if(data == null) {    	
     		return false;
     	}
-		String str = addHashTail(WindGateway.publishMarketDataChanges(null, data));
+		String str = addHashTail(WindGateway.publishMarketDataChanges(null, data),true);
 		channel.writeAndFlush(str);
 		return true;
     }
@@ -350,7 +342,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
     	if(data == null) {    	
     		return false;
     	}
-		String str = addHashTail(WindGateway.publishFutureChanges(null, data));
+		String str = addHashTail(WindGateway.publishFutureChanges(null, data),true);
 		channel.writeAndFlush(str);
 		return true;
     }
@@ -359,7 +351,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
     	if(data == null) {    	
     		return false;
     	}
-		String str = addHashTail(WindGateway.publishIndexDataChanges(null, data));
+		String str = addHashTail(WindGateway.publishIndexDataChanges(null, data),true);
 		channel.writeAndFlush(str);
 		return true;
     }
@@ -374,7 +366,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 				TDF_MARKET_DATA data = (TDF_MARKET_DATA)pairs.getValue();
 				if(data != null) {
 					if(data.getWindCode().contains(market)) {
-						channel.write(addHashTail(WindGateway.publishMarketDataChanges(null, data)));
+						channel.write(addHashTail(WindGateway.publishMarketDataChanges(null, data),true));
 					}
 				}		
 			}
@@ -390,7 +382,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 				TDF_FUTURE_DATA data = (TDF_FUTURE_DATA)pairs.getValue();
 				if(data != null) {
 					if(data.getWindCode().contains(market)) {
-						channel.write(addHashTail(WindGateway.publishFutureChanges(null, data)));
+						channel.write(addHashTail(WindGateway.publishFutureChanges(null, data),true));
 					}
 				}		
 			}
@@ -406,7 +398,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 				TDF_INDEX_DATA data = (TDF_INDEX_DATA)pairs.getValue();
 				if(data != null) {
 					if(data.getWindCode().contains(market)) {
-						channel.write(addHashTail(WindGateway.publishIndexDataChanges(null, data)));
+						channel.write(addHashTail(WindGateway.publishIndexDataChanges(null, data),true));
 					}
 				}		
 			}		
@@ -422,8 +414,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
         // Close the connection when an exception is raised.
     	String logstr = "ExceptionCaught : " + ctx.channel().remoteAddress();
     	log.warn(logstr);
-    	//log.warn(cause.getMessage());
-    	log.warn("NetIO",cause);
+    	log.warn(cause.getMessage(),cause);
         cause.printStackTrace();
         ctx.close();
     }    

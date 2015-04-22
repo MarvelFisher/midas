@@ -40,6 +40,8 @@ public class Program implements IFrameClose, TimerEventHandler {
 	public static boolean isConnected = false;
 	public static final String version = "1.00R01";
 	public static final String timeStamp = "2014-12-15";
+	
+	private JButton btnNewClient;
 
 	public Program() {
 		timer.TimerEvent = this;
@@ -178,6 +180,7 @@ public class Program implements IFrameClose, TimerEventHandler {
 		mainFrame.addButton(writrFile);		
 		
 		final JButton newClient = new JButton("New Client");
+		btnNewClient = newClient;
 		newClient.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 
@@ -242,7 +245,8 @@ public class Program implements IFrameClose, TimerEventHandler {
 	}
 	
 	public void onClientclose( ForexClient client) {
-		
+		_client = null;
+		btnNewClient.setEnabled(true);
 	}
 
 	@Override
