@@ -14,4 +14,14 @@
 		<entry key="Cascading">true</entry>
 		<entry key="Upstream IP">202.55.14.140</entry>
 		<entry key="Upstream Port">10049</entry>
+		<!--
+		DATA_TYPE_ALL = 0,//所有数据    
+		DATA_TYPE_INDEX = 0x1,  // 指数 
+		DATA_TYPE_TRANSACTION = 0x2,//逐笔成交  
+		DATA_TYPE_ORDER = 0x4, //逐笔 委托    
+		DATA_TYPE_ORDERQUEUE=0x8,//委 托队列 
+		DATA_TYPE_FUTURE_CX=0x10 
+		-->		
+		<entry key="Type Flags">17</entry>		
+		
    </properties>

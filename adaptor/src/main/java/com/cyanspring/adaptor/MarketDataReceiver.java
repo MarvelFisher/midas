@@ -12,21 +12,6 @@
  */
 package com.cyanspring.adaptor;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.marketdata.*;
-import com.cyanspring.id.Library.Util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.data.DataObject;
@@ -34,14 +19,22 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
-import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.id.Library.Util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         IMarketDataStateListener {
@@ -59,7 +52,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected IRemoteEventManager eventManager;
 
     protected ScheduleManager scheduleManager = new ScheduleManager();
-    private PriceSessionQuoteChecker quoteChecker = new PriceSessionQuoteChecker();
+    private QuoteChecker quoteChecker;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long quoteThrottle = 100; // 0 = no throttle
@@ -75,9 +68,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
-    private boolean quotePriceWarningIsOpen = false;
     private boolean quoteExtendEventIsSend = true;
-    private int quotePriceWarningPercent = 99;
     private boolean quoteLogIsOpen = false;
     private int quoteExtendSegmentSize = 300;
     private IQuoteAggregator aggregator;
@@ -173,10 +164,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private void clearAndSendQuoteEvent(QuoteEvent event) {
         event.getQuote().setTimeSent(Clock.getInstance().now());
         quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
-        // in queue
-        // because we
-        // are sending
-        // it now
         if (null != aggregator) {
             aggregator.reset(event.getQuote().getSymbol());
         }
@@ -186,78 +173,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private void logStaleInfo(Quote prev, Quote quote, boolean stale) {
         log.info("Quote stale: " + quote.getSymbol() + ", " + stale
                 + ", Prev: " + prev + ", New: " + quote);
-    }
-
-    // Check Quote Value
-    public boolean checkQuote(Quote prev, Quote quote) {
-        boolean IsCorrectQuote = true;
-        if (prev != null) {
-            if (quote.getClose() <= 0) {
-                quote.setClose(prev.getClose());
-            }
-            if (quote.getOpen() <= 0) {
-                quote.setOpen(prev.getOpen());
-            }
-            if (quote.getHigh() <= 0) {
-                quote.setHigh(prev.getHigh());
-            }
-            if (quote.getLow() <= 0) {
-                quote.setLow(prev.getLow());
-            }
-            if (quote.getBid() <= 0) {
-                quote.setBid(prev.getBid());
-            }
-            if (quote.getAsk() <= 0) {
-                quote.setAsk(prev.getAsk());
-            }
-        }
-
-        if (isQuotePriceWarningIsOpen()) {
-            if (quote.getClose() > 0 && getQuotePriceWarningPercent() > 0
-                    && getQuotePriceWarningPercent() < 100) {
-                double preCloseAddWarningPrice = quote.getClose()
-                        * (1.0 + getQuotePriceWarningPercent() / 100.0);
-                double preCloseSubtractWarningPrice = quote.getClose()
-                        * (1.0 - getQuotePriceWarningPercent() / 100.0);
-                if (quote.getAsk() > 0
-                        && (PriceUtils.GreaterThan(quote.getAsk(),
-                        preCloseAddWarningPrice) || PriceUtils
-                        .LessThan(quote.getAsk(),
-                                preCloseSubtractWarningPrice))) {
-                    IsCorrectQuote = false;
-                }
-                if (quote.getBid() > 0
-                        && (PriceUtils.GreaterThan(quote.getBid(),
-                        preCloseAddWarningPrice) || PriceUtils
-                        .LessThan(quote.getBid(),
-                                preCloseSubtractWarningPrice))) {
-                    IsCorrectQuote = false;
-                }
-                if (quote.getHigh() > 0
-                        && (PriceUtils.GreaterThan(quote.getHigh(),
-                        preCloseAddWarningPrice) || PriceUtils
-                        .LessThan(quote.getHigh(),
-                                preCloseSubtractWarningPrice))) {
-                    IsCorrectQuote = false;
-                }
-                if (quote.getLow() > 0
-                        && (PriceUtils.GreaterThan(quote.getLow(),
-                        preCloseAddWarningPrice) || PriceUtils
-                        .LessThan(quote.getLow(),
-                                preCloseSubtractWarningPrice))) {
-                    IsCorrectQuote = false;
-                }
-                if (quote.getOpen() > 0
-                        && (PriceUtils.GreaterThan(quote.getOpen(),
-                        preCloseAddWarningPrice) || PriceUtils
-                        .LessThan(quote.getOpen(),
-                                preCloseSubtractWarningPrice))) {
-                    IsCorrectQuote = false;
-                }
-            }
-        }
-
-        return IsCorrectQuote;
     }
 
     public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
@@ -281,13 +196,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                             + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
                             + ",Last=" + quote.getLast()
                             + ",Stale=" + quote.isStale() + ",ts="
-                            + quote.getTimeStamp().toString() + ",wPcnt="
-                            + getQuotePriceWarningPercent()
+                            + quote.getTimeStamp().toString()
                             + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
             );
         }
 
-        if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
+        if (!quoteChecker.checkAndUpdateQuote(prev, quote) && inEvent.getSourceId() <= 100) {
             quoteLog.warn("Quote BBBBB! : " + "Sc=" + inEvent.getSourceId()
                             + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
                             + ",B=" + quote.getBid() + ",C=" + quote.getClose()
@@ -295,7 +209,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                             + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                             + ",Stale=" + quote.isStale()
                             + ",ts=" + quote.getTimeStamp().toString()
-                            + ",wPcnt=" + getQuotePriceWarningPercent() + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
             );
             return;
         }
@@ -306,7 +220,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             clearAndSendQuoteEvent(inEvent.getQuoteEvent());
             return;
         } else if (null != quoteChecker
-                && !quoteChecker.checkWithSession(quote)) {
+                && !quoteChecker.check(quote)) {
             // if wind Adapter Quote always send,if other Adapter Quote prev not
             // stale to send
             if (inEvent.getSourceId() > 100) {
@@ -363,8 +277,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         // flush out all quotes throttled
         for (Entry<String, QuoteEvent> entry : quotesToBeSent.entrySet()) {
             sendQuoteEvent(entry.getValue());
-            // log.debug("Sending throttle quote: " +
-            // entry.getValue().getQuote());
         }
         quotesToBeSent.clear();
         broadCastStaleQuotes();
@@ -583,22 +495,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         this.quoteLogIsOpen = quoteLogIsOpen;
     }
 
-    public boolean isQuotePriceWarningIsOpen() {
-        return quotePriceWarningIsOpen;
-    }
-
-    public int getQuotePriceWarningPercent() {
-        return quotePriceWarningPercent;
-    }
-
-    public void setQuotePriceWarningIsOpen(boolean quotePriceWarningIsOpen) {
-        this.quotePriceWarningIsOpen = quotePriceWarningIsOpen;
-    }
-
-    public void setQuotePriceWarningPercent(int quotePriceWarningPercent) {
-        this.quotePriceWarningPercent = quotePriceWarningPercent;
-    }
-
     public IQuoteAggregator getAggregator() {
         return aggregator;
     }
@@ -639,14 +535,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         this.preSubscriptionList = preSubscriptionList;
     }
 
-    public IQuoteChecker getQuoteChecker() {
-        return quoteChecker;
-    }
-
-    public void setQuoteChecker(IQuoteChecker quoteChecker) {
-        this.quoteChecker = (PriceSessionQuoteChecker) quoteChecker;
-    }
-
     public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
         this.sessionMonitor = sessionMonitor;
     }
@@ -665,5 +553,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public HashMap<String, DataObject> getQuoteExtends() {
         return quoteExtends;
+    }
+
+    public void setQuoteChecker(QuoteChecker quoteChecker) {
+        this.quoteChecker = quoteChecker;
     }
 }

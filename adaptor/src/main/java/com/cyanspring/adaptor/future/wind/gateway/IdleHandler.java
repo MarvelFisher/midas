@@ -22,7 +22,7 @@ public class IdleHandler extends ChannelDuplexHandler {
             	System.out.println(str);
                 ctx.close();
             } else if (e.state() == IdleState.WRITER_IDLE) {
-            	String str = WindGatewayHandler.addHashTail("API=ServerHeartBeat");
+            	String str = WindGatewayHandler.addHashTail("API=ServerHeartBeat",true);
                 ctx.writeAndFlush(str);
             }
         }
