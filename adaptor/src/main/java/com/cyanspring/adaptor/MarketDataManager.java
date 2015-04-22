@@ -249,8 +249,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
     public void processTradeSubEvent(TradeSubEvent event)
             throws MarketDataException {
-        TradeSubEvent tradeSubEvent = (TradeSubEvent) event;
-        String symbol = tradeSubEvent.getSymbol();
+        String symbol = event.getSymbol();
         Quote quote = quotes.get(symbol);
         if (quote == null) {
             for (int i = 0; i < preSubscriptionList.size(); i++) {
