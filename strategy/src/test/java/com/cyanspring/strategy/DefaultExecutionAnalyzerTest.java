@@ -237,13 +237,13 @@ public class DefaultExecutionAnalyzerTest {
 		}
 
 		@Override
-		public boolean isCheckAdjQuote() {
+		public Boolean isCheckAdjQuote() {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public void setCheckAdjQuote(boolean checkAdjQuote) {
+		public void setCheckAdjQuote(Boolean checkAdjQuote) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -280,13 +280,13 @@ public class DefaultExecutionAnalyzerTest {
 		}
 
 		@Override
-		public boolean isValidateQuote() {
+		public Boolean isValidateQuote() {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public void setValidateQuote(boolean validateQuote) {
+		public void setValidateQuote(Boolean validateQuote) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -310,13 +310,25 @@ public class DefaultExecutionAnalyzerTest {
 		}
 
 		@Override
-		public boolean isRoundPrice() {
+		public Boolean isRoundPrice() {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public void setRoundPrice(boolean roundPrice) {
+		public void setRoundPrice(Boolean roundPrice) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public Boolean isRoundQty() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void setRoundQty(Boolean roundQty) {
 			// TODO Auto-generated method stub
 			
 		}

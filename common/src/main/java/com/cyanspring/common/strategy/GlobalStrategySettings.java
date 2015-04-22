@@ -7,6 +7,7 @@ public class GlobalStrategySettings {
 	private boolean checkAdjQuote = true;
 	private boolean validateQuote = false;
 	private boolean roundPrice = false;
+	private boolean roundQty = false;
 	private List<String> singleOrderCommonDisplayFields;
 	private List<FieldDef> singleOrderCommonFieldDefs;
 	private List<String> singleInstrumentCommonDisplayFields;
@@ -110,6 +111,14 @@ public class GlobalStrategySettings {
 
 	public void setRoundPrice(boolean roundPrice) {
 		this.roundPrice = roundPrice;
+	}
+
+	public boolean isRoundQty() {
+		return roundQty;
+	}
+
+	public void setRoundQty(boolean roundQty) {
+		this.roundQty = roundQty;
 	}
 	
 }

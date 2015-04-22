@@ -129,9 +129,18 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 		}
 		strategy.setSender(sender);
 		
-		strategy.setCheckAdjQuote(globalStrategySettings.isCheckAdjQuote());
-		strategy.setValidateQuote(globalStrategySettings.isValidateQuote());
-		strategy.setRoundPrice(globalStrategySettings.isRoundPrice());
+		if(null == strategy.isCheckAdjQuote())
+			strategy.setCheckAdjQuote(globalStrategySettings.isCheckAdjQuote());
+		
+		if(null == strategy.isValidateQuote())
+			strategy.setValidateQuote(globalStrategySettings.isValidateQuote());
+		
+		if(null == strategy.isRoundPrice())
+			strategy.setRoundPrice(globalStrategySettings.isRoundPrice());
+
+		if(null == strategy.isRoundQty())
+			strategy.setRoundQty(globalStrategySettings.isRoundQty());
+
 		return strategy;
 	}
 
