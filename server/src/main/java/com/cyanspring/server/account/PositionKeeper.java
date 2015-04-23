@@ -444,7 +444,12 @@ public class PositionKeeper {
 			availableQty += pos.getDetailAvailableQty();
 		}
 		double price = amount / qty;
-		availableQty -= GetPendingSellQty(account, symbol);
+
+        if (availableQty > 0) {
+            availableQty -= getPendingSellQty(account, symbol);
+        } else {
+            availableQty -= getPendingBuyQty(account, symbol);
+        }
 
 		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(),
 				list.get(0).getSymbol(), qty, price, margin);
@@ -453,7 +458,7 @@ public class PositionKeeper {
 		return result;
 	}
 
-	private double GetPendingSellQty(Account account, String symbol) {
+	private double getPendingSellQty(Account account, String symbol) {
 		double pendingSellQty = 0;
 
 		List<ParentOrder> orders = getParentOrders(account.getId(), symbol);
@@ -468,6 +473,23 @@ public class PositionKeeper {
 		}
 
 		return pendingSellQty;
+	}
+
+	private double getPendingBuyQty(Account account, String symbol) {
+		double pendingBuyQty = 0;
+
+		List<ParentOrder> orders = getParentOrders(account.getId(), symbol);
+
+		for (ParentOrder o : orders) {
+
+			if (o.getOrdStatus().isCompleted() || !o.getSide().isBuy()) {
+				continue;
+			}
+
+			pendingBuyQty += o.getRemainingQty();
+		}
+
+		return pendingBuyQty;
 	}
 	
 	private void checkOverallPosition(List<OpenPosition> list) throws PositionException {
