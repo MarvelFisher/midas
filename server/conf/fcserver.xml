@@ -62,18 +62,19 @@
 	</bean>
 
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="windAdaptor" />
 			</list>
 		</constructor-arg>
-		<property name="quoteLogIsOpen" value="true"></property>
-		<property name="quoteExtendEventIsSend" value="false"></property>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="false"/>
+		<property name="quoteExtendSegmentSize" value="300"/>
+
+
 		<property name="preSubscriptionList">
-			<list>
-				<ref bean="preSubscriptionList" />
-			</list>
+			<ref bean="preSubscriptionList" />
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -82,6 +83,8 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
 	</bean>
 
 	<!-- IBAdaptor setting (Setting can be marked if not used) -->

@@ -46,21 +46,20 @@
 	<bean id="dailyExec" class="java.lang.String">
 		<constructor-arg value="05:45:00" />
 	</bean>
-		
+
 	<!-- MarketDataManager setting-->
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="simMarketDataAdaptor" />
 			</list>
 		</constructor-arg>
-		<property name="quoteLogIsOpen" value="true"></property>
-		<property name="quoteExtendEventIsSend" value="true"></property>
-		<property name="quoteExtendSegmentSize" value="300"></property>
+		<property name="quoteThrottle" value="1000"/>
+		<property name="timerInterval" value="1000"/>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="true"/>
 		<property name="preSubscriptionList">
-			<list>
-				<ref bean="preSubscriptionList" />
-			</list>
+			<ref bean="preSubscriptionList" />
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -69,6 +68,8 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
 	</bean>
 	
 	<!-- Derby setting -->

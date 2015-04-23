@@ -28,7 +28,7 @@
 	</bean>
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://localHost:61616"></property>
+		<property name="url" value="nio://localHost:61616"/>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -52,10 +52,10 @@
 				<ref bean="simMarketDataAdaptor" />
 			</list>
 		</constructor-arg>
-		<property name="quoteThrottle" value="1000"></property>
-		<property name="timerInterval" value="1000"></property>
-		<property name="quoteLogIsOpen" value="true"></property>
-		<property name="quoteExtendEventIsSend" value="false"></property>
+		<property name="quoteThrottle" value="1000"/>
+		<property name="timerInterval" value="1000"/>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="false"/>
 		<property name="preSubscriptionList">
 			<ref bean="preSubscriptionList" />
 		</property>
