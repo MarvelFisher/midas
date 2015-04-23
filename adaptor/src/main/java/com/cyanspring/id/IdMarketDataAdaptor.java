@@ -38,6 +38,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     public static IdMarketDataAdaptor instance = null;
     public int sendHeartBeat = 0;
+    private boolean bAlive = true;
 
     public int getSendHeartBeat() {
         return sendHeartBeat;
@@ -322,7 +323,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
                 });
 
 
-        while (true) {
+        while (instance.bAlive) {
             channelFuture = bootstrap.connect(host, port);
             channelFuture.awaitUninterruptibly();
             try {
@@ -335,7 +336,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
                 }
 
             } catch (InterruptedException e) {
-                log.warn(e.getMessage(), e);
+                log.warn(e.getMessage(), e);                
             }
 
             log.info("id Data client can not connect with - " + host + " : " + port + " , will try again after 3 seconds.");
@@ -675,7 +676,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     }
 
     @Override
-    public void onStopEvent(RequestThread sender) {
-
+    public void onStopEvent(RequestThread sender) {    	
+    	bAlive = false;
     }
 }

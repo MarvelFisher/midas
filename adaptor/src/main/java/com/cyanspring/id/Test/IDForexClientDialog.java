@@ -34,11 +34,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class IDForexClientDialog extends JFrame {
 
-	final static int FRAME_WIDTH = 700;
+	final static int FRAME_WIDTH = 800;
 	final static int FRAME_HEIGHT = 400;
 	final static int FRAME_UI_01_HEIGHT = 60;
 	
@@ -52,13 +53,16 @@ public class IDForexClientDialog extends JFrame {
 	private JPanel defaultPanel, inputPanel;
 	JLabel statusbar;
 	IFrameClose callback;
-	JScrollPane scrollLog, scrollMsg;
+	JScrollPane scrollLog, scrollMsg, scrollLogR;
 
-	private JSplitPane splitPaneV, splitPaneV2;
+	private JSplitPane splitPaneV, splitPaneV2, splitPaneVL;
 	private DefaultListModel<InfoString> listLogModel = null;
+	private DefaultListModel<InfoString> listLogModelR = null;
 	private JList<InfoString> listLog = null;
+	private JList<InfoString> listLogR = null;
 	private DefaultListModel<String> listMsgModel = null;
 	private JList<String> listMsg = null;
+	private ArrayList<String> mapMsg = null;
 
 	@SuppressWarnings("unchecked")
 	public IDForexClientDialog(IFrameClose srcCallback, boolean bUsingMsg) {
@@ -100,12 +104,25 @@ public class IDForexClientDialog extends JFrame {
 			});
 
 		} else {
+			mapMsg = new ArrayList<String>();
 			listLogModel = new DefaultListModel<InfoString>();
+			listLogModelR = new DefaultListModel<InfoString>();
 			listLog = new JList<InfoString>(listLogModel);
 			listLog.setCellRenderer(new InfoLabel());
+			listLogR = new JList<InfoString>(listLogModelR);
+			listLogR.setCellRenderer(new InfoLabel());
 			scrollLog = createLogScrollPanel(listLog);
+			scrollLogR = createLogScrollPanel(listLogR);
 
-			splitPaneV = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPaneV2, scrollLog);
+			splitPaneVL = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollLog, scrollLogR);
+			splitPaneVL.setDividerSize(0);
+			splitPaneVL.addComponentListener(new ComponentAdapter() {
+				@Override
+				public void componentResized(ComponentEvent e) {
+					splitPaneVL.setDividerLocation(1.0 / 2.0);
+				}
+			});
+			splitPaneV = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPaneV2, /*scrollLog*/splitPaneVL);
 		}
 
 		getContentPane().add(splitPaneV);
@@ -217,6 +234,50 @@ public class IDForexClientDialog extends JFrame {
 				}
 			}
 		});	
+	}
+
+	public void addFollow(String symbol, String f, Object... args) {
+		addFollowNoTime(symbol, String.format(f, args));
+	}
+	
+	public void addFollowNoTime(final String symbol, String s) {
+		final InfoString value = new InfoString(InfoString.Info, s);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				int index = mapMsg.indexOf(symbol);
+				if (index < 0){
+					mapMsg.add(symbol);
+				}
+				if (listLogModelR != null){
+					if (index < 0){
+						listLogModelR.addElement(value);
+					}
+					else{
+						listLogModelR.remove(index);
+						listLogModelR.add(index, value);
+					}
+				}
+//				if (listLogR != null) {
+//					int lastIndex = listLogR.getModel().getSize() - 1;
+//					if (lastIndex > 0) {
+//						listLogR.setSelectedIndex(lastIndex);
+//						listLogR.ensureIndexIsVisible(lastIndex);
+//					}
+//				}
+			}
+		});	
+	}
+	public void removeFollow(String symbol){
+		int index = mapMsg.indexOf(symbol);
+		if (index < 0){
+			return;
+		}
+		mapMsg.remove(index);
+		if (listLogModelR != null){
+			listLogModelR.remove(index);
+		}
 	}
 	
 	public void addLog(Integer nLevel, String f, Object... args) {

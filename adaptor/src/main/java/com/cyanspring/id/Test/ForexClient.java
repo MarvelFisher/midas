@@ -23,7 +23,8 @@ import com.cyanspring.id.Library.Util.LogUtil;
 
 public class ForexClient implements IMarketDataListener,
 		IMarketDataStateListener, IFrameClose, AutoCloseable {
-
+	
+	public static final String _ClientName = "QuotesFeed 1.20150423.1";
 	private static final Logger log = LoggerFactory.getLogger(ForexClient.class);
 	
 	public static ForexClient instance = null;
@@ -41,7 +42,7 @@ public class ForexClient implements IMarketDataListener,
 	 */
 	public ForexClient(Program srcParent) {
 		parent = srcParent;
-		dialog = IDForexClientDialog.Instance(this, "Client");
+		dialog = IDForexClientDialog.Instance(this, _ClientName);
 		ForexClient.instance = this;
 		final JTextField text = new JTextField();
 		dialog.addTextField(text);
@@ -56,6 +57,9 @@ public class ForexClient implements IMarketDataListener,
 		JButton button = new JButton("add Symbol");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				if (text.getText().isEmpty()){
+					return;
+				}
 				boolean isRemove = checkBox.isSelected();
 				if (isRemove) {
 					ForexClient.instance.onRemoveSymbol(text.getText()
@@ -80,6 +84,9 @@ public class ForexClient implements IMarketDataListener,
 		JButton buttonT = new JButton("add Contribute");
 		buttonT.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				if (textCon.getText().isEmpty()){
+					return;
+				}
 				boolean isRemove = checkBoxCon.isSelected();
 				if (isRemove) {
 					ForexClient.instance.onRemoveContributor(textCon.getText()
@@ -119,6 +126,9 @@ public class ForexClient implements IMarketDataListener,
 				return;
 		}
 		dialog.addLog("[%s][%s] bid:%.5f ask:%.5f %s", innerQuote.getSymbol(),
+				DateUtil.formatDate(DateUtil.toGmt(innerQuote.getQuote().getTimeStamp()), "HH:mm:ss.SSS"),
+				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk(), innerQuote.getContributor());
+		dialog.addFollow(innerQuote.getSymbol(), "[%s][%s] bid:%.5f ask:%.5f %s", innerQuote.getSymbol(),
 				DateUtil.formatDate(DateUtil.toGmt(innerQuote.getQuote().getTimeStamp()), "HH:mm:ss.SSS"),
 				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk(), innerQuote.getContributor());
 
@@ -176,6 +186,7 @@ public class ForexClient implements IMarketDataListener,
 	public void onRemoveSymbol(String Symbol) {
 		try {
 			parent.onRemoveSymbol(Symbol, this);
+			dialog.removeFollow(Symbol);
 		} catch (MarketDataException e) {
 			LogUtil.logException(log, e);
 		}
