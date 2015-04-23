@@ -87,7 +87,7 @@
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<!-- 	Solve channel is inactive problem -->
 <!-- 		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
-		<property name="url" value="nio://localhost:61636?wireFormat.maxInactivityDuration=86400000"></property>
+		<property name="url" value="nio://10.0.0.51:61636?wireFormat.maxInactivityDuration=86400000"></property>
 	</bean>
 	
 		<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -118,21 +118,20 @@
        	</props>
        </property>
 	</bean>
-
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.info.marketdata.InfoMarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataReceiver">
 		<constructor-arg>
 			<list>
 				<ref bean="windAdaptor" />
-			</list>
+			</list>		 
 		</constructor-arg>
+		<property name="quoteThrottle" value="1000"></property>
+		<property name="timerInterval" value="1000"></property>
 		<property name="quoteLogIsOpen" value="true"></property>
-		<property name="quoteExtendEventIsSend" value="true"></property>
-		<property name="quoteExtendSegmentSize" value="300"></property>
+		<property name="quoteExtendEventIsSend" value="false"></property>
+
 		<property name="preSubscriptionList">
-			<list>
 				<ref bean="preSubscriptionList" />
-			</list>
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -141,6 +140,12 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+	</bean>
+
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"></property>
+		<property name="quotePriceWarningPercent" value="50"></property>
 	</bean>
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
