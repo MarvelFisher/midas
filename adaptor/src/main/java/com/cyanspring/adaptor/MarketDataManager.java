@@ -44,8 +44,14 @@ public class MarketDataManager extends MarketDataReceiver {
         super(adaptors);
     }
 
-    public void processQuoteRequestEvent(QuoteRequestEvent event) {
-
+    @Override
+    protected List<Class<? extends AsyncEvent>> subscribeEvent() {
+        ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
+        clzList.add(TradeSubEvent.class);
+        clzList.add(QuoteExtSubEvent.class);
+        clzList.add(QuoteSubEvent.class);
+        clzList.add(TradeDateEvent.class);
+        return clzList;
     }
 
     @Override
@@ -111,17 +117,6 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     @Override
-    protected List<Class<? extends AsyncEvent>> subscribeEvent() {
-        ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
-        clzList.add(QuoteRequestEvent.class);
-        clzList.add(TradeSubEvent.class);
-        clzList.add(QuoteExtSubEvent.class);
-        clzList.add(QuoteSubEvent.class);
-        clzList.add(TradeDateEvent.class);
-        return clzList;
-    }
-
-    @Override
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
         try {
             eventManager.sendGlobalEvent(event);
@@ -146,8 +141,7 @@ public class MarketDataManager extends MarketDataReceiver {
             }
         }
         if (quote == null || quote.isStale()) {
-            for (int i = 0; i < adaptors.size(); i++) {
-                IMarketDataAdaptor adaptor = adaptors.get(i);
+            for (IMarketDataAdaptor adaptor : adaptors) {
                 if (!adaptor.getState())
                     continue;
                 adaptor.subscribeMarketData(symbol, MarketDataManager.this);
@@ -160,10 +154,8 @@ public class MarketDataManager extends MarketDataReceiver {
         String symbol = event.getSymbol();
         Quote quote = quotes.get(symbol);
         if (quote == null) {
-            for (int i = 0; i < preSubscriptionList.size(); i++) {
-                List<String> preList = preSubscriptionList.get(i);
-                if (preList.contains(symbol)) {
-                    IMarketDataAdaptor adaptor = adaptors.get(i);
+            for (IMarketDataAdaptor adaptor : adaptors) {
+                if (preSubscriptionList.contains(symbol)) {
                     adaptor.subscribeMarketData(symbol, MarketDataManager.this);
                 }
             }
@@ -171,7 +163,7 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     @Override
-    public void processAsyncTimerEvent(AsyncTimerEvent event){
+    public void processAsyncTimerEvent(AsyncTimerEvent event) {
         super.processAsyncTimerEvent(event);
         if (quoteSaver != null) {
             quoteSaver.saveLastQuoteToFile(tickDir + "/" + lastQuoteFile, quotes);
@@ -179,7 +171,7 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
-    public void processTradeDateEvent(TradeDateEvent event){
+    public void processTradeDateEvent(TradeDateEvent event) {
         String newTradeDate = event.getTradeDate();
         if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
             tradeDate = newTradeDate;
@@ -249,7 +241,7 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     @Override
-    protected void requestMarketSession(){
+    protected void requestRequireData() {
         try {
             eventManager.sendRemoteEvent(new MarketSessionRequestEvent(null, null, true));
         } catch (Exception e) {
