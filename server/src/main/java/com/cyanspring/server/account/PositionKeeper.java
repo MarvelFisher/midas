@@ -108,6 +108,9 @@ public class PositionKeeper {
 		
 		this.updateAccountDynamicData(account);
 		notifyAccountDynamicUpdate(account);
+
+		OpenPosition update = getOverallPosition(account, order.getSymbol());
+		notifyOpenPositionUpdate(update);
 	}
 	
 	private OpenPosition createOpenPosition(Execution execution, Account account) {
