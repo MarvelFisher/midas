@@ -109,6 +109,12 @@
 		<property name="syncCentralDb" value="false"></property>
 	</bean>
 
+	<bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"></property>
+		<property name="quotePriceWarningPercent" value="50"></property>
+	</bean>
+
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>

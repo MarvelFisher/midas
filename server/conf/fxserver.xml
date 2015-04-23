@@ -62,7 +62,7 @@
 	</bean>
 
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="idAdaptor" />
@@ -71,8 +71,6 @@
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
-		<property name="quotePriceWarningIsOpen" value="true"></property>
-		<property name="quotePriceWarningPercent" value="50"></property>
 		<property name="quoteLogIsOpen" value="true"></property>
 		<property name="quoteExtendEventIsSend" value="false"></property>
 
@@ -81,10 +79,7 @@
 		</property>
 
 		<property name="preSubscriptionList">
-			<list>
-				<ref bean="preSubscriptionList" />
-				<ref bean="preSubscriptionList2" />
-			</list>
+			<ref bean="preSubscriptionList" />
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -93,6 +88,8 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
 	</bean>
 
 	<!-- IBAdaptor setting (Setting can be marked if not used) -->

@@ -6,15 +6,15 @@ import com.cyanspring.common.util.PriceUtils;
 public class QuoteChecker implements IQuoteChecker {
 
     MarketSessionType session;
-    private boolean isQuotePriceWarningIsOpen = false;
+    private boolean quotePriceWarningIsOpen = false;
     private int quotePriceWarningPercent = 99;
 
     public MarketSessionType getSession() {
         return session;
     }
 
-    public void setIsQuotePriceWarningIsOpen(boolean isQuotePriceWarningIsOpen) {
-        this.isQuotePriceWarningIsOpen = isQuotePriceWarningIsOpen;
+    public void setQuotePriceWarningIsOpen(boolean quotePriceWarningIsOpen) {
+        this.quotePriceWarningIsOpen = quotePriceWarningIsOpen;
     }
 
     public void setQuotePriceWarningPercent(int quotePriceWarningPercent) {
@@ -49,7 +49,7 @@ public class QuoteChecker implements IQuoteChecker {
             }
         }
 
-        if (this.isQuotePriceWarningIsOpen) {
+        if (this.quotePriceWarningIsOpen) {
             if (PriceUtils.GreaterThan(quote.getClose(), 0)
                     && this.quotePriceWarningPercent > 0
                     && this.quotePriceWarningPercent < 100) {
