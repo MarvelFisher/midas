@@ -50,7 +50,7 @@
 		<constructor-arg>
 			<ref bean="transportService" />
 		</constructor-arg>
-		<property name="embedBroker" value="true"></property>
+		<property name="embedBroker" value="true"/>
 		<property name="bridges">
 			<list>
 				<ref bean="apiBridgeManager" />
@@ -62,10 +62,10 @@
 		<constructor-arg>
 			<ref bean="globalTransportService" />
 		</constructor-arg>
-		<property name="embedBroker" value="false"></property>
+		<property name="embedBroker" value="false"/>
 	</bean>	
 	
-	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"></bean>
+	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"/>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
 		<property name="requestMap">
@@ -114,117 +114,31 @@
 	</bean>
 
 	<bean id="socketService" class="com.cyanspring.transport.socket.ServerSocketService">
-		<property name="port" value="52323"></property>
+		<property name="port" value="52323"/>
 	</bean>
 
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
-		<property name="embeddedSQLServer" value="true"></property>
-		<property name="embeddedHost" value="0.0.0.0"></property>
-		<property name="embeddedPort" ref="derbyPort"></property>
-		<property name="deleteTerminated" value="false"></property>
-		<property name="textSize" value="4000"></property>
-		<property name="cleanStart" value="false"></property>
-		<property name="todayOnly" value="false"></property>
-		<property name="checkEmailUnique" value="onlyExist"></property>
-		<property name="syncCentralDb" value="true"></property>
+		<property name="embeddedSQLServer" value="true"/>
+		<property name="embeddedHost" value="0.0.0.0"/>
+		<property name="embeddedPort" ref="derbyPort"/>
+		<property name="deleteTerminated" value="false"/>
+		<property name="textSize" value="4000"/>
+		<property name="cleanStart" value="false"/>
+		<property name="todayOnly" value="false"/>
+		<property name="checkEmailUnique" value="onlyExist"/>
+		<property name="syncCentralDb" value="true"/>
 	</bean>
 
 	<bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
 	</bean>
 
-	<bean id="preSubscriptionList" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-					<value>AUDCAD</value>
-					<value>AUDCHF</value>
-					<value>AUDCNH</value>
-					<value>AUDHKD</value>
-					<value>AUDJPY</value>
-					<value>AUDNZD</value>
-					<value>AUDSGD</value>
-					<value>AUDUSD</value>
-					<value>GBPAUD</value>
-					<value>GBPCAD</value>
-					<value>GBPCHF</value>
-					<value>GBPCNH</value>
-					<!-- <value>GBPDKK</value> -->
-					<value>GBPHKD</value>
-					<value>GBPJPY</value>
-					<value>GBPNOK</value>
-					<value>GBPNZD</value>
-					<value>GBPSEK</value>
-					<value>GBPUSD</value>
-					<value>CADCHF</value>
-					<value>CADCNH</value>
-					<value>CADHKD</value>
-					<value>CADJPY</value>
-					<value>CNHHKD</value>
-					<value>CNHJPY</value>
-					<!-- <value>DKKJPY</value> -->
-					<!-- <value>DKKNOK</value> -->
-					<!-- <value>DKKSEK</value> -->
-					<value>EURAUD</value>
-					<value>EURCAD</value>
-					<value>EURCHF</value>
-					<value>EURCNH</value>
-					<value>EURCZK</value>
-					<!-- <value>EURDKK</value> -->
-					<value>EURGBP</value>
-					<value>EURHKD</value>
-					<value>EURHUF</value>
-					<value>EURILS</value>
-					<value>EURJPY</value>
-					<value>EURMXN</value>
-					<value>EURNOK</value>
-					<value>EURNZD</value>
-					<value>EURRUB</value>
-					<value>EURSEK</value>
-					<value>EURSGD</value>
-					<value>EURUSD</value>
-					<value>HKDJPY</value>
-					<!-- <value>KRWAUD</value>
-					<value>KRWCAD</value>
-					<value>KRWCHF</value>
-					<value>KRWEUR</value>
-					<value>KRWGBP</value>
-					<value>KRWHKD</value>
-					<value>KRWJPY</value>
-					<value>KRWUSD</value> -->
-					<value>MXNJPY</value>
-					<value>NZDCHF</value>
-					<value>NZDJPY</value>
-					<value>NZDUSD</value>
-					<value>NOKJPY</value>
-					<value>NOKSEK</value>
-					<value>SGDCNH</value>
-					<value>SGDJPY</value>
-					<value>SEKJPY</value>
-					<value>CHFCNH</value>
-					<!-- <value>CHFDKK</value> -->
-					<value>CHFJPY</value>
-					<value>CHFNOK</value>
-					<value>CHFSEK</value>
-					<value>USDCAD</value>
-					<value>USDCHF</value>
-					<value>USDCNH</value>
-					<value>USDCZK</value>
-					<value>USDHKD</value>
-					<value>USDHUF</value>
-					<value>USDILS</value>
-					<value>USDJPY</value>
-					<value>USDMXN</value>
-					<value>USDNOK</value>
-					<value>USDRUB</value>
-					<value>USDSEK</value>
-					<value>USDSGD</value>
-					<!-- <value>XAUUSD</value> -->
-					<!-- <value>XAGUSD</value> -->
-
-			</list>
-		</constructor-arg>
+	<bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"/>
+		<property name="quotePriceWarningPercent" value="50"/>
 	</bean>
-	
-		<bean id="preSubscriptionList2" class="java.util.ArrayList">
+
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
 					<value>AUDCAD</value>
@@ -321,7 +235,7 @@
 	</bean>
 
 	<bean id="orderManager" class="com.cyanspring.server.OrderManager">
-		<property name="publishChildOrder" value="true"></property>
+		<property name="publishChildOrder" value="true"/>
 	</bean>
 
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
@@ -370,7 +284,7 @@
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
 		<property name="quoteChecker">
-			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"></bean>
+			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
 		</property>
 		<property name="fxSymbols">
 			<list>
@@ -465,7 +379,7 @@
 	</bean>
 
 	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
-		<property name="rmJobBatch" value="10000"></property>
+		<property name="rmJobBatch" value="10000"/>
 	</bean>
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">

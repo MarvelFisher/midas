@@ -38,7 +38,7 @@
 		<constructor-arg>
 			<ref bean="transportService" />
 		</constructor-arg>
-		<property name="embedBroker" value="true"></property>
+		<property name="embedBroker" value="true"/>
 		<property name="bridges">
 			<list>
 				<ref bean="apiBridgeManager" />
@@ -99,14 +99,20 @@
 	</bean>
 
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
-		<property name="embeddedSQLServer" value="true"></property>
-		<property name="embeddedHost" value="0.0.0.0"></property>
-		<property name="embeddedPort" ref="derbyPort"></property>
-		<property name="deleteTerminated" value="false"></property>
-		<property name="textSize" value="4000"></property>
-		<property name="cleanStart" value="false"></property>
-		<property name="todayOnly" value="true"></property>
-		<property name="syncCentralDb" value="false"></property>
+		<property name="embeddedSQLServer" value="true"/>
+		<property name="embeddedHost" value="0.0.0.0"/>
+		<property name="embeddedPort" ref="derbyPort"/>
+		<property name="deleteTerminated" value="false"/>
+		<property name="textSize" value="4000"/>
+		<property name="cleanStart" value="false"/>
+		<property name="todayOnly" value="true"/>
+		<property name="syncCentralDb" value="false"/>
+	</bean>
+
+	<bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"/>
+		<property name="quotePriceWarningPercent" value="50"/>
 	</bean>
 
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
@@ -214,7 +220,7 @@
 	</bean>
 
 	<bean id="orderManager" class="com.cyanspring.server.OrderManager">
-		<property name="publishChildOrder" value="true"></property>
+		<property name="publishChildOrder" value="true"/>
 	</bean>
 
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
@@ -245,7 +251,7 @@
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
 		<property name="quoteChecker">
-			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"></bean>
+			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
 		</property>
 		<property name="fxSymbols">
 			<list>
@@ -340,7 +346,7 @@
 	</bean>
 
 	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
-		<property name="rmJobBatch" value="5000"></property>
+		<property name="rmJobBatch" value="5000"/>
 	</bean>
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">

@@ -45,7 +45,7 @@ import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.server.marketdata.MarketDataManager;
+import com.cyanspring.adaptor.MarketDataManager;
 
 public class HyperDownStreamConnection extends AsyncEventProcessor implements IDownStreamConnection, IDownStreamSender{
 	private static final Logger log = LoggerFactory

@@ -6,6 +6,7 @@ public enum OrderReason {
 	StopLoss(3),
 	MarginCall(4),
 	TrailingStop(5),
+	DayEnd(6),
 	;
 	
 	private final int value;

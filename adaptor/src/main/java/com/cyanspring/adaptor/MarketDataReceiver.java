@@ -54,7 +54,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected long quoteThrottle = 100; // 0 = no throttle
     protected long timerInterval = 300;
     protected Map<String, QuoteEvent> quotesToBeSent = new HashMap<String, QuoteEvent>();
-    protected List<List<String>> preSubscriptionList = new ArrayList<List<String>>();
+    protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected String tradeDate;
 
@@ -77,7 +77,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         public void subscribeToEvents() {
 
             subscribeToEvent(MarketSessionEvent.class, null);
-            subscribeToEvent(QuoteReplyEvent.class, null);
 
             for (Class<? extends AsyncEvent> clz : subscribeEvent()) {
                 subscribeToEvent(clz, null);
@@ -92,16 +91,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     protected List<Class<? extends AsyncEvent>> subscribeEvent() {
         return null;
-    }
-
-    public void processQuoteReplyEvent(QuoteReplyEvent event) {
-        for (Entry<String, Quote> entry : event.getQuotes().entrySet()) {
-
-        }
-
-        for (Entry<String, DataObject> entry : event.getQuoteExts().entrySet()) {
-
-        }
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
@@ -277,7 +266,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             eventProcessor.getThread().setName("MarketDataManager");
 
         // requestMarketSession
-        requestMarketSession();
+        requestRequireData();
 
         chkDate = Clock.getInstance().now();
         for (IMarketDataAdaptor adaptor : adaptors) {
@@ -421,8 +410,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
     }
 
-    protected void requestMarketSession(){
+    protected void requestRequireData(){
         eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
+
+//        if(preSubscriptionList.size() > 0 ){
+//            eventManager.sendRemoteEvent(new QuoteRequestEvent(null, null, preSubscriptionList));
+//        }
     }
 
     private void preSubscribe() {
@@ -431,15 +424,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         log.debug("Market data presubscribe: " + preSubscriptionList);
         try {
-            for (int i = 0; i < preSubscriptionList.size(); i++) {
-                List<String> preList = preSubscriptionList.get(i);
-                IMarketDataAdaptor adaptor = adaptors.get(i);
+            for (IMarketDataAdaptor adaptor : adaptors) {
                 log.debug("Market data presubscribe adapter begin : Adapter=" + adaptor.getClass().getSimpleName() + ",State="
                         + adaptor.getState());
                 if (!adaptor.getState())
                     continue;
 
-                for (String symbol : preList) {
+                for (String symbol : preSubscriptionList) {
                     adaptor.subscribeMarketData(symbol, this);
                 }
             }
@@ -504,11 +495,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         this.quoteThrottle = quoteThrottle;
     }
 
-    public List<List<String>> getPreSubscriptionList() {
+    public List<String> getPreSubscriptionList() {
         return preSubscriptionList;
     }
 
-    public void setPreSubscriptionList(List<List<String>> preSubscriptionList) {
+    public void setPreSubscriptionList(List<String> preSubscriptionList) {
         this.preSubscriptionList = preSubscriptionList;
     }
 

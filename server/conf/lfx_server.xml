@@ -28,7 +28,7 @@
 	</bean>
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://localHost:61616"></property>
+		<property name="url" value="nio://localHost:61616"/>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -46,18 +46,18 @@
 	</bean>
 		
 	<!-- MarketDataManager setting-->
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="simMarketDataAdaptor" />
 			</list>
 		</constructor-arg>
-		<property name="quoteThrottle" value="1000"></property>
-		<property name="timerInterval" value="1000"></property>
+		<property name="quoteThrottle" value="1000"/>
+		<property name="timerInterval" value="1000"/>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="false"/>
 		<property name="preSubscriptionList">
-			<list>
-				<ref bean="preSubscriptionList" />
-			</list>
+			<ref bean="preSubscriptionList" />
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -66,7 +66,8 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
-		<property name="quoteChecker"><null/></property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
 	</bean>
 	
 	<!-- Derby setting -->

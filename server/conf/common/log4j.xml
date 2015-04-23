@@ -57,7 +57,7 @@
     	<priority value="INFO"/>
     </category>
     
-    <category name="com.cyanspring.server.marketdata.MarketDataManager.QuoteLog" additivity="false">
+    <category name="com.cyanspring.adaptor.MarketDataReceiver.QuoteLog" additivity="false">
     	<priority value="DEBUG"/>
     	<appender-ref ref="QUOTEFILE" />
     </category>
