@@ -37,6 +37,11 @@
     		<name>JBoss.org Maven repository</name>       
     		<url>https://repository.jboss.org/nexus/content/groups/public</url>     
     	</repository>
+		<repository>
+			<id>fdt</id>
+			<name>FDT Repository</name>
+			<url>http://10.0.0.20:8081/nexus/content/groups/public</url>
+		</repository>
   	</repositories>
 	
 	<properties>
@@ -156,4 +161,5 @@
 		</dependency>
 
   	</dependencies>
+
 </project>
