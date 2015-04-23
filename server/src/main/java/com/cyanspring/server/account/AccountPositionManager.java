@@ -416,20 +416,10 @@ public class AccountPositionManager implements IPlugin {
 				user.setId(user.getId().toLowerCase());
 				if(userKeeper.userExists(user.getId()))
 					throw new UserException("User already exists: " + user.getId(),ErrorMessage.USER_ALREADY_EXIST);
-				//Account account = new Account(generateAccountId(), event.getUser().getId(), defaultCurrency);
-				String defaultAccountId = user.getDefaultAccount();
-				if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
-					if(!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
-						defaultAccountId = user.getId() + "-" + Default.getMarket();
-					} else {
-						defaultAccountId = generateAccountId();
-						if(accountKeeper.accountExists(defaultAccountId)) {
-							throw new UserException("Cannot create default account for user: " +
-									user.getId() + ", last try: " + defaultAccountId,ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
-						}
-					}
-				}
+
+				String defaultAccountId = getDefaultAccountId(user);
 				user.setDefaultAccount(defaultAccountId);
+
 				if(null == user.getUserType())
 					user.setUserType(UserType.NORMAL);
 
@@ -438,18 +428,15 @@ public class AccountPositionManager implements IPlugin {
 				
 				eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));
 			} catch (UserException ue) {
-				//message = ue.getMessage();
 				message = MessageLookup.buildEventMessage(ue.getClientMessage(),ue.getMessage());
 				ok = false;
 			} catch (AccountException ae) {
 				message = MessageLookup.buildEventMessage(ae.getClientMessage(),ae.getMessage());
-				//message = ae.getMessage();
 				ok = false;
 			} 
 		} else {
 			ok = false;
-			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,"System doesn't support user creation");
-			//message = "System doesn't support user creation";
+			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED, "System doesn't support user creation");
 		}
 		
 		log.info("processCreateUserEvent: " + event.getUser() + ", " + ok + ", " + message);
@@ -470,55 +457,33 @@ public class AccountPositionManager implements IPlugin {
 		boolean ok = true;
 		User user = event.getUser();
 		String message = "";
-		ErrorMessage errorMsg = null ; 
+
 		if(null != userKeeper && null != accountKeeper) {
 			try {
-				
-				if(null == user.getUserType() || (!user.getUserType().equals(UserType.FACEBOOK) && !user.getUserType().equals(UserType.QQ) && !user.getUserType().equals(UserType.WECHAT) && !user.getUserType().equals(UserType.TWITTER)))
-				{
-					errorMsg = ErrorMessage.WRONG_USER_TYPE;
-					throw new UserException("Cannot create user by wrong UserType");
-					
-				}
-				
+				checkUserType(user);
+
 				user.setId(user.getId().toLowerCase());
 				if(!userKeeper.userExists(user.getId()))
 				{
-					//Account account = new Account(generateAccountId(), event.getUser().getId(), defaultCurrency);
-					String defaultAccountId = user.getDefaultAccount();
-					if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
-						if(!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
-							defaultAccountId = user.getId() + "-" + Default.getMarket();
-						} else {
-							defaultAccountId = generateAccountId();
-							if(accountKeeper.accountExists(defaultAccountId)) {
-								errorMsg = ErrorMessage.CREATE_USER_FAILED;
-								throw new UserException("Cannot create default account for user: " +
-										user.getId() + ", last try: " + defaultAccountId);
-							}
-						}
-					}
+					String defaultAccountId = getDefaultAccountId(user);
+
 					user.setDefaultAccount(defaultAccountId);
 					Account account = new Account(defaultAccountId, event.getUser().getId());
 					accountKeeper.setupAccount(account);
 					
 					//user not exist
 					eventManager.sendEvent(new PmUserCreateAndLoginEvent(PersistenceManager.ID, event.getReceiver(), user, event, userKeeper, accountKeeper, Arrays.asList(account)));
-					
 				}
 				else
 				{
 					//user exist
 					eventManager.sendEvent(new PmUserCreateAndLoginEvent(PersistenceManager.ID, event.getReceiver(), null, event, userKeeper, accountKeeper, null));
-//					throw new UserException("User already exists: " + user.getId());
 				}
 
 			} catch (UserException ue) {
-				//message = ue.getMessage();
-				message = MessageLookup.buildEventMessage(errorMsg, ue.getMessage());
+				message = MessageLookup.buildEventMessage(ue.getClientMessage(), ue.getMessage());
 				ok = false;
 			} catch (AccountException ae) {
-				//message = ae.getMessage();
 				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, ae.getMessage());
 				ok = false;
 			} 
@@ -540,8 +505,34 @@ public class AccountPositionManager implements IPlugin {
 				log.error(e.getMessage(), e);
 			}
 		}
-	}	
-	
+	}
+
+	private String getDefaultAccountId(User user) throws UserException {
+		String defaultAccountId = user.getDefaultAccount();
+
+		if (null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
+			if (!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
+				defaultAccountId = user.getId() + "-" + Default.getMarket();
+			} else {
+				defaultAccountId = generateAccountId();
+				if (accountKeeper.accountExists(defaultAccountId)) {
+					throw new UserException("Cannot create default account for user: " +
+							user.getId() + ", last try: " + defaultAccountId, ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
+				}
+			}
+		}
+
+		return defaultAccountId;
+	}
+
+	private void checkUserType(User user) throws UserException {
+		if (null == user.getUserType() || (!user.getUserType().equals(UserType.FACEBOOK)
+				&& !user.getUserType().equals(UserType.QQ) && !user.getUserType().equals(UserType.WECHAT)
+				&& !user.getUserType().equals(UserType.TWITTER))) {
+			throw new UserException("Cannot create user by wrong UserType", ErrorMessage.WRONG_USER_TYPE);
+		}
+	}
+
 	public void processOnUserCreatedEvent(OnUserCreatedEvent event) {
 		try {
 			userKeeper.createUser(event.getUser());
