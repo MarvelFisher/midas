@@ -30,6 +30,7 @@ import webcurve.util.PriceUtils;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.OpenPosition;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.business.OrderException;
@@ -85,6 +86,7 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.event.AsyncEventMultiProcessor;
 import com.cyanspring.event.AsyncEventProcessor;
@@ -150,6 +152,7 @@ public class BusinessManager implements ApplicationContextAware {
 	private long closePositionCheckInterval = 10000;
 	private Map<String, MultiOrderCancelTracker> cancelTrackers = new HashMap<String, MultiOrderCancelTracker>();
 	private boolean cancelAllOrdersAtClose = false;
+	private boolean closeAllPositionsAtClose = false;
 	
 	public boolean isAutoStartStrategy() {
 		return autoStartStrategy;
@@ -824,16 +827,34 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processMarketSessionEvent(MarketSessionEvent event) {
 		log.info("Received MarketSessionEvent: " + event);
-		if(this.cancelAllOrdersAtClose && event.getSession().equals(MarketSessionType.CLOSE)) {
-			for(ParentOrder order: orders.values()) {
-				if(!order.getOrdStatus().isCompleted()) {
-					log.debug("Market close cancel: " + order);
-					String source = order.get(String.class, OrderField.SOURCE.value());
-					String txId = order.get(String.class, OrderField.CLORDERID.value());
-					CancelStrategyOrderEvent cancel = 
-							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, null, false);
-					eventManager.sendEvent(cancel);
-				}			
+		if(event.getSession().equals(MarketSessionType.CLOSE)) {
+			if(this.cancelAllOrdersAtClose) {
+				for(ParentOrder order: orders.values()) {
+					if(!order.getOrdStatus().isCompleted()) {
+						log.debug("Market close cancel: " + order);
+						String source = order.get(String.class, OrderField.SOURCE.value());
+						String txId = order.get(String.class, OrderField.CLORDERID.value());
+						CancelStrategyOrderEvent cancel = 
+								new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, null, false);
+						eventManager.sendEvent(cancel);
+					}			
+				}
+			}
+			if(this.closeAllPositionsAtClose) {
+				List<Account> accounts = accountKeeper.getAllAccounts();
+				for(Account account: accounts) {
+					List<OpenPosition> list = positionKeeper.getOverallPosition(account);
+					for(OpenPosition position: list) {
+						log.info("Day end position close: " + position.getAccount() + ", " +
+								position.getQty() + ", " +
+								position.getSymbol() + ", " + position.getAcPnL());
+						ClosePositionRequestEvent closeEvent = new ClosePositionRequestEvent(position.getAccount(), 
+								null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.DayEnd,
+								IdGenerator.getInstance().getNextID());
+						
+						eventManager.sendEvent(closeEvent);
+					}
+				}				
 			}
 		}
 	}
