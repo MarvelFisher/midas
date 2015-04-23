@@ -63,7 +63,7 @@ public class MsgPackLiteServer implements Runnable {
                 	 	ch.pipeline().addLast("encoder",new FDTFrameEncoder());
                 		ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(readIdleInterval, writeIdleInterval, 0));
                 		ch.pipeline().addLast("idleHandler", new idDataServerIdleHandler());                	
-                		//ch.pipeline().addLast(new idDataServerHandler());
+                		ch.pipeline().addLast(new MsgPackLiteDataServerHandler());
                  }
              })
              .option(ChannelOption.SO_BACKLOG, 128)          // (5)

@@ -42,7 +42,7 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 				in.readByte();
 				continue; 
 			}
-			out.add(body_buf);
+			out.add(new String(body_buf, "UTF-8"));
 		}
 	}
 	

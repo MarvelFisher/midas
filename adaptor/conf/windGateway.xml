@@ -29,8 +29,8 @@
  
     <bean id="MsgPackLiteServer" class="com.cyanspring.adaptor.future.wind.gateway.MsgPackLiteServer">    
     	<property name="serverPort" value="10048"/>
-    	<property name="readIdleInterval" value="7"/>
-    	<property name="writeIdleInterval" value="10"/>
+    	<property name="readIdleInterval" value="0"/>
+    	<property name="writeIdleInterval" value="0"/>
     </bean>
     
 </beans>
