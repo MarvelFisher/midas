@@ -39,11 +39,11 @@
 	</bean>
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61636"></property>
+		<property name="url" value="nio://0.0.0.0:61636"/>
 	</bean>
 	
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://10.0.0.51:60006"></property>
+		<property name="url" value="nio://10.0.0.51:60006"/>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -62,19 +62,20 @@
 	</bean>
 
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="windAdaptor" />
 			</list>
 		</constructor-arg>
-		<property name="quoteLogIsOpen" value="true"></property>
-		<property name="quoteExtendEventIsSend" value="true"></property>
-		<property name="quoteExtendSegmentSize" value="300"></property>
+		<property name="quoteThrottle" value="1000"/>
+		<property name="timerInterval" value="1000"/>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="true"/>
+		<property name="quoteExtendSegmentSize" value="300"/>
+
 		<property name="preSubscriptionList">
-			<list>
-				<ref bean="preSubscriptionList" />
-			</list>
+			<ref bean="preSubscriptionList" />
 		</property>
 		<property name="sessionMonitor">
 			<map>
@@ -83,22 +84,24 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
 	</bean>
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 
 	<bean id="windAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
-		<property name="showGui" value="true"></property>
-		<property name="reqIp" value="114.80.154.34"></property>
-		<property name="reqPort" value="10051"></property>
-		<property name="userName" value="TD1001888001"></property>
-		<property name="password" value="62015725"></property>
-		<property name="gateway" value="true"></property> 
-		<property name="gatewayIp" value="202.55.14.140"></property> 
-		<property name="gatewayPort" value="10049"></property>	
-		<property name="marketDataLog" value="true"></property>
-		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->		
+		<property name="showGui" value="true"/>
+		<property name="reqIp" value="114.80.154.34"/>
+		<property name="reqPort" value="10051"/>
+		<property name="userName" value="TD1001888001"/>
+		<property name="password" value="62015725"/>
+		<property name="gateway" value="true"/>
+		<property name="gatewayIp" value="202.55.14.140"/>
+		<property name="gatewayPort" value="10049"/>
+		<property name="marketDataLog" value="true"/>
+		<property name="marketType" value="S"/> <!-- Stock:S,Future:F -->
 		<property name="refDataManager">
 			<ref bean="refDataManager" />
 		</property>		

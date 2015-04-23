@@ -39,11 +39,11 @@
 	</bean>
 	
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61616"></property>
+		<property name="url" value="nio://0.0.0.0:61616"/>
 	</bean>
 	
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://10.0.0.51:60006"></property>
+		<property name="url" value="nio://10.0.0.51:60006"/>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -69,10 +69,11 @@
 				<ref bean="ibAdaptor" />
 			</list>		 
 		</constructor-arg>
-		<property name="quoteThrottle" value="1000"></property>
-		<property name="timerInterval" value="1000"></property>
-		<property name="quoteLogIsOpen" value="true"></property>
-		<property name="quoteExtendEventIsSend" value="false"></property>
+		<property name="quoteThrottle" value="1000"/>
+		<property name="timerInterval" value="1000"/>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="false"/>
+		<property name="quoteExtendSegmentSize" value="300"/>
 
 		<property name="aggregator" >
 			<ref bean="quoteAggregator" />
@@ -110,16 +111,16 @@
 	<!-- IDAdaptor setting (Setting can be marked if not used) -->
 
 	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
-		<property name="account" value="fdtcanned"></property>
-		<property name="password" value="MFW9dC26"></property>
-		<property name="gateway" value="false"></property>
-		<property name="reqIp" value="10.0.0.32"></property>
-		<property name="reqPort" value="6086"></property>
-		<property name="exch" value="687"></property>
-		<property name="preOpen" value="510"></property>
-		<property name="open" value="515"></property>
-		<property name="close" value="500"></property>
-		<property name="sendHeartBeat" value="5"></property>
+		<property name="account" value="fdtcanned"/>
+		<property name="password" value="MFW9dC26"/>
+		<property name="gateway" value="false"/>
+		<property name="reqIp" value="10.0.0.32"/>
+		<property name="reqPort" value="6086"/>
+		<property name="exch" value="687"/>
+		<property name="preOpen" value="510"/>
+		<property name="open" value="515"/>
+		<property name="close" value="500"/>
+		<property name="sendHeartBeat" value="5"/>
 		<property name="nonFX">
 			<map>
 				<entry key="XAUUSD" value="691" />
