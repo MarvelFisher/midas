@@ -38,8 +38,8 @@ public class Program implements IFrameClose, TimerEventHandler {
 	List<ForexClient> clients = new ArrayList<ForexClient>();
 
 	public static boolean isConnected = false;
-	public static final String version = "1.00R01";
-	public static final String timeStamp = "2014-12-15";
+	public static final String version = "1.00R02";
+	public static final String timeStamp = "2015-04-23";
 	
 	private JButton btnNewClient;
 
