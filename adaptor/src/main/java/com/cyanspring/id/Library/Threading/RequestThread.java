@@ -170,6 +170,8 @@ public class RequestThread implements AutoCloseable {
 				default:
 					break;
 				}
+			} catch (InterruptedException ie) {
+				break;
 			} catch (Exception ex) {
 				LogUtil.logException(log, ex);
 				LogUtil.logError(log, 

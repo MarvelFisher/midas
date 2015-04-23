@@ -108,23 +108,10 @@ public class MarketDataManager extends MarketDataReceiver {
                 log.info("LastTradeDateQuoteExtends Loaded Results [" + entry.getKey()
                         + "] " + entry.getValue().toString());
             }
-        } else {
-            if (preSubscriptionList != null) {
-
-            }
         }
         super.init();
     }
 
-    @Override
-    protected void sendQuoteEvent(RemoteAsyncEvent event) {
-        try {
-            eventManager.sendGlobalEvent(event);
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
 
     public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
         log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
@@ -242,11 +229,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     protected void requestRequireData() {
-        try {
-            eventManager.sendRemoteEvent(new MarketSessionRequestEvent(null, null, true));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+        eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
     }
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {

@@ -90,7 +90,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     };
 
     protected List<Class<? extends AsyncEvent>> subscribeEvent() {
-        return null;
+        return new ArrayList<Class<? extends AsyncEvent>>();
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
@@ -410,12 +410,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
     }
 
-    protected void requestRequireData(){
-        eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
-
-//        if(preSubscriptionList.size() > 0 ){
-//            eventManager.sendRemoteEvent(new QuoteRequestEvent(null, null, preSubscriptionList));
-//        }
+    protected void requestRequireData() throws Exception {
+        eventManager.sendRemoteEvent(new MarketSessionRequestEvent(null, null, true));
     }
 
     private void preSubscribe() {
