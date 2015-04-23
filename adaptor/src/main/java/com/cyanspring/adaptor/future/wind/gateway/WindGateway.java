@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 
 
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -24,35 +27,123 @@ import cn.com.wind.td.tdf.*;
 public class WindGateway {
 	
 	private static WindGatewayInitializer windGatewayInitializer = null; 
-	private final int port;
 	public static HashMap<String,TDF_FUTURE_DATA> mapFutureData = new HashMap<String,TDF_FUTURE_DATA>(); 
 	public static HashMap<String,TDF_MARKET_DATA> mapMarketData = new HashMap<String,TDF_MARKET_DATA>();
 	public static HashMap<String,TDF_INDEX_DATA>  mapIndexData  = new HashMap<String,TDF_INDEX_DATA>();
 	public static HashMap<String,TDF_TRANSACTION> mapTransaction = new HashMap<String,TDF_TRANSACTION>();
 	public static HashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new HashMap<String,ArrayList<TDF_CODE>>();
 	
-	private static String windMFServerIP = "114.80.154.34";
-	private static String windMFServerPort = "10050";
-	private static String windMFServerUserId = "TD1001888002";
-	private static String windMFServerUserPwd = "35328058";
+
 	
-	private static String windSFServerIP = "114.80.154.34";
-	private static String windSFServerPort = "10051";
-	private static String windSFServerUserId = "TD1001888001";
-	private static String windSFServerUserPwd = "62015725";
+
+
+	public static WindGateway instance = null;
+	private static int typeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;	
+	
+	private static final Logger log = LoggerFactory
+			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);
+	
+	private int serverPort;
+	private String windMFServerIP = "114.80.154.34";
+	private int windMFServerPort = 10050;
+	private String windMFServerUserId = "TD1001888002";
+	private String windMFServerUserPwd = "35328058";
+	
+	private String windSFServerIP = "114.80.154.34";
+	private int windSFServerPort = 10051;
+	private String windSFServerUserId = "TD1001888001";
+	private String windSFServerUserPwd = "62015725";
+	
 	public static boolean cascading = false;
 	public static String upstreamIp = "202.55.14.140";
 	public static int upstreamPort = 10049;
-	public static WindGateway instance = null;
-	private static int typeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;
 	
-	private static final Logger log = LoggerFactory
-			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);	
+	public static MsgPackLiteServer msgPackLiteServer = null;
 	
-	public WindGateway(int port)
-	{
-		this.port = port;
+	
+	public int getServerPort() {
+		return serverPort;
+	}
+	public void setServerPort(int serverPort) {
+		this.serverPort = serverPort;
+	}
+
+	public String getWindMFServerIP() {
+		return this.windMFServerIP;
+	}
+	public void setWindMFServerIP(String ip) {
+		this.windMFServerIP = ip;
+	}
+	
+	public int getWindMFServerPort() {
+		return this.windMFServerPort;
+	}
+	public void setWindMFServerPort(int port) {
+		this.windMFServerPort = port;
+	}
+	
+	public String getWindMFServerUserId() {
+		return this.windMFServerUserId;
+	}
+	public void setWindMFServerUserId(String userId) {
+		this.windMFServerUserId = userId;
+	}
+	
+	public String getWindMFServerUserPwd() {
+		return this.windMFServerUserPwd;
+	}
+	public void setWindMFServerUserPwd(String pwd) {
+		this.windMFServerUserPwd = pwd;
 	}	
+
+	public String getWindSFServerIP() {
+		return this.windSFServerIP;
+	}
+	public void setWindSFServerIP(String ip) {
+		this.windSFServerIP = ip;
+	}
+	
+	public int getWindSFServerPort() {
+		return this.windSFServerPort;
+	}
+	public void setWindSFServerPort(int port) {
+		this.windSFServerPort = port;
+	}
+	
+	public String getWindSFServerUserId() {
+		return this.windSFServerUserId;
+	}
+	public void setWindSFServerUserId(String userId) {
+		this.windSFServerUserId = userId;
+	}
+	
+	public String getWindSFServerUserPwd() {
+		return this.windSFServerUserPwd;
+	}
+	public void setWindSFServerUserPwd(String pwd) {
+		this.windSFServerUserPwd = pwd;
+	}			
+	
+	public boolean getCascading() {
+		return cascading;
+	}
+	public void setCascading(boolean b) {
+		cascading = b;
+	}
+	
+	public String getUpstreamIp() {
+		return upstreamIp;
+	}
+	public void setUpstreamIp(String ip) {
+		upstreamIp = ip;
+	}
+	
+	public int getUpstreamPort() {
+		return upstreamPort;
+	}
+	public void setUpstreamPort(int port) {
+		upstreamPort = port;
+	}
 	
 	public static boolean compareArrays(long[] array1, long[] array2) {
         if (array1 != null && array2 != null){
@@ -460,7 +551,7 @@ public class WindGateway {
 	public void run() throws InterruptedException
 	{	
 		Demo demo = null,demoStock = null;
-		Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null;
+		Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null;
 		DataWrite dw = null,dwStock = null;
 		WindDataClient windDataClient = null;
 		
@@ -472,7 +563,7 @@ public class WindGateway {
 		} else {
 			if(windMFServerIP != null && windMFServerIP != "")
 			{
-				demo = new Demo(windMFServerIP, Integer.parseInt(windMFServerPort) , windMFServerUserId, windMFServerUserPwd , typeFlags, this);
+				demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , typeFlags, this);
 				DataHandler dh = new DataHandler (demo);
 				t1 = new Thread(dh);
 				t1.start();
@@ -483,7 +574,7 @@ public class WindGateway {
 			
 			if(windSFServerIP != null && windSFServerIP != "")
 			{
-				demoStock = new Demo(windSFServerIP, Integer.parseInt(windSFServerPort) , windSFServerUserId, windSFServerUserPwd , typeFlags, this);
+				demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , typeFlags, this);
 				DataHandler dhStock = new DataHandler (demoStock);
 				t1Stock = new Thread(dhStock);
 				t1Stock.start();
@@ -491,6 +582,11 @@ public class WindGateway {
 				t2Stock = new Thread ( dwStock );
 				t2Stock.start();
 			}
+		}
+		
+		if(msgPackLiteServer != null) {
+			mpServerThread = new Thread(msgPackLiteServer,"MsgPackLiteServer");
+			mpServerThread.start();
 		}
 
 	
@@ -508,7 +604,7 @@ public class WindGateway {
 			.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
 			.childHandler(windGatewayInitializer);
 		
-			bootstrap.bind(port).sync().channel().closeFuture().sync();
+			bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
 		}
 		finally
 		{
@@ -537,6 +633,10 @@ public class WindGateway {
 				windDataClient.stop();
 				clientThread.join();				
 			}
+			if(mpServerThread != null) {
+				msgPackLiteServer.stop();
+				mpServerThread.join();
+			}
 			
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();			
@@ -551,46 +651,17 @@ public class WindGateway {
 		String current = null;
 		try {
 			current = new java.io.File( "." ).getCanonicalPath();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	        System.out.println("Current dir:"+current);		
-	
-	    //Reading properties file in Java example
-        Properties props = new Properties();
-        FileInputStream fis; 
-        String serverPort = "10049";
-      
-        //loading properites from properties file
-        try {
-        	fis = new FileInputStream("conf/windGateway.xml");
-			props.loadFromXML(fis);
-	        //reading proeprty
-	        serverPort = props.getProperty("Server Port");
-	        WindGateway.windMFServerIP = props.getProperty("Wind Merchandise Server IP");
-	        WindGateway.windMFServerPort = props.getProperty("Wind Merchandise Server Port");
-	        WindGateway.windMFServerUserId = props.getProperty("Wind Merchandise User Id");
-	        WindGateway.windMFServerUserPwd = props.getProperty("Wind Merchandise User Pwd");
-	        
-	        WindGateway.windSFServerIP = props.getProperty("Wind Stock Server IP");
-	        WindGateway.windSFServerPort = props.getProperty("Wind Stock Server Port");
-	        WindGateway.windSFServerUserId = props.getProperty("Wind Stock User Id");
-	        WindGateway.windSFServerUserPwd = props.getProperty("Wind Stock User Pwd");
-	        
-	        WindGateway.cascading = props.getProperty("Cascading","true").equalsIgnoreCase("true");  
-	        WindGateway.upstreamIp = props.getProperty("Upstream IP","202.55.14.140");
-	        WindGateway.upstreamPort = Integer.parseInt(props.getProperty("Upstream Port","100"));
-	        
-	        WindGateway.typeFlags = Integer.parseInt(props.getProperty("Type Flags","17")); // DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX
-	     		
-		} catch (InvalidPropertiesFormatException e) {
-			log.error(e.getMessage(),e);		
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}
-        
-        instance = new WindGateway(Integer.parseInt(serverPort));
+	    log.info("Current dir : "+current);		
+	
+        ApplicationContext context = 
+	             new FileSystemXmlApplicationContext("conf/WindGateway.xml");
+        if(context.containsBean("MsgPackLiteServer")) {
+        	msgPackLiteServer = (MsgPackLiteServer)context.getBean("MsgPackLiteServer");
+        }
+        instance = (WindGateway)context.getBean("WindGateway");
         instance.run();
 	}
 
