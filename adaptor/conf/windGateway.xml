@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-   <properties> 
-   		<entry key="Server Port">10049</entry>
-   		<entry key="Wind Merchandise Server IP">114.80.154.34</entry>
-		<entry key="Wind Merchandise Server Port">10050</entry>  
-		<entry key="Wind Merchandise User Id">TD1001888002</entry>  
-		<entry key="Wind Merchandise User Pwd">35328058</entry>
-		<!-- entry key="Wind Stock Server IP">114.80.154.34</entry -->
-		<entry key="Wind Stock Server Port">10051</entry>  
-		<entry key="Wind Stock User Id">TD1001888001</entry>  
-		<entry key="Wind Stock User Pwd">62015725</entry> 
-		<entry key="Cascading">true</entry>
-		<entry key="Upstream IP">202.55.14.140</entry>
-		<entry key="Upstream Port">10049</entry>
-		<!--
-		DATA_TYPE_ALL = 0,//所有数据    
-		DATA_TYPE_INDEX = 0x1,  // 指数 
-		DATA_TYPE_TRANSACTION = 0x2,//逐笔成交  
-		DATA_TYPE_ORDER = 0x4, //逐笔 委托    
-		DATA_TYPE_ORDERQUEUE=0x8,//委 托队列 
-		DATA_TYPE_FUTURE_CX=0x10 
-		-->		
-		<entry key="Type Flags">17</entry>		
-		
-   </properties>
+   <beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+    
+    <bean id="WindGateway" class="com.cyanspring.adaptor.future.wind.gateway.WindGateway">
+
+    	<!-- Wind Merchandise Server -->
+    	<property name="windMFServerIP" value="114.80.154.34"/>      
+    	<property name="windMFServerPort" value="10050"/> 	
+    	<property name="windMFServerUserId" value="TD1001888002"/>
+    	<property name="windMFServerUserPwd" value="35328058"/>	  	
+    	
+    	<!-- Wind Stock / Index Future Server -->
+    	<property name="windSFServerIP" value="114.80.154.34"/>      
+    	<property name="windSFServerPort" value="10051"/> 	
+    	<property name="windSFServerUserId" value="TD1001888001"/>
+    	<property name="windSFServerUserPwd" value="62015725"/>
+    	
+    	<!--  Wind Gateway Configure -->	     	
+    	<property name="serverPort" value="10049"/>
+    	<property name="cascading" value="true"/>
+    	<property name="upstreamIp" value="202.55.14.140"/>
+    	<property name="upstreamPort" value="10049"/>
+    	    	
+    </bean>
+ 
+    <bean id="MsgPackLiteServer" class="com.cyanspring.adaptor.future.wind.gateway.MsgPackLiteServer">    
+    	<property name="serverPort" value="10048"/>
+    	<property name="readIdleInterval" value="7"/>
+    	<property name="writeIdleInterval" value="10"/>
+    </bean>
+    
+</beans>
