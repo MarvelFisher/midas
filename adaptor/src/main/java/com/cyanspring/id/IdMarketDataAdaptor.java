@@ -336,7 +336,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
                 }
 
             } catch (InterruptedException e) {
-                log.warn(e.getMessage(), e);                
+                log.warn(e.getMessage());                
             }
 
             log.info("id Data client can not connect with - " + host + " : " + port + " , will try again after 3 seconds.");
