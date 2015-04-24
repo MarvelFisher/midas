@@ -20,20 +20,19 @@
 		<property name="gatewayPort" value="10049"></property>
 		<property name="marketDataLog" value="true"></property>
 		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->
+		<property name="closeOverTimeControlIsOpen" value="true"></property>
+		<property name="tradeDateCheckIsOpen" value="false"></property>
+		<property name="marketSessionUtil">
+			<ref bean="marketSessionUtil"/>
+		</property>
 
+		<!--
 
-		<!-- CF -->
-		<!-- <property name="reqIp" value="114.80.154.34"></property> <property 
-			name="reqPort" value="10051"></property> <property name="userName" value="TD1001888001"></property> 
-			<property name="password" value="62015725"></property> -->
-		<!-- <property name="reqIp" value="114.80.159.20"></property> <property 
-			name="reqPort" value="10000"></property> -->
-
-		<!-- SHF, DCE -->
 		<property name="reqIp" value="114.80.154.34"></property>
 		<property name="reqPort" value="10050"></property>
 		<property name="userName" value="TD1001888002"></property>
 		<property name="password" value="35328058"></property>
+		-->
 		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 
 	</bean>
