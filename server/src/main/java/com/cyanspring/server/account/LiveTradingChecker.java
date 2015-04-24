@@ -309,7 +309,6 @@ public class LiveTradingChecker{
 	
 	public boolean checkFreezeLoss(Account account,AccountSetting accountSetting){
 		if( !startLiveTrading || !liveTradingSetting.isNeedCheckFreeze()){
-			log.info("no need to check freeze");
 			return false;
 		}
 		if(PriceUtils.isZero(accountSetting.getFreezePercent())){
@@ -393,7 +392,6 @@ public class LiveTradingChecker{
 	public boolean checkTerminateLoss(Account account,AccountSetting accountSetting){
 
 		if(!startLiveTrading || !liveTradingSetting.isNeedCheckTerminate()){
-			log.info("no need to check Terminate");
 			return false;
 		}
 		

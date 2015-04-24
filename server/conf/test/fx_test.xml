@@ -434,8 +434,7 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregator">
 	</bean>
-	<bean id="riskManager" class="com.
-	cyanspring.server.account.RiskManager">
+	<bean id="riskManager" class="com.cyanspring.server.account.RiskManager">
 	</bean>
 	<bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
 		<property name="startLiveTrading" value="false"/>
