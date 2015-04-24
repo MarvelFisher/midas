@@ -114,7 +114,7 @@ public class LiveTradingChecker{
 				return;
 			}
 			
-			log.info("scheduleDate : {}",scheduleDate);
+			log.info("getClosAllPositionTime scheduleDate : {}",scheduleDate);
 			
 			scheduleManager.scheduleTimerEvent(scheduleDate, timerProcessor, closeAllPositionEvent);
 		
@@ -157,11 +157,11 @@ public class LiveTradingChecker{
 			}
 			log.info("LiveTradingState.ON_CLOSING_POSITION");
 			status = LiveTradingState.ON_CLOSING_POSITION;
-			//Thread.sleep(100*1000);
+
 			List<Account> accountList= accountKeeper.getAllAccounts();
 			
 			for(Account account:accountList){
-				log.info("close position account:{}",account.getId());
+
 				closeAllPositoinAndOrder(account,OrderReason.LiveTradingRegularClose);
 				
 			}
@@ -245,7 +245,7 @@ public class LiveTradingChecker{
 				
 				
 				//close all position
-				log.info("positionList:{}",positionList.size());
+
 				if(null != positionList && positionList.size() >0){
 					
 					for(OpenPosition position : positionList){
@@ -292,7 +292,6 @@ public class LiveTradingChecker{
 			for(OpenPosition position : positionList){
 				
 				if(!isValidQuote(position.getSymbol())){
-					log.info("quote not valid:"+position.getSymbol());
 					return false;
 				}
 				
@@ -312,7 +311,6 @@ public class LiveTradingChecker{
 			return false;
 		}
 		if(PriceUtils.isZero(accountSetting.getFreezePercent())){
-			log.info("Freeze percent is 0");
 			return false;
 		}
 		
@@ -331,10 +329,8 @@ public class LiveTradingChecker{
 		boolean isFrozen =false;
 		
 		Double fdtDailyStopLoss=account.getStartAccountValue() * accountSetting.getFreezePercent();
-		//log.info("account:"+account.getId()+" state:"+account.getState());
-		if(PriceUtils.isZero(fdtDailyStopLoss)){
-			
-			//log.info("fdtDailyStopLoss is 0 - StartAccountValue:"+account.getStartAccountValue()+" - FreezePercent:"+accountSetting.getFreezePercent());
+		
+		if(PriceUtils.isZero(fdtDailyStopLoss)){		
 			return false;
 		}
 		
@@ -343,9 +339,6 @@ public class LiveTradingChecker{
 		
 		if(PriceUtils.EqualLessThan(dailyLoss, -fdtDailyStopLoss)){
 			
-			log.info("account:"+account.getId());
-			log.info("dailyLoss:"+dailyLoss);
-			log.info("fdtDailyStopLoss:"+fdtDailyStopLoss);
 			
 			//close all position and orders
 			
@@ -396,7 +389,6 @@ public class LiveTradingChecker{
 		}
 		
 		if(PriceUtils.isZero(accountSetting.getTerminatePercent())){
-			log.info("Terminate percent is 0");
 			return false;
 		}
 		
@@ -423,10 +415,6 @@ public class LiveTradingChecker{
 
 		if(PriceUtils.EqualLessThan(nowCash, fdtTerminateLimit)){
 			
-			log.info("account:"+account.getId()+" state:"+account.getState());
-			log.info("fdtTerminateLimit:"+fdtTerminateLimit);
-			log.info("nowCash:"+nowCash);
-			
 			//close all position and orders
 			
 			boolean isQuoteValid = checkQuotesAreAllValid(account);
@@ -441,12 +429,9 @@ public class LiveTradingChecker{
 			
 			closeAllPositoinAndOrder(account,OrderReason.StopLoss);
 
-			log.info("before state:"+account.getState());
 			//set account state to TERMINATE
 			account.setState(State.TERMINATED);
-			sendUpdateAccountEvent(account);
-			log.info("after state:"+account.getState());
-			
+			sendUpdateAccountEvent(account);			
 			isTerminate = true;
 		}
 			
