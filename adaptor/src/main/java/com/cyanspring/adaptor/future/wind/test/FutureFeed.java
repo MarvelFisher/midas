@@ -30,10 +30,12 @@ public class FutureFeed implements IFrameClose {
 	List<FutureClient> clients = new ArrayList<FutureClient>();
 	FutureClient client = null;
 	Mainframe mainframe = null;
+	JTextField textField = null;
 	public boolean isSelectAll = false;
 	public String watchSymbol = "IF1503.CF";
 	public boolean isWatchSymbol(String symbol) {
-			return symbol.compareToIgnoreCase(watchSymbol) == 0;
+		watchSymbol = textField.getText();
+		return symbol.compareToIgnoreCase(watchSymbol) == 0;
 	}
 	
 	public static FutureFeed instance = new FutureFeed();
@@ -126,7 +128,7 @@ public class FutureFeed implements IFrameClose {
 		
 		mainframe.addButton(buttonRefreshSymbol);
 		mainframe.addLabel(new JLabel("Watch"));
-		final JTextField textField = new JTextField();
+		textField = new JTextField();
 		textField.setText(this.watchSymbol);
 		textField.setPreferredSize(new Dimension(100, 20));
 		textField.addActionListener(new ActionListener() {			

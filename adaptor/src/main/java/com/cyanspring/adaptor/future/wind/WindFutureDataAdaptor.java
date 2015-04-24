@@ -62,6 +62,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	static volatile Date bigSessionCloseDate = Clock.getInstance().now();
 	static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
 	private boolean closeOverTimeControlIsOpen = true;
+	private boolean tradeDateCheckIsOpen = true;
 	private final String TITLE_FUTURE = "FUTURE";
 	private final String TITLE_STOCK = "STOCK";
 	private final String ERR_LAST_LESS_THAN_ZERO = "QUOTE ERROR : Last less than Zero";
@@ -104,8 +105,12 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
 
 	boolean isClosed = false;
-	RequestThread thread = null;	
-	
+	RequestThread thread = null;
+
+
+	public void setTradeDateCheckIsOpen(boolean tradeDateCheckIsOpen) {
+		this.tradeDateCheckIsOpen = tradeDateCheckIsOpen;
+	}
 
 	public MarketSessionUtil getMarketSessionUtil() {
 		return marketSessionUtil;
@@ -113,10 +118,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
 	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
 		this.marketSessionUtil = marketSessionUtil;
-	}
-
-	public boolean isCloseOverTimeControlIsOpen() {
-		return closeOverTimeControlIsOpen;
 	}
 
 	public void setCloseOverTimeControlIsOpen(boolean closeOverTimeControlIsOpen) {
@@ -409,7 +410,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					log.debug("Process Symbol Session & Send Stale Final Quote : Symbol="
 							+ symbol);
 					lastQuote.setStale(true);
-					sendInnerQuote(new InnerQuote(101,lastQuote), lastQuoteExtend);
+					sendInnerQuote(new InnerQuote(101, lastQuote), lastQuoteExtend);
 				}
 			}
 		}
@@ -710,12 +711,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						this.ERR_LAST_LESS_THAN_ZERO));
 				return;
 			}
-			if (stock.getTradingDay() != tradeDateForWindFormat) {
+			if (this.tradeDateCheckIsOpen
+					&& stock.getTradingDay() != tradeDateForWindFormat) {
 				debug(String.format("%s %s", this.TITLE_STOCK,
 						this.ERR_TRADEDATE_NOT_MATCH));
 				return;
 			}
-			if (isCloseOverTimeControlIsOpen()
+			if (this.closeOverTimeControlIsOpen
 					&& bigSessionIsClose
 					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
 				debug(String.format("%s %s,Session Close Time=%s",
@@ -741,12 +743,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						this.ERR_LAST_LESS_THAN_ZERO));
 				return;
 			}
-			if (future.getTradingDay() != tradeDateForWindFormat) {
+			if (this.tradeDateCheckIsOpen
+					&& future.getTradingDay() != tradeDateForWindFormat) {
 				debug(String.format("%s %s", this.TITLE_FUTURE,
 						this.ERR_TRADEDATE_NOT_MATCH));
 				return;
 			}
-			if (isCloseOverTimeControlIsOpen()
+			if (this.closeOverTimeControlIsOpen
 					&& bigSessionIsClose
 					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
 				debug(String.format("%s %s,Session Close Time=%s",

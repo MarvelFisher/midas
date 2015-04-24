@@ -166,7 +166,7 @@
 			</map>
 		</property>
 	</bean>
-	 
+
 	<bean id="businessManager" class="com.cyanspring.server.BusinessManager">
 		<property name="noOfContainers">
 			<value>10</value>
@@ -178,7 +178,7 @@
 			<value>true</value>
 		</property>
 	</bean>
-	 
+
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
 		<property name="quoteChecker">
 			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
@@ -187,6 +187,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="checkMargincut" value="false"/>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
@@ -227,7 +228,7 @@
 
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
-	
+
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
@@ -235,7 +236,7 @@
 		<property name="refDataFile">
 			<value>refdata/refData_sc.xml</value>
 		</property>
-		<!-- 
+		<!--
 		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 		 -->
 	</bean>
@@ -282,7 +283,7 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
@@ -296,7 +297,5 @@
 				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
-	</bean>
-	<bean id="riskManager" class="com.cyanspring.server.account.RiskManager">
 	</bean>
 </beans>

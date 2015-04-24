@@ -26,8 +26,6 @@ public class AccountSetting extends DataObject {
 		settings.setDailyStopLoss(0.0);
 		settings.setTrailingStop(0.0);
 		
-		//jimmy#livetrading
-		//TODO:需取得預設值
 		settings.setStopLossPercent(Default.getStopLossPercent());
 		settings.setFreezePercent(Default.getFreezePercent());
 		settings.setTerminatePercent(Default.getTerminatePecent());

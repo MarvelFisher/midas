@@ -31,31 +31,17 @@ public class AccountStateValidator {
 			throws OrderValidationException {
 		
 		try{
-			if( null == accountKeeper){
-				
-				log.warn("accountKeeper not exist");
-				return;
-				
+			if( null == accountKeeper){			
+				return;			
 			}
 			
-			if(!StringUtils.hasText(id)){
-				
-				log.warn("doesn't exist any data to validate");
-				return;
-				
+			if(!StringUtils.hasText(id)){				
+				return;			
 			}
 			
 			
 			Account account = accountKeeper.getAccount(id);
-			log.info("\n -------+\n"
-					+ "account:"+account.getUserId() +"\n"
-					+ "state:"+account.getState()+" \n"
-					+ "account value:"+account.getValue()+"\n"
-					+ "daily pnl:"+account.getDailyPnL()+"\n"
-					+ "------------"
-					);
-			
-			
+						
 			if( null != account){
 				
 				State state = account.getState();

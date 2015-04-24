@@ -6,6 +6,7 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<context:annotation-config />
+	<import resource="IFSessionState.xml" />
 
 	<bean id="windFutureDataAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
@@ -14,30 +15,51 @@
 		</property>
 		<property name="showGui" value="true"></property>
 		<property name="gateway" value="true"></property>
-		<property name="gatewayIp" value="202.55.14.140"></property> 
+		<property name="gatewayIp" value="10.0.0.20"></property> 
 		<!--  <property name="gatewayIp" value="10.0.0.48"></property> -->
 		<property name="gatewayPort" value="10049"></property>
 		<property name="marketDataLog" value="true"></property>
-		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->
+		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->
+		<property name="closeOverTimeControlIsOpen" value="true"></property>
+		<property name="tradeDateCheckIsOpen" value="false"></property>
+		<property name="marketSessionUtil">
+			<ref bean="marketSessionUtil"/>
+		</property>
 
+		<!--
 
-		<!-- CF -->
-		<!-- <property name="reqIp" value="114.80.154.34"></property> <property 
-			name="reqPort" value="10051"></property> <property name="userName" value="TD1001888001"></property> 
-			<property name="password" value="62015725"></property> -->
-		<!-- <property name="reqIp" value="114.80.159.20"></property> <property 
-			name="reqPort" value="10000"></property> -->
-
-		<!-- SHF, DCE -->
 		<property name="reqIp" value="114.80.154.34"></property>
 		<property name="reqPort" value="10050"></property>
 		<property name="userName" value="TD1001888002"></property>
 		<property name="password" value="35328058"></property>
+		-->
 
+	</bean>
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportService"/>
+	    </constructor-arg>
+	</bean>
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="nio://0.0.0.0:61626"></property>
 	</bean>
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.FuRefDataManager">
 		<property name="refDataFile">
-			<value>refData/refData_cf.xml</value>
+			<value>refData/refData_fc.xml</value>
 		</property>
+		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
+	</bean>
+
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<map>
+				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg>
+			<map>
+				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
+			</map>
+		</constructor-arg>
 	</bean>
 </beans>
