@@ -18,14 +18,18 @@ public class LiveTradingValidator implements IOrderValidator{
 	private static final Logger log = LoggerFactory
 			.getLogger(LiveTradingValidator.class);
 	
-	@Autowired
+	@Autowired(required=false)
 	RiskManager riskManager;
 
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
 		try{
-			log.info("into LiveTradingValidator");
+			if(null == riskManager){
+				return;
+			}
+			
+			
 			LiveTradingChecker liveTradingChecker = riskManager.getLiveTradingChecker();
 			
 			if( null == liveTradingChecker || !liveTradingChecker.isStartLiveTrading()){

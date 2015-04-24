@@ -439,15 +439,5 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
-	<bean id="riskManager" class="com.cyanspring.server.account.RiskManager">
-	</bean>
-	<bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
-		<property name="startLiveTrading" value="false"/>
-	</bean>
-	<bean id="liveTradingSetting" class="com.cyanspring.server.account.LiveTradingSetting">
-		<property name="needCheckPosition" value="true"/>
-		<property name="needCheckFreeze" value="true"/>
-		<property name="needCheckTerminate" value="true"/>	
-		<property name="closeAllPositionTime" value=""/>
-	</bean>
+
 </beans>

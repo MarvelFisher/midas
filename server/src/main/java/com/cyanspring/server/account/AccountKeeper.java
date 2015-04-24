@@ -91,7 +91,7 @@ public class AccountKeeper {
 		AccountSetting existing = accountSettings.get(setting.getId());
 		if(null == existing) {
 			existing = new AccountSetting(setting.getId());
-			//jimmy#livetrading#101
+			//live trading
 			setDefaultRiskManagementValue(existing);
 			accountSettings.put(setting.getId(), existing);
 		}

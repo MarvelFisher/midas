@@ -155,7 +155,7 @@ public class AccountPositionManager implements IPlugin {
 	@Autowired
 	IRefDataManager refDataManager;
 	
-	@Autowired
+	@Autowired(required=false)
 	RiskManager riskManager;
 	
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
@@ -842,17 +842,22 @@ public class AccountPositionManager implements IPlugin {
 			return false;
 		}
 		//live trading
-		LiveTradingChecker liveTradingChecker = riskManager.getLiveTradingChecker();
-		if( null != liveTradingChecker ){
-		
-			if(liveTradingChecker.checkTerminateLoss(account, accountSetting)){
-				
-				return true;
-				
-			}else if(liveTradingChecker.checkFreezeLoss(account, accountSetting)){
-				
-				return true;
-				
+		LiveTradingChecker liveTradingChecker = null;
+		if( null != riskManager){
+			
+			liveTradingChecker = riskManager.getLiveTradingChecker();
+			
+			if( null != liveTradingChecker ){
+			
+				if(liveTradingChecker.checkTerminateLoss(account, accountSetting)){
+					
+					return true;
+					
+				}else if(liveTradingChecker.checkFreezeLoss(account, accountSetting)){
+					
+					return true;
+					
+				}
 			}
 		}
 		

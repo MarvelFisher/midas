@@ -251,15 +251,11 @@ public abstract class BaseAccount implements Serializable {
 		if(!PriceUtils.isZero(this.cashDeposited))
 			this.rollPrice += this.PnL/this.cashDeposited;
 		
-		//jimmy#livetrading#100
-		System.out.println("endofday:"+this.getId()+" account val:"+this.getValue()+" state:"+this.getState());
+		
 		if(null == getState() || FROZEN == getState()){
 			setState(ACTIVE);
-		}
-		
-		//set start account value
+		}		
 		setStartAccountValue(getValue());
-		//----------------------------
 		
 	}
 
