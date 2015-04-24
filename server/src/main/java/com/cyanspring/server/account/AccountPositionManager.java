@@ -491,10 +491,8 @@ public class AccountPositionManager implements IPlugin {
 				ok = false;
 			} 
 		} else {
-			ok = false;			
-			//message = "System not yet Ready for Authentication";
+			ok = false;
 			message = MessageLookup.buildEventMessage(ErrorMessage.SYSTEM_NOT_READY, "System not yet Ready for Authentication");
-
 		}
 		
 		log.info("processUserCreateAndLoginEvent: " + event.getUser() + ", " + ok + ", " + message);
