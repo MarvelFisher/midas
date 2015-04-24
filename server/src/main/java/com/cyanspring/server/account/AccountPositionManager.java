@@ -155,6 +155,9 @@ public class AccountPositionManager implements IPlugin {
 	@Autowired
 	IRefDataManager refDataManager;
 	
+	@Autowired
+	RiskManager riskManager;
+	
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
 		@Override
@@ -838,6 +841,20 @@ public class AccountPositionManager implements IPlugin {
 			log.error(e.getMessage(), e);
 			return false;
 		}
+		//live trading
+		LiveTradingChecker liveTradingChecker = riskManager.getLiveTradingChecker();
+		if( null != liveTradingChecker ){
+		
+			if(liveTradingChecker.checkTerminateLoss(account, accountSetting)){
+				
+				return true;
+				
+			}else if(liveTradingChecker.checkFreezeLoss(account, accountSetting)){
+				
+				return true;
+				
+			}
+		}
 		
 		Double positionStopLoss = Default.getPositionStopLoss();
 		
@@ -852,6 +869,10 @@ public class AccountPositionManager implements IPlugin {
 					positionStopLoss = companyStopLoss;
 				else
 					positionStopLoss = Math.min(positionStopLoss, companyStopLoss);
+			}
+			//jimmy#livetrading
+			if( null != liveTradingChecker ){
+				positionStopLoss = liveTradingChecker.getPositionStopLoss(account, accountSetting,positionStopLoss);		
 			}
 		}
 		

@@ -79,7 +79,11 @@ public class AccountKeeper {
 			return empty;
 		}
 	}
-	
+	private void setDefaultRiskManagementValue(AccountSetting accountSet){
+		accountSet.setStopLossPercent(Default.getStopLossPercent());
+		accountSet.setFreezePercent(Default.getFreezePercent());
+		accountSet.setTerminatePercent(Default.getTerminatePecent());
+	}
 	public AccountSetting setAccountSetting(AccountSetting setting) throws AccountException {
 		if(!accounts.containsKey(setting.getId()))
 			throw new AccountException("Account id doesn't exist: " + setting.getId(),ErrorMessage.ACCOUNT_NOT_EXIST);
@@ -87,6 +91,8 @@ public class AccountKeeper {
 		AccountSetting existing = accountSettings.get(setting.getId());
 		if(null == existing) {
 			existing = new AccountSetting(setting.getId());
+			//jimmy#livetrading#101
+			setDefaultRiskManagementValue(existing);
 			accountSettings.put(setting.getId(), existing);
 		}
 		synchronized(existing) {

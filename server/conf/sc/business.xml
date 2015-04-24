@@ -23,6 +23,8 @@
 	        </list>
 	    </constructor-arg>
 	</bean>	
+	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
+	</bean>
 	<bean id="ceilFloorValidator" class="com.cyanspring.server.validation.CeilFloorValidator">   
 	</bean>
 	<!-- field specific validation -->
@@ -170,6 +172,9 @@
 	           	<value>50000.0</value>
 	           	<value>0.98</value>
 				<value>1</value>
+				<value>0.1</value>
+				<value>0.2</value>
+				<value>0.3</value>
             </list>
        </property>
     </bean>

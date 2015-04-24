@@ -418,9 +418,6 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
-	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
-	</bean>
-
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
@@ -442,5 +439,15 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregatorSimple">
 	</bean>
-
+	<bean id="riskManager" class="com.cyanspring.server.account.RiskManager">
+	</bean>
+	<bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
+		<property name="startLiveTrading" value="false"/>
+	</bean>
+	<bean id="liveTradingSetting" class="com.cyanspring.server.account.LiveTradingSetting">
+		<property name="needCheckPosition" value="true"/>
+		<property name="needCheckFreeze" value="true"/>
+		<property name="needCheckTerminate" value="true"/>	
+		<property name="closeAllPositionTime" value=""/>
+	</bean>
 </beans>

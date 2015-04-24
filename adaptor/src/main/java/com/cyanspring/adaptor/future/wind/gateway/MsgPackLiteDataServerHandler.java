@@ -20,7 +20,9 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext arg0) throws Exception {
 		Channel channel = arg0.channel();
 		channels.writeAndFlush(channel.remoteAddress().toString() +  " join");
+		channel.writeAndFlush("You had connected with server!");
 		channels.add(channel);
+
 		log.info("Add Client : " + channel.remoteAddress().toString());
 	}
 	
@@ -39,7 +41,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				channels.writeAndFlush(in);
 			}
 	    } finally {
-	        //ReferenceCountUtil.release(arg1);
+	        ReferenceCountUtil.release(arg1);
 	    }			
 	}	
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)

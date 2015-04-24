@@ -13,6 +13,9 @@ public enum AccountSettingType {
 	COMMISSION("Commission"),
 	DAILY_STOPLOSS("daily Stop Loss"),
 	TRAILING_STOP("Trailing stop"),
+	STOP_LOSS_PERCENT("Stop loss percent"),
+	FREEZE_PERCENT("Freeze percent"),
+	TERMINATE_PERCENT("Terminate percent")
 	;
    
 	static HashMap<String, AccountSettingType> map = new HashMap<String, AccountSettingType>();
