@@ -280,5 +280,6 @@
 			</map>
 		</constructor-arg>
 	</bean>	
-
+	<bean id="riskManager" class="com.cyanspring.server.account.RiskManager">
+	</bean>
 </beans>

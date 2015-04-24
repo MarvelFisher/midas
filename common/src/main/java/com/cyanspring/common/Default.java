@@ -20,6 +20,12 @@ public class Default {
 	private static double marginCall = 0.95;
 	private static int settlementDays = 0;
 	
+	private static double stopLossPercent=0.2;
+	private static double freezePercent=0.2;
+	private static double terminatePecent=0.2;
+
+	
+	
 	protected static void setValues(
 		String user,  
 		String account,
@@ -35,8 +41,11 @@ public class Default {
 		double orderQuantity,
 		double positionStopLoss,
 		double marginCall,
-		int settlementDays
-							) {
+		int settlementDays,
+		double stopLossPercent,
+		double freezePercent,
+		double terminatePecent
+			) {
 		Default.user = user;
 		Default.account = account;
 		Default.market = market;
@@ -52,6 +61,9 @@ public class Default {
 		Default.positionStopLoss = positionStopLoss;
 		Default.marginCall = marginCall;
 		Default.settlementDays = settlementDays;
+		Default.stopLossPercent  = stopLossPercent;
+		Default.freezePercent = freezePercent;
+		Default.terminatePecent = terminatePecent;
 	}
 	
 	static public String getUser() {
@@ -125,4 +137,20 @@ public class Default {
 	public static int getSettlementDays() {
 		return settlementDays;
 	}
+
+	public static double getStopLossPercent() {
+		return stopLossPercent;
+	}
+
+
+	public static double getFreezePercent() {
+		return freezePercent;
+	}
+
+
+	public static double getTerminatePecent() {
+		return terminatePecent;
+	}
+	
+	
 }

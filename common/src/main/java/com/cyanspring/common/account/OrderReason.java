@@ -7,6 +7,7 @@ public enum OrderReason {
 	MarginCall(4),
 	TrailingStop(5),
 	DayEnd(6),
+	LiveTradingRegularClose(7),
 	;
 	
 	private final int value;

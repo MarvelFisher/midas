@@ -11,7 +11,6 @@
 package com.cyanspring.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +60,6 @@ import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
-import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
@@ -93,6 +91,7 @@ import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.order.MultiOrderCancelTracker;
+import com.cyanspring.server.validation.AccountStateValidator;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
 import com.cyanspring.server.validation.ParentOrderPreCheck;
 import com.cyanspring.server.validation.ParentOrderValidator;
@@ -141,6 +140,9 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	@Autowired
 	PositionKeeper positionKeeper;
+	
+	@Autowired(required=false)
+	AccountStateValidator accountStateValidator;
 	
 	ScheduleManager scheduleManager = new ScheduleManager();
 	
@@ -211,6 +213,10 @@ public class BusinessManager implements ApplicationContextAware {
 		String account = (String)fields.get(OrderField.ACCOUNT.value());
 		
 		try {
+			//check state
+			if(null != accountStateValidator)
+				accountStateValidator.validate(account);
+			
 			String strategyName = (String)fields.get(OrderField.STRATEGY.value());
 			if(null == strategyName)
 				throw new Exception("Strategy Field is missing");

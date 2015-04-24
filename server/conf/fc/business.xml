@@ -167,6 +167,9 @@
 	           	<value>50000.0</value>
 	           	<value>0.98</value>
 				<value>0</value>
+				<value>0.1</value>
+				<value>0.2</value>
+				<value>0.3</value>
             </list>
        </property>
     </bean>

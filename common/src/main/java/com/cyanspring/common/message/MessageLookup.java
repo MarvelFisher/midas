@@ -182,6 +182,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_LOWER_FLOOR_PRICE,getBean(458, "Order price lower than floor price"));
 			addAndCheck(ErrorMessage.ORDER_CANT_FIND_QUOTEEXT_FILE,getBean(459, "Missing QuoteExt file"));
 			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Sell quantity exceeded available position quantity"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_ON_CLOSING_ALL_POSITION, getBean(438, "Live trading on closing position"));
 
 			
 			
@@ -205,6 +206,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ACCOUNT_AND_USER_NOT_MATCH,getBean(514, "Account and user not match"));
 			addAndCheck(ErrorMessage.USER_IS_TERMINATED, getBean(515, "User is terminated"));
 			addAndCheck(ErrorMessage.TERMINATE_USER_FAILED, getBean(516, "Change user termination status failed"));
+			addAndCheck(ErrorMessage.ACCOUNT_FROZEN,getBean(517, "Exceed Daily Maximun Loss!  Your account will be frozen for the rest of the day."));
+			addAndCheck(ErrorMessage.ACCOUNT_TERMINATED,getBean(518, "Exceed Account Stop Loss!  Your account is terminated."));
 
 			
 			

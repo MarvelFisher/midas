@@ -5,6 +5,7 @@ import com.cyanspring.common.data.DataObject;
 
 public class AccountSetting extends DataObject {
 
+
 	protected AccountSetting() {
 		
 	}
@@ -24,6 +25,12 @@ public class AccountSetting extends DataObject {
 		settings.setLeverageRate(0.0);
 		settings.setDailyStopLoss(0.0);
 		settings.setTrailingStop(0.0);
+		
+		//jimmy#livetrading
+		//TODO:需取得預設值
+		settings.setStopLossPercent(Default.getStopLossPercent());
+		settings.setFreezePercent(Default.getFreezePercent());
+		settings.setTerminatePercent(Default.getTerminatePecent());
 
 		return settings;
 	}
@@ -92,6 +99,34 @@ public class AccountSetting extends DataObject {
 	public void setTrailingStop(double trailingStop){
 		put(AccountSettingType.TRAILING_STOP.value(), trailingStop);
 	}
+	
+	
+	
+	public double getStopLossPercent() {
+		return get(double.class, AccountSettingType.STOP_LOSS_PERCENT.value());
+	}
+	public void setStopLossPercent(double stopLossPercent) {
+		put(AccountSettingType.STOP_LOSS_PERCENT.value(), stopLossPercent);
+	}
+	
+	
+	public double getFreezePercent() {
+		return get(double.class, AccountSettingType.FREEZE_PERCENT.value());
+	}
+	public void setFreezePercent(double freezePercent) {
+		put(AccountSettingType.FREEZE_PERCENT.value(), freezePercent);
+	}
+	
+	
+	public double getTerminatePercent() {
+		return get(double.class, AccountSettingType.TERMINATE_PERCENT.value());
+	}
+	public void setTerminatePercent(double terminatePercent) {
+		put(AccountSettingType.TERMINATE_PERCENT.value(), terminatePercent);
+	}
+	
+	
+	
 	
 	public AccountSetting clone() {
 		return (AccountSetting)super.clone();
