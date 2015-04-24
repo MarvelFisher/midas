@@ -228,6 +228,16 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     @Override
+    protected void sendQuoteEvent(RemoteAsyncEvent event) {
+        try {
+            eventManager.sendGlobalEvent(event);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
     protected void requestRequireData() {
         eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
     }
