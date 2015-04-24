@@ -1,0 +1,165 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:annotation-config />
+
+    <import resource="lt/*" />
+    <import resource="common/business.xml" />
+    <import resource="common/strategy.xml" />
+    <import resource="common/centralDb.xml" />
+    <import resource="common/persistence.xml" />
+    <import resource="classpath*:conf/common.xml" />
+
+    <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>Test</value>
+        </property>
+        <property name="category">
+            <value>EB</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>GLOBAL</value>
+        </property>
+        <property name="category">
+            <value>FX-MQ</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://0.0.0.0:61616"/>
+    </bean>
+
+    <bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://10.0.0.51:60006"/>
+    </bean>
+
+    <bean id="dataBaseUrl" class="java.lang.String">
+        <constructor-arg
+                value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+    </bean>
+    <bean id="dataBaseUser" class="java.lang.String">
+        <constructor-arg value="tqt001" />
+    </bean>
+    <bean id="dataBasePwd" class="java.lang.String">
+        <constructor-arg value="tqt001" />
+    </bean>
+
+    <bean id="dailyExec" class="java.lang.String">
+        <constructor-arg value="04:45:00" />
+    </bean>
+
+    <!-- MarketDataManager setting -->
+    <bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
+        <constructor-arg>
+            <list>
+                <ref bean="idAdaptor" />
+                <ref bean="ibAdaptor" />
+            </list>
+        </constructor-arg>
+        <property name="quoteThrottle" value="1000"/>
+        <property name="timerInterval" value="1000"/>
+        <property name="quoteLogIsOpen" value="true"/>
+        <property name="quoteExtendEventIsSend" value="false"/>
+        <property name="quoteExtendSegmentSize" value="300"/>
+
+        <property name="aggregator" >
+            <ref bean="quoteAggregator" />
+        </property>
+
+        <property name="preSubscriptionList">
+            <ref bean="preSubscriptionList" />
+        </property>
+        <property name="sessionMonitor">
+            <map>
+                <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+                <entry key="PREOPEN" value="0" />
+                <entry key="CLOSE" value="0" />
+            </map>
+        </property>
+        <property name="quoteChecker" ref="quoteChecker"/>
+        <property name="quoteSaver" ref="quoteSaver"/>
+    </bean>
+
+    <!-- IBAdaptor setting (Setting can be marked if not used) -->
+
+    <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+        <property name="id" value="IB01" />
+        <property name="host" value="10.0.0.20" />
+        <property name="port" value="4001" />
+        <property name="clientId" value="199" />
+        <property name="reqMarketDepth" value="false" />
+        <property name="logMarketData" value="false" />
+        <!--<property name="cancelOpenOrders" value="true" /> -->
+        <property name="refDataManager">
+            <ref bean="refDataManager" />
+        </property>
+    </bean>
+
+    <!-- IDAdaptor setting (Setting can be marked if not used) -->
+
+    <bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+        <property name="account" value="fdtcanned"/>
+        <property name="password" value="MFW9dC26"/>
+        <property name="gateway" value="false"/>
+        <property name="reqIp" value="10.0.0.32"/>
+        <property name="reqPort" value="6086"/>
+        <property name="exch" value="687"/>
+        <property name="preOpen" value="510"/>
+        <property name="open" value="515"/>
+        <property name="close" value="500"/>
+        <property name="sendHeartBeat" value="5"/>
+        <property name="nonFX">
+            <map>
+                <entry key="XAUUSD" value="691" />
+                <entry key="XAGUSD" value="691" />
+            </map>
+        </property>
+        <property name="contributeList">
+            <list>
+                <value>AXI</value>
+            </list>
+        </property>
+        <property name="unContributeList">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+    <!-- WindAdaptor setting (Setting can be marked if not used) -->
+    <!--
+    <bean id="windAdaptor"
+        class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
+        <property name="showGui" value="true"></property>
+        <property name="reqIp" value="114.80.154.34"></property>
+        <property name="reqPort" value="10051"></property>
+        <property name="userName" value="TD1001888001"></property>
+        <property name="password" value="62015725"></property>
+        <property name="gateway" value="true"></property>
+        <property name="gatewayIp" value="202.55.14.140"></property>
+        <property name="gatewayPort" value="10049"></property>
+        <property name="marketDataLog" value="false"></property>
+        <property name="marketType" value="F"></property>
+        <property name="refDataManager">
+            <ref bean="refDataManager" />
+        </property>
+    </bean>
+     -->
+    <!-- Derby setting -->
+    <bean id="derbyPort" class="java.lang.String">
+        <constructor-arg value="1527" />
+    </bean>
+
+</beans>

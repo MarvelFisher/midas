@@ -947,5 +947,8 @@ public class BusinessManager implements ApplicationContextAware {
 	public void setCancelAllOrdersAtClose(boolean cancelAllOrdersAtClose) {
 		this.cancelAllOrdersAtClose = cancelAllOrdersAtClose;
 	}
-	
+
+	public void setCloseAllPositionsAtClose(boolean closeAllPositionsAtClose) {
+		this.closeAllPositionsAtClose = closeAllPositionsAtClose;
+	}
 }

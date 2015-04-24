@@ -1,0 +1,76 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:annotation-config />
+
+    <import resource="test/lt_test.xml" />
+    <import resource="lt/MarketSession.xml" />
+    <import resource="common/business.xml" />
+    <import resource="common/strategy.xml" />
+    <import resource="common/centralDb.xml" />
+    <import resource="common/persistence.xml" />
+    <import resource="classpath*:conf/common.xml" />
+
+    <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>Test</value>
+        </property>
+        <property name="category">
+            <value>EB</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://localHost:61616"/>
+    </bean>
+
+    <bean id="dataBaseUrl" class="java.lang.String">
+        <constructor-arg value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+    </bean>
+    <bean id="dataBaseUser" class="java.lang.String">
+        <constructor-arg value="tqt001" />
+    </bean>
+    <bean id="dataBasePwd" class="java.lang.String">
+        <constructor-arg value="tqt001" />
+    </bean>
+
+    <bean id="dailyExec" class="java.lang.String">
+        <constructor-arg value="04:45:00" />
+    </bean>
+
+    <!-- MarketDataManager setting-->
+    <bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
+        <constructor-arg>
+            <list>
+                <ref bean="simMarketDataAdaptor" />
+            </list>
+        </constructor-arg>
+        <property name="quoteThrottle" value="1000"/>
+        <property name="timerInterval" value="1000"/>
+        <property name="quoteLogIsOpen" value="true"/>
+        <property name="quoteExtendEventIsSend" value="false"/>
+        <property name="preSubscriptionList">
+            <ref bean="preSubscriptionList" />
+        </property>
+        <property name="sessionMonitor">
+            <map>
+                <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+                <entry key="PREOPEN" value="0" />
+                <entry key="CLOSE" value="0" />
+            </map>
+        </property>
+        <property name="quoteChecker" ref="quoteChecker"/>
+        <property name="quoteSaver" ref="quoteSaver"/>
+    </bean>
+
+    <!-- Derby setting -->
+    <bean id="derbyPort" class="java.lang.String"><constructor-arg value="1527" /></bean>
+
+</beans>
