@@ -462,9 +462,6 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
-	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
-	</bean>
-
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
