@@ -48,6 +48,7 @@ import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.cyanspring.adaptor.IQuoteAggregator;
 
 public class MarketDataManager implements IPlugin, IMarketDataListener,
         IMarketDataStateListener {

@@ -1,4 +1,4 @@
-package com.cyanspring.server.marketdata;
+package com.cyanspring.adaptor;
 
 import com.cyanspring.common.marketdata.Quote;
 

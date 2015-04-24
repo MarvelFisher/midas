@@ -1,9 +1,9 @@
-package com.cyanspring.server.marketdata;
-
-import java.util.concurrent.ConcurrentHashMap;
+package com.cyanspring.adaptor;
 
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionType;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QuoteAggregatorIB implements IQuoteAggregator {
 	
