@@ -31,7 +31,7 @@ public class FutureClient implements IMarketDataListener,
 
 	FutureFeed parent = null;
 	boolean isConnected = false;
-	IDForexClientDialog dialog = null;
+	WindClientDialog dialog = null;
 
 	/**
 	 * 
@@ -39,7 +39,7 @@ public class FutureClient implements IMarketDataListener,
 	 */
 	public FutureClient(FutureFeed srcParent) {
 		parent = srcParent;
-		dialog = IDForexClientDialog.Instance(this, "Client");
+		dialog = WindClientDialog.Instance(this, "Client");
 		FutureClient.instance = this;
 		final JTextField text = new JTextField();
 		dialog.addTextField(text);
