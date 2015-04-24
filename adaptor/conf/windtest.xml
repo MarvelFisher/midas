@@ -33,7 +33,6 @@
 		<property name="userName" value="TD1001888002"></property>
 		<property name="password" value="35328058"></property>
 		-->
-		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 
 	</bean>
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
