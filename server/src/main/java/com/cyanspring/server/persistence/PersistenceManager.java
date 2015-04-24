@@ -655,15 +655,6 @@ public class PersistenceManager {
 			{
 				if(syncCentralDb)
 				{
-					/*
-					if(centralDbConnector.isUserExist(user.getId()))
-						throw new CentralDbException("This user already exists: " + user.getId());
-					if(centralDbConnector.isEmailExist(user.getEmail()))
-						throw new CentralDbException("This email already exists: " + user.getEmail());
-					if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-								user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
-						throw new CentralDbException("can't create this user: " + user.getId());
-						*/
 					if(!centralDbConnector.isUserExist(user.getId())) // user dose not exist in Mysql either
 					{
 						if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
@@ -677,8 +668,9 @@ public class PersistenceManager {
 								throw new CentralDbException("Your "+ user.getUserType().name() +" account email has been used to register an FDT Account. Please login it with " + user.getEmail() + " now.");
 							}
 						}
-						if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-									user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage())){
+						if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
+								user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
+								event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId())){
 							msg = ErrorMessage.CREATE_USER_FAILED;
 							throw new CentralDbException("can't create this user: " + user.getId());
 						}
@@ -1065,7 +1057,8 @@ public class PersistenceManager {
 						throw new CentralDbException("This email already exists: " + user.getEmail(),ErrorMessage.USER_EMAIL_EXIST);
 				}
 				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-							user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
+						user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
+						event.getOriginalEvent().getLanguage()))
 					throw new CentralDbException("can't create this user: " + user.getId(),ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
 			}
 			

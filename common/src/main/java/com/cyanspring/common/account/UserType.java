@@ -22,7 +22,19 @@ public enum UserType
 	TEST(101),
 	GROUPUSER(102),
 	;
-	
+
+	public boolean isThirdParty() {
+		switch (this) {
+			case FACEBOOK:
+			case QQ:
+			case WECHAT:
+			case TWITTER:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	static HashMap<Integer, UserType> hmRecord = new HashMap<>();
 	static 
 	{

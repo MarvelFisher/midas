@@ -34,6 +34,7 @@ public class CentralDbConnector {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static CentralDbConnector inst = null;
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
+	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
@@ -117,8 +118,20 @@ public class CentralDbConnector {
 	protected String getInsertUserSQL(String userId, String userName,
 			String password, String salt, String email, String phone, Date created,
 			UserType userType, String country, String language) {
-		return String.format(insertUser, userId, userName, password+salt, salt, email,
+		return String.format(insertUser, userId, userName, password + salt, salt, email,
 				phone, sdf.format(created), userType.getCode(), country, language, 0);
+	}
+
+    /**
+     *
+     * @param id
+     *          third party ID
+     * @param userId
+     * @param userType
+     * @return
+     */
+	protected String getInsertThirdPartyUserSQL(String id, String userId, UserType userType) {
+		return String.format(insertThirdPartyUser, id, userId, userType.getCode());
 	}
 
 	/*
@@ -136,8 +149,16 @@ public class CentralDbConnector {
 		return connect();
 	}
 
-	public boolean registerUser(String userId, String userName,
-			String password, String email, String phone, UserType userType, String country, String language) {
+    public boolean registerUser(
+            String userId, String userName, String password, String email, String phone, UserType userType,
+            String country, String language) {
+        return registerUser(userId, userName, password, email, phone, userType, country, language, null);
+    }
+
+	public boolean registerUser(
+            String userId, String userName, String password, String email, String phone, UserType userType,
+            String country, String language, String thirdPartyId) {
+
 		if (!checkConnected())
 			return false;
 
@@ -145,13 +166,20 @@ public class CentralDbConnector {
 		Date now = Default.getCalendar().getTime();
 		String salt = getRandomSalt(10);
 		
-		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, userType, country, language);
+		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now,
+				userType.isThirdParty() ? UserType.NORMAL : userType, country, language);
 		Statement stmt = null;
 		log.debug("[registerUser] SQL:" + sUserSQL);
 		try {
         	conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sUserSQL);
+
+			if (userType.isThirdParty()) {
+				String sql = getInsertThirdPartyUserSQL(thirdPartyId, userId, userType);
+                stmt.executeUpdate(sql);
+			}
+
 			bIsSuccess = true;
 			conn.commit();
 		} catch (SQLException e) {
@@ -337,7 +365,7 @@ public class CentralDbConnector {
 			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser);
 			
 			int nResult = stmt.executeUpdate(sQuerySet);
-			if(1 != nResult){
+			if(1 != nResult) {
 				closeStmt(stmt);
 				return false;
 			}
