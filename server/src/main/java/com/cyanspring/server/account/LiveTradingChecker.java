@@ -141,7 +141,7 @@ public class LiveTradingChecker{
 		}
 		
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
-			log.info("Daily loss: " + account.getDailyPnL() + " over " + dailyStopLoss);
+			log.info("Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
 			// set it to frozen first
 			account.setState(AccountState.FROZEN);
 			sendUpdateAccountEvent(account);
