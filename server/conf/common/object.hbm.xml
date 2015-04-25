@@ -171,7 +171,7 @@
   	<property column="START_ACCOUNT_VALUE"			name="startAccountValue"		 type="java.lang.Double"/>
   	<property column="STATE" 		name="state" length="20">
    		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.account.State</param>   
+   			<param name="enumClass">com.cyanspring.common.account.AccountState</param>   
        		<param name="type">12</param>
    		</type>
 	</property>

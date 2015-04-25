@@ -6,7 +6,7 @@ import java.util.Date;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.util.PriceUtils;
-import static com.cyanspring.common.account.State.*;
+import static com.cyanspring.common.account.AccountState.*;
 public abstract class BaseAccount implements Serializable {
 	private String id;
 	private String userId;
@@ -27,7 +27,7 @@ public abstract class BaseAccount implements Serializable {
 	private Date created;
 	
 	//jimmy#livetrading
-	private State state;
+	private AccountState state;
 	private double startAccountValue;
 	
 	
@@ -42,11 +42,11 @@ public abstract class BaseAccount implements Serializable {
 		this.startAccountValue = startAccountValue;
 	}
 
-	public synchronized State getState() {
+	public synchronized AccountState getState() {
 		return state;
 	}
 
-	public synchronized void  setState(State state) {
+	public synchronized void  setState(AccountState state) {
 		this.state = state;
 	}
 

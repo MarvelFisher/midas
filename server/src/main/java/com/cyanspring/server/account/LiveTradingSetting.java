@@ -4,7 +4,7 @@ public class LiveTradingSetting {
 	private boolean needCheckPosition;
 	private boolean needCheckFreeze;
 	private boolean needCheckTerminate;
-	private String  closeAllPositionTime;
+
 	public boolean isNeedCheckPosition() {
 		return needCheckPosition;
 	}
@@ -23,13 +23,4 @@ public class LiveTradingSetting {
 	public void setNeedCheckTerminate(boolean needCheckTerminate) {
 		this.needCheckTerminate = needCheckTerminate;
 	}
-	public String getCloseAllPositionTime() {
-		return closeAllPositionTime;
-	}
-	public void setCloseAllPositionTime(String closeAllPositionTime) {
-		this.closeAllPositionTime = closeAllPositionTime;
-	}
-
-
-	
 }
