@@ -442,7 +442,7 @@
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
 
-	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregatorSimple">
+	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
 
 	<bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
@@ -452,7 +452,6 @@
 		<property name="needCheckPosition" value="true"/>
 		<property name="needCheckFreeze" value="true"/>
 		<property name="needCheckTerminate" value="true"/>
-		<property name="closeAllPositionTime" value=""/>
 	</bean>
 
 </beans>
