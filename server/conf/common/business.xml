@@ -12,7 +12,7 @@
 	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
 	    <constructor-arg>
 	        <list>
-	        	<ref bean="liveTradingValidator"/>
+	        	<ref bean="accountStateValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
 				<ref bean="creditValidator"/>
@@ -24,8 +24,6 @@
 	<!-- live trading -->
 	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
 	</bean>       
-	<bean id="liveTradingValidator" class="com.cyanspring.server.validation.LiveTradingValidator">
-	</bean> 
 	
 	<!-- field specific validation -->
 	<bean id="orderFieldValidator" class="com.cyanspring.server.validation.OrderFieldValidator">       
