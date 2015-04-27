@@ -3,6 +3,8 @@ package com.cyanspring.common.event.marketsession;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 
+import java.util.Map;
+
 /**
  * Description....
  * <ul>
@@ -20,19 +22,13 @@ import com.cyanspring.common.marketsession.MarketSessionData;
  * @since 1.0
  */
 public class IndexSessionEvent extends RemoteAsyncEvent{
-    private String index;
-    private MarketSessionData data;
-    public IndexSessionEvent(String key, String receiver, String index, MarketSessionData data) {
+    private Map<String, MarketSessionData> dataMap;
+    public IndexSessionEvent(String key, String receiver, Map<String, MarketSessionData> dataMap) {
         super(key, receiver);
-        this.index = index;
-        this.data = data;
+        this.dataMap = dataMap;
     }
 
-    public MarketSessionData getData() {
-        return data;
-    }
-
-    public String getIndex() {
-        return index;
+    public Map<String, MarketSessionData> getDataMap() {
+        return dataMap;
     }
 }

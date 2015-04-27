@@ -3,6 +3,7 @@ package com.cyanspring.common.event.marketsession;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Description....
@@ -21,16 +22,16 @@ import java.util.Date;
  * @since 1.0
  */
 public class IndexSessionRequestEvent extends RemoteAsyncEvent {
-    private String index;
+    private List<String> indexList;
     private Date date;
-    public IndexSessionRequestEvent(String key, String receiver, String index, Date date) {
+    public IndexSessionRequestEvent(String key, String receiver, List<String> indexList, Date date) {
         super(key, receiver);
-        this.index = index;
+        this.indexList = indexList;
         this.date = date;
     }
 
-    public String getIndex() {
-        return index;
+    public List<String> getIndexList() {
+        return indexList;
     }
 
     public Date getDate() {

@@ -14,9 +14,7 @@ package com.cyanspring.server.marketsession;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -63,6 +61,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     private MarketSessionType currentSessionType;
     private String currentTradeDate;
     private MarketSessionChecker sessionChecker;
+    private Map<String, MarketSessionData> sessionDataMap;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long timerInterval = 5 * 1000;
@@ -74,7 +73,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             subscribeToEvent(MarketSessionRequestEvent.class, null);
             subscribeToEvent(TradeDateRequestEvent.class, null);
             subscribeToEvent(IndexSessionRequestEvent.class, null);
-            subscribeToEvent(AllMarketSessionRequestEvent.class, null);
         }
 
         @Override
@@ -113,25 +111,13 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     }
 
     public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
-        if (marketSessionUtil != null) {
-            try {
-                eventManager.sendRemoteEvent(new IndexSessionEvent(null, null,
-                        event.getIndex(),
-                        marketSessionUtil.getCurrentMarketSessionType(event.getIndex(), event.getDate())));
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
-        }
-    }
-
-    public void processAllMarketSessionRequestEvent(AllMarketSessionRequestEvent event){
-        if (marketSessionUtil != null){
-            try {
-                eventManager.sendRemoteEvent(new AllMarketSessionReplyEvent(null, null,
-                        marketSessionUtil.getMarketDatas(event.getIndexList(), event.getDate())));
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-            }
+        if (marketSessionUtil == null)
+            return;
+        try {
+            eventManager.sendRemoteEvent(new IndexSessionEvent(null, null,
+                    marketSessionUtil.getMarketDatas(event.getIndexList(), event.getDate())));
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
         }
     }
 
@@ -153,9 +139,27 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         }
     }
 
-    private void checkIndexMarketSession(Date date){
-        if (marketSessionUtil != null){
-
+    private void checkIndexMarketSession(Date date) {
+        if (marketSessionUtil == null)
+            return;
+        try {
+            if (sessionDataMap == null) {
+                sessionDataMap = marketSessionUtil.getMarketDatas(null, date);
+                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap));
+            } else {
+                Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
+                for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
+                    if (date.getTime() > entry.getValue().getEndDate().getTime()) {
+                        MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(entry.getKey(), date);
+                        sendMap.put(entry.getKey(), data);
+                        sessionDataMap.put(entry.getKey(), data);
+                    }
+                }
+                if (sendMap.size() > 0)
+                    eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
+            }
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
         }
     }
 
