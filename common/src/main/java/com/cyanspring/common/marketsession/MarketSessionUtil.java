@@ -1,24 +1,37 @@
 package com.cyanspring.common.marketsession;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MarketSessionUtil {
-	private Map<String, MarketSessionChecker> cMap;
-	private Map<String, TradeDateManager> tMap;
-	
-	public MarketSessionUtil(Map<String, MarketSessionChecker> cMap, Map<String, TradeDateManager> tMap){
-		this.cMap = cMap;
-		this.tMap = tMap;
-	}
-	
-	public MarketSessionData getCurrentMarketSessionType(String symbol, Date date) throws Exception{
-		MarketSessionChecker checker = cMap.get(symbol);
-		return checker.getState(date);
-	}
-	
-	public boolean isHoliday(String symbol, Date date){
-		TradeDateManager checker = tMap.get(symbol);		
-		return checker.isHoliday(date);
-	}
+    private Map<String, MarketSessionChecker> cMap;
+    private Map<String, TradeDateManager> tMap;
+
+    public MarketSessionUtil(Map<String, MarketSessionChecker> cMap, Map<String, TradeDateManager> tMap) {
+        this.cMap = cMap;
+        this.tMap = tMap;
+    }
+
+    public MarketSessionData getCurrentMarketSessionType(String index, Date date) throws Exception {
+        MarketSessionChecker checker = cMap.get(index);
+        return checker.getState(date);
+    }
+
+    public boolean isHoliday(String symbol, Date date) {
+        TradeDateManager checker = tMap.get(symbol);
+        return checker.isHoliday(date);
+    }
+
+    public Map<String, MarketSessionData> getMarketDatas(List<String> indexList, Date date) throws Exception {
+        Map<String, MarketSessionData> dataMap = new HashMap<String, MarketSessionData>();
+        for (Map.Entry<String, MarketSessionChecker> entry : cMap.entrySet()) {
+            if (indexList == null)
+                dataMap.put(entry.getKey(), entry.getValue().getState(date));
+            else if (indexList.contains(entry.getKey()))
+                dataMap.put(entry.getKey(), entry.getValue().getState(date));
+        }
+        return dataMap;
+    }
 }
