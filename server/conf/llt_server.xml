@@ -8,8 +8,9 @@
     <context:annotation-config />
 
     <import resource="test/lt_test.xml" />
+    <import resource="lt/business.xml" />
     <import resource="lt/MarketSession.xml" />
-    <import resource="common/business.xml" />
+    <!--<import resource="common/business.xml" />-->
     <import resource="common/strategy.xml" />
     <import resource="common/centralDb.xml" />
     <import resource="common/persistence.xml" />

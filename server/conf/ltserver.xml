@@ -8,7 +8,7 @@
     <context:annotation-config />
 
     <import resource="lt/*" />
-    <import resource="common/business.xml" />
+    <!--<import resource="common/business.xml" />-->
     <import resource="common/strategy.xml" />
     <import resource="common/centralDb.xml" />
     <import resource="common/persistence.xml" />

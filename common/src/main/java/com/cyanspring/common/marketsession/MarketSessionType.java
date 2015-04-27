@@ -34,6 +34,7 @@ public enum MarketSessionType {
 	PM_CONTINUOUS_TRADING,
 	PM_NO_TRADING,
 	CLOSE,
+	PRECLOSE,
 	OPEN,
 	PREOPEN;
 	
