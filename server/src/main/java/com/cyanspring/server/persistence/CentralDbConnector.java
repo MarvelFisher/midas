@@ -346,7 +346,9 @@ public class CentralDbConnector {
 
 	public boolean changeTermination(String userId, TerminationStatus terminationStatus) {
 
-		if (!checkConnected()) {
+        Connection conn = connect();
+
+		if (null == conn) {
 			return false;
 		}
 
@@ -375,6 +377,9 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 
 		return true;
