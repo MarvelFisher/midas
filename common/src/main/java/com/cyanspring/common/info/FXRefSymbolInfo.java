@@ -17,12 +17,20 @@ public class FXRefSymbolInfo extends IRefSymbolInfo
 	{
 		int index;
 		ArrayList<SymbolInfo> infoList = new ArrayList<SymbolInfo>();
-		for (int ii = 0; ii < symbolList.size(); ii++) infoList.add(null);
+	    ArrayList<String> symbolListClr = new ArrayList<String>();
+	    for (String s: symbolList)
+	    {
+	        if(Collections.frequency(symbolListClr, s) < 1) symbolListClr.add(s);
+	    }
+		for (int ii = 0; ii < symbolListClr.size(); ii++) 
+		{
+			infoList.add(null);
+		}
 		for (SymbolInfo symbolinfo : refSymbolInfo)
 		{
-			if (symbolList.contains(symbolinfo.getCode()))
+			if (symbolListClr.contains(symbolinfo.getCode()))
 			{
-				index = symbolList.indexOf(symbolinfo.getCode());
+				index = symbolListClr.indexOf(symbolinfo.getCode());
 				infoList.remove(index);
 				infoList.add(index, symbolinfo);
 			}
