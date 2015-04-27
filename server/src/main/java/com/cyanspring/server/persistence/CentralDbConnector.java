@@ -208,7 +208,7 @@ public class CentralDbConnector {
 
         Connection conn = connect();
 
-		if (null != conn) {
+		if (null == conn) {
 			log.debug("[userLoginEx] Connection is lost ,could not process userLogin :"+sUser);
 			return null;
 		}
@@ -287,7 +287,7 @@ public class CentralDbConnector {
 
         Connection conn = connect();
 
-		if (null != conn)
+		if (null == conn)
 			return false;
 
 		String sQuery = String.format(getUserPasswordSalt, sUser);
