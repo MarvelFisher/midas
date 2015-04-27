@@ -7,6 +7,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.id.Library.Util.DateUtil;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ public class MarketDataManager extends MarketDataReceiver {
         clzList.add(QuoteExtSubEvent.class);
         clzList.add(QuoteSubEvent.class);
         clzList.add(TradeDateEvent.class);
+        clzList.add(LastTradeDateQuotesRequestEvent.class);
         return clzList;
     }
 
@@ -133,6 +135,27 @@ public class MarketDataManager extends MarketDataReceiver {
                     continue;
                 adaptor.subscribeMarketData(symbol, MarketDataManager.this);
             }
+        }
+    }
+
+    public void processLastTradeDateQuotesRequestEvent(
+            LastTradeDateQuotesRequestEvent event) {
+        try {
+            if (tradeDate == null) {
+                TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(
+                        null, null);
+                eventManager.sendEvent(tdrEvent);
+            } else {
+                List<Quote> lst = new ArrayList<Quote>(
+                        lastTradeDateQuotes.values());
+                log.info("LastTradeDateQuotesRequestEvent sending lastTradeDateQuotes: "
+                        + lst);
+                LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(
+                        null, null, tradeDate, lst);
+                eventManager.sendRemoteEvent(lastTDQEvent);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
