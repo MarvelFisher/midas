@@ -98,7 +98,7 @@
 		<property name="userName" value="TD1001888001"/>
 		<property name="password" value="62015725"/>
 		<property name="gateway" value="true"/>
-		<property name="gatewayIp" value="202.55.14.140"/>
+		<property name="gatewayIp" value="10.0.0.20"/>
 		<property name="gatewayPort" value="10049"/>
 		<property name="marketDataLog" value="true"/>
 		<property name="marketType" value="S"/> <!-- Stock:S,Future:F -->
