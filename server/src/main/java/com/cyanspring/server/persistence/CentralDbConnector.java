@@ -22,7 +22,7 @@ import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.message.ErrorMessage;
 
 public class CentralDbConnector {
-	protected Connection conn = null;
+
 //	protected String host = "";
 //	protected int port = 0;
 //	protected String user = "";
@@ -32,7 +32,6 @@ public class CentralDbConnector {
 
 	private static String MARKET_FX = "FX";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static CentralDbConnector inst = null;
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
@@ -48,70 +47,20 @@ public class CentralDbConnector {
 		this.cpds = cpds;
 	}
 
-	public static CentralDbConnector getInstance() throws CentralDbException {
-		if (inst == null)
-			inst = new CentralDbConnector();
-
-		if (inst.isClosed()) {
-			if (!inst.connect())
-				throw new CentralDbException(
-						"can't connect to central database",ErrorMessage.CANT_CONNECT_TO_CENTRAL_DATABASE);
-		}
-
-		return inst;
-	}
-
 	private CentralDbConnector() {
 
 	}
 
-	public boolean connect() {
-//	public boolean connect(String sIP, int nPort, String sUser,
-//			String sPassword, String sDatabase) {
+	public Connection connect() {
 		try {
-			conn = cpds.getConnection();
-
-//			Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-//			String sReq = String.format(openSQL, sIP, nPort, sDatabase);
-//			conn = DriverManager.getConnection(sReq, sUser, sPassword);
+			Connection conn = cpds.getConnection();
 
 			log.info("Connected to the database");
+
+            return conn;
 		} catch (Exception e) {
 			log.error("Cannot connection to Database", e);
-			return false;
-		}
-
-		return true;
-	}
-
-	public boolean isClosed() {
-		if (conn == null)
-			return true;
-
-		boolean bResult = true;
-		try {
-			bResult = conn.isClosed();
-		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
-			bResult = true;
-		}
-		return bResult;
-	}
-
-//	public boolean connect() {
-//		return connect(host, port, user, pass, database);
-//	}
-
-	public void close() {
-		if (conn != null) {
-			try {
-				conn.close();
-				conn = null;
-				log.info("Disconnected from database");
-			} catch (Exception e) {
-				log.error("Cannot disconnect from database", e);
-			}
+			return null;
 		}
 	}
 
@@ -119,7 +68,7 @@ public class CentralDbConnector {
 			String password, String salt, String email, String phone, Date created,
 			UserType userType, String country, String language) {
 		return String.format(insertUser, userId, userName, password + salt, salt, email,
-				phone, sdf.format(created), userType.getCode(), country, language, 0);
+                phone, sdf.format(created), userType.getCode(), country, language, 0);
 	}
 
     /**
@@ -134,21 +83,6 @@ public class CentralDbConnector {
 		return String.format(insertThirdPartyUser, id, userId, userType.getCode());
 	}
 
-	/*
-	 * protected String getInsertAccountSQL(String accountId, String userId,
-	 * String market, double cash, double margin, double pl, double allTimePl,
-	 * double urPl, double cashDeposited, double unitPrice, boolean bActive,
-	 * Date created, String currency) { return String.format(insertAccount,
-	 * accountId, userId, margin, cash, margin, pl, allTimePl, urPl,
-	 * cashDeposited, unitPrice, (bActive)?"0x01":"0x02", sdf.format(created),
-	 * currency); }
-	 */
-	protected boolean checkConnected() {
-		if (!isClosed())
-			return true;
-		return connect();
-	}
-
     public boolean registerUser(
             String userId, String userName, String password, String email, String phone, UserType userType,
             String country, String language) {
@@ -159,7 +93,9 @@ public class CentralDbConnector {
             String userId, String userName, String password, String email, String phone, UserType userType,
             String country, String language, String thirdPartyId) {
 
-		if (!checkConnected())
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
 
 		boolean bIsSuccess = false;
@@ -194,12 +130,18 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return bIsSuccess;
 	}
 
 	public boolean isUserExist(String sUser) {
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
 
 		String sQuery = String.format(isUserExist, sUser);
@@ -220,12 +162,18 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return (nCount > 0);
 	}
 	
 	public boolean isEmailExist(String sEmail) {
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
 
 		String sQuery = String.format(isEmailExist, sEmail);
@@ -246,6 +194,9 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return (nCount > 0);
 	}
@@ -254,8 +205,10 @@ public class CentralDbConnector {
 		return userLoginEx(sUser, sPassword) != null;
 	}
 	public User userLoginEx(String sUser, String sPassword) {
-		if (!checkConnected())
-		{
+
+        Connection conn = connect();
+
+		if (null != conn) {
 			log.debug("[userLoginEx] Connection is lost ,could not process userLogin :"+sUser);
 			return null;
 		}
@@ -303,12 +256,12 @@ public class CentralDbConnector {
 
 			String fullPassword = (salt == null)? sPassword : sPassword + salt;
 			log.debug(String.format("[userLoginEx] user[%s] md5(fullPassword)[%s] fullPassword[%s] sPassword[%s] salt[%s] md5Password[%s]",
-					sUser == null ? "null" : sUser,
-					fullPassword == null ? "null": md5(fullPassword),
-					fullPassword == null ? "null": fullPassword,
-					sPassword == null ? "null": sPassword,
-					salt == null ? "null": salt,
-					md5Password == null ? "null": md5Password));
+                    sUser == null ? "null" : sUser,
+                    fullPassword == null ? "null" : md5(fullPassword),
+                    fullPassword == null ? "null" : fullPassword,
+                    sPassword == null ? "null" : sPassword,
+                    salt == null ? "null" : salt,
+                    md5Password == null ? "null" : md5Password));
 			
 			if(md5Password.equals(md5(fullPassword))){
 				closeStmt(stmt);
@@ -322,13 +275,19 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		log.debug("[userLoginEx] password not match :" + sUser);
 		return null;
 	}
 
 	public boolean changePassword(String sUser, String originalPass, String newPass) {
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null != conn)
 			return false;
 
 		String sQuery = String.format(getUserPasswordSalt, sUser);
@@ -378,6 +337,9 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return true;
 	}
@@ -419,8 +381,12 @@ public class CentralDbConnector {
 	}
 
 	public boolean updateConnection(){
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
+
 		Statement stmt = null;
 		boolean state = true;
 		try{
@@ -431,7 +397,9 @@ public class CentralDbConnector {
 			log.warn(e.getMessage(), e);
 		}finally{
 			if(stmt != null)
-				closeStmt(stmt);			
+				closeStmt(stmt);
+            if (conn != null)
+                closeConn(conn);
 		}
 		return state;
 	}
@@ -444,45 +412,13 @@ public class CentralDbConnector {
 		}
 	}
 
-//	public String getHost() {
-//		return this.host;
-//	}
-//
-//	public void setHost(String host) {
-//		this.host = host;
-//	}
-//
-//	public int getPort() {
-//		return this.port;
-//	}
-//
-//	public void setPort(int port) {
-//		this.port = port;
-//	}
-//
-//	public String getUser() {
-//		return this.user;
-//	}
-//
-//	public void setUser(String user) {
-//		this.user = user;
-//	}
-//
-//	public String getPass() {
-//		return this.pass;
-//	}
-//
-//	public void setPass(String pass) {
-//		this.pass = pass;
-//	}
-//
-//	public String getDatabase() {
-//		return this.database;
-//	}
-//
-//	public void setDatabase(String database) {
-//		this.database = database;
-//	}
+    private void closeConn(Connection conn) {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            log.warn("Cannot close connection", e);
+        }
+    }
 	
 	 protected String md5(String str) 
 	 {
