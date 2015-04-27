@@ -130,6 +130,7 @@
 		<property name="contributeList">
 			<list>
 				<value>AXI</value>
+				<value>FXN</value>
 			</list>
 		</property>
 		<property name="unContributeList">
