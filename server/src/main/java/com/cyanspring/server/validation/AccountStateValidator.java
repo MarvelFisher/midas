@@ -13,21 +13,23 @@ import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
+
 import static com.cyanspring.common.account.AccountState.*;
 
-public class AccountStateValidator {
+public class AccountStateValidator  implements IOrderValidator{
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(AccountStateValidator.class);
 	
 	@Autowired
 	public AccountKeeper accountKeeper;
-	
-	
-	public void validate(String id)
+
+	@Override
+	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
 		
 		try{
@@ -35,12 +37,20 @@ public class AccountStateValidator {
 				return;			
 			}
 			
-			if(!StringUtils.hasText(id)){				
+			String accountId = null;
+			
+			if(order == null){
+				accountId = (String)map.get(OrderField.ACCOUNT.value());			
+			}else{	
+				accountId = order.getAccount();		
+			}			
+
+			if(!StringUtils.hasText(accountId)){				
 				return;			
 			}
 			
 			
-			Account account = accountKeeper.getAccount(id);
+			Account account = accountKeeper.getAccount(accountId);
 						
 			if( null != account){
 				
@@ -69,8 +79,6 @@ public class AccountStateValidator {
 			log.error(e.getMessage(),e);
 			
 		}
-
-		
 		
 	}
 

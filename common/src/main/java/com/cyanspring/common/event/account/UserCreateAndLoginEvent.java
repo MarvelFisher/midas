@@ -11,14 +11,23 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 	private String country;
 	private String language;
 	private String original_id;
+	private String thirdPartyId;
 
-	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language, String org_id, String txId) {
+	@Deprecated
+	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
+								   String org_id, String txId) {
+		this(key, receiver, user, country, language, org_id, txId, null);
+	}
+
+	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
+								   String org_id, String txId, String thirdPartyId) {
 		super(key, receiver);
 		this.user = user;
 		this.country = country;
 		this.language = language;
 		this.txId = txId;
 		this.original_id = org_id;
+		this.thirdPartyId = thirdPartyId;
 		setPriority(EventPriority.HIGH);
 	}
 	
@@ -43,4 +52,7 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 		return language;
 	}
 
+	public String getThirdPartyId() {
+		return thirdPartyId;
+	}
 }
