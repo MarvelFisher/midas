@@ -158,7 +158,7 @@ public class AccountPositionManager implements IPlugin {
     IRefDataManager refDataManager;
 
     @Autowired(required = false)
-    RiskManager riskManager;
+    LiveTradingChecker liveTradingChecker;
 
     private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -802,8 +802,22 @@ public class AccountPositionManager implements IPlugin {
             List<Account> accounts = accountKeeper.getRmJobs().getJobs();
             for (Account account : accounts) {
                 positionKeeper.updateAccountDynamicData(account);
-                if (!checkStopLoss(account))
-                    checkMarginCall(account);
+                
+                AccountSetting accountSetting = null;
+                try {
+                    accountSetting = accountKeeper.getAccountSetting(account.getId());
+                } catch (AccountException e) {
+                    log.error(e.getMessage(), e);
+                    continue;
+                }
+                
+                if(checkLiveTrading(account, accountSetting))
+                	continue;
+                
+                if (checkStopLoss(account, accountSetting))
+                	continue;
+                    
+                checkMarginCall(account);
             }
             perfDataRm.end();
         }
@@ -829,35 +843,20 @@ public class AccountPositionManager implements IPlugin {
         return !quote.isStale();
     }
 
-    private boolean checkStopLoss(Account account) {
-        if (!checkStoploss)
-            return false;
-        AccountSetting accountSetting = null;
-        try {
-            accountSetting = accountKeeper.getAccountSetting(account.getId());
-        } catch (AccountException e) {
-            log.error(e.getMessage(), e);
-            return false;
-        }
-        //live trading
-        LiveTradingChecker liveTradingChecker = null;
-        if (null != riskManager) {
-
-            liveTradingChecker = riskManager.getLiveTradingChecker();
-
-            if (null != liveTradingChecker) {
-
-                if (liveTradingChecker.checkTerminateLoss(account, accountSetting)) {
-
-                    return true;
-
-                } else if (liveTradingChecker.checkFreezeLoss(account, accountSetting)) {
-
-                    return true;
-
-                }
+    private boolean checkLiveTrading(Account account, AccountSetting accountSetting) {
+        if (null != liveTradingChecker) {
+            if (liveTradingChecker.checkTerminateLoss(account, accountSetting)) {
+                return true;
+            } else if (liveTradingChecker.checkFreezeLoss(account, accountSetting)) {
+                return true;
             }
         }
+        return false;
+    }
+    
+    private boolean checkStopLoss(Account account, AccountSetting accountSetting) {
+        if (!checkStoploss)
+            return false;
 
         Double positionStopLoss = Default.getPositionStopLoss();
 

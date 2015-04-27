@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.account.Account;
-import com.cyanspring.common.account.State;
+import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
-import static com.cyanspring.common.account.State.*;
+import static com.cyanspring.common.account.AccountState.*;
 
 public class AccountStateValidator {
 	
@@ -44,7 +44,7 @@ public class AccountStateValidator {
 						
 			if( null != account){
 				
-				State state = account.getState();
+				AccountState state = account.getState();
 
 				if(FROZEN == state){
 					
