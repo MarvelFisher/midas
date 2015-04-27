@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cyanspring.common.event.account.*;
+import com.google.common.base.Strings;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -144,6 +145,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(UserTerminateEvent.class, null);
+            subscribeToEvent(UserMappingEvent.class, null);
 		}
 
 		@Override
@@ -587,8 +589,8 @@ public class PersistenceManager {
 		}
 		
 		try {
-			eventManager.sendRemoteEvent(new UserLoginReplyEvent(event.getOriginalEvent().getKey(), 
-					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
+			eventManager.sendRemoteEvent(new UserLoginReplyEvent(event.getOriginalEvent().getKey(),
+                    event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
 			
 			if(ok) {
 				user.setLastLogin(Clock.getInstance().now());
@@ -1313,7 +1315,7 @@ public class PersistenceManager {
 		
 		try {
 			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
-					event.getSender(), event.getUser(), ok, message, event.getTxId()));
+                    event.getSender(), event.getUser(), ok, message, event.getTxId()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -1348,6 +1350,31 @@ public class PersistenceManager {
 			log.error(e.getMessage(), e);
 		}
 	}
+
+    public void processUserMappingEvent(UserMappingEvent event) {
+
+        if (!syncCentralDb) {
+            return;
+        }
+
+        boolean userExist= false;
+        boolean userThirdPartyExist = false;
+
+        if (!Strings.isNullOrEmpty(event.getUser())) {
+            userExist = centralDbConnector.isUserExist(event.getUser().toLowerCase());
+        }
+
+        if (!Strings.isNullOrEmpty(event.getUserThirdParty())) {
+            userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase());
+        }
+
+        try {
+            eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
+                    event.getUser(), event.getUserThirdParty(), userExist, userThirdPartyExist));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 	
 	// getters and setters
 	public int getTextSize() {

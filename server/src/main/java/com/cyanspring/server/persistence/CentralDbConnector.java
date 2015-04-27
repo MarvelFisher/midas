@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.cyanspring.common.account.TerminationStatus;
+import com.google.common.base.Strings;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class CentralDbConnector {
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
+    private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
@@ -111,8 +113,8 @@ public class CentralDbConnector {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sUserSQL);
 
-			if (userType.isThirdParty()) {
-				String sql = getInsertThirdPartyUserSQL(thirdPartyId, userId, userType);
+			if (userType.isThirdParty() && !Strings.isNullOrEmpty(thirdPartyId)) {
+				String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), userId, userType);
                 stmt.executeUpdate(sql);
 			}
 
@@ -142,9 +144,9 @@ public class CentralDbConnector {
         Connection conn = connect();
 
 		if (null == conn)
-			return false;
+            return false;
 
-		String sQuery = String.format(isUserExist, sUser);
+        String sQuery = String.format(isUserExist, sUser);
 		log.debug("[isUserExist] SQL:" + sQuery);
 		Statement stmt = null;
 		int nCount = 0;
@@ -168,6 +170,38 @@ public class CentralDbConnector {
 		}
 		return (nCount > 0);
 	}
+
+    public boolean isThirdPartyUserExist(String id) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        String sQuery = String.format(isThirdPartyUserExist, id);
+        log.debug("[isThirdPartyUserExist] SQL:" + sQuery);
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+        return (nCount > 0);
+    }
 	
 	public boolean isEmailExist(String sEmail) {
 
