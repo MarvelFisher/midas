@@ -141,9 +141,6 @@ public class BusinessManager implements ApplicationContextAware {
 	@Autowired
 	PositionKeeper positionKeeper;
 	
-	@Autowired(required=false)
-	AccountStateValidator accountStateValidator;
-	
 	ScheduleManager scheduleManager = new ScheduleManager();
 	
 	private int noOfContainers = 20;
@@ -213,9 +210,6 @@ public class BusinessManager implements ApplicationContextAware {
 		String account = (String)fields.get(OrderField.ACCOUNT.value());
 		
 		try {
-			//check state
-			if(null != accountStateValidator)
-				accountStateValidator.validate(account);
 			
 			String strategyName = (String)fields.get(OrderField.STRATEGY.value());
 			if(null == strategyName)
