@@ -47,7 +47,7 @@ public class SymbolData implements Comparable<SymbolData>
             "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY " + 
             "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;";
 	private static final String dateFormat = "yyyy-MM-dd HH:mm:ss";
-	private static Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+	private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 	
 	private static IPriceSetter setter;
 	private CentralDbProcessor centralDB = null;
