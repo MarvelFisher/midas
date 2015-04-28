@@ -1,7 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
 import cn.com.wind.td.tdf.*;
-import com.cyanspring.adaptor.future.wind.test.FutureFeed;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -17,13 +16,11 @@ import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
-import com.cyanspring.id.Util;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -41,18 +38,18 @@ import java.util.concurrent.TimeUnit;
 
 public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         IReqThreadCallback {
-    String password = "";
-    String userName = "";
-    String reqIp = "";
-    String gatewayIp = "";
-    int reqPort = 0;
-    int gatewayPort = 0;
-    boolean gateway = false;
-    boolean showGui = false;
-    IRefDataManager refDataManager;
-    boolean marketDataLog = false; // log control
-    String marketType = "";
-    MarketSessionUtil marketSessionUtil;
+
+
+    private static final Logger log = LoggerFactory
+            .getLogger(WindFutureDataAdaptor.class);
+
+
+    private String gatewayIp = "";
+    private int gatewayPort = 0;
+    private boolean gateway = false;
+    private boolean showGui = false;
+    private boolean marketDataLog = false; // log control
+    private String marketType = "";
     protected long timerInterval = 5000;
     static final long SmallSessionTimeInterval = 30 * 60 * 1000;
     static final int AM10 = 100000000;
@@ -70,6 +67,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     private final String ERR_CLOSE_OVER_TIME = "QUOTE ERROR : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 
+
+    boolean isClose = false;
+    static NioEventLoopGroup nioEventLoopGroup = null;
+
+    IRefDataManager refDataManager;
+    MarketSessionUtil marketSessionUtil;
+
     @Autowired
     protected IRemoteEventManager eventManager;
 
@@ -77,29 +81,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     protected ScheduleManager scheduleManager = new ScheduleManager();
 
-
-    private static final Logger log = LoggerFactory
-            .getLogger(WindFutureDataAdaptor.class);
-
     public static WindFutureDataAdaptor instance = null;
 
-    /**
-     * ******************** configuration **************************************
-     */
-    private final String openMarket = "";
-    private final int openData = 0;
-    private final int openTime = 0;
-    private final String subscription = ""; // 000001.SZ;000002.SZ";
-    private final int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
-    private static final int doConnect = 0;
-    static volatile boolean isConnected = false;
-    static volatile boolean isConnecting = false;
-
-    /**
-     * ******************** configuration **************************************
-     */
-    TDFClient client = new TDFClient();
-    TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
     static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
     static ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
     static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
@@ -109,17 +92,38 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     boolean isClosed = false;
     RequestThread thread = null;
 
+    /*
+    API Use Variable
+     */
+
+    int reqPort = 0;
+    String password = "";
+    String userName = "";
+    String reqIp = "";
+    int nId = 0;
+    private final String apiOpenMarket = "";
+    private final int apiOpenData = 0;
+    private final int apiOpenTime = 0;
+    private final String apiSubscription = ""; // 000001.SZ;000002.SZ";
+    private final int apiOpenTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX; // DATA_TYPE_FLAG.DATA_TYPE_INDEX;
+    private static final int doConnect = 0;
+    static volatile boolean isConnected = false;
+    static volatile boolean isConnecting = false;
+
+    TDFClient tdfClient = new TDFClient();
+    TDF_OPEN_SETTING tdf_open_setting = new TDF_OPEN_SETTING();
+
 
     public void setTradeDateCheckIsOpen(boolean tradeDateCheckIsOpen) {
         this.tradeDateCheckIsOpen = tradeDateCheckIsOpen;
     }
 
-    public MarketSessionUtil getMarketSessionUtil() {
-        return marketSessionUtil;
-    }
-
     public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
         this.marketSessionUtil = marketSessionUtil;
+    }
+
+    public MarketSessionUtil getMarketSessionUtil() {
+        return marketSessionUtil;
     }
 
     public void setCloseOverTimeControlIsOpen(boolean closeOverTimeControlIsOpen) {
@@ -132,10 +136,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     public void setMarketType(String marketType) {
         this.marketType = marketType;
-    }
-
-    public IRefDataManager getRefDataManager() {
-        return refDataManager;
     }
 
     public void setRefDataManager(IRefDataManager refDataManager) {
@@ -286,27 +286,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         }
     }
 
-    public static void info(String f, Object... args) {
-        LogUtil.logInfo(log, f, args);
-        FutureFeed.info(f, args);
-    }
-
-    public static void error(String f, Object... args) {
-        LogUtil.logError(log, f, args);
-        FutureFeed.error(f, args);
-
-    }
-
-    public static void exception(Exception e) {
-        LogUtil.logException(log, e);
-        FutureFeed.error("%s", e.getMessage());
-    }
-
-    public static void debug(String f, Object... args) {
-        LogUtil.logDebug(log, f, args);
-        FutureFeed.debug(f, args);
-    }
-
     public static String convertGBString(String string) {
         String str = null;
         try {
@@ -349,11 +328,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     }
 
     public TDF_OPTION_CODE getOptionCodeInfo(String szWindCode) {
-        return client.getOptionCodeInfo(szWindCode);
+        return tdfClient.getOptionCodeInfo(szWindCode);
     }
 
     public List<SymbolInfo> updateCodeTable(String market) {
-        TDF_CODE[] codes = client.getCodeTable(market);
+        TDF_CODE[] codes = tdfClient.getCodeTable(market);
         List<SymbolInfo> list = new ArrayList<SymbolInfo>();
         try {
 
@@ -371,7 +350,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     }
 
     void printCodeTable(String market) {
-        TDF_CODE[] codes = client.getCodeTable(market);
+        TDF_CODE[] codes = tdfClient.getCodeTable(market);
         try {
 
             for (TDF_CODE code : codes) {
@@ -384,12 +363,12 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     void disconnect() {
         isClosed = true;
-        client.delete();
+        tdfClient.delete();
     }
 
     public void reconnect() {
         isClosed = false;
-        client.close();
+        tdfClient.close();
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
@@ -397,7 +376,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         for (String symbol : marketRuleBySymbolMap.keySet()) {
             MarketSessionData marketSessionData = null;
             try {
-                marketSessionData = getMarketSessionUtil()
+                marketSessionData = this.marketSessionUtil
                         .getCurrentMarketSessionType(
                                 marketRuleBySymbolMap.get(symbol),
                                 DateUtil.now());
@@ -418,311 +397,41 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         }
     }
 
-    // Parse Change Data
-    public TDF_QUOTATIONDATE_CHANGE convertToChangeData(String[] in_arr) {
-        TDF_QUOTATIONDATE_CHANGE changedata = new TDF_QUOTATIONDATE_CHANGE();
-        String key = null;
-        String value = null;
-        for (int i = 0; i < in_arr.length; i++) {
-            key = in_arr[i].split("=")[0];
-            value = in_arr[i].split("=")[1];
-            switch (key) {
-                case "Market":
-                    break;
-                case "OldDate":
-                    changedata.setOldDate(Integer.parseInt(value));
-                    break;
-                case "NewDate":
-                    changedata.setNewDate(Integer.parseInt(value));
-                    break;
-                default:
-                    break;
-            }
-        }
-        return changedata;
-    }
-
-    // Parse Index Data
-
-    // Parse Stock Data
-    public TDF_MARKET_DATA convertToStockData(String[] in_arr) {
-        TDF_MARKET_DATA stock = null;
-        String key = null;
-        String value = null;
-        String[] kv_arr = null;
-
-        for (int i = 0; i < in_arr.length; i++) {
-            if (in_arr[i] != null && !"".equals(in_arr[i])) {
-                kv_arr = in_arr[i].split("=");
-                if (kv_arr.length > 1) {
-                    key = kv_arr[0];
-                    value = kv_arr[1];
-                    if (key.equals("Symbol")) {
-                        if (stockDataBySymbolMap.containsKey(value)) {
-                            stock = stockDataBySymbolMap.get(value);
-                        } else {
-                            // add future data
-                            stock = new TDF_MARKET_DATA();
-                            stock.setWindCode(value);
-                            stock.setCode(value.split("\\.")[0]);
-                            stockDataBySymbolMap.put(value, stock);
-                        }
-                    }
-                    switch (key) {
-                        case "ActionDay":
-                            stock.setActionDay(Integer.parseInt(value));
-                            break;
-                        case "AskPrice":
-                            stock.setAskPrice(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "AskVol":
-                            stock.setAskVol(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "BidPrice":
-                            stock.setBidPrice(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "BidVol":
-                            stock.setBidVol(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "High":
-                            stock.setHigh(Long.parseLong(value));
-                            break;
-                        case "Ceil":
-                            stock.setHighLimited(Long.parseLong(value));
-                            break;
-                        case "Low":
-                            stock.setLow(Long.parseLong(value));
-                            break;
-                        case "Floor":
-                            stock.setLowLimited(Long.parseLong(value));
-                            break;
-                        case "Last":
-                            stock.setMatch(Long.parseLong(value));
-                            break;
-                        case "Open":
-                            stock.setOpen(Long.parseLong(value));
-                            break;
-                        case "IOPV":
-                            stock.setIOPV(Integer.parseInt(value));
-                            break;
-                        case "PreClose":
-                            stock.setPreClose(Long.parseLong(value));
-                            break;
-                        case "Status":
-                            stock.setStatus(Integer.parseInt(value));
-                            break;
-                        case "Time":
-                            stock.setTime(Integer.parseInt(value));
-                            break;
-                        case "TradingDay":
-                            stock.setTradingDay(Integer.parseInt(value));
-                            break;
-                        case "Turnover":
-                            stock.setTurnover(Long.parseLong(value));
-                            break;
-                        case "Volume":
-                            stock.setVolume(Long.parseLong(value));
-                            break;
-                        case "NumTrades":
-                            stock.setNumTrades(Long.parseLong(value));
-                            break;
-                        case "TotalBidVol":
-                            stock.setTotalBidVol(Long.parseLong(value));
-                            break;
-                        case "WgtAvgAskPrice":
-                            stock.setWeightedAvgAskPrice(Long.parseLong(value));
-                            break;
-                        case "WgtAvgBidPrice":
-                            stock.setWeightedAvgBidPrice(Long.parseLong(value));
-                            break;
-                        case "YieldToMaturity":
-                            stock.setYieldToMaturity(Integer.parseInt(value));
-                            break;
-                        case "Prefix":
-                            stock.setPrefix(value);
-                            break;
-                        case "Syl1":
-                            stock.setSyl1(Integer.parseInt(value));
-                            break;
-                        case "Syl2":
-                            stock.setSyl2(Integer.parseInt(value));
-                            break;
-                        case "SD2":
-                            stock.setSD2(Integer.parseInt(value));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-        return stock;
-    }
-
-    // Parse Future Data
-    public TDF_FUTURE_DATA convertToFutureData(String[] in_arr) {
-        TDF_FUTURE_DATA future = null;
-        String key = null;
-        String value = null;
-        String[] kv_arr = null;
-
-        for (int i = 0; i < in_arr.length; i++) {
-            if (in_arr[i] != null && !"".equals(in_arr[i])) {
-                kv_arr = in_arr[i].split("=");
-                if (kv_arr.length > 1) {
-                    key = kv_arr[0];
-                    value = kv_arr[1];
-                    if (key.equals("Symbol")) {
-                        if (futureDataBySymbolMap.containsKey(value)) {
-                            future = futureDataBySymbolMap.get(value);
-                        } else {
-                            // add future data
-                            future = new TDF_FUTURE_DATA();
-                            future.setWindCode(value);
-                            future.setCode(value.split("\\.")[0]);
-                            futureDataBySymbolMap.put(value, future);
-                        }
-                    }
-                    switch (key) {
-                        case "ActionDay":
-                            future.setActionDay(Integer.parseInt(value));
-                            break;
-                        case "AskPrice":
-                            future.setAskPrice(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "AskVol":
-                            future.setAskVol(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "BidPrice":
-                            future.setBidPrice(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "BidVol":
-                            future.setBidVol(parseStringTolong(value.substring(1,
-                                    value.length() - 1).split("\\s")));
-                            break;
-                        case "Close":
-                            future.setClose(Long.parseLong(value));
-                            break;
-                        case "High":
-                            future.setHigh(Long.parseLong(value));
-                            break;
-                        case "Ceil":
-                            future.setHighLimited(Long.parseLong(value));
-                            break;
-                        case "Low":
-                            future.setLow(Long.parseLong(value));
-                            break;
-                        case "Floor":
-                            future.setLowLimited(Long.parseLong(value));
-                            break;
-                        case "Last":
-                            future.setMatch(Long.parseLong(value));
-                            break;
-                        case "Open":
-                            future.setOpen(Long.parseLong(value));
-                            break;
-                        case "OI":
-                            future.setOpenInterest(Long.parseLong(value));
-                            break;
-//					case "PreClose":
-                        case "PreSettlePrice":
-                            future.setPreClose(Long.parseLong(value));
-                            break;
-                        case "SettlePrice":
-                            future.setSettlePrice(Long.parseLong(value));
-                            break;
-                        case "Status":
-                            future.setStatus(Integer.parseInt(value));
-                            break;
-                        case "Time":
-                            future.setTime(Integer.parseInt(value));
-                            break;
-                        case "TradingDay":
-                            future.setTradingDay(Integer.parseInt(value));
-                            break;
-                        case "Turnover":
-                            future.setTurnover(Long.parseLong(value));
-                            break;
-                        case "Volume":
-                            future.setVolume(Long.parseLong(value));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-        return future;
-    }
-
-    /**
-     * Convert String Array To long Array
-     *
-     * @param str_arr
-     * @return long array
-     */
-    public static long[] parseStringTolong(String[] str_arr) {
-        long[] long_arr = new long[str_arr.length];
-        for (int i = 0; i < str_arr.length; i++) {
-            long_arr[i] = Long.parseLong(str_arr[i]);
-        }
-        return long_arr;
-    }
-
     public void processGateWayMessage(int datatype, String[] in_arr) {
 
         if (in_arr == null)
             return;
-
         switch (datatype) {
-            // 系统消息
             case TDF_MSG_ID.MSG_SYS_HEART_BEAT:
-                // debug("MSG_SYS_HEART_BEAT");
-                break;
             case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:
-                break;
             case TDF_MSG_ID.MSG_SYS_CONNECT_RESULT:
-                break;
             case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT:
-                break;
             case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT:
-                debug("MSG_SYS_CODETABLE_RESULT");
-                break;
             case TDF_MSG_ID.MSG_SYS_MARKET_CLOSE:
-                debug("MSG_SYS_MARKET_CLOSE");
-                break;
             case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE:
-                debug("MSG_SYS_QUOTATIONDATE_CHANGE");
                 break;
             case TDF_MSG_ID.MSG_DATA_MARKET:
-                TDF_MARKET_DATA stock = convertToStockData(in_arr);
+                TDF_MARKET_DATA stock = WindParser.convertToStockData(in_arr, stockDataBySymbolMap);
                 if (stock.getTime() >= 240000000) {
-                    debug(String.format("%s %s", this.TITLE_STOCK,
+                    log.debug(String.format("%s %s", this.TITLE_STOCK,
                             this.ERR_TIME_FORMAT_ERROR));
                     return;
                 }
                 if (stock.getMatch() <= 0) {
-                    debug(String.format("%s %s", this.TITLE_STOCK,
+                    log.debug(String.format("%s %s", this.TITLE_STOCK,
                             this.ERR_LAST_LESS_THAN_ZERO));
                     return;
                 }
                 if (this.tradeDateCheckIsOpen
                         && stock.getTradingDay() != tradeDateForWindFormat) {
-                    debug(String.format("%s %s", this.TITLE_STOCK,
+                    log.debug(String.format("%s %s", this.TITLE_STOCK,
                             this.ERR_TRADEDATE_NOT_MATCH));
                     return;
                 }
                 if (this.closeOverTimeControlIsOpen
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-                    debug(String.format("%s %s,Session Close Time=%s",
+                    log.debug(String.format("%s %s,Session Close Time=%s",
                             this.TITLE_STOCK, this.ERR_CLOSE_OVER_TIME,
                             bigSessionCloseDate.toString()));
                     return;
@@ -731,30 +440,29 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                         TDF_MSG_ID.MSG_DATA_MARKET, stock});
                 break;
             case TDF_MSG_ID.MSG_DATA_INDEX:
-                debug("MSG_DATA_INDEX");
                 break;
             case TDF_MSG_ID.MSG_DATA_FUTURE:
-                TDF_FUTURE_DATA future = convertToFutureData(in_arr);
+                TDF_FUTURE_DATA future = WindParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 if (future.getTime() >= 240000000) {
-                    debug(String.format("%s %s", this.TITLE_FUTURE,
+                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
                             this.ERR_TIME_FORMAT_ERROR));
                     return;
                 }
                 if (future.getMatch() <= 0) {
-                    debug(String.format("%s %s", this.TITLE_FUTURE,
+                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
                             this.ERR_LAST_LESS_THAN_ZERO));
                     return;
                 }
                 if (this.tradeDateCheckIsOpen
                         && future.getTradingDay() != tradeDateForWindFormat) {
-                    debug(String.format("%s %s", this.TITLE_FUTURE,
+                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
                             this.ERR_TRADEDATE_NOT_MATCH));
                     return;
                 }
                 if (this.closeOverTimeControlIsOpen
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-                    debug(String.format("%s %s,Session Close Time=%s",
+                    log.debug(String.format("%s %s,Session Close Time=%s",
                             this.TITLE_FUTURE, this.ERR_CLOSE_OVER_TIME,
                             bigSessionCloseDate.toString()));
                     return;
@@ -763,33 +471,27 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                         TDF_MSG_ID.MSG_DATA_FUTURE, future});
                 break;
             case TDF_MSG_ID.MSG_DATA_TRANSACTION:
-                // Transaction
-                break;
             case TDF_MSG_ID.MSG_DATA_ORDERQUEUE:
-                // Order Queue
-                break;
             case TDF_MSG_ID.MSG_DATA_ORDER:
-                // Order
                 break;
             default:
                 break;
         }
     }
 
-    void processMessage() {
+    void processAPIMessage() {
         while (this.isConnected()) {
-            TDF_MSG msg = client.getMessage(10);
+            TDF_MSG msg = tdfClient.getMessage(10);
             if (msg == null)
                 continue;
 
             int type = msg.getDataType();
             switch (type) {
-                // 系统消息
                 case TDF_MSG_ID.MSG_SYS_HEART_BEAT:
-                    info("收到心跳资讯！");
+                    log.debug("MSG_SYS_HEART_BEAT");
                     break;
                 case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:
-                    error("网路断开！");
+                    log.error("MSG_SYS_DISCONNECT_NETWORK");
                     isConnected = false;
                     updateState(isConnected);
                     try {
@@ -804,21 +506,21 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                     break;
                 case TDF_MSG_ID.MSG_SYS_CONNECT_RESULT: {
                     TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
-                    info("网路连接结果：");
+                    log.debug("MSG_SYS_CONNECT_RESULT");
                     TDF_CONNECT_RESULT connect = data.getConnectResult();
-                    info("connect %s", connect.getConnResult() != 0 ? "success"
+                    log.info("connect %s", connect.getConnResult() != 0 ? "success"
                             : "fail");
                     break;
                 }
                 case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT: {
                     TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
                     TDF_LOGIN_RESULT login = data.getLoginResult();
-                    info("login %s", login.getLoginResult() != 0 ? "success"
+                    log.info("login %s", login.getLoginResult() != 0 ? "success"
                             : "fail");
                     break;
                 }
                 case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT: {
-                    info("收到代码表！");
+                    log.info("MSG_SYS_CODETABLE_RESULT");
                     TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
                     String[] markets = data.getCodeTableResult().getMarket();
                     for (String market : markets) {
@@ -832,8 +534,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 case TDF_MSG_ID.MSG_SYS_MARKET_CLOSE: {
                     TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
                     TDF_MARKET_CLOSE close = data.getMarketClose();
-                    info("%s, %d, %s", close.getMarket(), close.getTime(),
-                            convertGBString(close.getInfo()));
+                    log.debug("MSG_SYS_MARKET_CLOSE");
                     break;
                 }
                 case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE: {
@@ -844,7 +545,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                             TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE, change});
                     break;
                 }
-                // 资料消息
                 case TDF_MSG_ID.MSG_DATA_MARKET:
                     // info("MSG_DATA_MARKET");
                     for (int i = 0; i < msg.getAppHead().getItemCount(); i++) {
@@ -852,7 +552,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                         TDF_MARKET_DATA market = data.getMarketData();
                         QuoteMgr.instance.AddRequest(new Object[]{
                                 TDF_MSG_ID.MSG_DATA_MARKET, market});
-                        // StockItem.processMarketData(market);
                     }
                     break;
                 case TDF_MSG_ID.MSG_DATA_INDEX:
@@ -863,27 +562,21 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                         TDF_FUTURE_DATA future = data.getFutureData();
                         QuoteMgr.instance.AddRequest(new Object[]{
                                 TDF_MSG_ID.MSG_DATA_FUTURE, future});
-                        // FutureItem.processFutureData(future);
                     }
                     break;
                 case TDF_MSG_ID.MSG_DATA_TRANSACTION:
-                    info("MSG_DATA_TRANSACTION");
+                    log.info("MSG_DATA_TRANSACTION");
                     break;
                 case TDF_MSG_ID.MSG_DATA_ORDERQUEUE:
-                    // Order Queue
                     break;
                 case TDF_MSG_ID.MSG_DATA_ORDER:
-                    // Order
                     break;
                 default:
                     break;
             }
         }
-        client.close();
+        tdfClient.close();
     }
-
-    boolean isClose = false;
-    static NioEventLoopGroup clientGroup = null;
 
     /**
      * Wind Client link Gateway Server
@@ -891,36 +584,34 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
      * @param ip
      * @param port
      */
-    public void initFuture(String ip, int port) {
+    public void connectGateWay(String ip, int port) {
 
         isConnecting = true;
         WindFutureDataAdaptor.instance.closeClient();
-        Util.addLog(InfoString.ALert, "Wind initClient enter %s:%d", ip, port);
+//        Util.addLog(InfoString.ALert, "Wind initClient enter %s:%d", ip, port);
         LogUtil.logInfo(log, "Wind initClient enter %s:%d", ip, port);
 
         // Configure the client.
-        clientGroup = new NioEventLoopGroup();
+        nioEventLoopGroup = new NioEventLoopGroup();
         try {
-            Bootstrap bootstrap = new Bootstrap().group(clientGroup)
+            Bootstrap bootstrap = new Bootstrap().group(nioEventLoopGroup)
                     .channel(NioSocketChannel.class)
                     .handler(new ClientInitializer());
 
             ChannelFuture fClient = bootstrap.connect(ip, port).sync();
-            // Channel channel = bootstrap.connect(ip, port).sync().channel();
 
             if (fClient.isSuccess()) {
                 LogUtil.logInfo(log, "client socket connected : %s:%d", ip,
                         port);
-                Util.addLog("client socket connected : %s:%d", ip, port);
+//                Util.addLog("client socket connected : %s:%d", ip, port);
             } else {
                 LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
-                Util.addLog(InfoString.ALert, "Connect to %s:%d fail.", ip,
-                        port);
+//                Util.addLog(InfoString.ALert, "Connect to %s:%d fail.", ip,port);
                 isConnecting = true;
-                io.netty.util.concurrent.Future<?> f = clientGroup
+                io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
                         .shutdownGracefully();
                 f.await();
-                clientGroup = null;
+                nioEventLoopGroup = null;
 
                 fClient.channel().eventLoop().schedule(new Runnable() {
                     @Override
@@ -936,11 +627,9 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             }
         } catch (Exception e) {
             isConnecting = false;
-            // Shut down the event loop to terminate all threads.
             WindFutureDataAdaptor.instance.closeClient();
             LogUtil.logException(log, e);
-            Util.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", ip,
-                    port, e.getMessage());
+//            Util.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", ip,port, e.getMessage());
         }
     }
 
@@ -955,41 +644,36 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
      */
     public void sendState(boolean on) {
         for (IMarketDataStateListener listener : stateList) {
-            LogUtil.logDebug(log,
-                    "IMarketDataStateListener = " + listener.getClass());
+            log.debug("IMarketDataStateListener = " + listener.getClass());
             listener.onState(on);
         }
     }
 
     public void closeClient() {
-        if (clientGroup != null) {
-            io.netty.util.concurrent.Future<?> f = clientGroup
+        if (nioEventLoopGroup != null) {
+            io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
                     .shutdownGracefully();
             try {
                 f.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            clientGroup = null;
+            nioEventLoopGroup = null;
         }
 
-        LogUtil.logInfo(log, "Wind Close Client exit");
-        Util.addLog(InfoString.ALert, "Wind Close Client exit");
+        log.info("Wind Close Client exit");
+//        Util.addLog(InfoString.ALert, "Wind Close Client exit");
     }
 
-    // API initial
-    public static void initFuture(String ip, int port, String user,
-                                  String password) {
-        WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-        adaptor.connect();
-        adaptor.processMessage();
+    public void connectUseAPI(String ip, int port, String user,
+                              String password) {
+        connectUseAPI();
+        processAPIMessage();
     }
 
     public boolean isConnected() {
         return isConnected;
     }
-
-    int nId = 0;
 
     public void reconClient() {
         if (isClose || isConnecting)
@@ -1008,38 +692,37 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         this.addReqData(doConnect);
     }
 
-    public void connect() {
+    public void connectUseAPI() {
 
         while (true) {
-            setting.setIp(reqIp);
-            setting.setPort(Integer.toString(reqPort));
-            setting.setUser(userName);
-            setting.setPwd(password);
-
-            setting.setReconnectCount(99999999);
-            setting.setReconnectGap(10);
-            setting.setProtocol(0);
-            setting.setMarkets(openMarket);
-            setting.setDate(openData);
-            setting.setTime(openTime);
-            setting.setSubScriptions(subscription);
-            setting.setTypeFlags(openTypeFlags);
-            setting.setConnectionID(nId);
+            tdf_open_setting.setIp(reqIp);
+            tdf_open_setting.setPort(Integer.toString(reqPort));
+            tdf_open_setting.setUser(userName);
+            tdf_open_setting.setPwd(password);
+            tdf_open_setting.setReconnectCount(99999999);
+            tdf_open_setting.setReconnectGap(10);
+            tdf_open_setting.setProtocol(0);
+            tdf_open_setting.setMarkets(apiOpenMarket);
+            tdf_open_setting.setDate(apiOpenData);
+            tdf_open_setting.setTime(apiOpenTime);
+            tdf_open_setting.setSubScriptions(apiSubscription);
+            tdf_open_setting.setTypeFlags(apiOpenTypeFlags);
+            tdf_open_setting.setConnectionID(nId);
 
             nId = (nId + 1) % 2;
-            info("connect to %s:%d", reqIp, reqPort);
-            int err = client.open(setting);
+            log.info("connect to %s:%d", reqIp, reqPort);
+            int err = tdfClient.open(tdf_open_setting);
             if (err != TDF_ERR.TDF_ERR_SUCCESS) {
 
                 isConnecting = true;
-                error("Can't connect to %s:%d[%s]", reqIp, reqPort,
-                        getErrMsg(err));
+                log.error(String.format("Can't connect to %s:%d[%s]", reqIp, reqPort,
+                        getErrMsg(err)));
                 try {
                     if (err == TDF_ERR.TDF_ERR_VERIFY_FAILURE) {
                         disconnect();
                         Thread.sleep(10 * 1000);
-                        client.delete();
-                        client = new TDFClient();
+                        tdfClient.delete();
+                        tdfClient = new TDFClient();
 
                         addReqData(doConnect);
                         return;
@@ -1068,7 +751,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             eventProcessor.getThread().setName("WFDA eventProcessor");
 
         WindFutureDataAdaptor.instance = this;
-        getRefDataManager().init(); // init RefDataManager
+        this.refDataManager.init(); // init RefDataManager
 
         QuoteMgr.instance.init();
         initReqThread();
@@ -1124,7 +807,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         if (instrument.isEmpty())
             return;
 
-        if (WindFutureDataAdaptor.instance.isGateway()) {
+        if (gateway) {
             log.info("subscribeMarketData RefSymbol: " + instrument);
             log.debug("Setting refDataManager: "
                     + refDataManager.getClass());
@@ -1269,8 +952,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     @Override
     public void refreshSymbolInfo(String market) {
-        if (!isGateway()) {
-            // fetch symbol
+        if (!gateway) {
             List<SymbolInfo> list = updateCodeTable(market);
             sendSymbolInfo(list);
         }
@@ -1318,17 +1000,16 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
         int type = (int) reqObj;
         if (type == doConnect) {
-            if (isConnected == true)
+            if (isConnected)
                 return;
             if (gateway) {
-                LogUtil.logInfo(log, "connect to Wind GW %s:%d",
-                        getGatewayIp(), getGatewayPort());
-                initFuture(gatewayIp, gatewayPort);
+                log.info("connect to Wind GW %s:%d",
+                        gatewayIp, gatewayPort);
+                connectGateWay(gatewayIp, gatewayPort);
             } else {
-                initFuture(reqIp, reqPort, userName, password);
+                connectUseAPI(reqIp, reqPort, userName, password);
             }
         }
-        reqObj = null;
     }
 
     @Override
