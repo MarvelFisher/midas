@@ -63,7 +63,7 @@ public class RefDataHandler implements IPlugin {
 
     public void processRefDataRequestEvent(RefDataRequestEvent event) {
         try {
-            eventManager.sendRemoteEvent(new RefDataEvent(null, null, refDataManager.getRefDataList()));
+            eventManager.sendLocalOrRemoteEvent(new RefDataEvent(null, null, refDataManager.getRefDataList()));
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
