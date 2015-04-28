@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.cyanspring.server.persistence;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +36,6 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
-import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.Instrument;
@@ -612,9 +610,14 @@ public class PersistenceManager {
 
 		if(null == event.getUser())	//user exist , getAccount
 		{
-            ok = getAccount(event, userKeeper, accountKeeper);
+            ok = loginAndGetAccount(event, userKeeper, accountKeeper);
 			log.info("Login: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 		}
+        else if (Strings.isNullOrEmpty(event.getUser().getId()))
+        {
+            ok = loginFromThirdPartyIdAndGetAccount(event, userKeeper, accountKeeper);
+            log.info("Login: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
+        }
 		else	//user not exist, create user and then getAccount
 		{
 			Session session = sessionFactory.openSession();
@@ -682,23 +685,140 @@ public class PersistenceManager {
 		log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 	}
 
-    private boolean getAccount(PmUserCreateAndLoginEvent event, UserKeeper userKeeper, AccountKeeper accountKeeper) {
+    private boolean loginAndGetAccount(PmUserCreateAndLoginEvent event, UserKeeper userKeeper, AccountKeeper accountKeeper) {
         boolean ok = true;
         Account defaultAccount = null;
-        List<Account> list;
+        List<Account> list = null;
         String message = "";
+        User user = null;
+        ErrorMessage msg = null;
 
-        User user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
+        try {
+            // login
+            {
+                user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
 
-        if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
-            defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+                if (null == user) {
+                    ok = false;
+                    msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+                    throw new UserException("userid or password invalid");
+                }
+
+                if (user.getTerminationStatus().isTerminated()) {
+                    ok = false;
+                    msg = ErrorMessage.USER_IS_TERMINATED;
+                    throw new UserException("User is terminated");
+                }
+
+                String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId());
+
+                if (Strings.isNullOrEmpty(userId)) {
+
+                    if (!centralDbConnector.registerThirdPartyUser(event.getOriginalEvent().getUser().getId(),
+                            event.getOriginalEvent().getUser().getUserType(), event.getOriginalEvent().getThirdPartyId())) {
+
+                        ok = false;
+                        msg = ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED;
+                        throw new UserException("Register third party id failed");
+                    }
+
+                } else {
+                    if (!userId.equals(event.getOriginalEvent().getUser().getId())) {
+
+                        ok = false;
+                        msg = ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID;
+                        throw new UserException("Third party id is not match with the user id");
+                    }
+                }
+            }
+
+            user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
+
+            if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+                defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+            }
+
+            list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
+
+            if (defaultAccount == null && (list == null || list.size() <= 0)) {
+                ok = false;
+                message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+            }
+
+        } catch (Exception ue) {
+
+            log.error(ue.getMessage(), ue);
+
+            if(ue instanceof UserException){
+
+                message = MessageLookup.buildEventMessage(msg, ue.getMessage());
+            }else{
+                message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
+            }
         }
 
-        list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
+        try {
+            eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+                    event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+                    message, event.getOriginalEvent().getTxId(), false));
+            if(ok) {
+                user.setLastLogin(Clock.getInstance().now());
+                eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+            }
 
-        if (defaultAccount == null && (list == null || list.size() <= 0)) {
-            ok = false;
-            message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return ok;
+    }
+
+    private boolean loginFromThirdPartyIdAndGetAccount(PmUserCreateAndLoginEvent event, UserKeeper userKeeper, AccountKeeper accountKeeper) {
+        boolean ok = true;
+        Account defaultAccount = null;
+        List<Account> list = null;
+        String message = "";
+        User user = null;
+        ErrorMessage msg = null;
+
+        try {
+
+            String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId());
+
+            if (Strings.isNullOrEmpty(userId)) {
+
+                ok = false;
+                msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+                throw new UserException("userid or password invalid");
+            }
+
+            event.getOriginalEvent().getUser().setId(userId);
+
+            // TODO: Get user from MySQL and check termination?
+
+            user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
+
+            if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+                defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+            }
+
+            list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
+
+            if (defaultAccount == null && (list == null || list.size() <= 0)) {
+                ok = false;
+                message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+            }
+
+        } catch (Exception ue) {
+
+            log.error(ue.getMessage(), ue);
+
+            if(ue instanceof UserException){
+
+                message = MessageLookup.buildEventMessage(msg, ue.getMessage());
+            }else{
+                message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
+            }
         }
 
         try {
@@ -1366,6 +1486,12 @@ public class PersistenceManager {
 
         if (!Strings.isNullOrEmpty(event.getUserThirdParty())) {
             userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase());
+        }
+
+        // Backward compatibility
+        if (!userThirdPartyExist && centralDbConnector.isUserExist(event.getUserThirdParty().toLowerCase())) {
+            userExist = true;
+            userThirdPartyExist = true;
         }
 
         try {

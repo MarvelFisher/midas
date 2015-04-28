@@ -208,6 +208,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.TERMINATE_USER_FAILED, getBean(516, "Change user termination status failed"));
 			addAndCheck(ErrorMessage.ACCOUNT_FROZEN,getBean(517, "Exceed Daily Maximun Loss!  Your account will be frozen for the rest of the day."));
 			addAndCheck(ErrorMessage.ACCOUNT_TERMINATED,getBean(518, "Exceed Account Stop Loss!  Your account is terminated."));
+			addAndCheck(ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID, getBean(519, "Third party id is not match with the user id"));
+			addAndCheck(ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED, getBean(520, "Register third party id failed"));
 
 			
 			

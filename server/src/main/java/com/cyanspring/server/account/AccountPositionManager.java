@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -465,8 +466,13 @@ public class AccountPositionManager implements IPlugin {
             try {
                 checkUserType(user);
 
+                if (null == user.getId()) {
+                    user.setId("");
+                }
+
                 user.setId(user.getId().toLowerCase());
-                if (!userKeeper.userExists(user.getId())) {
+
+                if (Strings.isNullOrEmpty(user.getId()) || !userKeeper.userExists(user.getId())) {
                     String defaultAccountId = getDefaultAccountId(user);
 
                     user.setDefaultAccount(defaultAccountId);

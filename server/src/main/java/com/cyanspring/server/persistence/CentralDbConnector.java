@@ -22,6 +22,7 @@ import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.message.ErrorMessage;
 
+// TODO: JDBC Template
 public class CentralDbConnector {
 
 //	protected String host = "";
@@ -37,6 +38,7 @@ public class CentralDbConnector {
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
+    private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
@@ -138,6 +140,44 @@ public class CentralDbConnector {
 		}
 		return bIsSuccess;
 	}
+
+    public boolean registerThirdPartyUser(String userId, UserType userType, String thirdPartyId) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        boolean bIsSuccess = false;
+        Statement stmt = null;
+
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+
+            String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), userId, userType);
+            stmt.executeUpdate(sql);
+
+            bIsSuccess = true;
+            conn.commit();
+        } catch (SQLException e) {
+            bIsSuccess = false;
+            log.warn("Cannot register third party user." + userId + ", " + thirdPartyId, e);
+            try {
+                conn.rollback();
+            } catch (SQLException se) {
+                log.warn("Register third party user rollback fail." + userId + ", " + thirdPartyId, se);
+            }
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+        return bIsSuccess;
+    }
 
 	public boolean isUserExist(String sUser) {
 
@@ -316,6 +356,39 @@ public class CentralDbConnector {
 		log.debug("[userLoginEx] password not match :" + sUser);
 		return null;
 	}
+
+    public String getUserIdFromThirdPartyId(String thirdPartyId) {
+
+        Connection conn = connect();
+
+        if (null == conn) {
+            return null;
+        }
+
+        Statement stmt = null;
+
+        try {
+            String sQuery = String.format(getUserIdFromThirdPartyId, thirdPartyId);
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            return rs.getString("USERID");
+
+        } catch (SQLException e) {
+
+            closeStmt(stmt);
+            log.warn(e.getMessage(), e);
+            return null;
+
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+    }
 
 	public boolean changePassword(String sUser, String originalPass, String newPass) {
 
