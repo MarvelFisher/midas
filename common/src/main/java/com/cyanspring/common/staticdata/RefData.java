@@ -155,6 +155,10 @@ public class RefData extends DataObject {
 	public String getMarket(){
 		return this.get(String.class, RefDataField.MARKET.value());
 	}
+	
+	public String getSpellName(){
+		return this.get(String.class, RefDataField.SPELL_NAME.value());
+	}
 		
 	public void setSymbol(String symbol){
 		this.set(symbol, RefDataField.SYMBOL.value());
@@ -178,5 +182,9 @@ public class RefData extends DataObject {
 	
 	public void setSettlementDate(String settlementDate){
 		this.set(settlementDate, RefDataField.SETTLEMENT_DATE.value());
+	}
+	
+	public void setSpellName(String spellName){
+		this.set(spellName, RefDataField.SPELL_NAME.value());
 	}
 }

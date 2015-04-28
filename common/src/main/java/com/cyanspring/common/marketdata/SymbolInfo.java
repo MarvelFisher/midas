@@ -45,6 +45,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String Category = null;
 	private double Denominator = 0.0;
 	private String Tradable = null;
+	private String SpellName = null;
 	
 	public SymbolInfo(String market, String code) 
 	{
@@ -377,5 +378,11 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setMaximumHold(int maximumHold) {
 		MaximumHold = maximumHold;
+	}
+	public String getSpellName() {
+		return SpellName;
+	}
+	public void setSpellName(String spellName) {
+		SpellName = spellName;
 	}
 }
