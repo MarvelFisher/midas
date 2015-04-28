@@ -49,6 +49,10 @@
         <string>Category</string>
         <string>A</string>
       </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>zgpa</string>
+      </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
@@ -100,6 +104,10 @@
 	  <entry>
         <string>Category</string>
         <string>A</string>
+      </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>zxzq</string>
       </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
@@ -153,6 +161,10 @@
         <string>Category</string>
         <string>A</string>
       </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>zgrs</string>
+      </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
@@ -204,6 +216,10 @@
 	  <entry>
         <string>Category</string>
         <string>A</string>
+      </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>zgzg</string>
       </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
@@ -257,6 +273,10 @@
         <string>Category</string>
         <string>A</string>
       </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>pfyh</string>
+      </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
@@ -308,6 +328,10 @@
 	  <entry>
         <string>Category</string>
         <string>A</string>
+      </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>wka</string>
       </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
@@ -361,6 +385,10 @@
         <string>Category</string>
         <string>A</string>
       </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>msyh</string>
+      </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
@@ -412,6 +440,10 @@
 	  <entry>
         <string>Category</string>
         <string>A</string>
+      </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>htzq</string>
       </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
@@ -465,6 +497,10 @@
         <string>Category</string>
         <string>A</string>
       </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>lsw</string>
+      </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
    <com.cyanspring.common.staticdata.RefData>
@@ -516,6 +552,10 @@
 	  <entry>
         <string>Category</string>
         <string>A</string>
+      </entry>
+	  <entry>
+        <string>Spell name</string>
+        <string>kdxf</string>
       </entry>
     </fields>
    </com.cyanspring.common.staticdata.RefData>
@@ -569,6 +609,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>payh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -619,6 +663,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wka</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -671,6 +719,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgba</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -721,6 +773,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zsdc</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -773,6 +829,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>szny</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -823,6 +883,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjjt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -875,6 +939,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjln</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -925,6 +993,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ncp</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -977,6 +1049,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zxtx</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1027,6 +1103,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hqca</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1079,6 +1159,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tcljt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1130,6 +1214,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hscm</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1180,6 +1268,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zlzk</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1233,6 +1325,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>swhy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1283,6 +1379,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ndjt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1335,6 +1435,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wcdl</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1385,6 +1489,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xjdq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1437,6 +1545,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jdsn</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1487,6 +1599,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jrj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1539,6 +1655,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dxgd</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1589,6 +1709,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>daaj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1641,6 +1765,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xgjx</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1691,6 +1819,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hhkg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1743,6 +1875,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hykj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1793,6 +1929,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ynby</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1845,6 +1985,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wxqc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1895,6 +2039,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lzlj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -1947,6 +2095,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wfgk</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -1997,6 +2149,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xrtz</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2049,6 +2205,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jlad</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2099,6 +2259,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zaqc</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2151,6 +2315,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>pgft</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2201,6 +2369,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tlys</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2253,6 +2425,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gldq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2303,6 +2479,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dbzq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2355,6 +2535,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hbgt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2405,6 +2589,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jdfa</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2457,6 +2645,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gyzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2507,6 +2699,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yjpj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2559,6 +2755,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ghzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2609,6 +2809,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhfj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2661,6 +2865,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>qfzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2711,6 +2919,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xxzg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2763,6 +2975,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2813,6 +3029,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yhgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2865,6 +3085,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hwcm</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -2915,6 +3139,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yqjc</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -2967,6 +3195,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tgby</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3017,6 +3249,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sdhj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3069,6 +3305,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wkxt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3119,6 +3359,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zxga</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3171,6 +3415,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wly</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3221,6 +3469,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zya</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3273,6 +3525,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xxw</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3323,6 +3579,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ynty</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3375,6 +3635,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hbny</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3425,6 +3689,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shfz</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3477,6 +3745,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>aggf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3527,6 +3799,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dgcm</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3579,6 +3855,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jzny</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3629,6 +3909,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xygf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3681,6 +3965,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hdyy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3731,6 +4019,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zksh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3783,6 +4075,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xsmd</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3833,6 +4129,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hrsj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3885,6 +4185,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xhc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -3935,6 +4239,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hlsw</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -3987,6 +4295,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dzjg</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4037,6 +4349,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>snys</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4089,6 +4405,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>slyy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4139,6 +4459,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zggj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4191,6 +4515,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dhrj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4241,6 +4569,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jtl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4293,6 +4625,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4343,6 +4679,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nbyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4395,6 +4735,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>rsfz</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4445,6 +4789,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sjxx</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4497,6 +4845,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jfkj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4547,6 +4899,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>kdxf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4599,6 +4955,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dhgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4649,6 +5009,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gesx</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4701,6 +5065,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shls</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4751,6 +5119,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>afdm</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4803,6 +5175,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xlt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4853,6 +5229,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yhgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -4905,6 +5285,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dfyl</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -4955,6 +5339,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hnpc</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5007,6 +5395,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jrgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5057,6 +5449,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ysgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5109,6 +5505,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dbn</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5159,6 +5559,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hpr</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5211,6 +5615,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sggf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5261,6 +5669,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gldq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5313,6 +5725,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hkws</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5363,6 +5779,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>asd</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5415,6 +5835,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>klyy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5465,6 +5889,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zcgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5517,6 +5945,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>kdxf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5567,6 +5999,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ofg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5619,6 +6055,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hgtx</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5669,6 +6109,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jzd</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5721,6 +6165,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lxjm</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5771,6 +6219,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sxzq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5823,6 +6275,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bym</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5873,6 +6329,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>byd</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -5925,6 +6385,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ylyy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -5975,6 +6439,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hsk</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6027,6 +6495,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xbzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6077,6 +6549,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>aeyk</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6129,6 +6605,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wxkj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6179,6 +6659,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jqr</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6231,6 +6715,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hyxd</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6281,6 +6769,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lsgb</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6333,6 +6825,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bsy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6383,6 +6879,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hcjs</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6435,6 +6935,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hcys</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6485,6 +6989,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tcbj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6537,6 +7045,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gxcm</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6587,6 +7099,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>pfyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6639,6 +7155,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>scgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6689,6 +7209,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shjc</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6741,6 +7265,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bggf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6791,6 +7319,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hngj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6843,6 +7375,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hxyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6893,6 +7429,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>msyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -6945,6 +7485,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sgjt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -6995,6 +7539,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bggf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7047,6 +7595,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zndl</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7097,6 +7649,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hdgj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7149,6 +7705,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgsh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7199,6 +7759,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nfhk</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7251,6 +7815,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zxzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7301,6 +7869,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>syzg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7353,6 +7925,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zsyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7403,6 +7979,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zzgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7455,6 +8035,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bldc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7505,6 +8089,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zglt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7557,6 +8145,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wkfz</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7607,6 +8199,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hxdq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7659,6 +8255,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ytkc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7709,6 +8309,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gzb</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7761,6 +8365,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>rfyy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7811,6 +8419,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>trt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7863,6 +8475,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tbdg</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -7913,6 +8529,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tfgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -7965,6 +8585,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sqjt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8015,6 +8639,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ysjt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8067,6 +8695,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gjzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8117,6 +8749,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bfxt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8169,6 +8805,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dfhk</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8219,6 +8859,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgwx</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8271,6 +8915,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jfkj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8321,6 +8969,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgcb</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8373,6 +9025,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jfgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8423,6 +9079,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ytny</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8475,6 +9135,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ftqc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8525,6 +9189,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shjg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8577,6 +9245,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yge</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8627,6 +9299,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yzmy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8679,6 +9355,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>fxyy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8729,6 +9409,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xhzb</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8781,6 +9465,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hnhk</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8831,6 +9519,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhjt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8883,6 +9575,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ghny</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -8933,6 +9629,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hzyy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -8985,6 +9685,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>htxx</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9035,6 +9739,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hryy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9087,6 +9795,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ylny</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9137,6 +9849,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>whhx</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9189,6 +9905,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shjh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9239,6 +9959,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hdhk</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9291,6 +10015,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bys</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9341,6 +10069,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hxxf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9393,6 +10125,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yqmy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9443,6 +10179,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjls</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9495,6 +10235,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jxty</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9545,6 +10289,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xnzq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9597,6 +10345,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhdz</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9647,6 +10399,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zwcm</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9699,6 +10455,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jdjt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9749,6 +10509,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>pjgf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9801,6 +10565,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hlzj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9851,6 +10619,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gdnr</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -9903,6 +10675,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xspc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -9953,6 +10729,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>pzh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10005,6 +10785,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xwjt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10055,6 +10839,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjhj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10107,6 +10895,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>chxz</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10157,6 +10949,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>fhtx</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10209,6 +11005,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>fdts</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10259,6 +11059,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>kmyy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10311,6 +11115,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gzmt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10361,6 +11169,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>tsl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10413,6 +11225,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sdhj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10463,6 +11279,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>smwy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10515,6 +11335,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hsdz</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10565,6 +11389,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jndl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10617,6 +11445,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hygc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10667,6 +11499,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hlsn</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10719,6 +11555,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yywl</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10769,6 +11609,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gmry</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10821,6 +11665,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>qdpj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10871,6 +11719,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zbcm</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -10923,6 +11775,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bst</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -10973,6 +11829,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sngf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11025,6 +11885,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>wgq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11075,6 +11939,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ctkg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11127,6 +11995,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yysc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11177,6 +12049,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>fybl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11229,6 +12105,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ljz</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11279,6 +12159,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hygf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11331,6 +12215,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ctny</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11381,6 +12269,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shsh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11433,6 +12325,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>qdhe</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11483,6 +12379,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sagd</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11535,6 +12435,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhzb</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11585,6 +12489,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>drjt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11637,6 +12545,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lncd</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11687,6 +12599,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hyqc</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11739,6 +12655,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lxct</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11789,6 +12709,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gddl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11841,6 +12765,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>pbs</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11891,6 +12819,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sxfj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -11943,6 +12875,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>blgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -11993,6 +12929,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dfmz</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12045,6 +12985,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>htzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12095,6 +13039,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>sczh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12147,6 +13095,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nmhd</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12197,6 +13149,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>thdb</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12249,6 +13205,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>mhsw</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12299,6 +13259,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dfdq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12351,6 +13315,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>brcb</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12401,6 +13369,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gtdl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12453,6 +13425,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>ylgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12503,6 +13479,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhdl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12555,6 +13535,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjdl</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12605,6 +13589,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jzt</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12657,6 +13645,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zszq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12707,6 +13699,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dqtl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12759,6 +13755,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>njyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12809,6 +13809,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nbg</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12861,6 +13865,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgsh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -12911,6 +13919,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zncm</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -12963,6 +13975,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zggh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13013,6 +14029,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zghx</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13065,6 +14085,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hnxj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13115,6 +14139,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zqsw</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13167,6 +14195,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xyyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13217,6 +14249,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xbky</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13269,6 +14305,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>bjyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13319,6 +14359,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgxd</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13371,6 +14415,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgtj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13421,6 +14469,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nmjz</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13473,6 +14525,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xxmy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13523,6 +14579,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>hxdz</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13575,6 +14635,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>pdjt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13625,6 +14689,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nyyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13677,6 +14745,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgbc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13727,6 +14799,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgpa</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13779,6 +14855,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jtyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13829,6 +14909,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gstl</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13881,6 +14965,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xhbx</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -13931,6 +15019,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>xyzq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -13983,6 +15075,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgzt</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14033,6 +15129,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gsyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14085,6 +15185,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>dwzq</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14135,6 +15239,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgly</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14187,6 +15295,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgtb</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14237,6 +15349,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shyy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14289,6 +15405,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgzy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14339,6 +15459,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgrs</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14391,6 +15515,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zcqc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14441,6 +15569,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgjz</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14493,6 +15625,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgdj</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14543,6 +15679,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>htzq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14595,6 +15735,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lahn</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14645,6 +15789,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>shdq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14697,6 +15845,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgnc</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14747,6 +15899,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgjj</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14799,6 +15955,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhyf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14849,6 +16009,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>gdyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -14901,6 +16065,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgsy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -14951,6 +16119,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zhjy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15003,6 +16175,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zggl</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15053,6 +16229,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zmny</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15105,6 +16285,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zjky</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15155,6 +16339,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>fzzq</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15207,6 +16395,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>fhcm</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15257,6 +16449,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jscm</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15309,6 +16505,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>yhcs</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15359,6 +16559,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jsyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15411,6 +16615,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jmgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15461,6 +16669,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgyh</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15513,6 +16725,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zgzg</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15563,6 +16779,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>jygf</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15615,6 +16835,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>zxyh</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15665,6 +16889,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>rmw</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
@@ -15717,6 +16945,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>htwy</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15768,6 +17000,10 @@
 	        <string>Category</string>
 	        <string>A</string>
 	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>nwgf</string>
+	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData><com.cyanspring.common.staticdata.RefData>
 	    <fields>
@@ -15818,6 +17054,10 @@
 		  <entry>
 	        <string>Category</string>
 	        <string>A</string>
+	      </entry>
+		  <entry>
+	        <string>Spell name</string>
+	        <string>lymy</string>
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData>
