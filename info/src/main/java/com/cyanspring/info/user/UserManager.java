@@ -1,6 +1,5 @@
 package com.cyanspring.info.user;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,8 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
@@ -33,14 +34,19 @@ public class UserManager implements IPlugin {
 	
 	@Autowired
 	SessionFactory sessionFactoryCentral;
-
+	
+	@Autowired
+	ScheduleManager scheduleManager;
+	
 	@Autowired
 	private IRemoteEventManager eventManager;
-
+	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(ResetAccountRequestEvent.class, null);
+			subscribeToEvent(AsyncTimerEvent.class, null);
 		}
 
 		@Override
@@ -113,28 +119,22 @@ public class UserManager implements IPlugin {
 			
 			
 			while (iterator.hasNext()) {	
-				Object[] rows = (Object[]) iterator.next();	
+				Object[] rows = (Object[]) iterator.next();				
 				String StartDate = (String) rows[2].toString();
 			    String EndDate = rows[3].toString();
 			    
-//				strStartDate = RS.getString("START_DATE");
 				if(CurTime.compareTo(StartDate) < 0)
 				{
 					continue;
 				}
-//				strEndDate   = RS.getString("END_DATE");
 				if(CurTime.compareTo(EndDate) > 0)
 				{
 					continue;
-				}				
-//				ContestIdArray.add(RS.getString("CONTEST_ID"));
-				
+				}								
 				ContestIdArray.add((String) rows[0]);
 			}				
 			for (String ContestId : ContestIdArray)
-			{
-				//strCmd = "delete from "+ ContestId + "_fx where USER_ID='" + UserId + "'";
-				
+			{				
 				strCmd = "delete from "+ ContestId + "_fx where USER_ID='" + UserId + "' and DATE<>'0'";
 				query = sessionCentral.createSQLQuery(strCmd);
 				Return = query.executeUpdate();
@@ -147,7 +147,7 @@ public class UserManager implements IPlugin {
 			eventManager.sendRemoteEvent(resetAccountReplyEvent);
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("["+strCmd+"] "+e.getMessage(), e);
 			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),
 					event.getSender(), 
 					event.getAccount(), 
@@ -157,8 +157,7 @@ public class UserManager implements IPlugin {
 					event.getCoinId(), 
 					ResetAccountReplyType.LTSINFO_USERMANAGER, 
 					false, 
-
-					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User " + UserId + " fail."));
+					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "[UserManager]: Reset User " + UserId + " fail."));
 			try
 			{
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);
@@ -168,14 +167,52 @@ public class UserManager implements IPlugin {
 				log.error(ee.getMessage());
 			}
 		}
-		finally 
+		finally
 		{
 			session.close();
 			sessionCentral.close();
 		}
 		return true;
 	}
-
+	
+	private void SendSQLHeartBeat() {
+		Session session = null;
+		Session sessionCentral = null ;
+		try {
+			session = sessionFactory.openSession();
+			sessionCentral = sessionFactoryCentral.openSession();
+			
+			SQLQuery sq = session.createSQLQuery("select 1;");			
+			Iterator iterator = sq.list().iterator();			
+			sq = sessionCentral.createSQLQuery("select 1;");
+			iterator = sq.list().iterator();
+			log.debug("Send SQLHeartBeat...");
+		} catch (Exception e) {
+			log.warn("[SendSQLHeartBeat] : " + e.getMessage());
+		} finally {
+			if (null != session) {
+				session.close();
+			}
+			if (null != sessionCentral)
+			{
+				sessionCentral.close();
+			}
+		}
+	}
+	
+	public void processAsyncTimerEvent(AsyncTimerEvent event) {
+		if (event == timerEvent) {
+			try {
+				SendSQLHeartBeat();
+			}
+			catch (Exception e)
+			{
+				log.warn("[timerEvent] Exception : "
+						+ e.getMessage());
+			}
+		}
+	}
+	
 	@Override
 	public void init() throws Exception {
 		// TODO Auto-generated method stub
@@ -185,6 +222,10 @@ public class UserManager implements IPlugin {
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("UserManager");
+		
+		scheduleManager.scheduleRepeatTimerEvent(60000,
+				eventProcessor, timerEvent);
+		
 	}
 
 	@Override
