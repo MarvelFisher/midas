@@ -809,8 +809,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
         if (gateway) {
             log.info("subscribeMarketData RefSymbol: " + instrument);
-            log.debug("Setting refDataManager: "
-                    + refDataManager.getClass());
             RefData refData = null;
             String targetField = "";
             //Future

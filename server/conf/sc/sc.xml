@@ -58,14 +58,14 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="globalTransportService" />
 		</constructor-arg>
 		<property name="embedBroker" value="false"/>
 	</bean>
-	
+
 	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"/>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
@@ -141,16 +141,57 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>601318.SH</value>
-				<value>600030.SH</value>
-				<value>601628.SH</value>
-				<value>601989.SH</value>
-				<value>600000.SH</value>
-				<value>000002.SZ</value>
-				<value>600016.SH</value>
-				<value>600837.SH</value>
-				<value>300104.SZ</value>
-				<value>002230.SZ</value>
+                <value>000001.SZ</value>
+                <value>000002.SZ</value>
+                <value>000009.SZ</value>
+                <value>000024.SZ</value>
+                <value>000027.SZ</value>
+                <value>000039.SZ</value>
+                <value>000060.SZ</value>
+                <value>000061.SZ</value>
+                <value>000063.SZ</value>
+                <value>000069.SZ</value>
+                <value>000100.SZ</value>
+                <value>000156.SZ</value>
+                <value>000157.SZ</value>
+                <value>000166.SZ</value>
+                <value>000333.SZ</value>
+                <value>000338.SZ</value>
+                <value>000400.SZ</value>
+                <value>000401.SZ</value>
+                <value>000402.SZ</value>
+                <value>000413.SZ</value>
+                <value>000423.SZ</value>
+                <value>000425.SZ</value>
+                <value>000503.SZ</value>
+                <value>000536.SZ</value>
+                <value>000538.SZ</value>
+                <value>000559.SZ</value>
+                <value>000568.SZ</value>
+                <value>000581.SZ</value>
+                <value>000598.SZ</value>
+                <value>000623.SZ</value>
+                <value>000625.SZ</value>
+                <value>000629.SZ</value>
+                <value>000630.SZ</value>
+                <value>000651.SZ</value>
+                <value>000686.SZ</value>
+                <value>000709.SZ</value>
+                <value>000725.SZ</value>
+                <value>000728.SZ</value>
+                <value>000729.SZ</value>
+                <value>000750.SZ</value>
+                <value>000768.SZ</value>
+                <value>000776.SZ</value>
+                <value>000778.SZ</value>
+                <value>000783.SZ</value>
+                <value>000792.SZ</value>
+                <value>000793.SZ</value>
+                <value>000800.SZ</value>
+                <value>000825.SZ</value>
+                <value>000826.SZ</value>
+                <value>000831.SZ</value>
+                <value>000839.SZ</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -266,7 +307,7 @@
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
-	
+
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
@@ -280,5 +321,5 @@
 				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
-	</bean>	
+	</bean>
 </beans>
