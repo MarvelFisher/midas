@@ -122,7 +122,7 @@
 		<property name="preOpen" value="510"></property>
 		<property name="open" value="515"></property>
 		<property name="close" value="500"></property>
-		<property name="sendHeartBeat" value="5"></property>
+		<property name="sendHeartBeat" value="3"></property>
 		<property name="nonFX">
 			<map>
 				<entry key="XAUUSD" value="691" />
@@ -132,6 +132,7 @@
 		<property name="contributeList">
 			<list>
 				<value>AXI</value>
+				<value>FXN</value>
 			</list>
 		</property>
 		<property name="unContributeList">
@@ -140,25 +141,6 @@
 		</property>
 	</bean>
 
-	<!-- WindAdaptor setting (Setting can be marked if not used) -->
-	<!-- 
-	<bean id="windAdaptor"
-		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
-		<property name="showGui" value="true"></property>
-		<property name="reqIp" value="114.80.154.34"></property>
-		<property name="reqPort" value="10051"></property>
-		<property name="userName" value="TD1001888001"></property>
-		<property name="password" value="62015725"></property>
-		<property name="gateway" value="true"></property> 
-		<property name="gatewayIp" value="202.55.14.140"></property> 
-		<property name="gatewayPort" value="10049"></property>
-		<property name="marketDataLog" value="false"></property>
-		<property name="marketType" value="F"></property> 
-		<property name="refDataManager">
-			<ref bean="refDataManager" />
-		</property>					
-	</bean>
-	 -->
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String">
 		<constructor-arg value="1527" />
