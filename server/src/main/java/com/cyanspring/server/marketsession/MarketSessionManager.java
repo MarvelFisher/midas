@@ -114,7 +114,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         if (marketSessionUtil == null)
             return;
         try {
-            eventManager.sendRemoteEvent(new IndexSessionEvent(null, null,
+            eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(null, null,
                     marketSessionUtil.getMarketDatas(event.getIndexList(), event.getDate())));
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
