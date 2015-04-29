@@ -121,6 +121,7 @@ public class AlertManager extends Compute {
 	public void processQueryOrderAlertRequestEvent(
 			QueryOrderAlertRequestEvent event, List<Compute> computes) {
 		log.info("[receiveQueryOrderAlertRequestEvent] :" + event.toString());
+		receiveQueryOrderAlertRequestEvent(event, computes) ;
 	}
 
 	synchronized private void ResetUser(ResetAccountRequestEvent event) {
@@ -164,7 +165,6 @@ public class AlertManager extends Compute {
 	}
 
 	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
-		log.info("[receiveChildOrderUpdateEvent] : 1 " + execution.toString());
 		Session session = null;
 		try {
 			DecimalFormat qtyFormat = new DecimalFormat("#0");
@@ -221,7 +221,6 @@ public class AlertManager extends Compute {
 						lstExpired.add(pastTradeAlert);
 					}
 				}
-				log.debug("[receiveChildOrderUpdateEvent] : 2 " + execution.toString());
 				if (list.size() == 0) {
 					list.add(TA);
 				} else if (list.size() >= 20) {
@@ -269,10 +268,9 @@ public class AlertManager extends Compute {
 				session.close();
 			}
 		}
-		log.info("[receiveChildOrderUpdateEvent] :  ProcessEnd " + execution.toString());
 	}
 	
-	synchronized private void receiveQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event, List<Compute> computes) {
+	private void receiveQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event, List<Compute> computes) {
 		try {			
 			AlertType type = event.getType();
 			String Msg = "";
