@@ -186,7 +186,7 @@ public class UserManager implements IPlugin {
 			Iterator iterator = sq.list().iterator();			
 			sq = sessionCentral.createSQLQuery("select 1;");
 			iterator = sq.list().iterator();
-			log.debug("Send SQLHeartBeat...");
+			log.info("Send SQLHeartBeat...");
 		} catch (Exception e) {
 			log.warn("[SendSQLHeartBeat] : " + e.getMessage());
 		} finally {
