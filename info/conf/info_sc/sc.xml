@@ -47,6 +47,58 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
+				<value>601318.SH</value>
+				<value>600030.SH</value>
+				<value>601628.SH</value>
+				<value>601989.SH</value>
+				<value>600000.SH</value>
+				<value>000002.SZ</value>
+				<value>600016.SH</value>
+				<value>600837.SH</value>
+				<value>300104.SZ</value>
+				<value>002230.SZ</value>
+	        </list>    
+		</property>
+		<property name="SQLDelayInterval">
+			<value>300000</value>
+		</property>
+	</bean>
+	
+	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
+	</bean>
+	
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportService"/>
+	    </constructor-arg>
+		<property name="embedBroker" value="true"></property>
+	</bean>
+	
+	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportServiceMD"/>
+	    </constructor-arg>
+		<property name="embedBroker" value="false"></property>
+	</bean>
+	
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+		<property name="refDataFile">
+			<value>refdata/refData_sc.xml</value>
+		</property>
+	</bean>
+
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>601318.SH</value>
+				<value>600030.SH</value>
+				<value>601628.SH</value>
+				<value>601989.SH</value>
+				<value>600000.SH</value>
+				<value>600016.SH</value>
+				<value>600837.SH</value>
+				<value>300104.SZ</value>
+				<value>002230.SZ</value>
 				<value>000001.SZ</value>
 				<value>000002.SZ</value>
 				<value>000009.SZ</value>
@@ -98,49 +150,6 @@
 				<value>000826.SZ</value>
 				<value>000831.SZ</value>
 				<value>000839.SZ</value>
-	        </list>    
-		</property>
-		<property name="SQLDelayInterval">
-			<value>300000</value>
-		</property>
-	</bean>
-	
-	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
-	</bean>
-	
-	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
-	    <constructor-arg>
-	    	<ref bean="transportService"/>
-	    </constructor-arg>
-		<property name="embedBroker" value="true"></property>
-	</bean>
-	
-	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">
-	    <constructor-arg>
-	    	<ref bean="transportServiceMD"/>
-	    </constructor-arg>
-		<property name="embedBroker" value="false"></property>
-	</bean>
-	
-	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
-		<property name="refDataFile">
-			<value>refdata/refData_sc.xml</value>
-		</property>
-	</bean>
-
-	<bean id="preSubscriptionList" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-				<value>601318.SH</value>
-				<value>600030.SH</value>
-				<value>601628.SH</value>
-				<value>601989.SH</value>
-				<value>600000.SH</value>
-				<value>000002.SZ</value>
-				<value>600016.SH</value>
-				<value>600837.SH</value>
-				<value>300104.SZ</value>
-				<value>002230.SZ</value>
 			</list>
 		</constructor-arg>
 	</bean>
