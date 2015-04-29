@@ -9,14 +9,16 @@ public class UserMappingReplyEvent extends RemoteAsyncEvent {
     private String userThirdParty;
     private boolean userExist;
     private boolean userThirdPartyExist;
+    private String clientId;
 
-    public UserMappingReplyEvent(String key, String receiver, String txId, String user, String userThirdParty, boolean userExist, boolean userThirdPartyExist) {
+    public UserMappingReplyEvent(String key, String receiver, String txId, String user, String userThirdParty, boolean userExist, boolean userThirdPartyExist, String clientId) {
         super(key, receiver);
         this.txId = txId;
         this.user = user;
         this.userThirdParty = userThirdParty;
         this.userExist = userExist;
         this.userThirdPartyExist = userThirdPartyExist;
+        this.clientId = clientId;
     }
 
     public String getTxId() {
@@ -37,5 +39,9 @@ public class UserMappingReplyEvent extends RemoteAsyncEvent {
 
     public boolean isUserThirdPartyExist() {
         return userThirdPartyExist;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 }

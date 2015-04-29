@@ -1496,7 +1496,7 @@ public class PersistenceManager {
 
         try {
             eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
-                    event.getUser(), event.getUserThirdParty(), userExist, userThirdPartyExist));
+                    event.getUser(), event.getUserThirdParty(), userExist, userThirdPartyExist, event.getClientId()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
