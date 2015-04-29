@@ -88,8 +88,6 @@ public class AlertManager extends Compute {
 		if (MarketSessionType.PREOPEN == mst) {
 			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = true;
-			// AlertManager Clear expired alert
-			clearExpiredData() ;
 		} else if (MarketSessionType.CLOSE == mst) {
 			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = false;
@@ -111,14 +109,10 @@ public class AlertManager extends Compute {
 		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
-	
-	private void clearExpiredData()
-	{
-		
-	}
 
 	private void ResetUser(ResetAccountRequestEvent event) {
 		String UserId = event.getUserId();
+		String strCmd = "";
 		try {
 			// Clear memory
 			userTradeAlerts.remove(UserId);
@@ -126,7 +120,7 @@ public class AlertManager extends Compute {
 
 			Session session = sessionFactory.openSession();
 			try {
-				String strCmd = "Delete from TRADEALERT_PAST where USER_ID='"
+				strCmd = "Delete from TRADEALERT_PAST where USER_ID='"
 						+ UserId + "'";
 				SQLQuery query = session.createSQLQuery(strCmd);
 				int Return = query.executeUpdate();
@@ -135,16 +129,12 @@ public class AlertManager extends Compute {
 						event.getKey(), event.getSender(), event.getAccount(),
 						event.getTxId(), event.getUserId(), event.getMarket(),
 						event.getCoinId(),
-						ResetAccountReplyType.LTSINFO_ALERTMANAGER, false, // "Reset User "
-																			// +
-																			// UserId
-																			// +
-																			// "fail.");
+						ResetAccountReplyType.LTSINFO_ALERTMANAGER, false,
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_RESET_ERROR, "Reset User "
 										+ UserId + " fail."));			
 				SendRemoteEvent(resetAccountReplyEvent) ;
-				log.warn("[ResetUser] warn : " + ee.getMessage());
+				log.warn("[ResetUser]:[" + strCmd + "] :"+ ee.getMessage());
 			} finally {
 				session.close();
 			}
@@ -156,11 +146,12 @@ public class AlertManager extends Compute {
 			SendRemoteEvent(resetAccountReplyEvent) ;
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
-			log.error("[ResetUser] error : " + e.getMessage());
+			log.error("[ResetUser]:[" + strCmd +"] :"+ e.getMessage());
 		}
 	}
 
 	private void receiveChildOrderUpdateEvent(Execution execution) {
+		log.debug("[receiveChildOrderUpdateEvent] : 1 " + execution.toString());
 		Session session = null;
 		try {
 			DecimalFormat qtyFormat = new DecimalFormat("#0");
@@ -217,6 +208,7 @@ public class AlertManager extends Compute {
 						lstExpired.add(pastTradeAlert);
 					}
 				}
+				log.debug("[receiveChildOrderUpdateEvent] : 2 " + execution.toString());
 				if (list.size() == 0) {
 					list.add(TA);
 				} else if (list.size() >= 20) {
