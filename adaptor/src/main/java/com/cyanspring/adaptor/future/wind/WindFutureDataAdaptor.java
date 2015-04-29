@@ -858,7 +858,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                             refData.getExchange());
                     QuoteMgr.instance().addStockSymbol(refData.getSymbol(),
                             refData.getExchange());
-                    ClientHandler.subscribe(refData.getSymbol());
                     if(!QuoteMgr.instance().checkStockSymbol(instrument))
                         ClientHandler.subscribe(refData.getSymbol());
                 }
