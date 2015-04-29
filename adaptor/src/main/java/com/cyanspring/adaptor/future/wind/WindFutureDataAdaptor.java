@@ -515,8 +515,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT: {
                     TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
                     TDF_LOGIN_RESULT login = data.getLoginResult();
-                    log.info("login %s", login.getLoginResult() != 0 ? "success"
-                            : "fail");
+                    log.info(String.format("login %s", login.getLoginResult() != 0 ? "success"
+                            : "fail"));
                     break;
                 }
                 case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT: {
@@ -710,7 +710,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             tdf_open_setting.setConnectionID(nId);
 
             nId = (nId + 1) % 2;
-            log.info("connect to %s:%d", reqIp, reqPort);
+            log.info(String.format("connect to %s:%d", reqIp, reqPort));
             int err = tdfClient.open(tdf_open_setting);
             if (err != TDF_ERR.TDF_ERR_SUCCESS) {
 
@@ -848,6 +848,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                             refData.getStrategy());
                     QuoteMgr.instance().addFutureSymbol(
                             refData.getSymbol(), refData.getExchange());
+                    if(!QuoteMgr.instance().checkFutureSymbol(instrument))
+                        ClientHandler.subscribe(refData.getSymbol());
                 }
                 // Stock
                 if ("S".equals(WindFutureDataAdaptor.instance
@@ -856,8 +858,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                             refData.getExchange());
                     QuoteMgr.instance().addStockSymbol(refData.getSymbol(),
                             refData.getExchange());
+                    ClientHandler.subscribe(refData.getSymbol());
+                    if(!QuoteMgr.instance().checkStockSymbol(instrument))
+                        ClientHandler.subscribe(refData.getSymbol());
                 }
-                ClientHandler.subscribe(refData.getSymbol());
             }
         }
 
@@ -1003,8 +1007,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             if (isConnected)
                 return;
             if (gateway) {
-                log.info("connect to Wind GW %s:%d",
-                        gatewayIp, gatewayPort);
+                log.info(String.format("connect to Wind GW %s:%d",
+                        gatewayIp, gatewayPort));
                 connectGateWay(gatewayIp, gatewayPort);
             } else {
                 connectUseAPI(reqIp, reqPort, userName, password);
