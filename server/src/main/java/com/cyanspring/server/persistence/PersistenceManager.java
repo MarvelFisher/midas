@@ -695,43 +695,45 @@ public class PersistenceManager {
 
         try {
             // login
-            {
-                user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
+			user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
 
-                if (null == user) {
-                    ok = false;
-                    msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
-                    throw new UserException("userid or password invalid");
-                }
+			if (null == user) {
+				ok = false;
+				msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+				throw new UserException("userid or password invalid");
+			}
 
-                if (user.getTerminationStatus().isTerminated()) {
-                    ok = false;
-                    msg = ErrorMessage.USER_IS_TERMINATED;
-                    throw new UserException("User is terminated");
-                }
+			if (user.getTerminationStatus().isTerminated()) {
+				ok = false;
+				msg = ErrorMessage.USER_IS_TERMINATED;
+				throw new UserException("User is terminated");
+			}
 
-                String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId());
+			if (!Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
+				
+				String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId());
 
-                if (Strings.isNullOrEmpty(userId)) {
+				if (Strings.isNullOrEmpty(userId)) {
 
-                    if (!centralDbConnector.registerThirdPartyUser(event.getOriginalEvent().getUser().getId(),
-                            event.getOriginalEvent().getUser().getUserType(), event.getOriginalEvent().getThirdPartyId())) {
+					if (!centralDbConnector.registerThirdPartyUser(event.getOriginalEvent().getUser().getId(),
+							event.getOriginalEvent().getUser().getUserType(), event.getOriginalEvent().getThirdPartyId())) {
 
-                        ok = false;
-                        msg = ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED;
-                        throw new UserException("Register third party id failed");
-                    }
+						ok = false;
+						msg = ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED;
+						throw new UserException("Register third party id failed");
+					}
 
-                } else {
-                    if (!userId.equals(event.getOriginalEvent().getUser().getId())) {
+				} else {
+					if (!userId.equals(event.getOriginalEvent().getUser().getId())) {
 
-                        ok = false;
-                        msg = ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID;
-                        throw new UserException("Third party id is not match with the user id");
-                    }
-                }
-            }
+						ok = false;
+						msg = ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID;
+						throw new UserException("Third party id is not match with the user id");
+					}
+				}
+			}
 
+			// getAccount
             user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
 
             if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
