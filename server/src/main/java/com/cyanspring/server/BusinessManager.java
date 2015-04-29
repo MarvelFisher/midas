@@ -279,33 +279,36 @@ public class BusinessManager implements ApplicationContextAware {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (OrderException e) {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (DataConvertException e) {
 			failed = true;
 			//message = "DataConvertException: " + e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), "DataConvertException: " + e.getMessage());
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (DownStreamException e) {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (StrategyException e) {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
-			e.printStackTrace();
+//			e.printStackTrace();
 			//message = "Enter order failed, please check server log";
 			message = MessageLookup.buildEventMessage(ErrorMessage.ENTER_ORDER_ERROR, "Enter order failed, please check server log");
 			log.warn(e.getMessage(), e);
@@ -422,7 +425,7 @@ public class BusinessManager implements ApplicationContextAware {
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
-			e.printStackTrace();
+//			e.printStackTrace();
 			//message = "Amend order failed, please check server log";
 			message = MessageLookup.buildEventMessage(ErrorMessage.AMEND_ORDER_ERROR,"Amend order failed, please check server log");
 
