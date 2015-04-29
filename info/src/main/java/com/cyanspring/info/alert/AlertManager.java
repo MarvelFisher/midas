@@ -23,6 +23,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.alert.*;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
@@ -48,7 +49,10 @@ public class AlertManager extends Compute {
 
 	@Autowired
 	SessionFactory sessionFactory;
-
+	
+	@Autowired
+	ScheduleManager scheduleManager;
+	
 	private int maxNoOfAlerts;
 	private boolean checkAlertstart = true;
 
@@ -79,6 +83,9 @@ public class AlertManager extends Compute {
 	public void init() {
 		// TODO Auto-generated method stub
 		loadSQLdata();
+		AsyncTimerEvent SendSQLHeartTimer = new AsyncTimerEvent();
+		SendSQLHeartTimer.setKey("SendSQLHeartTimer");
+		scheduleManager.scheduleRepeatTimerEvent(60000, getEventProcessorMD(), SendSQLHeartTimer);
 	}
 
 	@Override
@@ -109,8 +116,14 @@ public class AlertManager extends Compute {
 		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
+	
+	@Override
+	public void processQueryOrderAlertRequestEvent(
+			QueryOrderAlertRequestEvent event, List<Compute> computes) {
+		log.info("[receiveQueryOrderAlertRequestEvent] :" + event.toString());
+	}
 
-	private void ResetUser(ResetAccountRequestEvent event) {
+	synchronized private void ResetUser(ResetAccountRequestEvent event) {
 		String UserId = event.getUserId();
 		String strCmd = "";
 		try {
@@ -150,8 +163,8 @@ public class AlertManager extends Compute {
 		}
 	}
 
-	private void receiveChildOrderUpdateEvent(Execution execution) {
-		log.debug("[receiveChildOrderUpdateEvent] : 1 " + execution.toString());
+	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
+		log.info("[receiveChildOrderUpdateEvent] : 1 " + execution.toString());
 		Session session = null;
 		try {
 			DecimalFormat qtyFormat = new DecimalFormat("#0");
@@ -256,13 +269,11 @@ public class AlertManager extends Compute {
 				session.close();
 			}
 		}
+		log.info("[receiveChildOrderUpdateEvent] :  ProcessEnd " + execution.toString());
 	}
-
-	@Override
-	public void processQueryOrderAlertRequestEvent(
-			QueryOrderAlertRequestEvent event, List<Compute> computes) {
-		try {
-			log.info("[receiveQueryOrderAlertRequestEvent]");
+	
+	synchronized private void receiveQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event, List<Compute> computes) {
+		try {			
 			AlertType type = event.getType();
 			String Msg = "";
 			QueryOrderAlertReplyEvent queryorderalertreplyevent = null;
@@ -945,13 +956,13 @@ public class AlertManager extends Compute {
 		}
 	}
 
-	private void SendSQLHeartBeat() {
+	synchronized private void SendSQLHeartBeat() {
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
 			SQLQuery sq = session.createSQLQuery("select 1;");
 			Iterator iterator = sq.list().iterator();
-			log.debug("Send SQLHeartBeat...");
+			log.info("Send SQLHeartBeat...");
 		} catch (Exception e) {
 			log.warn("[SendSQLHeartBeat] : " + e.getMessage());
 		} finally {
@@ -984,7 +995,7 @@ public class AlertManager extends Compute {
 	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event,
 			List<Compute> computes) {
-		if (event.getKey() == "1min") {
+		if (event.getKey() == "SendSQLHeartTimer") {
 			try {
 				SendSQLHeartBeat();
 			} catch (Exception e) {
