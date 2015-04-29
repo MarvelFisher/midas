@@ -271,9 +271,10 @@ public class AlertManager extends Compute {
 	}
 	
 	private void receiveQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event, List<Compute> computes) {
+		String Msg = "";
 		try {			
 			AlertType type = event.getType();
-			String Msg = "";
+			
 			QueryOrderAlertReplyEvent queryorderalertreplyevent = null;
 			if (type == AlertType.TRADE_QUERY_PAST) {
 				ArrayList<TradeAlert> list = userTradeAlerts.get(event
@@ -358,19 +359,19 @@ public class AlertManager extends Compute {
 						event.getuserId(), false, // Msg);
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
-				log.warn("[processQueryOrderAlertRequestEvent][AlertTypeError]: "
+				log.error("[processQueryOrderAlertRequestEvent][AlertTypeError]: "
 						+ event.toString());
 			}
 			try {
 				SendRemoteEvent(queryorderalertreplyevent) ;
 				log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "
-						+ queryorderalertreplyevent.getUserId() + " : " + Msg);
+						+ queryorderalertreplyevent.getUserId());
 			} catch (Exception e) {
-				log.warn("[processQueryOrderAlertRequestEvent] : "
+				log.error("[processQueryOrderAlertRequestEvent] : Send RemoteEventError"
 						+ e.getMessage());
 			}
 		} catch (Exception e) {
-			log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
+			log.warn("[processQueryOrderAlertRequestEvent] : " + Msg + " : "  + e.getMessage());
 		}
 	}
 
