@@ -104,6 +104,12 @@
 		<property name="SQLDelayInterval">
 			<value>300000</value>
 		</property>
+		<property name="timeInterval">
+			<value>60000</value>
+		</property>
+		<property name="checkSQLInterval">
+			<value>600000</value>
+		</property>
 	</bean>
 	
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">

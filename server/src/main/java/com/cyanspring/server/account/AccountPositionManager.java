@@ -75,6 +75,7 @@ import com.cyanspring.common.event.account.UserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.marketsession.SettlementEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
@@ -114,7 +115,8 @@ public class AccountPositionManager implements IPlugin {
     private long jobInterval = 1000;
     private List<String> fxSymbols = new ArrayList<String>();
     private boolean allFxRatesReceived = false;
-    private Map<String, Quote> marketData = new HashMap<String, Quote>();
+    private Map<String, Quote> marketData = new HashMap<>();
+    private Map<String, QuoteExtEvent> marketExtData = new HashMap<>();
     private String dailyExecTime;
     private IQuoteChecker quoteChecker = new PriceQuoteChecker();
     private long dynamicUpdateInterval = 2000;
@@ -182,6 +184,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(CreateAccountEvent.class, null);
             subscribeToEvent(AccountSnapshotRequestEvent.class, null);
             subscribeToEvent(QuoteEvent.class, null);
+            subscribeToEvent(QuoteExtEvent.class, null);
             subscribeToEvent(MarketDataReadyEvent.class, null);
             subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
             subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
@@ -625,6 +628,11 @@ public class AccountPositionManager implements IPlugin {
         }
     }
 
+    public void processQuoteExtEvent(QuoteExtEvent event) {
+
+        marketExtData.put(event.getSymbol(), event);
+    }
+
     public void processAccountSnapshotRequestEvent(AccountSnapshotRequestEvent event) {
         Account account = accountKeeper.getAccount(event.getAccountId());
         AccountSnapshotReplyEvent reply;
@@ -1059,20 +1067,33 @@ public class AccountPositionManager implements IPlugin {
     }
 
     public void processSettlementEvent(SettlementEvent event) {
+
         String symbol = event.getSymbol();
         log.info("Received SettlementEvent: " + symbol);
-        Quote quote = marketData.get(symbol);
-        if (null == quote && QuoteUtils.validQuote(quote)) {
-            log.error("processSettlementDayEvent quote is null or invalid: " + symbol + ", " + quote);
-            return;
+
+        QuoteExtEvent quoteExt = marketExtData.get(symbol);
+        Quote quote = null;
+
+        if (null == quoteExt || PriceUtils.EqualLessThan(quoteExt.getSettlePrice(), 0.0)) {
+
+            quote = marketData.get(symbol);
+            if (null == quote || !QuoteUtils.validQuote(quote)) {
+                log.error("processSettlementDayEvent quote is null or invalid: " + symbol + ", " + quote);
+                return;
+            }
         }
+
         List<Account> accounts = accountKeeper.getAllAccounts();
         for (Account account : accounts) {
             OpenPosition position = positionKeeper.getOverallPosition(account, symbol);
+
             if (!PriceUtils.isZero(position.getQty())) {
+
+                double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : quoteExt.getSettlePrice();
+
                 Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
                         Math.abs(position.getQty()),
-                        QuoteUtils.getMarketablePrice(quote, position.getQty()),
+                        price,
                         "", "",
                         "", "Settlement",
                         position.getUser(), position.getAccount(), "Settlement");
