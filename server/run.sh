@@ -22,7 +22,7 @@ echo "Starting LTS "`date` | tee -a ./log/console.log
 java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar conf/fxserver.xml >> ./log/console.log &
 echo $! > LTS_PID
 
-sleep 30
+sleep 60
 ./runinfo.sh start
 
 sleep 60
