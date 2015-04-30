@@ -791,63 +791,67 @@ public class AccountPositionManager implements IPlugin {
     }
 
     private void updateDynamicData() {
-        if (!recoveryDone)
-            return;
-
-        if (!allFxRatesReceived) {
-            for (String symbol : fxSymbols) {
-                Double rate = fxConverter.getFxRate(symbol);
-                if (null == rate || PriceUtils.isZero(rate)) {
-                    log.debug("Waiting on FX rate: " + symbol);
-                    return;
-                }
-            }
-            allFxRatesReceived = true;
-            log.info("FX rates ready: " + fxConverter.toString());
-        }
-
-        if (resetMarginHeld) {
-            resetMarginHeld = false;
-            positionKeeper.resetMarginHeld();
-        }
-
-        if (rmUpdateThrottler.check()) {
-            perfDataRm.start();
-            List<Account> accounts = accountKeeper.getRmJobs().getJobs();
-            for (Account account : accounts) {
-                positionKeeper.updateAccountDynamicData(account);
-                
-                AccountSetting accountSetting = null;
-                try {
-                    accountSetting = accountKeeper.getAccountSetting(account.getId());
-                } catch (AccountException e) {
-                    log.error(e.getMessage(), e);
-                    continue;
-                }
-                
-                if(checkLiveTrading(account, accountSetting))
-                	continue;
-                
-                if (checkStopLoss(account, accountSetting))
-                	continue;
-                    
-                checkMarginCall(account);
-            }
-            perfDataRm.end();
-        }
-
-        if (dynamicUpdateThrottler.check()) {
-            perfDataUpdate.start();
-            List<Account> accounts = accountKeeper.getDynamicJobs().getJobs();
-            for (Account account : accounts) {
-                List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
-                for (OpenPosition position : positions) {
-                    positionListener.onOpenPositionDynamiceUpdate(position);
-                }
-                positionListener.onAccountDynamicUpdate(account);
-            }
-            perfDataUpdate.end();
-        }
+    	try {
+	        if (!recoveryDone)
+	            return;
+	
+	        if (!allFxRatesReceived) {
+	            for (String symbol : fxSymbols) {
+	                Double rate = fxConverter.getFxRate(symbol);
+	                if (null == rate || PriceUtils.isZero(rate)) {
+	                    log.debug("Waiting on FX rate: " + symbol);
+	                    return;
+	                }
+	            }
+	            allFxRatesReceived = true;
+	            log.info("FX rates ready: " + fxConverter.toString());
+	        }
+	
+	        if (resetMarginHeld) {
+	            resetMarginHeld = false;
+	            positionKeeper.resetMarginHeld();
+	        }
+	
+	        if (rmUpdateThrottler.check()) {
+	            perfDataRm.start();
+	            List<Account> accounts = accountKeeper.getRmJobs().getJobs();
+	            for (Account account : accounts) {
+	                positionKeeper.updateAccountDynamicData(account);
+	                
+	                AccountSetting accountSetting = null;
+	                try {
+	                    accountSetting = accountKeeper.getAccountSetting(account.getId());
+	                } catch (AccountException e) {
+	                    log.error(e.getMessage(), e);
+	                    continue;
+	                }
+	                
+	                if(checkLiveTrading(account, accountSetting))
+	                	continue;
+	                
+	                if (checkStopLoss(account, accountSetting))
+	                	continue;
+	                    
+	                checkMarginCall(account);
+	            }
+	            perfDataRm.end();
+	        }
+	
+	        if (dynamicUpdateThrottler.check()) {
+	            perfDataUpdate.start();
+	            List<Account> accounts = accountKeeper.getDynamicJobs().getJobs();
+	            for (Account account : accounts) {
+	                List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+	                for (OpenPosition position : positions) {
+	                    positionListener.onOpenPositionDynamiceUpdate(position);
+	                }
+	                positionListener.onAccountDynamicUpdate(account);
+	            }
+	            perfDataUpdate.end();
+	        }
+    	} catch (Exception e) {
+    		log.error(e.getMessage(), e);
+    	}
     }
 
     private boolean quoteIsValid(Quote quote) {

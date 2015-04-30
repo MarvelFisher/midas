@@ -29,7 +29,10 @@ public class AccountSetting extends DataObject {
 		settings.setStopLossPercent(Default.getStopLossPercent());
 		settings.setFreezePercent(Default.getFreezePercent());
 		settings.setTerminatePercent(Default.getTerminatePecent());
-
+		
+		settings.setLiveTrading(false);
+		settings.setUserLiveTrading(false);
+		
 		return settings;
 	}
 	
@@ -123,7 +126,22 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.TERMINATE_PERCENT.value(), terminatePercent);
 	}
 	
+	public boolean isLiveTrading() {
+		return get(boolean.class, AccountSettingType.LIVE_TRADING.value());
+	}
+	public void setLiveTrading(boolean liveTrading) {
+		put(AccountSettingType.LIVE_TRADING.value(), liveTrading);
+	}
 	
+	public boolean isUserLiveTrading() {
+		return get(boolean.class, AccountSettingType.USER_LIVE_TRADING.value());
+	}
+	public void setUserLiveTrading(boolean userLiveTrading) {
+		put(AccountSettingType.USER_LIVE_TRADING.value(), userLiveTrading);
+	}
+	public boolean checkLiveTrading(){
+		return (isLiveTrading()||isUserLiveTrading());
+	}
 	
 	
 	public AccountSetting clone() {

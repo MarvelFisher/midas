@@ -25,6 +25,7 @@
                 <ref bean="apiBridgeManager" />
                 <ref bean="trailingStopManager" />
                 <ref bean="autoRunner" />
+                <ref bean="liveTradingSession" />
             </list>
         </property>
         <property name="readyMap">
@@ -436,9 +437,11 @@
             </list>
         </constructor-arg>
     </bean>
-
+	
 
     <bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
+	</bean>
+	<bean id="liveTradingSession" class="com.cyanspring.server.livetrading.LiveTradingSession">
 	</bean>
     <bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
     </bean>
@@ -446,6 +449,8 @@
         <property name="needCheckPosition" value="true"/>
         <property name="needCheckFreeze" value="true"/>
         <property name="needCheckTerminate" value="true"/>
+        <property name="userStopLiveTradingStartTime" value="02:00:00"/>
+        <property name="userStopLiveTradingEndTime" value="07:00:00"/>
     </bean>
 
 </beans>

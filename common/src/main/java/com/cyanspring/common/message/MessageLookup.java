@@ -160,6 +160,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_FIELD_EMPTY,getBean(435, "order field empty"));
 			addAndCheck(ErrorMessage.ORDER_FIELD_MUST_GREATER_THAN_ZERO,getBean(436, "order field must be greater than 0"));
 			addAndCheck(ErrorMessage.ORDER_FIELD_MUST_BE_INTEGER,getBean(437, "order field must be must be an integer"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_STOP_TRADING, getBean(438, "Live trading on stop trading time"));
+
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_LOT_SIZE_ERROR,getBean(439, "Can not determine symbol for quantity lot size validation"));
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_NOT_FOUND,getBean(440, "Can't find symbol in refdata"));
 			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity! Quantity should be the multiple of 1000."));
@@ -182,7 +184,6 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_LOWER_FLOOR_PRICE,getBean(458, "Order price lower than floor price"));
 			addAndCheck(ErrorMessage.ORDER_CANT_FIND_QUOTEEXT_FILE,getBean(459, "Missing QuoteExt file"));
 			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Sell quantity exceeded available position quantity"));
-			addAndCheck(ErrorMessage.LIVE_TRADING_ON_CLOSING_ALL_POSITION, getBean(438, "Live trading on closing position"));
 
 			
 			

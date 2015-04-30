@@ -4,7 +4,23 @@ public class LiveTradingSetting {
 	private boolean needCheckPosition;
 	private boolean needCheckFreeze;
 	private boolean needCheckTerminate;
+	private String 	userStopLiveTradingStartTime;
+	private String 	userStopLiveTradingEndTime;
 
+	
+	
+	public String getUserStopLiveTradingStartTime() {
+		return userStopLiveTradingStartTime;
+	}
+	public void setUserStopLiveTradingStartTime(String userStopLiveTradingStartTime) {
+		this.userStopLiveTradingStartTime = userStopLiveTradingStartTime;
+	}
+	public String getUserStopLiveTradingEndTime() {
+		return userStopLiveTradingEndTime;
+	}
+	public void setUserStopLiveTradingEndTime(String userStopLiveTradingEndTime) {
+		this.userStopLiveTradingEndTime = userStopLiveTradingEndTime;
+	}
 	public boolean isNeedCheckPosition() {
 		return needCheckPosition;
 	}
