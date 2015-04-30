@@ -24,7 +24,7 @@ java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar con
 echo $! > LTS_PID
 
 sleep 60
-./runinfo.sh start
+./fx_hkruninfo.sh start
 
 sleep 60
 echo "Starting AppServer "`date` | tee -a ./log/console.log

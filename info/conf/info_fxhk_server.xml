@@ -8,9 +8,8 @@
 >
 
 	<context:annotation-config />
-	<import resource="info_lt/*"/>
-	<import resource="info_common/ticktable_lt.xml"/>
-
+	<import resource="info_fx/*"/>
+	<import resource="info_common/ticktable_fx.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
@@ -41,14 +40,14 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_FX_S1"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FX_S1"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	</bean>
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_Global"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_Global"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	</bean>
