@@ -46,7 +46,7 @@
         <property name="url" value="nio://10.0.0.51:60006"/>
     </bean>
 
-    <bean id="dataBaseUrl" class="java.lang.String">x
+    <bean id="dataBaseUrl" class="java.lang.String">
         <constructor-arg
                 value="jdbc:mysql://125.227.191.247:3306/LTS_Global?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
     </bean>
