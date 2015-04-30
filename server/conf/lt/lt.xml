@@ -35,6 +35,7 @@
 				<ref bean="accountPositionManager" />
 				<ref bean="premiumFollowManager"/>
 				<ref bean="trailingStopManager"/>
+				<ref bean="liveTradingSession" />		
 			</list>
 		</property>
 		<property name="readyMap">
@@ -431,7 +432,7 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
-				<!-- <ref bean="ibAdaptor" /> -->
+				<ref bean="ibAdaptor" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -445,6 +446,9 @@
 	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
 
+	<bean id="liveTradingSession" class="com.cyanspring.server.livetrading.LiveTradingSession">
+	</bean>
+
 	<bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
 	</bean>
 
@@ -452,6 +456,8 @@
 		<property name="needCheckPosition" value="true"/>
 		<property name="needCheckFreeze" value="true"/>
 		<property name="needCheckTerminate" value="true"/>
+		<property name="userStopLiveTradingStartTime" value="2:00:00"/>
+        <property name="userStopLiveTradingEndTime" value="7:00:00"/>
 	</bean>
 
 </beans>

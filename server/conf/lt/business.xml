@@ -13,6 +13,7 @@
 	    <constructor-arg>
 	        <list>
 	        	<ref bean="accountStateValidator"/>
+	        	<ref bean="liveTradingSessionValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
 				<ref bean="creditValidator"/>
@@ -25,7 +26,10 @@
 	<!-- live trading -->
 	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
 	</bean>       
+	<bean id="liveTradingSessionValidator" class="com.cyanspring.server.validation.LiveTradingSessionValidator">
+	</bean> 
 	
+	 
 	<!-- field specific validation -->
 	<bean id="orderFieldValidator" class="com.cyanspring.server.validation.OrderFieldValidator">       
 	    <property name="fieldValidators">
@@ -165,12 +169,12 @@
 	           	<value>2</value>
 	           	<null/>
 	           	<value>100000.0</value>
-	           	<value>0.0</value>
+	           	<value>0.0</value><!-- position stop loss -->
 	           	<value>0.98</value>
 				<value>0</value>
-				<value>0.1</value>
-				<value>0.2</value>
-				<value>0.3</value>
+				<value>0.1</value><!-- live trading : position stop loss -->
+				<value>0.2</value><!-- live trading : freeze stop loss -->
+				<value>0.3</value><!-- live trading : terminate stop loss -->
             </list>
        </property>
     </bean>

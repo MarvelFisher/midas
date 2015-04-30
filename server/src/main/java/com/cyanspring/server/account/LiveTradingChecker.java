@@ -43,13 +43,21 @@ public class LiveTradingChecker{
 	
 	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
 	
+	
+	public void checkStartAccountValue(Account account){
+		if(PriceUtils.isZero(account.getStartAccountValue())){
+			account.setStartAccountValue(account.getCashDeposited());
+		}
+	}
+	
 	public Double getPositionStopLoss(Account account,AccountSetting accountSetting,Double positionStopLoss){
+		
 		if(!liveTradingSetting.isNeedCheckPosition()){
 			return positionStopLoss;
 		}	
 		
+		checkStartAccountValue(account);
 		Double stopLoss= account.getStartAccountValue() * accountSetting.getStopLossPercent();
-		
 		if(PriceUtils.isZero(stopLoss)){
 			return positionStopLoss;
 		} else if(PriceUtils.isZero(positionStopLoss)) {
@@ -133,15 +141,14 @@ public class LiveTradingChecker{
 			closeAllPositoinAndOrder(account);
 			return true;
 		}
-		
+		checkStartAccountValue(account);
 		Double dailyStopLoss = account.getStartAccountValue() * accountSetting.getFreezePercent();
-		
 		if(PriceUtils.isZero(dailyStopLoss)){		
 			return false;
 		}
 		
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
-			log.info("Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
+			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
 			// set it to frozen first
 			account.setState(AccountState.FROZEN);
 			sendUpdateAccountEvent(account);
@@ -170,7 +177,7 @@ public class LiveTradingChecker{
 		double totalLossLimit = account.getCashDeposited() * accountSetting.getTerminatePercent();
 		double currentLoss = account.getValue() - account.getCashDeposited();
 		if(PriceUtils.EqualLessThan(currentLoss, -totalLossLimit)){
-			log.info("Terminate loss: " + currentLoss + " over " + -totalLossLimit);
+			log.info("Account:"+account.getId()+"Terminate loss: " + currentLoss + " over " + -totalLossLimit);
 			account.setState(AccountState.TERMINATED);
 			sendUpdateAccountEvent(account);
 			closeAllPositoinAndOrder(account);

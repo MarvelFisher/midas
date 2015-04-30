@@ -15,7 +15,9 @@ public enum AccountSettingType {
 	TRAILING_STOP("Trailing stop"),
 	STOP_LOSS_PERCENT("Stop loss percent"),
 	FREEZE_PERCENT("Freeze percent"),
-	TERMINATE_PERCENT("Terminate percent")
+	TERMINATE_PERCENT("Terminate percent"),
+	LIVE_TRADING("Live trading"),
+	USER_LIVE_TRADING("User live trading")
 	;
    
 	static HashMap<String, AccountSettingType> map = new HashMap<String, AccountSettingType>();

@@ -28,6 +28,7 @@ import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.FieldDef;
@@ -47,6 +48,7 @@ import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
@@ -66,6 +68,7 @@ import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
@@ -91,7 +94,6 @@ import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.order.MultiOrderCancelTracker;
-import com.cyanspring.server.validation.AccountStateValidator;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
 import com.cyanspring.server.validation.ParentOrderPreCheck;
 import com.cyanspring.server.validation.ParentOrderValidator;
@@ -173,6 +175,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(CancelParentOrderEvent.class, null);
 			subscribeToEvent(ResetAccountRequestEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
+			subscribeToEvent(LiveTradingEndEvent.class, null);
 		}
 
 		@Override
@@ -727,7 +730,68 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	}
 	
-
+	private void cancelAllOrdersAndCloseAllPositions(Account account){
+		
+		List <ParentOrder> orderList = positionKeeper.getParentOrders(account.getId());
+		if(orderList.size() > 0)
+			log.info("Live trading cancelling of orders: ", orderList.size());
+		for(ParentOrder order : orderList){
+			if(order.getOrdStatus().isReady()){
+				String source = order.get(String.class, OrderField.SOURCE.value());
+				String txId = order.get(String.class, OrderField.CLORDERID.value());
+				CancelStrategyOrderEvent cancel = 
+						new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.CompanyStopLoss, false);
+				eventManager.sendEvent(cancel);
+			}
+		}
+		
+		//close all position
+		List <OpenPosition> positionList = positionKeeper.getOverallPosition(account);
+		if(positionList.size() > 0)
+			log.info("Live trading closing of positions: ", positionList.size());
+		if(positionList.size() >0){
+			for(OpenPosition position : positionList){
+				Quote quote = positionKeeper.getQuote(position.getSymbol());
+				
+                if (positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
+                    log.debug("Position stop loss over threshold but account is locked: " +
+                            account.getId() + ", " + position.getSymbol());
+                    continue;
+                }
+                
+                log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
+                        position.getSymbol() + ", " + position.getAcPnL() + ", " +
+                        quote);
+				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
+						null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.CompanyStopLoss,
+						IdGenerator.getInstance().getNextID());
+				
+				eventManager.sendEvent(event);
+			}
+		}
+		
+	}
+	
+	public void processLiveTradingEndEvent(LiveTradingEndEvent event){
+		//close all position and orders accounts that has live trading
+		try {
+			
+			List<Account> accounts = accountKeeper.getAllAccounts();
+			for(Account account:accounts){
+				
+				AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
+				if(accountSetting.checkLiveTrading()){
+					log.info("LiveTradingEndEvent:close position account:"+account.getId());
+					cancelAllOrdersAndCloseAllPositions(account);
+				}		
+			}
+			
+		} catch (AccountException e) {
+			log.error(e.getMessage(),e);
+		}
+		
+	}
+	
 	private IStrategyContainer getLeastLoadContainer() {
 		IStrategyContainer result = null;
 		for(IStrategyContainer container: containers) {
