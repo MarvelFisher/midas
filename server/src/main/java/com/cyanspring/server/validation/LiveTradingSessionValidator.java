@@ -22,9 +22,9 @@ public class LiveTradingSessionValidator implements IOrderValidator {
 	private static final Logger log = LoggerFactory
 			.getLogger(AccountStateValidator.class);
 	
-	@Autowired(required=false)
+	@Autowired
 	private LiveTradingSession liveTradingSession;
-	@Autowired(required=false)
+	@Autowired
 	public AccountKeeper accountKeeper;
 	
 	@Override

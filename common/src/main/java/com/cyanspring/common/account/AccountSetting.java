@@ -43,21 +43,21 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.ID.value(), id);
 	}
 	public Double getDefaultQty() {
-		Double result = get(Double.class, AccountSettingType.DEFAULT_QTY.value());
+		Double result = get(double.class, AccountSettingType.DEFAULT_QTY.value());
 		return null == result? Default.getOrderQuantity() : result;
 	}
 	public void setDefaultQty(Double defaultQty) {
 		put(AccountSettingType.DEFAULT_QTY.value(), defaultQty);
 	}
 	public Double getStopLossValue() {
-		Double result = get(Double.class, AccountSettingType.STOP_LOSS_VALUE.value());
+		Double result = get(double.class, AccountSettingType.STOP_LOSS_VALUE.value());
 		return null == result? Default.getPositionStopLoss() : result;
 	}
 	public void setStopLossValue(Double stopLossValue) {
 		put(AccountSettingType.STOP_LOSS_VALUE.value(), stopLossValue);
 	}	
 	public Double getCompanySLValue(){
-		return get(Double.class, AccountSettingType.COMPANY_SL_VALUE.value());
+		return get(double.class, AccountSettingType.COMPANY_SL_VALUE.value());
 	}	  
 	public void setCompanySLValue(Double companySLValue){
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
