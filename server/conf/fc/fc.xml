@@ -29,7 +29,7 @@
 			<list>
 				<ref bean="apiBridgeManager" />
 				<ref bean="marketSessionManager" />
-				<ref bean="refDataManager" />
+				<ref bean="refDataHandler" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
@@ -142,12 +142,6 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>IFC1</value>
-				<value>IFC2</value>
-				<value>IHC1</value>
-				<value>IHC2</value>
-				<value>ICC1</value>
-				<value>ICC2</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -222,6 +216,8 @@
 	
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
+
+	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.FuRefDataManager">
 		<property name="refDataFile">

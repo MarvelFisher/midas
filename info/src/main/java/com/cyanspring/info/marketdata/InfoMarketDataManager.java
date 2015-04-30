@@ -214,7 +214,7 @@ public class InfoMarketDataManager implements IPlugin, IMarketDataListener,
             String adapterName = adapter.getClass().getSimpleName();
             if (adapterName.equals("WindFutureDataAdaptor")) {
                 ((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
-                        .processMarketSession(event);
+                        .processEvent(event);
                 if (MarketSessionType.PREOPEN == event.getSession()) {
                     log.debug("Process Wind Future PREOPEN resubscribe");
                     ((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)

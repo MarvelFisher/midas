@@ -167,4 +167,9 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	public void refreshSymbolInfo(String market) {
 		
 	}
+
+	@Override
+	public void processEvent(Object object) {
+
+	}
 }

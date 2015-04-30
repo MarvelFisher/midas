@@ -12,16 +12,23 @@
  */
 package com.cyanspring.adaptor;
 
+import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.id.Library.Util.DateUtil;
@@ -31,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         IMarketDataStateListener {
@@ -47,6 +55,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     @Autowired
     protected IRemoteEventManager eventManager;
 
+    public void setEventManager(IRemoteEventManager eventManager) {
+        this.eventManager = eventManager;
+    }
+
+
     protected ScheduleManager scheduleManager = new ScheduleManager();
     private QuoteChecker quoteChecker;
 
@@ -58,6 +71,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected String tradeDate;
 
+    private MarketSessionType marketSessionType = MarketSessionType.DEFAULT;
     private long lastQuoteSaveInterval = 20000;
     private boolean staleQuotesSent;
     private Date initTime = Clock.getInstance().now();
@@ -68,15 +82,22 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private boolean quoteLogIsOpen = false;
     private int quoteExtendSegmentSize = 300;
     private IQuoteAggregator aggregator;
+    private volatile boolean isInitRefDateReceived = false;
+    private volatile boolean isInitIndexSessionReceived = false;
+    private volatile boolean isInitMarketSessionReceived = false;
+    private volatile boolean isInitEnd = false;
     boolean state = false;
     boolean isUninit = false;
 
-    private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+
+    protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
         @Override
         public void subscribeToEvents() {
 
             subscribeToEvent(MarketSessionEvent.class, null);
+            subscribeToEvent(IndexSessionEvent.class, null);
+            subscribeToEvent(RefDataEvent.class, null);
 
             for (Class<? extends AsyncEvent> clz : subscribeEvent()) {
                 subscribeToEvent(clz, null);
@@ -94,6 +115,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
+        marketSessionType = event.getSession(); //RecordMarketSession
         if (null != quoteChecker)
             quoteChecker.setSession(event.getSession());
         chkTime = sessionMonitor.get(event.getSession());
@@ -105,18 +127,46 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             aggregator.onMarketSession(event.getSession());
         }
 
-        for (IMarketDataAdaptor adapter : adaptors) {
-            String adapterName = adapter.getClass().getSimpleName();
-            if (adapterName.equals("WindFutureDataAdaptor")) {
-                ((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter).processMarketSession(event);
-                if (MarketSessionType.PREOPEN == event.getSession()) {
-                    log.debug("Process Wind Future PREOPEN resubscribe");
-                    ((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter).clearSubscribeMarketData();
+        for(IMarketDataAdaptor adaptor : adaptors){
+            adaptor.processEvent(event);
+        }
+
+        if(!isInitEnd) isInitMarketSessionReceived = true;
+    }
+
+    public void processRefDataEvent(RefDataEvent event){
+        log.debug("process RefData Event, Size=" + event.getRefDataList().size());
+        preSubscriptionList.clear();
+        List refDataList = event.getRefDataList();
+        for(int i=0; i<refDataList.size(); i++){
+            RefData refData = (RefData)refDataList.get(i);
+            preSubscriptionList.add(refData.getSymbol());
+        }
+        for(IMarketDataAdaptor adaptor : adaptors){
+            if(null != adaptor) {
+                adaptor.processEvent(event);
+                if(adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
+                        && marketSessionType==MarketSessionType.PREOPEN && isInitEnd){
+                    ((WindFutureDataAdaptor)adaptor).clearSubscribeMarketData();
                     preSubscribe();
                 }
             }
         }
+        if(!isInitEnd) isInitRefDateReceived = true;
+    }
 
+    public void processIndexSessionEvent(IndexSessionEvent event){
+        log.debug("Process Index Session Event");
+        for (String index : event.getDataMap().keySet()){
+            MarketSessionData marketSessionDate = event.getDataMap().get(index);
+            log.debug("Index=" + index + ",SessionType=" + marketSessionDate.getSessionType()
+                            + ",Start=" + marketSessionDate.getStart() + ",End=" + marketSessionDate.getEnd()
+            );
+        }
+        for(IMarketDataAdaptor adaptor : adaptors){
+            if(null != adaptor) adaptor.processEvent(event);
+        }
+        if(!isInitEnd) isInitIndexSessionReceived = true;
     }
 
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
@@ -259,14 +309,26 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     @Override
     public void init() throws Exception {
         log.info("initialising");
+        isInitEnd = false;
+        isInitRefDateReceived = false;
+        isInitIndexSessionReceived = true;
+        for(IMarketDataAdaptor adaptor: adaptors) {
+            if("WindFutureDataAdaptor".equals(adaptor.getClass().getSimpleName())){
+                isInitIndexSessionReceived = false;
+                break;
+            }
+        }
         // subscribe to events
         eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("MarketDataManager");
 
-        // requestMarketSession
         requestRequireData();
+
+        while (!isInitRefDateReceived || !isInitIndexSessionReceived || !isInitMarketSessionReceived){
+            TimeUnit.SECONDS.sleep(1);
+        }
 
         chkDate = Clock.getInstance().now();
         for (IMarketDataAdaptor adaptor : adaptors) {
@@ -313,6 +375,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (!eventProcessor.isSync())
             scheduleManager.scheduleRepeatTimerEvent(timerInterval,
                     eventProcessor, timerEvent);
+        isInitEnd = true;
     }
 
     private void broadCastStaleQuotes() {
@@ -412,6 +475,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     protected void requestRequireData() throws Exception {
         eventManager.sendRemoteEvent(new MarketSessionRequestEvent(null, null, true));
+        eventManager.sendRemoteEvent(new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now()));
+        eventManager.sendRemoteEvent(new RefDataRequestEvent(null, null));
     }
 
     private void preSubscribe() {

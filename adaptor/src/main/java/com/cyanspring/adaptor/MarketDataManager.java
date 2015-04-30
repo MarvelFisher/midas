@@ -1,13 +1,17 @@
 package com.cyanspring.adaptor;
 
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.marketdata.*;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.id.Library.Util.DateUtil;
 import org.slf4j.Logger;
@@ -138,6 +142,10 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
+    public void processRefDataEvent(RefDataEvent event){
+        super.processRefDataEvent(event);
+    }
+
     public void processLastTradeDateQuotesRequestEvent(
             LastTradeDateQuotesRequestEvent event) {
         try {
@@ -263,6 +271,8 @@ public class MarketDataManager extends MarketDataReceiver {
     @Override
     protected void requestRequireData() {
         eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
+        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now()));
+        eventManager.sendEvent(new RefDataRequestEvent(null, null));
     }
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {

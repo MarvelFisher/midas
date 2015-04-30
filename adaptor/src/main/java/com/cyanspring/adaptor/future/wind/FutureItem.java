@@ -183,14 +183,12 @@ public class FutureItem implements AutoCloseable {
         Quote quote = new Quote(symbolId, bids, asks);
 
         //Get MarketSession
-        String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
+        String index = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
         MarketSessionData marketSessionData = null;
         Date endDate;
         Date startDate;
         try {
-            marketSessionData = WindFutureDataAdaptor.instance
-                    .getMarketSessionUtil().getCurrentMarketSessionType(strategy,
-                            DateUtil.now());
+            marketSessionData = WindFutureDataAdaptor.marketSessionByIndexMap.get(index);
             endDate = marketSessionData.getEndDate();
             startDate = marketSessionData.getStartDate();
         } catch (Exception e) {
