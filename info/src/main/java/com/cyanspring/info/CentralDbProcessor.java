@@ -770,8 +770,8 @@ public class CentralDbProcessor implements IPlugin
 		resetStatement() ;
 		requestMarketSession() ;
 
-		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
-		scheduleManager.scheduleRepeatTimerEvent(checkSQLInterval, eventProcessor, checkEvent);
+		scheduleManager.scheduleRepeatTimerEvent(getTimeInterval(), eventProcessor, timerEvent);
+		scheduleManager.scheduleRepeatTimerEvent(getCheckSQLInterval(), eventProcessor, checkEvent);
 	}
 	@Override
 	public void uninit() {
@@ -887,6 +887,22 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setSQLDelayInterval(long interval) {
 		SQLDelayInterval = (interval > 0) ? interval : 1;
+	}
+
+	public long getTimeInterval() {
+		return timeInterval;
+	}
+
+	public void setTimeInterval(long timeInterval) {
+		this.timeInterval = (timeInterval <= 0) ? 600000 : timeInterval;
+	}
+
+	public long getCheckSQLInterval() {
+		return checkSQLInterval;
+	}
+
+	public void setCheckSQLInterval(long checkSQLInterval) {
+		this.checkSQLInterval = (checkSQLInterval <= 0) ? 600000 : checkSQLInterval;
 	}
 	
 }
