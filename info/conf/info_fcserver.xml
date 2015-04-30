@@ -164,11 +164,5 @@
 		<property name="marketDataLog" value="true"></property>
 		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->		
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="marketSessionUtil">
-			<ref bean="marketSessionUtil" />
-		</property>	
-		<property name="refDataManager">
-			<ref bean="refDataManager" />
-		</property>			
 	</bean>
 </beans>

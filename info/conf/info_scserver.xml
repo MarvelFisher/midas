@@ -161,12 +161,6 @@
 		<property name="gatewayIp" value="202.55.14.140"></property> 
 		<property name="gatewayPort" value="10049"></property>	
 		<property name="marketDataLog" value="true"></property>
-		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->		
-		<property name="refDataManager">
-			<ref bean="refDataManager" />
-		</property>		
-		<property name="marketSessionUtil">
-			<ref bean="marketSessionUtil" />
-		</property>		
+		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->
 	</bean>
 </beans>

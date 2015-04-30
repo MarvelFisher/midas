@@ -159,9 +159,6 @@
 		<property name="reqMarketDepth" value="false" />
 		<property name="logMarketData" value="false" />
 		<!--<property name="cancelOpenOrders" value="true" /> -->
-		<property name="refDataManager">
-			<ref bean="refDataManager" />
-		</property>
 	</bean>
 
 	<!-- IDAdaptor setting (Setting can be marked if not used) -->
