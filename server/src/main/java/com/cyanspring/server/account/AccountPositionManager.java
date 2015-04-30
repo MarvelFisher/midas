@@ -1077,7 +1077,7 @@ public class AccountPositionManager implements IPlugin {
         if (null == quoteExt || PriceUtils.EqualLessThan(quoteExt.getSettlePrice(), 0.0)) {
 
             quote = marketData.get(symbol);
-            if (null == quote || QuoteUtils.validQuote(quote)) {
+            if (null == quote || !QuoteUtils.validQuote(quote)) {
                 log.error("processSettlementDayEvent quote is null or invalid: " + symbol + ", " + quote);
                 return;
             }
