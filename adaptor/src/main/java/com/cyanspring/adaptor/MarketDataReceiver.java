@@ -89,6 +89,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean state = false;
     boolean isUninit = false;
 
+    private boolean isTest = false;
+
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -326,8 +328,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         requestRequireData();
 
-        while (!isInitRefDateReceived || !isInitIndexSessionReceived || !isInitMarketSessionReceived){
-            TimeUnit.SECONDS.sleep(1);
+        if(!isTest) {
+            while (!isInitRefDateReceived || !isInitIndexSessionReceived || !isInitMarketSessionReceived) {
+                TimeUnit.SECONDS.sleep(1);
+            }
         }
 
         chkDate = Clock.getInstance().now();
@@ -586,5 +590,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void setQuoteChecker(QuoteChecker quoteChecker) {
         this.quoteChecker = quoteChecker;
+    }
+
+    public void setIsTest(boolean isTest) {
+        this.isTest = isTest;
     }
 }
