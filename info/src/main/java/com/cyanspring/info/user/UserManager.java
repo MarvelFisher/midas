@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -111,12 +112,12 @@ public class UserManager implements IPlugin {
 
 			strCmd = "select * from CONTEST;";
 			query = sessionCentral.createSQLQuery(strCmd);
-			iterator = query.list().iterator();
-			Date DateTime = new Date();
+			iterator = query.list().iterator();			
+			Calendar cal_UTC = Calendar.getInstance();			 
 			SimpleDateFormat cdateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd HH:mm:ss.0");
-			String CurTime = cdateFormat.format(DateTime);
-			
+			cdateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			String CurTime = cdateFormat.format(cal_UTC.getTime());
 			
 			while (iterator.hasNext()) {	
 				Object[] rows = (Object[]) iterator.next();				
