@@ -139,6 +139,8 @@ public class AccountPositionManager implements IPlugin {
     private boolean resetMarginHeld = false;
     private boolean checkStoploss = true;
     private boolean checkMargincut = true;
+    private TotalPnLCalculator totalPnLCalculator = new TotalPnLCalculator();
+    private TimeThrottler totalPnLCalculatorThrottler = new TimeThrottler(2000);
 
     @Autowired
     private IRemoteEventManager eventManager;
@@ -824,6 +826,14 @@ public class AccountPositionManager implements IPlugin {
 	                } catch (AccountException e) {
 	                    log.error(e.getMessage(), e);
 	                    continue;
+	                }
+	                
+	                totalPnLCalculator.calculate(account, accountSetting);
+	                if(totalPnLCalculatorThrottler.check()) {
+	                	log.info("Total PnL: " + totalPnLCalculator.getTotalPnL() + ", " +
+	                			totalPnLCalculator.getTotalAccountValue() + ", " +
+	                			totalPnLCalculator.getLiveTradingPnL() + ", " +
+	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
 	                
 	                if(checkLiveTrading(account, accountSetting))

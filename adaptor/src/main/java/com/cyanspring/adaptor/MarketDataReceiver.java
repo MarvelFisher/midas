@@ -220,7 +220,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             );
         }
 
-        if (!quoteChecker.checkAndUpdateQuote(prev, quote) && inEvent.getSourceId() <= 100) {
+        if (null != quoteChecker && !quoteChecker.checkAndUpdateQuote(prev, quote) && inEvent.getSourceId() <= 100) {
             quoteLog.warn("Quote BBBBB! : " + "Sc=" + inEvent.getSourceId()
                             + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
                             + ",B=" + quote.getBid() + ",C=" + quote.getClose()
