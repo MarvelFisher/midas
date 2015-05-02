@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -115,6 +116,7 @@ public class UserManager implements IPlugin {
 			Date DateTime = new Date();
 			SimpleDateFormat cdateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd HH:mm:ss.0");
+			cdateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 			String CurTime = cdateFormat.format(DateTime);
 			
 			
