@@ -14,7 +14,7 @@ public class TimeThrottler {
 	
 	public boolean check() {
 		Date now = Clock.getInstance().now();
-		if(TimeUtil.getTimePass(Clock.getInstance().now(), lastTime) > interval) {
+		if(TimeUtil.getTimePass(now, lastTime) > interval) {
 			lastTime = now;
 			return true;
 		}
