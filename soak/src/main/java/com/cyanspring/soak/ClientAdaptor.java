@@ -21,7 +21,7 @@ import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public abstract class ClientAdaptor {
 	private static Logger log = LoggerFactory.getLogger(ClientAdaptor.class);

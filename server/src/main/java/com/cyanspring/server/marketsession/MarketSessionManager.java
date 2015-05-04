@@ -38,7 +38,7 @@ import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.marketsession.MarketSessionChecker;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     private static final Logger log = LoggerFactory

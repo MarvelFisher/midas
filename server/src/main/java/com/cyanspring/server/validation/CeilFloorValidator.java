@@ -1,10 +1,7 @@
 package com.cyanspring.server.validation;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,10 +15,8 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
@@ -36,8 +31,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.common.event.AsyncEventProcessor;
 /**
  * 
  * @author Jimmy
@@ -296,7 +290,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	
 	private boolean isSameTradeDate(String date)throws ParseException{
 		
-		Date dateC = DateUtil.parseDate(date, tradeDateFormat);
+		Date dateC = TimeUtil.parseDate(date, tradeDateFormat);
 		return TimeUtil.sameDate(tradeDate, dateC);
 		
 	}
@@ -308,7 +302,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	private void setTradeDate(String td) throws ParseException{
 
 		if(null != td && !"".equals(td)){
-			tradeDate = DateUtil.parseDate(td, tradeDateFormat);
+			tradeDate = TimeUtil.parseDate(td, tradeDateFormat);
 		}
 		
 	}

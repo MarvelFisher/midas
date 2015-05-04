@@ -9,7 +9,7 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class MarketInfoManager implements IPlugin {
 	private static final Logger log = LoggerFactory

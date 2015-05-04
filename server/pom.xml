@@ -154,6 +154,11 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.34</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
 		
 		<!-- Add for mysql connection issue -->
 		<dependency>
@@ -199,6 +204,7 @@
 			<groupId>com.cyanspring.adaptor</groupId>
 			<artifactId>cyanspring-adaptor</artifactId>
 			<version>${project.parent.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.cyanspring.simulator</groupId>

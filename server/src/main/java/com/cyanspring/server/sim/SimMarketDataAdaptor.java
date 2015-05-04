@@ -172,4 +172,9 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	public void processEvent(Object object) {
 
 	}
+
+	@Override
+	public void clean() {
+
+	}
 }

@@ -46,7 +46,7 @@
 	</bean>
 		
 	<!-- MarketDataManager setting-->
-	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="simMarketDataAdaptor" />

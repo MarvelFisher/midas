@@ -162,7 +162,7 @@ public class FutureFeed implements IFrameClose {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    adaptor.clearSubscribeMarketData();
+                    adaptor.clean();
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }

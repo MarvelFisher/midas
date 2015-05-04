@@ -1,6 +1,5 @@
-package com.cyanspring.adaptor;
+package com.cyanspring.common.marketdata;
 
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionType;
 
 public interface IQuoteAggregator {

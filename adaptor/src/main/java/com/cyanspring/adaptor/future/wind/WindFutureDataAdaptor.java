@@ -15,7 +15,7 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -926,7 +925,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         }
     }
 
-    public void clearSubscribeMarketData() {
+    @Override
+    public void clean() {
         lastQuoteBySymbolMap.clear();
         lastQuoteExtendBySymbolMap.clear();
         futureDataBySymbolMap.clear();

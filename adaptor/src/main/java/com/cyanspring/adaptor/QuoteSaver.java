@@ -2,6 +2,7 @@ package com.cyanspring.adaptor;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.marketdata.IQuoteSaver;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
@@ -31,7 +32,7 @@ import java.util.Map;
  * @version %I%, %G%
  * @since 1.0
  */
-public class QuoteSaver implements IQuoteSaver{
+public class QuoteSaver implements IQuoteSaver {
 
     private static final Logger log = LoggerFactory.getLogger(QuoteSaver.class);
     private XStream xstream = new XStream(new DomDriver());

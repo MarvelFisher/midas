@@ -1,4 +1,4 @@
-package com.cyanspring.event;
+package com.cyanspring.common.event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.util.RoundRobin;
 
 public abstract class AsyncEventMultiProcessor extends AsyncEventProcessor  {

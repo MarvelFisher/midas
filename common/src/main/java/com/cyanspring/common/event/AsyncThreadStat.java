@@ -1,4 +1,4 @@
-package com.cyanspring.event;
+package com.cyanspring.common.event;
 
 public class AsyncThreadStat {
 	public static boolean showStat;

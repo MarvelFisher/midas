@@ -1,4 +1,4 @@
-package com.cyanspring.adaptor;
+package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
@@ -12,8 +12,7 @@ import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.marketdata.*;
-import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,7 +222,7 @@ public class MarketDataManager extends MarketDataReceiver {
             for (String symbol : quoteExtends.keySet()) {
                 //Check TradeDate
                 Date lastTradeDateBySymbol = quoteExtends.get(symbol).get(Date.class, QuoteExtDataField.TIMESTAMP.value());
-                if (!tradeDate.equals(DateUtil.formatDate(lastTradeDateBySymbol, "yyyy-MM-dd"))) {
+                if (!tradeDate.equals(TimeUtil.formatDate(lastTradeDateBySymbol, "yyyy-MM-dd"))) {
                     continue;
                 }
                 transQuoteExtendOffset = transQuoteExtendOffset + 1;
@@ -231,7 +230,7 @@ public class MarketDataManager extends MarketDataReceiver {
                     if (transQuoteExtendOffset != 1) {
                         totalQuoteExtendCount = totalQuoteExtendCount + quoteExtendSegmentMap.size();
                         MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
-                                , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
+                                , quoteExtendSegmentMap, TimeUtil.parseDate(tradeDate, "yyyy-MM-dd"));
                         multiQuoteExtendEvent.setOffSet(transQuoteExtendOffset - dataSegmentSize);
                         multiQuoteExtendEvent.setTotalDataCount(-1);
                         eventManager.sendEvent(multiQuoteExtendEvent);
@@ -245,7 +244,7 @@ public class MarketDataManager extends MarketDataReceiver {
             if ((quoteExtendSegmentMap != null && quoteExtendSegmentMap.size() > 0) || (quoteExtendSegmentMap == null && transQuoteExtendOffset == 0)) {
                 totalQuoteExtendCount = totalQuoteExtendCount + (quoteExtendSegmentMap != null ? quoteExtendSegmentMap.size() : 0);
                 MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
-                        , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
+                        , quoteExtendSegmentMap, TimeUtil.parseDate(tradeDate, "yyyy-MM-dd"));
                 if (quoteExtendSegmentMap != null) {
                     multiQuoteExtendEvent.setOffSet(
                             transQuoteExtendOffset < dataSegmentSize ?

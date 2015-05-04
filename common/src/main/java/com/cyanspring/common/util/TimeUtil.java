@@ -90,6 +90,17 @@ public class TimeUtil {
 			return false;
 		return getOnlyDate(d1).equals(getOnlyDate(d2));
 	}
+
+	public static String formatDate(Date dt, String strFmt) {
+		SimpleDateFormat sdf = new SimpleDateFormat(strFmt);
+		return sdf.format(dt);
+	}
+
+	public static Date parseDate(String strValue, String strFmt)
+			throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat(strFmt);
+		return sdf.parse(strValue);
+	}
 	
 //	public static String getTradeDate(String tradeDateTime){
 //		String[] times = tradeDateTime.split(":");	

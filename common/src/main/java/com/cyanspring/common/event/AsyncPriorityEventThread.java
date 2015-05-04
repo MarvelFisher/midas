@@ -8,7 +8,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.event;
+package com.cyanspring.common.event;
 
 import java.util.Collections;
 import java.util.Date;
@@ -20,10 +20,6 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncExecuteEvent;
-import com.cyanspring.common.event.EventPriority;
 
 
 public abstract class AsyncPriorityEventThread {

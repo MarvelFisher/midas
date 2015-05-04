@@ -36,7 +36,7 @@ import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class PremiumFollowManager implements IPlugin {
 	private static final Logger log = LoggerFactory

@@ -13,12 +13,12 @@
 package com.cyanspring.server.sim;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.marketdata.MarketDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +44,7 @@ import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.adaptor.MarketDataManager;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class HyperDownStreamConnection extends AsyncEventProcessor implements IDownStreamConnection, IDownStreamSender{
 	private static final Logger log = LoggerFactory

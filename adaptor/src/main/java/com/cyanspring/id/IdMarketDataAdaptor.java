@@ -665,6 +665,11 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     }
 
     @Override
+    public void clean() {
+
+    }
+
+    @Override
     public void onStartEvent(RequestThread sender) {
 
     }

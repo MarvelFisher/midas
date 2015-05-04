@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 
 import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.marketdata.*;
-import com.cyanspring.id.Library.Util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +44,9 @@ import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.ForexTickTable;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.cyanspring.adaptor.IQuoteAggregator;
 
 public class MarketDataManager implements IPlugin, IMarketDataListener,
         IMarketDataStateListener {
@@ -219,12 +217,10 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
         for (IMarketDataAdaptor adapter : adaptors) {
             String adapterName = adapter.getClass().getSimpleName();
             if (adapterName.equals("WindFutureDataAdaptor")) {
-                ((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
-                        .processEvent(event);
+                    adapter.processEvent(event);
                 if (MarketSessionType.PREOPEN == event.getSession()) {
                     log.debug("Process Wind Future PREOPEN resubscribe");
-                    ((com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor) adapter)
-                            .clearSubscribeMarketData();
+                    adapter.clean();
                     eventProcessor.onEvent(new PresubscribeEvent(null));
                 }
             }
@@ -319,7 +315,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
             for (String symbol : quoteExtends.keySet()) {
                 //Check TradeDate
                 Date lastTradeDateBySymbol = quoteExtends.get(symbol).get(Date.class, QuoteExtDataField.TIMESTAMP.value());
-                if (!tradeDate.equals(DateUtil.formatDate(lastTradeDateBySymbol, "yyyy-MM-dd"))) {
+                if (!tradeDate.equals(TimeUtil.formatDate(lastTradeDateBySymbol, "yyyy-MM-dd"))) {
                     continue;
                 }
                 transQuoteExtendOffset = transQuoteExtendOffset + 1;
@@ -327,7 +323,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                     if (transQuoteExtendOffset != 1) {
                         totalQuoteExtendCount = totalQuoteExtendCount + quoteExtendSegmentMap.size();
                         MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
-                                , quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
+                                , quoteExtendSegmentMap, TimeUtil.parseDate(tradeDate, "yyyy-MM-dd"));
                         multiQuoteExtendEvent.setOffSet(transQuoteExtendOffset - dataSegmentSize);
                         multiQuoteExtendEvent.setTotalDataCount(-1);
                         eventManager.sendEvent(multiQuoteExtendEvent);
@@ -341,7 +337,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			if((quoteExtendSegmentMap != null && quoteExtendSegmentMap.size()>0) || (quoteExtendSegmentMap==null && transQuoteExtendOffset==0)) {
 				totalQuoteExtendCount = totalQuoteExtendCount + (quoteExtendSegmentMap != null ? quoteExtendSegmentMap.size() : 0);
 				MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
-						, quoteExtendSegmentMap, DateUtil.parseDate(tradeDate, "yyyy-MM-dd"));
+						, quoteExtendSegmentMap, TimeUtil.parseDate(tradeDate, "yyyy-MM-dd"));
 				if(quoteExtendSegmentMap != null) {
 					multiQuoteExtendEvent.setOffSet(
 							transQuoteExtendOffset < dataSegmentSize ?
@@ -476,12 +472,12 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
 		//Calculate Future Quote last Volume
 		if(inEvent.getSourceId() > 100) {
-			if (prev != null && DateUtil.formatDate(prev.getTimeStamp(), "yyyy-MM-dd").equals(tradeDate)) {
+			if (prev != null && TimeUtil.formatDate(prev.getTimeStamp(), "yyyy-MM-dd").equals(tradeDate)) {
 				quote.setLastVol(quote.getTotalVolume() - prev.getTotalVolume());
 			} else {
 				quote.setLastVol(quote.getTotalVolume());
 			}
-		}		
+		}
 
         if (isQuoteLogIsOpen()) {
             quoteLog.info("Quote Receive : " + "Sc="

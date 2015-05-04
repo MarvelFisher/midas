@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.event.ClientSocketEventManager;
 import com.cyanspring.transport.socket.ClientSocketService;
 import com.fdt.lts.client.error.Error;

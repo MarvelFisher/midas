@@ -47,10 +47,9 @@ import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
-import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.DualMap;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class OrderManager {
 	private static final Logger log = LoggerFactory

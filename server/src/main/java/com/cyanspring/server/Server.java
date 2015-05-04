@@ -61,7 +61,7 @@ import com.cyanspring.common.server.event.ServerShutdownEvent;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountPositionManager;
 import com.cyanspring.server.account.TrailingStopManager;
 import com.cyanspring.server.persistence.PersistenceManager;

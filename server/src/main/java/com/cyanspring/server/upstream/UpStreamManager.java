@@ -38,7 +38,7 @@ import com.cyanspring.common.upstream.IUpStreamConnection;
 import com.cyanspring.common.upstream.IUpStreamListener;
 import com.cyanspring.common.upstream.IUpStreamSender;
 import com.cyanspring.common.upstream.UpStreamException;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 
 public class UpStreamManager implements IPlugin {

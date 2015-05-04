@@ -9,8 +9,7 @@ import org.junit.Test;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.event.AsyncEventManager;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class AsyncEventProcessorTest extends AsyncEventProcessor {
 	IAsyncEventManager eventManager = new AsyncEventManager();

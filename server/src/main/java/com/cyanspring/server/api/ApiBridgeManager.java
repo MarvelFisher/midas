@@ -25,7 +25,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.transport.IServerSocketListener;
 import com.cyanspring.common.transport.IUserSocketContext;
-import com.cyanspring.event.AsyncPriorityEventThread;
+import com.cyanspring.common.event.AsyncPriorityEventThread;
 
 public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEventListener {
     private static Logger log = LoggerFactory.getLogger(ApiBridgeManager.class);

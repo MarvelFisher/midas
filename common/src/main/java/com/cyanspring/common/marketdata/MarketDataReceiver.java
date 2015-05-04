@@ -10,28 +10,28 @@
  * governing permissions and limitations under the License.
  * ****************************************************************************
  */
-package com.cyanspring.adaptor;
+package com.cyanspring.common.marketdata;
 
-import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.*;
-import com.cyanspring.common.event.marketdata.*;
+import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtEvent;
+import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,7 +149,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 adaptor.processEvent(event);
                 if(adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
                         && marketSessionType==MarketSessionType.PREOPEN && isInitEnd){
-                    ((WindFutureDataAdaptor)adaptor).clearSubscribeMarketData();
+                    adaptor.clean();
                     preSubscribe();
                 }
             }
@@ -200,7 +200,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         //Calculate Future Quote last Volume
         if (inEvent.getSourceId() > 100) {
-            if (prev != null && DateUtil.formatDate(prev.getTimeStamp(), "yyyy-MM-dd").equals(tradeDate)) {
+            if (prev != null && TimeUtil.formatDate(prev.getTimeStamp(), "yyyy-MM-dd").equals(tradeDate)) {
                 quote.setLastVol(quote.getTotalVolume() - prev.getTotalVolume());
             } else {
                 quote.setLastVol(quote.getTotalVolume());
@@ -328,11 +328,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         requestRequireData();
 
-        if(!isTest) {
-            while (!isInitRefDateReceived || !isInitIndexSessionReceived || !isInitMarketSessionReceived) {
-                TimeUnit.SECONDS.sleep(1);
-            }
-        }
+//        if(!isTest) {
+//            while (!isInitRefDateReceived || !isInitIndexSessionReceived || !isInitMarketSessionReceived) {
+//                TimeUnit.SECONDS.sleep(1);
+//            }
+//        }
 
         chkDate = Clock.getInstance().now();
         for (IMarketDataAdaptor adaptor : adaptors) {

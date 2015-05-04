@@ -1,7 +1,6 @@
-package com.cyanspring.adaptor;
+package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.marketdata.Quote;
 
 import java.util.HashMap;
 import java.util.Map;

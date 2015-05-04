@@ -1269,4 +1269,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
     }
 
+    @Override
+    public void clean() {
+
+    }
+
 }

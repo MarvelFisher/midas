@@ -25,7 +25,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.marketdata.ITickDataWriter;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.TickDataException;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class TickDataManager implements IPlugin {
 	private static final Logger log = LoggerFactory
