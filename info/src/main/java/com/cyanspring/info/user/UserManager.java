@@ -125,10 +125,10 @@ public class UserManager implements IPlugin {
 				String StartDate = (String) rows[2].toString();
 			    String EndDate = rows[3].toString();
 			    
-				if(CurTime.compareTo(StartDate) < 0)
-				{
-					continue;
-				}
+//				if(CurTime.compareTo(StartDate) < 0)
+//				{
+//					continue;
+//				}
 				if(CurTime.compareTo(EndDate) > 0)
 				{
 					continue;
@@ -167,7 +167,7 @@ public class UserManager implements IPlugin {
 			}
 			catch(Exception ee)
 			{
-				log.error(ee.getMessage());
+				log.error("["+strCmd+"] "+ee.getMessage(), ee);
 			}
 		}
 		finally
