@@ -14,7 +14,7 @@
     <bean id="eventManager" class="com.cyanspring.event.BtRemoteEventManager">
     </bean>
 
-    <bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager" init-method="init">
+    <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager" init-method="init">
         <constructor-arg>
             <ref bean="simMarketDataAdaptor"/>
         </constructor-arg>
