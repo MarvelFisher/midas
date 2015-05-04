@@ -91,12 +91,11 @@ public class AlertManager extends Compute {
 	@Override
 	public void processMarketSessionEvent(MarketSessionEvent event,
 			List<Compute> computes) {
+		log.info("[MarketSessionEvent] : " + event);
 		MarketSessionType mst = event.getSession();
-		if (MarketSessionType.PREOPEN == mst) {
-			log.info("[MarketSessionEvent] : " + mst);
+		if (MarketSessionType.PREOPEN == mst) {			
 			checkAlertstart = true;
 		} else if (MarketSessionType.CLOSE == mst) {
-			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = false;
 		}
 	}

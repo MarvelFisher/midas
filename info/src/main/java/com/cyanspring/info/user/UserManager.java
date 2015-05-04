@@ -3,6 +3,7 @@ package com.cyanspring.info.user;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -21,6 +23,9 @@ import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.event.AsyncEventProcessor;
@@ -40,13 +45,19 @@ public class UserManager implements IPlugin {
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
+	
+	@Autowired
+	private IRemoteEventManager eventManagerMD;
+	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private MarketSessionType marketSession;
+	private String market ;
+	private String tradeDate;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(ResetAccountRequestEvent.class, null);
-			subscribeToEvent(AsyncTimerEvent.class, null);
+			subscribeToEvent(ResetAccountRequestEvent.class, null);			
 		}
 
 		@Override
@@ -54,10 +65,30 @@ public class UserManager implements IPlugin {
 			return eventManager;
 		}
 	};
+	
+	private AsyncEventProcessor eventProcessorMD = new AsyncEventProcessor() {
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(MarketSessionEvent.class,null);
+			subscribeToEvent(AsyncTimerEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManagerMD;
+		}
+	};
 
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
 		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
+	}
+	
+	public void processMarketSessionEvent(MarketSessionEvent event) {
+		log.info("[MarketSessionEvent] : " + event);
+		marketSession = event.getSession();
+		market = event.getMarket();
+		tradeDate = event.getTradeDate();
 	}
 
 	private boolean ResetUser(ResetAccountRequestEvent event) {
@@ -112,22 +143,13 @@ public class UserManager implements IPlugin {
 			strCmd = "select * from CONTEST;";
 			query = sessionCentral.createSQLQuery(strCmd);
 			iterator = query.list().iterator();			
-			Calendar cal_UTC = Calendar.getInstance();			 
-			SimpleDateFormat cdateFormat = new SimpleDateFormat(
-					"yyyy-MM-dd HH:mm:ss.0");
-			cdateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-			String CurTime = cdateFormat.format(cal_UTC.getTime());	
 			while (iterator.hasNext()) {	
 				Object[] rows = (Object[]) iterator.next();				
 				String StartDate = (String) rows[2].toString();
 			    String EndDate = rows[3].toString();
 			    
-//				if(CurTime.compareTo(StartDate) < 0)
-//				{
-//					continue;
-//				}
-				if(CurTime.compareTo(EndDate) > 0)
+				if(tradeDate.compareTo(EndDate) > 0)
 				{
 					continue;
 				}								
@@ -135,10 +157,10 @@ public class UserManager implements IPlugin {
 			}				
 			for (String ContestId : ContestIdArray)
 			{				
-				strCmd = "delete from "+ ContestId + "_fx where USER_ID='" + UserId + "' and DATE<>'0'";
+				strCmd = "delete from "+ ContestId + "_" + market.toLowerCase() + " where USER_ID='" + UserId + "' and DATE<>'0'";
 				query = sessionCentral.createSQLQuery(strCmd);
 				Return = query.executeUpdate();
-				strCmd = "update "+ ContestId + "_fx set UNIT_PRICE='1' where USER_ID='" + UserId + "' and DATE='0'";
+				strCmd = "update "+ ContestId + "_" + market.toLowerCase() + " set UNIT_PRICE='1' where USER_ID='" + UserId + "' and DATE='0'";
 				query = sessionCentral.createSQLQuery(strCmd);
 				Return = query.executeUpdate();	
 				
@@ -174,7 +196,7 @@ public class UserManager implements IPlugin {
 		}
 		return true;
 	}
-	
+
 	private void SendSQLHeartBeat() {
 		Session session = null;
 		Session sessionCentral = null ;
@@ -223,9 +245,13 @@ public class UserManager implements IPlugin {
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("UserManager");
 		
-		scheduleManager.scheduleRepeatTimerEvent(60000,
-				eventProcessor, timerEvent);
+		eventProcessorMD.setHandler(this);
+		eventProcessorMD.init();
+		if (eventProcessorMD.getThread() != null)
+			eventProcessorMD.getThread().setName("UserManager-MD");
 		
+		scheduleManager.scheduleRepeatTimerEvent(60000,
+				eventProcessorMD, timerEvent);		
 	}
 
 	@Override
