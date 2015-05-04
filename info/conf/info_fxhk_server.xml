@@ -120,7 +120,7 @@
 	</bean>
 	
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataReceiver">
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataReceiver">
 		<constructor-arg>
 			<list>
 				<ref bean="ibAdaptor" />
