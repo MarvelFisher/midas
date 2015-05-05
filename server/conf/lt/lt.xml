@@ -289,6 +289,7 @@
 		<property name="quoteChecker">
 			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
 		</property>
+		<property name="rmUpdateInterval" value="50"/>
 		<property name="fxSymbols">
 			<list>
 				<value>AUDCAD</value>

@@ -65,12 +65,11 @@
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-            	<!-- <ref bean="idAdaptor" /> -->
                 <ref bean="ibAdaptor" />
             </list>
         </constructor-arg>
-        <property name="quoteThrottle" value="1000"/>
-        <property name="timerInterval" value="1000"/>
+        <property name="quoteThrottle" value="100"/>
+        <property name="timerInterval" value="100"/>
         <property name="quoteLogIsOpen" value="true"/>
         <property name="quoteExtendEventIsSend" value="false"/>
         <property name="quoteExtendSegmentSize" value="300"/>
