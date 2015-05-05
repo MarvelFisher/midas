@@ -11,7 +11,9 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -87,6 +89,8 @@ public class CentralDbProcessor implements IPlugin
 	private long SQLDelayInterval = 1;
 	private long timeInterval = 600000;
 	private long checkSQLInterval = 10 * 60 * 1000;
+	
+	private Date sessionEnd;
 	
 //	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 //	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
@@ -210,6 +214,18 @@ public class CentralDbProcessor implements IPlugin
 		if (isProcessQuote == false)
 		{
 			return;
+		}
+		if (sessionType == MarketSessionType.OPEN 
+				&& quote.getTimeStamp().getTime() >= sessionEnd.getTime())
+		{
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(sessionEnd);
+			cal.add(Calendar.SECOND, -1);
+			quote.setTimeStamp(cal.getTime());
+		}
+		else if (sessionType == MarketSessionType.PREOPEN)
+		{
+			quote.setTimeStamp(sessionEnd);
 		}
 		getChefBySymbol(quote.getSymbol()).onQuote(quote);
 	}
@@ -903,6 +919,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setCheckSQLInterval(long checkSQLInterval) {
 		this.checkSQLInterval = (checkSQLInterval <= 0) ? 600000 : checkSQLInterval;
+	}
+
+	public Date getSessionEnd() {
+		return sessionEnd;
+	}
+
+	public void setSessionEnd(Date sessionEnd) {
+		this.sessionEnd = sessionEnd;
 	}
 	
 }
