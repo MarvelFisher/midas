@@ -37,8 +37,8 @@ public class CentralDbConnector {
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
-    private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
-    private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
+    private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
@@ -211,14 +211,14 @@ public class CentralDbConnector {
 		return (nCount > 0);
 	}
 
-    public boolean isThirdPartyUserExist(String id) {
+    public boolean isThirdPartyUserExist(String id, String market, String language) {
 
         Connection conn = connect();
 
         if (null == conn)
             return false;
 
-        String sQuery = String.format(isThirdPartyUserExist, id);
+        String sQuery = String.format(isThirdPartyUserExist, id, market, language);
         log.debug("[isThirdPartyUserExist] SQL:" + sQuery);
         Statement stmt = null;
         int nCount = 0;
@@ -357,7 +357,7 @@ public class CentralDbConnector {
 		return null;
 	}
 
-    public String getUserIdFromThirdPartyId(String thirdPartyId) {
+    public String getUserIdFromThirdPartyId(String thirdPartyId, String market, String language) {
 
         Connection conn = connect();
 
@@ -368,7 +368,7 @@ public class CentralDbConnector {
         Statement stmt = null;
 
         try {
-            String sQuery = String.format(getUserIdFromThirdPartyId, thirdPartyId);
+            String sQuery = String.format(getUserIdFromThirdPartyId, thirdPartyId, market, language);
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sQuery);
 

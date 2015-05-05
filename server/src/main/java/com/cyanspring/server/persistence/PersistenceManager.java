@@ -711,7 +711,8 @@ public class PersistenceManager {
 
 			if (!Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
 				
-				String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId());
+				String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
+                        event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
 
 				if (Strings.isNullOrEmpty(userId)) {
 
@@ -785,7 +786,8 @@ public class PersistenceManager {
 
         try {
 
-            String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId());
+            String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
+                    event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
 
             if (Strings.isNullOrEmpty(userId)) {
 
@@ -1481,13 +1483,22 @@ public class PersistenceManager {
 
         boolean userExist= false;
         boolean userThirdPartyExist = false;
+        String userId = event.getUser();
 
         if (!Strings.isNullOrEmpty(event.getUser())) {
             userExist = centralDbConnector.isUserExist(event.getUser().toLowerCase());
         }
 
         if (!Strings.isNullOrEmpty(event.getUserThirdParty())) {
-            userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase());
+            userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase(),
+                    event.getMarket(), event.getLanguage());
+
+            if (userThirdPartyExist && Strings.isNullOrEmpty(event.getUser())) {
+
+                userId = centralDbConnector.getUserIdFromThirdPartyId(event.getUserThirdParty(), event.getMarket(),
+                        event.getLanguage());
+                userExist = true;
+            }
         }
 
         // Backward compatibility
@@ -1498,7 +1509,7 @@ public class PersistenceManager {
 
         try {
             eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
-                    event.getUser(), event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
+                    userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
 					event.getLanguage(), event.getClientId()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
