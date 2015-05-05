@@ -69,10 +69,8 @@
 			</list>
 		</constructor-arg>
 		<property name="quoteLogIsOpen" value="true"/>
-		<property name="quoteExtendEventIsSend" value="false"/>
+		<property name="quoteExtendEventIsSend" value="true"/>
 		<property name="quoteExtendSegmentSize" value="300"/>
-
-
 		<property name="preSubscriptionList">
 			<ref bean="preSubscriptionList" />
 		</property>
