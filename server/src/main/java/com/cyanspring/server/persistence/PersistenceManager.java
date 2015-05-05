@@ -87,6 +87,7 @@ public class PersistenceManager {
 	CentralDbConnector centralDbConnector;
 	
 	private CheckEmailType checkEmailUnique = CheckEmailType.allCheck;
+    private CheckPhoneType checkPhoneUnique = CheckPhoneType.allCheck;
 	private boolean syncCentralDb = true;
 	private boolean embeddedSQLServer;
 	private int textSize = 4000;
@@ -842,15 +843,12 @@ public class PersistenceManager {
     }
 
     private void createCentralDbUser(PmUserCreateAndLoginEvent event, User user) throws CentralDbException {
-        if(syncCentralDb)
-        {
-            if(!centralDbConnector.isUserExist(user.getId())) // user dose not exist in Mysql either
-            {
-                if( checkEmailUnique.equals(CheckEmailType.allCheck) ||
-                    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
-                {
-                    if(centralDbConnector.isEmailExist(user.getEmail()))
-                    {
+        if (syncCentralDb) {
+            if (!centralDbConnector.isUserExist(user.getId())) { // user dose not exist in Mysql either
+
+                if (checkEmailUnique.equals(CheckEmailType.allCheck) ||
+                        (checkEmailUnique.equals(CheckEmailType.onlyExist) && !Strings.isNullOrEmpty(user.getEmail()))) {
+                    if (centralDbConnector.isEmailExist(user.getEmail())) {
                         //fixed because of #3090
 //						throw new CentralDbException("This email already exists: " + user.getEmail());
                         throw new CentralDbException("Your " + user.getUserType().name() +
@@ -858,9 +856,19 @@ public class PersistenceManager {
                                 user.getEmail() + " now.", ErrorMessage.CREATE_USER_FAILED);
                     }
                 }
-                if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
+
+                if (checkPhoneUnique == CheckPhoneType.allCheck ||
+                        (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
+
+                    if (centralDbConnector.isPhoneExist(user.getPhone())) {
+                        throw new CentralDbException("Your phone has been used to register an FDT Account.",
+                                ErrorMessage.CREATE_USER_FAILED);
+                    }
+                }
+
+                if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
                         user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
-                        event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId())){
+                        event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId())) {
 
                     throw new CentralDbException("can't create this user: " + user.getId(), ErrorMessage.CREATE_USER_FAILED);
                 }
@@ -1188,11 +1196,20 @@ public class PersistenceManager {
 					throw new CentralDbException("This user already exists: " + user.getId(),ErrorMessage.USER_ALREADY_EXIST);
 				
 				if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
-					    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
-				{
+					    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty())) {
 					if(centralDbConnector.isEmailExist(user.getEmail()))
 						throw new CentralDbException("This email already exists: " + user.getEmail(),ErrorMessage.USER_EMAIL_EXIST);
 				}
+
+                if (checkPhoneUnique == CheckPhoneType.allCheck ||
+                        (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
+
+                    if (centralDbConnector.isPhoneExist(user.getPhone())) {
+                        throw new CentralDbException("This phone already exists: " + user.getPhone(),
+                                ErrorMessage.CREATE_USER_FAILED);
+                    }
+                }
+
 				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
 						user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
 						event.getOriginalEvent().getLanguage()))
@@ -1597,7 +1614,15 @@ public class PersistenceManager {
 		this.checkEmailUnique = checkEmailUnique;
 	}
 
-	public long getPurgeOrderDays() {
+    public CheckPhoneType getCheckPhoneUnique() {
+        return checkPhoneUnique;
+    }
+
+    public void setCheckPhoneUnique(CheckPhoneType checkPhoneUnique) {
+        this.checkPhoneUnique = checkPhoneUnique;
+    }
+
+    public long getPurgeOrderDays() {
 		return purgeOrderDays;
 	}
 
