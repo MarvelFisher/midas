@@ -71,7 +71,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected String tradeDate;
 
-    private MarketSessionType marketSessionType = MarketSessionType.DEFAULT;
     private long lastQuoteSaveInterval = 20000;
     private boolean staleQuotesSent;
     private Date initTime = Clock.getInstance().now();
@@ -86,6 +85,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitIndexSessionReceived = false;
     private volatile boolean isInitMarketSessionReceived = false;
     private volatile boolean isInitEnd = false;
+    private MarketSessionEvent marketSessionEvent;
     boolean state = false;
     boolean isUninit = false;
 
@@ -117,7 +117,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
-        marketSessionType = event.getSession(); //RecordMarketSession
+        marketSessionEvent = event; //RecordMarketSession
         if (null != quoteChecker)
             quoteChecker.setSession(event.getSession());
         chkTime = sessionMonitor.get(event.getSession());
@@ -148,7 +148,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             if(null != adaptor) {
                 adaptor.processEvent(event);
                 if(adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
-                        && marketSessionType==MarketSessionType.PREOPEN && isInitEnd){
+                        && marketSessionEvent.getSession()==MarketSessionType.PREOPEN && isInitEnd){
                     adaptor.clean();
                     preSubscribe();
                 }
@@ -207,6 +207,25 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
         }
 
+        //Check Forex TimeStamp
+        if(inEvent.getSourceId()<=100){
+
+            if(inEvent.getSourceId() == 2){
+                if(marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
+                        || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)){
+                    return;
+                }
+            }
+
+            if(marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN){
+                if(TimeUtil.getTimePass(quote.getTimeStamp(),marketSessionEvent.getEnd())>=0){
+                    quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(),1, TimeUnit.SECONDS));
+                }
+            }
+
+            quoteChecker.fixPriceQuote(prev, quote);
+        }
+
         if (isQuoteLogIsOpen()) {
             quoteLog.info("Quote Receive : " + "Sc="
                             + inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
@@ -220,7 +239,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             );
         }
 
-        if (null != quoteChecker && !quoteChecker.checkAndUpdateQuote(prev, quote) && inEvent.getSourceId() <= 100) {
+        if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote) && inEvent.getSourceId() <= 100) {
             quoteLog.warn("Quote BBBBB! : " + "Sc=" + inEvent.getSourceId()
                             + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
                             + ",B=" + quote.getBid() + ",C=" + quote.getClose()

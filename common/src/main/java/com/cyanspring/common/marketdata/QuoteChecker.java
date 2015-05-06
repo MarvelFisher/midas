@@ -25,29 +25,33 @@ public class QuoteChecker implements IQuoteChecker {
         this.session = session;
     }
 
-    // Check Quote Value
-    public boolean checkAndUpdateQuote(Quote prev, Quote quote) {
-        boolean IsCorrectQuote = true;
+    public Quote fixPriceQuote(Quote prev, Quote quote){
         if (prev != null) {
-            if (PriceUtils.EqualLessThan(quote.getClose(), 0)) {
+            if (PriceUtils.EqualLessThan(quote.getClose(),0)) {
                 quote.setClose(prev.getClose());
             }
-            if (PriceUtils.EqualLessThan(quote.getOpen(), 0)) {
+            if (PriceUtils.EqualLessThan(quote.getOpen(),0)) {
                 quote.setOpen(prev.getOpen());
             }
-            if (PriceUtils.EqualLessThan(quote.getHigh(), 0)) {
+            if (PriceUtils.EqualLessThan(quote.getHigh(),0)) {
                 quote.setHigh(prev.getHigh());
             }
-            if (PriceUtils.EqualLessThan(quote.getLow(), 0)) {
+            if (PriceUtils.EqualLessThan(quote.getLow(),0)) {
                 quote.setLow(prev.getLow());
             }
-            if (PriceUtils.EqualLessThan(quote.getBid(), 0)) {
+            if (PriceUtils.EqualLessThan(quote.getBid(),0)) {
                 quote.setBid(prev.getBid());
             }
-            if (PriceUtils.EqualLessThan(quote.getAsk(), 0)) {
+            if (PriceUtils.EqualLessThan(quote.getAsk(),0)) {
                 quote.setAsk(prev.getAsk());
             }
         }
+        return quote;
+    }
+
+    // Check Quote Value
+    public boolean checkQuotePrice(Quote quote) {
+        boolean IsCorrectQuote = true;
 
         if (this.quotePriceWarningIsOpen) {
             if (PriceUtils.GreaterThan(quote.getClose(), 0)
