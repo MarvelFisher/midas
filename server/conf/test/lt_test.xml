@@ -119,90 +119,15 @@
     <bean id="preSubscriptionList" class="java.util.ArrayList">
         <constructor-arg>
             <list>
-                <value>AUDCAD</value>
-                <value>AUDCHF</value>
-                <value>AUDCNH</value>
-                <value>AUDHKD</value>
-                <value>AUDJPY</value>
-                <value>AUDNZD</value>
-                <value>AUDSGD</value>
-                <value>AUDUSD</value>
-                <value>GBPAUD</value>
-                <value>GBPCAD</value>
-                <value>GBPCHF</value>
-                <value>GBPCNH</value>
-                <!-- <value>GBPDKK</value> -->
-                <value>GBPHKD</value>
-                <value>GBPJPY</value>
-                <value>GBPNOK</value>
-                <value>GBPNZD</value>
-                <value>GBPSEK</value>
-                <value>GBPUSD</value>
-                <value>CADCHF</value>
-                <value>CADCNH</value>
-                <value>CADHKD</value>
-                <value>CADJPY</value>
-                <value>CNHHKD</value>
-                <value>CNHJPY</value>
-                <!-- <value>DKKJPY</value> -->
-                <!-- <value>DKKNOK</value> -->
-                <!-- <value>DKKSEK</value> -->
-                <value>EURAUD</value>
-                <value>EURCAD</value>
-                <value>EURCHF</value>
-                <value>EURCNH</value>
-                <value>EURCZK</value>
-                <!-- <value>EURDKK</value> -->
-                <value>EURGBP</value>
-                <value>EURHKD</value>
-                <value>EURHUF</value>
-                <value>EURILS</value>
-                <value>EURJPY</value>
-                <value>EURMXN</value>
-                <value>EURNOK</value>
-                <value>EURNZD</value>
-                <value>EURRUB</value>
-                <value>EURSEK</value>
-                <value>EURSGD</value>
-                <value>EURUSD</value>
-                <value>HKDJPY</value>
-                <!-- <value>KRWAUD</value>
-                <value>KRWCAD</value>
-                <value>KRWCHF</value>
-                <value>KRWEUR</value>
-                <value>KRWGBP</value>
-                <value>KRWHKD</value>
-                <value>KRWJPY</value>
-                <value>KRWUSD</value> -->
-                <value>MXNJPY</value>
-                <value>NZDCHF</value>
-                <value>NZDJPY</value>
-                <value>NZDUSD</value>
-                <value>NOKJPY</value>
-                <value>NOKSEK</value>
-                <value>SGDCNH</value>
-                <value>SGDJPY</value>
-                <value>SEKJPY</value>
-                <value>CHFCNH</value>
-                <!-- <value>CHFDKK</value> -->
-                <value>CHFJPY</value>
-                <value>CHFNOK</value>
-                <value>CHFSEK</value>
-                <value>USDCAD</value>
-                <value>USDCHF</value>
-                <value>USDCNH</value>
-                <value>USDCZK</value>
-                <value>USDHKD</value>
-                <value>USDHUF</value>
-                <value>USDILS</value>
-                <value>USDJPY</value>
-                <value>USDMXN</value>
-                <value>USDNOK</value>
-                <value>USDRUB</value>
-                <value>USDSEK</value>
-                <value>USDSGD</value>
-                <!-- <value>XAUUSD</value> -->
-                <!-- <value>XAGUSD</value> -->
+				<value>AUDUSD</value>
+	            <value>USDJPY</value>
+	            <value>USDCHF</value>
+	            <value>USDCAD</value>
+	            <value>EURUSD</value>
+	            <value>EURJPY</value>
+	            <value>GBPUSD</value>
+	            <value>NZDUSD</value>
+	            <value>GBPJPY</value>
             </list>
         </constructor-arg>
     </bean>
@@ -258,88 +183,15 @@
         </property>
         <property name="fxSymbols">
             <list>
-                <value>AUDCAD</value>
-                <value>AUDCHF</value>
-                <value>AUDCNH</value>
-                <value>AUDHKD</value>
-                <value>AUDJPY</value>
-                <value>AUDNZD</value>
-                <value>AUDSGD</value>
-                <value>AUDUSD</value>
-                <value>GBPAUD</value>
-                <value>GBPCAD</value>
-                <value>GBPCHF</value>
-                <value>GBPCNH</value>
-                <!-- <value>GBPDKK</value> -->
-                <value>GBPHKD</value>
-                <value>GBPJPY</value>
-                <value>GBPNOK</value>
-                <value>GBPNZD</value>
-                <value>GBPSEK</value>
-                <value>GBPUSD</value>
-                <value>CADCHF</value>
-                <value>CADCNH</value>
-                <value>CADHKD</value>
-                <value>CADJPY</value>
-                <value>CNHHKD</value>
-                <value>CNHJPY</value>
-                <!-- <value>DKKJPY</value> -->
-                <!-- <value>DKKNOK</value> -->
-                <!-- <value>DKKSEK</value> -->
-                <value>EURAUD</value>
-                <value>EURCAD</value>
-                <value>EURCHF</value>
-                <value>EURCNH</value>
-                <value>EURCZK</value>
-                <!-- <value>EURDKK</value> -->
-                <value>EURGBP</value>
-                <value>EURHKD</value>
-                <value>EURHUF</value>
-                <value>EURILS</value>
-                <value>EURJPY</value>
-                <value>EURMXN</value>
-                <value>EURNOK</value>
-                <value>EURNZD</value>
-                <value>EURRUB</value>
-                <value>EURSEK</value>
-                <value>EURSGD</value>
-                <value>EURUSD</value>
-                <value>HKDJPY</value>
-                <!-- <value>KRWAUD</value>
-                <value>KRWCAD</value>
-                <value>KRWCHF</value>
-                <value>KRWEUR</value>
-                <value>KRWGBP</value>
-                <value>KRWHKD</value>
-                <value>KRWJPY</value>
-                <value>KRWUSD</value> -->
-                <value>MXNJPY</value>
-                <value>NZDCHF</value>
-                <value>NZDJPY</value>
-                <value>NZDUSD</value>
-                <value>NOKJPY</value>
-                <value>NOKSEK</value>
-                <value>SGDCNH</value>
-                <value>SGDJPY</value>
-                <value>SEKJPY</value>
-                <value>CHFCNH</value>
-                <!-- <value>CHFDKK</value> -->
-                <value>CHFJPY</value>
-                <value>CHFNOK</value>
-                <value>CHFSEK</value>
-                <value>USDCAD</value>
-                <value>USDCHF</value>
-                <value>USDCNH</value>
-                <value>USDCZK</value>
-                <value>USDHKD</value>
-                <value>USDHUF</value>
-                <value>USDILS</value>
-                <value>USDJPY</value>
-                <value>USDMXN</value>
-                <value>USDNOK</value>
-                <value>USDRUB</value>
-                <value>USDSEK</value>
-                <value>USDSGD</value>
+				<value>AUDUSD</value>
+	            <value>USDJPY</value>
+	            <value>USDCHF</value>
+	            <value>USDCAD</value>
+	            <value>EURUSD</value>
+	            <value>EURJPY</value>
+	            <value>GBPUSD</value>
+	            <value>NZDUSD</value>
+	            <value>GBPJPY</value>
             </list>
         </property>
         <property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->

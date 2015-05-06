@@ -40,6 +40,7 @@ public class CentralDbConnector {
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
+	private static String isPhoneExist = "SELECT COUNT(*) FROM AUTH WHERE `PHONE` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
@@ -274,6 +275,39 @@ public class CentralDbConnector {
 		}
 		return (nCount > 0);
 	}
+
+    public boolean isPhoneExist(String phone) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        String sQuery = String.format(isPhoneExist, phone);
+        log.debug("[isPhoneExist] SQL:" + sQuery);
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return (nCount > 0);
+    }
 
 	public boolean userLogin(String sUser, String sPassword) {
 		return userLoginEx(sUser, sPassword) != null;

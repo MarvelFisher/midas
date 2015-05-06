@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.cyanspring.common.event.marketsession.*;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
+import com.cyanspring.common.marketsession.*;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
@@ -35,9 +35,6 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.marketsession.MarketSessionChecker;
-import com.cyanspring.common.marketsession.MarketSessionData;
-import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class MarketSessionManager implements IPlugin, IAsyncEventListener {
@@ -60,11 +57,13 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     private int settlementDelay = 10;
     private MarketSessionType currentSessionType;
     private String currentTradeDate;
-    private MarketSessionChecker sessionChecker;
+    private IMarketSession sessionChecker;
     private Map<String, MarketSessionData> sessionDataMap;
+    private Map<String, RefData> refDataMap;
+    private boolean searchBySymbol = true;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-    protected long timerInterval = 5 * 1000;
+    protected long timerInterval = 1 * 1000;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -84,7 +83,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     public void processMarketSessionRequestEvent(MarketSessionRequestEvent event) {
         Date date = Clock.getInstance().now();
         try {
-            MarketSessionData sessionData = sessionChecker.getState(date);
+            MarketSessionData sessionData = sessionChecker.getState(date, null);
             MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(),
                     sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
             msEvent.setKey(null);
@@ -114,8 +113,26 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         if (marketSessionUtil == null)
             return;
         try {
-            eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
-                    marketSessionUtil.getMarketDatas(event.getIndexList(), event.getDate())));
+            if (searchBySymbol) {
+                List<RefData> refDataList;
+                if (event.getIndexList() == null)
+                    refDataList = new ArrayList<RefData>(refDataMap.values());
+                else{
+                    refDataList = new ArrayList<>();
+                    for (String index : event.getIndexList()) {
+                        refDataList.add(refDataMap.get(index));
+                    }
+                }
+
+                if (event.getIndexList() != null && refDataList.size() != event.getIndexList().size())
+                    log.warn("Not find all refData for IndexSessionRequestEvent, request list: " + event.getIndexList());
+                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
+                        marketSessionUtil.getSessionDataBySymbol(refDataList, event.getDate())));
+
+            } else {
+                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
+                        marketSessionUtil.getSessionDataByStrategy(event.getIndexList(), event.getDate())));
+            }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
@@ -129,7 +146,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         Date date = Clock.getInstance().now();
         try {
-            MarketSessionData sessionData = sessionChecker.getState(date);
+            MarketSessionData sessionData = sessionChecker.getState(date, null);
             checkMarketSession(sessionData);
             checkTradeDate();
             checkSettlement(date);
@@ -144,20 +161,25 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             return;
         try {
             if (sessionDataMap == null) {
-                sessionDataMap = marketSessionUtil.getMarketDatas(null, date);
+                if (searchBySymbol)
+                    sessionDataMap = marketSessionUtil.getSessionDataBySymbol(refDataManager.getRefDataList(), date); // need modify
+                else
+                    sessionDataMap = marketSessionUtil.getSessionDataByStrategy(null, date);
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap));
-            } else {
-                Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
-                for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
-                    if (date.getTime() > entry.getValue().getEndDate().getTime()) {
-                        MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(entry.getKey(), date);
-                        sendMap.put(entry.getKey(), data);
-                        sessionDataMap.put(entry.getKey(), data);
-                    }
-                }
-                if (sendMap.size() > 0)
-                    eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
+                return;
             }
+
+            Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
+            for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
+                if (date.getTime() < entry.getValue().getEndDate().getTime())
+                    continue;
+                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date); //need modify
+                sendMap.put(entry.getKey(), data);
+                sessionDataMap.put(entry.getKey(), data);
+            }
+            if (sendMap.size() > 0)
+                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
+
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
@@ -212,7 +234,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         log.info("initialising");
 
         Date date = Clock.getInstance().now();
-        sessionChecker.init(date);
+        sessionChecker.init(date, null);
 
         chkDate = TimeUtil.getPreviousDay(date);
 
@@ -224,6 +246,16 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
         if (!eventProcessor.isSync())
             scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);
+
+        refDataMap = new HashMap<String, RefData>();
+        for (RefData refData : refDataManager.getRefDataList()) {
+            if (searchBySymbol)
+                refDataMap.put(refData.getSymbol(), refData);
+            else {
+                if (!refDataMap.containsKey(refData.getStrategy()))
+                    refDataMap.put(refData.getStrategy(), refData);
+            }
+        }
     }
 
     @Override
@@ -250,5 +282,9 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
     public void setSettlementDelay(int settlementDelay) {
         this.settlementDelay = settlementDelay;
+    }
+
+    public void setSearchBySymbol(boolean searchBySymbol) {
+        this.searchBySymbol = searchBySymbol;
     }
 }

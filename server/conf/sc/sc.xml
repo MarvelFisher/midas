@@ -126,6 +126,8 @@
 		<property name="textSize" value="4000"/>
 		<property name="cleanStart" value="false"/>
 		<property name="todayOnly" value="false"/>
+		<property name="checkEmailUnique" value="onlyExist"/>
+        <property name="checkPhoneUnique" value="onlyExist"/>
 		<property name="syncCentralDb" value="true"/>
 	</bean>
 

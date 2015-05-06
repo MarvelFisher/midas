@@ -104,7 +104,7 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 				AccountSetting changes = new AccountSetting(id);;
 				for(KeyValue pair : changedFields){
 					Object oldValue = oldFields.get(pair.key);
-						Object newValue = BeanHolder.getInstance().getDataConverter().fromString(oldValue==null?String.class:oldValue.getClass(), pair.key, (String)pair.value);
+						Object newValue = BeanHolder.getInstance().getDataConverter().fromString(oldValue==null?String.class:oldValue.getClass(), pair.key, pair.value.toString());
 					changes.put(pair.key, newValue);
 				}
 				changes.put(AccountSettingType.ID.value(), id);

@@ -24,6 +24,8 @@
 	
 	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
 	</bean>       
+	<bean id="liveTradingSessionValidator" class="com.cyanspring.server.validation.LiveTradingSessionValidator">
+	</bean> 
 	
 	<!-- field specific validation -->
 	<bean id="orderFieldValidator" class="com.cyanspring.server.validation.OrderFieldValidator">       
