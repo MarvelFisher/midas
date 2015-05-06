@@ -374,7 +374,20 @@ public class AlertManager extends Compute {
 			log.warn("[processQueryOrderAlertRequestEvent] : " + Msg + " : "  + e.getMessage());
 		}
 	}
-
+	
+	synchronized private boolean checkSendFlag(BasePriceAlert alert)
+	{
+		if (alert.isSendFlag())
+		{
+			return false;
+		}
+		else
+		{
+			alert.setSendFlag(true);
+			return true ;
+		}
+	}
+	
 	@Override
 	public void processQuoteEvent(QuoteEvent event, List<Compute> computes) {
 		Quote quote = event.getQuote();
@@ -393,6 +406,10 @@ public class AlertManager extends Compute {
 				alert = list.get(i - 1);
 				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()),
 						quote)) {
+					if (!checkSendFlag(alert))
+					{
+						continue;
+					}
 					String setDateTime = alert.getDateTime();
 					// SendEvent
 					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
