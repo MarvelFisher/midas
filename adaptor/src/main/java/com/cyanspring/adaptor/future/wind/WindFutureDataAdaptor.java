@@ -983,3 +983,4 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     }
 }
+
