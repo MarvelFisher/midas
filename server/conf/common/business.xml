@@ -13,6 +13,7 @@
 	    <constructor-arg>
 	        <list>
 	        	<ref bean="accountStateValidator"/>
+	        	<ref bean="liveTradingSessionValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
 				<ref bean="creditValidator"/>
@@ -21,7 +22,6 @@
 	    </constructor-arg>
 	</bean>	
 	
-	<!-- live trading -->
 	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
 	</bean>       
 	
@@ -168,6 +168,8 @@
 				<value>0.1</value>
 				<value>0.2</value>
 				<value>0.3</value>
+				<value>false</value>
+				<value>false</value>
             </list>
        </property>
     </bean>

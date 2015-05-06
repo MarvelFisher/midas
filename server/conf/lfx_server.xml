@@ -9,6 +9,7 @@
 
 	<import resource="test/fx_test.xml" />
 	<import resource="fx/MarketSession.xml" />
+	<import resource="fx/LiveTrading.xml" />
 	<import resource="common/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />

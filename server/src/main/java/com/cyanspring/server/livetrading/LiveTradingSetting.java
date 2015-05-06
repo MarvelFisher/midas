@@ -1,4 +1,4 @@
-package com.cyanspring.server.account;
+package com.cyanspring.server.livetrading;
 
 public class LiveTradingSetting {
 	private boolean needCheckPosition;

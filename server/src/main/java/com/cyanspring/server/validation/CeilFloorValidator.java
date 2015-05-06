@@ -82,16 +82,13 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {		
 		
-		if(quoteExtendsMap.size()==0){		
-			
+		if(quoteExtendsMap.size()==0){					
 			log.warn("validation : No quoteExtends info");
-			return;
-			
+			return;		
 		}
 		
 		log.info("quoteExtendsMap size:"+quoteExtendsMap.size());
-		
-		
+
 		try{
 			
 			String symbol;
@@ -99,28 +96,20 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			DataObject data = null;
 			OrderType type = null;
 			
-			if(order == null){
-				
+			if(order == null){				
 				symbol = (String)map.get(OrderField.SYMBOL.value());
-				type =(OrderType) map.get(OrderField.TYPE.value());
-				
+				type =(OrderType) map.get(OrderField.TYPE.value());		
 			}
-			else{
-				
+			else{			
 				symbol = order.getSymbol();
-				type = order.getOrderType();
-				
+				type = order.getOrderType();	
 			}
 			
-			if(OrderType.Market == type){
-				
+			if(OrderType.Market == type){			
 				log.warn("this is market order");
-				return;
-				
+				return;			
 			}
-			
-			
-			
+				
 			if(null!=quoteExtendsMap && quoteExtendsMap.size()!=0){
 				data = quoteExtendsMap.get(symbol);
 			}
@@ -180,11 +169,11 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		int total = event.getTotalDataCount();
 		Date eventTradeDate = event.getTradeDate();
 
-		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){
-			
+		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){			
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
-			return;
-			
+			return;	
+		}else{
+			log.info("receiveData size:"+receiveDataMap.size());
 		}
 		
 		if(null == quoteExtendsMap ){
@@ -192,7 +181,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		}
 		
 		quoteExtendsMap.putAll(receiveDataMap);
-
+		
 	}
 	public void sendQuoteExtSubEvent(){
 		
@@ -226,24 +215,22 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	public void processTradeDateEvent(TradeDateEvent event){
 		log.info("into trade date event");
 		try{
+			
 			String eventTradeDate = event.getTradeDate();
 			if(null == eventTradeDate){
 				return;
 			}
 			if(null == tradeDate
 					|| !isSameTradeDate(eventTradeDate))
-			{
-				
+			{		
 				setTradeDate(eventTradeDate);
 				sendQuoteExtSubEvent();
-				
 			}
 
 		}catch(Exception e){
 			log.warn(e.getMessage(),e);
 		}
 
-		
 	}
 	
 	public void processMarketSessionEvent(MarketSessionEvent event){
@@ -256,11 +243,9 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			
 			if( null == oldTradeDate
 					|| MarketSessionType.PREOPEN == event.getSession())
-			{// if oldTradeDate ==  null means reboot
-				
+			{// if oldTradeDate ==  null means reboot		
 				setTradeDate(td);
 				sendQuoteExtSubEvent();
-	
 			}
 			
 		} catch (ParseException e) {

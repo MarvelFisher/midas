@@ -35,6 +35,7 @@
 				<ref bean="accountPositionManager" />
 				<ref bean="premiumFollowManager"/>
 				<ref bean="trailingStopManager"/>
+				<ref bean="liveTradingSession" />	
 			</list>
 		</property>
 		<property name="readyMap">
@@ -441,5 +442,5 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
-
+    
 </beans>

@@ -40,6 +40,8 @@ import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
+import com.cyanspring.common.event.AsyncEventMultiProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -89,10 +91,9 @@ import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.common.event.AsyncEventMultiProcessor;
-import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
+import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.order.MultiOrderCancelTracker;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
 import com.cyanspring.server.validation.ParentOrderPreCheck;
@@ -730,59 +731,17 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	}
 	
-	private void cancelAllOrdersAndCloseAllPositions(Account account){
-		
-		List <ParentOrder> orderList = positionKeeper.getParentOrders(account.getId());
-		if(orderList.size() > 0)
-			log.info("Live trading cancelling of orders: ", orderList.size());
-		for(ParentOrder order : orderList){
-			if(order.getOrdStatus().isReady()){
-				String source = order.get(String.class, OrderField.SOURCE.value());
-				String txId = order.get(String.class, OrderField.CLORDERID.value());
-				CancelStrategyOrderEvent cancel = 
-						new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.CompanyStopLoss, false);
-				eventManager.sendEvent(cancel);
-			}
-		}
-		
-		//close all position
-		List <OpenPosition> positionList = positionKeeper.getOverallPosition(account);
-		if(positionList.size() > 0)
-			log.info("Live trading closing of positions: ", positionList.size());
-		if(positionList.size() >0){
-			for(OpenPosition position : positionList){
-				Quote quote = positionKeeper.getQuote(position.getSymbol());
-				
-                if (positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
-                    log.debug("Position stop loss over threshold but account is locked: " +
-                            account.getId() + ", " + position.getSymbol());
-                    continue;
-                }
-                
-                log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
-                        position.getSymbol() + ", " + position.getAcPnL() + ", " +
-                        quote);
-				ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
-						null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.CompanyStopLoss,
-						IdGenerator.getInstance().getNextID());
-				
-				eventManager.sendEvent(event);
-			}
-		}
-		
-	}
-	
 	public void processLiveTradingEndEvent(LiveTradingEndEvent event){
 		//close all position and orders accounts that has live trading
 		try {
 			
 			List<Account> accounts = accountKeeper.getAllAccounts();
-			for(Account account:accounts){
-				
+			for(Account account:accounts){		
 				AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
 				if(accountSetting.checkLiveTrading()){
 					log.info("LiveTradingEndEvent:close position account:"+account.getId());
-					cancelAllOrdersAndCloseAllPositions(account);
+					TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
+					TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, false);
 				}		
 			}
 			

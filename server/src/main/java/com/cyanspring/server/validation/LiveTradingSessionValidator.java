@@ -37,46 +37,35 @@ public class LiveTradingSessionValidator implements IOrderValidator {
 				return;
 			}
 			
-			String accountId = null;	
-			
+			String accountId = null;				
 			if(order == null){
 				accountId = (String)map.get(OrderField.ACCOUNT.value());			
 			}else{	
 				accountId = order.getAccount();		
-			}
-			
+			}			
 			if(!StringUtils.hasText(accountId)){				
 				return;			
 			}
 			
-			Account account = accountKeeper.getAccount(accountId);
-			
+			Account account = accountKeeper.getAccount(accountId);			
 			if( null == account ){
 				return;
 			}
-			
-			
+
 			AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
-			if( null != account && accountSetting.checkLiveTrading()){
+			if( null != account && accountSetting.checkLiveTrading()){			
 				
-				if(!liveTradingSession.isAllowLiveTrading()){
-					
+				if(!liveTradingSession.isAllowLiveTrading()){				
 					throw new OrderValidationException("Live trading on stop trading time"
 							,ErrorMessage.LIVE_TRADING_STOP_TRADING);
-
 				}
 				
 			}
 			
-			
-		}catch(OrderValidationException e){	
-			
-			throw e;
-			
-		}catch(Exception e){
-			
-			log.error(e.getMessage(),e);
-			
+		}catch(OrderValidationException e){		
+			throw e;			
+		}catch(Exception e){		
+			log.error(e.getMessage(),e);		
 		}
 
 	}

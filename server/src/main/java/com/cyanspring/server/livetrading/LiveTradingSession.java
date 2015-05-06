@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -17,8 +18,6 @@ import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.livetrading.LiveTradingStartEvent;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.common.event.AsyncEventProcessor;
-import com.cyanspring.server.account.LiveTradingSetting;
 
 
 public class LiveTradingSession implements IPlugin {
@@ -54,13 +53,10 @@ public class LiveTradingSession implements IPlugin {
 	@Override
 	public void init() throws Exception {
 				
-		if(!checkLiveTradingSessionSetting()){
-			
+		if(!checkLiveTradingSessionSetting()){		
 			log.error("Live Trade Setting not setting well");			
-			return;
-			
-		}
-		
+			return;		
+		}	
 		eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null){
@@ -72,7 +68,6 @@ public class LiveTradingSession implements IPlugin {
         	log.error(e.getMessage(),e);
         	return;
         }
- 
         scheduleLiveTradingEvent(stopUserTradingEvent);
         scheduleLiveTradingEvent(startUserTradingEvent);
         
@@ -157,16 +152,10 @@ public class LiveTradingSession implements IPlugin {
 		long stopToday = getDateFromString(endTime).getTime();
         long now = Clock.getInstance().now().getTime();
 		 
-        log.info("start today:"+getDateFromString(startTime));
-		log.info("stopToday:"+getDateFromString(endTime));
-		log.info("now:"+Clock.getInstance().now());
-
-        
         if(startToday >= stopToday){
         	throw new Exception("start time over or equal than end time");
         }
-        
-        
+       
         if(startToday <= now && now <= stopToday){
 			return false;
 		}else {
@@ -182,15 +171,13 @@ public class LiveTradingSession implements IPlugin {
 		
 		String stopStartTime = liveTradingSetting.getUserStopLiveTradingStartTime();
 		String stopEndTime = liveTradingSetting.getUserStopLiveTradingEndTime();
-		
-			
+					
 		if(isNowInTradingTime(stopStartTime, stopEndTime)){
 				setLiveTradingState(LiveTradingState.USER_LIVE_TRADING_ON);
 		}else{
 				setLiveTradingState(LiveTradingState.USER_LIVE_TRADING_OFF);
 		}
 			
-
 	}
 
 	@Override
@@ -202,32 +189,24 @@ public class LiveTradingSession implements IPlugin {
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event){		
 		
-		if( startUserTradingEvent == event){
-			 
-			//change status
+		if( startUserTradingEvent == event){			 
+
 			setLiveTradingState(LiveTradingState.USER_LIVE_TRADING_ON);
-			//send event
-			try {
-				
+			try {		
 				log.info("User Live Trading Start:"+Clock.getInstance().now());
 				eventManager.sendRemoteEvent(new LiveTradingStartEvent(null, null));
 				scheduleLiveTradingEvent(startUserTradingEvent);
-				
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);
 			}
 			
-		}else if( stopUserTradingEvent == event ){
-			
-			//change status
+		}else if( stopUserTradingEvent == event ){			
+
 			setLiveTradingState(LiveTradingState.USER_LIVE_TRADING_OFF);
-			//send event
-			try {
-				
+			try {	
 				log.info("User Live Trading Stop:"+Clock.getInstance().now());
 				eventManager.sendEvent(new LiveTradingEndEvent(null, null));
-				scheduleLiveTradingEvent(stopUserTradingEvent);
-				
+				scheduleLiveTradingEvent(stopUserTradingEvent);			
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);
 			}

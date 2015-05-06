@@ -25,6 +25,7 @@
 				<ref bean="apiBridgeManager" />
 				<ref bean="trailingStopManager" />
 				<ref bean="autoRunner" />
+				<ref bean="liveTradingSession" />		
 			</list>
 		</property>
 		<property name="readyMap">
@@ -436,5 +437,5 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregator">
 	</bean>
-
+    
 </beans>
