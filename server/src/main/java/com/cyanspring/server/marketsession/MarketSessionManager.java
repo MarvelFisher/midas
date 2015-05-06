@@ -90,7 +90,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	public void processMarketSessionRequestEvent(MarketSessionRequestEvent event){
 		Date date = Clock.getInstance().now();
 		try {
-			MarketSessionData sessionData = sessionChecker.getState(date);			
+			MarketSessionData sessionData = sessionChecker.getState(date, null);
 			MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(), 
 					sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
 			msEvent.setKey(null);
@@ -113,7 +113,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		Date date = Clock.getInstance().now();
 		try {			
-			MarketSessionData sessionData = sessionChecker.getState(date);
+			MarketSessionData sessionData = sessionChecker.getState(date, null);
 			if(currentSessionType == null || !currentSessionType.equals(sessionData.getSessionType())){				
 				MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(), 
 						sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
@@ -160,7 +160,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 		log.info("initialising");
 
 		Date date = Clock.getInstance().now();
-		sessionChecker.init(date);
+		sessionChecker.init(date, null);
 		
 		chkDate = TimeUtil.getPreviousDay(date);
 		

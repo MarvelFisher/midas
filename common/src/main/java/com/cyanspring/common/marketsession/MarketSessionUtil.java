@@ -1,5 +1,7 @@
 package com.cyanspring.common.marketsession;
 
+import com.cyanspring.common.staticdata.RefData;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -12,9 +14,9 @@ public class MarketSessionUtil {
 		this.tMap = tMap;
 	}
 	
-	public MarketSessionData getCurrentMarketSessionType(String symbol, Date date) throws Exception{
-		MarketSessionChecker checker = cMap.get(symbol);
-		return checker.getState(date);
+	public MarketSessionData getCurrentMarketSessionType(RefData refData, Date date) throws Exception{
+		MarketSessionChecker checker = cMap.get(refData.getStrategy());
+		return checker.getState(date, refData);
 	}
 	
 	public boolean isHoliday(String symbol, Date date){
