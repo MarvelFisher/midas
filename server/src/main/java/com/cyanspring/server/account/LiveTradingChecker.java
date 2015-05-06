@@ -52,7 +52,7 @@ public class LiveTradingChecker{
 	
 	public Double getPositionStopLoss(Account account,AccountSetting accountSetting,Double positionStopLoss){
 		
-		if(!liveTradingSetting.isNeedCheckPosition()){
+		if(!liveTradingSetting.isNeedCheckPosition() || !accountSetting.checkLiveTrading()){
 			return positionStopLoss;
 		}	
 		
@@ -130,7 +130,7 @@ public class LiveTradingChecker{
 	}
 	
 	public boolean checkFreezeLoss(Account account,AccountSetting accountSetting){
-		if( !liveTradingSetting.isNeedCheckFreeze()){
+		if( !liveTradingSetting.isNeedCheckFreeze() || !accountSetting.checkLiveTrading()){
 			return false;
 		}
 		if(PriceUtils.isZero(accountSetting.getFreezePercent())){
@@ -161,7 +161,7 @@ public class LiveTradingChecker{
 	}
 
 	public boolean checkTerminateLoss(Account account,AccountSetting accountSetting){
-		if(!liveTradingSetting.isNeedCheckTerminate()){
+		if(!liveTradingSetting.isNeedCheckTerminate() || !accountSetting.checkLiveTrading()){
 			return false;
 		}
 		
