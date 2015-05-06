@@ -20,10 +20,12 @@ public class Default {
 	private static double marginCall = 0.95;
 	private static int settlementDays = 0;
 	
-	private static double stopLossPercent=0.2;
-	private static double freezePercent=0.2;
-	private static double terminatePecent=0.2;
+	private static double stopLossPercent = 0.2;
+	private static double freezePercent = 0.2;
+	private static double terminatePecent = 0.2;
 
+	private static boolean liveTrading = false;
+	private static boolean userLiveTrading = false;
 	
 	
 	protected static void setValues(
@@ -44,8 +46,9 @@ public class Default {
 		int settlementDays,
 		double stopLossPercent,
 		double freezePercent,
-		double terminatePecent
-			) {
+		double terminatePecent,
+		boolean liveTrading,
+		boolean userLiveTrading) {
 		Default.user = user;
 		Default.account = account;
 		Default.market = market;
@@ -64,6 +67,8 @@ public class Default {
 		Default.stopLossPercent  = stopLossPercent;
 		Default.freezePercent = freezePercent;
 		Default.terminatePecent = terminatePecent;
+		Default.liveTrading = liveTrading;
+		Default.userLiveTrading = userLiveTrading;
 	}
 	
 	static public String getUser() {
@@ -142,15 +147,20 @@ public class Default {
 		return stopLossPercent;
 	}
 
-
 	public static double getFreezePercent() {
 		return freezePercent;
 	}
 
-
 	public static double getTerminatePecent() {
 		return terminatePecent;
 	}
-	
+
+	public static boolean isLiveTrading() {
+		return liveTrading;
+	}
+
+	public static boolean isUserLiveTrading() {
+		return userLiveTrading;
+	}
 	
 }

@@ -171,6 +171,8 @@
 				<value>0.1</value>
 				<value>0.2</value>
 				<value>0.3</value>
+				<value>false</value>
+				<value>false</value>
             </list>
        </property>
     </bean>

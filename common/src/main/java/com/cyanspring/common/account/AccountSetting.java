@@ -15,6 +15,7 @@ public class AccountSetting extends DataObject {
 	
 	//!!! very important: you must add entry here whenever you add a setting
 	public static AccountSetting createEmptySettings(String accountId) {
+		
 		AccountSetting settings = new AccountSetting(accountId);
 		settings.setDefaultQty(Default.getOrderQuantity());
 		settings.setStopLossValue(Default.getPositionStopLoss());
@@ -24,14 +25,12 @@ public class AccountSetting extends DataObject {
 		settings.setCommission(0.0);
 		settings.setLeverageRate(0.0);
 		settings.setDailyStopLoss(0.0);
-		settings.setTrailingStop(0.0);
-		
+		settings.setTrailingStop(0.0);		
 		settings.setStopLossPercent(Default.getStopLossPercent());
 		settings.setFreezePercent(Default.getFreezePercent());
-		settings.setTerminatePercent(Default.getTerminatePecent());
-		
-		settings.setLiveTrading(false);
-		settings.setUserLiveTrading(false);
+		settings.setTerminatePercent(Default.getTerminatePecent());		
+		settings.setLiveTrading(Default.isLiveTrading());
+		settings.setUserLiveTrading(Default.isUserLiveTrading());
 		
 		return settings;
 	}
