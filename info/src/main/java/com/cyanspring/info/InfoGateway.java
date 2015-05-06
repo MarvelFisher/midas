@@ -114,7 +114,7 @@ public class InfoGateway implements IPlugin {
 	public void processResetAccountRequestEvent(
 			final ResetAccountRequestEvent event) {
 		log.info("[processResetAccountRequestEvent] : AccountId :"
-				+ event.getAccount() + "Coinid : " + event.getCoinId());
+				+ event.getAccount() + " Coinid : " + event.getCoinId());
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {

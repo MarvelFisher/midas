@@ -111,8 +111,8 @@ public class AlertManager extends Compute {
 		receiveChildOrderUpdateEvent(execution);
 	}
 
-
-	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+	@Override
+	public void processResetAccountRequestEvent(ResetAccountRequestEvent event, List<Compute> computes) {
 		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
