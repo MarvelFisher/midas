@@ -437,23 +437,5 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregator">
 	</bean>
-<<<<<<< HEAD
-    
-=======
-	
-	<bean id="liveTradingSession" class="com.cyanspring.server.livetrading.LiveTradingSession">
-	</bean>
 
-	<bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
-	</bean>
-
-	<bean id="liveTradingSetting" class="com.cyanspring.server.account.LiveTradingSetting">
-		<property name="needCheckPosition" value="true"/>
-		<property name="needCheckFreeze" value="true"/>
-		<property name="needCheckTerminate" value="false"/>
-		<property name="userStopLiveTradingStartTime" value="2:00:00"/>
-        <property name="userStopLiveTradingEndTime" value="7:00:00"/>
-	</bean>
-
->>>>>>> refs/heads/2015-04-30_sprint
 </beans>
