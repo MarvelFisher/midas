@@ -17,9 +17,9 @@ public class MarketSessionUtil {
 		this.tMap = tMap;
 	}
 
-	public MarketSessionData getCurrentMarketSessionType(RefData refData, Date date) throws Exception{
+	public MarketSessionData getCurrentMarketSessionType(RefData refData, Date date, boolean searchBySymbol) throws Exception{
 		MarketSessionChecker checker = cMap.get(refData.getStrategy());
-		return checker.getState(date, refData);
+        return searchBySymbol ? checker.getState(date, refData) : checker.getState(date, null);
 	}
 
 	public boolean isHoliday(String symbol, Date date){

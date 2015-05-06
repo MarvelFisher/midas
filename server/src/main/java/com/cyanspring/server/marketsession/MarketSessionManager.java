@@ -182,7 +182,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
                         Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
                 if (date.getTime() < compare.getTime())
                     continue;
-                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date);
+                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date, searchBySymbol);
                 sendMap.put(entry.getKey(), data);
                 sessionDataMap.put(entry.getKey(), data);
                 dateMap.put(entry.getKey(), Clock.getInstance().now());
