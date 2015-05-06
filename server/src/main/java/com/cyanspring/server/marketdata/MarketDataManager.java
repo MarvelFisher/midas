@@ -485,11 +485,20 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
         //Check Forex TimeStamp
         if(inEvent.getSourceId()<=100){
+
+            if(inEvent.getSourceId() == 2){
+                if(marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
+                        || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)){
+                    return;
+                }
+            }
+
             if(marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN){
                 if(TimeUtil.getTimePass(quote.getTimeStamp(),marketSessionEvent.getEnd())>=0){
                     quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(),1, TimeUnit.SECONDS));
                 }
             }
+
             fixPriceQuote(prev, quote);
         }
 
