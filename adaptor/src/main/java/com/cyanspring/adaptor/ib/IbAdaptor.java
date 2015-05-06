@@ -610,6 +610,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     synchronized private void publishQuote(Quote quote) {
+        if(!checkQuote(quote)) return;
         quote = (Quote) quote.clone();
         quote.sourceId = 1;
         quote.setTimeStamp(new Date());
@@ -618,6 +619,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             for (IMarketDataListener listener : list)
                 listener.onQuote(new InnerQuote(1, quote)); // use in MDM proceessInnerQuoteEvent , IB Adapter sourceid=1
 
+    }
+
+    private boolean checkQuote(Quote quote){
+        boolean isCheck = true;
+        if(PriceUtils.EqualLessThan(quote.getBid(),0) || PriceUtils.EqualLessThan(quote.getAsk(),0)){
+            isCheck = false;
+        }
+        return isCheck;
     }
 
     /**

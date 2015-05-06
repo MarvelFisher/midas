@@ -12,23 +12,6 @@
  */
 package com.cyanspring.server.marketdata;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.marketdata.*;
-import com.cyanspring.id.Library.Util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.data.DataObject;
@@ -36,18 +19,31 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
+import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.ForexTickTable;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.id.Library.Util.DateUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 public class MarketDataManager implements IPlugin, IMarketDataListener,
         IMarketDataStateListener {
@@ -103,6 +99,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
     private int quotePriceWarningPercent = 99;
     private boolean quoteLogIsOpen = false;
     private int quoteExtendSegmentSize = 300;
+    private MarketSessionEvent marketSessionEvent;
 
     public int getQuoteExtendSegmentSize() {
         return quoteExtendSegmentSize;
@@ -204,6 +201,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
     public void processMarketSessionEvent(MarketSessionEvent event)
             throws Exception {
+        marketSessionEvent = event;
         if (null != quoteChecker)
             quoteChecker.setSession(event.getSession());
         chkTime = sessionMonitor.get(event.getSession());
@@ -278,7 +276,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 
     public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
         log.debug("QuoteSubEvent: " + event.getSymbol() + ", "
-				+ event.getReceiver());
+                + event.getReceiver());
         String symbol = event.getSymbol();
         Quote quote = quotes.get(symbol);
 
@@ -353,7 +351,6 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
         }
     }
 
-
     public void processTradeSubEvent(TradeSubEvent event)
             throws MarketDataException {
         TradeSubEvent tradeSubEvent = (TradeSubEvent) event;
@@ -397,9 +394,7 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                 + ", Prev: " + prev + ", New: " + quote);
     }
 
-    // Check Quote Value
-    public boolean checkQuote(Quote prev, Quote quote) {
-        boolean IsCorrectQuote = true;
+    public Quote fixPriceQuote(Quote prev, Quote quote){
         if (prev != null) {
             if (quote.getClose() <= 0) {
                 quote.setClose(prev.getClose());
@@ -420,6 +415,12 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
                 quote.setAsk(prev.getAsk());
             }
         }
+        return quote;
+    }
+
+    // Check Quote Value
+    public boolean checkQuote(Quote quote) {
+        boolean IsCorrectQuote = true;
 
         if (isQuotePriceWarningIsOpen()) {
             if (quote.getClose() > 0 && getQuotePriceWarningPercent() > 0
@@ -480,23 +481,33 @@ public class MarketDataManager implements IPlugin, IMarketDataListener,
 			} else {
 				quote.setLastVol(quote.getTotalVolume());
 			}
-		}		
+		}
+
+        //Check Forex TimeStamp
+        if(inEvent.getSourceId()<=100){
+            if(marketSessionEvent.getSession() == MarketSessionType.OPEN){
+                if(TimeUtil.getTimePass(quote.getTimeStamp(),marketSessionEvent.getEnd())>=0){
+                    quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(),1, TimeUnit.SECONDS));
+                }
+            }
+            fixPriceQuote(prev, quote);
+        }
 
         if (isQuoteLogIsOpen()) {
             quoteLog.info("Quote Receive : " + "Sc="
-                    + inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
-                    + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
-                    + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
-                    + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
-                    + ",Last=" + quote.getLast()
-                    + ",Stale=" + quote.isStale() + ",ts="
-                    + quote.getTimeStamp().toString() + ",wPcnt="
-                    + getQuotePriceWarningPercent()
-					+ ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-			);
+                            + inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
+                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
+                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
+                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
+                            + ",Last=" + quote.getLast()
+                            + ",Stale=" + quote.isStale() + ",ts="
+                            + quote.getTimeStamp().toString() + ",wPcnt="
+                            + getQuotePriceWarningPercent()
+                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+            );
         }
 
-        if (!checkQuote(prev, quote) && inEvent.getSourceId() <= 100) {
+        if (!checkQuote(quote) && inEvent.getSourceId() <= 100) {
             quoteLog.warn("Quote BBBBB! : " + "Sc=" + inEvent.getSourceId()
                     + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
                     + ",B=" + quote.getBid() + ",C=" + quote.getClose()
