@@ -60,6 +60,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     private IMarketSession sessionChecker;
     private Map<String, MarketSessionData> sessionDataMap;
     private Map<String, RefData> refDataMap;
+    private Map<String, Date> dateMap = new HashMap<String, Date>();
     private boolean searchBySymbol = true;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -117,7 +118,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
                 List<RefData> refDataList;
                 if (event.getIndexList() == null)
                     refDataList = new ArrayList<RefData>(refDataMap.values());
-                else{
+                else {
                     refDataList = new ArrayList<>();
                     for (String index : event.getIndexList()) {
                         refDataList.add(refDataMap.get(index));
@@ -162,20 +163,29 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         try {
             if (sessionDataMap == null) {
                 if (searchBySymbol)
-                    sessionDataMap = marketSessionUtil.getSessionDataBySymbol(refDataManager.getRefDataList(), date); // need modify
+                    sessionDataMap = marketSessionUtil.getSessionDataBySymbol(refDataManager.getRefDataList(), date);
                 else
                     sessionDataMap = marketSessionUtil.getSessionDataByStrategy(null, date);
+
+                for (String key : sessionDataMap.keySet()) {
+                    dateMap.put(key, Clock.getInstance().now());
+                }
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap));
                 return;
             }
 
             Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
             for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
-                if (date.getTime() < entry.getValue().getEndDate().getTime())
+                Date record = dateMap.get(entry.getKey());
+                String[] time = entry.getValue().getEnd().split(":");
+                Date compare = TimeUtil.getScheduledDate(Calendar.getInstance(), record,
+                        Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
+                if (date.getTime() < compare.getTime())
                     continue;
-                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date); //need modify
+                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date, searchBySymbol);
                 sendMap.put(entry.getKey(), data);
                 sessionDataMap.put(entry.getKey(), data);
+                dateMap.put(entry.getKey(), Clock.getInstance().now());
             }
             if (sendMap.size() > 0)
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
