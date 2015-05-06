@@ -39,6 +39,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String isPhoneExist = "SELECT COUNT(*) FROM AUTH WHERE `PHONE` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
@@ -141,6 +142,49 @@ public class CentralDbConnector {
 		}
 		return bIsSuccess;
 	}
+
+    public boolean detachThirdPartyUser(String userId, String password, String thirdPartyId, String market, String language) {
+
+        if (!userLogin(userId, password))
+            return false;
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        boolean bIsSuccess = false;
+        Statement stmt = null;
+
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+
+            String sql = String.format(detachThirdPartyUser, thirdPartyId, userId, market, language);
+            stmt.executeUpdate(sql);
+
+            bIsSuccess = true;
+            conn.commit();
+
+        } catch (SQLException e) {
+            bIsSuccess = false;
+            log.warn("Cannot detach third party user." + userId + ", " + thirdPartyId, e);
+            try {
+                conn.rollback();
+            } catch (SQLException se) {
+                log.warn("Detach third party user rollback fail." + userId + ", " + thirdPartyId, se);
+            }
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return bIsSuccess;
+    }
 
     public boolean registerThirdPartyUser(String userId, UserType userType, String thirdPartyId) {
 

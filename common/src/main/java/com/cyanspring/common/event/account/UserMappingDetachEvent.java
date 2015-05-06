@@ -46,4 +46,15 @@ public class UserMappingDetachEvent extends RemoteAsyncEvent {
     public String getLanguage() {
         return language;
     }
+
+    @Override
+    public String toString() {
+        return "UserMappingDetachEvent{" +
+                "txId='" + txId + '\'' +
+                ", user='" + user + '\'' +
+                ", userThirdParty='" + userThirdParty + '\'' +
+                ", market='" + market + '\'' +
+                ", language='" + language + '\'' +
+                '}';
+    }
 }
