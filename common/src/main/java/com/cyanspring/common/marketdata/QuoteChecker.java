@@ -27,22 +27,22 @@ public class QuoteChecker implements IQuoteChecker {
 
     public Quote fixPriceQuote(Quote prev, Quote quote){
         if (prev != null) {
-            if (quote.getClose() <= 0) {
+            if (PriceUtils.EqualLessThan(quote.getClose(),0)) {
                 quote.setClose(prev.getClose());
             }
-            if (quote.getOpen() <= 0) {
+            if (PriceUtils.EqualLessThan(quote.getOpen(),0)) {
                 quote.setOpen(prev.getOpen());
             }
-            if (quote.getHigh() <= 0) {
+            if (PriceUtils.EqualLessThan(quote.getHigh(),0)) {
                 quote.setHigh(prev.getHigh());
             }
-            if (quote.getLow() <= 0) {
+            if (PriceUtils.EqualLessThan(quote.getLow(),0)) {
                 quote.setLow(prev.getLow());
             }
-            if (quote.getBid() <= 0) {
+            if (PriceUtils.EqualLessThan(quote.getBid(),0)) {
                 quote.setBid(prev.getBid());
             }
-            if (quote.getAsk() <= 0) {
+            if (PriceUtils.EqualLessThan(quote.getAsk(),0)) {
                 quote.setAsk(prev.getAsk());
             }
         }
