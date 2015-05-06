@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.cyanspring.common.event.marketsession.*;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
+import com.cyanspring.common.marketsession.*;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
@@ -35,9 +35,6 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.marketsession.MarketSessionChecker;
-import com.cyanspring.common.marketsession.MarketSessionData;
-import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class MarketSessionManager implements IPlugin, IAsyncEventListener {
@@ -60,13 +57,13 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     private int settlementDelay = 10;
     private MarketSessionType currentSessionType;
     private String currentTradeDate;
-    private MarketSessionChecker sessionChecker;
+    private IMarketSession sessionChecker;
     private Map<String, MarketSessionData> sessionDataMap;
     private Map<String, RefData> refDataMap;
     private boolean searchBySymbol = true;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-    protected long timerInterval = 5 * 1000;
+    protected long timerInterval = 1 * 1000;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 

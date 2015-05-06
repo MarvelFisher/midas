@@ -59,6 +59,11 @@ public class MarketSessionChecker implements IMarketSession {
         return sessionData;
     }
 
+    @Override
+    public String getTradeDate() {
+        return sdf.format(this.tradeDate);
+    }
+
     private String getCurrentIndex(Date date, RefData refData) throws ParseException {
         if (refData != null){
             String settlementDay = refData.getSettlementDate();
@@ -89,10 +94,6 @@ public class MarketSessionChecker implements IMarketSession {
             return true;
         }
         return false;
-    }
-
-    public String getTradeDate() {
-        return sdf.format(this.tradeDate);
     }
 
     public void setTradeDate(Date tradeDate) {
