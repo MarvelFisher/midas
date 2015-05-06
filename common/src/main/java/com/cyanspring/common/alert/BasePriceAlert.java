@@ -9,7 +9,8 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	private double price;
 	private String dateTime ;
 	private String content ;
-	private double percentage ;	
+	private double percentage ;
+	private boolean sendFlag;
 	
 	public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content){
 		super();
@@ -19,6 +20,7 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		this.setPrice(price);
 		this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 		this.setContent(content);
+		this.setSendFlag(false);
 	}
 	
 	public BasePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content){
@@ -29,6 +31,7 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 			this.setPercentage(percentage);
 			this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 			this.setContent(content);
+			this.setSendFlag(false);
 	}
 	
 	public BasePriceAlert()
@@ -133,5 +136,13 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 
 	public void setPercentage(double percentage) {
 		this.percentage = percentage;
+	}
+
+	public boolean isSendFlag() {
+		return sendFlag;
+	}
+
+	public void setSendFlag(boolean sendFlag) {
+		this.sendFlag = sendFlag;
 	}	
 }
