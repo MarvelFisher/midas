@@ -99,7 +99,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
 	static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
 	static ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
-	static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
+	static ConcurrentHashMap<String, RefData> marketRuleBySymbolMap = new ConcurrentHashMap<String, RefData>(); // SaveSymbolRule
 	static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
 	static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
 
@@ -1189,7 +1189,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					if ("F".equals(WindFutureDataAdaptor.instance
 							.getMarketType())) {
 						marketRuleBySymbolMap.put(instrument,
-								refData.getStrategy());
+								refData);
 						QuoteMgr.instance().addFutureSymbol(
 								refData.getSymbol(), refData.getExchange());
 					}
@@ -1197,7 +1197,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 					if ("S".equals(WindFutureDataAdaptor.instance
 							.getMarketType())) {
 						marketRuleBySymbolMap.put(instrument,
-								refData.getExchange());
+								refData);
 						QuoteMgr.instance().addStockSymbol(refData.getSymbol(),
 								refData.getExchange());
 					}

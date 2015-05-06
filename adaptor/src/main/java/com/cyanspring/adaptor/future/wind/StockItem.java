@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.cyanspring.common.marketdata.InnerQuote;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,13 +211,13 @@ public class StockItem implements AutoCloseable {
 		Quote quote = new Quote(symbolId, bids, asks);
 
 		//Get MarketSession
-		String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
+		RefData refData = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
 		MarketSessionData marketSessionData = null;
 		Date endDate;
 		Date startDate;
 		try {
 			marketSessionData = WindFutureDataAdaptor.instance
-					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
+					.getMarketSessionUtil().getCurrentMarketSessionType(refData,
 							DateUtil.now());
 			endDate = marketSessionData.getEndDate();
 			startDate = marketSessionData.getStartDate();
@@ -224,13 +225,6 @@ public class StockItem implements AutoCloseable {
 			LogUtil.logException(log, e);
 			return;
 		}
-
-		if (WindFutureDataAdaptor.instance.isMarketDataLog())
-			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
-							+ ",Symbol=" + symbolId + ",mst="
-							+ marketSessionData.getSessionType() + ",t=" + DateUtil.now()
-							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
-			);
 
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getTradingDay(),

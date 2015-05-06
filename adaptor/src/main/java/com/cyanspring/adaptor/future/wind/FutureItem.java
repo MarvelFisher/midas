@@ -10,6 +10,7 @@ import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Util.*;
@@ -196,13 +197,13 @@ public class FutureItem implements AutoCloseable {
 		Quote quote = new Quote(symbolId, bids, asks);
 
 		//Get MarketSession
-		String strategy = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
+		RefData refData = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
 		MarketSessionData marketSessionData = null;
 		Date endDate;
 		Date startDate;
 		try {
 			marketSessionData = WindFutureDataAdaptor.instance
-					.getMarketSessionUtil().getCurrentMarketSessionType(strategy,
+					.getMarketSessionUtil().getCurrentMarketSessionType(refData,
 							DateUtil.now());
 			endDate = marketSessionData.getEndDate();
 			startDate = marketSessionData.getStartDate();
@@ -210,13 +211,6 @@ public class FutureItem implements AutoCloseable {
 			LogUtil.logException(log, e);
 			return;
 		}
-
-//		if (WindFutureDataAdaptor.instance.isMarketDataLog())
-//			WindFutureDataAdaptor.debug("Wind Strategy=" + strategy
-//							+ ",Symbol=" + symbolId + ",Mst="
-//							+ marketSessionData.getSessionType() + ",t=" + DateUtil.now()
-//							+ ",S=" + marketSessionData.getStart() + ",D=" + marketSessionData.getEnd()
-//			);
 
 		// tick time
 		String timeStamp = String.format("%d-%d", data.getTradingDay(),
