@@ -141,7 +141,7 @@ public class AccountPositionManager implements IPlugin {
     private boolean checkStoploss = true;
     private boolean checkMargincut = true;
     private TotalPnLCalculator totalPnLCalculator = new TotalPnLCalculator();
-    private TimeThrottler totalPnLCalculatorThrottler = new TimeThrottler(2000);
+    private TimeThrottler totalPnLCalculatorThrottler = new TimeThrottler(20000);
 
     @Autowired
     private IRemoteEventManager eventManager;
