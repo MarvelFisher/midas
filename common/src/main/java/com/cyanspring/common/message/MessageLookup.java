@@ -211,6 +211,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ACCOUNT_TERMINATED,getBean(518, "Exceed Account Stop Loss!  Your account is terminated."));
 			addAndCheck(ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID, getBean(519, "Third party id is not match with the user id"));
 			addAndCheck(ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED, getBean(520, "Register third party id failed"));
+			addAndCheck(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, getBean(521, "Detach third party id failed"));
 
 			
 			

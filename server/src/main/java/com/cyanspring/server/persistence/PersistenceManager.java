@@ -145,6 +145,7 @@ public class PersistenceManager {
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(UserTerminateEvent.class, null);
             subscribeToEvent(UserMappingEvent.class, null);
+            subscribeToEvent(UserMappingDetachEvent.class, null);
 		}
 
 		@Override
@@ -1528,6 +1529,38 @@ public class PersistenceManager {
             eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
                     userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
 					event.getLanguage(), event.getClientId()));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void processUserMappingDetachEvent(UserMappingDetachEvent event) {
+
+        if (!syncCentralDb) {
+            return;
+        }
+
+        boolean ok = false;
+        String message = "";
+
+        try {
+            if (centralDbConnector.detachThirdPartyUser(event.getUser(), event.getPassword(), event.getUserThirdParty(),
+                    event.getMarket(), event.getLanguage())) {
+
+                ok = true;
+                log.info("Detach third party id, {}", event.toString());
+            } else {
+                MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id"));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            ok = false;
+            message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
+        }
+
+        try {
+            eventManager.sendRemoteEvent(new UserMappingDetachReplyEvent(event.getKey(), event.getSender(), ok, message,
+                    event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
