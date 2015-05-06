@@ -62,6 +62,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     private String currentTradeDate;
     private MarketSessionChecker sessionChecker;
     private Map<String, MarketSessionData> sessionDataMap;
+    private Map<String, RefData> refDataMap;
+    private boolean searchBySymbol = true;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long timerInterval = 5 * 1000;
@@ -114,8 +116,26 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         if (marketSessionUtil == null)
             return;
         try {
-            eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
-                    marketSessionUtil.getMarketDatas(event.getIndexList(), event.getDate())));
+            if (searchBySymbol) {
+                List<RefData> refDataList;
+                if (event.getIndexList() == null)
+                    refDataList = new ArrayList<RefData>(refDataMap.values());
+                else{
+                    refDataList = new ArrayList<>();
+                    for (String index : event.getIndexList()) {
+                        refDataList.add(refDataMap.get(index));
+                    }
+                }
+
+                if (event.getIndexList() != null && refDataList.size() != event.getIndexList().size())
+                    log.warn("Not find all refData for IndexSessionRequestEvent, request list: " + event.getIndexList());
+                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
+                        marketSessionUtil.getSessionDataBySymbol(refDataList, event.getDate())));
+
+            } else {
+                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
+                        marketSessionUtil.getSessionDataByStrategy(event.getIndexList(), event.getDate())));
+            }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
@@ -144,20 +164,25 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             return;
         try {
             if (sessionDataMap == null) {
-                sessionDataMap = marketSessionUtil.getMarketDatas(null, date); // need modify
+                if (searchBySymbol)
+                    sessionDataMap = marketSessionUtil.getSessionDataBySymbol(refDataManager.getRefDataList(), date); // need modify
+                else
+                    sessionDataMap = marketSessionUtil.getSessionDataByStrategy(null, date);
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap));
-            } else {
-                Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
-                for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
-                    if (date.getTime() > entry.getValue().getEndDate().getTime()) {
-                        MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(null, date); //need modify
-                        sendMap.put(entry.getKey(), data);
-                        sessionDataMap.put(entry.getKey(), data);
-                    }
-                }
-                if (sendMap.size() > 0)
-                    eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
+                return;
             }
+
+            Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
+            for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
+                if (date.getTime() < entry.getValue().getEndDate().getTime())
+                    continue;
+                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date); //need modify
+                sendMap.put(entry.getKey(), data);
+                sessionDataMap.put(entry.getKey(), data);
+            }
+            if (sendMap.size() > 0)
+                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
+
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
@@ -224,6 +249,16 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
         if (!eventProcessor.isSync())
             scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);
+
+        refDataMap = new HashMap<String, RefData>();
+        for (RefData refData : refDataManager.getRefDataList()) {
+            if (searchBySymbol)
+                refDataMap.put(refData.getSymbol(), refData);
+            else {
+                if (!refDataMap.containsKey(refData.getStrategy()))
+                    refDataMap.put(refData.getStrategy(), refData);
+            }
+        }
     }
 
     @Override
@@ -250,5 +285,9 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
     public void setSettlementDelay(int settlementDelay) {
         this.settlementDelay = settlementDelay;
+    }
+
+    public void setSearchBySymbol(boolean searchBySymbol) {
+        this.searchBySymbol = searchBySymbol;
     }
 }
