@@ -2,6 +2,7 @@ package com.cyanspring.id;
 
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.id.Library.Util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,7 +244,10 @@ public class SymbolItem implements AutoCloseable {
             dPrice = (tick.ask + tick.bid) / 2;
             dPrice = Double.parseDouble(FixStringBuilder.getString(dPrice, dp));
             // lPrice = getPriceKey(dPrice, dp);
-            if (0.0 == dPrice || false == checkPrice(dPrice, tick.ask)) {
+            if (0.0 == dPrice
+                    || false == checkPrice(dPrice, tick.ask)
+                    || PriceUtils.EqualGreaterThan(tick.bid,tick.ask))
+            {
                 bTick = false;
             } else {
                 tick.setValue(FieldID.CurrentPrice, dPrice);

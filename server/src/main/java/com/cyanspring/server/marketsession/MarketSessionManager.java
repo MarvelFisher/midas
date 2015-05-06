@@ -84,7 +84,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     public void processMarketSessionRequestEvent(MarketSessionRequestEvent event) {
         Date date = Clock.getInstance().now();
         try {
-            MarketSessionData sessionData = sessionChecker.getState(date);
+            MarketSessionData sessionData = sessionChecker.getState(date, null);
             MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(),
                     sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
             msEvent.setKey(null);
@@ -129,7 +129,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         Date date = Clock.getInstance().now();
         try {
-            MarketSessionData sessionData = sessionChecker.getState(date);
+            MarketSessionData sessionData = sessionChecker.getState(date, null);
             checkMarketSession(sessionData);
             checkTradeDate();
             checkSettlement(date);
@@ -144,13 +144,13 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             return;
         try {
             if (sessionDataMap == null) {
-                sessionDataMap = marketSessionUtil.getMarketDatas(null, date);
+                sessionDataMap = marketSessionUtil.getMarketDatas(null, date); // need modify
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap));
             } else {
                 Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
                 for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
                     if (date.getTime() > entry.getValue().getEndDate().getTime()) {
-                        MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(entry.getKey(), date);
+                        MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(null, date); //need modify
                         sendMap.put(entry.getKey(), data);
                         sessionDataMap.put(entry.getKey(), data);
                     }
@@ -212,7 +212,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         log.info("initialising");
 
         Date date = Clock.getInstance().now();
-        sessionChecker.init(date);
+        sessionChecker.init(date, null);
 
         chkDate = TimeUtil.getPreviousDay(date);
 

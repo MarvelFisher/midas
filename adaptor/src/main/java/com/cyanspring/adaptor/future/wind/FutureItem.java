@@ -9,6 +9,7 @@ import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Util.*;
@@ -376,5 +377,4 @@ public class FutureItem implements AutoCloseable {
         }
 
     }
-
 }
