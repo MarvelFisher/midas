@@ -28,8 +28,8 @@
 		<property name="plugins">
 			<list>
 				<ref bean="apiBridgeManager" />
+				<ref bean="refDataHandler" />
 				<ref bean="marketSessionManager" />
-				<ref bean="refDataManager" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
@@ -45,6 +45,9 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
+	
 	<bean id="trailingStopManager" class="com.cyanspring.server.account.TrailingStopManager">
 	</bean>
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">

@@ -16,8 +16,8 @@
         </property>
         <property name="plugins">
             <list>
-                <ref bean="marketSessionManager" />
-                <ref bean="refDataManager" />
+				<ref bean="refDataHandler" />
+				<ref bean="marketSessionManager" />
                 <ref bean="mdManager" />
                 <ref bean="downStreamManager" />
                 <ref bean="upStreamManager" />
@@ -35,6 +35,8 @@
             </map>
         </property>
     </bean>
+    <bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
+    
     <bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
         <constructor-arg>
             <ref bean="transportService" />
