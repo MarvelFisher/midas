@@ -889,7 +889,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 if("S".equals(marketType))
                     marketRuleBySymbolMap.put(refData.getSymbol(),refData.getExchange());
                 if("F".equals(marketType))
-                    marketRuleBySymbolMap.put(refData.getSymbol(),refData.getStrategy());
+                    marketRuleBySymbolMap.put(refData.getSymbol(),refData.getSymbol());
             }
         }
 
