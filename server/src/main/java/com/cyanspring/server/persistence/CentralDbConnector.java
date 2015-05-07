@@ -35,7 +35,7 @@ public class CentralDbConnector {
 	private static String MARKET_FX = "FX";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
-	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s')";
+	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `MARKET`, `LANGUAGE`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
@@ -85,19 +85,20 @@ public class CentralDbConnector {
      * @param userType
      * @return
      */
-	protected String getInsertThirdPartyUserSQL(String id, String userId, UserType userType) {
-		return String.format(insertThirdPartyUser, id, userId, userType.getCode());
+	protected String getInsertThirdPartyUserSQL(String id, String market, String language, String userId, UserType userType) {
+		return String.format(insertThirdPartyUser, id, market, language, userId, userType.getCode());
 	}
 
     public boolean registerUser(
             String userId, String userName, String password, String email, String phone, UserType userType,
             String country, String language) {
-        return registerUser(userId, userName, password, email, phone, userType, country, language, null);
+        return registerUser(userId, userName, password, email, phone, userType, country, language, null, null);
     }
 
-	public boolean registerUser(
+
+    public boolean registerUser(
             String userId, String userName, String password, String email, String phone, UserType userType,
-            String country, String language, String thirdPartyId) {
+            String country, String language, String thirdPartyId, String market) {
 
         Connection conn = connect();
 
@@ -117,8 +118,8 @@ public class CentralDbConnector {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sUserSQL);
 
-			if (userType.isThirdParty() && !Strings.isNullOrEmpty(thirdPartyId)) {
-				String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), userId, userType);
+			if (userType.isThirdParty() && !Strings.isNullOrEmpty(thirdPartyId) && !Strings.isNullOrEmpty(market)) {
+				String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), market, language, userId, userType);
                 stmt.executeUpdate(sql);
 			}
 
@@ -186,7 +187,7 @@ public class CentralDbConnector {
         return bIsSuccess;
     }
 
-    public boolean registerThirdPartyUser(String userId, UserType userType, String thirdPartyId) {
+    public boolean registerThirdPartyUser(String userId, UserType userType, String thirdPartyId, String market, String language) {
 
         Connection conn = connect();
 
@@ -200,7 +201,7 @@ public class CentralDbConnector {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
 
-            String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), userId, userType);
+            String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), market, language, userId, userType);
             stmt.executeUpdate(sql);
 
             bIsSuccess = true;

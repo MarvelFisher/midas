@@ -719,7 +719,8 @@ public class PersistenceManager {
 				if (Strings.isNullOrEmpty(userId)) {
 
 					if (!centralDbConnector.registerThirdPartyUser(event.getOriginalEvent().getUser().getId(),
-							event.getOriginalEvent().getUser().getUserType(), event.getOriginalEvent().getThirdPartyId())) {
+							event.getOriginalEvent().getUser().getUserType(), event.getOriginalEvent().getThirdPartyId(),
+                            event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage())) {
 
 						ok = false;
 						msg = ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED;
@@ -869,7 +870,8 @@ public class PersistenceManager {
 
                 if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
                         user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
-                        event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId())) {
+                        event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId(),
+                        event.getOriginalEvent().getMarket())) {
 
                     throw new CentralDbException("can't create this user: " + user.getId(), ErrorMessage.CREATE_USER_FAILED);
                 }
