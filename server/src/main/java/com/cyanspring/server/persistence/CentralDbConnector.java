@@ -40,6 +40,7 @@ public class CentralDbConnector {
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String deleteSameTypeThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `USERTYPE` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
 	private static String isPhoneExist = "SELECT COUNT(*) FROM AUTH WHERE `PHONE` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
@@ -201,7 +202,10 @@ public class CentralDbConnector {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
 
-            String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), market, language, userId, userType);
+            String sql = String.format(deleteSameTypeThirdPartyUser, userId, userType.getCode(), market, language);
+            stmt.executeUpdate(sql);
+
+            sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), market, language, userId, userType);
             stmt.executeUpdate(sql);
 
             bIsSuccess = true;
