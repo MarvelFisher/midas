@@ -622,70 +622,71 @@ public class PersistenceManager {
         }
 		else	//user not exist, create user and then getAccount
 		{
-			Session session = sessionFactory.openSession();
-            Account defaultAccount = event.getAccounts().size() > 0 ? event.getAccounts().get(0) : null;
-            User user = event.getUser();
-			Transaction tx = null;
-			ok = true;
-			ErrorMessage msg = null;
-            String message = "";
-
-			try 
-			{
-                createCentralDbUser(event, user);
-
-                tx = session.beginTransaction();
-				session.save(user);
-				tx.commit();
-				log.info("Created user: " + event.getUser());
-			}
-			catch (Exception e) {
-				if(e instanceof CentralDbException) {
-                    msg = ((CentralDbException) e).getClientMessage();
-                    log.warn(e.getMessage(), e);
-                } else {
-					msg = ErrorMessage.EXCEPTION_MESSAGE;
-					log.error(e.getMessage(), e);
-				}
-
-				ok = false;
-				message = MessageLookup.buildEventMessageWithCode(msg, e.getMessage());
-
-			    if (tx!=null) 
-			    	tx.rollback();
-			}
-			finally {
-				session.close();
-			}
-			
-			if(ok)
-			{
-				for(Account account : event.getAccounts()) {
-                    createAccount(account);
-                }
-
-				eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
-			}
-			
-			if(event.getOriginalEvent() != null)
-			{
-				try {
-					eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
-							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
-							, message, event.getOriginalEvent().getTxId(), true));
-					if(ok) {
-						for(Account account : event.getAccounts())
-							eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
-					}
-
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
-			}
+            ok = createUserAndGetAccount(event);
 		}
 
 		log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 	}
+
+    private boolean createUserAndGetAccount(PmUserCreateAndLoginEvent event) {
+        boolean ok;
+        Session session = sessionFactory.openSession();
+        Account defaultAccount = event.getAccounts().size() > 0 ? event.getAccounts().get(0) : null;
+        User user = event.getUser();
+        Transaction tx = null;
+        ok = true;
+        ErrorMessage msg = null;
+        String message = "";
+
+        try {
+            createCentralDbUser(event, user);
+
+            tx = session.beginTransaction();
+            session.save(user);
+            tx.commit();
+            log.info("Created user: " + event.getUser());
+        } catch (Exception e) {
+            if (e instanceof CentralDbException) {
+                msg = ((CentralDbException) e).getClientMessage();
+                log.warn(e.getMessage(), e);
+            } else {
+                msg = ErrorMessage.EXCEPTION_MESSAGE;
+                log.error(e.getMessage(), e);
+            }
+
+            ok = false;
+            message = MessageLookup.buildEventMessageWithCode(msg, e.getMessage());
+
+            if (tx != null)
+                tx.rollback();
+        } finally {
+            session.close();
+        }
+
+        if (ok) {
+            for (Account account : event.getAccounts()) {
+                createAccount(account);
+            }
+
+            eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
+        }
+
+        if (event.getOriginalEvent() != null) {
+            try {
+                eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+                        event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
+                        , message, event.getOriginalEvent().getTxId(), true));
+                if (ok) {
+                    for (Account account : event.getAccounts())
+                        eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+                }
+
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return ok;
+    }
 
     private boolean loginAndGetAccount(PmUserCreateAndLoginEvent event, UserKeeper userKeeper, AccountKeeper accountKeeper) {
         boolean ok = true;
