@@ -16,8 +16,8 @@
         </property>
         <property name="plugins">
             <list>
-                <ref bean="marketSessionManager" />
-                <ref bean="refDataHandler" />
+				<ref bean="refDataHandler" />
+				<ref bean="marketSessionManager" />
                 <ref bean="mdManager" />
                 <ref bean="downStreamManager" />
                 <ref bean="upStreamManager" />
@@ -35,6 +35,8 @@
             </map>
         </property>
     </bean>
+    <bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
+    
     <bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
         <constructor-arg>
             <ref bean="transportService" />
@@ -237,13 +239,10 @@
 
     <bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
     </bean>
-    
-    <bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
-    
 
     <bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
         <property name="refDataFile">
-            <value>refdata/refData_fdt.xml</value>
+            <value>refdata/refData_lt.xml</value>
         </property>
     </bean>
 
@@ -296,5 +295,16 @@
 
     <bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
-	
+	<bean id="liveTradingSession" class="com.cyanspring.server.livetrading.LiveTradingSession">
+	</bean>
+    <bean id="liveTradingChecker" class="com.cyanspring.server.account.LiveTradingChecker">
+    </bean>
+    <bean id="liveTradingSetting" class="com.cyanspring.server.account.LiveTradingSetting">
+        <property name="needCheckPosition" value="true"/>
+        <property name="needCheckFreeze" value="true"/>
+        <property name="needCheckTerminate" value="true"/>
+        <property name="userStopLiveTradingStartTime" value="02:00:00"/>
+        <property name="userStopLiveTradingEndTime" value="07:00:00"/>
+    </bean>
+
 </beans>
