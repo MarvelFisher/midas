@@ -139,9 +139,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void processRefDataEvent(RefDataEvent event){
         log.debug("process RefData Event, Size=" + event.getRefDataList().size());
         preSubscriptionList.clear();
-        List refDataList = event.getRefDataList();
-        for(int i=0; i<refDataList.size(); i++){
-            RefData refData = (RefData)refDataList.get(i);
+        List<RefData> refDataList = event.getRefDataList();
+        for (RefData aRefDataList : refDataList) {
+            RefData refData = aRefDataList;
             preSubscriptionList.add(refData.getSymbol());
         }
         for(IMarketDataAdaptor adaptor : adaptors){

@@ -28,8 +28,8 @@
 		<property name="plugins">
 			<list>
 				<ref bean="apiBridgeManager" />
-				<ref bean="marketSessionManager" />
-				<ref bean="refDataManager" />
+                <ref bean="refDataHandler" />
+                <ref bean="marketSessionManager" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
@@ -249,6 +249,8 @@
 
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
+
+    <bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
