@@ -43,6 +43,7 @@ public class MarketDataManager extends MarketDataReceiver {
     private String lastQuoteExtendFile = "lastExtend.xml";
     private String lastTradeDateQuoteFile = "last_tdq.xml";
     private String lastTradeDateQuoteExtendFile = "lastExtend_tdq.xml";
+    private boolean broadcastQuote;
 
     public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
         super(adaptors);
@@ -260,8 +261,10 @@ public class MarketDataManager extends MarketDataReceiver {
     @Override
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
         try {
-            eventManager.sendGlobalEvent(event);
-
+            if (broadcastQuote)
+                eventManager.sendGlobalEvent(event);
+            else
+                eventManager.sendEvent(event);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -276,5 +279,9 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {
         this.quoteSaver = quoteSaver;
+    }
+
+    public void setBroadcastQuote(boolean broadcastQuote) {
+        this.broadcastQuote = broadcastQuote;
     }
 }
