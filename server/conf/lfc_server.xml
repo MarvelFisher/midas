@@ -69,7 +69,8 @@
 		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 		<property name="quoteSaver" ref="quoteSaver"/>
-	</bean>
+        <property name="broadcastQuote" value="true"/>
+    </bean>
 
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>

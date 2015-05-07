@@ -83,6 +83,7 @@
 		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 		<property name="quoteSaver" ref="quoteSaver"/>
+        <property name="broadcastQuote" value="true"/>
 	</bean>
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->

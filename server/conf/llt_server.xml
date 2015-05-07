@@ -69,6 +69,7 @@
         </property>
         <property name="quoteChecker" ref="quoteChecker"/>
         <property name="quoteSaver" ref="quoteSaver"/>
+        <property name="broadcastQuote" value="true"/>
     </bean>
 
     <!-- Derby setting -->
