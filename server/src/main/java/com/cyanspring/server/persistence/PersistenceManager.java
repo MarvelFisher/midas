@@ -697,22 +697,22 @@ public class PersistenceManager {
         ErrorMessage msg = null;
 
         try {
-            // login
-			user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
-
-			if (null == user) {
-				ok = false;
-				msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
-				throw new UserException("userid or password invalid");
-			}
-
-			if (user.getTerminationStatus().isTerminated()) {
-				ok = false;
-				msg = ErrorMessage.USER_IS_TERMINATED;
-				throw new UserException("User is terminated");
-			}
-
 			if (!Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
+
+                // login (backward compatibility, old version skip this.)
+                user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
+
+                if (null == user) {
+                    ok = false;
+                    msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+                    throw new UserException("userid or password invalid");
+                }
+
+                if (user.getTerminationStatus().isTerminated()) {
+                    ok = false;
+                    msg = ErrorMessage.USER_IS_TERMINATED;
+                    throw new UserException("User is terminated");
+                }
 				
 				String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
                         event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
