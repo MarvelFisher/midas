@@ -148,7 +148,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             if(null != adaptor) {
                 adaptor.processEvent(event);
                 if(adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
-                        && marketSessionEvent.getSession()==MarketSessionType.PREOPEN && isInitEnd){
+                        && marketSessionEvent != null && marketSessionEvent.getSession()==MarketSessionType.PREOPEN && isInitEnd){
                     adaptor.clean();
                     preSubscribe();
                 }
