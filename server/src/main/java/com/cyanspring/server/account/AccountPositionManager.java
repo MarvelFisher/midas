@@ -632,7 +632,7 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 
-	public void processQuotExtEvent(QuoteExtEvent event) {
+	public void processQuoteExtEvent(QuoteExtEvent event) {
 
 		marketExtData.put(event.getSymbol(), event);
 	}
