@@ -792,11 +792,16 @@ public class PersistenceManager {
             String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
                     event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
 
-            if (Strings.isNullOrEmpty(userId)) {
+            if (Strings.isNullOrEmpty(userId) && /* phase 1 */ !centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
 
                 ok = false;
                 msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
                 throw new UserException("userid or password invalid");
+            }
+
+            /* phase 1 */
+            if (Strings.isNullOrEmpty(userId)) {
+                userId = event.getOriginalEvent().getThirdPartyId();
             }
 
             event.getOriginalEvent().getUser().setId(userId);
@@ -897,14 +902,14 @@ public class PersistenceManager {
 
 	public void processMultiInstrumentStrategyUpdateEvent(MultiInstrumentStrategyUpdateEvent event) {
 		MultiInstrumentStrategyData data = event.getStrategyData();
-		StrategyState state = data.getState();
-		persistXml(data.getId(), PersistType.MULTI_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
+        StrategyState state = data.getState();
+        persistXml(data.getId(), PersistType.MULTI_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
 	}
 
 	public void processSingleInstrumentStrategyUpdateEvent(SingleInstrumentStrategyUpdateEvent event) {
 		Instrument data = event.getInstrument();
-		StrategyState state = data.getState();
-		persistXml(data.getId(), PersistType.SINGLE_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
+        StrategyState state = data.getState();
+        persistXml(data.getId(), PersistType.SINGLE_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
 	}
 
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
@@ -1168,7 +1173,7 @@ public class PersistenceManager {
 		try {
 			
 			session = sessionFactory.openSession();
-			result = (List<PositionPeakPrice>)session.createCriteria(PositionPeakPrice.class)
+            result = (List<PositionPeakPrice>)session.createCriteria(PositionPeakPrice.class)
 				.list();
 			
 		} catch (HibernateException e) {
@@ -1294,9 +1299,9 @@ public class PersistenceManager {
 		Transaction tx = null;
 		try {
 		    tx = session.beginTransaction();
-	    	session.save(account);
-		    tx.commit();
-		    log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
+            session.save(account);
+            tx.commit();
+            log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -1350,7 +1355,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		OpenPosition position = event.getPosition();
 		Transaction tx = null;
-		try {
+        try {
 		    tx = session.beginTransaction();
 	    	session.delete(position);
 		    tx.commit();
@@ -1389,8 +1394,8 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		AccountSetting accountSetting = event.getAccountSetting();
 		Transaction tx = null;
-		try {
-		    tx = session.beginTransaction();
+        try {
+            tx = session.beginTransaction();
 	    	session.saveOrUpdate(accountSetting);
 		    tx.commit();
 		}
@@ -1415,7 +1420,7 @@ public class PersistenceManager {
 	        query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay2");
 		    query.setParameter("tradeDate", event.getTradeDateTime());
-	        query.executeUpdate();
+            query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay3");
 	        query.executeUpdate();
 	        tx.commit();
@@ -1455,10 +1460,10 @@ public class PersistenceManager {
 			//message = String.format("can't change user's password, err=[%s]", e.getMessage());
 			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_PWD_FAILED, String.format("can't change user's password, err=[%s]", e.getMessage()));
 
-		}
-		
-		try {
-			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
+        }
+
+        try {
+            eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
                     event.getSender(), event.getUser(), ok, message, event.getTxId()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -1489,7 +1494,7 @@ public class PersistenceManager {
 
 		try {
 			eventManager.sendRemoteEvent(new UserTerminateReplyEvent(event.getKey(), event.getSender(), ok, message, event.getUserId(), event.getTerminationStatus()));
-			eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.getTerminationStatus()));
+            eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.getTerminationStatus()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -1521,8 +1526,9 @@ public class PersistenceManager {
             }
         }
 
-        // Backward compatibility
+        // Backward compatibility, phase 1
         if (!userThirdPartyExist && centralDbConnector.isUserExist(event.getUserThirdParty().toLowerCase())) {
+            userId = event.getUserThirdParty();
             userExist = true;
             userThirdPartyExist = true;
         }
