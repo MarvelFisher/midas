@@ -175,6 +175,7 @@ public enum ErrorMessage {
 	THIRD_PARTY_ID_NOT_MATCH_USER_ID,
 	THIRD_PARTY_ID_REGISTER_FAILED,
 	DETACH_THIRD_PARTY_ID_FAILED,
+    USER_PHONE_EXIST,
 	
 	
 	// client errors start with 600

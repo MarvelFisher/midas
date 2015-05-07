@@ -681,7 +681,7 @@ public class PersistenceManager {
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}
-			}			
+			}
 		}
 
 		log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
@@ -869,7 +869,7 @@ public class PersistenceManager {
 
                     if (centralDbConnector.isPhoneExist(user.getPhone())) {
                         throw new CentralDbException("Your phone has been used to register an FDT Account.",
-                                ErrorMessage.CREATE_USER_FAILED);
+                                ErrorMessage.USER_PHONE_EXIST);
                     }
                 }
 
@@ -1214,7 +1214,7 @@ public class PersistenceManager {
 
                     if (centralDbConnector.isPhoneExist(user.getPhone())) {
                         throw new CentralDbException("This phone already exists: " + user.getPhone(),
-                                ErrorMessage.CREATE_USER_FAILED);
+                                ErrorMessage.USER_PHONE_EXIST);
                     }
                 }
 
