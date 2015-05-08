@@ -26,8 +26,8 @@
 		<property name="createThreadCount" value="5" />
 		<property name="maxRetrytimes" value="3" />
 		<property name="killTimeoutSecond" value="60000" />
-		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
-		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
+		<property name="parseApplicationId" value="17lAccEUiyp6nz8xfKZfzShX1kJgiRQhIjYQlzMR" />
+		<property name="parseRestApiId" value="CnHeNtHHQbz2I2bDErsi4CYArhr1BdAApu1YLykT" />
 		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.FC"/>
 	</bean>	
 	
