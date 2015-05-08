@@ -31,7 +31,7 @@ public class AccountSetting extends DataObject {
 		settings.setTerminatePercent(Default.getTerminatePecent());		
 		settings.setLiveTrading(Default.isLiveTrading());
 		settings.setUserLiveTrading(Default.isUserLiveTrading());
-		
+		settings.setLiveTradingType(LiveTradingType.DEFAULT);
 		return settings;
 	}
 	
@@ -138,6 +138,14 @@ public class AccountSetting extends DataObject {
 	public void setUserLiveTrading(boolean userLiveTrading) {
 		put(AccountSettingType.USER_LIVE_TRADING.value(), userLiveTrading);
 	}
+	
+	public LiveTradingType getLiveTradingType() {
+		return get(LiveTradingType.class, AccountSettingType.LIVE_TRADING_TYPE.value());
+	}
+	public void setLiveTradingType(LiveTradingType liveTradingType) {
+		put(AccountSettingType.LIVE_TRADING_TYPE.value(), liveTradingType);
+	}
+	
 	public boolean checkLiveTrading(){
 		return (isLiveTrading()||isUserLiveTrading());
 	}

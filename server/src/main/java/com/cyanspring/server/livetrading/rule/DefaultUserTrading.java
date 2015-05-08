@@ -18,8 +18,7 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		AccountSetting setting = null;	
 		if(null == accountSetting){
 			setting = AccountSetting.createEmptySettings(account.getId());
-		}
-		
+		}	
 		System.out.println("DefaultUserTrading setRule");	
 		double positionStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.POSTION_STOP_LOSS));
 		double frozenStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS));

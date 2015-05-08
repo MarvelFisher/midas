@@ -1,13 +1,13 @@
 package com.cyanspring.server.livetrading;
 
 public class LiveTradingSetting {
+	
 	private boolean needCheckPosition;
 	private boolean needCheckFreeze;
 	private boolean needCheckTerminate;
 	private String 	userStopLiveTradingStartTime;
 	private String 	userStopLiveTradingEndTime;
-
-	
+	private int changeSettingFrozenWeeks;
 	
 	public String getUserStopLiveTradingStartTime() {
 		return userStopLiveTradingStartTime;
@@ -39,4 +39,11 @@ public class LiveTradingSetting {
 	public void setNeedCheckTerminate(boolean needCheckTerminate) {
 		this.needCheckTerminate = needCheckTerminate;
 	}
+	public int getChangeSettingFrozenWeeks() {
+		return changeSettingFrozenWeeks;
+	}
+	public void setChangeSettingFrozenWeeks(int changeSettingFrozenWeeks) {
+		this.changeSettingFrozenWeeks = changeSettingFrozenWeeks;
+	}
+	
 }

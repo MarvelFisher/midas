@@ -34,7 +34,6 @@ public class LiveTradingSession implements IPlugin {
 	private LiveTradingState liveTradingState;	
 	private AsyncTimerEvent stopUserTradingEvent = new AsyncTimerEvent();	
 	private AsyncTimerEvent startUserTradingEvent = new AsyncTimerEvent();	
-	private long jobInterval = 1000;	
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -141,8 +140,7 @@ public class LiveTradingSession implements IPlugin {
         Date tempNow = Clock.getInstance().now();
         Date tempDate = TimeUtil.getScheduledDate(cal, tempNow, timesHour, timesMin, timesSecond);
 		
-        return tempDate;
-		
+        return tempDate;		
 	}
 	
 	

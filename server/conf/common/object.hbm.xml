@@ -238,6 +238,12 @@
   	<property column="TERMINATE_PERCENT" 			name="terminatePercent" 		  type="java.lang.Double"/>
   	<property column="LIVE_TRADING"			name="liveTrading"		 type="java.lang.Boolean"/>
   	<property column="USER_LIVE_TRADING"			name="userLiveTrading"		 type="java.lang.Boolean"/>
+    <property column="LIVE_TRADING_TYPE" 			name="liveTradingType" length="30">
+   		<type name="org.hibernate.type.EnumType">
+   			<param name="enumClass">com.cyanspring.common.account.LiveTradingType</param>   
+       		<param name="type">12</param>
+   		</type>
+	</property>
   </class>
   
   <class name="com.cyanspring.common.account.PositionPeakPrice" table="ANYONE.POSITION_PEAK_PRICE">

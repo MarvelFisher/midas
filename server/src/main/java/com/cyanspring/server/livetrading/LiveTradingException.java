@@ -3,6 +3,9 @@ package com.cyanspring.server.livetrading;
 import com.cyanspring.common.message.ErrorMessage;
 
 public class LiveTradingException extends Exception{
+	
+	private static final long serialVersionUID = 1L;
+	
 	private ErrorMessage clientMessage;
 
 	public LiveTradingException(String message) {

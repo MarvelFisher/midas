@@ -25,7 +25,9 @@ public class TradingUtil {
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(TradingUtil.class);
+	
 	private static Lock lock = new ReentrantLock();
+	
 	private static IQuoteChecker quoteChecker = new PriceQuoteChecker();
 	
 	private static boolean isValidQuote(Quote quote){

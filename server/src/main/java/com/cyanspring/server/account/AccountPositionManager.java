@@ -102,7 +102,7 @@ import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.server.livetrading.LiveTradingChecker;
+import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
 
@@ -162,9 +162,9 @@ public class AccountPositionManager implements IPlugin {
 
     @Autowired
     IRefDataManager refDataManager;
-
+    
     @Autowired(required = false)
-    LiveTradingChecker liveTradingChecker;
+    LiveTradingCheckHandler liveTradingCheckHandler;
 
     private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -837,11 +837,11 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
 	                
-	                if(checkLiveTrading(account, accountSetting))
+	                if(checkLiveTrading(account, accountSetting)){
+	                	continue;         
+	                }else if (checkStopLoss(account, accountSetting)){
 	                	continue;
-	                
-	                if (checkStopLoss(account, accountSetting))
-	                	continue;
+	                }
 	                    
 	                checkMarginCall(account);
 	            }
@@ -873,14 +873,12 @@ public class AccountPositionManager implements IPlugin {
     }
 
     private boolean checkLiveTrading(Account account, AccountSetting accountSetting) {
-        if (null != liveTradingChecker) {
-            if (liveTradingChecker.checkTerminateLoss(account, accountSetting)) {
-                return true;
-            } else if (liveTradingChecker.checkFreezeLoss(account, accountSetting)) {
-                return true;
-            }
+        if (null != liveTradingCheckHandler && accountSetting.checkLiveTrading()) {       	
+        	liveTradingCheckHandler.startCheckChain(account, accountSetting);
+        	return true;
+        }else{
+        	return false;
         }
-        return false;
     }
     
     private boolean checkStopLoss(Account account, AccountSetting accountSetting) {
@@ -900,10 +898,6 @@ public class AccountPositionManager implements IPlugin {
                     positionStopLoss = companyStopLoss;
                 else
                     positionStopLoss = Math.min(positionStopLoss, companyStopLoss);
-            }
-            //jimmy#livetrading
-            if (null != liveTradingChecker) {
-                positionStopLoss = liveTradingChecker.getPositionStopLoss(account, accountSetting, positionStopLoss);
             }
         }
 

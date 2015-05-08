@@ -3,45 +3,54 @@ package com.cyanspring.server.livetrading.checker;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.server.livetrading.LiveTradingException;
-import com.cyanspring.server.livetrading.rule.IUserLiveTradingRule;
-import com.cyanspring.server.livetrading.rule.LiveTradingType;
 
 public class LiveTradingCheckHandler {
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(LiveTradingCheckHandler.class);	
+	
 	@Autowired
 	private IRemoteEventManager eventManager;
-	private Map <LiveTradingType,List> checkMap = new HashMap();
 	
-	public LiveTradingCheckHandler(Map <LiveTradingType,List> map) {
+	private Map <LiveTradingType,List<ILiveTradingChecker>> checkMap = new HashMap<LiveTradingType,List<ILiveTradingChecker>>();
+	
+	public LiveTradingCheckHandler(Map <LiveTradingType,List<ILiveTradingChecker>> map) {
 		checkMap = map;
 	}
 	
-	public void showAllCheck() throws LiveTradingException{
+	public void startCheckChain(Account account, AccountSetting accountSetting){
 		
-		if(null != checkMap){
-			Set<Entry<LiveTradingType, List>>entrySet = checkMap.entrySet();
-			for(Entry <LiveTradingType,List>e:entrySet){				
-				log.info("key:{} value:{}",e.getKey(),e.getValue());
-				List <ILiveTradingChecker>rule =e.getValue();
-				for(ILiveTradingChecker checker: rule){
-					checker.check(null, null);
-				}
-			}
+		if(!accountSetting.checkLiveTrading()){
+			return;
+		}
+		if( null == checkMap ){
+			return;
+		}
+		if(!checkMap.containsKey(accountSetting.getLiveTradingType())){
+			log.warn("Live trading : can't find this checkchain - {}",accountSetting.getLiveTradingType());
 		}
 		
+		List <ILiveTradingChecker>checkList = checkMap.get(accountSetting.getLiveTradingType());
+		
+		for(ILiveTradingChecker checker: checkList){
+			boolean needNextCheck = checker.check(account, accountSetting);
+			if(!needNextCheck){
+				break;
+			}
+		}
+	
 	}
-	
-	
 
 }
