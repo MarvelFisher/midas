@@ -623,9 +623,8 @@ public class PersistenceManager {
 		else	//user not exist, create user and then getAccount
 		{
             ok = createUserAndGetAccount(event);
+			log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 		}
-
-		log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
 	}
 
     private boolean createUserAndGetAccount(PmUserCreateAndLoginEvent event) {
@@ -761,12 +760,12 @@ public class PersistenceManager {
                 message = MessageLookup.buildEventMessage(msg, ue.getMessage());
             }else{
                 message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
-            }
-        }
+			}
+		}
 
-        try {
-            eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
-                    event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+		try {
+			eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
                     message, event.getOriginalEvent().getTxId(), false));
             if(ok) {
                 user.setLastLogin(Clock.getInstance().now());
@@ -831,12 +830,12 @@ public class PersistenceManager {
                 message = MessageLookup.buildEventMessage(msg, ue.getMessage());
             }else{
                 message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
-            }
-        }
+			}
+		}
 
-        try {
-            eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
-                    event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+		try {
+			eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
                     message, event.getOriginalEvent().getTxId(), false));
             if(ok) {
                 user.setLastLogin(Clock.getInstance().now());
@@ -903,14 +902,14 @@ public class PersistenceManager {
 
 	public void processMultiInstrumentStrategyUpdateEvent(MultiInstrumentStrategyUpdateEvent event) {
 		MultiInstrumentStrategyData data = event.getStrategyData();
-        StrategyState state = data.getState();
-        persistXml(data.getId(), PersistType.MULTI_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
+		StrategyState state = data.getState();
+		persistXml(data.getId(), PersistType.MULTI_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
 	}
 
 	public void processSingleInstrumentStrategyUpdateEvent(SingleInstrumentStrategyUpdateEvent event) {
 		Instrument data = event.getInstrument();
-        StrategyState state = data.getState();
-        persistXml(data.getId(), PersistType.SINGLE_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
+		StrategyState state = data.getState();
+		persistXml(data.getId(), PersistType.SINGLE_INSTRUMENT_STRATEGY, state, data.getUser(), data.getAccount(), data.getRoute(), data.toCompactXML());
 	}
 
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
@@ -1174,7 +1173,7 @@ public class PersistenceManager {
 		try {
 			
 			session = sessionFactory.openSession();
-            result = (List<PositionPeakPrice>)session.createCriteria(PositionPeakPrice.class)
+			result = (List<PositionPeakPrice>)session.createCriteria(PositionPeakPrice.class)
 				.list();
 			
 		} catch (HibernateException e) {
@@ -1300,9 +1299,9 @@ public class PersistenceManager {
 		Transaction tx = null;
 		try {
 		    tx = session.beginTransaction();
-            session.save(account);
-            tx.commit();
-            log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
+			session.save(account);
+			tx.commit();
+			log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -1395,8 +1394,8 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		AccountSetting accountSetting = event.getAccountSetting();
 		Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
+		try {
+			tx = session.beginTransaction();
 	    	session.saveOrUpdate(accountSetting);
 		    tx.commit();
 		}
@@ -1421,7 +1420,7 @@ public class PersistenceManager {
 	        query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay2");
 		    query.setParameter("tradeDate", event.getTradeDateTime());
-            query.executeUpdate();
+			query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay3");
 	        query.executeUpdate();
 	        tx.commit();
@@ -1461,11 +1460,11 @@ public class PersistenceManager {
 			//message = String.format("can't change user's password, err=[%s]", e.getMessage());
 			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_PWD_FAILED, String.format("can't change user's password, err=[%s]", e.getMessage()));
 
-        }
+		}
 
-        try {
-            eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
-                    event.getSender(), event.getUser(), ok, message, event.getTxId()));
+		try {
+			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
+					event.getSender(), event.getUser(), ok, message, event.getTxId()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -1495,7 +1494,7 @@ public class PersistenceManager {
 
 		try {
 			eventManager.sendRemoteEvent(new UserTerminateReplyEvent(event.getKey(), event.getSender(), ok, message, event.getUserId(), event.getTerminationStatus()));
-            eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.getTerminationStatus()));
+			eventManager.sendRemoteEvent(new UserTerminateUpdateEvent(event.getKey(), null, event.getUserId(), event.getTerminationStatus()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -1532,11 +1531,11 @@ public class PersistenceManager {
             userId = event.getUserThirdParty();
             userExist = true;
             userThirdPartyExist = true;
-        }
+		}
 
-        try {
-            eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
-                    userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
+		try {
+			eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
+					userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
 					event.getLanguage(), event.getClientId()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -1565,11 +1564,11 @@ public class PersistenceManager {
             log.error(e.getMessage(), e);
             ok = false;
             message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
-        }
+		}
 
-        try {
-            eventManager.sendRemoteEvent(new UserMappingDetachReplyEvent(event.getKey(), event.getSender(), ok, message,
-                    event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage()));
+		try {
+			eventManager.sendRemoteEvent(new UserMappingDetachReplyEvent(event.getKey(), event.getSender(), ok, message,
+					event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
