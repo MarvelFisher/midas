@@ -1109,7 +1109,7 @@ public class AccountPositionManager implements IPlugin {
                         position.getUser(), position.getAccount(), "Settlement");
                 exec.put(OrderField.ID.value(), IdGenerator.getInstance().getNextID() + "STLM");
                 try {
-                    log.debug("Settling position: " + position + "  with " + quote);
+					log.debug("Settling position: " + position + "  with " + price);
                     positionKeeper.processExecution(exec, account);
                 } catch (PositionException e) {
                     log.error(e.getMessage(), e);
