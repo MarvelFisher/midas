@@ -65,7 +65,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	private final String TITLE_FUTURE = "FUTURE";
 	private final String TITLE_STOCK = "STOCK";
 	private final String ERR_LAST_LESS_THAN_ZERO = "QUOTE ERROR : Last less than Zero";
-	private final String ERR_TRADEDATE_NOT_MATCH = "QUOTE ERROR : Trade NOT match";
+//	private final String ERR_TRADEDATE_NOT_MATCH = "QUOTE ERROR : Trade NOT match";
 	private final String ERR_TIME_FORMAT_ERROR = "QUOTE ERROR : Time format error";
 	private final String ERR_CLOSE_OVER_TIME = "QUOTE ERROR : Close Over "
 			+ ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
@@ -710,11 +710,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						this.ERR_LAST_LESS_THAN_ZERO));
 				return;
 			}
-			if (stock.getTradingDay() != tradeDateForWindFormat) {
-				debug(String.format("%s %s", this.TITLE_STOCK,
-						this.ERR_TRADEDATE_NOT_MATCH));
-				return;
-			}
+//			if (stock.getTradingDay() != tradeDateForWindFormat) {
+//				debug(String.format("%s %s", this.TITLE_STOCK,
+//						this.ERR_TRADEDATE_NOT_MATCH));
+//				return;
+//			}
 			if (isCloseOverTimeControlIsOpen()
 					&& bigSessionIsClose
 					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
@@ -741,11 +741,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 						this.ERR_LAST_LESS_THAN_ZERO));
 				return;
 			}
-			if (future.getTradingDay() != tradeDateForWindFormat) {
-				debug(String.format("%s %s", this.TITLE_FUTURE,
-						this.ERR_TRADEDATE_NOT_MATCH));
-				return;
-			}
+//			if (future.getTradingDay() != tradeDateForWindFormat) {
+//				debug(String.format("%s %s", this.TITLE_FUTURE,
+//						this.ERR_TRADEDATE_NOT_MATCH));
+//				return;
+//			}
 			if (isCloseOverTimeControlIsOpen()
 					&& bigSessionIsClose
 					&& TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
