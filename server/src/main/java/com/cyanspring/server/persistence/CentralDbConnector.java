@@ -2,8 +2,6 @@ package com.cyanspring.server.persistence;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,19 +18,10 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserType;
-import com.cyanspring.common.message.ErrorMessage;
 
 // TODO: JDBC Template
 public class CentralDbConnector {
 
-//	protected String host = "";
-//	protected int port = 0;
-//	protected String user = "";
-//	protected String pass = "";
-//	protected String database = "";
-//	private   String openSQL = "";
-
-	private static String MARKET_FX = "FX";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `MARKET`, `LANGUAGE`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s')";

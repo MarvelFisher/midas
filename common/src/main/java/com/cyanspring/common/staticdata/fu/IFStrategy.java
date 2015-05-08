@@ -40,14 +40,14 @@ public class IFStrategy implements RefDataStrategy {
         if (this.cal == null) {
             n0 = new RefData();
             n1 = new RefData();
-            setStragetyData(cal);
+            setStrategyData((Calendar) cal.clone());
         }
 
-        if (cal.compareTo(this.cal) < 0 || marketSessionUtil.isHoliday(symbol, cal.getTime()))
+        if (cal.compareTo(this.cal) < 0)
             return;
         cal.add(Calendar.DAY_OF_YEAR, 1);
         this.cal.add(Calendar.MONTH, 1);
-        setStragetyData(this.cal);
+        setStrategyData(this.cal);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class IFStrategy implements RefDataStrategy {
         }
     }
 
-    private void setStragetyData(Calendar cal) {
+    private void setStrategyData(Calendar cal) {
         String day = getSettlementDay(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
         n0.setSettlementDate(day);
         n0ID = day.substring(2, 7);
