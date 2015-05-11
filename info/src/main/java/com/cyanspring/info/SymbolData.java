@@ -121,9 +121,14 @@ public class SymbolData implements Comparable<SymbolData>
 			if (price == null)
 			{
 				price = new HistoricalPrice(strSymbol, centralDB.getTradedate(), cal.getTime());
-				priceData.put(cal.getTime(), price);
+				changed = setter.setPrice(price, quote, dCurVolume);
+				if (changed)
+					priceData.put(cal.getTime(), price);
 			}
-			changed = setter.setPrice(price, quote, dCurVolume);
+			else
+			{
+				changed = setter.setPrice(price, quote, dCurVolume);
+			}
 		}
 		if (changed && writeMin) //writeToMin() ; 
 		{
@@ -266,7 +271,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			lastPrice = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
+			lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			Calendar cal_ = Calendar.getInstance() ;
 			boolean bDelete = false ;
 			if (lastPrice != null && lastPrice.getKeytime() != null)
@@ -298,6 +303,9 @@ public class SymbolData implements Comparable<SymbolData>
 				{
 					lastPrice.setOpen(getdOpen());
 				}
+				lastPrice.setHigh(0.0);
+				lastPrice.setLow(0.0);
+				lastPrice.setClose(0.0);
 				lastPrice.setVolume((long)dCurVolume);
 			}
 			else
@@ -339,7 +347,7 @@ public class SymbolData implements Comparable<SymbolData>
 				lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
 				tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
 				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
-		centralDB.dbhnd.updateSQL(sqlcmd);
+		centralDB.getDbhnd().updateSQL(sqlcmd);
 		if (strSymbol.equals(getStrSymbol()) == false)
 		{
 			sqlcmd = String.format(insertPrice, 
@@ -348,7 +356,7 @@ public class SymbolData implements Comparable<SymbolData>
 					lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
 					tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
 					lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
-			centralDB.dbhnd.updateSQL(sqlcmd);
+			centralDB.getDbhnd().updateSQL(sqlcmd);
 		}
 		logHistoricalPrice(lastPrice);
 	}
@@ -382,7 +390,7 @@ public class SymbolData implements Comparable<SymbolData>
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
 				prefix, getStrSymbol()) ;
-		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
+		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
 		try {
 			double dHigh = 0 ; 
 			double dLow = 0 ;
@@ -413,7 +421,7 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-			priceEmpty = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
+			priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			if (priceEmpty != null)
 			{
 				prices.add(priceEmpty) ;
@@ -692,7 +700,7 @@ public class SymbolData implements Comparable<SymbolData>
 		String strKeyTime = "" ;
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat) ;
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		centralDB.dbhnd.createStatement();
+		centralDB.getDbhnd().createStatement();
 		for (HistoricalPrice price : prices)
 		{
 			if (price.getDatatime() == null)
@@ -706,7 +714,7 @@ public class SymbolData implements Comparable<SymbolData>
 					price.getHigh(), price.getLow(), price.getVolume(), 
 					strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
 					price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
-			centralDB.dbhnd.addBatch(sqlcmd);
+			centralDB.getDbhnd().addBatch(sqlcmd);
 			if (strSymbol.equals(getStrSymbol()) == false)
 			{
 				sqlcmd = String.format(insertPrice, 
@@ -715,11 +723,11 @@ public class SymbolData implements Comparable<SymbolData>
 						price.getHigh(), price.getLow(), price.getVolume(), 
 						strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
 						price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
-				centralDB.dbhnd.updateSQL(sqlcmd);
+				centralDB.getDbhnd().updateSQL(sqlcmd);
 			}
 			logHistoricalPrice(price);
 		}
-		centralDB.dbhnd.executeBatch();
+		centralDB.getDbhnd().executeBatch();
 		return ;
 	}
 	
@@ -753,7 +761,7 @@ public class SymbolData implements Comparable<SymbolData>
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' AND `KEYTIME`<'%s' ORDER BY `KEYTIME`;", 
 				prefix, type, strSymbol, sdfprice.format(start), sdfprice.format(end)) ;
-		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
+		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
 		try {
 			while(rs.next())
 			{
