@@ -3,8 +3,6 @@ package com.cyanspring.server.livetrading.checker;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,6 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.server.livetrading.LiveTradingException;
 
 public class LiveTradingCheckHandler {
 	
@@ -40,6 +37,7 @@ public class LiveTradingCheckHandler {
 		}
 		if(!checkMap.containsKey(accountSetting.getLiveTradingType())){
 			log.warn("Live trading : can't find this checkchain - {}",accountSetting.getLiveTradingType());
+			return;
 		}
 		
 		List <ILiveTradingChecker>checkList = checkMap.get(accountSetting.getLiveTradingType());

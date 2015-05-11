@@ -15,7 +15,7 @@
 		<property name="needCheckPosition" value="true"/>
 		<property name="needCheckFreeze" value="true"/>
 		<property name="needCheckTerminate" value="true"/>
-		<property name="changeSettingFrozenWeeks" value="2"/>
+		<property name="changeSettingFrozenDays" value="14"/>
 		<property name="userStopLiveTradingStartTime" value="2:00:00"/>
         <property name="userStopLiveTradingEndTime" value="7:00:00"/>
 	</bean>
@@ -33,7 +33,7 @@
 	 <bean id="defaultUserTrading" class="com.cyanspring.server.livetrading.rule.DefaultUserTrading">
 	 	<constructor-arg>
 	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
-	 			<entry key="POSTION_STOP_LOSS" value="0.1"/>
+	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
 	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
 	 			<entry key="TERMINATE_STOP_LOSS" value="0.3"/>
 	 		</map>
@@ -43,7 +43,7 @@
 	 <bean id="dayTrading" class="com.cyanspring.server.livetrading.rule.DayTrading">
 	 	<constructor-arg>
 	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
-	 			<entry key="POSTION_STOP_LOSS" value="0.1"/>
+	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
 	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
 	 		</map>
 		</constructor-arg>

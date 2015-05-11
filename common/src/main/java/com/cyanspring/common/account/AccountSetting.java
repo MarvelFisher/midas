@@ -100,8 +100,6 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.TRAILING_STOP.value(), trailingStop);
 	}
 	
-	
-	
 	public double getStopLossPercent() {
 		return get(double.class, AccountSettingType.STOP_LOSS_PERCENT.value());
 	}
@@ -144,6 +142,13 @@ public class AccountSetting extends DataObject {
 	}
 	public void setLiveTradingType(LiveTradingType liveTradingType) {
 		put(AccountSettingType.LIVE_TRADING_TYPE.value(), liveTradingType);
+	}
+	
+	public String getLiveTradingSettedDate() {
+		return get(String.class, AccountSettingType.LIVE_TRADING_SETTED_DATE.value());
+	}
+	public void setLiveTradingSettedDate(String liveTradingSettedDate) {
+		put(AccountSettingType.LIVE_TRADING_SETTED_DATE.value(), liveTradingSettedDate);
 	}
 	
 	public boolean checkLiveTrading(){

@@ -7,7 +7,7 @@ public class LiveTradingSetting {
 	private boolean needCheckTerminate;
 	private String 	userStopLiveTradingStartTime;
 	private String 	userStopLiveTradingEndTime;
-	private int changeSettingFrozenWeeks;
+	private int changeSettingFrozenDays;
 	
 	public String getUserStopLiveTradingStartTime() {
 		return userStopLiveTradingStartTime;
@@ -39,11 +39,11 @@ public class LiveTradingSetting {
 	public void setNeedCheckTerminate(boolean needCheckTerminate) {
 		this.needCheckTerminate = needCheckTerminate;
 	}
-	public int getChangeSettingFrozenWeeks() {
-		return changeSettingFrozenWeeks;
+	public int getChangeSettingFrozenDays() {
+		return changeSettingFrozenDays;
 	}
-	public void setChangeSettingFrozenWeeks(int changeSettingFrozenWeeks) {
-		this.changeSettingFrozenWeeks = changeSettingFrozenWeeks;
+	public void setChangeSettingFrozenDays(int changeSettingFrozenDays) {
+		this.changeSettingFrozenDays = changeSettingFrozenDays;
 	}
 	
 }

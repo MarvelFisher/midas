@@ -19,6 +19,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.server.livetrading.rule.LiveTradingRuleHandler;
 
 public class AccountKeeper {
 	private static final Logger log = LoggerFactory
@@ -36,6 +37,9 @@ public class AccountKeeper {
 	
 	@Autowired
 	ILeverageManager leverageManager;
+	
+    @Autowired(required = false)
+    LiveTradingRuleHandler liveTradingRuleHandler;
 	
 	public void init() {
 		dynamicJobs = new AccountJobs(dynamicJobBatch);
@@ -88,6 +92,12 @@ public class AccountKeeper {
 			existing = AccountSetting.createEmptySettings(setting.getId());
 			accountSettings.put(setting.getId(), existing);
 		}
+		log.info("liveTradingRuleHandler.isNeedSetting:{}",liveTradingRuleHandler.isNeedSetting(existing, setting));
+		if(null != liveTradingRuleHandler 
+					&& liveTradingRuleHandler.isNeedSetting(existing, setting)){
+			setting = liveTradingRuleHandler.setTradingRule(existing, setting);
+		}
+		
 		synchronized(existing) {
 			for(Entry<String, Object> entry: setting.getFields().entrySet()) {
 				existing.getFields().put(entry.getKey(), entry.getValue());

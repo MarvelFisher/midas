@@ -1,9 +1,12 @@
 package com.cyanspring.server.livetrading.rule;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.LiveTradingType;
+import com.cyanspring.common.util.TimeUtil;
 
 public class DefaultUserTrading implements IUserLiveTradingRule{
 	
@@ -13,20 +16,23 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		paramsMap = map;
 	}
 	@Override
-	public AccountSetting setRule(Account account,AccountSetting accountSetting) {
+	public AccountSetting setRule(AccountSetting oldAccountSetting, AccountSetting newAccountSetting) {
 		
-		AccountSetting setting = null;	
-		if(null == accountSetting){
-			setting = AccountSetting.createEmptySettings(account.getId());
+		AccountSetting setting = oldAccountSetting;	
+		if(null == setting){
+			setting = AccountSetting.createEmptySettings(oldAccountSetting.getId());
 		}	
 		System.out.println("DefaultUserTrading setRule");	
-		double positionStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.POSTION_STOP_LOSS));
+		double positionStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.POSITION_STOP_LOSS));
 		double frozenStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS));
 		double terminateStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS));
-		accountSetting.setStopLossPercent(positionStopLoss);
-		accountSetting.setFreezePercent(frozenStopLoss);
-		accountSetting.setTerminatePercent(terminateStopLoss);
-		accountSetting.setLiveTrading(true);
+		setting.setStopLossPercent(positionStopLoss);
+		setting.setFreezePercent(frozenStopLoss);
+		setting.setTerminatePercent(terminateStopLoss);
+		setting.setLiveTrading(newAccountSetting.isLiveTrading());
+		setting.setUserLiveTrading(newAccountSetting.isUserLiveTrading());
+		setting.setLiveTradingType(LiveTradingType.DEFAULT);
+		setting.setLiveTradingSettedDate(TimeUtil.formatDate(TimeUtil.getOnlyDate(new Date()), dateFormat));
 		System.out.printf("positionStopLoss:%s",positionStopLoss);
 		return setting;
 		

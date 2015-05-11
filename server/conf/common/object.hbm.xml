@@ -244,6 +244,7 @@
        		<param name="type">12</param>
    		</type>
 	</property>
+	<property column="LIVE_TRADING_SETTED_DATE" 			name="liveTradingSettedDate" 		  type="java.lang.String"/>
   </class>
   
   <class name="com.cyanspring.common.account.PositionPeakPrice" table="ANYONE.POSITION_PEAK_PRICE">

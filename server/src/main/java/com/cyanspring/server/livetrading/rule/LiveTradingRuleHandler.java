@@ -7,22 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.LiveTradingType;
-import com.cyanspring.common.event.AsyncEventProcessor;
-import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
-import com.cyanspring.common.event.livetrading.LiveTradingAccountSettingReplyEvent;
-import com.cyanspring.common.event.livetrading.LiveTradingAccountSettingRequestEvent;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.server.account.AccountKeeper;
-import com.cyanspring.server.livetrading.LiveTradingException;
-import com.cyanspring.server.persistence.PersistenceManager;
 
-public class LiveTradingRuleHandler implements IPlugin{
+public class LiveTradingRuleHandler{
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(LiveTradingRuleHandler.class);	
@@ -35,92 +28,43 @@ public class LiveTradingRuleHandler implements IPlugin{
 	
 	private Map <LiveTradingType,IUserLiveTradingRule> ruleMap = new HashMap<LiveTradingType,IUserLiveTradingRule>();
 	
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {		
-			subscribeToEvent(LiveTradingAccountSettingRequestEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
-	};
-	
 	public LiveTradingRuleHandler(Map <LiveTradingType,IUserLiveTradingRule> map) {
 		ruleMap = map;
 	}
 	
-	public void setTradingRule(LiveTradingType type,Account account,AccountSetting accountSetting)throws LiveTradingException{
+	public AccountSetting setTradingRule(AccountSetting oldAccountSetting,AccountSetting newAccountSetting)throws AccountException{
+		LiveTradingType type = newAccountSetting.getLiveTradingType();
+		if(null == type){
+			throw new AccountException("Live Trading type doesn't exist",ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
+		}
 		
-		log.info("{} setTradingRule:{}",accountSetting.getId(),type);
+		log.info("{} setLiveTradingRule:{}",newAccountSetting.getId(),type);
 		if(null == ruleMap || 0 == ruleMap.size()){
-			throw new LiveTradingException("No trading rule in map");
+			throw new AccountException("Live Trading : No trading rule in map",ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
 		}
 		if(!ruleMap.containsKey(type)){
-			throw new LiveTradingException("This rule doen't exist in map:"+type);
+			throw new AccountException("Live Trading : This rule doen't exist in map:"+type,ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
 		}
 		
 		IUserLiveTradingRule rule = ruleMap.get(type);		
-		accountSetting = rule.setRule(account,accountSetting);
-		sendAccountSettingChangeEvent(accountSetting);
+		oldAccountSetting = rule.setRule(oldAccountSetting,newAccountSetting);
 		
+		return oldAccountSetting;	
 	}
 	
-	public void processLiveTradingAccountSettingRequestEvent(LiveTradingAccountSettingRequestEvent event){
-		//get event and get LiveTradingType and AccountContent
-		boolean isSettingOk = false;
-		try {
-			
-			Account account = event.getAccount();
-			AccountSetting setting = event.getAccountSetting();
-			LiveTradingType type = event.getLiveTradingType();
-			if(null != setting){
-				type = LiveTradingType.CUSTOM;
-			}
-			setting = accountKeeper.getAccountSetting(account.getId());
-			setTradingRule(type,account,setting);
-			isSettingOk = true;
-			
-		} catch (LiveTradingException e) {
-			log.error(e.getMessage(),e);
-			isSettingOk = false;
-		} catch (AccountException e) {
-			log.error(e.getMessage(),e);
-			isSettingOk = false;
+	public boolean isNeedSetting(AccountSetting oldAccountSetting,AccountSetting newAccountSetting) {
+		
+		if(oldAccountSetting.isLiveTrading() != newAccountSetting.isLiveTrading()){
+			return true;
+		}
+		if(oldAccountSetting.isUserLiveTrading() != newAccountSetting.isUserLiveTrading()){
+			return true;
+		}
+		if(!oldAccountSetting.getLiveTradingType().equals(newAccountSetting.getLiveTradingType())){
+			return true;
 		}
 		
-		LiveTradingAccountSettingReplyEvent replyEvent = new LiveTradingAccountSettingReplyEvent(event.getKey(),event.getReceiver(),isSettingOk);
-		try {
-			eventManager.sendRemoteEvent(replyEvent);
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-		}
-		
-	}
-	
-	private void sendAccountSettingChangeEvent(AccountSetting accountSetting){
-        PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID,
-                null, accountSetting);
-        eventManager.sendEvent(pmEvent);
-	}
-
-	@Override
-	public void init() throws Exception {
-		
-		eventProcessor.setHandler(this);
-		eventProcessor.init();
-		if (eventProcessor.getThread() != null){
-			eventProcessor.getThread().setName("LiveTradingRuleHandler");
-		}
-		
-	}
-
-	@Override
-	public void uninit() {
-		eventProcessor.uninit();
-		eventManager.uninit();		
+		return false;
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.cyanspring.server.livetrading.rule;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.LiveTradingType;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.account.AccountKeeper;
-import com.cyanspring.server.livetrading.LiveTradingException;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 
 public class CustomTrading implements IUserLiveTradingRule{
@@ -20,16 +23,21 @@ public class CustomTrading implements IUserLiveTradingRule{
     AccountKeeper accountKeeper;
 	
 	@Override
-	public AccountSetting setRule(Account account, AccountSetting accountSetting)
-			throws LiveTradingException {
+	public AccountSetting setRule(AccountSetting oldAccountSetting, AccountSetting newAccountSetting)
+			throws AccountException {
 		
-		AccountSetting tempSetting = null;
+		AccountSetting tempSetting = oldAccountSetting;
 		try {
-			tempSetting = accountKeeper.getAccountSetting(account.getId());
-			tempSetting.setStopLossPercent(accountSetting.getStopLossPercent());
-			tempSetting.setFreezePercent(accountSetting.getFreezePercent());
-			tempSetting.setTerminatePercent(accountSetting.getTerminatePercent());
-			tempSetting.setUserLiveTrading(true);
+			
+			tempSetting = accountKeeper.getAccountSetting(newAccountSetting.getId());
+			tempSetting.setStopLossPercent(newAccountSetting.getStopLossPercent());
+			tempSetting.setFreezePercent(newAccountSetting.getFreezePercent());
+			tempSetting.setTerminatePercent(newAccountSetting.getTerminatePercent());
+			tempSetting.setLiveTrading(newAccountSetting.isLiveTrading());
+			tempSetting.setUserLiveTrading(newAccountSetting.isUserLiveTrading());
+			tempSetting.setLiveTradingType(LiveTradingType.CUSTOM);
+			tempSetting.setLiveTradingSettedDate(TimeUtil.formatDate(TimeUtil.getOnlyDate(new Date()), dateFormat));
+
 		} catch (AccountException e) {
 			log.error(e.getMessage(),e);
 		}

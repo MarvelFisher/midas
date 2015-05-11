@@ -213,7 +213,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED, getBean(520, "Register third party id failed"));
 			addAndCheck(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, getBean(521, "Detach third party id failed"));
 			addAndCheck(ErrorMessage.USER_PHONE_EXIST, getBean(522, "This phone already exists"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_SETTING_NOT_OVER_FROZEN_DAYS, getBean(523, "cant change live trading setting , because not over frozen setted days"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP, getBean(524, "can't find this rule in live trading"));
 
+			
 			
 			
 			
