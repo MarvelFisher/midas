@@ -69,9 +69,11 @@ public class RefDataHandler implements IPlugin {
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) {
+        log.debug("RURURUN");
         if (currentType == null){
             currentType = event.getSession();
             try {
+                refDataManager.init();
                 refDataManager.update(event.getTradeDate());
                 return;
             } catch (Exception e) {
@@ -99,7 +101,6 @@ public class RefDataHandler implements IPlugin {
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("RefDataHandler");
 
-        refDataManager.init();
         requestRequireData();
     }
 
