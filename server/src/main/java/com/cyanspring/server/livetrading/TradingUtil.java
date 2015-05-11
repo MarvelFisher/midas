@@ -25,9 +25,7 @@ public class TradingUtil {
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(TradingUtil.class);
-	
-	private static Lock lock = new ReentrantLock();
-	
+		
 	private static IQuoteChecker quoteChecker = new PriceQuoteChecker();
 	
 	private static boolean isValidQuote(Quote quote){
@@ -37,10 +35,7 @@ public class TradingUtil {
 	}
 	
 	public static void cancelAllOrders(Account account,PositionKeeper positionKeeper,IRemoteEventManager eventManager){
-		
-		lock.lock();
-		try{
-			
+				
 			List <ParentOrder> orderList = positionKeeper.getParentOrders(account.getId());
 			if(orderList.size() > 0)
 				log.info("Live trading cancelling of orders: ", orderList.size());
@@ -52,19 +47,11 @@ public class TradingUtil {
 							new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.CompanyStopLoss, false);
 					eventManager.sendEvent(cancel);
 				}
-			}
-			
-		}finally{
-			lock.unlock();
-		}
-		
+			}	
 	}
 	
 	public static void closeOpenPositions(Account account,PositionKeeper positionKeeper,IRemoteEventManager eventManager,boolean checkValidQuote){
-		
-		lock.lock();
-		try{
-			
+
 			List <OpenPosition> positionList = positionKeeper.getOverallPosition(account);
 			if(positionList.size() > 0)
 				log.info("Live trading closing of positions: ", positionList.size());
@@ -90,10 +77,5 @@ public class TradingUtil {
 					eventManager.sendEvent(event);
 				}
 			}
-				
-		}finally{
-			lock.unlock();
-		}
-		
 	}
 }
