@@ -167,7 +167,8 @@ public class CentralDbEventProc implements Runnable
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
-		log.info("Process MarketSession: " + event.getTradeDate() + " " + event.getSession());
+		log.info("Process MarketSession: " + event.getTradeDate() + " " + event.getSession()
+				+ " Start: " + event.getStart() + " End: " + event.getEnd());
 		centraldb.setTradedate(event.getTradeDate());
 		centraldb.setSessionEnd(event.getEnd());
 		centraldb.setSessionType(event.getSession(), event.getMarket()) ;

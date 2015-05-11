@@ -97,7 +97,7 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private IRefSymbolInfo refSymbolInfo;
 	private ArrayList<String> appServIDList = new ArrayList<String>();
-	DBHandler dbhnd ;
+	private DBHandler dbhnd ;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -178,7 +178,7 @@ public class CentralDbProcessor implements IPlugin
 		else if (event == checkEvent)
 		{
 			log.info("Check SQL connection");
-			dbhnd.checkSQLConnect();
+			getDbhnd().checkSQLConnect();
 		}
 		else if (event == insertEvent)
 		{
@@ -262,7 +262,7 @@ public class CentralDbProcessor implements IPlugin
 		for (String market : MarketList)
 		{
 			sqlcmd = String.format("DELETE FROM Symbol_Info WHERE MARKET='%s';", market);
-			dbhnd.updateSQL(sqlcmd);
+			getDbhnd().updateSQL(sqlcmd);
 		}
 		this.writeSymbolInfo(symbolInfoList) ;
 	}
@@ -328,7 +328,7 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> symbolinfoTmp = new ArrayList<SymbolInfo>();
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, group, market) ;
-		ResultSet rs = dbhnd.querySQL(sqlcmd);
+		ResultSet rs = getDbhnd().querySQL(sqlcmd);
 		int index;
 		try 
 		{
@@ -395,7 +395,7 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 				" AND `GROUP`='%s' AND `MARKET`='%s';", user, group, market) ;
-		dbhnd.updateSQL(sqlcmd);
+		getDbhnd().updateSQL(sqlcmd);
 		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		try
@@ -437,11 +437,11 @@ public class CentralDbProcessor implements IPlugin
 			}
 			else
 			{
-				dbhnd.updateSQL(sqlcmd);
+				getDbhnd().updateSQL(sqlcmd);
 				retsymbollist.clear();
 				sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 						user, group, market) ;
-				ResultSet rs = dbhnd.querySQL(sqlcmd);
+				ResultSet rs = getDbhnd().querySQL(sqlcmd);
 				SymbolInfo symbolinfo;
 				int index;
 				while(rs.next())
@@ -536,7 +536,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		sqlcmd += ";" ;
-		dbhnd.updateSQL(sqlcmd);
+		getDbhnd().updateSQL(sqlcmd);
 	}
 	
 	public void writeSymbolInfo(ArrayList<SymbolInfo> symbolInfoList)
@@ -563,7 +563,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		sqlcmd += ";" ;
-		dbhnd.updateSQL(sqlcmd);
+		getDbhnd().updateSQL(sqlcmd);
 	}
 	
 	public void onCallRefData()
@@ -605,7 +605,7 @@ public class CentralDbProcessor implements IPlugin
 
 					if (!marketList.contains(refdata.getExchange()))
 					{
-						dbhnd.checkMarketExist(refdata.getExchange());
+						getDbhnd().checkMarketExist(refdata.getExchange());
 						marketList.add(refdata.getExchange());
 					}
 					int chefNum = getChefNumber(refdata.getSymbol());
@@ -741,7 +741,7 @@ public class CentralDbProcessor implements IPlugin
 	@Override
 	public void init() throws Exception {
 		log.info("Initialising...");
-		dbhnd = new DBHandler(jdbcUrl, driverClass) ;
+		setDbhnd(new DBHandler(jdbcUrl, driverClass)) ;
 		quoteBuffer = new LinkedList<QuoteEvent>();
 		
 		// subscribe to events
@@ -927,6 +927,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setSessionEnd(Date sessionEnd) {
 		this.sessionEnd = sessionEnd;
+	}
+
+	public DBHandler getDbhnd() {
+		return dbhnd;
+	}
+
+	public void setDbhnd(DBHandler dbhnd) {
+		this.dbhnd = dbhnd;
 	}
 	
 }
