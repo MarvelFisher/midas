@@ -444,7 +444,11 @@ public class CentralDbConnector {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sQuery);
 
-            return rs.getString("USERID");
+			if (rs.next()) {
+				return rs.getString("USERID");
+			} else {
+				return null;
+			}
 
         } catch (SQLException e) {
 
