@@ -40,9 +40,9 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 	public List<SymbolInfo> getBySymbolInfos(List<SymbolInfo> inputInfoList) 
 	{
 		ArrayList<SymbolInfo> infoList = new ArrayList<SymbolInfo>();
-		for (SymbolInfo symbolinfo : refSymbolInfo)
+		for (SymbolInfo inputinfo : inputInfoList)
 		{
-			for (SymbolInfo inputinfo : inputInfoList)
+			for (SymbolInfo symbolinfo : refSymbolInfo)
 			{
 				if (symbolinfo.getCode().equals(inputinfo.getCode()) 
 						|| symbolinfo.getHint().equals(inputinfo.getHint()))
