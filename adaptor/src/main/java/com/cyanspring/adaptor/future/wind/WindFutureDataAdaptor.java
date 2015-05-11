@@ -341,7 +341,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         // process symbol Market Session
         for (String symbol : marketRuleBySymbolMap.keySet()) {
             MarketSessionData marketSessionData = marketSessionByIndexMap.get(marketRuleBySymbolMap.get(symbol));
-            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
+            if (marketSessionData != null && marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
                 Quote lastQuote = lastQuoteBySymbolMap.get(symbol);
                 DataObject lastQuoteExtend = lastQuoteExtendBySymbolMap.get(symbol);
                 if (lastQuote != null && !lastQuote.isStale()) {
