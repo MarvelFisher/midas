@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
 import org.hibernate.HibernateException;
@@ -639,6 +640,11 @@ public class PersistenceManager {
 
         try {
             createCentralDbUser(event, user);
+
+            // the 3rd user type is recorded in THIRD_PARTY_USER table.
+            if (user.getUserType().isThirdParty()) {
+                user.setUserType(UserType.NORMAL);
+            }
 
             tx = session.beginTransaction();
             session.save(user);
