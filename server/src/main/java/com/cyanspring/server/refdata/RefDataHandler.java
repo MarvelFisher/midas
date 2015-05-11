@@ -69,7 +69,6 @@ public class RefDataHandler implements IPlugin {
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) {
-        log.debug("RURURUN");
         if (currentType == null){
             currentType = event.getSession();
             try {
