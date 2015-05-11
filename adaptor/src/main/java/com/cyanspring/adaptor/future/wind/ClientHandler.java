@@ -155,10 +155,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		LogUtil.logInfo(log, "Wind channel Active");
 		context = ctx;
-		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		WindFutureDataAdaptor.isConnected = true;
-		WindFutureDataAdaptor.isConnecting = false;
-		adaptor.updateState(WindFutureDataAdaptor.isConnected);
 
 		String[] arrSymbol = WindFutureDataAdaptor.instance.getRefSymbol();
 		if (arrSymbol.length > 0) {
@@ -166,6 +162,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 				subscribe(symbol);
 			}
 		}
+
+		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
+		WindFutureDataAdaptor.isConnected = true;
+		WindFutureDataAdaptor.isConnecting = false;
+		adaptor.updateState(WindFutureDataAdaptor.isConnected);
 
 		msLastTime = System.currentTimeMillis();
 
