@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.message.ErrorMessage;
@@ -54,13 +55,16 @@ public class LiveTradingRuleHandler{
 	
 	public boolean isNeedSetting(AccountSetting oldAccountSetting,AccountSetting newAccountSetting) {
 		
-		if(oldAccountSetting.isLiveTrading() != newAccountSetting.isLiveTrading()){
+		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING.value())
+				&& oldAccountSetting.isLiveTrading() != newAccountSetting.isLiveTrading()){
 			return true;
 		}
-		if(oldAccountSetting.isUserLiveTrading() != newAccountSetting.isUserLiveTrading()){
+		if(newAccountSetting.fieldExists(AccountSettingType.USER_LIVE_TRADING.value())
+				&& oldAccountSetting.isUserLiveTrading() != newAccountSetting.isUserLiveTrading()){
 			return true;
 		}
-		if(!oldAccountSetting.getLiveTradingType().equals(newAccountSetting.getLiveTradingType())){
+		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING_TYPE.value())
+				&& !oldAccountSetting.getLiveTradingType().equals(newAccountSetting.getLiveTradingType())){
 			return true;
 		}
 		
