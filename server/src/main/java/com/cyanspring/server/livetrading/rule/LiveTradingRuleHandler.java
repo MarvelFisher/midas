@@ -44,7 +44,7 @@ public class LiveTradingRuleHandler{
 			throw new AccountException("Live Trading : No trading rule in map",ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
 		}
 		if(!ruleMap.containsKey(type)){
-			throw new AccountException("Live Trading : This rule doen't exist in map:"+type,ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
+			throw new AccountException("Live Trading : This rule doesn't exist in map:"+type,ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
 		}
 		
 		IUserLiveTradingRule rule = ruleMap.get(type);		
