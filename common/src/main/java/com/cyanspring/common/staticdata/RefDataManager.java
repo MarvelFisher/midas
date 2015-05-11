@@ -49,8 +49,13 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 			map.put(refData.getSymbol(), refData);
 		}
 	}
-	
-	@Override
+
+    @Override
+    public boolean update(String tradeDate) throws Exception {
+        return false;
+    }
+
+    @Override
 	public void uninit() {
 		log.info("uninitialising");
 		map.clear();
@@ -80,15 +85,4 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 		return market;
 	}
 
-	@Override
-	public RefData getRefDataByRefSymbol(String refSymbol) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RefData getRefDataBySymbol(String symbol) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

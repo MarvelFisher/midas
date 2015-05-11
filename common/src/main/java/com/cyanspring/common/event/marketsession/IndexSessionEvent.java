@@ -23,12 +23,18 @@ import java.util.Map;
  */
 public class IndexSessionEvent extends RemoteAsyncEvent{
     private Map<String, MarketSessionData> dataMap;
-    public IndexSessionEvent(String key, String receiver, Map<String, MarketSessionData> dataMap) {
+    private boolean ok;
+    public IndexSessionEvent(String key, String receiver, Map<String, MarketSessionData> dataMap, boolean ok) {
         super(key, receiver);
         this.dataMap = dataMap;
+        this.ok = ok;
     }
 
     public Map<String, MarketSessionData> getDataMap() {
         return dataMap;
+    }
+
+    public boolean isOk() {
+        return ok;
     }
 }

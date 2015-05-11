@@ -783,13 +783,6 @@ public class AccountPositionManager implements IPlugin {
             if (nDayOfWeek != Calendar.SUNDAY && nDayOfWeek != Calendar.SATURDAY)
                 processDayEndTasks();
             scheduleDayEndEvent();
-            if (refDataManager instanceof FuRefDataManager) {
-                try {
-                    refDataManager.init();
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
         }
     }
 

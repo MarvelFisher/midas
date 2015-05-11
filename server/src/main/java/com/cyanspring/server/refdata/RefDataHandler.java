@@ -4,6 +4,8 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -42,6 +44,7 @@ public class RefDataHandler implements IPlugin {
     private IRemoteEventManager eventManager;
 
     private MarketSessionType currentType;
+    private String tradeDate;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -66,18 +69,23 @@ public class RefDataHandler implements IPlugin {
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) {
-        if (currentType == null)
+        if (currentType == null){
             currentType = event.getSession();
-        if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
-            return;
-        currentType = event.getSession();
-        if (refDataManager instanceof FuRefDataManager) {
             try {
-                refDataManager.init();
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList()));
+                refDataManager.update(event.getTradeDate());
+                return;
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
+        }
+        if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
+            return;
+        currentType = event.getSession();
+        try {
+            if (refDataManager.update(event.getTradeDate()))
+                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList()));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -92,10 +100,15 @@ public class RefDataHandler implements IPlugin {
             eventProcessor.getThread().setName("RefDataHandler");
 
         refDataManager.init();
+        requestRequireData();
     }
 
     @Override
     public void uninit() {
         eventProcessor.uninit();
+    }
+
+    private void requestRequireData(){
+        eventManager.sendEvent(new MarketSessionRequestEvent(null, null));
     }
 }

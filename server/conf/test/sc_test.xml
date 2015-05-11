@@ -16,8 +16,9 @@
 		</property>
 		<property name="plugins">
 			<list>
-                <ref bean="refDataManager" />
                 <ref bean="marketSessionManager" />
+                <ref bean="refDataHandler" />
+                <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="upStreamManager" />
@@ -232,7 +233,9 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+    <bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
+
+    <bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
 			<value>refdata/refData_sc.xml</value>
 		</property>
@@ -283,6 +286,10 @@
 			</list>
 		</constructor-arg>
 	</bean>
+
+    <bean id="indexMarketSessionManager" class="com.cyanspring.server.marketsession.IndexMarketSessionManager">
+        <property name="settlementDelay"><value>45</value></property>
+    </bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>

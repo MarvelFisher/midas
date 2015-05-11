@@ -12,15 +12,10 @@
  */
 package com.cyanspring.server.marketsession;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.marketsession.*;
-import com.cyanspring.common.staticdata.IRefDataManager;
-import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.util.TimeUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,21 +42,9 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     @Autowired
     private IRemoteEventManager eventManager;
 
-    @Autowired
-    private IRefDataManager refDataManager;
-
-    @Autowired(required = false)
-    private MarketSessionUtil marketSessionUtil;
-
-    private Date chkDate;
-    private int settlementDelay = 10;
     private MarketSessionType currentSessionType;
     private String currentTradeDate;
     private IMarketSession sessionChecker;
-    private Map<String, MarketSessionData> sessionDataMap;
-    private Map<String, RefData> refDataMap;
-    private Map<String, Date> dateMap = new HashMap<String, Date>();
-    private boolean searchBySymbol = true;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long timerInterval = 1 * 1000;
@@ -72,7 +55,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         public void subscribeToEvents() {
             subscribeToEvent(MarketSessionRequestEvent.class, null);
             subscribeToEvent(TradeDateRequestEvent.class, null);
-            subscribeToEvent(IndexSessionRequestEvent.class, null);
         }
 
         @Override
@@ -110,34 +92,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         }
     }
 
-    public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
-        if (marketSessionUtil == null)
-            return;
-        try {
-            if (searchBySymbol) {
-                List<RefData> refDataList;
-                if (event.getIndexList() == null)
-                    refDataList = new ArrayList<RefData>(refDataMap.values());
-                else {
-                    refDataList = new ArrayList<>();
-                    for (String index : event.getIndexList()) {
-                        refDataList.add(refDataMap.get(index));
-                    }
-                }
-
-                if (event.getIndexList() != null && refDataList.size() != event.getIndexList().size())
-                    log.warn("Not find all refData for IndexSessionRequestEvent, request list: " + event.getIndexList());
-                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
-                        marketSessionUtil.getSessionDataBySymbol(refDataList, event.getDate())));
-
-            } else {
-                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
-                        marketSessionUtil.getSessionDataByStrategy(event.getIndexList(), event.getDate())));
-            }
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-        }
-    }
 
     public void processPmSettlementEvent(PmSettlementEvent event) {
         log.info("Receive PmSettlementEvent, symbol: " + event.getEvent().getSymbol());
@@ -150,70 +104,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             MarketSessionData sessionData = sessionChecker.getState(date, null);
             checkMarketSession(sessionData);
             checkTradeDate();
-            checkSettlement(date);
-            checkIndexMarketSession(date);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-        }
-    }
-
-    private void checkIndexMarketSession(Date date) {
-        if (marketSessionUtil == null)
-            return;
-        try {
-            if (sessionDataMap == null) {
-                if (searchBySymbol)
-                    sessionDataMap = marketSessionUtil.getSessionDataBySymbol(refDataManager.getRefDataList(), date);
-                else
-                    sessionDataMap = marketSessionUtil.getSessionDataByStrategy(null, date);
-
-                for (String key : sessionDataMap.keySet()) {
-                    dateMap.put(key, Clock.getInstance().now());
-                }
-                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap));
-                return;
-            }
-
-            Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
-            for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
-                Date record = dateMap.get(entry.getKey());
-                String[] time = entry.getValue().getEnd().split(":");
-                Date compare = TimeUtil.getScheduledDate(Calendar.getInstance(), record,
-                        Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
-                if (date.getTime() < compare.getTime())
-                    continue;
-                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date, searchBySymbol);
-                sendMap.put(entry.getKey(), data);
-                sessionDataMap.put(entry.getKey(), data);
-                dateMap.put(entry.getKey(), Clock.getInstance().now());
-            }
-            if (sendMap.size() > 0)
-                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap));
-
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-        }
-    }
-
-    private void checkSettlement(Date date) throws ParseException {
-        if (refDataManager.getRefDataList().size() <= 0)
-            return;
-        if (TimeUtil.sameDate(chkDate, date) || !currentSessionType.equals(MarketSessionType.CLOSE))
-            return;
-        chkDate = date;
-        for (RefData refData : refDataManager.getRefDataList()) {
-            if (refData.getSettlementDate() != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date settlementDate = sdf.parse(refData.getSettlementDate());
-                if (TimeUtil.sameDate(settlementDate, chkDate)) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.MINUTE, settlementDelay);
-                    SettlementEvent sdEvent = new SettlementEvent(null, null, refData.getSymbol());
-                    PmSettlementEvent pmSDEvent = new PmSettlementEvent(null, null, sdEvent);
-                    scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
-                    log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
-                }
-            }
         }
     }
 
@@ -246,8 +138,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         Date date = Clock.getInstance().now();
         sessionChecker.init(date, null);
 
-        chkDate = TimeUtil.getPreviousDay(date);
-
         // subscribe to events
         eventProcessor.setHandler(this);
         eventProcessor.init();
@@ -256,16 +146,6 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
         if (!eventProcessor.isSync())
             scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);
-
-        refDataMap = new HashMap<String, RefData>();
-        for (RefData refData : refDataManager.getRefDataList()) {
-            if (searchBySymbol)
-                refDataMap.put(refData.getSymbol(), refData);
-            else {
-                if (!refDataMap.containsKey(refData.getStrategy()))
-                    refDataMap.put(refData.getStrategy(), refData);
-            }
-        }
     }
 
     @Override
@@ -288,13 +168,5 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
     public void setSessionChecker(MarketSessionChecker sessionChecker) {
         this.sessionChecker = sessionChecker;
-    }
-
-    public void setSettlementDelay(int settlementDelay) {
-        this.settlementDelay = settlementDelay;
-    }
-
-    public void setSearchBySymbol(boolean searchBySymbol) {
-        this.searchBySymbol = searchBySymbol;
     }
 }
