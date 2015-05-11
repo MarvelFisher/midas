@@ -3,6 +3,7 @@ package com.cyanspring.common.staticdata.fu;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 
-public class IFStrategy implements RefDataStrategy {
+public class IFStrategy implements IRefDataStrategy {
     private static final Logger log = LoggerFactory
             .getLogger(IFStrategy.class);
 
@@ -48,6 +49,15 @@ public class IFStrategy implements RefDataStrategy {
         cal.add(Calendar.DAY_OF_YEAR, 1);
         this.cal.add(Calendar.MONTH, 1);
         setStrategyData(this.cal);
+    }
+
+    @Override
+    public boolean update(Calendar tradeDate) {
+        if (tradeDate.compareTo(this.cal) < 0)
+            return false;
+        this.cal.add(Calendar.MONTH, 1);
+        setStrategyData(this.cal);
+        return true;
     }
 
     @Override

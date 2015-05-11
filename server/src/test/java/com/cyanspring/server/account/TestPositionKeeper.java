@@ -292,7 +292,12 @@ public class TestPositionKeeper {
 			refData.set(40, RefDataField.MARGIN_RATE.value());
 		}
 
-		@Override
+        @Override
+        public boolean update(String tradeDate) throws Exception {
+            return false;
+        }
+
+        @Override
 		public RefData getRefData(String symbol) {
 			if(symbol.equals("AUDUSD"))
 				return refData;
@@ -317,18 +322,5 @@ public class TestPositionKeeper {
 		@Override
 		public void setRefDataFile(String refDataFile) {			
 		}
-
-		@Override
-		public RefData getRefDataByRefSymbol(String refSymbol) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public RefData getRefDataBySymbol(String symbol) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
 	}
 }

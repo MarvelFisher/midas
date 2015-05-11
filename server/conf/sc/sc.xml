@@ -28,8 +28,9 @@
 		<property name="plugins">
 			<list>
 				<ref bean="apiBridgeManager" />
-                <ref bean="refDataHandler" />
                 <ref bean="marketSessionManager" />
+                <ref bean="refDataHandler" />
+                <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
@@ -260,6 +261,10 @@
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
 	</bean>
+
+    <bean id="indexMarketSessionManager" class="com.cyanspring.server.marketsession.IndexMarketSessionManager">
+        <property name="settlementDelay"><value>45</value></property>
+    </bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
