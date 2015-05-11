@@ -619,7 +619,7 @@ public class PersistenceManager {
         else if (Strings.isNullOrEmpty(event.getUser().getId()))
         {
             ok = loginFromThirdPartyIdAndGetAccount(event, userKeeper, accountKeeper);
-            log.info("Login: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
+            log.info("Login 3rd: " + event.getOriginalEvent().getThirdPartyId() + ", " + ok);
         }
 		else	//user not exist, create user and then getAccount
 		{
