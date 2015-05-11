@@ -65,7 +65,7 @@ public class MarketSessionChecker implements IMarketSession {
     }
 
     private String getCurrentIndex(Date date, RefData refData) throws ParseException {
-        if (refData != null){
+        if (refData != null && refData.getSettlementDate() != null){
             String settlementDay = refData.getSettlementDate();
             if (TimeUtil.sameDate(date, sdf.parse(settlementDay)))
                 return MarketSessionIndex.SETTLEMENT_DAY.toString();

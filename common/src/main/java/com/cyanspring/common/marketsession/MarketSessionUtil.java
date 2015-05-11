@@ -19,6 +19,8 @@ public class MarketSessionUtil {
 
 	public MarketSessionData getCurrentMarketSessionType(RefData refData, Date date, boolean searchBySymbol) throws Exception{
 		MarketSessionChecker checker = cMap.get(refData.getStrategy());
+        if (checker == null)
+            checker = cMap.get(refData.getExchange());
         return searchBySymbol ? checker.getState(date, refData) : checker.getState(date, null);
 	}
 
@@ -31,6 +33,8 @@ public class MarketSessionUtil {
         Map<String, MarketSessionData> dataMap = new HashMap<String, MarketSessionData>();
         for (RefData refData : indexList){
             MarketSessionChecker checker = cMap.get(refData.getStrategy());
+            if (checker == null)
+                checker = cMap.get(refData.getExchange());
             if (checker == null)
                 continue;
             dataMap.put(refData.getSymbol(), checker.getState(date, refData));
