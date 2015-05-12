@@ -137,24 +137,28 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processRefDataEvent(RefDataEvent event){
-        log.debug("process RefData Event, Size=" + event.getRefDataList().size());
-        preSubscriptionList.clear();
-        List<RefData> refDataList = event.getRefDataList();
-        for (RefData aRefDataList : refDataList) {
-            RefData refData = aRefDataList;
-            preSubscriptionList.add(refData.getSymbol());
-        }
-        for(IMarketDataAdaptor adaptor : adaptors){
-            if(null != adaptor) {
-                adaptor.processEvent(event);
-                if(adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
-                        && marketSessionEvent != null && marketSessionEvent.getSession()==MarketSessionType.PREOPEN && isInitReqDataEnd){
-                    adaptor.clean();
-                    preSubscribe();
+        if(event.isOk() && event.getRefDataList().size() > 0) {
+            log.debug("process RefData Event, Size=" + event.getRefDataList().size());
+            preSubscriptionList.clear();
+            List refDataList = event.getRefDataList();
+            for (int i = 0; i < refDataList.size(); i++) {
+                RefData refData = (RefData) refDataList.get(i);
+                preSubscriptionList.add(refData.getSymbol());
+            }
+            for (IMarketDataAdaptor adaptor : adaptors) {
+                if (null != adaptor) {
+                    adaptor.processEvent(event);
+                    if (adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
+                            && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN && isInitReqDataEnd) {
+                        adaptor.clean();
+                        preSubscribe();
+                    }
                 }
             }
+            if (!isInitReqDataEnd) isInitRefDateReceived = true;
+        }else{
+            log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
         }
-        if(!isInitReqDataEnd) isInitRefDateReceived = true;
     }
 
     public void processIndexSessionEvent(IndexSessionEvent event){
@@ -171,7 +175,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
             if (!isInitReqDataEnd) isInitIndexSessionReceived = true;
         }else{
-            log.debug("IndexSession NOT ok - " + event.getDataMap() != null ? "0" : "null");
+            log.debug("IndexSession Event NOT OK - " + (event.getDataMap() != null ? "0" : "null"));
         }
     }
 
@@ -513,7 +517,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (null == preSubscriptionList || preSubscriptionList.size() <= 0)
             return;
 
-        log.debug("Market data presubscribe: " + preSubscriptionList.toArray());
+        log.debug("Market data presubscribe: " + preSubscriptionList);
         try {
             for (IMarketDataAdaptor adaptor : adaptors) {
                 log.debug("Market data presubscribe adapter begin : Adapter=" + adaptor.getClass().getSimpleName() + ",State="
