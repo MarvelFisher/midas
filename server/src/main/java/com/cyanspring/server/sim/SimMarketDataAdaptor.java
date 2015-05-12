@@ -28,6 +28,7 @@ import com.cyanspring.common.type.QtyPrice;
 
 public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	private Exchange exchange;
+	private volatile boolean isConnected = false;
 	Map<String, List<IMarketDataListener>> subs = 
 		Collections.synchronizedMap(new HashMap<String, List<IMarketDataListener>>());
 
@@ -139,18 +140,28 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		}
 	}
 
+	public void sendState(boolean on) {
+		for (IMarketDataStateListener listener : marketDataStateListeners) {
+			listener.onState(on);
+		}
+	}
+
 	@Override
 	public boolean getState() {
 		// should depend on simulator state
-		return true;
+		return isConnected;
 	}
 
 	@Override
 	public void init() {
+		isConnected = true;
+		sendState(isConnected);
 	}
 
 	@Override
 	public void uninit() {
+		isConnected = false;
+		sendState(isConnected);
 	}
 
 	@Override
