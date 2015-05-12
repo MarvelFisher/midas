@@ -61,8 +61,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     private final String TITLE_FUTURE = "FUTURE";
     private final String TITLE_STOCK = "STOCK";
     private final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
-    private final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : Trade NOT match";
-    private final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format error";
+    private final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : TradeDate NOT match";
+    private final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format fault";
     private final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 
