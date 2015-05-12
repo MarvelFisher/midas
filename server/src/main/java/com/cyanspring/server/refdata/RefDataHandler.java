@@ -62,7 +62,9 @@ public class RefDataHandler implements IPlugin {
 
     public void processRefDataRequestEvent(RefDataRequestEvent event) {
         try {
-            boolean ok = refDataManager.getRefDataList() != null;
+            boolean ok = true;
+            if (refDataManager.getRefDataList() == null || refDataManager.getRefDataList().size() <= 0)
+                ok = false;
             eventManager.sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
             log.info("Response RefDataRequestEvent, ok: {}", ok);
         } catch (Exception e) {
@@ -71,21 +73,19 @@ public class RefDataHandler implements IPlugin {
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) {
-        if (currentType == null){
-            currentType = event.getSession();
-            try {
+        try {
+            if (currentType == null) {
+                currentType = event.getSession();
                 refDataManager.init();
                 refDataManager.update(event.getTradeDate());
+                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
                 return;
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
             }
-        }
-        if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
-            return;
-        currentType = event.getSession();
-        try {
-            if (refDataManager.update(event.getTradeDate())){
+            if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
+                return;
+            currentType = event.getSession();
+
+            if (refDataManager.update(event.getTradeDate())) {
                 eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
                 log.info("Update refData size: {}", refDataManager.getRefDataList().size());
             }
@@ -112,7 +112,7 @@ public class RefDataHandler implements IPlugin {
         eventProcessor.uninit();
     }
 
-    private void requestRequireData(){
+    private void requestRequireData() {
         eventManager.sendEvent(new MarketSessionRequestEvent(null, null));
     }
 }
