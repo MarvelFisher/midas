@@ -36,8 +36,7 @@ public class LiveTradingRuleHandler{
 	public AccountSetting setTradingRule(AccountSetting oldAccountSetting,AccountSetting newAccountSetting)throws AccountException{
 		LiveTradingType type = newAccountSetting.getLiveTradingType();
 		if(null == type){
-			log.warn("Trading Rule havn't value, set to DEFAULT");
-			type = LiveTradingType.DEFAULT;
+			type = oldAccountSetting.getLiveTradingType();
 		}
 		
 		log.info("{} setLiveTradingRule:{}",newAccountSetting.getId(),type);
@@ -55,7 +54,7 @@ public class LiveTradingRuleHandler{
 	}
 	
 	public boolean isNeedSetting(AccountSetting oldAccountSetting,AccountSetting newAccountSetting) {
-		
+
 		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING.value())
 				&& oldAccountSetting.isLiveTrading() != newAccountSetting.isLiveTrading()){
 			return true;
