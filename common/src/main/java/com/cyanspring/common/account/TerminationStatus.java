@@ -7,7 +7,8 @@ public enum TerminationStatus {
 
     NOT_TERMINATED(0),
     TERMINATED(1),
-    BLACK_LISTED(2);
+    BLACK_LISTED(2),
+    TRANSFERRING(3);
 
     private final int value;
 

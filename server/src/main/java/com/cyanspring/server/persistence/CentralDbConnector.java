@@ -28,6 +28,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s'";
+    private static String insertPendingTransfer = "INSERT INTO ToDoCvtFDT(`ID3RD`, `USERID`) VALUES('%s', '%s')";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String deleteSameTypeThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `USERTYPE` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
@@ -114,7 +115,17 @@ public class CentralDbConnector {
                 stmt.executeUpdate(sql);
 			}
 
-			bIsSuccess = true;
+            // Add to transfer table and terminate FDT account for transferring.
+            if (isUserExist(thirdPartyId.toLowerCase())) {
+
+                String sql = String.format(insertPendingTransfer, thirdPartyId.toLowerCase(), userId);
+                stmt.executeUpdate(sql);
+
+                sql = String.format(setUserTermination, TerminationStatus.TRANSFERRING.getValue(), userId);
+                stmt.executeUpdate(sql);
+            }
+
+            bIsSuccess = true;
 			conn.commit();
 		} catch (SQLException e) {
 			bIsSuccess = false;
