@@ -60,10 +60,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     private boolean tradeDateCheckIsOpen = true;
     private final String TITLE_FUTURE = "FUTURE";
     private final String TITLE_STOCK = "STOCK";
-    private final String ERR_LAST_LESS_THAN_ZERO = "QUOTE ERROR : Last less than Zero";
-    private final String ERR_TRADEDATE_NOT_MATCH = "QUOTE ERROR : Trade NOT match";
-    private final String ERR_TIME_FORMAT_ERROR = "QUOTE ERROR : Time format error";
-    private final String ERR_CLOSE_OVER_TIME = "QUOTE ERROR : Close Over "
+    private final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
+    private final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : Trade NOT match";
+    private final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format error";
+    private final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 
 
@@ -370,25 +370,25 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 TDF_MARKET_DATA stock = WindParser.convertToStockData(in_arr, stockDataBySymbolMap);
                 if (stock.getTime() >= 240000000) {
                     log.debug(String.format("%s %s", this.TITLE_STOCK,
-                            this.ERR_TIME_FORMAT_ERROR));
+                            this.WARN_TIME_FORMAT_ERROR));
                     return;
                 }
                 if (stock.getMatch() <= 0) {
                     log.debug(String.format("%s %s", this.TITLE_STOCK,
-                            this.ERR_LAST_LESS_THAN_ZERO));
+                            this.WARN_LAST_LESS_THAN_ZERO));
                     return;
                 }
                 if (this.tradeDateCheckIsOpen
                         && stock.getTradingDay() != tradeDateForWindFormat) {
                     log.debug(String.format("%s %s", this.TITLE_STOCK,
-                            this.ERR_TRADEDATE_NOT_MATCH));
+                            this.WARN_TRADEDATE_NOT_MATCH));
                     return;
                 }
                 if (this.closeOverTimeControlIsOpen
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
                     log.debug(String.format("%s %s,Session Close Time=%s",
-                            this.TITLE_STOCK, this.ERR_CLOSE_OVER_TIME,
+                            this.TITLE_STOCK, this.WARN_CLOSE_OVER_TIME,
                             bigSessionCloseDate.toString()));
                     return;
                 }
@@ -401,25 +401,25 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 TDF_FUTURE_DATA future = WindParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 if (future.getTime() >= 240000000) {
                     log.debug(String.format("%s %s", this.TITLE_FUTURE,
-                            this.ERR_TIME_FORMAT_ERROR));
+                            this.WARN_TIME_FORMAT_ERROR));
                     return;
                 }
                 if (future.getMatch() <= 0) {
                     log.debug(String.format("%s %s", this.TITLE_FUTURE,
-                            this.ERR_LAST_LESS_THAN_ZERO));
+                            this.WARN_LAST_LESS_THAN_ZERO));
                     return;
                 }
                 if (this.tradeDateCheckIsOpen
                         && future.getTradingDay() != tradeDateForWindFormat) {
                     log.debug(String.format("%s %s", this.TITLE_FUTURE,
-                            this.ERR_TRADEDATE_NOT_MATCH));
+                            this.WARN_TRADEDATE_NOT_MATCH));
                     return;
                 }
                 if (this.closeOverTimeControlIsOpen
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
                     log.debug(String.format("%s %s,Session Close Time=%s",
-                            this.TITLE_FUTURE, this.ERR_CLOSE_OVER_TIME,
+                            this.TITLE_FUTURE, this.WARN_CLOSE_OVER_TIME,
                             bigSessionCloseDate.toString()));
                     return;
                 }

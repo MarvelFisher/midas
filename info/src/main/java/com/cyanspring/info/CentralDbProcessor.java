@@ -683,9 +683,6 @@ public class CentralDbProcessor implements IPlugin
 //			onCallRefData();
 			reset = true;
 		}
-		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
-			isProcessQuote = true;
-		this.sessionType = sessionType;
 		
 		if (insert)
 		{
@@ -697,6 +694,9 @@ public class CentralDbProcessor implements IPlugin
 			resetStatement() ;
 			onCallRefData();
 		}
+		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
+			isProcessQuote = true;
+		this.sessionType = sessionType;
 	}
 	public void sendCentralReady(String appserv)
 	{
