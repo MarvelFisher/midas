@@ -101,7 +101,7 @@ public class IndexMarketSessionManager implements IPlugin {
                         marketSessionUtil.getSessionDataByStrategy(event.getIndexList(), event.getDate()), true));
             }
         } catch (Exception e) {
-            log.warn(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -166,11 +166,12 @@ public class IndexMarketSessionManager implements IPlugin {
                 sessionDataMap.put(entry.getKey(), data);
                 dateMap.put(entry.getKey(), Clock.getInstance().now());
             }
-            if (sendMap.size() > 0)
+            if (sendMap.size() > 0){
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
-
+                log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
+            }
         } catch (Exception e) {
-            log.warn(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
