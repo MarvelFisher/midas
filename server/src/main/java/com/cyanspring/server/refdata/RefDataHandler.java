@@ -62,9 +62,11 @@ public class RefDataHandler implements IPlugin {
 
     public void processRefDataRequestEvent(RefDataRequestEvent event) {
         try {
-            eventManager.sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList()));
+            boolean ok = refDataManager.getRefDataList() != null;
+            eventManager.sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
+            log.info("Response RefDataRequestEvent, ok: {}, size: {}", ok, refDataManager.getRefDataList().size());
         } catch (Exception e) {
-            log.warn(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -83,8 +85,10 @@ public class RefDataHandler implements IPlugin {
             return;
         currentType = event.getSession();
         try {
-            if (refDataManager.update(event.getTradeDate()))
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList()));
+            if (refDataManager.update(event.getTradeDate())){
+                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+                log.info("Update refData size: {}", refDataManager.getRefDataList().size());
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

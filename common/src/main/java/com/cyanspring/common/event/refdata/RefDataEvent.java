@@ -23,12 +23,18 @@ import java.util.List;
  */
 public class RefDataEvent extends RemoteAsyncEvent {
     private List<RefData> refDataList;
-    public RefDataEvent(String key, String receiver, List<RefData> refDataList) {
+    private boolean ok;
+    public RefDataEvent(String key, String receiver, List<RefData> refDataList, boolean ok) {
         super(key, receiver);
         this.refDataList = refDataList;
+        this.ok = ok;
     }
 
     public List<RefData> getRefDataList() {
         return refDataList;
+    }
+
+    public boolean isOk() {
+        return ok;
     }
 }
