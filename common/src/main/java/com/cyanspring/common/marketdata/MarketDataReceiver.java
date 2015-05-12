@@ -375,7 +375,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             public void run() {
                 for (final IMarketDataAdaptor adaptor : adaptors) {
                     try {
-                        while(!processInitReqData())
+                        while(!processInitReqData() && !isTest)
                             TimeUnit.SECONDS.sleep(1);
                         log.debug("Adapter:" + adaptor.getClass().getSimpleName() + " init.");
                         adaptor.init();
