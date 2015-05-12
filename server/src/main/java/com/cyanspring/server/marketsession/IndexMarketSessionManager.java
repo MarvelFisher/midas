@@ -122,8 +122,13 @@ public class IndexMarketSessionManager implements IPlugin {
             if (searchBySymbol)
                 refDataMap.put(refData.getSymbol(), refData);
             else {
-                if (!refDataMap.containsKey(refData.getStrategy()))
-                    refDataMap.put(refData.getStrategy(), refData);
+                String index;
+                if (refData.getStrategy() != null)
+                    index = refData.getStrategy();
+                else
+                    index = refData.getExchange();
+                if (!refDataMap.containsKey(index))
+                    refDataMap.put(index, refData);
             }
         }
     }
@@ -138,7 +143,7 @@ public class IndexMarketSessionManager implements IPlugin {
     }
 
     private void checkIndexMarketSession() {
-        if (marketSessionUtil == null || refDataMap == null)
+        if (marketSessionUtil == null || refDataMap == null || refDataMap.size() <= 0)
             return;
         Date date = Clock.getInstance().now();
         try {
@@ -163,12 +168,17 @@ public class IndexMarketSessionManager implements IPlugin {
                         Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
                 if (date.getTime() < compare.getTime())
                     continue;
-                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refDataMap.get(entry.getKey()), date, searchBySymbol);
+                RefData refData = refDataMap.get(entry.getKey());
+                if (refData == null){
+                    log.warn("Index {} is null", entry.getKey());
+                    continue;
+                }
+                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refData, date, searchBySymbol);
                 sendMap.put(entry.getKey(), data);
                 sessionDataMap.put(entry.getKey(), data);
                 dateMap.put(entry.getKey(), Clock.getInstance().now());
             }
-            if (sendMap.size() > 0){
+            if (sendMap.size() > 0) {
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
                 log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
             }
