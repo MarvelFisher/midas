@@ -1514,6 +1514,7 @@ public class PersistenceManager {
 
         boolean userExist= false;
         boolean userThirdPartyExist = false;
+		boolean isPendingTransfer = false;
         String userId = event.getUser();
 
         if (!Strings.isNullOrEmpty(event.getUser())) {
@@ -1524,6 +1525,10 @@ public class PersistenceManager {
             userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase(),
                     event.getMarket(), event.getLanguage());
 
+            if (userThirdPartyExist && centralDbConnector.isThirdPartyUserPendingTransfer(event.getUserThirdParty().toLowerCase())) {
+                isPendingTransfer = true;
+            }
+
             if (userThirdPartyExist && Strings.isNullOrEmpty(event.getUser())) {
 
                 userId = centralDbConnector.getUserIdFromThirdPartyId(event.getUserThirdParty(), event.getMarket(),
@@ -1532,17 +1537,13 @@ public class PersistenceManager {
             }
         }
 
-        // Backward compatibility, phase 1
-        if (!userThirdPartyExist && centralDbConnector.isUserExist(event.getUserThirdParty().toLowerCase())) {
-            userId = event.getUserThirdParty();
-            userExist = true;
-            userThirdPartyExist = true;
-		}
-
 		try {
-			eventManager.sendRemoteEvent(new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
-					userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
-					event.getLanguage(), event.getClientId()));
+            UserMappingReplyEvent reply = new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
+                    userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
+                    event.getLanguage(), event.getClientId());
+            reply.setTransferring(isPendingTransfer);
+
+			eventManager.sendRemoteEvent(reply);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

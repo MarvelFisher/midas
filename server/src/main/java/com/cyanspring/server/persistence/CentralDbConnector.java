@@ -27,6 +27,7 @@ public class CentralDbConnector {
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `MARKET`, `LANGUAGE`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s'";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String deleteSameTypeThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `USERTYPE` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
@@ -279,6 +280,37 @@ public class CentralDbConnector {
                 closeConn(conn);
             }
         }
+        return (nCount > 0);
+    }
+
+    public boolean isThirdPartyUserPendingTransfer(String thirdPartyId) {
+
+        Connection conn = connect();
+
+        String sql = String.format(isPendingTransfer, thirdPartyId);
+        log.debug("[isThirdPartyUserPendingTransfer] SQL:" + sql);
+
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
         return (nCount > 0);
     }
 	
