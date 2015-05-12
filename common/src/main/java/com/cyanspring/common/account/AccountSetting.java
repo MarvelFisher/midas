@@ -32,6 +32,7 @@ public class AccountSetting extends DataObject {
 		settings.setLiveTrading(Default.isLiveTrading());
 		settings.setUserLiveTrading(Default.isUserLiveTrading());
 		settings.setLiveTradingType(LiveTradingType.DEFAULT);
+		settings.setLiveTradingSettedDate("");
 		return settings;
 	}
 	

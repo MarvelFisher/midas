@@ -36,7 +36,8 @@ public class LiveTradingRuleHandler{
 	public AccountSetting setTradingRule(AccountSetting oldAccountSetting,AccountSetting newAccountSetting)throws AccountException{
 		LiveTradingType type = newAccountSetting.getLiveTradingType();
 		if(null == type){
-			throw new AccountException("Live Trading type doesn't exist",ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP);
+			log.warn("Trading Rule havn't value, set to DEFAULT");
+			type = LiveTradingType.DEFAULT;
 		}
 		
 		log.info("{} setLiveTradingRule:{}",newAccountSetting.getId(),type);

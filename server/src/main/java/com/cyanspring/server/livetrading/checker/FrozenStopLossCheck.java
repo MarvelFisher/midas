@@ -35,7 +35,7 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
      */
 	@Override
 	public boolean check(Account account, AccountSetting accountSetting) {
-		log.info("frozen check:{}",account.getId());
+
 		if(!accountSetting.checkLiveTrading()){
 			return false;
 		}
