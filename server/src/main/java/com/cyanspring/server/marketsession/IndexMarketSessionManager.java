@@ -115,6 +115,8 @@ public class IndexMarketSessionManager implements IPlugin {
     }
 
     public void processRefDataEvent(RefDataEvent event) {
+        if (!event.isOk())
+            return;
         refDataMap = new HashMap<String, RefData>();
         for (RefData refData : event.getRefDataList()) {
             if (searchBySymbol)
