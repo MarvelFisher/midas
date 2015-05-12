@@ -513,7 +513,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (null == preSubscriptionList || preSubscriptionList.size() <= 0)
             return;
 
-        log.debug("Market data presubscribe: " + preSubscriptionList);
+        log.debug("Market data presubscribe: " + preSubscriptionList.toArray());
         try {
             for (IMarketDataAdaptor adaptor : adaptors) {
                 log.debug("Market data presubscribe adapter begin : Adapter=" + adaptor.getClass().getSimpleName() + ",State="
