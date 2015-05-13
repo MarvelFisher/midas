@@ -128,7 +128,7 @@
 		<property name="cleanStart" value="false"/>
 		<property name="todayOnly" value="false"/>
 		<property name="checkEmailUnique" value="onlyExist"/>
-		<property name="checkPhoneUnique" value="onlyExist"/>
+		<property name="checkPhoneUnique" value="noCheck"/>
 		<property name="syncCentralDb" value="true"/>
 	</bean>
 
