@@ -75,7 +75,7 @@ public class IndexMarketSessionManager implements IPlugin {
 
     public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
         try {
-            if (marketSessionUtil == null || refDataMap == null) {
+            if (checkSessionAndRefData()) {
                 eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
                 return;
             }
@@ -143,7 +143,7 @@ public class IndexMarketSessionManager implements IPlugin {
     }
 
     private void checkIndexMarketSession() {
-        if (marketSessionUtil == null || refDataMap == null || refDataMap.size() <= 0)
+        if (checkSessionAndRefData())
             return;
         Date date = Clock.getInstance().now();
         try {
@@ -169,7 +169,7 @@ public class IndexMarketSessionManager implements IPlugin {
                 if (date.getTime() < compare.getTime())
                     continue;
                 RefData refData = refDataMap.get(entry.getKey());
-                if (refData == null){
+                if (refData == null) {
                     log.warn("Index {} is null", entry.getKey());
                     continue;
                 }
@@ -188,25 +188,25 @@ public class IndexMarketSessionManager implements IPlugin {
     }
 
     private void checkSettlement() throws ParseException {
-        if (refDataMap == null || refDataMap.size() <= 0)
+        if (checkRefData())
             return;
         if (TimeUtil.sameDate(chkDate, tradeDate) || !currentSessionType.equals(MarketSessionType.CLOSE))
             return;
         chkDate = tradeDate;
         List<RefData> refDataList = new ArrayList<RefData>(refDataMap.values());
         for (RefData refData : refDataList) {
-            if (refData.getSettlementDate() != null) {
-
-                Date settlementDate = sdf.parse(refData.getSettlementDate());
-                if (TimeUtil.sameDate(settlementDate, chkDate)) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.MINUTE, settlementDelay);
-                    SettlementEvent sdEvent = new SettlementEvent(null, null, refData.getSymbol());
-                    PmSettlementEvent pmSDEvent = new PmSettlementEvent(null, null, sdEvent);
-                    scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
-                    log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
-                }
+            if (refData.getSettlementDate() == null)
+                continue;
+            Date settlementDate = sdf.parse(refData.getSettlementDate());
+            if (TimeUtil.sameDate(settlementDate, chkDate)) {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.MINUTE, settlementDelay);
+                SettlementEvent sdEvent = new SettlementEvent(null, null, refData.getSymbol());
+                PmSettlementEvent pmSDEvent = new PmSettlementEvent(null, null, sdEvent);
+                scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
+                log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
             }
+
         }
     }
 
@@ -238,5 +238,13 @@ public class IndexMarketSessionManager implements IPlugin {
 
     public void setSettlementDelay(int settlementDelay) {
         this.settlementDelay = settlementDelay;
+    }
+
+    private boolean checkSessionAndRefData() {
+        return marketSessionUtil == null || checkRefData();
+    }
+
+    private boolean checkRefData() {
+        return refDataMap == null || refDataMap.size() <= 0;
     }
 }
