@@ -92,7 +92,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 				}
 			}
 		} finally {
-			if(WindFutureDataAdaptor.instance.isMarketDataLog()) calculateMessageFlow(in.length());
+			calculateMessageFlow(in.length());
 			ReferenceCountUtil.release(msg);
 		}
 
