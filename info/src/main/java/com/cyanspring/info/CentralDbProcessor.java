@@ -175,11 +175,11 @@ public class CentralDbProcessor implements IPlugin
 		{
 			resetSymbolDataStat();
 		}
-		else if (event == checkEvent)
-		{
-			log.info("Check SQL connection");
-			getDbhnd().checkSQLConnect();
-		}
+//		else if (event == checkEvent)
+//		{
+//			log.info("Check SQL connection");
+//			getDbhnd().checkSQLConnect();
+//		}
 		else if (event == insertEvent)
 		{
 			insertSQL();
