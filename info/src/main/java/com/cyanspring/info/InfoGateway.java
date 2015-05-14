@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +35,6 @@ public class InfoGateway implements IPlugin {
 
 	@Autowired
 	private IRemoteEventManager eventManagerMD;
-
-	@Autowired
-	SessionFactory sessionFactory;
 
 	private int createThreadCount;
 	private ExecutorService service;

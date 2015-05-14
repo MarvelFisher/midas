@@ -927,10 +927,14 @@ public class AlertManager extends Compute {
 	public <T> void SQLSave(T object) {
 		Session session = null;
 		try {
-			session = sessionFactory.openSession();
+			session = sessionFactory.openSession();			
 			Transaction tx = session.beginTransaction();
-			session.save(object);
-			tx.commit();
+			tx.setTimeout(3);
+			if (tx.isActive())
+			{
+				session.save(object);
+				tx.commit();
+			}
 		} catch (Exception e) {
 			log.warn("[SQLSave] : " + e.getMessage());
 		} finally {
@@ -964,7 +968,7 @@ public class AlertManager extends Compute {
 			session.delete(object);
 			tx.commit();
 		} catch (Exception e) {
-			log.warn("[SQLDelete] : " + e.getMessage());
+			log.warn("[SQLDelete] : " + e.getMessage()); 
 		} finally {
 			if (null != session) {
 				session.close();
@@ -975,12 +979,12 @@ public class AlertManager extends Compute {
 	synchronized private void SendSQLHeartBeat() {
 		Session session = null;
 		try {
-			session = sessionFactory.openSession();
+			session = sessionFactory.openSession();			
 			SQLQuery sq = session.createSQLQuery("select 1;");
 			Iterator iterator = sq.list().iterator();
 			log.info("Send SQLHeartBeat...");
 		} catch (Exception e) {
-			log.warn("[SendSQLHeartBeat] : " + e.getMessage());
+			log.error("[SendSQLHeartBeat] : " + e.getMessage());
 		} finally {
 			if (null != session) {
 				session.close();
