@@ -28,7 +28,7 @@ public class CentralDbConnector {
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isThirdPartyUserAnyMappingExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
-	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s'";
+	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s' AND `STATUS` IS NULL";
     private static String insertPendingTransfer = "INSERT INTO ToDoCvtFDT(`ID3RD`, `USERID`) VALUES('%s', '%s')";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
@@ -504,6 +504,61 @@ public class CentralDbConnector {
 		log.debug("[userLoginEx] password not match :" + sUser);
 		return null;
 	}
+
+    public User getUser(String sUser) {
+
+        Connection conn = connect();
+
+        if (null == conn) {
+            log.debug("[getUser] Connection is lost ,could not process userLogin :" + sUser);
+            return null;
+        }
+
+        String sQuery = String.format(getUserAllInfo, sUser);
+        log.debug("[getUser] SQL:" + sQuery);
+        Statement stmt = null;
+
+        String username = null;
+        String email = null;
+        String phone = null;
+        UserType userType = null;
+        int isTerminated = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next()){
+                username = rs.getString("USERNAME");
+                email = rs.getString("EMAIL");
+                phone = rs.getString("PHONE");
+                userType = UserType.fromCode(rs.getInt("USERTYPE"));
+                isTerminated = rs.getInt("ISTERMINATED");
+
+                log.debug(String.format("[getUser] user[%s] queried: USERNAME[%s] EMAIL[%s] PHONE[%s] USERTYPE[%s] ISTERMINATED[%s]",
+                        sUser == null ? "null" : sUser,
+                        username == null ? "null": username,
+                        email == null ? "null": email,
+                        phone == null ? "null": phone,
+                        userType == null ? "null": userType.name(),
+                        isTerminated));
+
+                return new User(sUser, username, "", email, phone, userType, TerminationStatus.fromInt(isTerminated));
+            }
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return null;
+    }
 
     public String getUserIdFromThirdPartyId(String thirdPartyId, String market, String language) {
 
