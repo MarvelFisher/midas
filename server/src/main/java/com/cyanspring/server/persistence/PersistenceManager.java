@@ -642,7 +642,7 @@ public class PersistenceManager {
             createCentralDbUser(event, user);
 
             // the 3rd user type is recorded in THIRD_PARTY_USER table.
-            if (user.getUserType().isThirdParty()) {
+            if (user.getUserType().isThirdParty() && !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
                 user.setUserType(UserType.NORMAL);
             }
 
@@ -1522,7 +1522,7 @@ public class PersistenceManager {
 
         if (!Strings.isNullOrEmpty(event.getUserThirdParty())) {
             userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase(),
-                    event.getMarket(), event.getLanguage());
+					event.getMarket(), event.getLanguage());
 
             if (userThirdPartyExist && Strings.isNullOrEmpty(event.getUser())) {
 
