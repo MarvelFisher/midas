@@ -213,6 +213,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED, getBean(520, "Register third party id failed"));
 			addAndCheck(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, getBean(521, "Detach third party id failed"));
 			addAndCheck(ErrorMessage.USER_PHONE_EXIST, getBean(522, "This phone already exists"));
+			addAndCheck(ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP, getBean(523, "This third party id is already used in the new version app"));
 
 			
 			

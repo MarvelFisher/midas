@@ -639,6 +639,13 @@ public class PersistenceManager {
         String message = "";
 
         try {
+			if (Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
+					centralDbConnector.isThirdPartyUserAnyMappingExist(user.getId())) {
+
+				throw new CentralDbException("This third party id is already used in the new version app",
+						ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP);
+			}
+
             createCentralDbUser(event, user);
 
             // the 3rd user type is recorded in THIRD_PARTY_USER table.
