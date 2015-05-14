@@ -27,6 +27,7 @@ public class CentralDbConnector {
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `MARKET`, `LANGUAGE`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+	private static String isThirdPartyUserAnyMappingExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
 	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s'";
     private static String insertPendingTransfer = "INSERT INTO ToDoCvtFDT(`ID3RD`, `USERID`) VALUES('%s', '%s')";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
@@ -293,6 +294,38 @@ public class CentralDbConnector {
         }
         return (nCount > 0);
     }
+
+	public boolean isThirdPartyUserAnyMappingExist(String id) {
+
+		Connection conn = connect();
+
+		if (null == conn)
+			return false;
+
+		String sQuery = String.format(isThirdPartyUserAnyMappingExist, id);
+		log.debug("[isThirdPartyUserAnyMappingExist] SQL:" + sQuery);
+		Statement stmt = null;
+		int nCount = 0;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sQuery);
+
+			if (rs.next())
+				nCount = rs.getInt("COUNT(*)");
+
+		} catch (SQLException e) {
+			log.warn(e.getMessage(), e);
+		} finally {
+			if (stmt != null) {
+				closeStmt(stmt);
+			}
+			if (conn != null) {
+				closeConn(conn);
+			}
+		}
+		return (nCount > 0);
+	}
 
     public boolean isThirdPartyUserPendingTransfer(String thirdPartyId) {
 
