@@ -67,14 +67,9 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         Date date = Clock.getInstance().now();
         try {
             MarketSessionData sessionData = sessionChecker.getState(date, null);
-            MarketSessionEvent msEvent = new MarketSessionEvent(null, null, sessionData.getSessionType(),
+            MarketSessionEvent msEvent = new MarketSessionEvent(event.getKey(), event.getSender(), sessionData.getSessionType(),
                     sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
-            msEvent.setKey(null);
-            msEvent.setReceiver(null);
-            if (event.isLocal())
-                eventManager.sendEvent(msEvent);
-            else
-                eventManager.sendRemoteEvent(msEvent);
+            eventManager.sendLocalOrRemoteEvent(msEvent);
             currentSessionType = sessionData.getSessionType();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
