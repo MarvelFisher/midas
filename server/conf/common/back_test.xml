@@ -28,7 +28,7 @@
 		</property>
 	</bean>
 	
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager" init-method="init">
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager" init-method="init">
 	    <constructor-arg>
 	    	<ref bean="exchangeBT"/>
 	    </constructor-arg>
