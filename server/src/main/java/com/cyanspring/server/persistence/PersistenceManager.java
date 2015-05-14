@@ -638,6 +638,8 @@ public class PersistenceManager {
         ErrorMessage msg = null;
         String message = "";
 
+        boolean isTransfer = false;
+
         try {
 			if (Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
 					centralDbConnector.isThirdPartyUserAnyMappingExist(user.getId())) {
@@ -646,7 +648,9 @@ public class PersistenceManager {
 						ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP);
 			}
 
-            createCentralDbUser(event, user);
+            isTransfer = centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+            createCentralDbUser(event, user, isTransfer);
 
             // the 3rd user type is recorded in THIRD_PARTY_USER table.
             if (user.getUserType().isThirdParty() && !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
@@ -675,7 +679,7 @@ public class PersistenceManager {
             session.close();
         }
 
-        if (ok) {
+        if (ok && !isTransfer) {
             for (Account account : event.getAccounts()) {
                 createAccount(account);
             }
@@ -862,37 +866,47 @@ public class PersistenceManager {
         return ok;
     }
 
-    private void createCentralDbUser(PmUserCreateAndLoginEvent event, User user) throws CentralDbException {
-        if (syncCentralDb) {
-            if (!centralDbConnector.isUserExist(user.getId())) { // user dose not exist in Mysql either
+    private void createCentralDbUser(PmUserCreateAndLoginEvent event, User user, boolean isTransfer) throws CentralDbException {
 
-                if (checkEmailUnique.equals(CheckEmailType.allCheck) ||
-                        (checkEmailUnique.equals(CheckEmailType.onlyExist) && !Strings.isNullOrEmpty(user.getEmail()))) {
-                    if (centralDbConnector.isEmailExist(user.getEmail())) {
-                        //fixed because of #3090
-//						throw new CentralDbException("This email already exists: " + user.getEmail());
+        if (!syncCentralDb) {
+            return;
+        }
+
+        if (!centralDbConnector.isUserExist(user.getId())) { // user dose not exist in Mysql either
+
+            if (checkEmailUnique.equals(CheckEmailType.allCheck) ||
+                    (checkEmailUnique.equals(CheckEmailType.onlyExist) && !Strings.isNullOrEmpty(user.getEmail()))) {
+
+                if (centralDbConnector.isEmailExist(user.getEmail())) {
+                    if (isTransfer) {
+                        user.setEmail("");
+                    } else {
                         throw new CentralDbException("Your " + user.getUserType().name() +
                                 " account email has been used to register an FDT Account. Please login it with " +
                                 user.getEmail() + " now.", ErrorMessage.CREATE_USER_FAILED);
                     }
                 }
+            }
 
-                if (checkPhoneUnique == CheckPhoneType.allCheck ||
-                        (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
+            if (checkPhoneUnique == CheckPhoneType.allCheck ||
+                    (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
 
-                    if (centralDbConnector.isPhoneExist(user.getPhone())) {
+                if (centralDbConnector.isPhoneExist(user.getPhone())) {
+                    if (isTransfer) {
+                        user.setPhone("");
+                    } else {
                         throw new CentralDbException("Your phone has been used to register an FDT Account.",
                                 ErrorMessage.USER_PHONE_EXIST);
                     }
                 }
+            }
 
-                if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
-                        user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
-                        event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId(),
-                        event.getOriginalEvent().getMarket())) {
+            if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
+                    user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
+                    event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId(),
+                    event.getOriginalEvent().getMarket())) {
 
-                    throw new CentralDbException("can't create this user: " + user.getId(), ErrorMessage.CREATE_USER_FAILED);
-                }
+                throw new CentralDbException("can't create this user: " + user.getId(), ErrorMessage.CREATE_USER_FAILED);
             }
         }
     }
