@@ -144,6 +144,12 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void processRefDataEvent(RefDataEvent event){
         super.processRefDataEvent(event);
+        //Check last.xml Symbol
+        if(event.isOk() && event.getRefDataList().size() > 0){
+            log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
+            quotes.keySet().retainAll(preSubscriptionList);
+            quoteExtends.keySet().retainAll(preSubscriptionList);
+        }
     }
 
     public void processLastTradeDateQuotesRequestEvent(
