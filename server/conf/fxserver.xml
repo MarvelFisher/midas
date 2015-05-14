@@ -130,6 +130,7 @@
                 <value>AXI</value>
                 <value>FXN</value>
 				<value>WBRS</value>
+                <value>DUBA</value>
             </list>
         </property>
         <property name="unContributeList">
