@@ -823,8 +823,16 @@ public class PersistenceManager {
 
             event.getOriginalEvent().getUser().setId(userId);
 
-            // TODO: Get user from MySQL and check termination?
+            // Get user from MySQL and check termination
+            user = centralDbConnector.getUser(userId);
 
+            if (null == user || user.getTerminationStatus().isTerminated()) {
+                ok = false;
+                msg = ErrorMessage.USER_IS_TERMINATED;
+                throw new UserException("User is terminated");
+            }
+
+            // Get account
             user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
 
             if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
