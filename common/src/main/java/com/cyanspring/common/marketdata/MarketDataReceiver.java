@@ -56,11 +56,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     @Autowired
     protected IRemoteEventManager eventManager;
 
-    public void setEventManager(IRemoteEventManager eventManager) {
-        this.eventManager = eventManager;
-    }
-
-
     protected ScheduleManager scheduleManager = new ScheduleManager();
     private QuoteChecker quoteChecker;
 
@@ -98,7 +93,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         @Override
         public void subscribeToEvents() {
 
-            subscribeToEvent(NodeInfoEvent.class, null);
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
@@ -116,18 +110,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     protected List<Class<? extends AsyncEvent>> subscribeEvent() {
         return new ArrayList<Class<? extends AsyncEvent>>();
-    }
-
-    public void processNodeInfoEvent(NodeInfoEvent event) {
-        try {
-            if (!processInitReqData()) {
-                log.info("Record server node info: {}", event.getInbox());
-                serverInfo = event.getInbox();
-                requestRequireData();
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
@@ -374,6 +356,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("MarketDataReceiver");
+
+        requestRequireData();
 
         chkDate = Clock.getInstance().now();
         for (IMarketDataAdaptor adaptor : adaptors) {
@@ -642,5 +626,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void setIsTest(boolean isTest) {
         this.isTest = isTest;
+    }
+
+    public void setEventManager(IRemoteEventManager eventManager) {
+        this.eventManager = eventManager;
+    }
+
+    public void setServerInfo(String serverInfo) {
+        this.serverInfo = serverInfo;
     }
 }
