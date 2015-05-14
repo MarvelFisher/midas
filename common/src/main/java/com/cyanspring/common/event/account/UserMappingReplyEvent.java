@@ -13,6 +13,7 @@ public class UserMappingReplyEvent extends RemoteAsyncEvent {
     private String language;
     private String clientId;
     private boolean transferring;
+    private boolean oldThirdPartyUser;
 
     public UserMappingReplyEvent(String key, String receiver, String txId, String user, String userThirdParty, boolean userExist, boolean userThirdPartyExist, String market, String language, String clientId) {
         super(key, receiver);
@@ -64,5 +65,13 @@ public class UserMappingReplyEvent extends RemoteAsyncEvent {
 
     public void setTransferring(boolean transferring) {
         this.transferring = transferring;
+    }
+
+    public boolean isOldThirdPartyUser() {
+        return oldThirdPartyUser;
+    }
+
+    public void setOldThirdPartyUser(boolean oldThirdPartyUser) {
+        this.oldThirdPartyUser = oldThirdPartyUser;
     }
 }

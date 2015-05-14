@@ -1544,6 +1544,7 @@ public class PersistenceManager {
         boolean userExist= false;
         boolean userThirdPartyExist = false;
 		boolean isPendingTransfer = false;
+		boolean isOldThirdPartyUser = false;
         String userId = event.getUser();
 
         if (!Strings.isNullOrEmpty(event.getUser())) {
@@ -1564,6 +1565,10 @@ public class PersistenceManager {
                         event.getLanguage());
                 userExist = true;
             }
+
+			if (!userThirdPartyExist && centralDbConnector.isUserExist(event.getUserThirdParty().toLowerCase())) {
+				isOldThirdPartyUser = true;
+			}
         }
 
 		try {
@@ -1571,6 +1576,7 @@ public class PersistenceManager {
                     userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
                     event.getLanguage(), event.getClientId());
             reply.setTransferring(isPendingTransfer);
+			reply.setOldThirdPartyUser(isOldThirdPartyUser);
 
 			eventManager.sendRemoteEvent(reply);
         } catch (Exception e) {
