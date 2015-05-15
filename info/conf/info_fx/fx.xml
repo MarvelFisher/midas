@@ -10,7 +10,7 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
-<!-- 	        	<ref bean="mdManager" /> -->
+<!-- 	        	<ref bean="mdReceiver" /> -->
 	        	<ref bean="InfoGateway" />
             	<ref bean="centralDbProcessor"/>
             	<ref bean="userManager"/>
@@ -32,8 +32,8 @@
 	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
-	<bean id="useLocalMdManager" class="java.lang.Boolean">
-		<constructor-arg value="false"/>
+	<bean id="useLocalMdReceiver" class="java.lang.Boolean">
+		<constructor-arg value="true"/>
 	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">

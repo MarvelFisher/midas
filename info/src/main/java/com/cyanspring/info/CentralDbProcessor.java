@@ -118,7 +118,7 @@ public class CentralDbProcessor implements IPlugin
 	ScheduleManager scheduleManager;
 	
 	@Autowired
-	private Boolean useLocalMdManager;
+	private Boolean useLocalMdReceiver;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor(){
 
@@ -129,7 +129,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
-			if (useLocalMdManager == true) 
+			if (useLocalMdReceiver == true) 
 				subscribeToEvent(QuoteEvent.class, null);
 		}
 
@@ -147,7 +147,7 @@ public class CentralDbProcessor implements IPlugin
 //			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
-			if (useLocalMdManager == false) 
+			if (useLocalMdReceiver == false) 
 				subscribeToEvent(QuoteEvent.class, null);
 		}
 
