@@ -10,7 +10,6 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
-<!-- 	        	<ref bean="mdReceiver" /> -->
 	        	<ref bean="InfoGateway" />
             	<ref bean="centralDbProcessor"/>
             	<ref bean="userManager"/>

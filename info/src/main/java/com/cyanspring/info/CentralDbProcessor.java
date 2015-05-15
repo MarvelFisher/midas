@@ -117,9 +117,6 @@ public class CentralDbProcessor implements IPlugin
 	@Autowired
 	ScheduleManager scheduleManager;
 	
-	@Autowired
-	private Boolean useLocalMdReceiver;
-	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor(){
 
 		@Override
@@ -129,8 +126,6 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
-			if (useLocalMdReceiver == true) 
-				subscribeToEvent(QuoteEvent.class, null);
 		}
 
 		@Override
@@ -144,11 +139,9 @@ public class CentralDbProcessor implements IPlugin
 
 		@Override
 		public void subscribeToEvents() {
-//			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
-			if (useLocalMdReceiver == false) 
-				subscribeToEvent(QuoteEvent.class, null);
+			subscribeToEvent(QuoteEvent.class, null);
 		}
 
 		@Override
@@ -329,7 +322,6 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, group, market) ;
 		ResultSet rs = getDbhnd().querySQL(sqlcmd);
-		int index;
 		try 
 		{
 			SymbolInfo symbolinfo = null;
@@ -345,12 +337,6 @@ public class CentralDbProcessor implements IPlugin
 				symbolinfo.setKrName(rs.getString("KR_NAME"));
 				symbolinfo.setEsName(rs.getString("ES_NAME"));
 				symbolinfoTmp.add(symbolinfo);
-//				index = getRefSymbolInfo().at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
-//				if (index >= 0)
-//				{
-//					symbolinfo = getRefSymbolInfo().get(index);
-//					symbolinfos.add(symbolinfo);
-//				}
 			}
 			symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolInfos(symbolinfoTmp);
 			if (symbolinfos.isEmpty())

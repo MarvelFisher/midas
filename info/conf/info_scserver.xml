@@ -149,7 +149,7 @@
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
-		<property name="quoteLogIsOpen" value="true"></property>
+		<property name="quoteLogIsOpen" value="false"></property>
 		<property name="quoteExtendEventIsSend" value="false"></property>
 
 		<property name="preSubscriptionList">
