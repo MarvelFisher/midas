@@ -117,8 +117,6 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>IF1502</value>
-				<value>IF1503</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -127,6 +125,7 @@
 		<constructor-arg>
 			<ref bean="simExchange" />
 		</constructor-arg>
+		<property name="sourceId" value="101"/>
 	</bean>
 
 	<bean id="simExchange" class="webcurve.exchange.Exchange">
