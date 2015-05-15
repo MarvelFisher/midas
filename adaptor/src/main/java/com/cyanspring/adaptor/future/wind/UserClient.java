@@ -6,7 +6,7 @@ import java.util.List;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.InnerQuote;
-import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 
 public class UserClient implements AutoCloseable {
@@ -64,24 +64,18 @@ public class UserClient implements AutoCloseable {
         }
     }
 
-    /**
-     * send quote info to listener
-     *
-     * @param innerQuote
-     * @param quoteExt
-     */
-    public void sendInnerQuote(InnerQuote innerQuote, DataObject quoteExt) {
-
-        if (isMySymbol(innerQuote.getSymbol())) {
-            //use in MDM proceessInnerQuoteEvent , Wind Future Adapter sourceid=101
+    public void sendInnerQuote(InnerQuote innerQuote){
+        if(isMySymbol(innerQuote.getSymbol())){
             listener.onQuote(innerQuote);
-            listener.onQuoteExt(quoteExt, 101);
         }
     }
 
-    /**
-     *
-     */
+    public void sendQuoteExtend(DataObject quoteExtend){
+        if(isMySymbol(quoteExtend.get(String.class, QuoteExtDataField.SYMBOL.value()))){
+            listener.onQuoteExt(quoteExtend, 101);
+        }
+    }
+
     void uninit() {
 
         if (list != null) {
@@ -91,11 +85,6 @@ public class UserClient implements AutoCloseable {
         listener = null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
     @Override
     public void close() throws Exception {
         uninit();

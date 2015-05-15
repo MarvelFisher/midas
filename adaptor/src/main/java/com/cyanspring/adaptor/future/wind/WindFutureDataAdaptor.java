@@ -66,7 +66,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     private final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 
-
     boolean isClose = false;
     static NioEventLoopGroup nioEventLoopGroup = null;
 
@@ -74,9 +73,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     protected IRemoteEventManager eventManager;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-
     protected ScheduleManager scheduleManager = new ScheduleManager();
-
     public static WindFutureDataAdaptor instance = null;
 
     static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
@@ -347,7 +344,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 if (lastQuote != null && !lastQuote.isStale()) {
                     log.debug("Process Symbol Session & Send Stale Final Quote : Symbol=" + symbol);
                     lastQuote.setStale(true);
-                    sendInnerQuote(new InnerQuote(101, lastQuote), lastQuoteExtend);
+                    sendInnerQuote(new InnerQuote(101, lastQuote));
                 }
             }
         }
@@ -373,11 +370,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                             this.WARN_TIME_FORMAT_ERROR));
                     return;
                 }
-                if (stock.getMatch() <= 0) {
-                    log.debug(String.format("%s %s", this.TITLE_STOCK,
-                            this.WARN_LAST_LESS_THAN_ZERO));
-                    return;
-                }
+//                if (stock.getMatch() <= 0) {
+//                    log.debug(String.format("%s %s", this.TITLE_STOCK,
+//                            this.WARN_LAST_LESS_THAN_ZERO));
+//                    return;
+//                }
                 if (this.tradeDateCheckIsOpen
                         && stock.getTradingDay() != tradeDateForWindFormat) {
                     log.debug(String.format("%s %s", this.TITLE_STOCK,
@@ -404,11 +401,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                             this.WARN_TIME_FORMAT_ERROR));
                     return;
                 }
-                if (future.getMatch() <= 0) {
-                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
-                            this.WARN_LAST_LESS_THAN_ZERO));
-                    return;
-                }
+//                if (future.getMatch() <= 0) {
+//                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
+//                            this.WARN_LAST_LESS_THAN_ZERO));
+//                    return;
+//                }
                 if (this.tradeDateCheckIsOpen
                         && future.getTradingDay() != tradeDateForWindFormat) {
                     log.debug(String.format("%s %s", this.TITLE_FUTURE,
@@ -816,30 +813,26 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         }
     }
 
-    /**
-     * Send Quote
-     *
-     * @param innerQuote  inner Quote Data
-     * @param quoteExtend Quote Extend Data
-     */
-    public void sendInnerQuote(InnerQuote innerQuote, DataObject quoteExtend) {
+    public void sendInnerQuote(InnerQuote innerQuote){
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients) {
-            client.sendInnerQuote(innerQuote, quoteExtend);
+            client.sendInnerQuote(innerQuote);
         }
     }
 
-    /**
-     * Save Last Quote Data
-     *
-     * @param quote
-     */
-    public void saveLastQuote(Quote quote, DataObject quoteExt) {
-        lastQuoteBySymbolMap.put(quote.getSymbol(), quote);
-        if (quoteExt != null) {
-            lastQuoteExtendBySymbolMap.put(quoteExt.get(String.class,
-                    QuoteExtDataField.SYMBOL.value()), quoteExt);
+    public void sendQuoteExtend(DataObject quoteExtend){
+        List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+        for (UserClient client : clients) {
+            client.sendQuoteExtend(quoteExtend);
         }
+    }
+
+    public void saveLastQuote(Quote quote){
+        lastQuoteBySymbolMap.put(quote.getSymbol(),quote);
+    }
+
+    public void saveLastQuoteExtend(DataObject quoteExtend){
+        lastQuoteExtendBySymbolMap.put(quoteExtend.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExtend);
     }
 
     public void sendSymbolInfo(List<SymbolInfo> list) {
