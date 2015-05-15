@@ -55,7 +55,7 @@
 	  <property name="validationQueryTimeout" ><value>3</value></property>
 	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
 	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
-	</bean>n
+	</bean>
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
