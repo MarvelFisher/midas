@@ -50,13 +50,18 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 			return false;
 		}
 		
-		checkStartAccountValue(account);
-		
 		Double dailyStopLoss = account.getStartAccountValue() * accountSetting.getFreezePercent();
-		if(PriceUtils.isZero(dailyStopLoss)){		
-			return true;
-		}
 		
+		if(PriceUtils.isZero(dailyStopLoss)){
+			if(!PriceUtils.isZero(accountSetting.getDailyStopLoss())){
+				dailyStopLoss = accountSetting.getDailyStopLoss();
+			}else{
+				return true;
+			}
+		}else{
+			dailyStopLoss = Math.min(dailyStopLoss, accountSetting.getDailyStopLoss());
+		}
+				
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 			
 			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
@@ -80,12 +85,6 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
-		}
-	}
-	
-	private void checkStartAccountValue(Account account){
-		if(PriceUtils.isZero(account.getStartAccountValue())){
-			account.setStartAccountValue(account.getCashDeposited());
 		}
 	}
 	
