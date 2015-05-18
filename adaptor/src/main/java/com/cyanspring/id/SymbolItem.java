@@ -278,6 +278,7 @@ public class SymbolItem implements AutoCloseable {
         }
 
         Quote quote = getQuote();
+        quote.setTimeStamp(new Date());
         InnerQuote innerQuote = new InnerQuote(2, quote); //Id Adapter soureid = 2
         innerQuote.setContributor(contributeCode);
         IdMarketDataAdaptor.instance.sendInnerQuote(innerQuote);
