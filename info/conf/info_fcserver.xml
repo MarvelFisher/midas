@@ -142,7 +142,7 @@
 	</bean>
 
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataReceiver">
+	<bean id="mdReceiver" class="com.cyanspring.common.marketdata.MarketDataReceiver">
 		<constructor-arg>
 			<list>
 				<ref bean="windAdaptor" />
@@ -150,7 +150,7 @@
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
-		<property name="quoteLogIsOpen" value="true"></property>
+		<property name="quoteLogIsOpen" value="false"></property>
 		<property name="quoteExtendEventIsSend" value="false"></property>
 
 		<property name="preSubscriptionList">

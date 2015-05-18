@@ -81,6 +81,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitIndexSessionReceived = false;
     private volatile boolean isInitMarketSessionReceived = false;
     private volatile boolean isInitReqDataEnd = false;
+    private volatile boolean isPreSubscribing = false;
     private MarketSessionEvent marketSessionEvent;
     boolean state = false;
     boolean isUninit = false;
@@ -133,6 +134,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processRefDataEvent(RefDataEvent event) {
+        if (isPreSubscribing){
+            log.warn("RefData Event coming in presubscribe");
+            event = null;
+            return;
+        }
+
         if (event.isOk() && event.getRefDataList().size() > 0) {
             log.debug("process RefData Event, Size=" + event.getRefDataList().size());
             preSubscriptionList.clear();
@@ -532,6 +539,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (null == preSubscriptionList || preSubscriptionList.size() <= 0)
             return;
 
+        isPreSubscribing = true;
         log.debug("Market data presubscribe: " + preSubscriptionList);
         try {
             for (IMarketDataAdaptor adaptor : adaptors) {
@@ -546,6 +554,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
         } catch (MarketDataException e) {
             log.error(e.getMessage(), e);
+        } finally {
+            isPreSubscribing = false;
         }
     }
 

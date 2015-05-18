@@ -689,12 +689,44 @@ public class PersistenceManager {
 
         if (event.getOriginalEvent() != null) {
             try {
-                eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
-                        event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
-                        , message, event.getOriginalEvent().getTxId(), true));
-                if (ok) {
-                    for (Account account : event.getAccounts())
-                        eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+                if (isTransfer) {
+
+                    UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
+                    AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
+
+                    // getAccount
+                    user = userKeeper.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+                    if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+                        defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+                    }
+
+                    List<Account> list = accountKeeper.getAccounts(user.getId());
+
+                    if (defaultAccount == null && (list == null || list.size() <= 0)) {
+                        ok = false;
+                        message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+                    }
+
+                    event.getUser().setDefaultAccount(defaultAccount.getId());
+
+                    eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+                            event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+                            message, event.getOriginalEvent().getTxId(), true));
+                    if(ok) {
+                        user.setLastLogin(Clock.getInstance().now());
+                        eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+                    }
+
+                } else {
+
+                    eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+                            event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
+                            , message, event.getOriginalEvent().getTxId(), true));
+                    if (ok) {
+                        for (Account account : event.getAccounts())
+                            eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+                    }
                 }
 
             } catch (Exception e) {

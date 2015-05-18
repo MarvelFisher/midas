@@ -117,7 +117,7 @@ public class CentralDbConnector {
 			}
 
             // Add to transfer table and terminate FDT account for transferring.
-            if (isUserExist(thirdPartyId.toLowerCase())) {
+            if (!Strings.isNullOrEmpty(thirdPartyId) && isUserExist(thirdPartyId.toLowerCase())) {
 
                 String sql = String.format(insertPendingTransfer, thirdPartyId.toLowerCase(), userId);
                 stmt.executeUpdate(sql);

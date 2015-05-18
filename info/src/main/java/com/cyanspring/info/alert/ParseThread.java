@@ -77,6 +77,7 @@ public class ParseThread extends Thread{
 			{
 				if (!bReSend)
 				{
+					iRetrytimes = 0;
 					PD = ParseDataQueue.poll();
 				}
 				if (PD == null)
@@ -92,7 +93,7 @@ public class ParseThread extends Thread{
 //					log.debug("[ParseThread "+strThreadId+"] sending"+PD.strpushMessage);
 					threadStatus.setThreadState(ThreadState.SENDDING) ;
 					threadStatus.UpdateTime();
-					sendPost(PD) ;
+					sendPost(PD) ;					
 				}
 				catch (Exception ec)
 				{
