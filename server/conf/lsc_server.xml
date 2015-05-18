@@ -70,7 +70,7 @@
 		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 		<property name="quoteSaver" ref="quoteSaver"/>
-        <property name="broadcastQuote" value="true"/>
+        <property name="broadcastQuote" value="false"/>
     </bean>
 	
 	<!-- Derby setting -->

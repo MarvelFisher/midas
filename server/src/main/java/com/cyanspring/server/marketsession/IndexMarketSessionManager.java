@@ -49,7 +49,6 @@ public class IndexMarketSessionManager implements IPlugin {
     private ScheduleManager scheduleManager = new ScheduleManager();
     private Map<String, MarketSessionData> sessionDataMap;
     private Map<String, RefData> refDataMap;
-    private Map<String, Date> dateMap = new HashMap<String, Date>();
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     private Date chkDate;
     private Date tradeDate;
@@ -147,40 +146,36 @@ public class IndexMarketSessionManager implements IPlugin {
             return;
         Date date = Clock.getInstance().now();
         try {
+            if (refDataMap == null || refDataMap.size() <= 0)
+                return;
             if (sessionDataMap == null) {
                 if (searchBySymbol)
                     sessionDataMap = marketSessionUtil.getSessionDataBySymbol(new ArrayList<RefData>(refDataMap.values()), date);
                 else
                     sessionDataMap = marketSessionUtil.getSessionDataByStrategy(null, date);
 
-                for (String key : sessionDataMap.keySet()) {
-                    dateMap.put(key, Clock.getInstance().now());
-                }
                 eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap, true));
                 return;
             }
 
             Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
-            for (Map.Entry<String, MarketSessionData> entry : sessionDataMap.entrySet()) {
-                Date record = dateMap.get(entry.getKey());
-                String[] time = entry.getValue().getEnd().split(":");
-                Date compare = TimeUtil.getScheduledDate(Calendar.getInstance(), record,
-                        Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
-                if (date.getTime() < compare.getTime())
-                    continue;
-                RefData refData = refDataMap.get(entry.getKey());
-                if (refData == null) {
-                    log.warn("Index {} is null", entry.getKey());
-                    continue;
+            Map<String, MarketSessionData> chkMap;
+            if (searchBySymbol)
+                chkMap = marketSessionUtil.getSessionDataBySymbol(new ArrayList<RefData>(refDataMap.values()), date);
+            else
+                chkMap = marketSessionUtil.getSessionDataByStrategy(null, date);
+
+            for (Map.Entry<String, MarketSessionData> entry : chkMap.entrySet()){
+                MarketSessionData chkData = sessionDataMap.get(entry.getKey());
+                if (chkData == null || !chkData.getSessionType().equals(entry.getValue().getSessionType())){
+                    sessionDataMap.put(entry.getKey(), entry.getValue());
+                    sendMap.put(entry.getKey(), entry.getValue());
                 }
-                MarketSessionData data = marketSessionUtil.getCurrentMarketSessionType(refData, date, searchBySymbol);
-                sendMap.put(entry.getKey(), data);
-                sessionDataMap.put(entry.getKey(), data);
-                dateMap.put(entry.getKey(), Clock.getInstance().now());
             }
+
             if (sendMap.size() > 0) {
-                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
                 log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
+                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -206,7 +201,6 @@ public class IndexMarketSessionManager implements IPlugin {
                 scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
                 log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
             }
-
         }
     }
 
