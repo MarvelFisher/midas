@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -42,6 +43,8 @@ import com.cyanspring.common.event.marketdata.SymbolEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
@@ -87,7 +90,7 @@ public class CentralDbProcessor implements IPlugin
 	private AsyncTimerEvent checkEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent insertEvent = new AsyncTimerEvent();
 	private long SQLDelayInterval = 1;
-	private long timeInterval = 600000;
+	private long timeInterval = 60000;
 	private long checkSQLInterval = 10 * 60 * 1000;
 	
 	private Date sessionEnd;
@@ -107,9 +110,6 @@ public class CentralDbProcessor implements IPlugin
 	
 	@Autowired
 	private SystemInfo systemInfoMD;
-	
-	@Autowired
-	private RefDataManager refDataManager;
 	
 	@Autowired
 	private TickTableManager tickTableManager;
@@ -142,6 +142,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
+			subscribeToEvent(RefDataEvent.class, null);
 		}
 
 		@Override
@@ -190,11 +191,19 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processQuoteEvent(QuoteEvent event)
 	{
+		if (isStartup)
+		{
+			return;
+		}
 		Quote quote = event.getQuote();
 		processQuote(quote);
 	}
 	public void processInnerQuoteEvent(InnerQuoteEvent event)
 	{
+		if (isStartup)
+		{
+			return;
+		}
 		Quote quote = event.getQuote();
 		processQuote(quote);
 	}
@@ -263,6 +272,11 @@ public class CentralDbProcessor implements IPlugin
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
 		centralDbEventProcessor.onEvent(event);
+	}
+	
+	public void processRefDataEvent(RefDataEvent event) 
+	{
+		onCallRefData(event);
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -552,18 +566,10 @@ public class CentralDbProcessor implements IPlugin
 		getDbhnd().updateSQL(sqlcmd);
 	}
 	
-	public void onCallRefData()
+	public void onCallRefData(RefDataEvent event)
 	{
 		log.info("Call refData start");
-		try 
-		{
-			refDataManager.init();
-		} 
-		catch (Exception e) 
-		{
-			log.error(e.getMessage(), e);
-		}
-		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
+		List<RefData> refList = event.getRefDataList();
 		if (refList.isEmpty())
 		{
 			log.warn("refData is empty: " + refList.isEmpty());
@@ -644,13 +650,10 @@ public class CentralDbProcessor implements IPlugin
 		{
 			if (sessionType == MarketSessionType.CLOSE)
 			{
-//				insertSQL(market);
 				insert = true;
 			}
 			else if (sessionType == MarketSessionType.PREOPEN)
 			{
-//				resetStatement() ;
-//				onCallRefData();
 				reset = true;
 			}
 		}
@@ -659,26 +662,22 @@ public class CentralDbProcessor implements IPlugin
 			if (sessionType == MarketSessionType.OPEN 
 					|| sessionType == MarketSessionType.PREOPEN)
 			{
-//				resetStatement() ;
-//				onCallRefData();
 				reset = true;
 			}
 		}
 		else if (this.sessionType == null)
 		{
-//			onCallRefData();
 			reset = true;
 		}
 		
 		if (insert)
 		{
-//			insertSQL();
 			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
 		}
 		if (reset)
 		{
 			resetStatement() ;
-			onCallRefData();
+			sendRefDataRequest();
 		}
 		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
 			isProcessQuote = true;
@@ -690,6 +689,14 @@ public class CentralDbProcessor implements IPlugin
 		event.setTickTableList(tickTableManager.getTickTables());
 		log.info("Sending ReadyEvent to: " + appserv);
 		sendEvent(event);
+	}
+	
+	public void sendRefDataRequest()
+	{
+		RefDataRequestEvent event = new RefDataRequestEvent(null, null);
+		event.setReceiver(systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + systemInfoMD.getId());
+		log.info("Sending RefDataRequest event ...");
+		sendMDEvent(event);
 	}
 	
 	public void sendMDEvent(RemoteAsyncEvent event) {
@@ -741,8 +748,6 @@ public class CentralDbProcessor implements IPlugin
 		eventProcessorMD.init();
 		if(eventProcessorMD.getThread() != null)
 			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
-		refDataManager.init();
-//		onCallRefData();
 		switch (serverMarket)
 		{
 		case "FC":
