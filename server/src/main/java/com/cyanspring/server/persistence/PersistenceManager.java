@@ -657,6 +657,22 @@ public class PersistenceManager {
                 user.setUserType(UserType.NORMAL);
             }
 
+            if (isTransfer) {
+                // Set the old default account.
+
+                UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
+                AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
+
+                // getAccount
+                User oldUser = userKeeper.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+                if (null != oldUser.getDefaultAccount() && !oldUser.getDefaultAccount().isEmpty()) {
+                    defaultAccount = accountKeeper.getAccount(oldUser.getDefaultAccount());
+                }
+
+                user.setDefaultAccount(defaultAccount.getId());
+            }
+
             tx = session.beginTransaction();
             session.save(user);
             tx.commit();

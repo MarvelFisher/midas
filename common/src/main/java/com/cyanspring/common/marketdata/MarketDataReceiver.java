@@ -66,7 +66,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected String tradeDate;
-
+    private static final int QUOTE_GENERAL = 1;
+    private static final int QUOTE_PRICE_ERROR = 2;
+    private static final int QUOTE_TIME_ERROR = 3;
     private long lastQuoteSaveInterval = 20000;
     private boolean staleQuotesSent;
     private Date initTime = Clock.getInstance().now();
@@ -197,19 +199,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (null != aggregator) {
             aggregator.reset(event.getQuote().getSymbol());
         }
-//        Quote quote = event.getQuote();
-//        if(quoteLogIsOpen) {
-//            quoteLog.info("Quote Send: "
-//                            + "Symbol=" + quote.getSymbol()
-//                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
-//                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
-//                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
-//                            + ",Last=" + quote.getLast()
-//                            + ",Stale=" + quote.isStale() + ",ts="
-//                            + quote.getTimeStamp().toString()
-//                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-//            );
-//        }
         sendQuoteEvent(event);
     }
 
@@ -247,32 +236,18 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 }
             }
 
-            quoteChecker.fixPriceQuote(prev, quote);
+            if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
         }
+
 
         if (quoteLogIsOpen) {
-            quoteLog.info("Quote Receive : " + "Sc="
-                            + inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
-                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
-                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
-                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
-                            + ",Last=" + quote.getLast()
-                            + ",Stale=" + quote.isStale() + ",ts="
-                            + quote.getTimeStamp().toString()
-                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-            );
+            printQuoteLog(inEvent.getSourceId(), quote, QUOTE_GENERAL);
         }
-
+        if(null != quoteChecker && !quoteChecker.checkTime(prev, quote)){
+            printQuoteLog(inEvent.getSourceId(), quote, QUOTE_TIME_ERROR);
+        }
         if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote) && inEvent.getSourceId() <= 100) {
-            quoteLog.warn("Quote BBBBB! : " + "Sc=" + inEvent.getSourceId()
-                            + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
-                            + ",B=" + quote.getBid() + ",C=" + quote.getClose()
-                            + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
-                            + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
-                            + ",Stale=" + quote.isStale()
-                            + ",ts=" + quote.getTimeStamp().toString()
-                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-            );
+            printQuoteLog(inEvent.getSourceId(), quote, QUOTE_PRICE_ERROR);
             return;
         }
 
@@ -332,6 +307,22 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         // send the quote now
         clearAndSendQuoteEvent(event);
+    }
+
+    public void printQuoteLog(int sourceId, Quote quote, int logType){
+        StringBuffer sb = new StringBuffer();
+        sb.append("Sc=" + sourceId
+                + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
+                + ",B=" + quote.getBid() + ",C=" + quote.getClose()
+                + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
+                + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
+                + ",Stale=" + quote.isStale()
+                + ",ts=" + quote.getTimeStamp().toString()
+                + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume());
+        if(logType==QUOTE_GENERAL) quoteLog.debug("Quote Receive : " + sb.toString());
+        if(logType==QUOTE_TIME_ERROR) quoteLog.error("Quote Time BBBBB!:" + sb.toString());
+        if(logType==QUOTE_PRICE_ERROR) quoteLog.error("Quote Price BBBBB!:" + sb.toString());
+
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
@@ -417,10 +408,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 curState = true;
         }
 
-//        if (curState) {
-//            log.debug("presubscribe quotes...");
-//            preSubscribe();
-//        }
         setState(curState);
 
         if (!eventProcessor.isSync())

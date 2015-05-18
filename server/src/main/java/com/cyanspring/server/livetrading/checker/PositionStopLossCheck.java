@@ -112,9 +112,7 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 		if (PriceUtils.isZero(accountSetting.getStopLossPercent())) {
 			return positionStopLoss;
 		}
-		
-		checkStartAccountValue(account);
-		
+				
 		Double stopLoss = account.getStartAccountValue()
 				* accountSetting.getStopLossPercent();
 		
@@ -134,10 +132,5 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 
         return !quote.isStale();
     }
-
-	private void checkStartAccountValue(Account account){
-		if(PriceUtils.isZero(account.getStartAccountValue())){
-			account.setStartAccountValue(account.getCashDeposited());
-		}
-	}
+    
 }

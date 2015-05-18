@@ -56,7 +56,7 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 			closeAllPositoinAndOrder(account);
 			return false;
 		}
-		checkStartAccountValue(account);
+		
 		double totalLossLimit = account.getCashDeposited() * accountSetting.getTerminatePercent();
 		double currentLoss = account.getValue() - account.getCashDeposited();
 		if(PriceUtils.EqualLessThan(currentLoss, -totalLossLimit)){
@@ -85,9 +85,4 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 		}
 	}
 	
-	private void checkStartAccountValue(Account account){
-		if(PriceUtils.isZero(account.getStartAccountValue())){
-			account.setStartAccountValue(account.getCashDeposited());
-		}
-	}
 }
