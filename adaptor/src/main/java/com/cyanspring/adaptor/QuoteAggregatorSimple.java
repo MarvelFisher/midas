@@ -97,7 +97,7 @@ class QuoteS {
                 this.quote = quote;
             }
         }
-
+        this.quote.setTimeStamp(quote.getTimeStamp());
         this.sourceId = sourceId;
         return this.quote;
     }
