@@ -1036,7 +1036,8 @@ public class AccountPositionManager implements IPlugin {
         userKeeper.injectUsers(users);
         User defaultUser = userKeeper.tryCreateDefaultUser();
         if (null != defaultUser)
-            eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, defaultUser, null));
+            eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, defaultUser,
+                    new CreateUserEvent(PersistenceManager.ID, null, defaultUser, "TW", "TW", "")));
     }
 
     public void injectAccounts(List<Account> accounts) {
