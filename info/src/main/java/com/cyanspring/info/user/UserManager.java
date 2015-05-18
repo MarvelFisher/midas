@@ -92,6 +92,28 @@ public class UserManager implements IPlugin {
 		tradeDate = event.getTradeDate();
 	}
 
+	private void UpdateQuery(String Cmd, Session session) {
+		SQLQuery query;
+		int Return = 0;
+		int RetryCount = 0;
+		while (RetryCount < 20) {
+			try {
+				RetryCount++;
+				query = session.createSQLQuery(Cmd);
+				Return = query.executeUpdate();
+				break;
+			} catch (Exception e) {
+				log.warn("Query Exception [" + RetryCount + "]: " + Cmd + " : "
+						+ e.getMessage());
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+
+				}
+			}
+		}
+	}
+
 	private boolean ResetUser(ResetAccountRequestEvent event) {
 		Session session = sessionFactory.openSession();
 		Session sessionCentral = sessionFactoryCentral.openSession();
@@ -110,121 +132,38 @@ public class UserManager implements IPlugin {
 		ArrayList<String> ContestIdArray = new ArrayList<String>();
 		try {
 			// Local MYSQL
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='"
-							+ AccountId + ddateFormat + "'" + ",USER_ID='"
-							+ UserId + ddateFormat + "' where ACCOUNT_ID='"
-							+ AccountId + "'";
-					query = session.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId
-							+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
-							+ "' where ACCOUNT_ID='" + AccountId + "'";
-					query = session.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId
-							+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
-							+ "' where ACCOUNT_ID='" + AccountId + "'";
-					query = session.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId
-							+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
-							+ "' where ACCOUNT='" + AccountId + "'";
-					query = session.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId
-							+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
-							+ "' where ACCOUNT='" + AccountId + "'";
-					query = session.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
+
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+
+			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId
+					+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
+					+ "' where ACCOUNT='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+			strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId
+					+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
+					+ "' where ACCOUNT='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+
 			// Central MYSQL
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
-							+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
-							+ "' where ACCOUNT_ID='" + AccountId + "'";
-					query = sessionCentral.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
-			while (RetryCount < 20) {
-				try {
-					RetryCount++;
-					strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId
-							+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
-							+ "' where ACCOUNT_ID='" + AccountId + "'";
-					query = sessionCentral.createSQLQuery(strCmd);
-					Return = query.executeUpdate();
-				} catch (Exception e) {
-					log.warn("Query Exception [" + Return + "]:" + strCmd + " : "
-							+ e.getMessage());
-					Thread.sleep(1000);
-				}
-			}
-			Return = 0;
-			RetryCount = 0;
-			
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, sessionCentral);
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, sessionCentral);
 			strCmd = "select * from CONTEST;";
 			query = sessionCentral.createSQLQuery(strCmd);
 			iterator = query.list().iterator();
@@ -239,19 +178,16 @@ public class UserManager implements IPlugin {
 				}
 				ContestIdArray.add((String) rows[0]);
 			}
-			
+
 			for (String ContestId : ContestIdArray) {
 				strCmd = "delete from " + ContestId + "_"
 						+ market.toLowerCase() + " where USER_ID='" + UserId
 						+ "' and DATE<>'0'";
-				query = sessionCentral.createSQLQuery(strCmd);
-				Return = query.executeUpdate();
+				UpdateQuery(strCmd, sessionCentral);
 				strCmd = "update " + ContestId + "_" + market.toLowerCase()
 						+ " set UNIT_PRICE='1' where USER_ID='" + UserId
 						+ "' and DATE='0'";
-				query = sessionCentral.createSQLQuery(strCmd);
-				Return = query.executeUpdate();
-
+				UpdateQuery(strCmd, sessionCentral);
 			}
 			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(
 					event.getKey(), event.getSender(), event.getAccount(),
