@@ -563,14 +563,14 @@ public class PersistenceManager {
 				}
 
 			} catch (Exception ue) {
-				
-				log.error(ue.getMessage(), ue);
-				//message = ue.getMessage();
+
 				if(ue instanceof UserException){
+                    log.warn(ue.getMessage(), ue);
 					message = MessageLookup.buildEventMessage(msg,ue.getMessage());
 					if(msg==null)
 						message = MessageLookup.buildEventMessage(ErrorMessage.INVALID_USER_ACCOUNT_PWD,ue.getMessage());					
 				}else{
+                    log.error(ue.getMessage(), ue);
 					message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
 				}		
 				
@@ -766,12 +766,11 @@ public class PersistenceManager {
 
         } catch (Exception ue) {
 
-            log.error(ue.getMessage(), ue);
-
             if(ue instanceof UserException){
-
+                log.warn(ue.getMessage(), ue);
                 message = MessageLookup.buildEventMessage(msg, ue.getMessage());
             }else{
+                log.error(ue.getMessage(), ue);
                 message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
 			}
 		}
@@ -836,12 +835,11 @@ public class PersistenceManager {
 
         } catch (Exception ue) {
 
-            log.error(ue.getMessage(), ue);
-
             if(ue instanceof UserException){
-
+                log.warn(ue.getMessage(), ue);
                 message = MessageLookup.buildEventMessage(msg, ue.getMessage());
             }else{
+                log.error(ue.getMessage(), ue);
                 message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
 			}
 		}
@@ -1529,7 +1527,7 @@ public class PersistenceManager {
 
         if (!Strings.isNullOrEmpty(event.getUserThirdParty())) {
             userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase(),
-					event.getMarket(), event.getLanguage());
+                    event.getMarket(), event.getLanguage());
 
             if (userThirdPartyExist && Strings.isNullOrEmpty(event.getUser())) {
 
