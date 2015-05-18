@@ -17,19 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
+ * This Manager is used to send detail refData to the subscriber
+ *
+ * BoardCastEvent: 1) RefDataEvent
+ * Event can be request: 1) RefDataRequestEvent
+ * Subscribed Event: 1) MarketSessionEvent
  *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0, modify by elviswu
  * @since 1.0
  */
 

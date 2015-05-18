@@ -20,19 +20,15 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
+ * This Manager is used to send detail marketsession to the subscriber
+ * and this manager will check settlement day to monitor every refdatas.
+ *
+ * BoardCastEvent: 1) IndexSessionEvent
+ * Event can be request: 1) IndexSessionRequestEvent
+ * Subscribed Event: 1) MarketSessionEvent, 2) RefDataEvent
  *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0, modify by elviswu
  * @since 1.0
  */
 public class IndexMarketSessionManager implements IPlugin {
