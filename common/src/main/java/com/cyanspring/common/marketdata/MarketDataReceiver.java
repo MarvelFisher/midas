@@ -197,19 +197,19 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (null != aggregator) {
             aggregator.reset(event.getQuote().getSymbol());
         }
-        Quote quote = event.getQuote();
-        if(quoteLogIsOpen) {
-            quoteLog.info("Quote Send: "
-                            + "Symbol=" + quote.getSymbol()
-                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
-                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
-                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
-                            + ",Last=" + quote.getLast()
-                            + ",Stale=" + quote.isStale() + ",ts="
-                            + quote.getTimeStamp().toString()
-                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-            );
-        }
+//        Quote quote = event.getQuote();
+//        if(quoteLogIsOpen) {
+//            quoteLog.info("Quote Send: "
+//                            + "Symbol=" + quote.getSymbol()
+//                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
+//                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
+//                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
+//                            + ",Last=" + quote.getLast()
+//                            + ",Stale=" + quote.isStale() + ",ts="
+//                            + quote.getTimeStamp().toString()
+//                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+//            );
+//        }
         sendQuoteEvent(event);
     }
 
@@ -250,18 +250,18 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             quoteChecker.fixPriceQuote(prev, quote);
         }
 
-//        if (isQuoteLogIsOpen()) {
-//            quoteLog.info("Quote Receive : " + "Sc="
-//                            + inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
-//                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
-//                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
-//                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
-//                            + ",Last=" + quote.getLast()
-//                            + ",Stale=" + quote.isStale() + ",ts="
-//                            + quote.getTimeStamp().toString()
-//                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-//            );
-//        }
+        if (quoteLogIsOpen) {
+            quoteLog.info("Quote Receive : " + "Sc="
+                            + inEvent.getSourceId() + ",Symbol=" + quote.getSymbol()
+                            + ",A=" + quote.getAsk() + ",B=" + quote.getBid()
+                            + ",C=" + quote.getClose() + ",O=" + quote.getOpen()
+                            + ",H=" + quote.getHigh() + ",L=" + quote.getLow()
+                            + ",Last=" + quote.getLast()
+                            + ",Stale=" + quote.isStale() + ",ts="
+                            + quote.getTimeStamp().toString()
+                            + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+            );
+        }
 
         if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote) && inEvent.getSourceId() <= 100) {
             quoteLog.warn("Quote BBBBB! : " + "Sc=" + inEvent.getSourceId()
