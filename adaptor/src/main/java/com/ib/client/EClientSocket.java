@@ -4,9 +4,13 @@
  */
 package com.ib.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class EClientSocket {
@@ -78,6 +82,8 @@ public class EClientSocket {
 	// 51 = can receive smartComboRoutingParams in openOrder
 	// 52 = can receive deltaNeutralConId, deltaNeutralSettlingFirm, deltaNeutralClearingAccount and deltaNeutralClearingIntent in openOrder
 	// 53 = can receive orderRef in execution
+
+    private static final Logger log = LoggerFactory.getLogger(EClientSocket.class);
 
     private static final int CLIENT_VERSION = 53;
     private static final int SERVER_VERSION = 38;
@@ -197,7 +203,8 @@ public class EClientSocket {
             return;
         }
         try{
-            Socket socket = new Socket( host, port);
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), 3000);
             eConnect(socket, clientId);
         }
         catch( Exception e) {
@@ -242,10 +249,10 @@ public class EClientSocket {
 
         // check server version
         m_serverVersion = m_reader.readInt();
-        System.out.println("Server Version:" + m_serverVersion);
+        log.info("Server Version:" + m_serverVersion);
         if ( m_serverVersion >= 20 ){
             m_TwsTime = m_reader.readStr();
-            System.out.println("TWS Time at connection:" + m_TwsTime);
+            log.info("TWS Time at connection:" + m_TwsTime);
         }
         if( m_serverVersion < SERVER_VERSION) {
         	eDisconnect();
@@ -407,7 +414,7 @@ public class EClientSocket {
     public synchronized void reqMktData(int tickerId, Contract contract,
     		String genericTickList, boolean snapshot) {
         if (!m_connected) {
-        	System.out.println("Error??");
+            log.error("Error??");
             error(EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
             return;
         }
