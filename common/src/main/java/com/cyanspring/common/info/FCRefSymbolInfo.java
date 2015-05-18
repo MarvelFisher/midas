@@ -50,7 +50,8 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 		{
 			for (SymbolInfo symbolinfo : refSymbolInfo)
 			{
-				if (symbolinfo.getHintOrCode().equals(inputinfo.getHintOrCode()))
+				if (symbolinfo.getCode().equals(inputinfo.getCode()) 
+						|| symbolinfo.getHint().equals(inputinfo.getHint()))
 				{
 					infoList.add(symbolinfo);
 					break;

@@ -123,14 +123,6 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public String getEsSubName() {
 		return esSubName;
 	}
-	public String getHintOrCode() {
-		if (hint != null) {
-			return hint;
-		}
-		else {
-			return code;
-		}
-	}
 	public void setExchange(String exchange) {
 		this.exchange = exchange;
 	}
