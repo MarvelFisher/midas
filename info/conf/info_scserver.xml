@@ -182,7 +182,7 @@
 		<property name="gateway" value="true"></property> 
 		<property name="gatewayIp" value="202.55.14.140"></property> 
 		<property name="gatewayPort" value="10049"></property>	
-		<property name="marketDataLog" value="true"></property>
+		<property name="marketDataLog" value="false"></property>
 		<property name="marketType" value="S"></property> <!-- Stock:S,Future:F -->
 	</bean>
 </beans>
