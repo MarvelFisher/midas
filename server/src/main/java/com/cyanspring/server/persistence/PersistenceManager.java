@@ -1612,7 +1612,7 @@ public class PersistenceManager {
                 userExist = true;
             }
 
-			if (!userThirdPartyExist && centralDbConnector.isUserExist(event.getUserThirdParty().toLowerCase())) {
+			if (!userThirdPartyExist && centralDbConnector.isUserExistAndNotTerminated(event.getUserThirdParty().toLowerCase())) {
 				isOldThirdPartyUser = true;
 			}
         }
