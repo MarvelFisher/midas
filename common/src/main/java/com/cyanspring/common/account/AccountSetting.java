@@ -33,6 +33,8 @@ public class AccountSetting extends DataObject {
 		settings.setUserLiveTrading(Default.isUserLiveTrading());
 		settings.setLiveTradingType(LiveTradingType.DEFAULT);
 		settings.setLiveTradingSettedDate("");
+		settings.setFreezeValue(Default.getFreezeValue());
+		settings.setTerminateValue(Default.getTerminateValue());
 		return settings;
 	}
 	
@@ -150,6 +152,21 @@ public class AccountSetting extends DataObject {
 	}
 	public void setLiveTradingSettedDate(String liveTradingSettedDate) {
 		put(AccountSettingType.LIVE_TRADING_SETTED_DATE.value(), liveTradingSettedDate);
+	}
+	
+	public double getFreezeValue() {
+		return get(double.class, AccountSettingType.FREEZE_VALUE.value());
+	}
+	public void setFreezeValue(double freezeValue) {
+		put(AccountSettingType.FREEZE_VALUE.value(), freezeValue);
+	}
+	
+	
+	public double getTerminateValue() {
+		return get(double.class, AccountSettingType.TERMINATE_VALUE.value());
+	}
+	public void setTerminateValue(double terminateValue) {
+		put(AccountSettingType.TERMINATE_VALUE.value(), terminateValue);
 	}
 	
 	public boolean checkLiveTrading(){

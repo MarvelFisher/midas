@@ -24,6 +24,9 @@ public class Default {
 	private static double freezePercent = 0.2;
 	private static double terminatePecent = 0.2;
 
+	private static double freezeValue = 0;
+	private static double terminateValue = 0;
+	
 	private static boolean liveTrading = false;
 	private static boolean userLiveTrading = false;
 	
@@ -48,7 +51,9 @@ public class Default {
 		double freezePercent,
 		double terminatePecent,
 		boolean liveTrading,
-		boolean userLiveTrading) {
+		boolean userLiveTrading,
+		double freezeValue,
+		double terminateValue) {
 		Default.user = user;
 		Default.account = account;
 		Default.market = market;
@@ -69,6 +74,8 @@ public class Default {
 		Default.terminatePecent = terminatePecent;
 		Default.liveTrading = liveTrading;
 		Default.userLiveTrading = userLiveTrading;
+		Default.freezeValue = freezeValue;
+		Default.terminateValue = terminateValue;
 	}
 	
 	static public String getUser() {
@@ -161,6 +168,14 @@ public class Default {
 
 	public static boolean isUserLiveTrading() {
 		return userLiveTrading;
+	}
+	
+	public static double getTerminateValue() {
+		return terminateValue;
+	}
+	
+	public static double getFreezeValue() {
+		return freezeValue;
 	}
 	
 }

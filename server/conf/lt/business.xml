@@ -175,6 +175,8 @@
 				<value>0.3</value><!-- live trading : terminate stop loss -->
 				<value>true</value><!-- live trading : company live trading -->
 				<value>false</value><!-- live trading : user live trading -->
+				<value>0</value>
+				<value>0</value>
             </list>
        </property>
     </bean>

@@ -17,6 +17,7 @@ import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.server.account.PositionKeeper;
 
 public class TradingUtil {
@@ -74,4 +75,16 @@ public class TradingUtil {
             eventManager.sendEvent(event);
         }
     }
+    
+	public static double getMinValue(double x,double y){
+
+		if (PriceUtils.isZero(x)) {
+			return y;
+		} else if (PriceUtils.isZero(y)) {
+			return x;
+		} else {
+			return Math.min(x, y);
+		}
+		
+	}
 }

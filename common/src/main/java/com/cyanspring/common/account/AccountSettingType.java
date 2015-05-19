@@ -19,7 +19,9 @@ public enum AccountSettingType {
 	LIVE_TRADING("Live trading"),
 	USER_LIVE_TRADING("User live trading"),
 	LIVE_TRADING_TYPE("live trading type"),
-	LIVE_TRADING_SETTED_DATE("live trading setted date")
+	LIVE_TRADING_SETTED_DATE("live trading setted date"),
+	FREEZE_VALUE("Freeze value"),
+	TERMINATE_VALUE("Terminate value")
 	;
    
 	static HashMap<String, AccountSettingType> map = new HashMap<String, AccountSettingType>();
