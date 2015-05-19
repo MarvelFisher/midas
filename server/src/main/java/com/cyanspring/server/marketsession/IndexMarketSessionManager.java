@@ -128,6 +128,11 @@ public class IndexMarketSessionManager implements IPlugin {
         }
     }
 
+    public void processPmSettlementEvent(PmSettlementEvent event) {
+        log.info("Receive PmSettlementEvent, symbol: " + event.getEvent().getSymbol());
+        eventManager.sendEvent(event.getEvent());
+    }
+
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         try {
             checkIndexMarketSession();
