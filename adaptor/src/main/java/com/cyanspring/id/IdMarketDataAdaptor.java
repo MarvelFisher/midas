@@ -87,16 +87,17 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     List<UserClient> clientsList = new ArrayList<UserClient>();
     Hashtable<String, Integer> refTable = new Hashtable<String, Integer>();
-
-
     private Map<String, Integer> nonFX;
-
     private List<String> contributeList;
-
     private List<String> unContributeList;
+    private Map<String,String> pluginContributeBySymbolMap;
 
     public Map<String, Integer> getNonFX() {
         return nonFX;
+    }
+
+    public void setNonFX(Map<String, Integer> nonFX) {
+        this.nonFX = nonFX;
     }
 
     public List<String> getContributeList() {
@@ -115,8 +116,12 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         this.unContributeList = unContributeList;
     }
 
-    public void setNonFX(Map<String, Integer> nonFX) {
-        this.nonFX = nonFX;
+    public Map<String, String> getPluginContributeBySymbolMap() {
+        return pluginContributeBySymbolMap;
+    }
+
+    public void setPluginContributeBySymbolMap(Map<String, String> pluginContributeBySymbolMap) {
+        this.pluginContributeBySymbolMap = pluginContributeBySymbolMap;
     }
 
     public Date getTime() {

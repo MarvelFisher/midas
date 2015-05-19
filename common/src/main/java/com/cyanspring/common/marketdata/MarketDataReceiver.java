@@ -239,15 +239,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
         }
 
+        if (quoteLogIsOpen) printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_GENERAL);
 
-        if (quoteLogIsOpen) {
-            printQuoteLog(inEvent.getSourceId(), quote, QUOTE_GENERAL);
-        }
         if(null != quoteChecker && !quoteChecker.checkTime(prev, quote)){
-            printQuoteLog(inEvent.getSourceId(), quote, QUOTE_TIME_ERROR);
+            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_TIME_ERROR);
         }
         if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote) && inEvent.getSourceId() <= 100) {
-            printQuoteLog(inEvent.getSourceId(), quote, QUOTE_PRICE_ERROR);
+            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_PRICE_ERROR);
             return;
         }
 
@@ -309,7 +307,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         clearAndSendQuoteEvent(event);
     }
 
-    public void printQuoteLog(int sourceId, Quote quote, int logType){
+    public void printQuoteLog(int sourceId, String contributor, Quote quote, int logType){
         StringBuffer sb = new StringBuffer();
         sb.append("Sc=" + sourceId
                 + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
@@ -318,7 +316,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                 + ",Stale=" + quote.isStale()
                 + ",ts=" + quote.getTimeStamp().toString()
-                + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume());
+                + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+                + (sourceId==2?",Cb="+contributor:"")
+        );
         if(logType==QUOTE_GENERAL) quoteLog.debug("Quote Receive : " + sb.toString());
         if(logType==QUOTE_TIME_ERROR) quoteLog.error("Quote Time BBBBB!:" + sb.toString());
         if(logType==QUOTE_PRICE_ERROR) quoteLog.error("Quote Price BBBBB!:" + sb.toString());
@@ -461,7 +461,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         chkDate = Clock.getInstance().now();
         InnerQuoteEvent event = new InnerQuoteEvent(innerQuote.getSymbol(), null,
-                innerQuote.getQuote(), innerQuote.getSourceId());
+                innerQuote.getQuote(), innerQuote.getSourceId(), innerQuote.getContributor());
         eventProcessor.onEvent(event);
     }
 

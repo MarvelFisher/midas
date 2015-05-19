@@ -137,6 +137,10 @@
             <list>
             </list>
         </property>
+        <property name="pluginContributeBySymbolMap">
+            <map>
+            </map>
+        </property>
     </bean>
 
     <!-- Derby setting -->
