@@ -74,4 +74,20 @@ public class UserMappingReplyEvent extends RemoteAsyncEvent {
     public void setOldThirdPartyUser(boolean oldThirdPartyUser) {
         this.oldThirdPartyUser = oldThirdPartyUser;
     }
+
+    @Override
+    public String toString() {
+        return "UserMappingReplyEvent{" +
+                "txId='" + txId + '\'' +
+                ", user='" + user + '\'' +
+                ", userThirdParty='" + userThirdParty + '\'' +
+                ", userExist=" + userExist +
+                ", userThirdPartyExist=" + userThirdPartyExist +
+                ", market='" + market + '\'' +
+                ", language='" + language + '\'' +
+                ", clientId='" + clientId + '\'' +
+                ", transferring=" + transferring +
+                ", oldThirdPartyUser=" + oldThirdPartyUser +
+                '}';
+    }
 }
