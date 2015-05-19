@@ -10,13 +10,13 @@
  ******************************************************************************/
 package com.cyanspring.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.event.order.*;
+import com.cyanspring.common.marketsession.WeekDay;
+import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -52,19 +52,6 @@ import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.order.AmendParentOrderEvent;
-import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
-import com.cyanspring.common.event.order.AmendStrategyOrderEvent;
-import com.cyanspring.common.event.order.CancelParentOrderEvent;
-import com.cyanspring.common.event.order.CancelParentOrderReplyEvent;
-import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
-import com.cyanspring.common.event.order.ClosePositionReplyEvent;
-import com.cyanspring.common.event.order.ClosePositionRequestEvent;
-import com.cyanspring.common.event.order.EnterParentOrderEvent;
-import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
-import com.cyanspring.common.event.order.InitClientEvent;
-import com.cyanspring.common.event.order.InitClientRequestEvent;
-import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent;
@@ -155,6 +142,11 @@ public class BusinessManager implements ApplicationContextAware {
 	private Map<String, MultiOrderCancelTracker> cancelTrackers = new HashMap<String, MultiOrderCancelTracker>();
 	private boolean cancelAllOrdersAtClose = false;
 	private boolean closeAllPositionsAtClose = false;
+
+    private AsyncTimerEvent cancelPendingOrderEvent = new AsyncTimerEvent();
+    private ScheduleManager cancelOrderManager = new ScheduleManager();
+    private WeekDay weekDay;
+    private String cancelPendingOrderTime;
 	
 	public boolean isAutoStartStrategy() {
 		return autoStartStrategy;
@@ -177,6 +169,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(ResetAccountRequestEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(LiveTradingEndEvent.class, null);
+            subscribeToEvent(CancelPendingOrderEvent.class, null);
 		}
 
 		@Override
@@ -632,7 +625,9 @@ public class BusinessManager implements ApplicationContextAware {
 				}
 				positionKeeper.unlockAccountPosition(order.getId());
 			}
-		}
+		}else if (event == this.cancelPendingOrderEvent) {
+            eventManager.sendEvent(new CancelPendingOrderEvent(null, null));
+        }
 	}
 	
 	private HashMap<String, Object> convertOrderFields(Map<String, Object> fields, String strategyName) throws DataConvertException, StrategyException {
@@ -884,6 +879,28 @@ public class BusinessManager implements ApplicationContextAware {
 			}
 		}
 	}
+
+
+    public void processCancelPendingOrderEvent(CancelPendingOrderEvent event){
+        List<Account> accounts = accountKeeper.getAllAccounts();
+        for (Account account : accounts){
+            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, 7); // find the next same weekday.
+
+        String[] times = cancelPendingOrderTime.split(":");
+        int hr = Integer.parseInt(times[0]);
+        int min = Integer.parseInt(times[1]);
+        int sec = Integer.parseInt(times[2]);
+        cal.set(Calendar.HOUR_OF_DAY, hr);
+        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.SECOND, sec);
+
+        cancelOrderManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
+        log.info("Schedule cancel pending order event at {}", cal.getTime());
+    }
 	
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers
@@ -931,6 +948,27 @@ public class BusinessManager implements ApplicationContextAware {
 		eventMultiProcessor.setName("BusinessTP");
 
 		scheduleManager.scheduleRepeatTimerEvent(closePositionCheckInterval, eventProcessor, closePositionCheckEvent);
+
+        if (weekDay != null && cancelPendingOrderTime != null){
+            Calendar cal = Calendar.getInstance();
+            while (cal.get(Calendar.DAY_OF_WEEK) != weekDay.getDay()) {
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+            }
+
+            String[] times = cancelPendingOrderTime.split(":");
+            int hr = Integer.parseInt(times[0]);
+            int min = Integer.parseInt(times[1]);
+            int sec = Integer.parseInt(times[2]);
+            cal.set(Calendar.HOUR_OF_DAY, hr);
+            cal.set(Calendar.MINUTE, min);
+            cal.set(Calendar.SECOND, sec);
+
+            if (TimeUtil.getTimePass(Clock.getInstance().now(), cal.getTime()) >= 0)
+                cal.add(Calendar.DAY_OF_YEAR, 7);
+
+            cancelOrderManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
+            log.info("Schedule cancel pending order event at {}", cal.getTime());
+        }
 	}
 
 	public void uninit() {
@@ -971,4 +1009,12 @@ public class BusinessManager implements ApplicationContextAware {
 	public void setCloseAllPositionsAtClose(boolean closeAllPositionsAtClose) {
 		this.closeAllPositionsAtClose = closeAllPositionsAtClose;
 	}
+
+    public void setWeekDay(WeekDay weekDay) {
+        this.weekDay = weekDay;
+    }
+
+    public void setCancelPendingOrderTime(String cancelPendingOrderTime) {
+        this.cancelPendingOrderTime = cancelPendingOrderTime;
+    }
 }
