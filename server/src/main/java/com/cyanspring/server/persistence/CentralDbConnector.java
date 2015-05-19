@@ -102,9 +102,14 @@ public class CentralDbConnector {
 		boolean bIsSuccess = false;
 		Date now = Default.getCalendar().getTime();
 		String salt = getRandomSalt(10);
-		
-		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now,
-				userType.isThirdParty() ? UserType.NORMAL : userType, country, language);
+
+        UserType authUserType = userType;
+
+        if (userType.isThirdParty() && !Strings.isNullOrEmpty(thirdPartyId) && !Strings.isNullOrEmpty(market)) {
+            authUserType = UserType.NORMAL;
+        }
+
+		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, authUserType, country, language);
 		Statement stmt = null;
 		log.debug("[registerUser] SQL:" + sUserSQL);
 		try {
