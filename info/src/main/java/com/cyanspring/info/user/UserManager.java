@@ -36,28 +36,28 @@ public class UserManager implements IPlugin {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	SessionFactory sessionFactoryCentral;
-	
+
 	@Autowired
 	ScheduleManager scheduleManager;
-	
+
 	@Autowired
 	private IRemoteEventManager eventManager;
-	
+
 	@Autowired
 	private IRemoteEventManager eventManagerMD;
-	
+
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private MarketSessionType marketSession;
-	private String market ;
+	private String market;
 	private String tradeDate;
-	
+
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(ResetAccountRequestEvent.class, null);			
+			subscribeToEvent(ResetAccountRequestEvent.class, null);
 		}
 
 		@Override
@@ -65,11 +65,11 @@ public class UserManager implements IPlugin {
 			return eventManager;
 		}
 	};
-	
+
 	private AsyncEventProcessor eventProcessorMD = new AsyncEventProcessor() {
 		@Override
 		public void subscribeToEvents() {
-			subscribeToEvent(MarketSessionEvent.class,null);
+			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 		}
 
@@ -80,10 +80,11 @@ public class UserManager implements IPlugin {
 	};
 
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
-		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
+		log.info("[processResetAccountRequestEvent] : AccountId :"
+				+ event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
-	
+
 	public void processMarketSessionEvent(MarketSessionEvent event) {
 		log.info("[MarketSessionEvent] : " + event);
 		marketSession = event.getSession();
@@ -91,106 +92,126 @@ public class UserManager implements IPlugin {
 		tradeDate = event.getTradeDate();
 	}
 
+	private void UpdateQuery(String Cmd, Session session) {
+		SQLQuery query;
+		int Return = 0;
+		int RetryCount = 0;
+		while (RetryCount < 20) {
+			try {
+				RetryCount++;
+				query = session.createSQLQuery(Cmd);
+				Return = query.executeUpdate();
+				break;
+			} catch (Exception e) {
+				log.warn("Query Exception [" + RetryCount + "]: " + Cmd + " : "
+						+ e.getMessage());
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+
+				}
+			}
+		}
+	}
+
 	private boolean ResetUser(ResetAccountRequestEvent event) {
 		Session session = sessionFactory.openSession();
 		Session sessionCentral = sessionFactoryCentral.openSession();
-		SQLQuery query ;
-		Iterator iterator ;
+		SQLQuery query;
+		Iterator iterator;
 		String strCmd = "";
-		int Return ;
+		int Return = 0;
+		int RetryCount = 0;
 		String UserId = event.getUserId();
 		String AccountId = event.getAccount();
-		
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyyMMddHHmmss");
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Calendar cal = Calendar.getInstance();
 		String ddateFormat = "-R" + dateFormat.format(cal.getTime());
-		
+
 		ArrayList<String> ContestIdArray = new ArrayList<String>();
 		try {
-			// Local MYSQL	
-			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId + ddateFormat + "'" +
-					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
-			query = session.createSQLQuery(strCmd);
-			Return = query.executeUpdate();			
-			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
-					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
-			query = session.createSQLQuery(strCmd);
-			Return = query.executeUpdate();
-			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
-					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
-			query = session.createSQLQuery(strCmd);
-			Return = query.executeUpdate();
-			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId  + ddateFormat + "'" +
-					 ",TRADER='" + UserId  + ddateFormat + "' where ACCOUNT='" + AccountId + "'" ;
-			query = session.createSQLQuery(strCmd);
-			Return = query.executeUpdate();
-			strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId  + ddateFormat + "'" +
-					 ",TRADER='" + UserId  + ddateFormat + "' where ACCOUNT='" + AccountId + "'" ;
-			query = session.createSQLQuery(strCmd);
-			Return = query.executeUpdate();
+			// Local MYSQL
+
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+
+			strCmd = "update CLOSED_POSITIONS set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+			strCmd = "update CHILD_ORDER_AUDIT set ACCOUNT='" + AccountId
+					+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
+					+ "' where ACCOUNT='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
+			strCmd = "update EXECUTIONS set ACCOUNT='" + AccountId
+					+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
+					+ "' where ACCOUNT='" + AccountId + "'";
+			UpdateQuery(strCmd, session);
 
 			// Central MYSQL
-			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
-					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
-			query = sessionCentral.createSQLQuery(strCmd);
-			Return = query.executeUpdate();
-			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId  + ddateFormat + "'" +
-					 ",USER_ID='" + UserId  + ddateFormat + "' where ACCOUNT_ID='" + AccountId + "'" ;
-			query = sessionCentral.createSQLQuery(strCmd);
-			Return = query.executeUpdate();			
-
+			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, sessionCentral);
+			strCmd = "update OPEN_POSITIONS set ACCOUNT_ID='" + AccountId
+					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
+					+ "' where ACCOUNT_ID='" + AccountId + "'";
+			UpdateQuery(strCmd, sessionCentral);
 			strCmd = "select * from CONTEST;";
 			query = sessionCentral.createSQLQuery(strCmd);
-			iterator = query.list().iterator();			
+			iterator = query.list().iterator();
 
-			while (iterator.hasNext()) {	
-				Object[] rows = (Object[]) iterator.next();				
+			while (iterator.hasNext()) {
+				Object[] rows = (Object[]) iterator.next();
 				String StartDate = (String) rows[2].toString();
-			    String EndDate = rows[3].toString();
-			    
-				if(tradeDate.compareTo(EndDate) > 0)
-				{
+				String EndDate = rows[3].toString();
+
+				if (tradeDate.compareTo(EndDate) > 0) {
 					continue;
-				}								
+				}
 				ContestIdArray.add((String) rows[0]);
-			}				
-			for (String ContestId : ContestIdArray)
-			{				
-				strCmd = "delete from "+ ContestId + "_" + market.toLowerCase() + " where USER_ID='" + UserId + "' and DATE<>'0'";
-				query = sessionCentral.createSQLQuery(strCmd);
-				Return = query.executeUpdate();
-				strCmd = "update "+ ContestId + "_" + market.toLowerCase() + " set UNIT_PRICE='1' where USER_ID='" + UserId + "' and DATE='0'";
-				query = sessionCentral.createSQLQuery(strCmd);
-				Return = query.executeUpdate();	
-				
-			}			
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),event.getSender(), event.getAccount(), event.getTxId(), event.getUserId(), event.getMarket(), event.getCoinId(),ResetAccountReplyType.LTSINFO_USERMANAGER, true,"");
+			}
+
+			for (String ContestId : ContestIdArray) {
+				strCmd = "delete from " + ContestId + "_"
+						+ market.toLowerCase() + " where USER_ID='" + UserId
+						+ "' and DATE<>'0'";
+				UpdateQuery(strCmd, sessionCentral);
+				strCmd = "update " + ContestId + "_" + market.toLowerCase()
+						+ " set UNIT_PRICE='1' where USER_ID='" + UserId
+						+ "' and DATE='0'";
+				UpdateQuery(strCmd, sessionCentral);
+			}
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(
+					event.getKey(), event.getSender(), event.getAccount(),
+					event.getTxId(), event.getUserId(), event.getMarket(),
+					event.getCoinId(),
+					ResetAccountReplyType.LTSINFO_USERMANAGER, true, "");
 			eventManager.sendRemoteEvent(resetAccountReplyEvent);
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
-			log.error("["+strCmd+"] "+e.getMessage(), e);
-			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(event.getKey(),
-					event.getSender(), 
-					event.getAccount(), 
-					event.getTxId(), 
-					event.getUserId(), 
-					event.getMarket(), 
-					event.getCoinId(), 
-					ResetAccountReplyType.LTSINFO_USERMANAGER, 
-					false, 
-					MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_RESET_ERROR, "[UserManager]: Reset User " + UserId + " fail."));
-			try
-			{
+			log.error("[" + strCmd + "] " + e.getMessage(), e);
+			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(
+					event.getKey(), event.getSender(), event.getAccount(),
+					event.getTxId(), event.getUserId(), event.getMarket(),
+					event.getCoinId(),
+					ResetAccountReplyType.LTSINFO_USERMANAGER, false,
+					MessageLookup.buildEventMessage(
+							ErrorMessage.ACCOUNT_RESET_ERROR,
+							"[UserManager]: Reset User " + UserId + " fail."));
+			try {
 				eventManager.sendRemoteEvent(resetAccountReplyEvent);
+			} catch (Exception ee) {
+				log.error("[" + strCmd + "] " + ee.getMessage(), ee);
 			}
-			catch(Exception ee)
-			{
-				log.error("["+strCmd+"] "+ee.getMessage(), ee);
-			}
-		}
-		finally
-		{
+		} finally {
 			session.close();
 			sessionCentral.close();
 		}
@@ -199,13 +220,13 @@ public class UserManager implements IPlugin {
 
 	private void SendSQLHeartBeat() {
 		Session session = null;
-		Session sessionCentral = null ;
+		Session sessionCentral = null;
 		try {
 			session = sessionFactory.openSession();
 			sessionCentral = sessionFactoryCentral.openSession();
-			
-			SQLQuery sq = session.createSQLQuery("select 1;");			
-			Iterator iterator = sq.list().iterator();			
+
+			SQLQuery sq = session.createSQLQuery("select 1;");
+			Iterator iterator = sq.list().iterator();
 			sq = sessionCentral.createSQLQuery("select 1;");
 			iterator = sq.list().iterator();
 			log.info("Send SQLHeartBeat...");
@@ -215,26 +236,22 @@ public class UserManager implements IPlugin {
 			if (null != session) {
 				session.close();
 			}
-			if (null != sessionCentral)
-			{
+			if (null != sessionCentral) {
 				sessionCentral.close();
 			}
 		}
 	}
-	
+
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if (event == timerEvent) {
 			try {
 				SendSQLHeartBeat();
-			}
-			catch (Exception e)
-			{
-				log.warn("[timerEvent] Exception : "
-						+ e.getMessage());
+			} catch (Exception e) {
+				log.warn("[timerEvent] Exception : " + e.getMessage());
 			}
 		}
 	}
-	
+
 	@Override
 	public void init() throws Exception {
 		// TODO Auto-generated method stub
@@ -244,14 +261,14 @@ public class UserManager implements IPlugin {
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("UserManager");
-		
+
 		eventProcessorMD.setHandler(this);
 		eventProcessorMD.init();
 		if (eventProcessorMD.getThread() != null)
 			eventProcessorMD.getThread().setName("UserManager-MD");
-		
-		scheduleManager.scheduleRepeatTimerEvent(60000,
-				eventProcessorMD, timerEvent);		
+
+		scheduleManager.scheduleRepeatTimerEvent(60000, eventProcessorMD,
+				timerEvent);
 	}
 
 	@Override
