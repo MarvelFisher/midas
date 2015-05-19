@@ -386,9 +386,25 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
+    	ArrayList<String> symbolarr = new ArrayList<String>();
+    	symbolarr.add(strSymbol);
+    	ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) centralDB.getRefSymbolInfo().getBySymbolStrings(symbolarr);
+    	if (symbolinfos.size() < 1)
+    	{
+    		return;
+    	}
+    	String symbol;
+    	if (symbolinfos.get(0).getHint() == null)
+    	{
+    		symbol = symbolinfos.get(0).getCode(); 
+    	}
+    	else
+    	{
+    		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
+    	}
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
-				prefix, getStrSymbol()) ;
+				prefix, symbol) ;
 		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
 		try {
 			double dHigh = 0 ; 
