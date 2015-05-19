@@ -393,7 +393,15 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
-    	String symbol = (symbolinfos.get(0).getHint() == null) ? symbolinfos.get(0).getCode() : symbolinfos.get(0).getHint(); 
+    	String symbol;
+    	if (symbolinfos.get(0).getHint() == null)
+    	{
+    		symbol = symbolinfos.get(0).getCode(); 
+    	}
+    	else
+    	{
+    		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
+    	}
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
 				prefix, symbol) ;
