@@ -13,6 +13,7 @@ public class MarketSessionData {
 	private MarketSessionType sessionType;
 	private String start;
 	private String end;
+    private Date date;
 
 	public MarketSessionData(MarketSessionType sessionType, String start,
 			String end) {
@@ -33,7 +34,11 @@ public class MarketSessionData {
 		int nMin = Integer.parseInt(time[1]);
 		int nSec = Integer.parseInt(time[2]);
 		Calendar cal = Calendar.getInstance();
-		Date date = Clock.getInstance().now();
+        Date date;
+        if (this.date == null)
+            date = Clock.getInstance().now();
+        else
+            date = this.date;
 		return TimeUtil.getScheduledDate(cal, date, nHr, nMin, nSec);
 	}
 	public void setStart(String start) {
@@ -45,7 +50,11 @@ public class MarketSessionData {
 		int nMin = Integer.parseInt(time[1]);
 		int nSec = Integer.parseInt(time[2]);
 		Calendar cal = Calendar.getInstance();
-		Date date = Clock.getInstance().now();
+        Date date;
+        if (this.date == null)
+            date = Clock.getInstance().now();
+        else
+            date = this.date;
 		return TimeUtil.getScheduledDate(cal, date, nHr, nMin, nSec);
 	}	
 
@@ -60,4 +69,8 @@ public class MarketSessionData {
 	public String getEnd() {
 		return end;
 	}
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 }

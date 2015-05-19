@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.staticdata.RefData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class MarketSessionChecker implements IMarketSession {
             if (!compare(data, date))
                 continue;
             sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
+            sessionData.setDate(Clock.getInstance().now());
             if (data.getSessionType().equals(MarketSessionType.PREOPEN) && tradeDateManager != null) {
                 if (currentType != null && !currentType.equals(data.getSessionType()))
                     tradeDate = tradeDateManager.nextTradeDate(tradeDate);
