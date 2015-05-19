@@ -763,6 +763,13 @@ public class PersistenceManager {
         try {
 			if (!Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
 
+                // Old 3rd party id can't be bound with exist FDT id.
+                if (centralDbConnector.isUserExistAndNotTerminated(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
+                    ok = false;
+                    msg = ErrorMessage.USER_ALREADY_EXIST;
+                    throw new UserException("This user already exists: " + event.getOriginalEvent().getUser().getId());
+                }
+
                 // login (backward compatibility, old version skip this.)
                 user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
 
