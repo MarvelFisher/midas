@@ -1,4 +1,3 @@
 <com.cyanspring.common.server.event.ServerShutdownEvent>
   <priority>NORMAL</priority>
-  <receiver>null</receiver>
 </com.cyanspring.common.server.event.ServerShutdownEvent>
