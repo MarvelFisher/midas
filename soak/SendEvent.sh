@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne "2" ]; then
-    echo "Please input the right parameters."
+    echo "Please input the right parameters. 1) log file, 2) EventSender settings file"
     exit 0
 fi
 
