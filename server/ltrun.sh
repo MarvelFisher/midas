@@ -9,7 +9,7 @@ cd $WORKDIR
 
 if [ -s LTS_PID ]; then
 LTS_PID=`cat LTS_PID`
-kill -9 $LTS_PID
+kill $LTS_PID
 fi
 
 sleep 5
