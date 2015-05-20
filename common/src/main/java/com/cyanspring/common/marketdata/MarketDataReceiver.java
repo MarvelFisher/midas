@@ -69,9 +69,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private static final int QUOTE_GENERAL = 1;
     private static final int QUOTE_PRICE_ERROR = 2;
     private static final int QUOTE_TIME_ERROR = 3;
-    private long lastQuoteSaveInterval = 20000;
-    private boolean staleQuotesSent;
-    private Date initTime = Clock.getInstance().now();
     private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
@@ -416,17 +413,15 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     private void broadCastStaleQuotes() {
-        if (staleQuotesSent)
-            return;
-
-        if (TimeUtil.getTimePass(initTime) < lastQuoteSaveInterval)
-            return;
-
-        staleQuotesSent = true;
-        for (Quote quote : quotes.values()) {
-            if (quote.isStale())
-                this.clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(),
-                        null, quote));
+        if(marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.CLOSE){
+            log.debug("MDR send final stale quote event");
+            for(Quote quote : quotes.values()){
+                if(quote != null && !quote.isStale()){
+                    quote.setStale(true);
+                    clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+                    printQuoteLog(0,null,quote,QUOTE_GENERAL);
+                }
+            }
         }
     }
 
