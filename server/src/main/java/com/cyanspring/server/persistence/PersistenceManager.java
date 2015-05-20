@@ -648,7 +648,8 @@ public class PersistenceManager {
 						ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP);
 			}
 
-            isTransfer = centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+            isTransfer = !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
+					centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase());
 
             createCentralDbUser(event, user, isTransfer);
 
@@ -692,12 +693,10 @@ public class PersistenceManager {
             if (tx != null)
                 tx.rollback();
         } finally {
-            log.info("Session" + session);
             session.close();
         }
 
         if (ok && !isTransfer) {
-            log.info("event.getAccounts()" + event.getAccounts());
             for (Account account : event.getAccounts()) {
                 createAccount(account);
             }
@@ -1385,11 +1384,9 @@ public class PersistenceManager {
 	
 	protected void createAccount(Account account)
 	{
-        log.info("sessionFactory" + sessionFactory);
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
-            log.info("Session" + session);
 		    tx = session.beginTransaction();
 			session.save(account);
 			tx.commit();
