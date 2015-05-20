@@ -1,5 +1,6 @@
 package com.cyanspring.cstw.gui;
 
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -59,9 +60,10 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private CreateUserDialog createUserDialog;
 	private Action createUserAction;
 	private Action createCountAccountAction;
+	private Action createManualRefreshAction;
 	private ImageRegistry imageRegistry;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long maxRefreshInterval = 2000;
+	private long maxRefreshInterval = 60000;
 	private boolean show;
 	
 	@Override
@@ -109,7 +111,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 		});
-
+		createManualRefreshAction(parent);
 		createUserAccountAction(parent);
 		createCountAccountAction(parent);
 		createResetAccountAction(parent);
@@ -119,8 +121,27 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		else
 			Business.getInstance().getEventManager().subscribe(ServerStatusEvent.class, this);
 		
-		Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval, this, timerEvent);
+		log.info("no auto refresh account version");
+		//Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval, this, timerEvent);
 
+	}
+	private void createManualRefreshAction(final Composite parent){
+		createManualRefreshAction = new Action(){
+			public void run() {
+				log.info("refresh start");
+				MessageBox messageBox = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION);
+				messageBox.setText("Info");
+				messageBox.setMessage("Refresh Start");
+				messageBox.open();
+				showAccounts();
+				}
+		};
+		createManualRefreshAction.setText("Refresh All Accounts");
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.REFRESH_ICON.toString());
+		createManualRefreshAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createManualRefreshAction);
 	}
 
 	private void createUserAccountAction(final Composite parent) {
@@ -308,6 +329,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof AccountDynamicUpdateEvent) {
 			processAccountUpdate(((AccountDynamicUpdateEvent)event).getAccount());
 		} else if (event instanceof AsyncTimerEvent) {
+			log.info("refresh start");
 			showAccounts();
 		}
 	}
