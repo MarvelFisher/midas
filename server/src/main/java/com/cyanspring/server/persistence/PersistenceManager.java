@@ -692,10 +692,12 @@ public class PersistenceManager {
             if (tx != null)
                 tx.rollback();
         } finally {
+            log.info("Session" + session);
             session.close();
         }
 
         if (ok && !isTransfer) {
+            log.info("event.getAccounts()" + event.getAccounts());
             for (Account account : event.getAccounts()) {
                 createAccount(account);
             }
@@ -1383,9 +1385,11 @@ public class PersistenceManager {
 	
 	protected void createAccount(Account account)
 	{
+        log.info("sessionFactory" + sessionFactory);
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
+            log.info("Session" + session);
 		    tx = session.beginTransaction();
 			session.save(account);
 			tx.commit();
