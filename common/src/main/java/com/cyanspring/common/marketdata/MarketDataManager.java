@@ -137,7 +137,7 @@ public class MarketDataManager extends MarketDataReceiver {
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (!adaptor.getState())
                     continue;
-                adaptor.subscribeMarketData(symbol, MarketDataManager.this);
+                adaptor.subscribeMarketData(symbol, this);
             }
         }
     }
@@ -180,7 +180,7 @@ public class MarketDataManager extends MarketDataReceiver {
         if (quote == null) {
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (preSubscriptionList.contains(symbol)) {
-                    adaptor.subscribeMarketData(symbol, MarketDataManager.this);
+                    adaptor.subscribeMarketData(symbol, this);
                 }
             }
         }
