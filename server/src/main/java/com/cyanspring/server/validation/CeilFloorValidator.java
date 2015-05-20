@@ -86,8 +86,6 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			log.warn("validation : No quoteExtends info");
 			return;		
 		}
-		
-		log.info("quoteExtendsMap size:"+quoteExtendsMap.size());
 
 		try{
 			
@@ -126,10 +124,10 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 				Double ceil = data.get(Double.class, QuoteExtDataField.CEIL.value());
 				Double floor = data.get(Double.class, QuoteExtDataField.FLOOR.value());				
 	
-				if(PriceUtils.GreaterThan(price, ceil)){
+				if(ceil != null && PriceUtils.GreaterThan(price, ceil)){
 					throw new OrderValidationException("Order price over than ceil price:"+ceil,ErrorMessage.ORDER_OVER_CEIL_PRICE);
 				}
-				if(PriceUtils.LessThan(price,floor)){
+				if(floor != null && PriceUtils.LessThan(price,floor)){
 					throw new OrderValidationException("Order price lower than floor price:"+floor,ErrorMessage.ORDER_LOWER_FLOOR_PRICE);
 				}
 				
@@ -165,9 +163,6 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event){
 
 		Map <String,DataObject> receiveDataMap = event.getMutilQuoteExtend();
-		int offset = event.getOffSet();
-		int total = event.getTotalDataCount();
-		Date eventTradeDate = event.getTradeDate();
 
 		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){			
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
@@ -177,7 +172,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		}
 		
 		if(null == quoteExtendsMap ){
-			quoteExtendsMap = new <String, DataObject>ConcurrentHashMap();
+			quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		}
 		
 		quoteExtendsMap.putAll(receiveDataMap);
@@ -203,7 +198,26 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 				quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 			}
 			if(null != symbol){
-				quoteExtendsMap.put(symbol, updateObj);
+				
+				Double ceil = updateObj.get(Double.class, QuoteExtDataField.CEIL.value());
+				Double floor = updateObj.get(Double.class, QuoteExtDataField.FLOOR.value());
+				if(ceil==null && floor == null){
+					return;
+				}			
+				DataObject obj = null;
+				if(quoteExtendsMap.containsKey(symbol)){
+					obj = quoteExtendsMap.get(symbol);		
+				}else{
+					obj = updateObj;
+				}
+				if(ceil!=null){
+					obj.set(ceil, QuoteExtDataField.CEIL.value());
+				}
+				if(floor!=null){
+					obj.set(floor, QuoteExtDataField.FLOOR.value());
+				}
+				quoteExtendsMap.put(symbol, obj);
+				
 			}
 
 		}catch(Exception e){
@@ -213,7 +227,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	}
 
 	public void processTradeDateEvent(TradeDateEvent event){
-		log.info("into trade date event");
+		
 		try{
 			
 			String eventTradeDate = event.getTradeDate();
@@ -258,15 +272,14 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			
 		}
 	}
+	
 	public void requestMarketSession() {
 		eventManager.sendEvent(new MarketSessionRequestEvent(CeilFloorValidator.ID, CeilFloorValidator.SENDER, true));
 	}
 
-
 	public ConcurrentHashMap<String, DataObject> getQuoteExtendsMap() {
 		return quoteExtendsMap;
 	}
-
 
 	public void setQuoteExtendsMap(
 			ConcurrentHashMap<String, DataObject> quoteExtendsMap) {
@@ -279,11 +292,7 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		return TimeUtil.sameDate(tradeDate, dateC);
 		
 	}
-	private boolean isSameTradeDate(Date date){
-		return TimeUtil.sameDate(tradeDate, date);
-	}
 
-	
 	private void setTradeDate(String td) throws ParseException{
 
 		if(null != td && !"".equals(td)){
@@ -291,5 +300,4 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 		}
 		
 	}
-	
 }
