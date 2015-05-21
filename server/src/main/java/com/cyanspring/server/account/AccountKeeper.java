@@ -92,10 +92,13 @@ public class AccountKeeper {
 			existing = AccountSetting.createEmptySettings(setting.getId());
 			accountSettings.put(setting.getId(), existing);
 		}
-		log.info("liveTradingRuleHandler.isNeedSetting:{}",liveTradingRuleHandler.isNeedSetting(existing, setting));
+		
 		if(null != liveTradingRuleHandler 
 					&& liveTradingRuleHandler.isNeedSetting(existing, setting)){
 			setting = liveTradingRuleHandler.setTradingRule(existing, setting);
+			if(setting !=null){
+				log.info("account {} set to live trading mode",setting.getId());
+			}
 		}
 		
 		synchronized(existing) {
