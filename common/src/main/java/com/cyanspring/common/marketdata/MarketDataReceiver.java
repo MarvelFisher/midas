@@ -389,9 +389,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     private void broadCastStaleQuotes() {
         if(marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.CLOSE){
-            log.debug("MDR send final stale quote event");
             for(Quote quote : quotes.values()){
                 if(quote != null && !quote.isStale()){
+                    log.debug("MDR send final stale quote event:" + quote.getSymbol());
                     quote.setStale(true);
                     clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
                     printQuoteLog(0,null,quote,QUOTE_GENERAL);
