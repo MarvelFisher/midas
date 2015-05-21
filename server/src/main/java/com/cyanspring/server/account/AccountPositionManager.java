@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,6 @@ import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
-import com.cyanspring.common.staticdata.FuRefDataManager;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
@@ -117,7 +117,7 @@ public class AccountPositionManager implements IPlugin {
     private List<String> fxSymbols = new ArrayList<String>();
     private boolean allFxRatesReceived = false;
     private Map<String, Quote> marketData = new HashMap<>();
-    private Map<String, QuoteExtEvent> marketExtData = new HashMap<>();
+    private Map<String, Double> settlePrices = new HashMap<>();
     private String dailyExecTime;
     private IQuoteChecker quoteChecker = new PriceQuoteChecker();
     private long dynamicUpdateInterval = 2000;
@@ -632,8 +632,9 @@ public class AccountPositionManager implements IPlugin {
     }
 
     public void processQuoteExtEvent(QuoteExtEvent event) {
-
-        marketExtData.put(event.getSymbol(), event);
+        if (event.getQuoteExt().fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
+            settlePrices.put(event.getSymbol(), event.getQuoteExt().get(Double.class, QuoteExtDataField.SETTLEPRICE.value()));
+        }
     }
 
     public void processAccountSnapshotRequestEvent(AccountSnapshotRequestEvent event) {
@@ -1070,10 +1071,10 @@ public class AccountPositionManager implements IPlugin {
         String symbol = event.getSymbol();
         log.info("Received SettlementEvent: " + symbol);
 
-        QuoteExtEvent quoteExt = marketExtData.get(symbol);
+        Double settlePrice = settlePrices.get(symbol);
         Quote quote = null;
 
-        if (null == quoteExt || PriceUtils.EqualLessThan(quoteExt.getSettlePrice(), 0.0)) {
+        if (null == settlePrice || PriceUtils.EqualLessThan(settlePrice, 0.0)) {
 
             quote = marketData.get(symbol);
             if (null == quote || !QuoteUtils.validQuote(quote)) {
@@ -1088,7 +1089,7 @@ public class AccountPositionManager implements IPlugin {
 
             if (!PriceUtils.isZero(position.getQty())) {
 
-                double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : quoteExt.getSettlePrice();
+                double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : settlePrice;
 
                 Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
                         Math.abs(position.getQty()),
