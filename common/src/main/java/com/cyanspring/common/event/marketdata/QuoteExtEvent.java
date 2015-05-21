@@ -20,10 +20,6 @@ public class QuoteExtEvent extends RemoteAsyncEvent {
 	public String getSymbol(){
 		return data.get(String.class, QuoteExtDataField.SYMBOL.value());
 	}
-
-	public double getSettlePrice() {
-		return data.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
-	}
 	
 	public Map<String, Object> getFields() {
 		return data.getFields();
