@@ -220,19 +220,15 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         //Check Forex TimeStamp
         if (inEvent.getSourceId() <= 100) {
 
-            if (inEvent.getSourceId() == 2) {
-                if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
+            if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
                         || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
-                    return;
-                }
+                return;
             }
-
             if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN) {
                 if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionEvent.getEnd()) >= 0) {
                     quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(), 1, TimeUnit.SECONDS));
                 }
             }
-
             if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
         }
 
@@ -250,25 +246,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             logStaleInfo(prev, quote, quote.isStale());
             quotes.put(quote.getSymbol(), quote);
             clearAndSendQuoteEvent(inEvent.getQuoteEvent());
-            return;
-        } else if (null != quoteChecker && !quoteChecker.check(quote)) {
-            // if wind Adapter Quote always send,if other Adapter Quote prev not
-            // stale to send
-            if (inEvent.getSourceId() > 100) {
-                // Stale continue send Quote
-                quotes.put(quote.getSymbol(), quote);
-                clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-                        quote));
-            } else {
-                boolean prevStale = prev.isStale();
-                logStaleInfo(prev, quote, true);
-                prev.setStale(true); // just set the existing stale
-                if (!prevStale) {
-                    // Stale send prev Quote
-                    clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(),
-                            null, prev));
-                }
-            }
             return;
         } else {
             quotes.put(quote.getSymbol(), quote);
