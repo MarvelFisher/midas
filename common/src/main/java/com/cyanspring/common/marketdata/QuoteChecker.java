@@ -53,7 +53,7 @@ public class QuoteChecker implements IQuoteChecker {
     public boolean checkTime(Quote prev, Quote quote){
         boolean isCorrectQuote = true;
         if(prev!=null){
-            if(TimeUtil.getTimePass(quote.getTimeStamp(), prev.getTimeStamp()) < 1000) isCorrectQuote = false;
+            if(TimeUtil.getTimePass(quote.getTimeStamp(), prev.getTimeStamp()) < 0) isCorrectQuote = false;
         }
         return isCorrectQuote;
     }

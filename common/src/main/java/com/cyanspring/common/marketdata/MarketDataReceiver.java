@@ -320,7 +320,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 + (sourceId==2?",Cb="+contributor:"")
         );
         if(logType==QUOTE_GENERAL) quoteLog.debug("Quote Receive : " + sb.toString());
-        if(logType==QUOTE_TIME_ERROR) quoteLog.error("Quote Time BBBBB!:" + sb.toString());
+        if(logType==QUOTE_TIME_ERROR) quoteLog.warn("Quote Time BBBBB!:" + sb.toString());
         if(logType==QUOTE_PRICE_ERROR) quoteLog.error("Quote Price BBBBB!:" + sb.toString());
 
     }
