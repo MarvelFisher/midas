@@ -26,13 +26,11 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.common.event.AsyncEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +67,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private static final int QUOTE_GENERAL = 1;
     private static final int QUOTE_PRICE_ERROR = 2;
     private static final int QUOTE_TIME_ERROR = 3;
-    private long lastQuoteSaveInterval = 20000;
-    private boolean staleQuotesSent;
-    private Date initTime = Clock.getInstance().now();
     private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
@@ -223,19 +218,15 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         //Check Forex TimeStamp
         if (inEvent.getSourceId() <= 100) {
 
-            if (inEvent.getSourceId() == 2) {
-                if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
+            if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
                         || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
-                    return;
-                }
+                return;
             }
-
             if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN) {
                 if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionEvent.getEnd()) >= 0) {
                     quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(), 1, TimeUnit.SECONDS));
                 }
             }
-
             if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
         }
 
@@ -253,25 +244,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             logStaleInfo(prev, quote, quote.isStale());
             quotes.put(quote.getSymbol(), quote);
             clearAndSendQuoteEvent(inEvent.getQuoteEvent());
-            return;
-        } else if (null != quoteChecker && !quoteChecker.check(quote)) {
-            // if wind Adapter Quote always send,if other Adapter Quote prev not
-            // stale to send
-            if (inEvent.getSourceId() > 100) {
-                // Stale continue send Quote
-                quotes.put(quote.getSymbol(), quote);
-                clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(), null,
-                        quote));
-            } else {
-                boolean prevStale = prev.isStale();
-                logStaleInfo(prev, quote, true);
-                prev.setStale(true); // just set the existing stale
-                if (!prevStale) {
-                    // Stale send prev Quote
-                    clearAndSendQuoteEvent(new QuoteEvent(inEvent.getKey(),
-                            null, prev));
-                }
-            }
             return;
         } else {
             quotes.put(quote.getSymbol(), quote);
@@ -416,17 +388,15 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     private void broadCastStaleQuotes() {
-        if (staleQuotesSent)
-            return;
-
-        if (TimeUtil.getTimePass(initTime) < lastQuoteSaveInterval)
-            return;
-
-        staleQuotesSent = true;
-        for (Quote quote : quotes.values()) {
-            if (quote.isStale())
-                this.clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(),
-                        null, quote));
+        if(marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.CLOSE){
+            log.debug("MDR send final stale quote event");
+            for(Quote quote : quotes.values()){
+                if(quote != null && !quote.isStale()){
+                    quote.setStale(true);
+                    clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+                    printQuoteLog(0,null,quote,QUOTE_GENERAL);
+                }
+            }
         }
     }
 
