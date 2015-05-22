@@ -571,7 +571,7 @@ public class PersistenceManager {
 						message = MessageLookup.buildEventMessage(ErrorMessage.INVALID_USER_ACCOUNT_PWD,ue.getMessage());					
 				}else{
                     log.error(ue.getMessage(), ue);
-					message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
+					message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,ue.getMessage());
 				}		
 				
 			    if (tx!=null) 
@@ -683,7 +683,7 @@ public class PersistenceManager {
                 msg = ((CentralDbException) e).getClientMessage();
                 log.warn(e.getMessage(), e);
             } else {
-                msg = ErrorMessage.EXCEPTION_MESSAGE;
+                msg = ErrorMessage.CREATE_USER_FAILED;
                 log.error(e.getMessage(), e);
             }
 
@@ -831,7 +831,7 @@ public class PersistenceManager {
                 message = MessageLookup.buildEventMessage(msg, ue.getMessage());
             }else{
                 log.error(ue.getMessage(), ue);
-                message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
+                message = MessageLookup.buildEventMessage(ErrorMessage.USER_LOGIN_FAILED,ue.getMessage());
 			}
 		}
 
@@ -908,7 +908,7 @@ public class PersistenceManager {
                 message = MessageLookup.buildEventMessage(msg, ue.getMessage());
             }else{
                 log.error(ue.getMessage(), ue);
-                message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
+                message = MessageLookup.buildEventMessage(ErrorMessage.USER_LOGIN_FAILED,ue.getMessage());
 			}
 		}
 
@@ -1323,7 +1323,7 @@ public class PersistenceManager {
 				log.warn(e.getMessage(), e);
 				message = MessageLookup.buildEventMessage(((CentralDbException) e).getClientMessage(), String.format("can't create user, err=[%s]", e.getMessage()));
 			}else {
-				message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, String.format("can't create user, err=[%s]", e.getMessage()));
+				message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED, String.format("can't create user, err=[%s]", e.getMessage()));
 				log.error(e.getMessage(), e);
 			}
 			ok = false;
