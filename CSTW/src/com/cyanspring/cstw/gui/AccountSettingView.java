@@ -10,6 +10,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
@@ -43,13 +44,14 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 	@SuppressWarnings("rawtypes")
 	private Class clazz;
 	private List<String> editableFields;
-	
+	private Composite composite= null;
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
+		composite=parent;
 		imageRegistry = Activator.getDefault().getImageRegistry();
 
 		viewer = new PropertyTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
@@ -81,6 +83,8 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 		
 	}
 	
+	
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void confirmChange() {
 		List<KeyValue> changedFields = viewer.workoutChangedFields();
@@ -93,6 +97,13 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 			try {
 				strOld = BeanHolder.getInstance().getDataConverter().toString(pair.key, oldFields.get(pair.key));
 				strNew = BeanHolder.getInstance().getDataConverter().toString(pair.key, pair.value);
+				if(isNumberType(strOld) && !isNumberType(strNew)){
+					MessageBox messageBox = new MessageBox(composite.getShell(), SWT.ERROR);
+					messageBox.setText("Error Type");
+					messageBox.setMessage(pair.key+" type error : "+strOld+" -> "+strNew);
+					messageBox.open();
+					return;
+				}
 			} catch (DataConvertException e) {
 				log.error(e.getMessage(), e);
 			}
@@ -101,11 +112,11 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 		try {
 			if (changedFields.size() > 0 && 
 					MessageDialog.openConfirm(viewer.getControl().getShell(), "Are you sure?", sb.toString())) {
-				AccountSetting changes = new AccountSetting(id);;
+				AccountSetting changes = new AccountSetting(id);
 				for(KeyValue pair : changedFields){
 					Object oldValue = oldFields.get(pair.key);
 						Object newValue = BeanHolder.getInstance().getDataConverter().fromString(oldValue==null?String.class:oldValue.getClass(), pair.key, pair.value.toString());
-					changes.put(pair.key, newValue);
+						changes.put(pair.key, newValue);
 				}
 				changes.put(AccountSettingType.ID.value(), id);
 				sendRemoteEvent(new ChangeAccountSettingRequestEvent(ID, Business.getInstance().getFirstServer(), changes));
@@ -117,6 +128,17 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 		
 	}
 	
+	private boolean isNumberType(String strOld) {
+		try{
+			Double.parseDouble(strOld);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
+	}
+
+
+
 	private void setEditMode(boolean editMode) {
 		if (viewer.getInput() == null)
 			return;
