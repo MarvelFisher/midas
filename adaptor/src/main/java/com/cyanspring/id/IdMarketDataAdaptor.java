@@ -215,26 +215,19 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      */
     @Override
     public void init() throws Exception {
-
         log.debug("Id Adapter init begin");
-
+        isClose = false;
         if (thread == null) {
             thread = new RequestThread(this, "Id init");
         }
         thread.start();
-
         instance = this;
         config();
-
         QuoteMgr.instance().init();
-
         FileMgr.instance().init();
-
         Collections.sort(contributeList);
         Collections.sort(unContributeList);
-
         connect();
-
     }
 
     void config() {
@@ -253,42 +246,26 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         list = null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#uninit()
-     */
     @Override
     public void uninit() {
-        LogUtil.logInfo(log, "Id Adapter init begin");
         isClose = true;
+        QuoteMgr.instance().close();
+        FileMgr.instance().close();
         if (thread != null) {
             thread.close();
             thread = null;
         }
-
         closeClient();
-
-        QuoteMgr.instance().close();
-        FileMgr.instance().close();
-
-        isClose = true;
-
         LogUtil.logInfo(log, "Id Adapter uninit end");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#getState()
-     */
     @Override
     public boolean getState() {
         return isConnected;
     }
 
     public void updateState() {
-        sendState(getState());
+        if(!isClose) sendState(getState());
     }
 
     void connect() {
@@ -374,10 +351,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
             }
             nioEventLoopGroup = null;
         }
-
         Parser.instance().clearRingbuffer();
-        LogUtil.logInfo(log, "Id Adapter init exit");
-        Util.addLog(InfoString.ALert, "Id Adapter init exit");
+        log.info("IdMarketDataAdapter Close");
     }
 
 
