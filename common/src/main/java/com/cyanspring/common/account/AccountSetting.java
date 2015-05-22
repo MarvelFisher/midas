@@ -31,7 +31,7 @@ public class AccountSetting extends DataObject {
 		settings.setTerminatePercent(Default.getTerminatePecent());		
 		settings.setLiveTrading(Default.isLiveTrading());
 		settings.setUserLiveTrading(Default.isUserLiveTrading());
-		settings.setLiveTradingType(LiveTradingType.DEFAULT);
+		settings.setLiveTradingType(Default.getLiveTradingType());
 		settings.setLiveTradingSettedDate("");
 		return settings;
 	}
