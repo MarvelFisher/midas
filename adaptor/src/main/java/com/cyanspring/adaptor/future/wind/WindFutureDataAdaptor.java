@@ -585,6 +585,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     }
 
     public void closeClient() {
+        log.info("Wind close client begin");
         if (nioEventLoopGroup != null) {
             io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
                     .shutdownGracefully();
@@ -595,7 +596,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             }
             nioEventLoopGroup = null;
         }
-        log.info("WindAdapter Close");
+        log.info("Wind close client end");
     }
 
     public void connectUseAPI(String ip, int port, String user,
@@ -695,13 +696,14 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     @Override
     public void uninit() {
+        log.info("Wind uninit begin");
         isClose = true;
+        closeClient();
         QuoteMgr.instance.uninit();
         closeReqThread();
-        closeClient();
         if (!eventProcessor.isSync())
             scheduleManager.uninit();
-        LogUtil.logInfo(log, "WindFutureDataAdaptor exit");
+        log.info("Wind uninit end");
     }
 
     List<ISymbolDataListener> symbolList = new ArrayList<ISymbolDataListener>();

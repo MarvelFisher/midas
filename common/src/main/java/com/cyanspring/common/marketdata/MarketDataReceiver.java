@@ -180,6 +180,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
+        if(isUninit) return;
         try {
             eventManager.sendEvent(event);
 
@@ -298,7 +299,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
-
         // flush out all quotes throttled
         for (Entry<String, QuoteEvent> entry : quotesToBeSent.entrySet()) {
             sendQuoteEvent(entry.getValue());
@@ -324,6 +324,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     @Override
     public void init() throws Exception {
         log.info("initialising");
+        isUninit = false;
         isInitReqDataEnd = false;
         isInitMarketSessionReceived = false;
         isInitRefDateReceived = false;
@@ -413,8 +414,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isUninit = true;
 
         log.info("uninitialising");
-        if (!eventProcessor.isSync())
+        if (!eventProcessor.isSync()) {
             scheduleManager.uninit();
+        }
 
         for (IMarketDataAdaptor adaptor : adaptors) {
             adaptor.uninit();

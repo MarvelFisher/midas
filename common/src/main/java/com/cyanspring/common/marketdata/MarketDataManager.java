@@ -266,6 +266,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
+        if(isUninit) return;
         try {
             if (broadcastQuote)
                 eventManager.sendGlobalEvent(event);

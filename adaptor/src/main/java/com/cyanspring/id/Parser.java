@@ -263,6 +263,7 @@ public class Parser implements IReqThreadCallback {
         if (MarketStatus.CLOSE == nStatus) {
             if (!adaptor.getIsClose()) {
                 if (adaptor.getStatus() == MarketStatus.CLOSE) {
+                    adaptor.setIsClose(true);
                     QuoteMgr.instance().writeFile(true, true);
                 }
             }
@@ -293,6 +294,7 @@ public class Parser implements IReqThreadCallback {
 
         if (adaptor.getIsClose()) {
             if (nStatus == MarketStatus.OPEN) {
+                adaptor.setIsClose(false);
                 QuoteMgr.instance().sunrise();
                 QuoteMgr.instance().writeFile(false, true);
             }
@@ -380,6 +382,13 @@ public class Parser implements IReqThreadCallback {
         try {
             throw new Exception("NotImplementedException");
         } catch (Exception e) {
+        }
+    }
+
+    public void close() {
+        if (reqThread != null) {
+            reqThread.close();
+            reqThread = null;
         }
     }
 }
