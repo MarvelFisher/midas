@@ -3,10 +3,7 @@ package com.cyanspring.adaptor.future.wind;
 import cn.com.wind.td.tdf.*;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
@@ -15,7 +12,6 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
@@ -38,10 +34,8 @@ import java.util.concurrent.TimeUnit;
 public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         IReqThreadCallback {
 
-
     private static final Logger log = LoggerFactory
             .getLogger(WindFutureDataAdaptor.class);
-
 
     private String gatewayIp = "";
     private int gatewayPort = 0;
@@ -86,10 +80,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     boolean isClosed = false;
     RequestThread thread = null;
-
-    /*
-    API Use Variable
-     */
 
     int reqPort = 0;
     String password = "";
@@ -243,10 +233,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             return eventManager;
         }
     };
-
-//    public void processMarketSession(MarketSessionEvent event) {
-//
-//    }
 
     public static String convertGBString(String string) {
         String str = null;
@@ -541,7 +527,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
         isConnecting = true;
         WindFutureDataAdaptor.instance.closeClient();
-//        Util.addLog(InfoString.ALert, "Wind initClient enter %s:%d", ip, port);
         LogUtil.logInfo(log, "Wind initClient enter %s:%d", ip, port);
 
         // Configure the client.
@@ -556,10 +541,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             if (fClient.isSuccess()) {
                 LogUtil.logInfo(log, "client socket connected : %s:%d", ip,
                         port);
-//                Util.addLog("client socket connected : %s:%d", ip, port);
             } else {
                 LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
-//                Util.addLog(InfoString.ALert, "Connect to %s:%d fail.", ip,port);
                 isConnecting = true;
                 io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
                         .shutdownGracefully();
@@ -582,12 +565,11 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             isConnecting = false;
             WindFutureDataAdaptor.instance.closeClient();
             LogUtil.logException(log, e);
-//            Util.addLog(InfoString.Error, "Connect to %s:%d fail.[%s]", ip,port, e.getMessage());
         }
     }
 
     public void updateState(boolean connected) {
-        sendState(connected);
+        if(!isClose) sendState(connected);
     }
 
     /**
@@ -613,9 +595,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             }
             nioEventLoopGroup = null;
         }
-
-        log.info("Wind Close Client exit");
-//        Util.addLog(InfoString.ALert, "Wind Close Client exit");
+        log.info("WindAdapter Close");
     }
 
     public void connectUseAPI(String ip, int port, String user,
@@ -641,7 +621,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     }
 
     public void doConnect() {
-
         this.addReqData(doConnect);
     }
 
@@ -696,7 +675,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     @Override
     public void init() throws Exception {
-
+        isClose = false;
         // subscribe to events
         eventProcessor.setHandler(this);
         eventProcessor.init();
@@ -719,12 +698,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         isClose = true;
         QuoteMgr.instance.uninit();
         closeReqThread();
-        if (!eventProcessor.isSync())
-            scheduleManager.cancelTimerEvent(timerEvent);
-
-        LogUtil.logInfo(log, "WindFutureDataAdaptor exit");
         closeClient();
-        isClose = true;
+        if (!eventProcessor.isSync())
+            scheduleManager.uninit();
+        LogUtil.logInfo(log, "WindFutureDataAdaptor exit");
     }
 
     List<ISymbolDataListener> symbolList = new ArrayList<ISymbolDataListener>();
