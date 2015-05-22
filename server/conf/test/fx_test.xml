@@ -165,6 +165,8 @@
 		<property name="autoStartStrategy">
 			<value>true</value>
 		</property>
+        <property name="weekDay" value="TUESDAY"/>
+        <property name="cancelPendingOrderTime" value="15:42:00"/>
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
@@ -343,9 +345,12 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-	</bean>
+        <property name="quoteChecker" ref="priceQuoteChecker"/>
+    </bean>
 
-	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
+    <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
+
+    <bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
 		<constructor-arg>
 			<list>
 			</list>

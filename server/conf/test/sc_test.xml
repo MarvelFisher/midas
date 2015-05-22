@@ -269,7 +269,8 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-	</bean>
+        <property name="checkSingleSide" value="true"/>
+    </bean>
 
 	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
 		<constructor-arg>

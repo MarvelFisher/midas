@@ -296,9 +296,12 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-	</bean>
+        <property name="quoteChecker" ref="priceQuoteChecker"/>
+    </bean>
 
-	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
+    <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
+
+    <bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
 
 </beans>
