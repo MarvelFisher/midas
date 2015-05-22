@@ -175,12 +175,9 @@
 				<value>0.3</value><!-- live trading : terminate stop loss -->
 				<value>true</value><!-- live trading : company live trading -->
 				<value>false</value><!-- live trading : user live trading -->
-<<<<<<< HEAD
 				<value>0</value>
 				<value>0</value>
-=======
 				<value>DEFAULT</value>
->>>>>>> refs/heads/2015-05-15_sprint
             </list>
        </property>
     </bean>

@@ -172,12 +172,9 @@
 				<value>0.3</value>
 				<value>false</value>
 				<value>false</value>
-<<<<<<< HEAD
 				<value>0</value>
 				<value>0</value>
-=======
 				<value>DAY_TRADING</value>
->>>>>>> refs/heads/2015-05-15_sprint
             </list>
        </property>
     </bean>
