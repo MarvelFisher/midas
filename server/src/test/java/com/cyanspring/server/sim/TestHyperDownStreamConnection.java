@@ -1,5 +1,6 @@
 package com.cyanspring.server.sim;
 
+import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -100,6 +101,7 @@ public class TestHyperDownStreamConnection {
 	@Before
 	public void before() throws Exception {
 		connection = new HyperDownStreamConnection();
+        connection.setQuoteChecker(new PriceQuoteChecker());
 		connection.setSync(true);
 		//connection.init();
 		buyOrder = new ChildOrder(symbol, OrderSide.Buy, 2000,
