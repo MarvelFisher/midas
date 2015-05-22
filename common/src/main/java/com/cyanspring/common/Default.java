@@ -3,6 +3,8 @@ package com.cyanspring.common;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import com.cyanspring.common.account.LiveTradingType;
+
 public class Default {
 	private static String user = "default";
 	private static String account = "default";
@@ -29,7 +31,7 @@ public class Default {
 	
 	private static boolean liveTrading = false;
 	private static boolean userLiveTrading = false;
-	
+	private static LiveTradingType liveTradingType = LiveTradingType.DEFAULT;
 	
 	protected static void setValues(
 		String user,  
@@ -53,7 +55,8 @@ public class Default {
 		boolean liveTrading,
 		boolean userLiveTrading,
 		double freezeValue,
-		double terminateValue) {
+		double terminateValue,
+		LiveTradingType liveTradingType) {
 		Default.user = user;
 		Default.account = account;
 		Default.market = market;
@@ -76,6 +79,7 @@ public class Default {
 		Default.userLiveTrading = userLiveTrading;
 		Default.freezeValue = freezeValue;
 		Default.terminateValue = terminateValue;
+		Default.liveTradingType = liveTradingType;
 	}
 	
 	static public String getUser() {
@@ -178,4 +182,7 @@ public class Default {
 		return freezeValue;
 	}
 	
+	public static LiveTradingType getLiveTradingType() {
+		return liveTradingType;
+	}
 }
