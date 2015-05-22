@@ -162,7 +162,7 @@ public class AccountPositionManager implements IPlugin {
 
     @Autowired
     IRefDataManager refDataManager;
-    
+
     @Autowired(required = false)
     LiveTradingCheckHandler liveTradingCheckHandler;
 
@@ -791,7 +791,7 @@ public class AccountPositionManager implements IPlugin {
     	try {
 	        if (!recoveryDone)
 	            return;
-	
+
 	        if (!allFxRatesReceived) {
 	            for (String symbol : fxSymbols) {
 	                Double rate = fxConverter.getFxRate(symbol);
@@ -803,18 +803,18 @@ public class AccountPositionManager implements IPlugin {
 	            allFxRatesReceived = true;
 	            log.info("FX rates ready: " + fxConverter.toString());
 	        }
-	
+
 	        if (resetMarginHeld) {
 	            resetMarginHeld = false;
 	            positionKeeper.resetMarginHeld();
 	        }
-	
+
 	        if (rmUpdateThrottler.check()) {
 	            perfDataRm.start();
 	            List<Account> accounts = accountKeeper.getRmJobs().getJobs();
 	            for (Account account : accounts) {
 	                positionKeeper.updateAccountDynamicData(account);
-	                
+
 	                AccountSetting accountSetting = null;
 	                try {
 	                    accountSetting = accountKeeper.getAccountSetting(account.getId());
@@ -822,7 +822,7 @@ public class AccountPositionManager implements IPlugin {
 	                    log.error(e.getMessage(), e);
 	                    continue;
 	                }
-	                
+
 	                totalPnLCalculator.calculate(account, accountSetting);
 	                if(totalPnLCalculatorThrottler.check()) {
 	                	log.info("Total PnL: " + totalPnLCalculator.getTotalPnL() + ", " +
@@ -830,18 +830,18 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingPnL() + ", " +
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
-	                
+
 	                if(checkLiveTrading(account, accountSetting)){
-	                	continue;         
+	                	continue;
 	                }else if (checkStopLoss(account, accountSetting)){
 	                	continue;
 	                }
-	                    
+
 	                checkMarginCall(account);
 	            }
 	            perfDataRm.end();
 	        }
-	
+
 	        if (dynamicUpdateThrottler.check()) {
 	            perfDataUpdate.start();
 	            List<Account> accounts = accountKeeper.getDynamicJobs().getJobs();
@@ -867,32 +867,37 @@ public class AccountPositionManager implements IPlugin {
     }
 
     private boolean checkLiveTrading(Account account, AccountSetting accountSetting) {
-        if (null != liveTradingCheckHandler && accountSetting.checkLiveTrading()) {       	
+        if (null != liveTradingCheckHandler && accountSetting.checkLiveTrading()) {
         	liveTradingCheckHandler.startCheckChain(account, accountSetting);
         	return true;
         }else{
         	return false;
         }
     }
-    
+
     private boolean checkStopLoss(Account account, AccountSetting accountSetting) {
         if (!checkStoploss)
             return false;
 
         Double positionStopLoss = Default.getPositionStopLoss();
 
-        if (null != accountSetting) {
-            positionStopLoss = accountSetting.getStopLossValue();
-            Double companyStopLoss = accountSetting.getCompanySLValue();
-            if (null == positionStopLoss)
-                positionStopLoss = Default.getPositionStopLoss();
+        try{
+            if (null != accountSetting) {
+                positionStopLoss = accountSetting.getStopLossValue();
+                Double companyStopLoss = accountSetting.getCompanySLValue();
+                if (null == positionStopLoss || PriceUtils.isZero(positionStopLoss))
+                    positionStopLoss = Default.getPositionStopLoss();
 
-            if (null != companyStopLoss && !PriceUtils.isZero(companyStopLoss)) {
-                if (PriceUtils.isZero(positionStopLoss))
-                    positionStopLoss = companyStopLoss;
-                else
-                    positionStopLoss = Math.min(positionStopLoss, companyStopLoss);
+                if (null != companyStopLoss && !PriceUtils.isZero(companyStopLoss)) {
+                    if (PriceUtils.isZero(positionStopLoss))
+                        positionStopLoss = companyStopLoss;
+                    else
+                        positionStopLoss = Math.min(positionStopLoss, companyStopLoss);
+                }
             }
+        } catch (Exception e){
+            log.warn("Check StopLoss fail at {}, {}", account.getUserId(), account.getId());
+            return false;
         }
 
         if (PriceUtils.isZero(positionStopLoss))
