@@ -534,7 +534,7 @@ public abstract class MultiInstrumentStrategy extends Strategy {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			failed = true;
-			message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, e.getMessage());
+			message = MessageLookup.buildEventMessage(ErrorMessage.STRATEGY_ERROR, e.getMessage());
 			//message = e.getMessage();
 		}
 		

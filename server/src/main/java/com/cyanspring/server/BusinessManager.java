@@ -711,7 +711,7 @@ public class BusinessManager implements ApplicationContextAware {
 			failed = true;
 		} catch (Exception e) {
 			//message = strategyName + " " + e.getMessage();
-			message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, strategyName + " " + e.getMessage());
+			message = MessageLookup.buildEventMessage(ErrorMessage.STRATEGY_ERROR, strategyName + " " + e.getMessage());
 			log.error(message, e);
 			failed = true;
 		} 
