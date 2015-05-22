@@ -896,7 +896,7 @@ public class AccountPositionManager implements IPlugin {
                 }
             }
         } catch (Exception e){
-            log.warn("Check StopLoss fail at {}, {}", account.getUserId(), account.getId());
+            log.error("Check StopLoss fail at {}, {}", account.getUserId(), account.getId());
             return false;
         }
 
