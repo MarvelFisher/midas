@@ -6,20 +6,14 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.LiveTradingType;
-import com.cyanspring.common.event.IRemoteEventManager;
 
 public class LiveTradingCheckHandler {
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(LiveTradingCheckHandler.class);	
-	
-	@Autowired
-	private IRemoteEventManager eventManager;
 	
 	private Map <LiveTradingType,List<ILiveTradingChecker>> checkMap = new HashMap<LiveTradingType,List<ILiveTradingChecker>>();
 	

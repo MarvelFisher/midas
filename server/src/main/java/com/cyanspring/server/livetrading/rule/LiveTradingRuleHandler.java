@@ -5,27 +5,17 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
-import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.server.account.AccountKeeper;
 
 public class LiveTradingRuleHandler{
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(LiveTradingRuleHandler.class);	
-	
-	@Autowired
-	private IRemoteEventManager eventManager;
-	
-    @Autowired
-    AccountKeeper accountKeeper;
 	
 	private Map <LiveTradingType,IUserLiveTradingRule> ruleMap = new HashMap<LiveTradingType,IUserLiveTradingRule>();
 	
