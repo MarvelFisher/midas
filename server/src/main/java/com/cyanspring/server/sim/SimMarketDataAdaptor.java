@@ -161,7 +161,6 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	@Override
 	public void uninit() {
 		isConnected = false;
-		sendState(isConnected);
 	}
 
 	@Override

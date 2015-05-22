@@ -180,9 +180,8 @@ public class LiveTradingSession implements IPlugin {
 
 	@Override
 	public void uninit() {
-		eventProcessor.uninit();
-		eventManager.uninit();
 		scheduleManager.uninit();
+		eventProcessor.uninit();
 	}
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event){		

@@ -190,6 +190,7 @@ public class PersistenceManager {
 
 	public void uninit() {
 		log.info("uninitialising");
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 		if(embeddedSQLServer)
 			stopEmbeddedSQLServer();

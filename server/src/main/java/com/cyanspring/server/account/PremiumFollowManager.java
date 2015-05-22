@@ -303,6 +303,7 @@ public class PremiumFollowManager implements IPlugin {
 	
 	@Override
 	public void uninit() {
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 		globalEventProcessor.uninit();	
 	}

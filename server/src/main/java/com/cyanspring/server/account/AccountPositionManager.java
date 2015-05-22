@@ -408,8 +408,8 @@ public class AccountPositionManager implements IPlugin {
     @Override
     public void uninit() {
         positionKeeper.setListener(null);
+        scheduleManager.uninit();
         eventProcessor.uninit();
-        scheduleManager.cancelTimerEvent(timerEvent);
         timerProcessor.uninit();
     }
 

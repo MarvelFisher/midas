@@ -972,8 +972,8 @@ public class BusinessManager implements ApplicationContextAware {
 	}
 
 	public void uninit() {
+		scheduleManager.uninit();
 		eventProcessor.uninit();
-		scheduleManager.cancelTimerEvent(closePositionCheckEvent);
 	}
 	
 	@Override

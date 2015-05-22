@@ -139,6 +139,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
     @Override
     public void uninit() {
+        if(!eventProcessor.isSync())
+            scheduleManager.uninit();
         eventProcessor.uninit();
     }
 

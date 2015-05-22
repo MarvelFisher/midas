@@ -478,6 +478,7 @@ public class Server implements ApplicationContextAware{
 				plugins.get(i-1).uninit();
 			}
 		}
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 		businessManager.uninit();
 		orderManager.uninit();

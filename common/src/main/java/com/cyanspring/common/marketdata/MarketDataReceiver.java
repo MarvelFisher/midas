@@ -414,7 +414,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         log.info("uninitialising");
         if (!eventProcessor.isSync())
-            scheduleManager.cancelTimerEvent(timerEvent);
+            scheduleManager.uninit();
 
         for (IMarketDataAdaptor adaptor : adaptors) {
             adaptor.uninit();

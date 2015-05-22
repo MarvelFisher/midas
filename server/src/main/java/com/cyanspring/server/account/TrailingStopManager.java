@@ -92,6 +92,7 @@ public class TrailingStopManager implements IPlugin {
 
 	@Override
 	public void uninit() {
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 	}
 	
