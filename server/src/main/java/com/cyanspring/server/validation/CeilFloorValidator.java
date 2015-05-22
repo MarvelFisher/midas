@@ -158,7 +158,6 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	public void uninit() {
 		quoteExtendsMap = null;
 		eventProcessor.uninit();
-		eventManager.uninit();
 	}
 	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event){
 

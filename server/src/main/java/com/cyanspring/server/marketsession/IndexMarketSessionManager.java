@@ -224,6 +224,8 @@ public class IndexMarketSessionManager implements IPlugin {
 
     @Override
     public void uninit() {
+        if (!eventProcessor.isSync())
+            scheduleManager.uninit();
         eventProcessor.uninit();
     }
 
