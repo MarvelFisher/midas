@@ -371,7 +371,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
                     log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            this.TITLE_STOCK, stock.getWindCode(), this.WARN_CLOSE_OVER_TIME,
+                            this.TITLE_STOCK, this.WARN_CLOSE_OVER_TIME,
                             bigSessionCloseDate.toString(), stock.getWindCode()));
                     return;
                 }
@@ -384,7 +384,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                 TDF_FUTURE_DATA future = WindParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 if (future.getTime() >= 240000000) {
                     log.debug(String.format("%s %s,%s", this.TITLE_FUTURE,
-                            this.WARN_TIME_FORMAT_ERROR), future.getWindCode());
+                            this.WARN_TIME_FORMAT_ERROR, future.getWindCode()));
                     return;
                 }
 //                if (future.getMatch() <= 0) {
