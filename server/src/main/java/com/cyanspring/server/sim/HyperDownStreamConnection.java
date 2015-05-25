@@ -160,16 +160,25 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
                     PriceUtils.EqualLessThan(order.getPrice(), quote.getBid());
         }
     }
+    
+    private boolean checkVolume(Quote quote, ChildOrder order){
+    	if(order.getSide().isBuy()){
+    		return quote.getAskVol() >= 0 && PriceUtils.validPrice(quote.getAsk());
+    	} else {
+    		return quote.getBid() >= 0 && PriceUtils.validPrice(quote.getBid());
+    	}
+    }
 
 	private boolean isMarketable(Quote quote, ChildOrder order) {
 		if(!quoteIsValid(quote))
 			return false;
 
-        if (checkSingleSide)
-            return checkOrder(quote, order);
-
-		if(order.getType() == ExchangeOrderType.MARKET)
-			return true;
+		if (order.getType() == ExchangeOrderType.MARKET) {
+			if (checkSingleSide)
+	            return checkVolume(quote, order);
+			else 
+				return true;
+		}
 		
 		return checkOrder(quote, order);
 	}
