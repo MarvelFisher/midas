@@ -352,8 +352,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             case TDF_MSG_ID.MSG_DATA_MARKET:
                 TDF_MARKET_DATA stock = WindParser.convertToStockData(in_arr, stockDataBySymbolMap);
                 if (stock.getTime() >= 240000000) {
-                    log.debug(String.format("%s %s", this.TITLE_STOCK,
-                            this.WARN_TIME_FORMAT_ERROR));
+                    log.debug(String.format("%s %s,%s", this.TITLE_STOCK,
+                            this.WARN_TIME_FORMAT_ERROR, stock.getWindCode()));
                     return;
                 }
 //                if (stock.getMatch() <= 0) {
@@ -363,16 +363,16 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 //                }
                 if (this.tradeDateCheckIsOpen
                         && stock.getTradingDay() != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s", this.TITLE_STOCK,
-                            this.WARN_TRADEDATE_NOT_MATCH));
+                    log.debug(String.format("%s %s %s", this.TITLE_STOCK,
+                            this.WARN_TRADEDATE_NOT_MATCH, stock.getWindCode()));
                     return;
                 }
                 if (this.closeOverTimeControlIsOpen
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s",
-                            this.TITLE_STOCK, this.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString()));
+                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
+                            this.TITLE_STOCK, stock.getWindCode(), this.WARN_CLOSE_OVER_TIME,
+                            bigSessionCloseDate.toString(), stock.getWindCode()));
                     return;
                 }
                 QuoteMgr.instance.AddRequest(new Object[]{
@@ -383,8 +383,8 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             case TDF_MSG_ID.MSG_DATA_FUTURE:
                 TDF_FUTURE_DATA future = WindParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 if (future.getTime() >= 240000000) {
-                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
-                            this.WARN_TIME_FORMAT_ERROR));
+                    log.debug(String.format("%s %s,%s", this.TITLE_FUTURE,
+                            this.WARN_TIME_FORMAT_ERROR), future.getWindCode());
                     return;
                 }
 //                if (future.getMatch() <= 0) {
@@ -394,16 +394,16 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 //                }
                 if (this.tradeDateCheckIsOpen
                         && future.getTradingDay() != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
-                            this.WARN_TRADEDATE_NOT_MATCH));
+                    log.debug(String.format("%s %s,%s", this.TITLE_FUTURE,
+                            this.WARN_TRADEDATE_NOT_MATCH,future.getWindCode()));
                     return;
                 }
                 if (this.closeOverTimeControlIsOpen
                         && bigSessionIsClose
                         && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s",
+                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
                             this.TITLE_FUTURE, this.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString()));
+                            bigSessionCloseDate.toString(),future.getWindCode()));
                     return;
                 }
                 QuoteMgr.instance.AddRequest(new Object[]{
