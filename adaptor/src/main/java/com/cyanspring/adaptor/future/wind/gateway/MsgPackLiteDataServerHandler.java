@@ -1,52 +1,458 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.asdfa.msgpack.MsgPack;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.Network.Transport.FDTFields;
+
+import cn.com.wind.td.tdf.TDF_CODE;
+import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
+import cn.com.wind.td.tdf.TDF_INDEX_DATA;
+import cn.com.wind.td.tdf.TDF_MARKET_DATA;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
-	
+	private static final ConcurrentHashMap<Channel,Registration> channels = new ConcurrentHashMap<Channel,Registration>();
+	public static final Registration registrationGlobal = new Registration();  
+
 	private static final Logger log = LoggerFactory.getLogger(MsgPackLiteDataServerHandler.class);
-	
-	ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-	public void channelActive(ChannelHandlerContext arg0) throws Exception {
-		Channel channel = arg0.channel();
-		channels.writeAndFlush(channel.remoteAddress().toString() +  " join");
-		channel.writeAndFlush("You had connected with server!");
-		channels.add(channel);
 
-		log.info("Add Client : " + channel.remoteAddress().toString());
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+		Channel incoming = ctx.channel();			
+		
+		channels.put(incoming,new Registration());
+		log.info("[MsgPack Server] - " + incoming.remoteAddress().toString() + " has joined! , Current Count : " + channels.size());
+		sendMarkets(incoming);
 	}
 	
-	public void channelInactive(ChannelHandlerContext arg0) throws Exception {
-		Channel channel = arg0.channel();
-		channels.remove(channel);
-		channels.writeAndFlush(channel.remoteAddress().toString() +  " exit");;
-		log.info("Remove Client : " + channel.remoteAddress().toString());
+	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+		Channel incoming = ctx.channel();
+		channels.remove(ctx.channel());
+		log.info("[MsgPack Server] - " + incoming.remoteAddress().toString() + " has removed , Current Count : " + channels.size());
+	
 	}	
 	
-	public void channelRead(ChannelHandlerContext arg0, Object arg1)
+
+	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
-		String in = (String)arg1;
-		try {
-			if(in != null) {
-				channels.writeAndFlush(in);
-			}
-	    } finally {
-	        ReferenceCountUtil.release(arg1);
-	    }			
+        String in = null;
+        if(msg instanceof String) {
+        	in = (String)msg;
+        } else if(msg instanceof byte[]){
+        	in = new String((byte[])msg,"UTF-8");
+        }
+        try {
+        		if(in != null) {
+        			Channel channel = ctx.channel();
+        			Registration lst = channels.get(channel);
+        			if(lst == null) {        			
+            			log.info("in : [" + in + "] , " + channel.remoteAddress().toString()); 
+            			log.error("channel not found : " + in);
+        			}
+        			else {        			
+        				parseRequest(ctx,in,lst);// Add symbol to map;
+        			}
+        		}            
+        } finally {
+            ReferenceCountUtil.release(msg); // (2)
+        }			
 	}	
+	
+	static public boolean isRegisteredByClient(String symbol) {	
+		if(channels.size() == 0) {
+			return false;
+		}
+		return registrationGlobal.hadSymbol(symbol);
+	}	
+	
+    private static void subscribeSymbols(Channel channel , String symbols,Registration lst) {
+		String[] sym_arr = symbols.split(";");
+		for(String str : sym_arr)
+		{
+			if(sendMarketData(channel,str) == false)
+			{
+				if(sendFutureData(channel,str) == false)
+				{
+					if(sendIndexData(channel,str) == false)
+					{	
+						if(WindGateway.cascading) {
+							WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
+						} else {
+							log.error("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
+						}
+					}
+				}						
+			}
+			// 先加到  Global Register Symbol
+			registrationGlobal.addSymbol(str);								
+			// 加到 Client 的 Registration
+			if(lst.addSymbol(str) == false) {								
+				log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
+			}					
+		}    	
+    }
+    
+    
+    private static void subscribeMarkets(Channel channel , String markets, Registration lst) {
+		String[] market_arr = markets.split(";");
+		boolean weDontHave,newlyAdded;
+		for(String market : market_arr) {
+			newlyAdded = lst.addMarket(market);
+			weDontHave = registrationGlobal.addMarket(market);
+			log.info((newlyAdded ? "Subscribe Makret : " : "Re-subscribe Market : " ) + market + " , from " + channel.remoteAddress().toString());
+			if(weDontHave && WindGateway.cascading) {				
+				WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Market=" + market,true));			
+			} else {				
+				sendDataByMarket(channel,market);				
+			}
+		}
+    }
+    
+    private static void rearrangeRegistration() {
+		synchronized(channels) {
+			registrationGlobal.clear();
+			Iterator<?> it = channels.entrySet().iterator();			
+			while (it.hasNext()) {
+				@SuppressWarnings("rawtypes")
+				Map.Entry pairs = (Map.Entry)it.next();			
+				Registration lst = (Registration)pairs.getValue();
+				if(lst == null) {					
+					continue;
+				}
+				registrationGlobal.addRegistration(lst);			
+			}
+		}
+    }	
+	
+    private static void parseRequest(ChannelHandlerContext ctx,String msg,Registration lst) {       
+    	Channel channel = ctx.channel();
+    	try {
+			String strHash = null;
+			String strDataType = null;
+			String symbols = null;
+			String strMarket = null;
+			if (msg != null) {
+				boolean clientHeartBeat = false;
+				String[] in_arr = msg.split("\\|");
+				for (String str : in_arr) {
+					if (str.startsWith("API=")) {
+						strDataType = str.substring(4);
+						if(strDataType.equals("ClientHeartBeat")) {						
+							clientHeartBeat = true;
+						}
+					}
+					if (str.startsWith("Hash=")) {
+						strHash = str.substring(5);
+					}
+					if(str.startsWith("Symbol=")) {					
+						symbols = str.substring(7);
+					}				
+					if(str.startsWith("Market=")) {					
+						strMarket = str.substring(7);
+					}
+				}
+				if(false == clientHeartBeat) {				
+        			String strlog = "in : [" + msg + "] , " + channel.remoteAddress();
+        			System.out.println(strlog);
+        			log.info(strlog);					
+				}
+				int endindex = msg.indexOf("|Hash=");
+				if (endindex > 0) {
+					String tempStr = msg.substring(0, endindex);
+					int hascode = tempStr.hashCode();
+
+					// Compare hash code
+					if (hascode != Integer.parseInt(strHash)) {					
+						String logstr = "HashCode mismatch : " + msg + " , from : " + channel.remoteAddress();
+						System.out.println(logstr);
+						log.warn(logstr);
+						return;
+					}
+					if(strDataType == null) {					
+						String logstr = "missing API function : " + msg + " , from : " + channel.remoteAddress();
+						System.out.println(logstr);
+						log.warn(logstr);
+						return;
+					}	else	{
+						if (strDataType.equals("SUBSCRIBE") && symbols != null) {						
+							if(symbols != null) {
+								subscribeSymbols(channel,symbols,lst);
+							}
+							if(strMarket != null) {
+								subscribeMarkets(channel,strMarket,lst);
+							}
+						}	else if(strDataType.equals("ClearSubscribe")) {						
+							lst.clear();
+							rearrangeRegistration();
+							log.info("Clear Subscribe from : " + channel.remoteAddress().toString());							
+						}	else if(strDataType.equals("GetMarkets")) {						
+							if(WindGateway.cascading) {
+								WindDataClientHandler.sendRequest(msg);
+							} else {
+								sendMarkets(channel);
+							}
+						}	else if(strDataType.equals("GetCodeTable")) {						
+							if(WindGateway.cascading) {
+								WindDataClientHandler.sendRequest(msg);
+							} else {
+								sendCodeTable(channel,strMarket);
+							}															
+						}
+					}	
+				}	else	{
+					String logstr = "Missing HashCode  : " + msg + " , from : " + channel.remoteAddress();					
+					log.warn(logstr);
+				}				
+			}
+		}	catch (Exception e) {
+
+    		log.warn(e.getMessage(),e);
+    	}	finally	{
+ 	
+    	}
+	}	
+    
+    public static void sendMarkets(Channel channel)
+    {
+    	ArrayList<String>lst = new ArrayList<String>();
+    	synchronized(WindGateway.mapCodeTable) {    	
+    		if(WindGateway.mapCodeTable.size() == 0) {    		
+    			return;
+    		}
+    		    		
+    		Iterator<?> it = WindGateway.mapCodeTable.entrySet().iterator();			
+    		while (it.hasNext()) {
+    			@SuppressWarnings("rawtypes")
+    			Map.Entry pairs = (Map.Entry)it.next();
+    			String market = (String)pairs.getKey();
+    			if(market == null || market == "") {    			
+    				continue;
+    			}
+    			lst.add(market);
+    		}
+    	}
+    	if(lst.size() == 0) {
+    		lst = null;
+    		return;
+    	}
+    	HashMap<Integer,Object> map = new HashMap<Integer,Object>();
+    	map.put(FDTFields.PacketType,FDTFields.WindMarkets);
+    	map.put(FDTFields.ArrayOfString,lst);
+    	channel.writeAndFlush(map);
+    }
+    
+    public static void sendCodeTablePacketArray(Channel channel,ArrayList<HashMap<Integer,Object>>packetArray) {
+		HashMap<Integer,Object> map = new HashMap<Integer,Object>();
+		map.put(FDTFields.PacketType,FDTFields.PacketArray);
+		map.put(FDTFields.ArrayOfPacket,packetArray);
+		channel.writeAndFlush(map);    	
+    	
+    }
+    
+    public static HashMap<Integer,Object> codeToMap(TDF_CODE code) {
+    	HashMap<Integer,Object> map = new HashMap<Integer,Object>();
+    	map.put(FDTFields.PacketType, FDTFields.WindCodeTable);
+    	map.put(FDTFields.WindSymbolCode,code.getWindCode());
+    	map.put(FDTFields.ShortName, code.getClass());
+    	map.put(FDTFields.SecurityExchange, code.getMarket());
+    	map.put(FDTFields.SecurityType, code.getType());
+    	return map;
+    }
+    
+    public static void sendCodeTable(Channel channel,String market)
+    {
+    	if(market == null) {    	
+			String logstr = "Missing Market while request Code Table : from " + channel.remoteAddress();
+			System.out.println(logstr);
+			log.warn(logstr);    		
+    	}
+    	ArrayList<TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
+    	if(lst == null || lst.size() == 0) {    	
+			String logstr = "No symbol at market : " + market + " , request from : " + channel.remoteAddress();
+			System.out.println(logstr);
+			log.warn(logstr);    		
+    	}
+    	synchronized(lst) {
+    		ArrayList<HashMap<Integer,Object>>packetArray = new ArrayList<HashMap<Integer,Object>>();
+    		int i = 0;
+    		for(TDF_CODE code : lst) {
+    			packetArray.add(codeToMap(code));
+    			i += 1;
+    			if(i % 100 == 0) {
+    				sendCodeTablePacketArray(channel,packetArray);
+    				packetArray.clear();
+    				i = 0;
+    			}
+    		}
+    		if(packetArray.size() > 0) {
+				sendCodeTablePacketArray(channel,packetArray);
+				packetArray.clear();
+    		}
+    	}    	
+    }
+    
+    
+    public static boolean sendMarketData(Channel channel,String symbol) {    
+    	TDF_MARKET_DATA data = WindGateway.mapMarketData.get(symbol);
+    	if(data == null) {    	
+    		return false;
+    	}
+		HashMap<Integer, Object> map = WindGateway.publishMarketDataChangesToMap(null, data);
+		channel.writeAndFlush(map);
+		return true;
+    }
+    
+    public static boolean sendFutureData(Channel channel,String symbol) {    
+    	TDF_FUTURE_DATA data = WindGateway.mapFutureData.get(symbol);
+    	if(data == null) {    	
+    		return false;
+    	}
+    	HashMap<Integer, Object> map = WindGateway.publishFutureChangesToMap(null, data);
+		channel.writeAndFlush(map);
+		return true;
+    }
+    public static boolean sendIndexData(Channel channel,String symbol) {    
+    	TDF_INDEX_DATA data = WindGateway.mapIndexData.get(symbol);
+    	if(data == null) {    	
+    		return false;
+    	}
+    	HashMap<Integer, Object> map = WindGateway.publishIndexDataChangesToMap(null, data);
+		channel.writeAndFlush(map);
+		return true;
+    }
+    
+    public static void sendDataByMarket(Channel channel,String market) {
+    	market = "." + market;
+    	try {
+			Iterator<?> it = WindGateway.mapMarketData.entrySet().iterator();			
+			while (it.hasNext()) {
+				@SuppressWarnings("rawtypes")
+				Map.Entry pairs = (Map.Entry)it.next();
+				TDF_MARKET_DATA data = (TDF_MARKET_DATA)pairs.getValue();
+				if(data != null) {
+					if(data.getWindCode().contains(market)) {
+						channel.write(WindGateway.publishMarketDataChangesToMap(null, data));
+					}
+				}		
+			}
+    	} catch(NoSuchElementException e) {
+    		log.warn(e.getMessage() + " at mapMarketData with market : " + market + " , client : " + channel.remoteAddress().toString());
+    	}			
+			
+    	try {
+    		Iterator<?> it = WindGateway.mapFutureData.entrySet().iterator();			
+			while (it.hasNext()) {
+				@SuppressWarnings("rawtypes")
+				Map.Entry pairs = (Map.Entry)it.next();
+				TDF_FUTURE_DATA data = (TDF_FUTURE_DATA)pairs.getValue();
+				if(data != null) {
+					if(data.getWindCode().contains(market)) {
+						channel.write(WindGateway.publishFutureChangesToMap(null, data));
+					}
+				}		
+			}
+    	} catch(NoSuchElementException e) {
+    		log.warn(e.getMessage() + " at mapFutureData with market : " + market + " , client : " + channel.remoteAddress().toString());
+    	}				
+			
+    	try {
+    		Iterator<?>it = WindGateway.mapIndexData.entrySet().iterator();			
+			while (it.hasNext()) {
+				@SuppressWarnings("rawtypes")
+				Map.Entry pairs = (Map.Entry)it.next();
+				TDF_INDEX_DATA data = (TDF_INDEX_DATA)pairs.getValue();
+				if(data != null) {
+					if(data.getWindCode().contains(market)) {
+						channel.write(WindGateway.publishIndexDataChangesToMap(null, data));
+					}
+				}		
+			}		
+    	} catch(NoSuchElementException e) {
+    		log.warn(e.getMessage() + " at mapIndexData with market : " + market + " , client : " + channel.remoteAddress().toString());
+    	}    	
+    	channel.flush();
+    }
+       
+    
+    public static void sendQuotationDateChange(String market,int oldDate,int newDate) {
+    	if(channels.size() == 0) {
+    		return;
+    	}    	
+    	HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+    	map.put(FDTFields.PacketType,FDTFields.WindQuotationDateChange);
+    	map.put(FDTFields.SecurityExchange, market);
+    	map.put(FDTFields.LastTradingDay,oldDate);
+    	map.put(FDTFields.TradingDay,newDate);
+    	sendMessagePackToAllClient(map);
+    }
+    
+    public static void sendMarketClose(String market,int time,String info) {
+    	if(channels.size() == 0) {
+    		return;
+    	}
+    	HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+    	map.put(FDTFields.PacketType, FDTFields.WindMarketClose);
+    	map.put(FDTFields.SecurityExchange, market);
+    	map.put(FDTFields.Time,time);
+    	map.put(FDTFields.Information,info);
+    	sendMessagePackToAllClient(map);
+    }
+    
+    private static HashMap<Integer, Object> heartbeatMessagePack(int heartbeatCounter) {
+    	HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+    	map.put(FDTFields.PacketType, FDTFields.Heartbeat);
+    	map.put(FDTFields.SerialNumber,heartbeatCounter);
+    	return map;
+    }
+    
+    public static void sendHeartbeat(Channel channel,int heartbeatCounter) {
+    	channel.writeAndFlush(heartbeatMessagePack(heartbeatCounter));
+    }
+    
+    public static void sendMessagePackToAllClient(HashMap<Integer, Object> map) {
+    	for(Channel channel : channels.keySet()) {    	
+    		channel.writeAndFlush(map);
+    	}
+    }
+    
+    public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol) {
+		Iterator<?> it = channels.entrySet().iterator();			
+		while (it.hasNext()) {
+			@SuppressWarnings("rawtypes")
+			Map.Entry pairs = (Map.Entry)it.next();			
+			Registration lst = (Registration)pairs.getValue();
+			if(lst == null) {					
+				continue;
+			}
+			if(lst.hadSymbol(symbol)) {
+				((Channel)pairs.getKey()).writeAndFlush(map);
+			}
+		}		    
+    }
+    
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
 			throws Exception {    	
-		log.info(e.getMessage(),e);
+		log.info(e.getMessage() + " , from : " + ctx.channel().remoteAddress().toString(),e);
 		ctx.close();
-	}	
+	}
+
 }

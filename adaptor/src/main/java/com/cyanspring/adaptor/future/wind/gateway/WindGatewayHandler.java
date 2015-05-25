@@ -1,7 +1,6 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,6 +8,8 @@ import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 
 
@@ -26,23 +27,37 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	
 	//private static final ChannelGroup channels = new DefaultChannelGroup(null);
 	private static final Hashtable<Channel,Registration> channels = new Hashtable<Channel,Registration>();
-	private static final Registration registrationGlobal = new Registration();  
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);
 	
-	static public void resubscribe(Channel channel) {
-		String strSubscribe = registrationGlobal.getSubscribeMarket();
+	public static final Registration registrationGlobal = new Registration();  	
+	
+	static public void resubscribe(Channel channel,Registration reg) {
+		String strSubscribe = registrationGlobal.getSubscribeMarket(null);
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
 		}
-		strSubscribe = registrationGlobal.getSubscribeSymbol();
+		strSubscribe = registrationGlobal.getSubscribeSymbol(null);
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
+		}
+		if(reg != null) {
+			strSubscribe = registrationGlobal.getSubscribeMarket(reg);
+			if(strSubscribe != null) {
+				channel.write(addHashTail(strSubscribe,true));
+			}
+			strSubscribe = registrationGlobal.getSubscribeSymbol(reg);
+			if(strSubscribe != null) {
+				channel.write(addHashTail(strSubscribe,true));
+			}			
 		}
 	}
 	
 	static public boolean isRegisteredByClient(String symbol)
 	{	
+		if(channels.size() == 0) {
+			return false;
+		}
 		return registrationGlobal.hadSymbol(symbol);
 	}
 	
@@ -92,16 +107,21 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	}
 			
 
-    public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception { // (2)
         // Discard the received data silently.
-        String in = (String) msg;
+        String in = null;
+        if(msg instanceof String) {
+        	in = (String)msg;
+        } else if(msg instanceof byte[]){
+        	in = new String((byte[])msg,"UTF-8");
+        }
         try {
         		if(in != null) {
         			Channel channel = ctx.channel();
         			Registration lst = channels.get(channel);
         			if(lst == null) {        			
-            			log.info("in : [" + in + "] , " + channel.remoteAddress().toString());        				;
-        				log.error("channel not found : " + in);
+            			log.info("in : [" + in + "] , " + channel.remoteAddress().toString()); 
+            			log.error("channel not found : " + in);
         			}
         			else {        			
         				parseRequest(ctx,in,lst);// Add symbol to map;
@@ -412,8 +432,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
     
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
         // Close the connection when an exception is raised.
-    	String logstr = "ExceptionCaught : " + ctx.channel().remoteAddress();
-    	log.warn(logstr);
+    	log.warn("ExceptionCaught : " + ctx.channel().remoteAddress().toString());
     	log.warn(cause.getMessage(),cause);
         cause.printStackTrace();
         ctx.close();

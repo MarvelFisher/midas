@@ -128,7 +128,7 @@ public class Demo {
 
 		int err = client.openProxy(setting, proxySetting);
 		if (err!=TDF_ERR.TDF_ERR_SUCCESS) {
-			System.out.printf("Can't connect to %s:%d. �����˳���\n", ip, port);
+			log.warn("Can't connect to %s:%d. �����˳���\n", ip, port);
 			System.exit(err);
 		}		
 	}

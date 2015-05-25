@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.xml.DOMConfigurator;
@@ -16,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import com.cyanspring.Network.Transport.FDTFields;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
@@ -277,6 +281,76 @@ public class WindGateway {
 		return sb.toString();
 
 	}
+	static public HashMap<Integer,Object> publishFutureChangesToMap(TDF_FUTURE_DATA dirty,TDF_FUTURE_DATA data) {	
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindFutureData);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());		
+		
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
+			map.put(FDTFields.ActionDay, data.getActionDay());
+		}
+		if(dirty == null || false == compareArrays(dirty.getAskPrice(),data.getAskPrice()))	{			
+			map.put(FDTFields.AskPriceArray,data.getAskPrice());
+		}		
+		if(dirty == null || false == compareArrays(dirty.getAskVol(),data.getAskVol()))	{
+			map.put(FDTFields.AskVolumeArray, data.getAskVol());
+		}			
+		if(dirty == null || false == compareArrays(dirty.getBidPrice(),data.getBidPrice())) {				
+			map.put(FDTFields.BidPriceArray, data.getBidPrice());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getBidVol(),data.getBidVol())) {			
+			map.put(FDTFields.BidVolumeArray,data.getBidVol());			
+		}		
+		if(dirty == null || dirty.getClose() != data.getClose()) {		
+			map.put(FDTFields.Close,data.getClose());								
+		}
+		if(dirty == null || dirty.getHigh() != data.getHigh()) {		
+			map.put(FDTFields.High,data.getHigh());		
+		}
+		if(dirty == null || dirty.getHighLimited() != data.getHighLimited()) {		
+			map.put(FDTFields.HighLimit,data.getHighLimited());		
+		}
+		if(dirty == null || dirty.getLow() != data.getLow()) {		
+			map.put(FDTFields.Low,data.getLow());
+		}
+		if(dirty == null || dirty.getLowLimited() != data.getLowLimited()) {		
+			map.put(FDTFields.LowLimit,data.getLowLimited());
+		}
+		if(dirty == null || dirty.getMatch() != data.getMatch()) {		
+			map.put(FDTFields.Last,data.getMatch());
+		}
+		if(dirty == null || dirty.getOpen() != data.getOpen()) {		
+			map.put(FDTFields.Open,data.getOpen());
+		}
+		if(dirty == null || dirty.getOpenInterest() != data.getOpenInterest()) {		
+			map.put(FDTFields.OpenInterest,data.getOpenInterest());
+		}
+		if(dirty == null || dirty.getPreClose() != data.getPreClose()) {		
+			map.put(FDTFields.PreClose,data.getPreClose());
+		}
+		if(dirty == null || dirty.getSettlePrice() != data.getSettlePrice()) {		
+			map.put(FDTFields.SettlePrice,data.getSettlePrice());
+		}
+		if(dirty == null || dirty.getPreSettlePrice() != data.getPreSettlePrice()) {		
+			map.put(FDTFields.PreSettlePrice,data.getPreSettlePrice());
+		}		
+		if(dirty == null || dirty.getStatus() != data.getStatus()) {		
+			map.put(FDTFields.Status,data.getStatus());
+		}
+		if(dirty == null || dirty.getTime() != data.getTime()) {		
+			map.put(FDTFields.Time,data.getTime());
+		}
+		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {		
+			map.put(FDTFields.TradingDay,data.getTradingDay());			
+		}
+		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {	
+			map.put(FDTFields.Turnover,data.getTurnover());			
+		}
+		if(dirty == null || dirty.getVolume() != data.getVolume()) {		
+			map.put(FDTFields.Volume,data.getVolume());
+		}		
+		return map;
+	}
 	
 	static public String publishMarketDataChanges(TDF_MARKET_DATA dirty,TDF_MARKET_DATA data)
 	{
@@ -359,7 +433,7 @@ public class WindGateway {
 		}
 		if(dirty == null || dirty.getTotalAskVol() != data.getTotalAskVol())
 		{
-			sb.append("|TotalBidVol=" + data.getTotalAskVol());
+			sb.append("|TotalAskVol=" + data.getTotalAskVol());
 		}		
 		if(dirty == null || dirty.getTotalBidVol() != data.getTotalBidVol())
 		{
@@ -396,6 +470,77 @@ public class WindGateway {
 		
 		return sb.toString();
 	}
+	
+	static public HashMap<Integer,Object> publishMarketDataChangesToMap(TDF_MARKET_DATA dirty,TDF_MARKET_DATA data)
+	{
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindMarketData);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());		
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
+			map.put(FDTFields.ActionDay,data.getActionDay());
+		}
+		if(dirty == null || false == compareArrays(dirty.getAskPrice(),data.getAskPrice())) {					
+			map.put(FDTFields.AskPriceArray,data.getAskPrice());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getAskVol(),data.getAskVol()))	{		
+			map.put(FDTFields.AskVolumeArray,data.getAskVol());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getBidPrice(),data.getBidPrice())) {					
+			map.put(FDTFields.BidPriceArray,data.getBidPrice());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getBidVol(),data.getBidVol())) {					
+			map.put(FDTFields.BidVolumeArray,data.getBidVol());			
+		}		
+		if(dirty == null || dirty.getHigh() != data.getHigh()) {		
+			map.put(FDTFields.High,data.getHigh());	
+		}
+		if(dirty == null || dirty.getHighLimited() != data.getHighLimited()) {		
+			map.put(FDTFields.HighLimit,data.getHighLimited());		
+		}
+		if(dirty == null || dirty.getLow() != data.getLow()) {		
+			map.put(FDTFields.Low,data.getLow());
+		}
+		if(dirty == null || dirty.getLowLimited() != data.getLowLimited())
+		{
+			map.put(FDTFields.LowLimit,data.getLowLimited());
+		}
+		if(dirty == null || dirty.getMatch() != data.getMatch()) {		
+			map.put(FDTFields.Last,data.getMatch());
+		}
+		if(dirty == null || dirty.getOpen() != data.getOpen()) {		
+			map.put(FDTFields.Open,data.getOpen());
+		}		
+		if(dirty == null || dirty.getPreClose() != data.getPreClose()) {		
+			map.put(FDTFields.PreClose,data.getPreClose());
+		}
+		if(dirty == null || dirty.getStatus() != data.getStatus()) {		
+			map.put(FDTFields.Status,data.getStatus());
+		}
+		if(dirty == null || dirty.getTime() != data.getTime()) {		
+			map.put(FDTFields.Time,data.getTime());
+		}
+		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {		
+			map.put(FDTFields.TradingDay,data.getTradingDay());			
+		}
+		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {		
+			map.put(FDTFields.Turnover,data.getTurnover());			
+		}
+		if(dirty == null || dirty.getVolume() != data.getVolume())
+		{
+			map.put(FDTFields.Volume,data.getVolume());
+		}		
+		if(dirty == null || dirty.getNumTrades() != data.getNumTrades()) {		
+			map.put(FDTFields.NumberOfTrades,data.getNumTrades());
+		}
+		if(dirty == null || dirty.getTotalAskVol() != data.getTotalAskVol()) {		
+			map.put(FDTFields.TotalAskVolume,data.getTotalAskVol());
+		}		
+		if(dirty == null || dirty.getTotalBidVol() != data.getTotalBidVol()) {		
+			map.put(FDTFields.TotalBidVolume,data.getTotalBidVol());
+		}
+		
+		return map;
+	}	
 	
 	static public String publishIndexDataChanges(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data)
 	{
@@ -443,11 +588,54 @@ public class WindGateway {
 		return sb.toString();		
 	}
 	
+	static public HashMap<Integer,Object> publishIndexDataChangesToMap(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data) {	
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindIndexData);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());	
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
+			map.put(FDTFields.ActionDay,data.getActionDay());
+		}
+		if(dirty == null || dirty.getHighIndex() != data.getHighIndex()) {		
+			map.put(FDTFields.High,data.getHighIndex());
+		}
+		if(dirty == null || dirty.getLastIndex() != data.getLastIndex()) {		
+			map.put(FDTFields.Last,data.getLastIndex());
+		}
+		if(dirty == null || dirty.getLowIndex() != data.getLowIndex()) {		
+			map.put(FDTFields.Low,data.getLowIndex());
+		}
+		if(dirty == null || dirty.getOpenIndex() != data.getOpenIndex()) {		
+			map.put(FDTFields.Open,data.getOpenIndex());
+		}
+		if(dirty == null || dirty.getPreCloseIndex() != data.getPreCloseIndex()) {		
+			map.put(FDTFields.PreClose,data.getPreCloseIndex());
+		}
+		if(dirty == null || dirty.getTime() != data.getTime()) {		
+			map.put(FDTFields.Time,data.getTime());
+		}
+		if(dirty == null || dirty.getTotalVolume() != data.getTotalVolume()) {		
+			map.put(FDTFields.Volume,data.getTotalVolume());
+		}
+		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {	
+			map.put(FDTFields.TradingDay,data.getTradingDay());
+		}
+		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {		
+			map.put(FDTFields.Turnover,data.getTurnover());
+		}
+		return map;		
+	}	
+	
 	void publishWindData(String str,String symbol) {	
 		if(windGatewayInitializer != null )	{
 			WindGatewayHandler.publishWindData(str,symbol,true);
 		}		
 	}
+	
+	void publishWindDataNoHash(String str,String symbol) {	
+		if(windGatewayInitializer != null )	{
+			WindGatewayHandler.publishWindData(str,symbol,false);
+		}		
+	}	
 	
 	public void receiveHeartBeat() {	
 		publishWindData("API=Heart Beat",null);
@@ -479,6 +667,9 @@ public class WindGateway {
 			String str = publishFutureChanges(data,futureData);
 			publishWindData(str,symbol);
 		}
+		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol);
+		}		
 		if(data != null) {		
 			data = null;
 		}					
@@ -495,6 +686,9 @@ public class WindGateway {
 			String str = publishMarketDataChanges(data,marketData);
 			publishWindData(str,symbol);
 		}
+		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishMarketDataChangesToMap(data,marketData), symbol);
+		}		
 		if(data != null) {		
 			data = null;
 		}		
@@ -512,6 +706,9 @@ public class WindGateway {
 			String str = publishIndexDataChanges(data,indexData);
 			publishWindData(str,symbol);
 		}
+		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol);
+		}
 		if(data != null) {		
 			data = null;
 		}		
@@ -521,14 +718,17 @@ public class WindGateway {
 		String str = "API=MarketClose|Market=" + marketClose.getMarket() + 				
 				"|Time=" + marketClose.getTime() + "|Info=" + marketClose.getInfo();
 		log.info(str);
-		publishWindData(str,null);				
+		publishWindData(str,null);	
+		MsgPackLiteDataServerHandler.sendMarketClose(marketClose.getMarket(),marketClose.getTime(),marketClose.getInfo());
+		
 	}
 	
 	public void receiveQuotationDateChange(TDF_QUOTATIONDATE_CHANGE dateChange) {
 		String str = "API=QDateChange|Market=" + dateChange.getMarket() +
 				"|OldDate=" + dateChange.getOldDate() + "|NewDate=" + dateChange.getNewDate();
 		log.info(str);
-		publishWindData(str,null);			
+		publishWindData(str,null);	
+		MsgPackLiteDataServerHandler.sendQuotationDateChange(dateChange.getMarket(),dateChange.getOldDate(),dateChange.getNewDate());
 	}
 	
 	public void receiveCodeTable(String strMarket,TDF_CODE[] codes) {	
@@ -540,10 +740,25 @@ public class WindGateway {
 			lst = new ArrayList<TDF_CODE>();
 			mapCodeTable.put(strMarket, lst);
 		}
-		synchronized(lst) {		
-			lst.clear();
-			for(TDF_CODE code : codes) {			
-				lst.add(code);
+		if(codes != null) {
+			synchronized(lst) {		
+				lst.clear();
+				for(TDF_CODE code : codes) {			
+					lst.add(code);
+				}
+			}
+		}
+	}		
+	
+	public void convertMarkets(String[] in_arr) {
+		for(String str : in_arr) {
+			if(str.contains("Markets=")) {
+				String[] markets = str.substring(8).split(",");
+				for(String market : markets) {
+					if(market != null && market.isEmpty() == false) {
+						receiveCodeTable(market,null);
+					}
+				}
 			}
 		}
 	}	
@@ -664,6 +879,5 @@ public class WindGateway {
         instance = (WindGateway)context.getBean("WindGateway");
         instance.run();
 	}
-
 		
 }

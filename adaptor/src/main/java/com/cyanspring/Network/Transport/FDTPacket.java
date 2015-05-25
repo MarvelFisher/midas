@@ -7,5 +7,5 @@ public class FDTPacket {
 	public final static byte PKT_END 	= 0x03;			// 每筆封包結尾
 	public final byte PKT_ZIP 	= 0x01;			// 資料壓縮
 	public final static byte PKT_NOTZIP = 0x00;			// 資料未壓縮	
-	public final int  PKT_COMPRESS_SIZE = 256;	// 發送封包的壓縮基準	
+	public final static int  PKT_COMPRESS_SIZE = 128;	// 發送封包的壓縮基準	
 }
