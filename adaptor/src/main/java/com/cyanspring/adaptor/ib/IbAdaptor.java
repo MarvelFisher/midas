@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cyanspring.common.event.refdata.RefDataEvent;
@@ -80,8 +81,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private DualMap<Integer, String> idToChildId = new DualMap<Integer, String>();
     private Map<Integer, ChildOrder> idToOrder = Collections
             .synchronizedMap(new HashMap<Integer, ChildOrder>());
-    // private Map<Integer, Map<String, Object>> pendingAmends =
-    // Collections.synchronizedMap(new HashMap<Integer, Map<String, Object>>());
     private boolean qtyHasChanged;
     private boolean priceHasChanged;
     private volatile boolean isConnected = false;
@@ -117,7 +116,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                         }
                         gcChildOrders();
                         try {
-                            Thread.sleep(10000);
+                            TimeUnit.SECONDS.sleep(10);
                         } catch (InterruptedException e) {
                             return;
                         }
@@ -125,6 +124,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 }
 
             });
+            gcThread.setName("IbInitThread");
             gcThread.start();
 
             if (cancelOpenOrders) {
@@ -145,75 +145,27 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
     }
 
-    /*
-    @Override
-    synchronized public void init() throws Exception {
-        if(!initialised) {
-            while(!clientSocket.isConnected()) {
-                log.debug("Attempting to establish connection to IB TWS/Gateway...");
-                clientSocket.eConnect(host, port, clientId);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    log.warn(e.getMessage(), e);
-                }
-            }
-            log.info("IB connected");
-            gcThread = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    while(true) {
-                        gcChildOrders();
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            return;
-                        }
-                    }
-                }
-
-            });
-            gcThread.start();
-
-            notifyMarketDataState(true);
-
-            if(cancelOpenOrders) {
-                cancellingOpenOrders = true;
-                Thread thread = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        log.info("Requesting open orders");
-                        clientSocket.reqOpenOrders();
-                    }
-
-                });
-                thread.start();
-            }
-
-            initialised = true;
-        }
-    }
-    */
     private void ConnectToIBGateway() {
-        while (!clientSocket.isConnected()) {
-            log.debug("Attempting to establish connection to IB TWS/Gateway...");
-            clear();
-            clientSocket.eConnect(host, port, clientId);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                log.warn(e.getMessage(), e);
-            }
+        if(clientSocket.isConnected()) return;
+
+        log.info("Attempting to establish connection to IB TWS/Gateway...");
+        clear();
+        clientSocket.eDisconnect();
+        clientSocket.eConnect(host, port, clientId);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            log.warn(e.getMessage(), e);
         }
         log.info("IB connected");
     }
 
     @Override
     synchronized public void uninit() {
-        clientSocket.eDisconnect();
+        log.info("Ib Adapter uninit begin");
         gcThread.interrupt();
+        clientSocket.eDisconnect();
+        log.info("Ib Adapter uninit end");
     }
 
     private void gcChildOrders() {
