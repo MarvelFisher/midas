@@ -9,7 +9,7 @@
 
 	<context:annotation-config />
 	<import resource="info_fc/*"/>
-	<import resource="common/ticktable_fc.xml"/>
+	<import resource="info_common/ticktable_fc.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
@@ -26,8 +26,8 @@
 		<property name="createThreadCount" value="5" />
 		<property name="maxRetrytimes" value="3" />
 		<property name="killTimeoutSecond" value="60000" />
-		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
-		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
+		<property name="parseApplicationId" value="17lAccEUiyp6nz8xfKZfzShX1kJgiRQhIjYQlzMR" />
+		<property name="parseRestApiId" value="CnHeNtHHQbz2I2bDErsi4CYArhr1BdAApu1YLykT" />
 		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.FC"/>
 	</bean>	
 	
@@ -40,16 +40,38 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FC"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FC_F1"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
+	  <property name="maxActive"><value>20</value></property> 
+	  <property name="initialSize"><value>1</value></property>  
+      <property name="maxWait"><value>60000</value></property>  
+      <property name="maxIdle"><value>20</value></property>  
+      <property name="minIdle"><value>3</value></property> 
+<!-- 	  <property name="testWhileIdle" ><value> true </value></property> -->
+	  <property name= "testOnBorrow" ><value> true </value></property>
+	  <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+	  <property name="validationQueryTimeout" ><value>3</value></property>
+	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
 	</bean>
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_China"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
+	  <property name="maxActive"><value>20</value></property> 
+	  <property name="initialSize"><value>1</value></property>  
+      <property name="maxWait"><value>60000</value></property>  
+      <property name="maxIdle"><value>20</value></property>  
+      <property name="minIdle"><value>3</value></property> 
+<!-- 	  <property name="testWhileIdle" ><value> true </value></property> -->
+	  <property name= "testOnBorrow" ><value> true </value></property>
+	  <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+	  <property name="validationQueryTimeout" ><value>3</value></property>
+	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
 	</bean>
 	
 	<bean id="jdbcUrl" class="java.lang.String">	
@@ -120,7 +142,7 @@
 	</bean>
 
 	<!-- MarketDataManager setting -->
-	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataReceiver">
+	<bean id="mdReceiver" class="com.cyanspring.common.marketdata.MarketDataReceiver">
 		<constructor-arg>
 			<list>
 				<ref bean="windAdaptor" />
@@ -128,7 +150,7 @@
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
-		<property name="quoteLogIsOpen" value="true"></property>
+		<property name="quoteLogIsOpen" value="false"></property>
 		<property name="quoteExtendEventIsSend" value="false"></property>
 
 		<property name="preSubscriptionList">
@@ -159,16 +181,11 @@
 		<property name="userName" value="TD1001888001"></property>
 		<property name="password" value="62015725"></property>
 		<property name="gateway" value="true"></property> 
-		<property name="gatewayIp" value="202.55.14.140"></property> 
+		<property name="gatewayIp" value="10.0.0.20"></property>
 		<property name="gatewayPort" value="10049"></property>	
-		<property name="marketDataLog" value="true"></property>
+		<property name="marketDataLog" value="false"></property>
+		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->		
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="marketSessionUtil">
-			<ref bean="marketSessionUtil" />
-		</property>	
-		<property name="refDataManager">
-			<ref bean="refDataManager" />
-		</property>			
 	</bean>
 </beans>

@@ -2,8 +2,6 @@ package com.cyanspring.server.persistence;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.cyanspring.common.account.TerminationStatus;
+import com.google.common.base.Strings;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import org.slf4j.Logger;
@@ -19,23 +18,24 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserType;
-import com.cyanspring.common.message.ErrorMessage;
 
+// TODO: JDBC Template
 public class CentralDbConnector {
-	protected Connection conn = null;
-//	protected String host = "";
-//	protected int port = 0;
-//	protected String user = "";
-//	protected String pass = "";
-//	protected String database = "";
-//	private   String openSQL = "";
 
-	private static String MARKET_FX = "FX";
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static CentralDbConnector inst = null;
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
+	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `MARKET`, `LANGUAGE`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
+	private static String isUserExistAndNotTerminated = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s' AND ISTERMINATED=0";
+    private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+	private static String isThirdPartyUserAnyMappingExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
+	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s' AND `STATUS` IS NULL";
+    private static String insertPendingTransfer = "INSERT INTO ToDoCvtFDT(`ID3RD`, `USERID`) VALUES('%s', '%s')";
+    private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String deleteSameTypeThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `USERTYPE` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
+	private static String isPhoneExist = "SELECT COUNT(*) FROM AUTH WHERE `PHONE` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
@@ -47,112 +47,92 @@ public class CentralDbConnector {
 		this.cpds = cpds;
 	}
 
-	public static CentralDbConnector getInstance() throws CentralDbException {
-		if (inst == null)
-			inst = new CentralDbConnector();
-
-		if (inst.isClosed()) {
-			if (!inst.connect())
-				throw new CentralDbException(
-						"can't connect to central database",ErrorMessage.CANT_CONNECT_TO_CENTRAL_DATABASE);
-		}
-
-		return inst;
-	}
-
 	private CentralDbConnector() {
 
 	}
 
-	public boolean connect() {
-//	public boolean connect(String sIP, int nPort, String sUser,
-//			String sPassword, String sDatabase) {
+	public Connection connect() {
 		try {
-			conn = cpds.getConnection();
-
-//			Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-//			String sReq = String.format(openSQL, sIP, nPort, sDatabase);
-//			conn = DriverManager.getConnection(sReq, sUser, sPassword);
+			Connection conn = cpds.getConnection();
 
 			log.info("Connected to the database");
+
+            return conn;
 		} catch (Exception e) {
 			log.error("Cannot connection to Database", e);
-			return false;
-		}
-
-		return true;
-	}
-
-	public boolean isClosed() {
-		if (conn == null)
-			return true;
-
-		boolean bResult = true;
-		try {
-			bResult = conn.isClosed();
-		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
-			bResult = true;
-		}
-		return bResult;
-	}
-
-//	public boolean connect() {
-//		return connect(host, port, user, pass, database);
-//	}
-
-	public void close() {
-		if (conn != null) {
-			try {
-				conn.close();
-				conn = null;
-				log.info("Disconnected from database");
-			} catch (Exception e) {
-				log.error("Cannot disconnect from database", e);
-			}
+			return null;
 		}
 	}
 
 	protected String getInsertUserSQL(String userId, String userName,
 			String password, String salt, String email, String phone, Date created,
 			UserType userType, String country, String language) {
-		return String.format(insertUser, userId, userName, password+salt, salt, email,
-				phone, sdf.format(created), userType.getCode(), country, language, 0);
+		return String.format(insertUser, userId, userName, password + salt, salt, email,
+                phone, sdf.format(created), userType.getCode(), country, language, 0);
 	}
 
-	/*
-	 * protected String getInsertAccountSQL(String accountId, String userId,
-	 * String market, double cash, double margin, double pl, double allTimePl,
-	 * double urPl, double cashDeposited, double unitPrice, boolean bActive,
-	 * Date created, String currency) { return String.format(insertAccount,
-	 * accountId, userId, margin, cash, margin, pl, allTimePl, urPl,
-	 * cashDeposited, unitPrice, (bActive)?"0x01":"0x02", sdf.format(created),
-	 * currency); }
-	 */
-	protected boolean checkConnected() {
-		if (!isClosed())
-			return true;
-		return connect();
+    /**
+     *
+     * @param id
+     *          third party ID
+     * @param userId
+     * @param userType
+     * @return
+     */
+	protected String getInsertThirdPartyUserSQL(String id, String market, String language, String userId, UserType userType) {
+		return String.format(insertThirdPartyUser, id, market, language, userId, userType.getCode());
 	}
 
-	public boolean registerUser(String userId, String userName,
-			String password, String email, String phone, UserType userType, String country, String language) {
-		if (!checkConnected())
+    public boolean registerUser(
+            String userId, String userName, String password, String email, String phone, UserType userType,
+            String country, String language) {
+        return registerUser(userId, userName, password, email, phone, userType, country, language, null, null);
+    }
+
+
+    public boolean registerUser(
+            String userId, String userName, String password, String email, String phone, UserType userType,
+            String country, String language, String thirdPartyId, String market) {
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
 
 		boolean bIsSuccess = false;
 		Date now = Default.getCalendar().getTime();
 		String salt = getRandomSalt(10);
-		
-		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, userType, country, language);
+
+        UserType authUserType = userType;
+
+        if (userType.isThirdParty() && !Strings.isNullOrEmpty(thirdPartyId) && !Strings.isNullOrEmpty(market)) {
+            authUserType = UserType.NORMAL;
+        }
+
+		String sUserSQL = getInsertUserSQL(userId, userName, password, salt, email, phone, now, authUserType, country, language);
 		Statement stmt = null;
 		log.debug("[registerUser] SQL:" + sUserSQL);
 		try {
         	conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			stmt.executeUpdate(sUserSQL);
-			bIsSuccess = true;
+
+			if (userType.isThirdParty() && !Strings.isNullOrEmpty(thirdPartyId) && !Strings.isNullOrEmpty(market)) {
+				String sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), market, language, userId, userType);
+                stmt.executeUpdate(sql);
+			}
+
+            // Add to transfer table and terminate FDT account for transferring.
+            if (!Strings.isNullOrEmpty(thirdPartyId) && isUserExist(thirdPartyId.toLowerCase())) {
+
+                String sql = String.format(insertPendingTransfer, thirdPartyId.toLowerCase(), userId);
+                stmt.executeUpdate(sql);
+
+                sql = String.format(setUserTermination, TerminationStatus.TRANSFERRING.getValue(), userId);
+                stmt.executeUpdate(sql);
+            }
+
+            bIsSuccess = true;
 			conn.commit();
 		} catch (SQLException e) {
 			bIsSuccess = false;
@@ -166,15 +146,105 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return bIsSuccess;
 	}
 
-	public boolean isUserExist(String sUser) {
-		if (!checkConnected())
-			return false;
+    public boolean detachThirdPartyUser(String userId, String password, String thirdPartyId, String market, String language) {
 
-		String sQuery = String.format(isUserExist, sUser);
+        if (!userLogin(userId, password))
+            return false;
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        boolean bIsSuccess = false;
+        Statement stmt = null;
+
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+
+            String sql = String.format(detachThirdPartyUser, thirdPartyId, userId, market, language);
+            stmt.executeUpdate(sql);
+
+            bIsSuccess = true;
+            conn.commit();
+
+        } catch (SQLException e) {
+            bIsSuccess = false;
+            log.warn("Cannot detach third party user." + userId + ", " + thirdPartyId, e);
+            try {
+                conn.rollback();
+            } catch (SQLException se) {
+                log.warn("Detach third party user rollback fail." + userId + ", " + thirdPartyId, se);
+            }
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return bIsSuccess;
+    }
+
+    public boolean registerThirdPartyUser(String userId, UserType userType, String thirdPartyId, String market, String language) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        boolean bIsSuccess = false;
+        Statement stmt = null;
+
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+
+            String sql = String.format(deleteSameTypeThirdPartyUser, userId, userType.getCode(), market, language);
+            stmt.executeUpdate(sql);
+
+            sql = getInsertThirdPartyUserSQL(thirdPartyId.toLowerCase(), market, language, userId, userType);
+            stmt.executeUpdate(sql);
+
+            bIsSuccess = true;
+            conn.commit();
+        } catch (SQLException e) {
+            bIsSuccess = false;
+            log.warn("Cannot register third party user." + userId + ", " + thirdPartyId, e);
+            try {
+                conn.rollback();
+            } catch (SQLException se) {
+                log.warn("Register third party user rollback fail." + userId + ", " + thirdPartyId, se);
+            }
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+        return bIsSuccess;
+    }
+
+	public boolean isUserExist(String sUser) {
+
+        Connection conn = connect();
+
+		if (null == conn)
+            return false;
+
+        String sQuery = String.format(isUserExist, sUser);
 		log.debug("[isUserExist] SQL:" + sQuery);
 		Statement stmt = null;
 		int nCount = 0;
@@ -192,12 +262,145 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return (nCount > 0);
 	}
+
+    public boolean isUserExistAndNotTerminated(String sUser) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        String sQuery = String.format(isUserExistAndNotTerminated, sUser);
+        log.debug("[isUserExistAndNotTerminated] SQL:" + sQuery);
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+        return (nCount > 0);
+    }
+
+    public boolean isThirdPartyUserExist(String id, String market, String language) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        String sQuery = String.format(isThirdPartyUserExist, id, market, language);
+        log.debug("[isThirdPartyUserExist] SQL:" + sQuery);
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+        return (nCount > 0);
+    }
+
+	public boolean isThirdPartyUserAnyMappingExist(String id) {
+
+		Connection conn = connect();
+
+		if (null == conn)
+			return false;
+
+		String sQuery = String.format(isThirdPartyUserAnyMappingExist, id);
+		log.debug("[isThirdPartyUserAnyMappingExist] SQL:" + sQuery);
+		Statement stmt = null;
+		int nCount = 0;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sQuery);
+
+			if (rs.next())
+				nCount = rs.getInt("COUNT(*)");
+
+		} catch (SQLException e) {
+			log.warn(e.getMessage(), e);
+		} finally {
+			if (stmt != null) {
+				closeStmt(stmt);
+			}
+			if (conn != null) {
+				closeConn(conn);
+			}
+		}
+		return (nCount > 0);
+	}
+
+    public boolean isThirdPartyUserPendingTransfer(String thirdPartyId) {
+
+        Connection conn = connect();
+
+        String sql = String.format(isPendingTransfer, thirdPartyId);
+        log.debug("[isThirdPartyUserPendingTransfer] SQL:" + sql);
+
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return (nCount > 0);
+    }
 	
 	public boolean isEmailExist(String sEmail) {
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
 
 		String sQuery = String.format(isEmailExist, sEmail);
@@ -218,16 +421,54 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return (nCount > 0);
 	}
+
+    public boolean isPhoneExist(String phone) {
+
+        Connection conn = connect();
+
+        if (null == conn)
+            return false;
+
+        String sQuery = String.format(isPhoneExist, phone);
+        log.debug("[isPhoneExist] SQL:" + sQuery);
+        Statement stmt = null;
+        int nCount = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next())
+                nCount = rs.getInt("COUNT(*)");
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return (nCount > 0);
+    }
 
 	public boolean userLogin(String sUser, String sPassword) {
 		return userLoginEx(sUser, sPassword) != null;
 	}
 	public User userLoginEx(String sUser, String sPassword) {
-		if (!checkConnected())
-		{
+
+        Connection conn = connect();
+
+		if (null == conn) {
 			log.debug("[userLoginEx] Connection is lost ,could not process userLogin :"+sUser);
 			return null;
 		}
@@ -275,12 +516,12 @@ public class CentralDbConnector {
 
 			String fullPassword = (salt == null)? sPassword : sPassword + salt;
 			log.debug(String.format("[userLoginEx] user[%s] md5(fullPassword)[%s] fullPassword[%s] sPassword[%s] salt[%s] md5Password[%s]",
-					sUser == null ? "null" : sUser,
-					fullPassword == null ? "null": md5(fullPassword),
-					fullPassword == null ? "null": fullPassword,
-					sPassword == null ? "null": sPassword,
-					salt == null ? "null": salt,
-					md5Password == null ? "null": md5Password));
+                    sUser == null ? "null" : sUser,
+                    fullPassword == null ? "null" : md5(fullPassword),
+                    fullPassword == null ? "null" : fullPassword,
+                    sPassword == null ? "null" : sPassword,
+                    salt == null ? "null" : salt,
+                    md5Password == null ? "null" : md5Password));
 			
 			if(md5Password.equals(md5(fullPassword))){
 				closeStmt(stmt);
@@ -294,13 +535,111 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		log.debug("[userLoginEx] password not match :" + sUser);
 		return null;
 	}
 
+    public User getUser(String sUser) {
+
+        Connection conn = connect();
+
+        if (null == conn) {
+            log.debug("[getUser] Connection is lost ,could not process userLogin :" + sUser);
+            return null;
+        }
+
+        String sQuery = String.format(getUserAllInfo, sUser);
+        log.debug("[getUser] SQL:" + sQuery);
+        Statement stmt = null;
+
+        String username = null;
+        String email = null;
+        String phone = null;
+        UserType userType = null;
+        int isTerminated = 0;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+            if (rs.next()){
+                username = rs.getString("USERNAME");
+                email = rs.getString("EMAIL");
+                phone = rs.getString("PHONE");
+                userType = UserType.fromCode(rs.getInt("USERTYPE"));
+                isTerminated = rs.getInt("ISTERMINATED");
+
+                log.debug(String.format("[getUser] user[%s] queried: USERNAME[%s] EMAIL[%s] PHONE[%s] USERTYPE[%s] ISTERMINATED[%s]",
+                        sUser == null ? "null" : sUser,
+                        username == null ? "null": username,
+                        email == null ? "null": email,
+                        phone == null ? "null": phone,
+                        userType == null ? "null": userType.name(),
+                        isTerminated));
+
+                return new User(sUser, username, "", email, phone, userType, TerminationStatus.fromInt(isTerminated));
+            }
+
+        } catch (SQLException e) {
+            log.warn(e.getMessage(), e);
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+
+        return null;
+    }
+
+    public String getUserIdFromThirdPartyId(String thirdPartyId, String market, String language) {
+
+        Connection conn = connect();
+
+        if (null == conn) {
+            return null;
+        }
+
+        Statement stmt = null;
+
+        try {
+            String sQuery = String.format(getUserIdFromThirdPartyId, thirdPartyId, market, language);
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sQuery);
+
+			if (rs.next()) {
+				return rs.getString("USERID");
+			} else {
+				return null;
+			}
+
+        } catch (SQLException e) {
+
+            closeStmt(stmt);
+            log.warn(e.getMessage(), e);
+            return null;
+
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+    }
+
 	public boolean changePassword(String sUser, String originalPass, String newPass) {
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
 
 		String sQuery = String.format(getUserPasswordSalt, sUser);
@@ -337,7 +676,7 @@ public class CentralDbConnector {
 			String sQuerySet = String.format(setUserPassword, newMd5Password, sUser);
 			
 			int nResult = stmt.executeUpdate(sQuerySet);
-			if(1 != nResult){
+			if(1 != nResult) {
 				closeStmt(stmt);
 				return false;
 			}
@@ -350,13 +689,18 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 		return true;
 	}
 
 	public boolean changeTermination(String userId, TerminationStatus terminationStatus) {
 
-		if (!checkConnected()) {
+        Connection conn = connect();
+
+		if (null == conn) {
 			return false;
 		}
 
@@ -385,14 +729,21 @@ public class CentralDbConnector {
 			if (stmt != null) {
 				closeStmt(stmt);
 			}
+            if (conn != null) {
+                closeConn(conn);
+            }
 		}
 
 		return true;
 	}
 
 	public boolean updateConnection(){
-		if (!checkConnected())
+
+        Connection conn = connect();
+
+		if (null == conn)
 			return false;
+
 		Statement stmt = null;
 		boolean state = true;
 		try{
@@ -403,7 +754,9 @@ public class CentralDbConnector {
 			log.warn(e.getMessage(), e);
 		}finally{
 			if(stmt != null)
-				closeStmt(stmt);			
+				closeStmt(stmt);
+            if (conn != null)
+                closeConn(conn);
 		}
 		return state;
 	}
@@ -416,45 +769,13 @@ public class CentralDbConnector {
 		}
 	}
 
-//	public String getHost() {
-//		return this.host;
-//	}
-//
-//	public void setHost(String host) {
-//		this.host = host;
-//	}
-//
-//	public int getPort() {
-//		return this.port;
-//	}
-//
-//	public void setPort(int port) {
-//		this.port = port;
-//	}
-//
-//	public String getUser() {
-//		return this.user;
-//	}
-//
-//	public void setUser(String user) {
-//		this.user = user;
-//	}
-//
-//	public String getPass() {
-//		return this.pass;
-//	}
-//
-//	public void setPass(String pass) {
-//		this.pass = pass;
-//	}
-//
-//	public String getDatabase() {
-//		return this.database;
-//	}
-//
-//	public void setDatabase(String database) {
-//		this.database = database;
-//	}
+    private void closeConn(Connection conn) {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            log.warn("Cannot close connection", e);
+        }
+    }
 	
 	 protected String md5(String str) 
 	 {

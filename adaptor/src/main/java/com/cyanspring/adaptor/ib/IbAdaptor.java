@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         IStreamAdaptor<IDownStreamConnection> {
     private static final Logger log = LoggerFactory.getLogger(IbAdaptor.class);
 
-    IRefDataManager refDataManager;
+//    IRefDataManager refDataManager;
 
     // connection parameters
     private String host;
@@ -68,6 +70,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     protected EClientSocket clientSocket;
     private Map<String, List<IMarketDataListener>> subs = Collections
             .synchronizedMap(new HashMap<String, List<IMarketDataListener>>());
+
+    private ConcurrentHashMap<String, RefData> refDateBySymbolMap = new ConcurrentHashMap<String, RefData>();
 
     // Down Stream
     private DownStreamConnection downStreamConnection = new DownStreamConnection();
@@ -260,7 +264,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     public void subscribeMarketData(String instrument,
                                     IMarketDataListener listener) throws MarketDataException {
         log.info("subscribeMarketData: " + instrument);
-        RefData refData = refDataManager.getRefData(instrument);
+        RefData refData = refDateBySymbolMap.get(instrument);
         if (refData == null) {
             throw new MarketDataException("Symbol " + instrument
                     + " is not found in reference data");
@@ -362,7 +366,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         @Override
         public void newOrder(ChildOrder order) throws DownStreamException {
             log.debug("Sending new order: " + order);
-            RefData refData = refDataManager.getRefData(order.getSymbol());
+            RefData refData = refDateBySymbolMap.get(order.getSymbol());
             Contract contract = refData.get(Contract.class,
                     RefDataField.CONTRACT.value());
             if (refData == null || null == contract) {
@@ -389,7 +393,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         public void amendOrder(ChildOrder order, Map<String, Object> fields)
                 throws DownStreamException {
             log.debug("Amending order: " + order);
-            RefData refData = refDataManager.getRefData(order.getSymbol());
+            RefData refData = refDateBySymbolMap.get(order.getSymbol());
             Contract contract = refData.get(Contract.class,
                     RefDataField.CONTRACT.value());
             if (refData == null || null == contract) {
@@ -610,6 +614,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     synchronized private void publishQuote(Quote quote) {
+        if(!checkQuote(quote)) return;
         quote = (Quote) quote.clone();
         quote.sourceId = 1;
         quote.setTimeStamp(new Date());
@@ -618,6 +623,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             for (IMarketDataListener listener : list)
                 listener.onQuote(new InnerQuote(1, quote)); // use in MDM proceessInnerQuoteEvent , IB Adapter sourceid=1
 
+    }
+
+    private boolean checkQuote(Quote quote){
+        boolean isCheck = true;
+        if(PriceUtils.EqualLessThan(quote.getBid(),0) || PriceUtils.EqualLessThan(quote.getAsk(),0)){
+            isCheck = false;
+        }
+        return isCheck;
     }
 
     /**
@@ -1210,13 +1223,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         this.logMarketData = logMarketData;
     }
 
-    public IRefDataManager getRefDataManager() {
-        return refDataManager;
-    }
-
-    public void setRefDataManager(IRefDataManager refDataManager) {
-        this.refDataManager = refDataManager;
-    }
+//    public IRefDataManager getRefDataManager() {
+//        return refDataManager;
+//    }
+//
+//    public void setRefDataManager(IRefDataManager refDataManager) {
+//        this.refDataManager = refDataManager;
+//    }
 
     public String getId() {
         return id;
@@ -1249,6 +1262,24 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     @Override
     public void refreshSymbolInfo(String market) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void processEvent(Object object) {
+        //RefDataEvent
+        if (object instanceof RefDataEvent)
+        {
+            log.debug("Ib Adapter Receive RefDataEvent");
+            RefDataEvent refDataEvent = (RefDataEvent) object;
+            for(RefData refData : refDataEvent.getRefDataList()){
+                refDateBySymbolMap.put(refData.getSymbol(), refData);
+            }
+        }
+    }
+
+    @Override
+    public void clean() {
 
     }
 

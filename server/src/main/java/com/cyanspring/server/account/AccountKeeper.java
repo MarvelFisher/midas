@@ -19,6 +19,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.server.livetrading.rule.LiveTradingRuleHandler;
 
 public class AccountKeeper {
 	private static final Logger log = LoggerFactory
@@ -36,6 +37,9 @@ public class AccountKeeper {
 	
 	@Autowired
 	ILeverageManager leverageManager;
+	
+    @Autowired(required = false)
+    LiveTradingRuleHandler liveTradingRuleHandler;
 	
 	public void init() {
 		dynamicJobs = new AccountJobs(dynamicJobBatch);
@@ -79,16 +83,24 @@ public class AccountKeeper {
 			return empty;
 		}
 	}
-	
 	public AccountSetting setAccountSetting(AccountSetting setting) throws AccountException {
 		if(!accounts.containsKey(setting.getId()))
 			throw new AccountException("Account id doesn't exist: " + setting.getId(),ErrorMessage.ACCOUNT_NOT_EXIST);
 		
 		AccountSetting existing = accountSettings.get(setting.getId());
 		if(null == existing) {
-			existing = new AccountSetting(setting.getId());
+			existing = AccountSetting.createEmptySettings(setting.getId());
 			accountSettings.put(setting.getId(), existing);
 		}
+		
+		if(null != liveTradingRuleHandler 
+					&& liveTradingRuleHandler.isNeedSetting(existing, setting)){
+			setting = liveTradingRuleHandler.setTradingRule(existing, setting);
+			if(setting !=null){
+				log.info("account {} set to live trading mode",setting.getId());
+			}
+		}
+		
 		synchronized(existing) {
 			for(Entry<String, Object> entry: setting.getFields().entrySet()) {
 				existing.getFields().put(entry.getKey(), entry.getValue());

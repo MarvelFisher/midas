@@ -23,6 +23,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.alert.*;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
@@ -48,7 +49,10 @@ public class AlertManager extends Compute {
 
 	@Autowired
 	SessionFactory sessionFactory;
-
+	
+	@Autowired
+	ScheduleManager scheduleManager;
+	
 	private int maxNoOfAlerts;
 	private boolean checkAlertstart = true;
 
@@ -79,19 +83,19 @@ public class AlertManager extends Compute {
 	public void init() {
 		// TODO Auto-generated method stub
 		loadSQLdata();
+		AsyncTimerEvent SendSQLHeartTimer = new AsyncTimerEvent();
+		SendSQLHeartTimer.setKey("SendSQLHeartTimer");
+		scheduleManager.scheduleRepeatTimerEvent(60000, getEventProcessorMD(), SendSQLHeartTimer);
 	}
 
 	@Override
 	public void processMarketSessionEvent(MarketSessionEvent event,
 			List<Compute> computes) {
+		log.info("[MarketSessionEvent] : " + event);
 		MarketSessionType mst = event.getSession();
-		if (MarketSessionType.PREOPEN == mst) {
-			log.info("[MarketSessionEvent] : " + mst);
+		if (MarketSessionType.PREOPEN == mst) {			
 			checkAlertstart = true;
-			// AlertManager Clear expired alert
-			clearExpiredData() ;
 		} else if (MarketSessionType.CLOSE == mst) {
-			log.info("[MarketSessionEvent] : " + mst);
 			checkAlertstart = false;
 		}
 	}
@@ -107,19 +111,22 @@ public class AlertManager extends Compute {
 		receiveChildOrderUpdateEvent(execution);
 	}
 
-
-	public void processResetAccountRequestEvent(ResetAccountRequestEvent event) {
+	@Override
+	public void processResetAccountRequestEvent(ResetAccountRequestEvent event, List<Compute> computes) {
 		log.info("[processResetAccountRequestEvent] : AccountId :" + event.getAccount() + " Coinid : " + event.getCoinId());
 		ResetUser(event);
 	}
 	
-	private void clearExpiredData()
-	{
-		
+	@Override
+	public void processQueryOrderAlertRequestEvent(
+			QueryOrderAlertRequestEvent event, List<Compute> computes) {
+		log.info("[receiveQueryOrderAlertRequestEvent] :" + event.toString());
+		receiveQueryOrderAlertRequestEvent(event, computes) ;
 	}
 
-	private void ResetUser(ResetAccountRequestEvent event) {
+	synchronized private void ResetUser(ResetAccountRequestEvent event) {
 		String UserId = event.getUserId();
+		String strCmd = "";
 		try {
 			// Clear memory
 			userTradeAlerts.remove(UserId);
@@ -127,7 +134,7 @@ public class AlertManager extends Compute {
 
 			Session session = sessionFactory.openSession();
 			try {
-				String strCmd = "Delete from TRADEALERT_PAST where USER_ID='"
+				strCmd = "Delete from TRADEALERT_PAST where USER_ID='"
 						+ UserId + "'";
 				SQLQuery query = session.createSQLQuery(strCmd);
 				int Return = query.executeUpdate();
@@ -136,16 +143,12 @@ public class AlertManager extends Compute {
 						event.getKey(), event.getSender(), event.getAccount(),
 						event.getTxId(), event.getUserId(), event.getMarket(),
 						event.getCoinId(),
-						ResetAccountReplyType.LTSINFO_ALERTMANAGER, false, // "Reset User "
-																			// +
-																			// UserId
-																			// +
-																			// "fail.");
+						ResetAccountReplyType.LTSINFO_ALERTMANAGER, false,
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ACCOUNT_RESET_ERROR, " Reset User "
 										+ UserId + "fail."));			
 				SendRemoteEvent(resetAccountReplyEvent) ;
-				log.warn("[ResetUser] warn : " + ee.getMessage());
+				log.warn("[ResetUser]:[" + strCmd + "] :"+ ee.getMessage());
 			} finally {
 				session.close();
 			}
@@ -157,11 +160,11 @@ public class AlertManager extends Compute {
 			SendRemoteEvent(resetAccountReplyEvent) ;
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
-			log.error("[ResetUser] error : " + e.getMessage());
+			log.error("[ResetUser]:[" + strCmd +"] :"+ e.getMessage());
 		}
 	}
 
-	private void receiveChildOrderUpdateEvent(Execution execution) {
+	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
 		Session session = null;
 		try {
 			DecimalFormat qtyFormat = new DecimalFormat("#0");
@@ -266,14 +269,12 @@ public class AlertManager extends Compute {
 			}
 		}
 	}
-
-	@Override
-	public void processQueryOrderAlertRequestEvent(
-			QueryOrderAlertRequestEvent event, List<Compute> computes) {
-		try {
-			log.info("[receiveQueryOrderAlertRequestEvent]");
+	
+	private void receiveQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event, List<Compute> computes) {
+		String Msg = "";
+		try {			
 			AlertType type = event.getType();
-			String Msg = "";
+			
 			QueryOrderAlertReplyEvent queryorderalertreplyevent = null;
 			if (type == AlertType.TRADE_QUERY_PAST) {
 				ArrayList<TradeAlert> list = userTradeAlerts.get(event
@@ -358,22 +359,35 @@ public class AlertManager extends Compute {
 						event.getuserId(), false, // Msg);
 						MessageLookup.buildEventMessage(
 								ErrorMessage.ALERT_TYPE_NOT_SUPPORT, Msg));
-				log.warn("[processQueryOrderAlertRequestEvent][AlertTypeError]: "
+				log.error("[processQueryOrderAlertRequestEvent][AlertTypeError]: "
 						+ event.toString());
 			}
 			try {
 				SendRemoteEvent(queryorderalertreplyevent) ;
 				log.info("[processQueryOrderAlertRequestEvent] Send Reply User : "
-						+ queryorderalertreplyevent.getUserId() + " : " + Msg);
+						+ queryorderalertreplyevent.getUserId());
 			} catch (Exception e) {
-				log.warn("[processQueryOrderAlertRequestEvent] : "
+				log.error("[processQueryOrderAlertRequestEvent] : Send RemoteEventError"
 						+ e.getMessage());
 			}
 		} catch (Exception e) {
-			log.warn("[processQueryOrderAlertRequestEvent] : " + e.getMessage());
+			log.warn("[processQueryOrderAlertRequestEvent] : " + Msg + " : "  + e.getMessage());
 		}
 	}
-
+	
+	synchronized private boolean checkSendFlag(BasePriceAlert alert)
+	{
+		if (alert.isSendFlag())
+		{
+			return false;
+		}
+		else
+		{
+			alert.setSendFlag(true);
+			return true ;
+		}
+	}
+	
 	@Override
 	public void processQuoteEvent(QuoteEvent event, List<Compute> computes) {
 		Quote quote = event.getQuote();
@@ -392,6 +406,10 @@ public class AlertManager extends Compute {
 				alert = list.get(i - 1);
 				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()),
 						quote)) {
+					if (!checkSendFlag(alert))
+					{
+						continue;
+					}
 					String setDateTime = alert.getDateTime();
 					// SendEvent
 					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
@@ -909,10 +927,14 @@ public class AlertManager extends Compute {
 	public <T> void SQLSave(T object) {
 		Session session = null;
 		try {
-			session = sessionFactory.openSession();
+			session = sessionFactory.openSession();			
 			Transaction tx = session.beginTransaction();
-			session.save(object);
-			tx.commit();
+			tx.setTimeout(3);
+			if (tx.isActive())
+			{
+				session.save(object);
+				tx.commit();
+			}
 		} catch (Exception e) {
 			log.warn("[SQLSave] : " + e.getMessage());
 		} finally {
@@ -946,7 +968,7 @@ public class AlertManager extends Compute {
 			session.delete(object);
 			tx.commit();
 		} catch (Exception e) {
-			log.warn("[SQLDelete] : " + e.getMessage());
+			log.warn("[SQLDelete] : " + e.getMessage()); 
 		} finally {
 			if (null != session) {
 				session.close();
@@ -954,15 +976,15 @@ public class AlertManager extends Compute {
 		}
 	}
 
-	private void SendSQLHeartBeat() {
+	synchronized private void SendSQLHeartBeat() {
 		Session session = null;
 		try {
-			session = sessionFactory.openSession();
+			session = sessionFactory.openSession();			
 			SQLQuery sq = session.createSQLQuery("select 1;");
 			Iterator iterator = sq.list().iterator();
-			log.debug("Send SQLHeartBeat...");
+			log.info("Send SQLHeartBeat...");
 		} catch (Exception e) {
-			log.warn("[SendSQLHeartBeat] : " + e.getMessage());
+			log.error("[SendSQLHeartBeat] : " + e.getMessage());
 		} finally {
 			if (null != session) {
 				session.close();
@@ -993,7 +1015,7 @@ public class AlertManager extends Compute {
 	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event,
 			List<Compute> computes) {
-		if (event.getKey() == "1min") {
+		if (event.getKey() == "SendSQLHeartTimer") {
 			try {
 				SendSQLHeartBeat();
 			} catch (Exception e) {

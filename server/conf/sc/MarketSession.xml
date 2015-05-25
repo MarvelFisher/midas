@@ -13,7 +13,6 @@
 	    <property name="sessionChecker"> 
         	<ref bean="sessionChecker"/>
         </property>
-        <property name="settlementDelay"><value>10</value></property>
 	</bean>
 	
 	<bean id="sessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
@@ -39,11 +38,11 @@
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
 		        	<constructor-arg><value>15:00:00</value></constructor-arg>
-		        	<constructor-arg><value>23:59:59</value></constructor-arg>
+		        	<constructor-arg><value>33:00:00</value></constructor-arg>
 				</bean>	
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>-9:00:00</value></constructor-arg>
 		        	<constructor-arg><value>09:00:00</value></constructor-arg>
 				</bean>		
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
@@ -65,8 +64,8 @@
 			<list>
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>00:00:00</value></constructor-arg>
-		        	<constructor-arg><value>23:59:59</value></constructor-arg>
+		        	<constructor-arg><value>-9:00:00</value></constructor-arg>
+		        	<constructor-arg><value>33:00:00</value></constructor-arg>
 				</bean>	
 			</list>
 		</constructor-arg>

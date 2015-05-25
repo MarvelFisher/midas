@@ -6,7 +6,7 @@ import java.util.Date;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.util.PriceUtils;
-
+import static com.cyanspring.common.account.AccountState.*;
 public abstract class BaseAccount implements Serializable {
 	private String id;
 	private String userId;
@@ -26,6 +26,30 @@ public abstract class BaseAccount implements Serializable {
 
 	private Date created;
 	
+	//jimmy#livetrading
+	private AccountState state;
+	private double startAccountValue;
+	
+	
+	
+
+
+	public synchronized double getStartAccountValue() {
+		return startAccountValue;
+	}
+
+	public synchronized void setStartAccountValue(double startAccountValue) {
+		this.startAccountValue = startAccountValue;
+	}
+
+	public synchronized AccountState getState() {
+		return state;
+	}
+
+	public synchronized void  setState(AccountState state) {
+		this.state = state;
+	}
+
 	protected BaseAccount() {
 		this.created = Clock.getInstance().now();
 	}
@@ -47,6 +71,10 @@ public abstract class BaseAccount implements Serializable {
 		this.margin = Default.getMarginTimes() * this.cash;
 		this.cashAvailable = this.cash;
 		this.marginHeld = 0.0;
+		
+		//jimmy#livetrading
+		this.state = ACTIVE;
+		this.startAccountValue=Default.getAccountCash();
 	}
 	
 	public synchronized double getPnL() {
@@ -222,6 +250,13 @@ public abstract class BaseAccount implements Serializable {
 	public synchronized void updateEndOfDay() {
 		if(!PriceUtils.isZero(this.cashDeposited))
 			this.rollPrice += this.PnL/this.cashDeposited;
+		
+		
+		if(null == getState() || FROZEN == getState()){
+			setState(ACTIVE);
+		}		
+		setStartAccountValue(getValue());
+		
 	}
 
 	public synchronized void resetDailyPnL() {

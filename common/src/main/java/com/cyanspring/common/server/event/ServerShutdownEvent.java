@@ -10,8 +10,14 @@
  ******************************************************************************/
 package com.cyanspring.common.server.event;
 
-import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class ServerShutdownEvent extends AsyncEvent {
+public class ServerShutdownEvent extends RemoteAsyncEvent {
 
+    public ServerShutdownEvent(){
+        super(null, null);
+    }
+    public ServerShutdownEvent(String key, String receiver) {
+        super(key, receiver);
+    }
 }

@@ -9,6 +9,7 @@
 
 	<import resource="test/fx_test.xml" />
 	<import resource="fx/MarketSession.xml" />
+	<import resource="fx/LiveTrading.xml" />
 	<import resource="common/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
@@ -46,7 +47,7 @@
 	</bean>
 		
 	<!-- MarketDataManager setting-->
-	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="simMarketDataAdaptor" />
@@ -66,8 +67,9 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
-		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteChecker" ref="quoteChecker"/> <!-- dont set this or cant test in weekend  -->
 		<property name="quoteSaver" ref="quoteSaver"/>
+        <property name="broadcastQuote" value="true"/>
 	</bean>
 	
 	<!-- Derby setting -->

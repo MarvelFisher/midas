@@ -70,5 +70,11 @@
 			<artifactId>msgpacklite</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.cyanspring.transport</groupId>
+			<artifactId>cyanspring-transport</artifactId>
+			<version>${project.parent.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 </project>

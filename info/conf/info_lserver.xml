@@ -9,6 +9,7 @@
 
 	<context:annotation-config />
 	<import resource="info_test/*"/>	
+	<import resource="info_common/ticktable_fx.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
@@ -38,15 +39,37 @@
 	</bean>	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FX"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FX_S1"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
+	  <property name="maxActive"><value>20</value></property> 
+	  <property name="initialSize"><value>1</value></property>  
+      <property name="maxWait"><value>60000</value></property>  
+      <property name="maxIdle"><value>20</value></property>  
+      <property name="minIdle"><value>3</value></property> 
+<!-- 	  <property name="testWhileIdle" ><value> true </value></property> -->
+	  <property name= "testOnBorrow" ><value> true </value></property>
+	  <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+	  <property name="validationQueryTimeout" ><value>3</value></property>
+	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
 	</bean>	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FX_HK"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
+	  <property name="maxActive"><value>20</value></property> 
+	  <property name="initialSize"><value>1</value></property>  
+      <property name="maxWait"><value>60000</value></property>  
+      <property name="maxIdle"><value>20</value></property>  
+      <property name="minIdle"><value>3</value></property> 
+<!-- 	  <property name="testWhileIdle" ><value> true </value></property> -->
+	  <property name= "testOnBorrow" ><value> true </value></property>
+	  <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+	  <property name="validationQueryTimeout" ><value>3</value></property>
+	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
 	</bean>
 	
 	<bean id="jdbcUrl" class="java.lang.String">	
@@ -92,7 +115,7 @@
 	  <property name="dataSource" ref="dataSource"/>
 	  <property name="mappingResources">
 	    <list>
-	      <value>conf/info_test/object.hbm.xml</value>
+	      <value>conf/object.hbm.xml</value>
 	    </list>
 	  </property>
 	  <property name="hibernateProperties">

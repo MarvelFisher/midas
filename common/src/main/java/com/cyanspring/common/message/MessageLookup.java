@@ -152,7 +152,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.CUM_QTY_GREATER_THAN_INTENTED_QTY,getBean(427, "CumQty is greater than intended quantity"));
 			addAndCheck(ErrorMessage.PRICE_NOT_PERMITTED,getBean(428, "Price is not permitted by parentOrder"));
 			addAndCheck(ErrorMessage.PARENT_ORDER_IS_PENDING,getBean(429, "Parent order is pending on action"));
-			addAndCheck(ErrorMessage.MARKET_CLOSED,getBean(430, "Market closed,order couldn't be placed"));
+			addAndCheck(ErrorMessage.MARKET_CLOSED,getBean(430, "When market close, pop out a notification when user make an order in market closed pair."));
 			addAndCheck(ErrorMessage.MARKET_VALIDATION_ERROR,getBean(431, "Market validation error"));
 			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_HOLD,getBean(432, "The order quantity is over maximum hold."));
 			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_LOT,getBean(433, "The order quantity is over maximun lot"));
@@ -160,6 +160,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_FIELD_EMPTY,getBean(435, "order field empty"));
 			addAndCheck(ErrorMessage.ORDER_FIELD_MUST_GREATER_THAN_ZERO,getBean(436, "order field must be greater than 0"));
 			addAndCheck(ErrorMessage.ORDER_FIELD_MUST_BE_INTEGER,getBean(437, "order field must be must be an integer"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_STOP_TRADING, getBean(438, "Live trading on stop trading time"));
+
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_LOT_SIZE_ERROR,getBean(439, "Can not determine symbol for quantity lot size validation"));
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_NOT_FOUND,getBean(440, "Can't find symbol in refdata"));
 			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity! Quantity should be the multiple of 1000."));
@@ -205,7 +207,17 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ACCOUNT_AND_USER_NOT_MATCH,getBean(514, "Account and user not match"));
 			addAndCheck(ErrorMessage.USER_IS_TERMINATED, getBean(515, "User is terminated"));
 			addAndCheck(ErrorMessage.TERMINATE_USER_FAILED, getBean(516, "Change user termination status failed"));
+			addAndCheck(ErrorMessage.ACCOUNT_FROZEN,getBean(517, "Exceed Daily Maximun Loss!  Your account will be frozen for the rest of the day."));
+			addAndCheck(ErrorMessage.ACCOUNT_TERMINATED,getBean(518, "Exceed Account Stop Loss!  Your account is terminated."));
+			addAndCheck(ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID, getBean(519, "Third party id is not match with the user id"));
+			addAndCheck(ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED, getBean(520, "Register third party id failed"));
+			addAndCheck(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, getBean(521, "Detach third party id failed"));
+			addAndCheck(ErrorMessage.USER_PHONE_EXIST, getBean(522, "This phone already exists"));
+			addAndCheck(ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP, getBean(523, "This third party id is already used in the new version app"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_SETTING_NOT_OVER_FROZEN_DAYS, getBean(524, "cant change live trading setting , because not over frozen setted days"));
+			addAndCheck(ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP, getBean(525, "can't find this rule in live trading"));
 
+			
 			
 			
 			

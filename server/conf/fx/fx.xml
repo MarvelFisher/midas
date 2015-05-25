@@ -28,13 +28,15 @@
 		<property name="plugins">
 			<list>
 				<ref bean="apiBridgeManager" />
-				<ref bean="marketSessionManager" />
-				<ref bean="refDataManager" />
+                <ref bean="refDataHandler" />
+                <ref bean="marketSessionManager" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
 				<ref bean="premiumFollowManager"/>
 				<ref bean="trailingStopManager"/>
+				<ref bean="liveTradingSession" />	
+
 			</list>
 		</property>
 		<property name="readyMap">
@@ -126,6 +128,7 @@
 		<property name="cleanStart" value="false"/>
 		<property name="todayOnly" value="false"/>
 		<property name="checkEmailUnique" value="onlyExist"/>
+		<property name="checkPhoneUnique" value="noCheck"/>
 		<property name="syncCentralDb" value="true"/>
 	</bean>
 
@@ -280,6 +283,8 @@
 		<property name="autoStartStrategy">
 			<value>true</value>
 		</property>
+        <property name="weekDay" value="SATURDAY"/>
+        <property name="cancelPendingOrderTime" value="05:30:00"/>
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
@@ -394,6 +399,8 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
+	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
+
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
 			<value>refdata/refData_fdt.xml</value>
@@ -418,9 +425,6 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
-	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
-	</bean>
-
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
@@ -438,9 +442,12 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
+        <property name="quoteChecker" ref="priceQuoteChecker"/>
 	</bean>
-	
-	<bean id="quoteAggregator" class="com.cyanspring.server.marketdata.QuoteAggregatorSimple">
+
+    <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
+
+	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
 	</bean>
 
 </beans>

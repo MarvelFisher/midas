@@ -10,7 +10,6 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
-<!-- 	        	<ref bean="mdManager" /> -->
 	        	<ref bean="InfoGateway" />
             	<ref bean="centralDbProcessor"/>
             	<ref bean="userManager"/>
@@ -32,8 +31,8 @@
 	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
-	<bean id="useLocalMdManager" class="java.lang.Boolean">
-		<constructor-arg value="false"/>
+	<bean id="useLocalMdReceiver" class="java.lang.Boolean">
+		<constructor-arg value="true"/>
 	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
@@ -104,6 +103,12 @@
 		<property name="SQLDelayInterval">
 			<value>300000</value>
 		</property>
+		<property name="timeInterval">
+			<value>60000</value>
+		</property>
+		<property name="checkSQLInterval">
+			<value>600000</value>
+		</property>
 	</bean>
 	
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
@@ -139,19 +144,6 @@
 				<value>ICC1</value>
 				<value>ICC2</value>
 			</list>
-		</constructor-arg>
-	</bean>
-
-	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-		<constructor-arg>
-			<map>
-				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
-			</map>
 		</constructor-arg>
 	</bean>
 	

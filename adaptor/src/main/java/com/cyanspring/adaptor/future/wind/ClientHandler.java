@@ -4,7 +4,6 @@ import cn.com.wind.td.tdf.TDF_MSG_ID;
 import com.cyanspring.id.Library.Threading.TimerThread;
 import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.*;
-import com.cyanspring.id.Util;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,10 +38,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
-		// Discard the received data silently.
 		lastRecv = DateUtil.now();
 		String in = (String) msg;
-		// System.out.println(in);
 		try {
 			String strHash = null;
 			String strDataType = null;
@@ -93,10 +90,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					}
 				}
-//				System.out.flush();
 			}
 		} finally {
-			if(WindFutureDataAdaptor.instance.isMarketDataLog()) calculateMessageFlow(in.length());
+			calculateMessageFlow(in.length());
 			ReferenceCountUtil.release(msg);
 		}
 
@@ -147,7 +143,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		// Close the connection when an exception is raised.
 		LogUtil.logException(log, (Exception) cause);
-		// cause.printStackTrace();
 		ctx.close();
 		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		WindFutureDataAdaptor.isConnected = false;
@@ -160,10 +155,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		LogUtil.logInfo(log, "Wind channel Active");
 		context = ctx;
-		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		WindFutureDataAdaptor.isConnected = true;
-		WindFutureDataAdaptor.isConnecting = false;
-		adaptor.updateState(WindFutureDataAdaptor.isConnected);
 
 		String[] arrSymbol = WindFutureDataAdaptor.instance.getRefSymbol();
 		if (arrSymbol.length > 0) {
@@ -172,50 +163,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 			}
 		}
 
+		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
+		WindFutureDataAdaptor.isConnected = true;
+		WindFutureDataAdaptor.isConnecting = false;
+		adaptor.updateState(WindFutureDataAdaptor.isConnected);
+
 		msLastTime = System.currentTimeMillis();
 
 		// sendRequestCodeTable("CF");
 
 		// INDEX
 		// subscribe("000300.SH");
-		//
-		// // STOCK
-		//
-		// subscribe("601318.SH"); //中國平安
-		// subscribe("600030.SH"); //中信證券
-		// subscribe("601628.SH"); //中國人壽
-		// subscribe("601989.SH"); //中國重工
-		// subscribe("600000.SH"); //浦發銀行
-		// subscribe("000002.SZ"); //万科A
-		// subscribe("600016.SH"); //民生银行
-		// subscribe("600837.SH"); //海通证券
-		// subscribe("300104.SZ"); //乐视网
-		// subscribe("002230.SZ"); //科大讯飞
-		//
-		//
-		// // FUTURE
-		// subscribe("AG1506.SHF"); // 白銀
-		// subscribe("CU1506.SHF"); //滬銅
-		// subscribe("AU1506.SHF"); //黃金
-		// subscribe("RB1505.SHF"); //螺紋鋼
-		// subscribe("RU1505.SHF"); //橡膠
-		// subscribe("ZN1503.SHF"); //鋅
-		// subscribe("M1505.DCE"); //豆粕
-		// subscribe("I1505.DCE"); // 鐵礦石
-		// subscribe("L1505.DCE"); //聚乙烯
-		// subscribe("Y1505.DCE"); //豆油
-		// subscribe("PP1505.DCE"); //聚丙烯
-		// subscribe("P1505.DCE"); //棕櫚油
-		// subscribe("J1505.DCE"); //焦炭
-		// subscribe("JD1505.DCE"); //雞蛋
-		// subscribe("FG506.CZC"); // 玻璃
-		// subscribe("RM505.CZC"); //菜籽粕
-		// subscribe("TA505.CZC"); //PTA //有夜盤
-		// subscribe("SR505.CZC"); //白糖 //有夜盤
-		// subscribe("MA506.CZC"); //鄭醇
-		// subscribe("CF505.CZC"); //棉花
-		// subscribe("IF1502.CF"); // 滬深300當月
-		// subscribe("IF1503.CF"); //滬深300下月
 
 		sendReqHeartbeat(); // send request heartbeat message
 
@@ -274,7 +232,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		fsb.append(String.valueOf(fsbhashCode));
 
 		LogUtil.logInfo(log, "[RequestMarket]%s", fsb.toString());
-		Util.addLog("[RequestMarket]%s", fsb.toString());
 		sendData(fsb.toString() + "\r\n");
 	}
 
@@ -295,7 +252,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		fsb.append(String.valueOf(fsbhashCode));
 
 		LogUtil.logInfo(log, "[RequestCodeTable]%s", fsb.toString());
-		Util.addLog("[RequestCodeTable]%s", fsb.toString());
+//		Util.addLog("[RequestCodeTable]%s", fsb.toString());
 		sendData(fsb.toString() + "\r\n");
 	}
 
@@ -312,7 +269,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		fsb.append(String.valueOf(fsbhashCode));
 
 		LogUtil.logInfo(log, "[ReqHeartBeat]%s", fsb.toString());
-		Util.addLog("[ReqHeartBeat]%s", fsb.toString());
 		sendData(fsb.toString() + "\r\n");
 
 	}
@@ -333,11 +289,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 		String subscribeStr = sbSymbol.toString();
 
-		// LogUtil.logInfo(log, String.valueOf(subscribeStr.hashCode()));
 		subscribeStr = subscribeStr + "|Hash="
 				+ String.valueOf(subscribeStr.hashCode());
 		LogUtil.logInfo(log, "[Subscribe]%s", subscribeStr);
-		Util.addLog("[Subscribe]%s", subscribeStr);
 
 		sendData(subscribeStr + "\r\n");
 	}
@@ -359,11 +313,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 		String unsubscribeStr = sbSymbol.toString();
 
-		// LogUtil.logInfo(log, String.valueOf(subscribeStr.hashCode()));
 		unsubscribeStr = unsubscribeStr + "|Hash="
 				+ String.valueOf(unsubscribeStr.hashCode());
 		LogUtil.logInfo(log, "[UnSubscribe]%s", unsubscribeStr);
-		Util.addLog("[UnSubscribe]%s", unsubscribeStr);
 
 		sendData(unsubscribeStr + "\r\n");
 	}
@@ -382,7 +334,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		subscribeStr = subscribeStr + "|Hash="
 				+ String.valueOf(subscribeStr.hashCode());
 		LogUtil.logInfo(log, "[sendClearSubscribe]%s", subscribeStr);
-		Util.addLog("[sendClearSubscribe]%s", subscribeStr);
 
 		sendData(subscribeStr + "\r\n");
 	}
@@ -395,9 +346,5 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	void uninit() throws Exception {
 	}
-
-	// public static void main(String[] args) {
-	// sendReqHeartbeat();
-	// }
 
 }

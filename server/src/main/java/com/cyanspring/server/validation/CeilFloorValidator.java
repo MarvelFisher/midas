@@ -1,10 +1,7 @@
 package com.cyanspring.server.validation;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,10 +15,8 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
@@ -36,8 +31,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.common.event.AsyncEventProcessor;
 /**
  * 
  * @author Jimmy
@@ -88,16 +82,11 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {		
 		
-		if(quoteExtendsMap.size()==0){		
-			
+		if(quoteExtendsMap.size()==0){					
 			log.warn("validation : No quoteExtends info");
-			return;
-			
+			return;		
 		}
-		
-		log.info("quoteExtendsMap size:"+quoteExtendsMap.size());
-		
-		
+
 		try{
 			
 			String symbol;
@@ -105,28 +94,20 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			DataObject data = null;
 			OrderType type = null;
 			
-			if(order == null){
-				
+			if(order == null){				
 				symbol = (String)map.get(OrderField.SYMBOL.value());
-				type =(OrderType) map.get(OrderField.TYPE.value());
-				
+				type =(OrderType) map.get(OrderField.TYPE.value());		
 			}
-			else{
-				
+			else{			
 				symbol = order.getSymbol();
-				type = order.getOrderType();
-				
+				type = order.getOrderType();	
 			}
 			
-			if(OrderType.Market == type){
-				
+			if(OrderType.Market == type){			
 				log.warn("this is market order");
-				return;
-				
+				return;			
 			}
-			
-			
-			
+				
 			if(null!=quoteExtendsMap && quoteExtendsMap.size()!=0){
 				data = quoteExtendsMap.get(symbol);
 			}
@@ -143,10 +124,10 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 				Double ceil = data.get(Double.class, QuoteExtDataField.CEIL.value());
 				Double floor = data.get(Double.class, QuoteExtDataField.FLOOR.value());				
 	
-				if(PriceUtils.GreaterThan(price, ceil)){
+				if(ceil != null && PriceUtils.GreaterThan(price, ceil)){
 					throw new OrderValidationException("Order price over than ceil price:"+ceil,ErrorMessage.ORDER_OVER_CEIL_PRICE);
 				}
-				if(PriceUtils.LessThan(price,floor)){
+				if(floor != null && PriceUtils.LessThan(price,floor)){
 					throw new OrderValidationException("Order price lower than floor price:"+floor,ErrorMessage.ORDER_LOWER_FLOOR_PRICE);
 				}
 				
@@ -177,28 +158,24 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	public void uninit() {
 		quoteExtendsMap = null;
 		eventProcessor.uninit();
-		eventManager.uninit();
 	}
 	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event){
 
 		Map <String,DataObject> receiveDataMap = event.getMutilQuoteExtend();
-		int offset = event.getOffSet();
-		int total = event.getTotalDataCount();
-		Date eventTradeDate = event.getTradeDate();
 
-		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){
-			
+		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){			
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
-			return;
-			
+			return;	
+		}else{
+			log.info("receiveData size:"+receiveDataMap.size());
 		}
 		
 		if(null == quoteExtendsMap ){
-			quoteExtendsMap = new <String, DataObject>ConcurrentHashMap();
+			quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		}
 		
 		quoteExtendsMap.putAll(receiveDataMap);
-
+		
 	}
 	public void sendQuoteExtSubEvent(){
 		
@@ -220,7 +197,26 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 				quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 			}
 			if(null != symbol){
-				quoteExtendsMap.put(symbol, updateObj);
+				
+				Double ceil = updateObj.get(Double.class, QuoteExtDataField.CEIL.value());
+				Double floor = updateObj.get(Double.class, QuoteExtDataField.FLOOR.value());
+				if(ceil==null && floor == null){
+					return;
+				}			
+				DataObject obj = null;
+				if(quoteExtendsMap.containsKey(symbol)){
+					obj = quoteExtendsMap.get(symbol);		
+				}else{
+					obj = updateObj;
+				}
+				if(ceil!=null){
+					obj.set(ceil, QuoteExtDataField.CEIL.value());
+				}
+				if(floor!=null){
+					obj.set(floor, QuoteExtDataField.FLOOR.value());
+				}
+				quoteExtendsMap.put(symbol, obj);
+				
 			}
 
 		}catch(Exception e){
@@ -230,26 +226,24 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	}
 
 	public void processTradeDateEvent(TradeDateEvent event){
-		log.info("into trade date event");
+		
 		try{
+			
 			String eventTradeDate = event.getTradeDate();
 			if(null == eventTradeDate){
 				return;
 			}
 			if(null == tradeDate
 					|| !isSameTradeDate(eventTradeDate))
-			{
-				
+			{		
 				setTradeDate(eventTradeDate);
 				sendQuoteExtSubEvent();
-				
 			}
 
 		}catch(Exception e){
 			log.warn(e.getMessage(),e);
 		}
 
-		
 	}
 	
 	public void processMarketSessionEvent(MarketSessionEvent event){
@@ -262,11 +256,9 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			
 			if( null == oldTradeDate
 					|| MarketSessionType.PREOPEN == event.getSession())
-			{// if oldTradeDate ==  null means reboot
-				
+			{// if oldTradeDate ==  null means reboot		
 				setTradeDate(td);
 				sendQuoteExtSubEvent();
-	
 			}
 			
 		} catch (ParseException e) {
@@ -279,15 +271,14 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 			
 		}
 	}
+	
 	public void requestMarketSession() {
 		eventManager.sendEvent(new MarketSessionRequestEvent(CeilFloorValidator.ID, CeilFloorValidator.SENDER, true));
 	}
 
-
 	public ConcurrentHashMap<String, DataObject> getQuoteExtendsMap() {
 		return quoteExtendsMap;
 	}
-
 
 	public void setQuoteExtendsMap(
 			ConcurrentHashMap<String, DataObject> quoteExtendsMap) {
@@ -296,21 +287,16 @@ public class CeilFloorValidator implements IOrderValidator,IPlugin{
 	
 	private boolean isSameTradeDate(String date)throws ParseException{
 		
-		Date dateC = DateUtil.parseDate(date, tradeDateFormat);
+		Date dateC = TimeUtil.parseDate(date, tradeDateFormat);
 		return TimeUtil.sameDate(tradeDate, dateC);
 		
 	}
-	private boolean isSameTradeDate(Date date){
-		return TimeUtil.sameDate(tradeDate, date);
-	}
 
-	
 	private void setTradeDate(String td) throws ParseException{
 
 		if(null != td && !"".equals(td)){
-			tradeDate = DateUtil.parseDate(td, tradeDateFormat);
+			tradeDate = TimeUtil.parseDate(td, tradeDateFormat);
 		}
 		
 	}
-	
 }

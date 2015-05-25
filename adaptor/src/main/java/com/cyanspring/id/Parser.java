@@ -256,26 +256,12 @@ public class Parser implements IReqThreadCallback {
             return false;
         }
 
-        // check if is Refresh
-        // refresh frame must skipped else the tick time may cause sunrise
-        // incorrectly
-        if (dataByFieldIdMap.containsKey(FieldID.CycleMessageIndicator)) {
-            //log.info(DateUtil
-            //		.formatDate("--------------yyyy-MM-dd-HH-mm-ss-SSS----------------"));
-            //SymbolItem item = QuoteMgr.instance().getItem(strID);
-            //if (item != null) {
-            //	item.parseRefresh(time, tTime, nDP, table);
-            //	return true;
-            //}
-            return false;
-        }
-
         IdMarketDataAdaptor adaptor = IdMarketDataAdaptor.instance;
         adaptor.setTime(tTime);
         int nStatus = adaptor.getStatus(tTime);
 
         if (MarketStatus.CLOSE == nStatus) {
-            if (false == adaptor.getIsClose()) {
+            if (!adaptor.getIsClose()) {
                 if (adaptor.getStatus() == MarketStatus.CLOSE) {
                     adaptor.setIsClose(true);
                     QuoteMgr.instance().writeFile(true, true);
@@ -287,11 +273,16 @@ public class Parser implements IReqThreadCallback {
         //check Contribute
         List<String> contributeList = adaptor.getContributeList();
         List<String> unContributeList = adaptor.getUnContributeList();
-
+        Map<String, String> pluginContributeBySymbolMap = adaptor.getPluginContributeBySymbolMap();
 
         if (contributeList != null && contributeList.size() > 0) {
             if (Collections.binarySearch(contributeList, nContributeCode) < 0) {
-                return false;
+                if (pluginContributeBySymbolMap != null) {
+                    if (!(pluginContributeBySymbolMap.containsKey(strID) && nContributeCode.equals(pluginContributeBySymbolMap.get(strID))))
+                        return false;
+                } else {
+                    return false;
+                }
             }
         } else {
             if (unContributeList != null && unContributeList.size() > 0) {
@@ -301,7 +292,7 @@ public class Parser implements IReqThreadCallback {
             }
         }
 
-        if (true == adaptor.getIsClose()) {
+        if (adaptor.getIsClose()) {
             if (nStatus == MarketStatus.OPEN) {
                 adaptor.setIsClose(false);
                 QuoteMgr.instance().sunrise();
@@ -391,6 +382,13 @@ public class Parser implements IReqThreadCallback {
         try {
             throw new Exception("NotImplementedException");
         } catch (Exception e) {
+        }
+    }
+
+    public void close() {
+        if (reqThread != null) {
+            reqThread.close();
+            reqThread = null;
         }
     }
 }

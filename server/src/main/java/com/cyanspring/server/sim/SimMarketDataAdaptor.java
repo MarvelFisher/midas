@@ -28,13 +28,14 @@ import com.cyanspring.common.type.QtyPrice;
 
 public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	private Exchange exchange;
+	private int sourceId;
+	private volatile boolean isConnected = false;
 	Map<String, List<IMarketDataListener>> subs = 
 		Collections.synchronizedMap(new HashMap<String, List<IMarketDataListener>>());
 
 	List<IMarketDataStateListener> marketDataStateListeners = new ArrayList<IMarketDataStateListener>();
 	Map<String, Quote> cache = Collections.synchronizedMap(new HashMap<String, Quote>());
-	
-	
+
 	private Quote bookToQuote(OrderBook book) {
 		List<QtyPrice> bids = new LinkedList<QtyPrice>();
 		List<QtyPrice> asks = new LinkedList<QtyPrice>();
@@ -67,7 +68,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 			List<IMarketDataListener> list = subs.get(book.getCode());
 			if(null != list)
 				for(IMarketDataListener listener: list)
-					listener.onQuote(new InnerQuote(1, (Quote)quote.clone()));
+					listener.onQuote(new InnerQuote(sourceId, (Quote)quote.clone()));
 		}
 		
 	};
@@ -125,7 +126,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		if(book != null) {
 			Quote quote = bookToQuote(book);
 			cache.put(instrument, quote);
-			listener.onQuote(new InnerQuote(1, (Quote)quote.clone()));
+			listener.onQuote(new InnerQuote(sourceId, (Quote)quote.clone()));
 		}
 			
 	}
@@ -139,18 +140,27 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		}
 	}
 
+	public void sendState(boolean on) {
+		for (IMarketDataStateListener listener : marketDataStateListeners) {
+			listener.onState(on);
+		}
+	}
+
 	@Override
 	public boolean getState() {
 		// should depend on simulator state
-		return true;
+		return isConnected;
 	}
 
 	@Override
 	public void init() {
+		isConnected = true;
+		sendState(isConnected);
 	}
 
 	@Override
 	public void uninit() {
+		isConnected = false;
 	}
 
 	@Override
@@ -166,5 +176,19 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	@Override
 	public void refreshSymbolInfo(String market) {
 		
+	}
+
+	@Override
+	public void processEvent(Object object) {
+
+	}
+
+	@Override
+	public void clean() {
+
+	}
+
+	public void setSourceId(int sourceId) {
+		this.sourceId = sourceId;
 	}
 }

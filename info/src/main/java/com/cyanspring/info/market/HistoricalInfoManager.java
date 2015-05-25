@@ -10,7 +10,7 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.info.HistoricalTradeEvent;
 import com.cyanspring.common.event.info.HistoricalTradeRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class HistoricalInfoManager implements IPlugin {
 	private static final Logger log = LoggerFactory

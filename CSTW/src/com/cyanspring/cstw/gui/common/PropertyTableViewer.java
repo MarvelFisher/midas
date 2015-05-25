@@ -266,7 +266,7 @@ public class PropertyTableViewer extends TableViewer {
 					if(entry.getValue() instanceof String) {
 						strNew = (String)entry.getValue();
 					} else {
-						strNew = dataConverter.toString(entry.getKey(), oldValue);
+						strNew = dataConverter.toString(entry.getKey(), entry.getValue());
 					}
 					if(!strOld.equals(strNew)) {
 						 result.add(new KeyValue(entry.getKey(), entry.getValue()));

@@ -1,0 +1,227 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+	<import resource="info_lt/*"/>
+	<import resource="info_common/ticktable_lt.xml"/>
+
+	
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
+		<property name="maxNoOfAlerts" value="20" />
+	</bean>	
+	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
+		<property name="getPremiumTableInterval" value="300000" />
+<!-- 	##b$$ = <b> -->
+		<property name="PremiumFollowHtmlFormat" value="##b$$%UserName%##/b$$ %Side% ##b$$%Currency%##/b$$ %Quantity%@%Price%" />
+		<property name="getPremiumFollowListURL" value="http://r.forexmastergaedev.appspot.com/rest/getPremiumFollowList" />
+		<property name="SetInBoxURL" value="http://forexmastergaedev.appspot.com/rest/setInBoxMsg" />
+	</bean>
+	<bean id="ParseManager" class="com.cyanspring.info.alert.ParseManager">
+		<property name="timeoutSecond" value="3000" />
+		<property name="createThreadCount" value="5" />
+		<property name="maxRetrytimes" value="3" />
+		<property name="killTimeoutSecond" value="60000" />
+		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
+		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
+		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.FX"/>
+	</bean>	
+	
+	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
+		<property name="endString" value="（更多精彩" />
+		<property name="CheckThreadStatusInterval" value="300000" />	
+		<property name="SocialAPI" value="http://forexmastergaedev.appspot.com/rest/appSendPost"/>
+		<property name="PostAccount" value="fxmcn003"/>		
+	</bean>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_FX_S1"/>
+	  <property name="username" value="tqt001"/>
+	  <property name="password" value="tqt001"/>
+	  <property name="maxActive"><value>20</value></property> 
+	  <property name="initialSize"><value>1</value></property>  
+      <property name="maxWait"><value>60000</value></property>  
+      <property name="maxIdle"><value>20</value></property>  
+      <property name="minIdle"><value>3</value></property> 
+<!-- 	  <property name="testWhileIdle" ><value> true </value></property> -->
+	  <property name= "testOnBorrow" ><value> true </value></property>
+	  <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+	  <property name="validationQueryTimeout" ><value>3</value></property>
+	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
+	</bean>
+	
+	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_Global"/>
+	  <property name="username" value="tqt001"/>
+	  <property name="password" value="tqt001"/>
+	  <property name="maxActive"><value>20</value></property> 
+	  <property name="initialSize"><value>1</value></property>  
+      <property name="maxWait"><value>60000</value></property>  
+      <property name="maxIdle"><value>20</value></property>  
+      <property name="minIdle"><value>3</value></property> 
+<!-- 	  <property name="testWhileIdle" ><value> true </value></property> -->
+	  <property name= "testOnBorrow" ><value> true </value></property>
+	  <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+	  <property name="validationQueryTimeout" ><value>3</value></property>
+	  <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+	  <property name= "numTestsPerEvictionRun" ><value>20</value></property>
+	</bean>
+	
+	<bean id="jdbcUrl" class="java.lang.String">	
+<!-- 		<constructor-arg value="jdbc:mysql://10.0.0.10:3306/TA_DS_TEST?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" /> -->
+		<constructor-arg value="jdbc:mysql://10.0.0.10/TA_DS_TEST?jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;user=tqt001&amp;password=tqt001" />
+	</bean>
+	
+	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>Test</value>
+		</property>
+		<property name="category">
+			<value>Info</value>
+		</property>
+		<property name="id">
+			<value>I1</value>
+		</property>
+	</bean>	
+	
+	<bean id="systemInfoMD" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>Test</value>
+		</property>
+		<property name="category">
+			<value>EB</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>	
+	
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="nio://0.0.0.0:61617"></property>
+	</bean>
+	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
+		<!-- 	Solve channel is inactive problem -->
+<!-- 		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
+		<property name="url" value="nio://localhost:61616?wireFormat.maxInactivityDuration=86400000"></property>
+	</bean>
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	  <property name="dataSource" ref="dataSource"/>
+	  <property name="mappingResources">
+	    <list>
+	      <value>conf/object.hbm.xml</value>
+	    </list>
+	  </property>
+	  <property name="hibernateProperties">
+      	<props>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.show_sql">false</prop>
+         <prop key="hibernate.format_sql">false</prop>
+         <prop key="hibernate.connection.autocommit">false</prop>
+       	</props>
+       </property>
+	</bean>
+	
+	<bean id="sessionFactoryCentral" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	  <property name="dataSource" ref="dataSourceCentral"/>
+	  <property name="hibernateProperties">
+      	<props>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.show_sql">false</prop>
+         <prop key="hibernate.format_sql">false</prop>
+         <prop key="hibernate.connection.autocommit">false</prop>
+       	</props>
+       </property>
+	</bean>
+	
+	<!-- MarketDataManager setting -->
+	<bean id="mdReceiver" class="com.cyanspring.common.marketdata.MarketDataReceiver">
+		<constructor-arg>
+			<list>
+				<ref bean="ibAdaptor" />
+			</list>		 
+		</constructor-arg>
+		<property name="quoteThrottle" value="1000"></property>
+		<property name="timerInterval" value="1000"></property>
+		<property name="quoteLogIsOpen" value="false"></property>
+		<property name="quoteExtendEventIsSend" value="false"></property>
+
+		<property name="preSubscriptionList">
+				<ref bean="preSubscriptionList" />
+		</property>
+		<property name="sessionMonitor">
+			<map>
+				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+				<entry key="PREOPEN" value="0" />
+				<entry key="CLOSE" value="0" />
+			</map>
+		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+	</bean>
+
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"></property>
+		<property name="quotePriceWarningPercent" value="50"></property>
+	</bean>
+	
+	<!-- IBAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+		<property name="id" value="IB01" />
+		<property name="host" value="10.0.0.30" />
+		<property name="port" value="4001" />
+		<property name="clientId" value="198" />
+		<property name="reqMarketDepth" value="false" />
+		<property name="logMarketData" value="false" />
+		<!--<property name="cancelOpenOrders" value="true" /> -->
+	</bean>
+
+	<!-- IDAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+		<property name="account" value="fdtcanned"></property>
+		<property name="password" value="MFW9dC26"></property>
+		<property name="gateway" value="false"></property>
+		<property name="reqIp" value="10.0.0.32"></property>
+		<property name="reqPort" value="6086"></property>
+		<property name="exch" value="687"></property>
+		<property name="preOpen" value="510"></property>
+		<property name="open" value="515"></property>
+		<property name="close" value="500"></property>
+		<property name="sendHeartBeat" value="5"></property>
+		<property name="nonFX">
+			<map>
+				<entry key="XAUUSD" value="691" />
+				<entry key="XAGUSD" value="691" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- WindAdaptor setting (Setting can be marked if not used) -->
+	<!-- 
+	<bean id="windAdaptor"
+		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
+		<property name="showGui" value="true"></property>
+		<property name="reqIp" value="114.80.154.34"></property>
+		<property name="reqPort" value="10051"></property>
+		<property name="userName" value="TD1001888001"></property>
+		<property name="password" value="62015725"></property>
+		<property name="gateway" value="true"></property> 
+		<property name="gatewayIp" value="202.55.14.140"></property> 
+		<property name="gatewayPort" value="10049"></property>
+		<property name="marketDataLog" value="false"></property>
+		<property name="marketType" value="F"></property> 
+		<property name="refDataManager">
+			<ref bean="refDataManager" />
+		</property>					
+	</bean>
+	 -->
+</beans>

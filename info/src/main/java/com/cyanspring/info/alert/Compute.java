@@ -2,7 +2,6 @@ package com.cyanspring.info.alert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -15,7 +14,7 @@ import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public abstract class Compute {
 	private List<Class<? extends AsyncEvent>> lst;

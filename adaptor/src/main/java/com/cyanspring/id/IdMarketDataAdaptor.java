@@ -80,23 +80,24 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     boolean overNight = false;
     String path = "";
-    boolean isClose = false;
+    volatile boolean isClose = false;
     Object m_lock = new Object();
 
     List<IMarketDataStateListener> stateList = new ArrayList<IMarketDataStateListener>();
 
     List<UserClient> clientsList = new ArrayList<UserClient>();
     Hashtable<String, Integer> refTable = new Hashtable<String, Integer>();
-
-
     private Map<String, Integer> nonFX;
-
     private List<String> contributeList;
-
     private List<String> unContributeList;
+    private Map<String,String> pluginContributeBySymbolMap;
 
     public Map<String, Integer> getNonFX() {
         return nonFX;
+    }
+
+    public void setNonFX(Map<String, Integer> nonFX) {
+        this.nonFX = nonFX;
     }
 
     public List<String> getContributeList() {
@@ -115,8 +116,12 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         this.unContributeList = unContributeList;
     }
 
-    public void setNonFX(Map<String, Integer> nonFX) {
-        this.nonFX = nonFX;
+    public Map<String, String> getPluginContributeBySymbolMap() {
+        return pluginContributeBySymbolMap;
+    }
+
+    public void setPluginContributeBySymbolMap(Map<String, String> pluginContributeBySymbolMap) {
+        this.pluginContributeBySymbolMap = pluginContributeBySymbolMap;
     }
 
     public Date getTime() {
@@ -210,26 +215,19 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      */
     @Override
     public void init() throws Exception {
-
         log.debug("Id Adapter init begin");
-
+        isClose = false;
         if (thread == null) {
             thread = new RequestThread(this, "Id init");
         }
         thread.start();
-
         instance = this;
         config();
-
         QuoteMgr.instance().init();
-
         FileMgr.instance().init();
-
         Collections.sort(contributeList);
         Collections.sort(unContributeList);
-
         connect();
-
     }
 
     void config() {
@@ -248,42 +246,28 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         list = null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#uninit()
-     */
     @Override
     public void uninit() {
-        LogUtil.logInfo(log, "Id Adapter init begin");
+        LogUtil.logInfo(log, "Id Adapter uninit begin");
         isClose = true;
+        closeClient();
+        Parser.instance().close();
+        QuoteMgr.instance().close();
+        FileMgr.instance().close();
         if (thread != null) {
             thread.close();
             thread = null;
         }
-
-        closeClient();
-
-        QuoteMgr.instance().close();
-        FileMgr.instance().close();
-
-        isClose = true;
-
         LogUtil.logInfo(log, "Id Adapter uninit end");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#getState()
-     */
     @Override
     public boolean getState() {
         return isConnected;
     }
 
     public void updateState() {
-        sendState(getState());
+        if(!isClose) sendState(getState());
     }
 
     void connect() {
@@ -298,7 +282,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      * @param port connect Host Port
      * @throws Exception
      */
-    public static void connectGateWay(String host, int port) throws Exception {
+    public void connectGateWay(String host, int port) throws Exception {
 
         IdMarketDataAdaptor.instance.closeClient();
         Util.addLog(InfoString.ALert, "Id Adapter connect Id GW begin %s:%d", host, port);
@@ -339,6 +323,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
                 log.warn(e.getMessage());                
             }
 
+            if(isClose) return;
             log.info("id Data client can not connect with - " + host + " : " + port + " , will try again after 3 seconds.");
 
             try {
@@ -360,6 +345,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      */
 
     public void closeClient() {
+        log.debug("IdMarketDataAdapter close client begin");
         if (nioEventLoopGroup != null) {
             io.netty.util.concurrent.Future<?> f = nioEventLoopGroup.shutdownGracefully();
             try {
@@ -369,10 +355,8 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
             }
             nioEventLoopGroup = null;
         }
-
         Parser.instance().clearRingbuffer();
-        LogUtil.logInfo(log, "Id Adapter init exit");
-        Util.addLog(InfoString.ALert, "Id Adapter init exit");
+        log.info("IdMarketDataAdapter close client end");
     }
 
 
@@ -660,6 +644,16 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     }
 
     @Override
+    public void processEvent(Object object) {
+
+    }
+
+    @Override
+    public void clean() {
+
+    }
+
+    @Override
     public void onStartEvent(RequestThread sender) {
 
     }
@@ -667,9 +661,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     @Override
     public void onRequestEvent(RequestThread sender, Object reqObj) {
         reqObj = null;
+        if(isClose) return;
         try {
             thread.removeAllRequest();
-            if (!getState()) connectGateWay(getReqIp(), getReqPort());
+            if(!getState()) connectGateWay(getReqIp(), getReqPort());
         } catch (Exception e) {
             LogUtil.logException(log, e);
         }

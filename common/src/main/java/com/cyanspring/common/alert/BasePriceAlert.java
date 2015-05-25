@@ -9,6 +9,8 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	private double price;
 	private String dateTime ;
 	private String content ;
+	private double percentage ;
+	private boolean sendFlag;
 	
 	public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content){
 		super();
@@ -18,6 +20,18 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		this.setPrice(price);
 		this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 		this.setContent(content);
+		this.setSendFlag(false);
+	}
+	
+	public BasePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content){
+			super();
+			this.id = "A" + IdGenerator.getInstance().getNextID();
+			this.setUserId(userId); //david
+			this.setSymbol(symbol);  //USDJPY
+			this.setPercentage(percentage);
+			this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
+			this.setContent(content);
+			this.setSendFlag(false);
 	}
 	
 	public BasePriceAlert()
@@ -65,11 +79,6 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	public boolean equals(Object obj){		
 		return this.getId().equals(((BasePriceAlert)obj).getId());
 	}
-	
-//	@Override
-//	public int hashCode(){
-//		return 0;
-//	}
 	
 	public String getId() {
 		return id;
@@ -119,5 +128,21 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	public void setContent(String content)
 	{
 		this.content = content ;
+	}
+
+	public double getPercentage() {
+		return percentage;
+	}
+
+	public void setPercentage(double percentage) {
+		this.percentage = percentage;
+	}
+
+	public boolean isSendFlag() {
+		return sendFlag;
+	}
+
+	public void setSendFlag(boolean sendFlag) {
+		this.sendFlag = sendFlag;
 	}	
 }

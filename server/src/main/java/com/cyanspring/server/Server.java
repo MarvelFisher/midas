@@ -61,7 +61,7 @@ import com.cyanspring.common.server.event.ServerShutdownEvent;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountPositionManager;
 import com.cyanspring.server.account.TrailingStopManager;
 import com.cyanspring.server.persistence.PersistenceManager;
@@ -478,6 +478,7 @@ public class Server implements ApplicationContextAware{
 				plugins.get(i-1).uninit();
 			}
 		}
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 		businessManager.uninit();
 		orderManager.uninit();
@@ -565,7 +566,7 @@ public class Server implements ApplicationContextAware{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		String configFile = "conf/fcserver.xml";
+		String configFile = "conf/lfx_server.xml";
 		String logConfigFile = "conf/common/log4j.xml";
 		if(args.length == 1) {
 			configFile = args[0];

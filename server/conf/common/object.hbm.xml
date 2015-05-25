@@ -168,6 +168,13 @@
   	<property column="ACTIVE"			name="active"		 type="java.lang.Boolean"/>
   	<property column="CREATED"			name="created"		 type="java.util.Date"/>
   	<property column="CURRENCY"			name="currency" 	 type="java.lang.String"/>
+  	<property column="START_ACCOUNT_VALUE"			name="startAccountValue"		 type="java.lang.Double"/>
+  	<property column="STATE" 		name="state" length="20">
+   		<type name="org.hibernate.type.EnumType">
+   			<param name="enumClass">com.cyanspring.common.account.AccountState</param>   
+       		<param name="type">12</param>
+   		</type>
+	</property>
   </class>
   
 <!--   
@@ -226,7 +233,20 @@
 	<property column="LEVERAGE_RATE" 			name="leverageRate" 		  type="java.lang.Double"/>
 	<property column="DAILY_STOPLOSS" 			name="dailyStopLoss" 		  type="java.lang.Double"/>
   	<property column="TRAILING_STOP" 			name="trailingStop" 		  type="java.lang.Double"/>
-  	
+  	<property column="STOP_LOSS_PERCENT" 			name="stopLossPercent" 		  type="java.lang.Double"/>
+  	<property column="FREEZE_PERCENT" 			name="freezePercent" 		  type="java.lang.Double"/>
+  	<property column="TERMINATE_PERCENT" 			name="terminatePercent" 		  type="java.lang.Double"/>
+  	<property column="LIVE_TRADING"			name="liveTrading"		 type="java.lang.Boolean"/>
+  	<property column="USER_LIVE_TRADING"			name="userLiveTrading"		 type="java.lang.Boolean"/>
+    <property column="LIVE_TRADING_TYPE" 			name="liveTradingType" length="30">
+   		<type name="org.hibernate.type.EnumType">
+   			<param name="enumClass">com.cyanspring.common.account.LiveTradingType</param>   
+       		<param name="type">12</param>
+   		</type>
+	</property>
+	<property column="LIVE_TRADING_SETTED_DATE" 			name="liveTradingSettedDate" 		  type="java.lang.String"/>
+  	<property column="FREEZE_VALUE" 			name="freezeValue" 		  type="java.lang.Double"/>
+  	<property column="TERMINATE_VALUE" 			name="terminateValue" 		  type="java.lang.Double"/>	
   </class>
   
   <class name="com.cyanspring.common.account.PositionPeakPrice" table="ANYONE.POSITION_PEAK_PRICE">

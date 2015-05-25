@@ -11,7 +11,7 @@
 
 	<bean id="sender" class="com.cyanspring.soak.EventSender">
 		<property name="eventClass">
-			<value>com.cyanspring.common.event.info.HistoricalPriceRequestEvent</value>
+			<value>com.cyanspring.common.server.event.ServerShutdownEvent</value>
 		</property>
 	</bean>
 
@@ -20,10 +20,10 @@
 			<value>Test</value>
 		</property>
 		<property name="category">
-			<value>Info</value>
+			<value>EB</value>
 		</property>
 		<property name="id">
-			<value>I1</value>
+			<value>S1</value>
 		</property>
 	</bean>	
 	
@@ -31,25 +31,12 @@
 <!--
 		<property name="url" value="nio://54.169.33.151:61616"></property>
 -->
-		<property name="url" value="nio://10.0.0.51:61627"></property>
+		<property name="url" value="nio://localhost:61616"></property>
 	</bean>
 	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 	    <constructor-arg>
 	    	<ref bean="transportService"/>
-	    </constructor-arg>
-	</bean>
-	
-	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-<!--
-		<property name="url" value="nio://54.169.33.151:61616"></property>
--->
-		<property name="url" value="nio://localhost:60006"></property>
-	</bean>
-	
-	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
-	    <constructor-arg>
-	    	<ref bean="globalTransportService"/>
 	    </constructor-arg>
 	</bean>
 	

@@ -10,12 +10,13 @@
  ******************************************************************************/
 package com.cyanspring.server.persistence;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
+import com.google.common.base.Strings;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -36,7 +37,6 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
-import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.Instrument;
@@ -60,7 +60,7 @@ import com.cyanspring.common.type.PersistType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.UserKeeper;
 
@@ -88,6 +88,7 @@ public class PersistenceManager {
 	CentralDbConnector centralDbConnector;
 	
 	private CheckEmailType checkEmailUnique = CheckEmailType.allCheck;
+    private CheckPhoneType checkPhoneUnique = CheckPhoneType.allCheck;
 	private boolean syncCentralDb = true;
 	private boolean embeddedSQLServer;
 	private int textSize = 4000;
@@ -144,6 +145,8 @@ public class PersistenceManager {
 			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(UserTerminateEvent.class, null);
+            subscribeToEvent(UserMappingEvent.class, null);
+            subscribeToEvent(UserMappingDetachEvent.class, null);
 		}
 
 		@Override
@@ -187,6 +190,7 @@ public class PersistenceManager {
 
 	public void uninit() {
 		log.info("uninitialising");
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 		if(embeddedSQLServer)
 			stopEmbeddedSQLServer();
@@ -560,15 +564,15 @@ public class PersistenceManager {
 				}
 
 			} catch (Exception ue) {
-				
-				log.error(ue.getMessage(), ue);
-				//message = ue.getMessage();
+
 				if(ue instanceof UserException){
+                    log.warn(ue.getMessage(), ue);
 					message = MessageLookup.buildEventMessage(msg,ue.getMessage());
 					if(msg==null)
 						message = MessageLookup.buildEventMessage(ErrorMessage.INVALID_USER_ACCOUNT_PWD,ue.getMessage());					
 				}else{
-					message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE,ue.getMessage());
+                    log.error(ue.getMessage(), ue);
+					message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,ue.getMessage());
 				}		
 				
 			    if (tx!=null) 
@@ -587,8 +591,8 @@ public class PersistenceManager {
 		}
 		
 		try {
-			eventManager.sendRemoteEvent(new UserLoginReplyEvent(event.getOriginalEvent().getKey(), 
-					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
+			eventManager.sendRemoteEvent(new UserLoginReplyEvent(event.getOriginalEvent().getKey(),
+                    event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, message, event.getOriginalEvent().getTxId()));
 			
 			if(ok) {
 				user.setLastLogin(Clock.getInstance().now());
@@ -607,140 +611,371 @@ public class PersistenceManager {
 		UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
 		AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
 		boolean ok = true;
-		String message = "";
-		User user = null;
-		Account defaultAccount = null;
-		List<Account> list = null;
 
 		if(null == event.getUser())	//user exist , getAccount
 		{
-			user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
-
-			if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
-				defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
-			}
-
-			list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
-
-			if (defaultAccount == null && (list == null || list.size() <= 0)) {
-				ok = false;
-				//message = "No trading account available for this user";
-				message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
-
-			}
-			
-			try {
-				eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
-						event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
-						message, event.getOriginalEvent().getTxId(), false));
-				if(ok) {
-					user.setLastLogin(Clock.getInstance().now());
-					eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
-				}
-
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
+            ok = loginAndGetAccount(event, userKeeper, accountKeeper);
 			log.info("Login: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
-			
 		}
+        else if (Strings.isNullOrEmpty(event.getUser().getId()))
+        {
+            ok = loginFromThirdPartyIdAndGetAccount(event, userKeeper, accountKeeper);
+            log.info("Login 3rd: " + event.getOriginalEvent().getThirdPartyId() + ", " + ok);
+        }
 		else	//user not exist, create user and then getAccount
 		{
-			Session session = sessionFactory.openSession();
-			user = event.getUser();
-			Transaction tx = null;
-			ok = true;
-			ErrorMessage msg = null;
-			try 
-			{
-				if(syncCentralDb)
-				{
-					/*
-					if(centralDbConnector.isUserExist(user.getId()))
-						throw new CentralDbException("This user already exists: " + user.getId());
-					if(centralDbConnector.isEmailExist(user.getEmail()))
-						throw new CentralDbException("This email already exists: " + user.getEmail());
-					if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-								user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
-						throw new CentralDbException("can't create this user: " + user.getId());
-						*/
-					if(!centralDbConnector.isUserExist(user.getId())) // user dose not exist in Mysql either
-					{
-						if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
-						    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
-						{
-							if(centralDbConnector.isEmailExist(user.getEmail()))
-							{
-								//fixed because of #3090
-//								throw new CentralDbException("This email already exists: " + user.getEmail());
-								msg = ErrorMessage.CREATE_USER_FAILED;
-								throw new CentralDbException("Your "+ user.getUserType().name() +" account email has been used to register an FDT Account. Please login it with " + user.getEmail() + " now.");
-							}
-						}
-						if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-									user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage())){
-							msg = ErrorMessage.CREATE_USER_FAILED;
-							throw new CentralDbException("can't create this user: " + user.getId());
-						}
-						
-					}
-				}
-				
-				tx = session.beginTransaction();
-				session.save(user);
-				tx.commit();
-				log.info("Created user: " + event.getUser());
+            ok = createUserAndGetAccount(event);
+			log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
+		}
+	}
+
+    private boolean createUserAndGetAccount(PmUserCreateAndLoginEvent event) {
+        boolean ok;
+        Session session = sessionFactory.openSession();
+        Account defaultAccount = event.getAccounts().size() > 0 ? event.getAccounts().get(0) : null;
+        User user = event.getUser();
+        Transaction tx = null;
+        ok = true;
+        ErrorMessage msg = null;
+        String message = "";
+
+        boolean isTransfer = false;
+
+        try {
+			if (Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
+					centralDbConnector.isThirdPartyUserAnyMappingExist(user.getId())) {
+
+				throw new CentralDbException("This third party id is already used in the new version app",
+						ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP);
 			}
-			catch (Exception e) {
-				if(e instanceof CentralDbException)
-					log.warn(e.getMessage(), e);
-				else {
-					msg = ErrorMessage.EXCEPTION_MESSAGE;
-					log.error(e.getMessage(), e);
-				}
-				ok = false;
+
+            isTransfer = !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
+					centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+            createCentralDbUser(event, user, isTransfer);
+
+            // the 3rd user type is recorded in THIRD_PARTY_USER table.
+            if (user.getUserType().isThirdParty() && !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
+                user.setUserType(UserType.NORMAL);
+            }
+
+            if (isTransfer) {
+                // Set the old default account.
+
+                UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
+                AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
+
+                // getAccount
+                User oldUser = userKeeper.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+                if (null != oldUser.getDefaultAccount() && !oldUser.getDefaultAccount().isEmpty()) {
+                    defaultAccount = accountKeeper.getAccount(oldUser.getDefaultAccount());
+                }
+
+                user.setDefaultAccount(defaultAccount.getId());
+            }
+
+            tx = session.beginTransaction();
+            session.save(user);
+            tx.commit();
+            log.info("Created user: " + event.getUser());
+        } catch (Exception e) {
+            if (e instanceof CentralDbException) {
+                msg = ((CentralDbException) e).getClientMessage();
+                log.warn(e.getMessage(), e);
+            } else {
+                msg = ErrorMessage.CREATE_USER_FAILED;
+                log.error(e.getMessage(), e);
+            }
+
+            ok = false;
+            message = MessageLookup.buildEventMessageWithCode(msg, e.getMessage());
+
+            if (tx != null)
+                tx.rollback();
+        } finally {
+            session.close();
+        }
+
+        if (ok && !isTransfer) {
+            for (Account account : event.getAccounts()) {
+                createAccount(account);
+            }
+
+            eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
+        }
+
+        if (event.getOriginalEvent() != null) {
+            try {
+                if (isTransfer) {
+
+                    UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
+                    AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
+
+                    // getAccount
+                    user = userKeeper.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+                    if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+                        defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+                    }
+
+                    List<Account> list = accountKeeper.getAccounts(user.getId());
+
+                    if (defaultAccount == null && (list == null || list.size() <= 0)) {
+                        ok = false;
+                        message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+                    }
+
+                    event.getUser().setDefaultAccount(defaultAccount.getId());
+
+                    eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+                            event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+                            message, event.getOriginalEvent().getTxId(), true));
+                    if(ok) {
+                        user.setLastLogin(Clock.getInstance().now());
+                        eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+                    }
+
+                } else {
+
+                    eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+                            event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
+                            , message, event.getOriginalEvent().getTxId(), true));
+                    if (ok) {
+                        for (Account account : event.getAccounts())
+                            eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+                    }
+                }
+
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return ok;
+    }
+
+    private boolean loginAndGetAccount(PmUserCreateAndLoginEvent event, UserKeeper userKeeper, AccountKeeper accountKeeper) {
+        boolean ok = true;
+        Account defaultAccount = null;
+        List<Account> list = null;
+        String message = "";
+        User user = null;
+        ErrorMessage msg = null;
+
+        try {
+			if (!Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
+
+                // Old 3rd party id can't be bound with exist FDT id.
+                if (centralDbConnector.isUserExistAndNotTerminated(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
+                    ok = false;
+                    msg = ErrorMessage.USER_ALREADY_EXIST;
+                    throw new UserException("This user already exists: " + event.getOriginalEvent().getUser().getId());
+                }
+
+                // login (backward compatibility, old version skip this.)
+                user = centralDbConnector.userLoginEx(event.getOriginalEvent().getUser().getId(), event.getOriginalEvent().getUser().getPassword());
+
+                if (null == user) {
+                    ok = false;
+                    msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+                    throw new UserException("userid or password invalid");
+                }
+
+                if (user.getTerminationStatus().isTerminated()) {
+                    ok = false;
+                    msg = ErrorMessage.USER_IS_TERMINATED;
+                    throw new UserException("User is terminated");
+                }
 				
-				//message = String.format("can't create user, err=[ %s ]", e.getMessage());
-				
-				message = MessageLookup.buildEventMessageWithCode(msg, e.getMessage());
-				
-				
-			    if (tx!=null) 
-			    	tx.rollback();
-			}
-			finally {
-				session.close();
-			}
-			
-			if(ok)
-			{
-				for(Account account : event.getAccounts())
-					createAccount(account);
-				eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
-			}
-			
-			if(event.getOriginalEvent() != null)
-			{
-				try {
-					eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(), 
-							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
-							, message, event.getOriginalEvent().getTxId(), true));
-					if(ok) {
-						for(Account account : event.getAccounts())
-							eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+				String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
+                        event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
+
+				if (Strings.isNullOrEmpty(userId)) {
+
+					if (!centralDbConnector.registerThirdPartyUser(event.getOriginalEvent().getUser().getId(),
+							event.getOriginalEvent().getUser().getUserType(), event.getOriginalEvent().getThirdPartyId(),
+                            event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage())) {
+
+						ok = false;
+						msg = ErrorMessage.THIRD_PARTY_ID_REGISTER_FAILED;
+						throw new UserException("Register third party id failed");
 					}
 
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
+				} else {
+					if (!userId.equals(event.getOriginalEvent().getUser().getId())) {
+
+						ok = false;
+						msg = ErrorMessage.THIRD_PARTY_ID_NOT_MATCH_USER_ID;
+						throw new UserException("Third party id is not match with the user id");
+					}
 				}
-			}			
+			}
+
+			// getAccount
+            user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
+
+            if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+                defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+            }
+
+            list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
+
+            if (defaultAccount == null && (list == null || list.size() <= 0)) {
+                ok = false;
+                message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+            }
+
+        } catch (Exception ue) {
+
+            if(ue instanceof UserException){
+                log.warn(ue.getMessage(), ue);
+                message = MessageLookup.buildEventMessage(msg, ue.getMessage());
+            }else{
+                log.error(ue.getMessage(), ue);
+                message = MessageLookup.buildEventMessage(ErrorMessage.USER_LOGIN_FAILED,ue.getMessage());
+			}
 		}
-		log.info("CreateAndLogin: " + event.getOriginalEvent().getUser().getId() + ", " + ok);
-		
-	}
-		
-	
-	public void processSignalEvent(SignalEvent event) {
+
+		try {
+			eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+                    message, event.getOriginalEvent().getTxId(), false));
+            if(ok) {
+                user.setLastLogin(Clock.getInstance().now());
+                eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return ok;
+    }
+
+    private boolean loginFromThirdPartyIdAndGetAccount(PmUserCreateAndLoginEvent event, UserKeeper userKeeper, AccountKeeper accountKeeper) {
+        boolean ok = true;
+        Account defaultAccount = null;
+        List<Account> list = null;
+        String message = "";
+        User user = null;
+        ErrorMessage msg = null;
+
+        try {
+
+            String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
+                    event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
+
+            if (Strings.isNullOrEmpty(userId) && /* phase 1 */ !centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
+
+                ok = false;
+                msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+                throw new UserException("userid or password invalid");
+            }
+
+            /* phase 1 */
+            if (Strings.isNullOrEmpty(userId)) {
+                userId = event.getOriginalEvent().getThirdPartyId();
+            }
+
+            event.getOriginalEvent().getUser().setId(userId);
+
+            // Get user from MySQL and check termination
+            user = centralDbConnector.getUser(userId);
+
+            if (null == user || user.getTerminationStatus().isTerminated()) {
+                ok = false;
+                msg = ErrorMessage.USER_IS_TERMINATED;
+                throw new UserException("User is terminated");
+            }
+
+            // Get account
+            user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
+
+            if (null != user.getDefaultAccount() && !user.getDefaultAccount().isEmpty()) {
+                defaultAccount = accountKeeper.getAccount(user.getDefaultAccount());
+            }
+
+            list = accountKeeper.getAccounts(event.getOriginalEvent().getUser().getId());
+
+            if (defaultAccount == null && (list == null || list.size() <= 0)) {
+                ok = false;
+                message = MessageLookup.buildEventMessage(ErrorMessage.NO_TRADING_ACCOUNT, "No trading account available for this user");
+            }
+
+        } catch (Exception ue) {
+
+            if(ue instanceof UserException){
+                log.warn(ue.getMessage(), ue);
+                message = MessageLookup.buildEventMessage(msg, ue.getMessage());
+            }else{
+                log.error(ue.getMessage(), ue);
+                message = MessageLookup.buildEventMessage(ErrorMessage.USER_LOGIN_FAILED,ue.getMessage());
+			}
+		}
+
+		try {
+			eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
+					event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
+                    message, event.getOriginalEvent().getTxId(), false));
+            if(ok) {
+                user.setLastLogin(Clock.getInstance().now());
+                eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return ok;
+    }
+
+    private void createCentralDbUser(PmUserCreateAndLoginEvent event, User user, boolean isTransfer) throws CentralDbException {
+
+        if (!syncCentralDb) {
+            return;
+        }
+
+        if (!centralDbConnector.isUserExist(user.getId())) { // user dose not exist in Mysql either
+
+            if (checkEmailUnique.equals(CheckEmailType.allCheck) ||
+                    (checkEmailUnique.equals(CheckEmailType.onlyExist) && !Strings.isNullOrEmpty(user.getEmail()))) {
+
+                if (centralDbConnector.isEmailExist(user.getEmail())) {
+                    if (isTransfer) {
+                        user.setEmail("");
+                    } else {
+                        throw new CentralDbException("Your " + user.getUserType().name() +
+                                " account email has been used to register an FDT Account. Please login it with " +
+                                user.getEmail() + " now.", ErrorMessage.CREATE_USER_FAILED);
+                    }
+                }
+            }
+
+            if (checkPhoneUnique == CheckPhoneType.allCheck ||
+                    (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
+
+                if (centralDbConnector.isPhoneExist(user.getPhone())) {
+                    if (isTransfer) {
+                        user.setPhone("");
+                    } else {
+                        throw new CentralDbException("Your phone has been used to register an FDT Account.",
+                                ErrorMessage.USER_PHONE_EXIST);
+                    }
+                }
+            }
+
+            if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
+                    user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
+                    event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId(),
+                    event.getOriginalEvent().getMarket())) {
+
+                throw new CentralDbException("can't create this user: " + user.getId(), ErrorMessage.CREATE_USER_FAILED);
+            }
+        }
+    }
+
+
+    public void processSignalEvent(SignalEvent event) {
 		persistXml(event.getKey(), PersistType.SIGNAL, StrategyState.Running, null, null, null, event.getSignal().toCompactXML());
 	}
 	
@@ -1059,13 +1294,23 @@ public class PersistenceManager {
 					throw new CentralDbException("This user already exists: " + user.getId(),ErrorMessage.USER_ALREADY_EXIST);
 				
 				if( checkEmailUnique.equals(CheckEmailType.allCheck) || 
-					    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty()))
-				{
+					    (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail() && !user.getEmail().isEmpty())) {
 					if(centralDbConnector.isEmailExist(user.getEmail()))
 						throw new CentralDbException("This email already exists: " + user.getEmail(),ErrorMessage.USER_EMAIL_EXIST);
 				}
+
+                if (checkPhoneUnique == CheckPhoneType.allCheck ||
+                        (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
+
+                    if (centralDbConnector.isPhoneExist(user.getPhone())) {
+                        throw new CentralDbException("This phone already exists: " + user.getPhone(),
+                                ErrorMessage.USER_PHONE_EXIST);
+                    }
+                }
+
 				if(!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), 
-							user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(), event.getOriginalEvent().getLanguage()))
+						user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
+						event.getOriginalEvent().getLanguage()))
 					throw new CentralDbException("can't create this user: " + user.getId(),ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
 			}
 			
@@ -1079,7 +1324,7 @@ public class PersistenceManager {
 				log.warn(e.getMessage(), e);
 				message = MessageLookup.buildEventMessage(((CentralDbException) e).getClientMessage(), String.format("can't create user, err=[%s]", e.getMessage()));
 			}else {
-				message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, String.format("can't create user, err=[%s]", e.getMessage()));
+				message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED, String.format("can't create user, err=[%s]", e.getMessage()));
 				log.error(e.getMessage(), e);
 			}
 			ok = false;
@@ -1144,9 +1389,9 @@ public class PersistenceManager {
 		Transaction tx = null;
 		try {
 		    tx = session.beginTransaction();
-	    	session.save(account);
-		    tx.commit();
-		    log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
+			session.save(account);
+			tx.commit();
+			log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -1200,7 +1445,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		OpenPosition position = event.getPosition();
 		Transaction tx = null;
-		try {
+        try {
 		    tx = session.beginTransaction();
 	    	session.delete(position);
 		    tx.commit();
@@ -1240,7 +1485,7 @@ public class PersistenceManager {
 		AccountSetting accountSetting = event.getAccountSetting();
 		Transaction tx = null;
 		try {
-		    tx = session.beginTransaction();
+			tx = session.beginTransaction();
 	    	session.saveOrUpdate(accountSetting);
 		    tx.commit();
 		}
@@ -1265,7 +1510,7 @@ public class PersistenceManager {
 	        query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay2");
 		    query.setParameter("tradeDate", event.getTradeDateTime());
-	        query.executeUpdate();
+			query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay3");
 	        query.executeUpdate();
 	        tx.commit();
@@ -1306,7 +1551,7 @@ public class PersistenceManager {
 			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_PWD_FAILED, String.format("can't change user's password, err=[%s]", e.getMessage()));
 
 		}
-		
+
 		try {
 			eventManager.sendRemoteEvent(new ChangeUserPasswordReplyEvent(event.getKey(),
 					event.getSender(), event.getUser(), ok, message, event.getTxId()));
@@ -1344,6 +1589,87 @@ public class PersistenceManager {
 			log.error(e.getMessage(), e);
 		}
 	}
+
+    public void processUserMappingEvent(UserMappingEvent event) {
+
+        if (!syncCentralDb) {
+            return;
+        }
+
+        boolean userExist= false;
+        boolean userThirdPartyExist = false;
+		boolean isPendingTransfer = false;
+		boolean isOldThirdPartyUser = false;
+        String userId = event.getUser();
+
+        if (!Strings.isNullOrEmpty(event.getUser())) {
+            userExist = centralDbConnector.isUserExist(event.getUser().toLowerCase());
+        }
+
+        if (!Strings.isNullOrEmpty(event.getUserThirdParty())) {
+            userThirdPartyExist = centralDbConnector.isThirdPartyUserExist(event.getUserThirdParty().toLowerCase(),
+                    event.getMarket(), event.getLanguage());
+
+            if (userThirdPartyExist && centralDbConnector.isThirdPartyUserPendingTransfer(event.getUserThirdParty().toLowerCase())) {
+                isPendingTransfer = true;
+            }
+
+            if (userThirdPartyExist && Strings.isNullOrEmpty(event.getUser())) {
+
+                userId = centralDbConnector.getUserIdFromThirdPartyId(event.getUserThirdParty(), event.getMarket(),
+                        event.getLanguage());
+                userExist = true;
+            }
+
+			if (!userThirdPartyExist && centralDbConnector.isUserExistAndNotTerminated(event.getUserThirdParty().toLowerCase())) {
+				isOldThirdPartyUser = true;
+			}
+        }
+
+		try {
+            UserMappingReplyEvent reply = new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
+                    userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
+                    event.getLanguage(), event.getClientId());
+            reply.setTransferring(isPendingTransfer);
+			reply.setOldThirdPartyUser(isOldThirdPartyUser);
+
+			eventManager.sendRemoteEvent(reply);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void processUserMappingDetachEvent(UserMappingDetachEvent event) {
+
+        if (!syncCentralDb) {
+            return;
+        }
+
+        boolean ok = false;
+        String message = "";
+
+        try {
+            if (centralDbConnector.detachThirdPartyUser(event.getUser(), event.getPassword(), event.getUserThirdParty(),
+                    event.getMarket(), event.getLanguage())) {
+
+                ok = true;
+                log.info("Detach third party id, {}", event.toString());
+            } else {
+                MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id"));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            ok = false;
+            message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
+		}
+
+		try {
+			eventManager.sendRemoteEvent(new UserMappingDetachReplyEvent(event.getKey(), event.getSender(), ok, message,
+					event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage()));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 	
 	// getters and setters
 	public int getTextSize() {
@@ -1426,7 +1752,15 @@ public class PersistenceManager {
 		this.checkEmailUnique = checkEmailUnique;
 	}
 
-	public long getPurgeOrderDays() {
+    public CheckPhoneType getCheckPhoneUnique() {
+        return checkPhoneUnique;
+    }
+
+    public void setCheckPhoneUnique(CheckPhoneType checkPhoneUnique) {
+        this.checkPhoneUnique = checkPhoneUnique;
+    }
+
+    public long getPurgeOrderDays() {
 		return purgeOrderDays;
 	}
 

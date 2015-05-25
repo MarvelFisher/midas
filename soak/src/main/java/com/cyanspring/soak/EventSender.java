@@ -12,6 +12,7 @@ import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;
+import com.cyanspring.common.server.event.ServerShutdownEvent;
 
 public class EventSender extends ClientAdaptor {
 	private static Logger log = LoggerFactory.getLogger(ClientAdaptor.class);
@@ -73,8 +74,15 @@ public class EventSender extends ClientAdaptor {
 	}
 
 	public static void main(String[] args) throws Exception {
-		DOMConfigurator.configure("conf/evts_log4j.xml");
+		String logconf = "conf/evts_log4j.xml";
 		String configFile = "conf/eventSender.xml";
+		if (args.length != 2)
+		{
+			throw new Exception("Recommended arguments \'log4jConfig\' , \'EventSenderConfog\'");
+		}
+		logconf = args[0];
+		configFile = args[1];
+		DOMConfigurator.configure(logconf);
 		ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
 		
 		// start server

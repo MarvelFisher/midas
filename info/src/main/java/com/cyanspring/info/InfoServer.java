@@ -23,12 +23,10 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.system.DuplicateSystemIdEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
-import com.cyanspring.common.server.event.DownStreamReadyEvent;
-import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.marketdata.MarketDataReceiver;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.info.marketdata.InfoMarketDataManager;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class InfoServer 
 {
@@ -62,11 +60,14 @@ public class InfoServer
 	@Autowired
 	private ScheduleManager scheduleManager;
 	
-//	@Autowired
-//	InfoMarketDataManager mdManager;
+	@Autowired
+	MarketDataReceiver mdReceiver;
 	
 	@Autowired
 	private Boolean useLocalMdManager;
+	
+	@Autowired
+	private Boolean useLocalMdReceiver;
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<IPlugin> plugins;
@@ -184,10 +185,12 @@ public class InfoServer
 				plugin.init();
 			}
 		}
-		
-//		if (useLocalMdManager == true)
-//			mdManager.init();
-
+		if (useLocalMdReceiver)
+		{
+			mdReceiver.setServerInfo(systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + systemInfoMD.getId());
+			mdReceiver.setEventManager(eventManagerMD);
+			mdReceiver.init();
+		}
 	}
 	
 	class ReadyList {

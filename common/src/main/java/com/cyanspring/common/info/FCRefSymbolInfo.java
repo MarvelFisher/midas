@@ -1,6 +1,7 @@
 package com.cyanspring.common.info;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.cyanspring.common.marketdata.SymbolInfo;
@@ -16,18 +17,23 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 	{
 		int index;
 		ArrayList<SymbolInfo> infoList = new ArrayList<SymbolInfo>();
-		for (int ii = 0; ii < symbolList.size(); ii++)
+	    ArrayList<String> symbolListClr = new ArrayList<String>();
+	    for (String s: symbolList)
+	    {
+	        if(Collections.frequency(symbolListClr, s) < 1) symbolListClr.add(s);
+	    }
+		for (int ii = 0; ii < symbolListClr.size(); ii++)
 		{
 			infoList.add(null);
 		}
 		for (SymbolInfo symbolinfo : refSymbolInfo)
 		{
-			if (symbolList.contains(symbolinfo.getCode()) || symbolList.contains(symbolinfo.getHint()))
+			if (symbolListClr.contains(symbolinfo.getCode()) || symbolListClr.contains(symbolinfo.getHint()))
 			{
-				index = symbolList.indexOf(symbolinfo.getCode());
+				index = symbolListClr.indexOf(symbolinfo.getCode());
 				if (index < 0)
 				{
-					index = symbolList.indexOf(symbolinfo.getHint());
+					index = symbolListClr.indexOf(symbolinfo.getHint());
 				}
 				infoList.remove(index);
 				infoList.add(index, symbolinfo);
@@ -40,12 +46,11 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 	public List<SymbolInfo> getBySymbolInfos(List<SymbolInfo> inputInfoList) 
 	{
 		ArrayList<SymbolInfo> infoList = new ArrayList<SymbolInfo>();
-		for (SymbolInfo symbolinfo : refSymbolInfo)
+		for (SymbolInfo inputinfo : inputInfoList)
 		{
-			for (SymbolInfo inputinfo : inputInfoList)
+			for (SymbolInfo symbolinfo : refSymbolInfo)
 			{
-				if (symbolinfo.getCode().equals(inputinfo.getCode()) 
-						|| symbolinfo.getHint().equals(inputinfo.getHint()))
+				if (symbolinfo.getHintOrCode().equals(inputinfo.getHintOrCode()))
 				{
 					infoList.add(symbolinfo);
 					break;

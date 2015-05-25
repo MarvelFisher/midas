@@ -3,12 +3,15 @@ package com.cyanspring.adaptor.future.wind;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_MARKET_DATA;
 import cn.com.wind.td.tdf.TDF_MSG_ID;
-import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
-
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QuoteMgr implements IReqThreadCallback {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(QuoteMgr.class);
 
 	public static QuoteMgr instance = new QuoteMgr();
 	Object m_lock = new Object();
@@ -69,28 +72,10 @@ public class QuoteMgr implements IReqThreadCallback {
 	
 
 	void process(int type, Object objMsg) {
-//		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
 		switch (type) {
-		case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT: {
-
-//			List<SymbolInfo> list = adaptor.updateCodeTable((String) objMsg);
-//			adaptor.sendSymbolInfo(list);
-		}
+		case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT:
 			break;
-		/*
-		 * case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK: { try {
-		 * Thread.sleep(1000); } catch (InterruptedException e) { }
-		 * 
-		 * if (!isClosed) { connect(); } } break;
-		 */
-		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE: {
-			TDF_QUOTATIONDATE_CHANGE change = (TDF_QUOTATIONDATE_CHANGE) objMsg;
-			WindFutureDataAdaptor.info("%s, quotation change from %d to %d",
-					change.getMarket(), change.getOldDate(),
-					change.getNewDate());
-
-//			adaptor.updateCodeTable(change.getMarket());
-		}
+		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE:
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE: {
 			TDF_FUTURE_DATA future = (TDF_FUTURE_DATA) objMsg;
@@ -120,9 +105,6 @@ public class QuoteMgr implements IReqThreadCallback {
 		}
 		int type = (int) arr[0];
 		process(type, arr[1]);
-
-		arr = null;
-		reqObj = null;
 	}
 
 	@Override

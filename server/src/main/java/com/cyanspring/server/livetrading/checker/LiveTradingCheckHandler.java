@@ -1,0 +1,48 @@
+package com.cyanspring.server.livetrading.checker;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.LiveTradingType;
+
+public class LiveTradingCheckHandler {
+	
+	private static final Logger log = LoggerFactory
+			.getLogger(LiveTradingCheckHandler.class);	
+	
+	private Map <LiveTradingType,List<ILiveTradingChecker>> checkMap = new HashMap<LiveTradingType,List<ILiveTradingChecker>>();
+	
+	public LiveTradingCheckHandler(Map <LiveTradingType,List<ILiveTradingChecker>> map) {
+		checkMap = map;
+	}
+	
+	public void startCheckChain(Account account, AccountSetting accountSetting){
+		
+		if(!accountSetting.checkLiveTrading()){
+			return;
+		}
+		if( null == checkMap ){
+			return;
+		}
+		if(!checkMap.containsKey(accountSetting.getLiveTradingType())){
+			log.warn("Live trading : can't find this checkchain - {}",accountSetting.getLiveTradingType());
+			return;
+		}
+		
+		List <ILiveTradingChecker>checkList = checkMap.get(accountSetting.getLiveTradingType());
+		
+		for(ILiveTradingChecker checker: checkList){
+			boolean needNextCheck = checker.check(account, accountSetting);
+			if(!needNextCheck){
+				break;
+			}
+		}
+	
+	}
+
+}

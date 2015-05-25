@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.alert.Compute;
 public class InfoGateway implements IPlugin {
 	private static final Logger log = LoggerFactory
@@ -36,9 +35,6 @@ public class InfoGateway implements IPlugin {
 
 	@Autowired
 	private IRemoteEventManager eventManagerMD;
-
-	@Autowired
-	SessionFactory sessionFactory;
 
 	private int createThreadCount;
 	private ExecutorService service;
@@ -114,7 +110,7 @@ public class InfoGateway implements IPlugin {
 	public void processResetAccountRequestEvent(
 			final ResetAccountRequestEvent event) {
 		log.info("[processResetAccountRequestEvent] : AccountId :"
-				+ event.getAccount() + "Coinid : " + event.getCoinId());
+				+ event.getAccount() + " Coinid : " + event.getCoinId());
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {

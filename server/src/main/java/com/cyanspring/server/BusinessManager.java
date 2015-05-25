@@ -10,14 +10,13 @@
  ******************************************************************************/
 package com.cyanspring.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.event.order.*;
+import com.cyanspring.common.marketsession.WeekDay;
+import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -29,6 +28,7 @@ import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.FieldDef;
@@ -40,6 +40,8 @@ import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.downstream.DownStreamException;
+import com.cyanspring.common.event.AsyncEventMultiProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -48,26 +50,14 @@ import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.order.AmendParentOrderEvent;
-import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
-import com.cyanspring.common.event.order.AmendStrategyOrderEvent;
-import com.cyanspring.common.event.order.CancelParentOrderEvent;
-import com.cyanspring.common.event.order.CancelParentOrderReplyEvent;
-import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
-import com.cyanspring.common.event.order.ClosePositionReplyEvent;
-import com.cyanspring.common.event.order.ClosePositionRequestEvent;
-import com.cyanspring.common.event.order.EnterParentOrderEvent;
-import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
-import com.cyanspring.common.event.order.InitClientEvent;
-import com.cyanspring.common.event.order.InitClientRequestEvent;
-import com.cyanspring.common.event.order.UpdateChildOrderEvent;
-import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
@@ -88,10 +78,9 @@ import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.event.AsyncEventMultiProcessor;
-import com.cyanspring.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
+import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.order.MultiOrderCancelTracker;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
 import com.cyanspring.server.validation.ParentOrderPreCheck;
@@ -153,6 +142,11 @@ public class BusinessManager implements ApplicationContextAware {
 	private Map<String, MultiOrderCancelTracker> cancelTrackers = new HashMap<String, MultiOrderCancelTracker>();
 	private boolean cancelAllOrdersAtClose = false;
 	private boolean closeAllPositionsAtClose = false;
+
+    private AsyncTimerEvent cancelPendingOrderEvent = new AsyncTimerEvent();
+    private ScheduleManager cancelOrderManager = new ScheduleManager();
+    private WeekDay weekDay;
+    private String cancelPendingOrderTime;
 	
 	public boolean isAutoStartStrategy() {
 		return autoStartStrategy;
@@ -174,6 +168,8 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(CancelParentOrderEvent.class, null);
 			subscribeToEvent(ResetAccountRequestEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
+			subscribeToEvent(LiveTradingEndEvent.class, null);
+            subscribeToEvent(CancelPendingOrderEvent.class, null);
 		}
 
 		@Override
@@ -211,6 +207,7 @@ public class BusinessManager implements ApplicationContextAware {
 		String account = (String)fields.get(OrderField.ACCOUNT.value());
 		
 		try {
+			
 			String strategyName = (String)fields.get(OrderField.STRATEGY.value());
 			if(null == strategyName)
 				throw new Exception("Strategy Field is missing");
@@ -279,33 +276,36 @@ public class BusinessManager implements ApplicationContextAware {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (OrderException e) {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (DataConvertException e) {
 			failed = true;
 			//message = "DataConvertException: " + e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), "DataConvertException: " + e.getMessage());
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (DownStreamException e) {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (StrategyException e) {
 			failed = true;
 			//message = e.getMessage();
 			message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-
-			log.warn(e.getMessage(), e);
+			log.warn(message);
+//			log.warn(e.getMessage(), e);
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
-			e.printStackTrace();
+//			e.printStackTrace();
 			//message = "Enter order failed, please check server log";
 			message = MessageLookup.buildEventMessage(ErrorMessage.ENTER_ORDER_ERROR, "Enter order failed, please check server log");
 			log.warn(e.getMessage(), e);
@@ -422,7 +422,7 @@ public class BusinessManager implements ApplicationContextAware {
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
-			e.printStackTrace();
+//			e.printStackTrace();
 			//message = "Amend order failed, please check server log";
 			message = MessageLookup.buildEventMessage(ErrorMessage.AMEND_ORDER_ERROR,"Amend order failed, please check server log");
 
@@ -625,7 +625,9 @@ public class BusinessManager implements ApplicationContextAware {
 				}
 				positionKeeper.unlockAccountPosition(order.getId());
 			}
-		}
+		}else if (event == this.cancelPendingOrderEvent) {
+            eventManager.sendEvent(new CancelPendingOrderEvent(null, null));
+        }
 	}
 	
 	private HashMap<String, Object> convertOrderFields(Map<String, Object> fields, String strategyName) throws DataConvertException, StrategyException {
@@ -709,7 +711,7 @@ public class BusinessManager implements ApplicationContextAware {
 			failed = true;
 		} catch (Exception e) {
 			//message = strategyName + " " + e.getMessage();
-			message = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, strategyName + " " + e.getMessage());
+			message = MessageLookup.buildEventMessage(ErrorMessage.STRATEGY_ERROR, strategyName + " " + e.getMessage());
 			log.error(message, e);
 			failed = true;
 		} 
@@ -724,7 +726,26 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	}
 	
-
+	public void processLiveTradingEndEvent(LiveTradingEndEvent event){
+		//close all position and orders accounts that has live trading
+		try {
+			
+			List<Account> accounts = accountKeeper.getAllAccounts();
+			for(Account account:accounts){		
+				AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
+				if(accountSetting.checkLiveTrading()){
+					log.info("LiveTradingEndEvent:close position account:"+account.getId());
+					TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
+					TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, false);
+				}		
+			}
+			
+		} catch (AccountException e) {
+			log.error(e.getMessage(),e);
+		}
+		
+	}
+	
 	private IStrategyContainer getLeastLoadContainer() {
 		IStrategyContainer result = null;
 		for(IStrategyContainer container: containers) {
@@ -858,6 +879,28 @@ public class BusinessManager implements ApplicationContextAware {
 			}
 		}
 	}
+
+
+    public void processCancelPendingOrderEvent(CancelPendingOrderEvent event){
+        List<Account> accounts = accountKeeper.getAllAccounts();
+        for (Account account : accounts){
+            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, 7); // find the next same weekday.
+
+        String[] times = cancelPendingOrderTime.split(":");
+        int hr = Integer.parseInt(times[0]);
+        int min = Integer.parseInt(times[1]);
+        int sec = Integer.parseInt(times[2]);
+        cal.set(Calendar.HOUR_OF_DAY, hr);
+        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.SECOND, sec);
+
+        cancelOrderManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
+        log.info("Schedule cancel pending order event at {}", cal.getTime());
+    }
 	
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers
@@ -905,11 +948,32 @@ public class BusinessManager implements ApplicationContextAware {
 		eventMultiProcessor.setName("BusinessTP");
 
 		scheduleManager.scheduleRepeatTimerEvent(closePositionCheckInterval, eventProcessor, closePositionCheckEvent);
+
+        if (weekDay != null && cancelPendingOrderTime != null){
+            Calendar cal = Calendar.getInstance();
+            while (cal.get(Calendar.DAY_OF_WEEK) != weekDay.getDay()) {
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+            }
+
+            String[] times = cancelPendingOrderTime.split(":");
+            int hr = Integer.parseInt(times[0]);
+            int min = Integer.parseInt(times[1]);
+            int sec = Integer.parseInt(times[2]);
+            cal.set(Calendar.HOUR_OF_DAY, hr);
+            cal.set(Calendar.MINUTE, min);
+            cal.set(Calendar.SECOND, sec);
+
+            if (TimeUtil.getTimePass(Clock.getInstance().now(), cal.getTime()) >= 0)
+                cal.add(Calendar.DAY_OF_YEAR, 7);
+
+            cancelOrderManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
+            log.info("Schedule cancel pending order event at {}", cal.getTime());
+        }
 	}
 
 	public void uninit() {
+		scheduleManager.uninit();
 		eventProcessor.uninit();
-		scheduleManager.cancelTimerEvent(closePositionCheckEvent);
 	}
 	
 	@Override
@@ -941,5 +1005,16 @@ public class BusinessManager implements ApplicationContextAware {
 	public void setCancelAllOrdersAtClose(boolean cancelAllOrdersAtClose) {
 		this.cancelAllOrdersAtClose = cancelAllOrdersAtClose;
 	}
-	
+
+	public void setCloseAllPositionsAtClose(boolean closeAllPositionsAtClose) {
+		this.closeAllPositionsAtClose = closeAllPositionsAtClose;
+	}
+
+    public void setWeekDay(WeekDay weekDay) {
+        this.weekDay = weekDay;
+    }
+
+    public void setCancelPendingOrderTime(String cancelPendingOrderTime) {
+        this.cancelPendingOrderTime = cancelPendingOrderTime;
+    }
 }

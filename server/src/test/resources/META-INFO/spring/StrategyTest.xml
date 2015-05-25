@@ -14,13 +14,14 @@
     <bean id="eventManager" class="com.cyanspring.event.BtRemoteEventManager">
     </bean>
 
-    <bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager" init-method="init">
+    <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager" init-method="init">
         <constructor-arg>
             <ref bean="simMarketDataAdaptor"/>
         </constructor-arg>
         <property name="sync">
             <value>true</value>
         </property>
+        <property name="isTest" value="true"/>
         <property name="quoteChecker" ref="quoteChecker"/>
         <property name="quoteSaver" ref="quoteSaver"/>
     </bean>

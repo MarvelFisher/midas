@@ -46,8 +46,9 @@ public class SymbolData implements Comparable<SymbolData>
 	private static final String insertPrice = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) " + 
             "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY " + 
             "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;";
-	private static final String dateFormat = "yyyy-MM-dd HH:mm:ss";
-	private static Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+	private static final String DateFormat = "yyyy-MM-dd";
+	private static final String DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 	
 	private static IPriceSetter setter;
 	private CentralDbProcessor centralDB = null;
@@ -121,9 +122,14 @@ public class SymbolData implements Comparable<SymbolData>
 			if (price == null)
 			{
 				price = new HistoricalPrice(strSymbol, centralDB.getTradedate(), cal.getTime());
-				priceData.put(cal.getTime(), price);
+				changed = setter.setPrice(price, quote, dCurVolume);
+				if (changed)
+					priceData.put(cal.getTime(), price);
 			}
-			changed = setter.setPrice(price, quote, dCurVolume);
+			else
+			{
+				changed = setter.setPrice(price, quote, dCurVolume);
+			}
 		}
 		if (changed && writeMin) //writeToMin() ; 
 		{
@@ -266,7 +272,8 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			lastPrice = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
+			lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
 			boolean bDelete = false ;
 			if (lastPrice != null && lastPrice.getKeytime() != null)
@@ -274,15 +281,12 @@ public class SymbolData implements Comparable<SymbolData>
 				cal_.setTime(lastPrice.getKeytime());
 				if (strType.equals("W"))
 				{
-					bDelete = cal_.get(Calendar.WEEK_OF_YEAR) == cal.get(Calendar.WEEK_OF_YEAR) ;
+					bDelete = getWeek(sdf.format(cal_.getTime())) == getWeek(sdf.format(cal.getTime())) ;
 				}
 				else
 				{
-					bDelete = cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH) ;
-				}
-				if (bDelete)
-				{
-					//centralDB.dbhnd.deletePrice(market, strType, getStrSymbol(), lastPrice);
+					bDelete = (cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
+								&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) ;
 				}
 			}
 			else
@@ -298,6 +302,9 @@ public class SymbolData implements Comparable<SymbolData>
 				{
 					lastPrice.setOpen(getdOpen());
 				}
+				lastPrice.setHigh(0.0);
+				lastPrice.setLow(0.0);
+				lastPrice.setClose(0.0);
 				lastPrice.setVolume((long)dCurVolume);
 			}
 			else
@@ -331,7 +338,7 @@ public class SymbolData implements Comparable<SymbolData>
 											getdClose(),
 											(int)dCurVolume);
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sqlcmd = String.format(insertPrice, 
 				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
@@ -339,7 +346,7 @@ public class SymbolData implements Comparable<SymbolData>
 				lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
 				tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
 				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
-		centralDB.dbhnd.updateSQL(sqlcmd);
+		centralDB.getDbhnd().updateSQL(sqlcmd);
 		if (strSymbol.equals(getStrSymbol()) == false)
 		{
 			sqlcmd = String.format(insertPrice, 
@@ -348,7 +355,7 @@ public class SymbolData implements Comparable<SymbolData>
 					lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
 					tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
 					lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
-			centralDB.dbhnd.updateSQL(sqlcmd);
+			centralDB.getDbhnd().updateSQL(sqlcmd);
 		}
 		logHistoricalPrice(lastPrice);
 	}
@@ -379,10 +386,26 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return;
     	}
+    	ArrayList<String> symbolarr = new ArrayList<String>();
+    	symbolarr.add(strSymbol);
+    	ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) centralDB.getRefSymbolInfo().getBySymbolStrings(symbolarr);
+    	if (symbolinfos.size() < 1)
+    	{
+    		return;
+    	}
+    	String symbol;
+    	if (symbolinfos.get(0).getHint() == null)
+    	{
+    		symbol = symbolinfos.get(0).getCode(); 
+    	}
+    	else
+    	{
+    		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
+    	}
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
-				prefix, getStrSymbol()) ;
-		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
+				prefix, symbol) ;
+		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
 		try {
 			double dHigh = 0 ; 
 			double dLow = 0 ;
@@ -413,7 +436,7 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-			priceEmpty = centralDB.dbhnd.getLastValue(market, strType, getStrSymbol(), false) ;
+			priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			if (priceEmpty != null)
 			{
 				prices.add(priceEmpty) ;
@@ -557,13 +580,14 @@ public class SymbolData implements Comparable<SymbolData>
 			return;
 		}
 //		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		Date date = cal.getTime() ;
-		int day = cal.get(Calendar.DATE); 
-		int week = cal.get(Calendar.WEEK_OF_YEAR) ;
-		int month = cal.get(Calendar.MONTH) ;
+		Calendar pricetime = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+		Calendar emptytime = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		emptytime.set(Calendar.HOUR_OF_DAY, 0);
+		emptytime.set(Calendar.MINUTE, 0);
+		emptytime.set(Calendar.SECOND, 0);
+		Date date = emptytime.getTime() ;
 		HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
 													   date, 
 													   date, 
@@ -577,11 +601,11 @@ public class SymbolData implements Comparable<SymbolData>
 		if (pricelist.size() > 1)
 		{
 			lastPrice = pricelist.get(pricelist.size()-1) ;
-			cal.setTime(lastPrice.getKeytime());
+			pricetime.setTime(lastPrice.getKeytime());
 		}
 		if (strType.equals("D") && lastPrice != null)
 		{
-			if (day == cal.get(Calendar.DATE))
+			if (emptytime.get(Calendar.DATE) == pricetime.get(Calendar.DATE))
 			{
 				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
 				{
@@ -604,7 +628,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else if (strType.equals("W") && lastPrice != null)
 		{
-			if (week == cal.get(Calendar.WEEK_OF_YEAR))
+			if (getWeek(sdf.format(emptytime.getTime())) == getWeek(sdf.format(pricetime.getTime())))
 			{
 				lastPrice.setDatatime(date);
 				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
@@ -628,7 +652,8 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else if (strType.equals("M") && lastPrice != null)
 		{
-			if (month == cal.get(Calendar.MONTH))
+			if (emptytime.get(Calendar.MONTH) == pricetime.get(Calendar.MONTH) 
+					&& emptytime.get(Calendar.YEAR) == pricetime.get(Calendar.YEAR))
 			{
 				lastPrice.setDatatime(date);
 				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
@@ -690,9 +715,8 @@ public class SymbolData implements Comparable<SymbolData>
 		String strTable = String.format("%s_%s", prefix, strType) ;
 		String sqlcmd = "" ;//"START TRANSACTION;" ;
 		String strKeyTime = "" ;
-		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat) ;
+		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat) ;
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		centralDB.dbhnd.createStatement();
 		for (HistoricalPrice price : prices)
 		{
 			if (price.getDatatime() == null)
@@ -706,7 +730,7 @@ public class SymbolData implements Comparable<SymbolData>
 					price.getHigh(), price.getLow(), price.getVolume(), 
 					strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
 					price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
-			centralDB.dbhnd.addBatch(sqlcmd);
+			centralDB.getDbhnd().addBatch(sqlcmd);
 			if (strSymbol.equals(getStrSymbol()) == false)
 			{
 				sqlcmd = String.format(insertPrice, 
@@ -715,11 +739,11 @@ public class SymbolData implements Comparable<SymbolData>
 						price.getHigh(), price.getLow(), price.getVolume(), 
 						strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
 						price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
-				centralDB.dbhnd.updateSQL(sqlcmd);
+				centralDB.getDbhnd().addBatch(sqlcmd);
 			}
 			logHistoricalPrice(price);
 		}
-		centralDB.dbhnd.executeBatch();
+		centralDB.getDbhnd().executeBatch();
 		return ;
 	}
 	
@@ -753,7 +777,7 @@ public class SymbolData implements Comparable<SymbolData>
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' AND `KEYTIME`<'%s' ORDER BY `KEYTIME`;", 
 				prefix, type, strSymbol, sdfprice.format(start), sdfprice.format(end)) ;
-		ResultSet rs = centralDB.dbhnd.querySQL(sqlcmd) ;
+		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
 		try {
 			while(rs.next())
 			{
@@ -810,6 +834,33 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		return listPrice ;
 	}
+	
+	public static int getWeek(String strDate) 
+	{
+		// strDate: yyyy-MM-dd
+		int year,month,day,total_day;
+		int  monthday[] = {0,31,59,90,120,151,181,212,243,273,304,334,365};
+		int smonthday[] = {0,31,60,91,121,152,182,213,244,274,305,335,366};
+
+	 	try 
+	 	{
+	 		year  = Integer.parseInt(strDate.substring(0,4));
+	 		month = Integer.parseInt(strDate.substring(5,7));
+			day   = Integer.parseInt(strDate.substring(8,10));
+		} 
+	 	catch (Exception e) 
+	 	{
+	 		return 0;
+		}
+	        
+		if (year%4==0)
+			total_day = (year-1)*365+(year-1)/4+smonthday[month-1]+(day-1);
+		else
+			total_day = (year-1)*365+(year-1)/4+ monthday[month-1]+(day-1);
+
+		return total_day / 7;
+	}
+	
 	public void logHistoricalPrice(HistoricalPrice hp)
 	{
 		//if (...)

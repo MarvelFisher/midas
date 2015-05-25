@@ -47,7 +47,7 @@
 	</bean>
 		
 	<!-- MarketDataManager setting-->
-	<bean id="mdManager" class="com.cyanspring.server.marketdata.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="ibAdaptor" />
@@ -67,7 +67,9 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
-		<property name="quoteChecker"><null/></property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
+		<property name="broadcastQuote" value="true"/>
 	</bean>
 	
 	<!-- Derby setting -->

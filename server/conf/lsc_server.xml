@@ -48,7 +48,7 @@
 	</bean>
 
 	<!-- MarketDataManager setting-->
-	<bean id="mdManager" class="com.cyanspring.adaptor.MarketDataManager">
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
 		<constructor-arg>
 			<list>
 				<ref bean="simMarketDataAdaptor" />
@@ -70,7 +70,8 @@
 		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 		<property name="quoteSaver" ref="quoteSaver"/>
-	</bean>
+        <property name="broadcastQuote" value="false"/>
+    </bean>
 	
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1529" /></bean>

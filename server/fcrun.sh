@@ -9,7 +9,7 @@ cd $WORKDIR
 
 if [ -s LTS_PID ]; then
 LTS_PID=`cat LTS_PID`
-kill -9 $LTS_PID
+kill $LTS_PID
 fi
 
 sleep 5
@@ -24,8 +24,8 @@ java ${JAVA_OPTS} -Duser.timezone=GMT+8 -jar jars/cyanspring-server-2.56.jar con
 
 echo $! > LTS_PID
 
-sleep 30
-./runinfofc.sh start
+sleep 60
+./fcruninfo.sh start
 
 sleep 60
 echo "Starting AppServer "`date` | tee -a ./log/console.log

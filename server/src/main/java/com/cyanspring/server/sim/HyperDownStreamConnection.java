@@ -13,12 +13,12 @@
 package com.cyanspring.server.sim;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.marketdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,17 +35,13 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
-import com.cyanspring.common.marketdata.IQuoteChecker;
-import com.cyanspring.common.marketdata.PriceQuoteChecker;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
-import com.cyanspring.event.AsyncEventProcessor;
-import com.cyanspring.adaptor.MarketDataManager;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class HyperDownStreamConnection extends AsyncEventProcessor implements IDownStreamConnection, IDownStreamSender{
 	private static final Logger log = LoggerFactory
@@ -57,7 +53,9 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	@Autowired
 	protected MarketDataManager marketDataManager;
 	
-	private IQuoteChecker quoteChecker = new PriceQuoteChecker();
+	private IQuoteChecker quoteChecker;
+
+    private boolean checkSingleSide;
 
 	private String id = "HyperMarket" + "-" + IdGenerator.getInstance().getNextID();
 	private Map<String, Map<String, ChildOrder>> orders = new ConcurrentHashMap<String, Map<String, ChildOrder>>();
@@ -152,23 +150,30 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 		
 		return !quote.isStale();
 	}
-	
+
+    private boolean checkOrder(Quote quote, ChildOrder order){
+        if(order.getSide().isBuy()) {
+            return PriceUtils.validPrice(quote.getAsk()) &&
+                    PriceUtils.EqualGreaterThan(order.getPrice(), quote.getAsk());
+        } else {
+            return PriceUtils.validPrice(quote.getBid()) &&
+                    PriceUtils.EqualLessThan(order.getPrice(), quote.getBid());
+        }
+    }
+
 	private boolean isMarketable(Quote quote, ChildOrder order) {
 		if(!quoteIsValid(quote))
 			return false;
-		
+
+        if (checkSingleSide)
+            return checkOrder(quote, order);
+
 		if(order.getType() == ExchangeOrderType.MARKET)
 			return true;
 		
-		if(order.getSide().isBuy()) {
-			return PriceUtils.validPrice(quote.getAsk()) && 
-					PriceUtils.EqualGreaterThan(order.getPrice(), quote.getAsk());
-		} else {
-			return PriceUtils.validPrice(quote.getBid()) && 
-					PriceUtils.EqualLessThan(order.getPrice(), quote.getBid());
-		}
+		return checkOrder(quote, order);
 	}
-	
+
 	@Override
 	public void init() throws Exception {
 		super.init();
@@ -351,5 +356,7 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 		this.quoteChecker = quoteChecker;
 	}
 
-	
+    public void setCheckSingleSide(boolean checkSingleSide) {
+        this.checkSingleSide = checkSingleSide;
+    }
 }

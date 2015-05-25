@@ -5,6 +5,7 @@ import com.cyanspring.common.data.DataObject;
 
 public class AccountSetting extends DataObject {
 
+
 	protected AccountSetting() {
 		
 	}
@@ -14,6 +15,7 @@ public class AccountSetting extends DataObject {
 	
 	//!!! very important: you must add entry here whenever you add a setting
 	public static AccountSetting createEmptySettings(String accountId) {
+		
 		AccountSetting settings = new AccountSetting(accountId);
 		settings.setDefaultQty(Default.getOrderQuantity());
 		settings.setStopLossValue(Default.getPositionStopLoss());
@@ -23,8 +25,16 @@ public class AccountSetting extends DataObject {
 		settings.setCommission(0.0);
 		settings.setLeverageRate(0.0);
 		settings.setDailyStopLoss(0.0);
-		settings.setTrailingStop(0.0);
-
+		settings.setTrailingStop(0.0);		
+		settings.setStopLossPercent(Default.getStopLossPercent());
+		settings.setFreezePercent(Default.getFreezePercent());
+		settings.setTerminatePercent(Default.getTerminatePecent());		
+		settings.setLiveTrading(Default.isLiveTrading());
+		settings.setUserLiveTrading(Default.isUserLiveTrading());
+		settings.setLiveTradingType(Default.getLiveTradingType());
+		settings.setLiveTradingSettedDate("");
+		settings.setFreezeValue(Default.getFreezeValue());
+		settings.setTerminateValue(Default.getTerminateValue());
 		return settings;
 	}
 	
@@ -35,23 +45,23 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.ID.value(), id);
 	}
 	public Double getDefaultQty() {
-		Double result = get(Double.class, AccountSettingType.DEFAULT_QTY.value());
+		Double result = get(double.class, AccountSettingType.DEFAULT_QTY.value());
 		return null == result? Default.getOrderQuantity() : result;
 	}
 	public void setDefaultQty(Double defaultQty) {
 		put(AccountSettingType.DEFAULT_QTY.value(), defaultQty);
 	}
-	public Double getStopLossValue() {
-		Double result = get(Double.class, AccountSettingType.STOP_LOSS_VALUE.value());
+	public double getStopLossValue() {
+		Double result = get(double.class, AccountSettingType.STOP_LOSS_VALUE.value());
 		return null == result? Default.getPositionStopLoss() : result;
 	}
-	public void setStopLossValue(Double stopLossValue) {
+	public void setStopLossValue(double stopLossValue) {
 		put(AccountSettingType.STOP_LOSS_VALUE.value(), stopLossValue);
 	}	
-	public Double getCompanySLValue(){
-		return get(Double.class, AccountSettingType.COMPANY_SL_VALUE.value());
+	public double getCompanySLValue(){
+		return get(double.class, AccountSettingType.COMPANY_SL_VALUE.value());
 	}	  
-	public void setCompanySLValue(Double companySLValue){
+	public void setCompanySLValue(double companySLValue){
 		put(AccountSettingType.COMPANY_SL_VALUE.value(), companySLValue);
 	}
 	public double getMargin(){
@@ -92,6 +102,77 @@ public class AccountSetting extends DataObject {
 	public void setTrailingStop(double trailingStop){
 		put(AccountSettingType.TRAILING_STOP.value(), trailingStop);
 	}
+	
+	public double getStopLossPercent() {
+		return get(double.class, AccountSettingType.STOP_LOSS_PERCENT.value());
+	}
+	public void setStopLossPercent(double stopLossPercent) {
+		put(AccountSettingType.STOP_LOSS_PERCENT.value(), stopLossPercent);
+	}
+	
+	
+	public double getFreezePercent() {
+		return get(double.class, AccountSettingType.FREEZE_PERCENT.value());
+	}
+	public void setFreezePercent(double freezePercent) {
+		put(AccountSettingType.FREEZE_PERCENT.value(), freezePercent);
+	}
+	
+	
+	public double getTerminatePercent() {
+		return get(double.class, AccountSettingType.TERMINATE_PERCENT.value());
+	}
+	public void setTerminatePercent(double terminatePercent) {
+		put(AccountSettingType.TERMINATE_PERCENT.value(), terminatePercent);
+	}
+	
+	public boolean isLiveTrading() {
+		return get(boolean.class, AccountSettingType.LIVE_TRADING.value());
+	}
+	public void setLiveTrading(boolean liveTrading) {
+		put(AccountSettingType.LIVE_TRADING.value(), liveTrading);
+	}
+	
+	public boolean isUserLiveTrading() {
+		return get(boolean.class, AccountSettingType.USER_LIVE_TRADING.value());
+	}
+	public void setUserLiveTrading(boolean userLiveTrading) {
+		put(AccountSettingType.USER_LIVE_TRADING.value(), userLiveTrading);
+	}
+	
+	public LiveTradingType getLiveTradingType() {
+		return get(LiveTradingType.class, AccountSettingType.LIVE_TRADING_TYPE.value());
+	}
+	public void setLiveTradingType(LiveTradingType liveTradingType) {
+		put(AccountSettingType.LIVE_TRADING_TYPE.value(), liveTradingType);
+	}
+	
+	public String getLiveTradingSettedDate() {
+		return get(String.class, AccountSettingType.LIVE_TRADING_SETTED_DATE.value());
+	}
+	public void setLiveTradingSettedDate(String liveTradingSettedDate) {
+		put(AccountSettingType.LIVE_TRADING_SETTED_DATE.value(), liveTradingSettedDate);
+	}
+	
+	public double getFreezeValue() {
+		return get(double.class, AccountSettingType.FREEZE_VALUE.value());
+	}
+	public void setFreezeValue(double freezeValue) {
+		put(AccountSettingType.FREEZE_VALUE.value(), freezeValue);
+	}
+	
+	
+	public double getTerminateValue() {
+		return get(double.class, AccountSettingType.TERMINATE_VALUE.value());
+	}
+	public void setTerminateValue(double terminateValue) {
+		put(AccountSettingType.TERMINATE_VALUE.value(), terminateValue);
+	}
+	
+	public boolean checkLiveTrading(){
+		return (isLiveTrading()||isUserLiveTrading());
+	}
+	
 	
 	public AccountSetting clone() {
 		return (AccountSetting)super.clone();

@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.event.AsyncPriorityEventThread;
+import com.cyanspring.common.event.AsyncPriorityEventThread;
 
 public class AsyncEventThreadTest {
 	AsyncEventThread1 thread = new AsyncEventThread1();

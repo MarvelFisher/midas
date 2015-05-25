@@ -25,14 +25,13 @@ import com.cyanspring.common.event.account.PmPositionPeakPriceDeleteEvent;
 import com.cyanspring.common.event.account.PmPositionPeakPriceUpdateEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
-import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.TimeThrottler;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class TrailingStopManager implements IPlugin {
 	private static final Logger log = LoggerFactory
@@ -93,6 +92,7 @@ public class TrailingStopManager implements IPlugin {
 
 	@Override
 	public void uninit() {
+		scheduleManager.uninit();
 		eventProcessor.uninit();
 	}
 	

@@ -3,6 +3,8 @@ package com.cyanspring.common;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import com.cyanspring.common.account.LiveTradingType;
+
 public class Default {
 	private static String user = "default";
 	private static String account = "default";
@@ -20,6 +22,17 @@ public class Default {
 	private static double marginCall = 0.95;
 	private static int settlementDays = 0;
 	
+	private static double stopLossPercent = 0.2;
+	private static double freezePercent = 0.2;
+	private static double terminatePecent = 0.2;
+
+	private static double freezeValue = 0;
+	private static double terminateValue = 0;
+	
+	private static boolean liveTrading = false;
+	private static boolean userLiveTrading = false;
+	private static LiveTradingType liveTradingType = LiveTradingType.DEFAULT;
+	
 	protected static void setValues(
 		String user,  
 		String account,
@@ -35,8 +48,15 @@ public class Default {
 		double orderQuantity,
 		double positionStopLoss,
 		double marginCall,
-		int settlementDays
-							) {
+		int settlementDays,
+		double stopLossPercent,
+		double freezePercent,
+		double terminatePecent,
+		boolean liveTrading,
+		boolean userLiveTrading,
+		double freezeValue,
+		double terminateValue,
+		LiveTradingType liveTradingType) {
 		Default.user = user;
 		Default.account = account;
 		Default.market = market;
@@ -52,6 +72,14 @@ public class Default {
 		Default.positionStopLoss = positionStopLoss;
 		Default.marginCall = marginCall;
 		Default.settlementDays = settlementDays;
+		Default.stopLossPercent  = stopLossPercent;
+		Default.freezePercent = freezePercent;
+		Default.terminatePecent = terminatePecent;
+		Default.liveTrading = liveTrading;
+		Default.userLiveTrading = userLiveTrading;
+		Default.freezeValue = freezeValue;
+		Default.terminateValue = terminateValue;
+		Default.liveTradingType = liveTradingType;
 	}
 	
 	static public String getUser() {
@@ -124,5 +152,37 @@ public class Default {
 
 	public static int getSettlementDays() {
 		return settlementDays;
+	}
+
+	public static double getStopLossPercent() {
+		return stopLossPercent;
+	}
+
+	public static double getFreezePercent() {
+		return freezePercent;
+	}
+
+	public static double getTerminatePecent() {
+		return terminatePecent;
+	}
+
+	public static boolean isLiveTrading() {
+		return liveTrading;
+	}
+
+	public static boolean isUserLiveTrading() {
+		return userLiveTrading;
+	}
+	
+	public static double getTerminateValue() {
+		return terminateValue;
+	}
+	
+	public static double getFreezeValue() {
+		return freezeValue;
+	}
+	
+	public static LiveTradingType getLiveTradingType() {
+		return liveTradingType;
 	}
 }

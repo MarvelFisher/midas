@@ -28,8 +28,9 @@
 		<property name="plugins">
 			<list>
 				<ref bean="apiBridgeManager" />
-				<ref bean="marketSessionManager" />
-				<ref bean="refDataManager" />
+                <ref bean="marketSessionManager" />
+                <ref bean="refDataHandler" />
+                <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
@@ -58,14 +59,14 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="globalTransportService" />
 		</constructor-arg>
 		<property name="embedBroker" value="false"/>
 	</bean>
-	
+
 	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"/>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
@@ -126,6 +127,8 @@
 		<property name="textSize" value="4000"/>
 		<property name="cleanStart" value="false"/>
 		<property name="todayOnly" value="false"/>
+		<property name="checkEmailUnique" value="onlyExist"/>
+        <property name="checkPhoneUnique" value="noCheck"/>
 		<property name="syncCentralDb" value="true"/>
 	</bean>
 
@@ -141,16 +144,6 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>601318.SH</value>
-				<value>600030.SH</value>
-				<value>601628.SH</value>
-				<value>601989.SH</value>
-				<value>600000.SH</value>
-				<value>000002.SZ</value>
-				<value>600016.SH</value>
-				<value>600837.SH</value>
-				<value>300104.SZ</value>
-				<value>002230.SZ</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -203,6 +196,7 @@
 			<list>
 			</list>
 		</property>
+		<property name="checkMargincut" value="false"/>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
@@ -215,13 +209,15 @@
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
 	</bean>
-	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
+	<bean id="commissionManager" class="com.cyanspring.server.account.StockCommissionManager">
 	</bean>
 	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
 	</bean>
 
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
+
+	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
@@ -264,8 +260,14 @@
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
+        <property name="checkSingleSide" value="true"/>
 	</bean>
-	
+
+    <bean id="indexMarketSessionManager" class="com.cyanspring.server.marketsession.IndexMarketSessionManager">
+        <property name="settlementDelay"><value>45</value></property>
+		<property name="searchBySymbol" value="false"></property>
+    </bean>
+
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
@@ -279,6 +281,5 @@
 				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
-	</bean>	
-
+	</bean>
 </beans>

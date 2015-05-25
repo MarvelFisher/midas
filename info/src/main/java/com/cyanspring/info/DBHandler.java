@@ -39,10 +39,22 @@ public class DBHandler
 	public boolean isConnected()
     {
         try
-        {
-            if (connect != null && !connect.isClosed())
+        {        	
+            if (connect != null)
             {
-                return true;
+            	if(connect.isValid(0)) 
+            	{
+            		return true;
+            	}	
+            	else 
+            	{
+            		log.warn("SQL connection is invalid, try to reconnect later");
+            		return false;
+            	}
+            }
+            else
+            {
+            	return false;
             }
         }
         catch (SQLException se)
@@ -59,6 +71,7 @@ public class DBHandler
         	{
         		connect.close();
         	}
+        	log.info("Reconnect to SQL, discard old connection");
         	connect = DriverManager.getConnection(jdbcUrl);
         }
         catch (SQLException e)
@@ -142,6 +155,10 @@ public class DBHandler
     {
     	if (!isConnected())
     	{
+    		if (this.stat != null)
+    		{
+    			closeStatement();
+    		}
             reconnectSQL();
     	}
         Statement stat = null ;
@@ -173,13 +190,12 @@ public class DBHandler
     }
     public void createStatement()
     {
+		if (stat != null)
+		{
+			return;
+		}
     	try 
     	{
-    		if (stat != null)
-    		{
-    			stat.close();
-    			stat = null ;
-    		}
 			stat = connect.createStatement() ;
 		} 
     	catch (SQLException e) 
@@ -204,6 +220,8 @@ public class DBHandler
     }
     public void addBatch(String sqlcmd)
     {
+    	this.checkSQLConnect();
+    	createStatement();
         try
         {
             stat.addBatch(sqlcmd);

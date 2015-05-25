@@ -36,7 +36,7 @@ import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyContainer;
 import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
-import com.cyanspring.event.AsyncExecuteEventThread;
+import com.cyanspring.common.event.AsyncExecuteEventThread;
 
 public class AsyncStrategyContainer implements IStrategyContainer, IAsyncEventListener {
 	private static final Logger log = LoggerFactory

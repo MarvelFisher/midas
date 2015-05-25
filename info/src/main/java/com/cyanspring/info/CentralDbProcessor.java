@@ -11,9 +11,12 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -40,6 +43,8 @@ import com.cyanspring.common.event.marketdata.SymbolEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
@@ -52,7 +57,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.staticdata.TickTableManager;
-import com.cyanspring.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.util.DefPriceSetter;
 import com.cyanspring.info.util.FXPriceSetter;
 
@@ -85,15 +90,17 @@ public class CentralDbProcessor implements IPlugin
 	private AsyncTimerEvent checkEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent insertEvent = new AsyncTimerEvent();
 	private long SQLDelayInterval = 1;
-	private long timeInterval = 600000;
+	private long timeInterval = 60000;
 	private long checkSQLInterval = 10 * 60 * 1000;
+	
+	private Date sessionEnd;
 	
 //	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
 //	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private IRefSymbolInfo refSymbolInfo;
 	private ArrayList<String> appServIDList = new ArrayList<String>();
-	DBHandler dbhnd ;
+	private DBHandler dbhnd ;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -105,16 +112,10 @@ public class CentralDbProcessor implements IPlugin
 	private SystemInfo systemInfoMD;
 	
 	@Autowired
-	private RefDataManager refDataManager;
-	
-	@Autowired
 	private TickTableManager tickTableManager;
 	
 	@Autowired
 	ScheduleManager scheduleManager;
-	
-	@Autowired
-	private Boolean useLocalMdManager;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor(){
 
@@ -125,8 +126,6 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
-			if (useLocalMdManager == true) 
-				subscribeToEvent(QuoteEvent.class, null);
 		}
 
 		@Override
@@ -140,11 +139,10 @@ public class CentralDbProcessor implements IPlugin
 
 		@Override
 		public void subscribeToEvents() {
-//			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
-			if (useLocalMdManager == false) 
-				subscribeToEvent(QuoteEvent.class, null);
+			subscribeToEvent(QuoteEvent.class, null);
+			subscribeToEvent(RefDataEvent.class, null);
 		}
 
 		@Override
@@ -171,11 +169,11 @@ public class CentralDbProcessor implements IPlugin
 		{
 			resetSymbolDataStat();
 		}
-		else if (event == checkEvent)
-		{
-			log.info("Check SQL connection");
-			dbhnd.checkSQLConnect();
-		}
+//		else if (event == checkEvent)
+//		{
+//			log.info("Check SQL connection");
+//			getDbhnd().checkSQLConnect();
+//		}
 		else if (event == insertEvent)
 		{
 			insertSQL();
@@ -193,11 +191,19 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processQuoteEvent(QuoteEvent event)
 	{
+		if (isStartup)
+		{
+			return;
+		}
 		Quote quote = event.getQuote();
 		processQuote(quote);
 	}
 	public void processInnerQuoteEvent(InnerQuoteEvent event)
 	{
+		if (isStartup)
+		{
+			return;
+		}
 		Quote quote = event.getQuote();
 		processQuote(quote);
 	}
@@ -210,6 +216,18 @@ public class CentralDbProcessor implements IPlugin
 		if (isProcessQuote == false)
 		{
 			return;
+		}
+		if (sessionType == MarketSessionType.OPEN 
+				&& quote.getTimeStamp().getTime() >= sessionEnd.getTime())
+		{
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(sessionEnd);
+			cal.add(Calendar.SECOND, -1);
+			quote.setTimeStamp(cal.getTime());
+		}
+		else if (sessionType == MarketSessionType.PREOPEN)
+		{
+			quote.setTimeStamp(sessionEnd);
 		}
 		getChefBySymbol(quote.getSymbol()).onQuote(quote);
 	}
@@ -246,7 +264,7 @@ public class CentralDbProcessor implements IPlugin
 		for (String market : MarketList)
 		{
 			sqlcmd = String.format("DELETE FROM Symbol_Info WHERE MARKET='%s';", market);
-			dbhnd.updateSQL(sqlcmd);
+			getDbhnd().updateSQL(sqlcmd);
 		}
 		this.writeSymbolInfo(symbolInfoList) ;
 	}
@@ -254,6 +272,11 @@ public class CentralDbProcessor implements IPlugin
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
 		centralDbEventProcessor.onEvent(event);
+	}
+	
+	public void processRefDataEvent(RefDataEvent event) 
+	{
+		onCallRefData(event);
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -312,8 +335,7 @@ public class CentralDbProcessor implements IPlugin
 		ArrayList<SymbolInfo> symbolinfoTmp = new ArrayList<SymbolInfo>();
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, group, market) ;
-		ResultSet rs = dbhnd.querySQL(sqlcmd);
-		int index;
+		ResultSet rs = getDbhnd().querySQL(sqlcmd);
 		try 
 		{
 			SymbolInfo symbolinfo = null;
@@ -329,12 +351,6 @@ public class CentralDbProcessor implements IPlugin
 				symbolinfo.setKrName(rs.getString("KR_NAME"));
 				symbolinfo.setEsName(rs.getString("ES_NAME"));
 				symbolinfoTmp.add(symbolinfo);
-//				index = getRefSymbolInfo().at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
-//				if (index >= 0)
-//				{
-//					symbolinfo = getRefSymbolInfo().get(index);
-//					symbolinfos.add(symbolinfo);
-//				}
 			}
 			symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolInfos(symbolinfoTmp);
 			if (symbolinfos.isEmpty())
@@ -379,7 +395,7 @@ public class CentralDbProcessor implements IPlugin
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 				" AND `GROUP`='%s' AND `MARKET`='%s';", user, group, market) ;
-		dbhnd.updateSQL(sqlcmd);
+		getDbhnd().updateSQL(sqlcmd);
 		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
 		try
@@ -421,11 +437,11 @@ public class CentralDbProcessor implements IPlugin
 			}
 			else
 			{
-				dbhnd.updateSQL(sqlcmd);
+				getDbhnd().updateSQL(sqlcmd);
 				retsymbollist.clear();
 				sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 						user, group, market) ;
-				ResultSet rs = dbhnd.querySQL(sqlcmd);
+				ResultSet rs = getDbhnd().querySQL(sqlcmd);
 				SymbolInfo symbolinfo;
 				int index;
 				while(rs.next())
@@ -520,7 +536,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		sqlcmd += ";" ;
-		dbhnd.updateSQL(sqlcmd);
+		getDbhnd().updateSQL(sqlcmd);
 	}
 	
 	public void writeSymbolInfo(ArrayList<SymbolInfo> symbolInfoList)
@@ -547,21 +563,13 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		sqlcmd += ";" ;
-		dbhnd.updateSQL(sqlcmd);
+		getDbhnd().updateSQL(sqlcmd);
 	}
 	
-	public void onCallRefData()
+	public void onCallRefData(RefDataEvent event)
 	{
 		log.info("Call refData start");
-		try 
-		{
-			refDataManager.init();
-		} 
-		catch (Exception e) 
-		{
-			log.error(e.getMessage(), e);
-		}
-		ArrayList<RefData> refList = (ArrayList<RefData>)refDataManager.getRefDataList();
+		List<RefData> refList = event.getRefDataList();
 		if (refList.isEmpty())
 		{
 			log.warn("refData is empty: " + refList.isEmpty());
@@ -589,7 +597,7 @@ public class CentralDbProcessor implements IPlugin
 
 					if (!marketList.contains(refdata.getExchange()))
 					{
-						dbhnd.checkMarketExist(refdata.getExchange());
+						getDbhnd().checkMarketExist(refdata.getExchange());
 						marketList.add(refdata.getExchange());
 					}
 					int chefNum = getChefNumber(refdata.getSymbol());
@@ -642,13 +650,10 @@ public class CentralDbProcessor implements IPlugin
 		{
 			if (sessionType == MarketSessionType.CLOSE)
 			{
-//				insertSQL(market);
 				insert = true;
 			}
 			else if (sessionType == MarketSessionType.PREOPEN)
 			{
-//				resetStatement() ;
-//				onCallRefData();
 				reset = true;
 			}
 		}
@@ -657,30 +662,26 @@ public class CentralDbProcessor implements IPlugin
 			if (sessionType == MarketSessionType.OPEN 
 					|| sessionType == MarketSessionType.PREOPEN)
 			{
-//				resetStatement() ;
-//				onCallRefData();
 				reset = true;
 			}
 		}
 		else if (this.sessionType == null)
 		{
-//			onCallRefData();
 			reset = true;
 		}
-		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
-			isProcessQuote = true;
-		this.sessionType = sessionType;
 		
 		if (insert)
 		{
-//			insertSQL();
 			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
 		}
 		if (reset)
 		{
 			resetStatement() ;
-			onCallRefData();
+			sendRefDataRequest();
 		}
+		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
+			isProcessQuote = true;
+		this.sessionType = sessionType;
 	}
 	public void sendCentralReady(String appserv)
 	{
@@ -688,6 +689,14 @@ public class CentralDbProcessor implements IPlugin
 		event.setTickTableList(tickTableManager.getTickTables());
 		log.info("Sending ReadyEvent to: " + appserv);
 		sendEvent(event);
+	}
+	
+	public void sendRefDataRequest()
+	{
+		RefDataRequestEvent event = new RefDataRequestEvent(null, null);
+		event.setReceiver(systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + systemInfoMD.getId());
+		log.info("Sending RefDataRequest event ...");
+		sendMDEvent(event);
 	}
 	
 	public void sendMDEvent(RemoteAsyncEvent event) {
@@ -725,7 +734,7 @@ public class CentralDbProcessor implements IPlugin
 	@Override
 	public void init() throws Exception {
 		log.info("Initialising...");
-		dbhnd = new DBHandler(jdbcUrl, driverClass) ;
+		setDbhnd(new DBHandler(jdbcUrl, driverClass)) ;
 		quoteBuffer = new LinkedList<QuoteEvent>();
 		
 		// subscribe to events
@@ -739,8 +748,6 @@ public class CentralDbProcessor implements IPlugin
 		eventProcessorMD.init();
 		if(eventProcessorMD.getThread() != null)
 			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
-		refDataManager.init();
-//		onCallRefData();
 		switch (serverMarket)
 		{
 		case "FC":
@@ -770,8 +777,8 @@ public class CentralDbProcessor implements IPlugin
 		resetStatement() ;
 		requestMarketSession() ;
 
-		scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
-		scheduleManager.scheduleRepeatTimerEvent(checkSQLInterval, eventProcessor, checkEvent);
+		scheduleManager.scheduleRepeatTimerEvent(getTimeInterval(), eventProcessor, timerEvent);
+		scheduleManager.scheduleRepeatTimerEvent(getCheckSQLInterval(), eventProcessor, checkEvent);
 	}
 	@Override
 	public void uninit() {
@@ -887,6 +894,38 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setSQLDelayInterval(long interval) {
 		SQLDelayInterval = (interval > 0) ? interval : 1;
+	}
+
+	public long getTimeInterval() {
+		return timeInterval;
+	}
+
+	public void setTimeInterval(long timeInterval) {
+		this.timeInterval = (timeInterval <= 0) ? 600000 : timeInterval;
+	}
+
+	public long getCheckSQLInterval() {
+		return checkSQLInterval;
+	}
+
+	public void setCheckSQLInterval(long checkSQLInterval) {
+		this.checkSQLInterval = (checkSQLInterval <= 0) ? 600000 : checkSQLInterval;
+	}
+
+	public Date getSessionEnd() {
+		return sessionEnd;
+	}
+
+	public void setSessionEnd(Date sessionEnd) {
+		this.sessionEnd = sessionEnd;
+	}
+
+	public DBHandler getDbhnd() {
+		return dbhnd;
+	}
+
+	public void setDbhnd(DBHandler dbhnd) {
+		this.dbhnd = dbhnd;
 	}
 	
 }

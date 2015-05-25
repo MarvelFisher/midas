@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.cyanspring.common.marketdata.MarketDataManager;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,7 +41,6 @@ import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyContainer;
 import com.cyanspring.common.strategy.StrategyException;
 import com.cyanspring.common.type.QtyPrice;
-import com.cyanspring.adaptor.MarketDataManager;
 import com.cyanspring.strategy.StrategyFactory;
 
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/StrategyTest.xml" })

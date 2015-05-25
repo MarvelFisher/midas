@@ -3,6 +3,7 @@ package com.cyanspring.server.account;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cyanspring.common.type.OrderSide;
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Default;
@@ -16,7 +17,7 @@ public class CommissionManager implements ICommissionManager{
 	private final double minCommission = 2;
 
 	@Override
-	public double getCommission(RefData refData, AccountSetting settings) {
+	public double getCommission(RefData refData, AccountSetting settings, OrderSide side) {
 		double accountCom = 1;
 		if(settings != null && !PriceUtils.isZero(settings.getCommission()))
 			accountCom = settings.getCommission();		
@@ -41,8 +42,8 @@ public class CommissionManager implements ICommissionManager{
 	}
 	
 	@Override
-	public double getCommission(RefData refData, AccountSetting settings, double value) {
-		double commission = getCommission(refData, settings);
+	public double getCommission(RefData refData, AccountSetting settings, double value, OrderSide side) {
+		double commission = getCommission(refData, settings, side);
 		return calCommission(commission * value);
 	}
 
