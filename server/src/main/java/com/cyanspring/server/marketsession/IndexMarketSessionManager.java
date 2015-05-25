@@ -58,6 +58,7 @@ public class IndexMarketSessionManager implements IPlugin {
         @Override
         public void subscribeToEvents() {
             subscribeToEvent(IndexSessionRequestEvent.class, null);
+            subscribeToEvent(AllIndexSessionRequestEvent.class, null);
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
         }
@@ -95,6 +96,15 @@ public class IndexMarketSessionManager implements IPlugin {
                 eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
                         marketSessionUtil.getSessionDataByStrategy(event.getIndexList(), event.getDate()), true));
             }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void processAllIndexSessionRequestEvent(AllIndexSessionRequestEvent event){
+        try {
+            eventManager.sendLocalOrRemoteEvent(new AllIndexSessionEvent(event.getKey(), event.getSender(),
+                    marketSessionUtil.getAll()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

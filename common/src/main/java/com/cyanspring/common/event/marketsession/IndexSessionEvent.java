@@ -6,19 +6,11 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import java.util.Map;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
+ * This event is used to response detail marketSession data
+ * Subscriber: MarketDataReceiver.java
  *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class IndexSessionEvent extends RemoteAsyncEvent{

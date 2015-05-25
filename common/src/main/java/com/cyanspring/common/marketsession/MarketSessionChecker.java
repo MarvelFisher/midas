@@ -89,6 +89,11 @@ public class MarketSessionChecker implements IMarketSession {
         }
     }
 
+    @Override
+    public Map<String, MarketSession> getStateMap() {
+        return stateMap;
+    }
+
     private boolean compare(MarketSessionData data, Date compare) throws ParseException {
 
         if (TimeUtil.getTimePass(data.getStartDate(), compare) <= 0 &&
@@ -108,10 +113,6 @@ public class MarketSessionChecker implements IMarketSession {
 
     public void setTradeDateManager(ITradeDate tradeDateManager) {
         this.tradeDateManager = tradeDateManager;
-    }
-
-    public Map<String, MarketSession> getStateMap() {
-        return stateMap;
     }
 
     public void setStateMap(Map<String, MarketSession> stateMap) {
