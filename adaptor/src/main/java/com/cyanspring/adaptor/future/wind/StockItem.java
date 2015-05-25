@@ -42,6 +42,7 @@ public class StockItem implements AutoCloseable {
 
     protected static ConcurrentHashMap<String, StockItem> stockItemBySymbolMap = new ConcurrentHashMap<String, StockItem>();
     private String symbolId;
+    private int sessionStatus = -1;
     private int tDate = 0;
     private long totalVolume = 0;
     private long volume = 0;
@@ -282,6 +283,7 @@ public class StockItem implements AutoCloseable {
             quote.setLow((double) data.getLow() / 10000);
             quote.setLast((double) data.getMatch() / 10000);
             quote.setClose((double) data.getPreClose() / 10000);
+            quote.setTurnover((double) data.getTurnover());
 
             // volume
             long totalVolume = data.getVolume();
@@ -316,6 +318,13 @@ public class StockItem implements AutoCloseable {
         if (PriceUtils.Compare(item.lowLimit, lowLimit) != 0) {
             item.lowLimit = lowLimit;
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+            quoteExtendIsChange = true;
+        }
+
+        int sessionStatus = WindParser.getItemSessionStatus(marketSessionData);
+        if(sessionStatus!=item.sessionStatus){
+            item.sessionStatus = sessionStatus;
+            quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
             quoteExtendIsChange = true;
         }
 

@@ -287,7 +287,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 + ",B=" + quote.getBid() + ",C=" + quote.getClose()
                 + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                 + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
-                + ",Stale=" + quote.isStale()
+                + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
                 + ",ts=" + quote.getTimeStamp().toString()
                 + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
                 + (sourceId==2?",Cb="+contributor:"")
