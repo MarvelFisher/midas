@@ -1,0 +1,84 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+
+	<bean id="mdServer" class="com.cyanspring.server.MarketDataServer">
+		<property name="plugins">
+			<list>
+                <ref bean="refDataHandler" />
+                <ref bean="marketSessionManager" />
+				<ref bean="mdManager" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+		<constructor-arg>
+			<ref bean="transportService" />
+		</constructor-arg>
+		<property name="embedBroker" value="true"/>
+	</bean>
+
+	<bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"/>
+		<property name="quotePriceWarningPercent" value="50"/>
+	</bean>
+
+	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
+	</bean>
+
+	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
+	</bean>
+	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+	</bean>
+	
+	<bean id="eurrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.0001</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="usdrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>
+
+	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
+		<property name="tickTables">
+			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
+				<entry key="DEFAULT" value-ref="hkexTickTable" />
+				<entry key="FX" value-ref="forexTickTable" />
+				<entry key="EURRUB" value-ref="eurrubForexTickTable" />
+				<entry key="USDRUB" value-ref="usdrubForexTickTable" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
+	</bean>
+
+	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
+
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+		<property name="refDataFile">
+			<value>refdata/refData_fdt.xml</value>
+		</property>
+	</bean>
+
+    <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
+
+	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
+	</bean>
+
+</beans>
