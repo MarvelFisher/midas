@@ -33,41 +33,6 @@
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
 	</bean>
 
-	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
-	</bean>
-	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
-	</bean>
-	
-	<bean id="eurrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
-		<property name="tickTable">
-			<array>
-				<array><value>0</value><value>1000000</value><value>0.0001</value></array>
-			</array>
-		</property>
-	</bean>
-	
-	<bean id="usdrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
-		<property name="tickTable">
-			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
-			</array>
-		</property>
-	</bean>
-
-	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
-		<property name="tickTables">
-			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
-				<entry key="DEFAULT" value-ref="hkexTickTable" />
-				<entry key="FX" value-ref="forexTickTable" />
-				<entry key="EURRUB" value-ref="eurrubForexTickTable" />
-				<entry key="USDRUB" value-ref="usdrubForexTickTable" />
-			</map>
-		</property>
-	</bean>
-
-	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
-	</bean>
-
 	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
