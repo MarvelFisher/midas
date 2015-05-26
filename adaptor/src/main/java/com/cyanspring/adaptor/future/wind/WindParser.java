@@ -4,11 +4,24 @@ package com.cyanspring.adaptor.future.wind;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_MARKET_DATA;
 import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
+import com.cyanspring.common.marketsession.MarketSessionData;
+import com.cyanspring.common.marketsession.MarketSessionType;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WindParser {
 
+    private static final int INDEXSESSION_PREOPEN = 0;
+    private static final int INDEXSESSION_OPEN = 1;
+    private static final int INDEXSESSION_CLOSE = 2;
+
+    public static int getItemSessionStatus(MarketSessionData marketSessionData){
+        int sessionStatus = -1;
+        if(MarketSessionType.PREOPEN == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_PREOPEN;
+        if(MarketSessionType.OPEN == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_OPEN;
+        if(MarketSessionType.CLOSE == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_CLOSE;
+        return sessionStatus;
+    }
 
     /**
      * Parser InputMessage Array To Wind Quotation Date Change Object

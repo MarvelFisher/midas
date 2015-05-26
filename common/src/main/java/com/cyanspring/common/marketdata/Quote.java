@@ -35,6 +35,7 @@ public class Quote implements Cloneable, Serializable {
 	double askVol;
 	double last;
 	double lastVol;
+	double turnover;
 	double high;
 	double low;
 	double open;
@@ -43,8 +44,7 @@ public class Quote implements Cloneable, Serializable {
 	Date timeStamp;
 	Date timeSent;
 	boolean stale;
-//	boolean opened;
-	
+
 	public String getId(){
 		return id;
 	}
@@ -112,16 +112,18 @@ public class Quote implements Cloneable, Serializable {
 	public void setClose(double close) {
 		this.close = close;
 	}
-
 	public Date getTimeStamp() {
 		return timeStamp;
 	}
-
 	public void setTimeStamp(Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
-	
-
+	public double getTurnover() {
+		return turnover;
+	}
+	public void setTurnover(double turnover) {
+		this.turnover = turnover;
+	}
 	protected List<QtyPrice> bids;
 	protected List<QtyPrice> asks;
 	
@@ -229,15 +231,4 @@ public class Quote implements Cloneable, Serializable {
 		}
 		return result;
 	}
-/*	
-	public void setOpened(boolean opened)
-	{
-		this.opened = opened;
-	}
-	
-	public boolean getOpened()
-	{
-		return this.opened;
-	}
-	*/
 }

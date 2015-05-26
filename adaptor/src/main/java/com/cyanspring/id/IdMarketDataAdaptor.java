@@ -218,7 +218,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         log.debug("Id Adapter init begin");
         isClose = false;
         if (thread == null) {
-            thread = new RequestThread(this, "Id init");
+            thread = new RequestThread(this, "IdRequestThread");
         }
         thread.start();
         instance = this;

@@ -51,7 +51,7 @@ public class MarketSessionChecker implements IMarketSession {
             if (!compare(data, date))
                 continue;
             sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
-            sessionData.setDate(Clock.getInstance().now());
+            sessionData.setDate(date);
             if (data.getSessionType().equals(MarketSessionType.PREOPEN) && tradeDateManager != null) {
                 if (currentType != null && !currentType.equals(data.getSessionType()))
                     tradeDate = tradeDateManager.nextTradeDate(tradeDate);
@@ -89,8 +89,14 @@ public class MarketSessionChecker implements IMarketSession {
         }
     }
 
-    private boolean compare(MarketSessionData data, Date compare) throws ParseException {
+    @Override
+    public Map<String, MarketSession> getStateMap() {
+        return stateMap;
+    }
 
+    private boolean compare(MarketSessionData data, Date compare) throws ParseException {
+    	
+    	data.setDate(compare);   	
         if (TimeUtil.getTimePass(data.getStartDate(), compare) <= 0 &&
                 TimeUtil.getTimePass(data.getEndDate(), compare) >= 0) {
             return true;
@@ -108,10 +114,6 @@ public class MarketSessionChecker implements IMarketSession {
 
     public void setTradeDateManager(ITradeDate tradeDateManager) {
         this.tradeDateManager = tradeDateManager;
-    }
-
-    public Map<String, MarketSession> getStateMap() {
-        return stateMap;
     }
 
     public void setStateMap(Map<String, MarketSession> stateMap) {

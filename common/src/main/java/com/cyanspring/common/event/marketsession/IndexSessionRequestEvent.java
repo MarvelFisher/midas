@@ -6,19 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
+ * This event is used to request detail marketSession data
+ * Subscriber: IndexMarketSessionManager.java
  *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class IndexSessionRequestEvent extends RemoteAsyncEvent {
