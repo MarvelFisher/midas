@@ -6,34 +6,26 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<context:annotation-config />
-	<import resource="IFSessionState.xml" />
+	<import resource="OPENSessionState.xml" />
 
 	<bean id="windFutureDataAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
-		<property name="refDataManager">
-			<ref bean="refDataManager" />
-		</property>
 		<property name="showGui" value="true"></property>
-		<property name="gateway" value="true"></property>
-		<property name="gatewayIp" value="10.0.0.20"></property> 
-		<!--  <property name="gatewayIp" value="10.0.0.48"></property> -->
-		<property name="gatewayPort" value="10049"></property>
-		<property name="marketDataLog" value="true"></property>
-		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->
-		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="tradeDateCheckIsOpen" value="false"></property>
-		<property name="marketSessionUtil">
-			<ref bean="marketSessionUtil"/>
-		</property>
-
-		<!--
-
 		<property name="reqIp" value="114.80.154.34"></property>
 		<property name="reqPort" value="10050"></property>
 		<property name="userName" value="TD1001888002"></property>
 		<property name="password" value="35328058"></property>
-		-->
-
+		<property name="gateway" value="true"></property> 
+		<property name="gatewayIp" value="10.0.0.20"></property>
+		<property name="gatewayPort" value="10049"></property>	
+		<property name="marketDataLog" value="true"></property>
+		<property name="tradeDateCheckIsOpen" value="false"></property>
+		<property name="modifyTickTime" value="false"></property>
+		<property name="marketType" ref="MarketType"></property> <!-- Stock:S,Future:F -->		
+		<property name="closeOverTimeControlIsOpen" value="false"></property>
+	</bean>
+	<bean id="MarketType" class="java.lang.String">
+	    <constructor-arg value="S"/>
 	</bean>
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 	    <constructor-arg>
@@ -45,20 +37,34 @@
 	</bean>
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.FuRefDataManager">
 		<property name="refDataFile">
-			<value>refData/refData_fc.xml</value>
+			<value>refData/refData_sc.xml</value>
 		</property>
 		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 	</bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+<!-- 	Futures setting
 		<constructor-arg>
 			<map>
-				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
+				<entry key="IF"><ref bean="SessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
-				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
+				<entry key="IF"><ref bean="TradeDateManager"/></entry>
+			</map>
+		</constructor-arg> -->
+<!-- 	Stocks setting -->
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="SessionChecker"/></entry>
+				<entry key="SZ"><ref bean="SessionChecker"/></entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg>
+			<map>
+				<entry key="SH"><ref bean="TradeDateManager"/></entry>
+				<entry key="SZ"><ref bean="TradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>
