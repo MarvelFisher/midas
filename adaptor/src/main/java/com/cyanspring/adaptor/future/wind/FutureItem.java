@@ -2,6 +2,7 @@ package com.cyanspring.adaptor.future.wind;
 
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
+
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
@@ -13,6 +14,7 @@ import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -205,24 +207,25 @@ public class FutureItem implements AutoCloseable {
         if (PriceUtils.GreaterThan(data.getMatch(), 0)) {
 
             //modify tick Time
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-                    && DateUtil.compareDate(tickTime, endDate) < 0) {
-                tickTime = endDate;
-            }
-
-            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
-                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
-                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
-            }
-
-            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
-                if (TimeUtil.getTimePass(tickTime, startDate) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
-                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
-                if (TimeUtil.getTimePass(endDate, tickTime) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
-                    tickTime = endDate;
-            }
-
+        	if (QuoteMgr.isModifyTickTime()) {
+	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
+	                tickTime = endDate;
+	            }
+	
+	            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
+	                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
+	                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
+	            }
+	
+	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
+	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
+	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+	                    tickTime = endDate;
+	            }
+        	}
 
             List<QtyPrice> bids = new ArrayList<QtyPrice>();
             List<QtyPrice> asks = new ArrayList<QtyPrice>();

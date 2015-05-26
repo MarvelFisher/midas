@@ -14,10 +14,19 @@ public class QuoteMgr implements IReqThreadCallback {
 			.getLogger(QuoteMgr.class);
 
 	public static QuoteMgr instance = new QuoteMgr();
+	private static boolean isModifyTickTime = true;
 	Object m_lock = new Object();
 
 	public static QuoteMgr instance() {
 		return instance;
+	}
+
+	public static boolean isModifyTickTime() {
+		return isModifyTickTime;
+	}
+
+	public static void setModifyTickTime(boolean isModifyTickTime) {
+		QuoteMgr.isModifyTickTime = isModifyTickTime;
 	}
 
 	RequestThread thread = null;

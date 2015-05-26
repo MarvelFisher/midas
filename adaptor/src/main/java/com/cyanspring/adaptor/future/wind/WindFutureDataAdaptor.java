@@ -52,6 +52,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
     private boolean closeOverTimeControlIsOpen = true;
     private boolean tradeDateCheckIsOpen = true;
+	private boolean isModifyTickTime = true;
     private final String TITLE_FUTURE = "FUTURE";
     private final String TITLE_STOCK = "STOCK";
     private final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
@@ -686,6 +687,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         WindFutureDataAdaptor.instance = this;
 
         QuoteMgr.instance.init();
+        QuoteMgr.setModifyTickTime(isModifyTickTime);
         initReqThread();
         doConnect();
 
@@ -954,5 +956,13 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
     public void onStopEvent(RequestThread sender) {
 
     }
+
+	public boolean isModifyTickTime() {
+		return isModifyTickTime;
+	}
+
+	public void setModifyTickTime(boolean isModifyTickTime) {
+		this.isModifyTickTime = isModifyTickTime;
+	}
 }
 
