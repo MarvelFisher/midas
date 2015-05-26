@@ -95,7 +95,8 @@ public class MarketSessionChecker implements IMarketSession {
     }
 
     private boolean compare(MarketSessionData data, Date compare) throws ParseException {
-
+    	
+    	data.setDate(compare);   	
         if (TimeUtil.getTimePass(data.getStartDate(), compare) <= 0 &&
                 TimeUtil.getTimePass(data.getEndDate(), compare) >= 0) {
             return true;
