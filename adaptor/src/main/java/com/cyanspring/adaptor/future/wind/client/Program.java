@@ -44,7 +44,7 @@ public class Program {
 		do {
 			msg = in.nextLine();
 			if(MsgPackLiteDataClientHandler.ctx != null) {
-				MsgPackLiteDataClientHandler.ctx.writeAndFlush(msg);
+				MsgPackLiteDataClientHandler.ctx.writeAndFlush(msg.getBytes());
 			}
 		} while(msg.equalsIgnoreCase("exit") == false);
 		in.close();

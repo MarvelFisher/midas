@@ -1,7 +1,10 @@
 package com.cyanspring.Network.Transport;
 
+import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 
+import net.asdfa.msgpack.MsgPack;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -35,6 +38,7 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 				continue; //discard head byte that is not 0x02;
 			}
 			
+
 			int packetlen_low = unsignedByteToInt(in.readByte());
 			int packetlen_hi = unsignedByteToInt(in.readByte());
 			int packetlen = packetlen_low + packetlen_hi*256;
@@ -45,7 +49,8 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 			
 			byte byVer = in.readByte();
 			byte byPktNo = in.readByte();
-			byte[] body_buf = new byte[packetlen - 2];
+			byte byIsCompressed = in.readByte();
+			byte[] body_buf = new byte[packetlen - 3];
 			in.readBytes(body_buf);
 			byte tail_byte = in.readByte();
 			
@@ -56,7 +61,14 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 				in.readByte();
 				continue; 
 			}
-			out.add(new String(body_buf, "UTF-8"));
+			if(byIsCompressed == 0) {
+				out.add(MsgPack.unpack(body_buf));
+			} else {
+				byte[] decompBuf = CompressUtil.decompress(body_buf);			
+				out.add(MsgPack.unpack(decompBuf));
+				decompBuf = null;
+			}
+			body_buf = null;			
 		}
 	}
 	

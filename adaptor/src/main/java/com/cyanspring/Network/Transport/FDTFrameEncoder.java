@@ -1,5 +1,7 @@
 package com.cyanspring.Network.Transport;
 
+import net.asdfa.msgpack.MsgPack;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +38,33 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 			//MsgPackParser message = (MsgPackParser)object;
 			//int datalen = message.toByteArray().length;
 			//byte[] data = message.toByteArray();			
-			String message = (String)obj;
-			byte[] data = message.getBytes();
-			int datalen = data.length + 2;
+			//String message = (String)obj;
+			//byte[] data = message.getBytes();
+			boolean isCompressed = false;
+			byte[] data = MsgPack.pack(obj);
+			byte[] compressedData = null;
+			int compressedLen = 0,datalen = data.length + 2 + 1;
+			if(data.length >= FDTPacket.PKT_COMPRESS_SIZE ) {
+				isCompressed = true;				
+				compressedData = CompressUtil.compress(data);
+				compressedLen = compressedData.length; 
+				if(compressedLen >= data.length) {
+					isCompressed = false;
+					compressedData = null;
+				} else {
+					datalen = compressedLen + 2 + 1;
+				}
+			}
+			/*
+			if(obj instanceof String) {
+				data = ((String)obj).getBytes();
+			} else {
+				data = (byte[])obj;
+			}
+			*/
+			
 
-		   	byte byHead0, byHead1, byHead2, byHead3;
+		   	byte byHead0, byHead1, byHead2;
 			byHead0 = (byte)(FDTPacket.PKT_LEAD);
 			byHead1 = (byte)(datalen%256);
 			byHead2 = (byte)(datalen/256);
@@ -55,9 +79,17 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 			// PACKET NO
 			buf.writeByte(byPacketNo++);
 			
-			buf.writeBytes(data);
+			if(isCompressed) {
+				buf.writeByte(1);
+				buf.writeBytes(compressedData);
+			} else {
+				buf.writeByte(0);
+				buf.writeBytes(data);				
+			}
 			// TAIL BYTE
 			buf.writeByte(FDTPacket.PKT_END);
+			data = null;
+			compressedData = null;
 		}
 		catch(Exception e)
 		{

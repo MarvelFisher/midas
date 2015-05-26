@@ -5,7 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -17,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.cyanspring.Network.Transport.FDTFields;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -24,21 +29,22 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import cn.com.wind.td.tdf.*;
 
-public class WindGateway {
+public class WindGateway implements Runnable {
 	
 	private static WindGatewayInitializer windGatewayInitializer = null; 
-	public static HashMap<String,TDF_FUTURE_DATA> mapFutureData = new HashMap<String,TDF_FUTURE_DATA>(); 
-	public static HashMap<String,TDF_MARKET_DATA> mapMarketData = new HashMap<String,TDF_MARKET_DATA>();
-	public static HashMap<String,TDF_INDEX_DATA>  mapIndexData  = new HashMap<String,TDF_INDEX_DATA>();
-	public static HashMap<String,TDF_TRANSACTION> mapTransaction = new HashMap<String,TDF_TRANSACTION>();
-	public static HashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new HashMap<String,ArrayList<TDF_CODE>>();
+	public static ConcurrentHashMap<String,TDF_FUTURE_DATA> mapFutureData = new ConcurrentHashMap<String,TDF_FUTURE_DATA>(); 
+	public static ConcurrentHashMap<String,TDF_MARKET_DATA> mapMarketData = new ConcurrentHashMap<String,TDF_MARKET_DATA>();
+	public static ConcurrentHashMap<String,TDF_INDEX_DATA>  mapIndexData  = new ConcurrentHashMap<String,TDF_INDEX_DATA>();
+	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
+	public static ConcurrentHashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ArrayList<TDF_CODE>>();
 	
 
 	
 
 
 	public static WindGateway instance = null;
-	private static int typeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;	
+	private static int stockTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_TRANSACTION | DATA_TYPE_FLAG.DATA_TYPE_INDEX;
+	private static int merchandiseTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);
@@ -59,6 +65,7 @@ public class WindGateway {
 	public static int upstreamPort = 10049;
 	
 	public static MsgPackLiteServer msgPackLiteServer = null;
+	Demo demo = null,demoStock = null;
 	
 	
 	public int getServerPort() {
@@ -175,14 +182,18 @@ public class WindGateway {
 		return sb.append("]").toString();
 	}
 	
-	static public String publishTransactionChanges(TDF_TRANSACTION dirty,TDF_TRANSACTION data) {
+	static public String publishTransactionChanges(TDF_TRANSACTION data) {
 		StringBuilder sb = new StringBuilder("API=TRANSACTION|Symbol=" + data.getWindCode());
-		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {
-			sb.append("|ActionDay=" + data.getActionDay()); 
-		}
-		if(dirty == null || dirty.getAskOrder() != data.getAskOrder()) {
+		sb.append("|AD=" + data.getActionDay());
+		sb.append("|Tm=" + data.getTime());
+		sb.append("|Id=" + data.getIndex());
+		sb.append("|Pr=" + data.getPrice());
+		sb.append("|Vl=" + data.getVolume());
+		sb.append("|To=" + data.getTurnover());
+		sb.append("|BS=" + data.getBSFlag());
+		sb.append("|OK=" + data.getOrderKind());
+		sb.append("|FC=" + data.getFunctionCode());
 
-		}
 		return sb.toString();
 	}
 	
@@ -277,6 +288,76 @@ public class WindGateway {
 		return sb.toString();
 
 	}
+	static public HashMap<Integer,Object> publishFutureChangesToMap(TDF_FUTURE_DATA dirty,TDF_FUTURE_DATA data) {	
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindFutureData);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());		
+		
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
+			map.put(FDTFields.ActionDay, data.getActionDay());
+		}
+		if(dirty == null || false == compareArrays(dirty.getAskPrice(),data.getAskPrice()))	{			
+			map.put(FDTFields.AskPriceArray,data.getAskPrice());
+		}		
+		if(dirty == null || false == compareArrays(dirty.getAskVol(),data.getAskVol()))	{
+			map.put(FDTFields.AskVolumeArray, data.getAskVol());
+		}			
+		if(dirty == null || false == compareArrays(dirty.getBidPrice(),data.getBidPrice())) {				
+			map.put(FDTFields.BidPriceArray, data.getBidPrice());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getBidVol(),data.getBidVol())) {			
+			map.put(FDTFields.BidVolumeArray,data.getBidVol());			
+		}		
+		if(dirty == null || dirty.getClose() != data.getClose()) {		
+			map.put(FDTFields.Close,data.getClose());								
+		}
+		if(dirty == null || dirty.getHigh() != data.getHigh()) {		
+			map.put(FDTFields.High,data.getHigh());		
+		}
+		if(dirty == null || dirty.getHighLimited() != data.getHighLimited()) {		
+			map.put(FDTFields.HighLimit,data.getHighLimited());		
+		}
+		if(dirty == null || dirty.getLow() != data.getLow()) {		
+			map.put(FDTFields.Low,data.getLow());
+		}
+		if(dirty == null || dirty.getLowLimited() != data.getLowLimited()) {		
+			map.put(FDTFields.LowLimit,data.getLowLimited());
+		}
+		if(dirty == null || dirty.getMatch() != data.getMatch()) {		
+			map.put(FDTFields.Last,data.getMatch());
+		}
+		if(dirty == null || dirty.getOpen() != data.getOpen()) {		
+			map.put(FDTFields.Open,data.getOpen());
+		}
+		if(dirty == null || dirty.getOpenInterest() != data.getOpenInterest()) {		
+			map.put(FDTFields.OpenInterest,data.getOpenInterest());
+		}
+		if(dirty == null || dirty.getPreClose() != data.getPreClose()) {		
+			map.put(FDTFields.PreClose,data.getPreClose());
+		}
+		if(dirty == null || dirty.getSettlePrice() != data.getSettlePrice()) {		
+			map.put(FDTFields.SettlePrice,data.getSettlePrice());
+		}
+		if(dirty == null || dirty.getPreSettlePrice() != data.getPreSettlePrice()) {		
+			map.put(FDTFields.PreSettlePrice,data.getPreSettlePrice());
+		}		
+		if(dirty == null || dirty.getStatus() != data.getStatus()) {		
+			map.put(FDTFields.Status,data.getStatus());
+		}
+		if(dirty == null || dirty.getTime() != data.getTime()) {		
+			map.put(FDTFields.Time,data.getTime());
+		}
+		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {		
+			map.put(FDTFields.TradingDay,data.getTradingDay());			
+		}
+		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {	
+			map.put(FDTFields.Turnover,data.getTurnover());			
+		}
+		if(dirty == null || dirty.getVolume() != data.getVolume()) {		
+			map.put(FDTFields.Volume,data.getVolume());
+		}		
+		return map;
+	}
 	
 	static public String publishMarketDataChanges(TDF_MARKET_DATA dirty,TDF_MARKET_DATA data)
 	{
@@ -359,7 +440,7 @@ public class WindGateway {
 		}
 		if(dirty == null || dirty.getTotalAskVol() != data.getTotalAskVol())
 		{
-			sb.append("|TotalBidVol=" + data.getTotalAskVol());
+			sb.append("|TotalAskVol=" + data.getTotalAskVol());
 		}		
 		if(dirty == null || dirty.getTotalBidVol() != data.getTotalBidVol())
 		{
@@ -396,6 +477,77 @@ public class WindGateway {
 		
 		return sb.toString();
 	}
+	
+	static public HashMap<Integer,Object> publishMarketDataChangesToMap(TDF_MARKET_DATA dirty,TDF_MARKET_DATA data)
+	{
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindMarketData);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());		
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
+			map.put(FDTFields.ActionDay,data.getActionDay());
+		}
+		if(dirty == null || false == compareArrays(dirty.getAskPrice(),data.getAskPrice())) {					
+			map.put(FDTFields.AskPriceArray,data.getAskPrice());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getAskVol(),data.getAskVol()))	{		
+			map.put(FDTFields.AskVolumeArray,data.getAskVol());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getBidPrice(),data.getBidPrice())) {					
+			map.put(FDTFields.BidPriceArray,data.getBidPrice());			
+		}
+		if(dirty == null || false == compareArrays(dirty.getBidVol(),data.getBidVol())) {					
+			map.put(FDTFields.BidVolumeArray,data.getBidVol());			
+		}		
+		if(dirty == null || dirty.getHigh() != data.getHigh()) {		
+			map.put(FDTFields.High,data.getHigh());	
+		}
+		if(dirty == null || dirty.getHighLimited() != data.getHighLimited()) {		
+			map.put(FDTFields.HighLimit,data.getHighLimited());		
+		}
+		if(dirty == null || dirty.getLow() != data.getLow()) {		
+			map.put(FDTFields.Low,data.getLow());
+		}
+		if(dirty == null || dirty.getLowLimited() != data.getLowLimited())
+		{
+			map.put(FDTFields.LowLimit,data.getLowLimited());
+		}
+		if(dirty == null || dirty.getMatch() != data.getMatch()) {		
+			map.put(FDTFields.Last,data.getMatch());
+		}
+		if(dirty == null || dirty.getOpen() != data.getOpen()) {		
+			map.put(FDTFields.Open,data.getOpen());
+		}		
+		if(dirty == null || dirty.getPreClose() != data.getPreClose()) {		
+			map.put(FDTFields.PreClose,data.getPreClose());
+		}
+		if(dirty == null || dirty.getStatus() != data.getStatus()) {		
+			map.put(FDTFields.Status,data.getStatus());
+		}
+		if(dirty == null || dirty.getTime() != data.getTime()) {		
+			map.put(FDTFields.Time,data.getTime());
+		}
+		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {		
+			map.put(FDTFields.TradingDay,data.getTradingDay());			
+		}
+		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {		
+			map.put(FDTFields.Turnover,data.getTurnover());			
+		}
+		if(dirty == null || dirty.getVolume() != data.getVolume())
+		{
+			map.put(FDTFields.Volume,data.getVolume());
+		}		
+		if(dirty == null || dirty.getNumTrades() != data.getNumTrades()) {		
+			map.put(FDTFields.NumberOfTrades,data.getNumTrades());
+		}
+		if(dirty == null || dirty.getTotalAskVol() != data.getTotalAskVol()) {		
+			map.put(FDTFields.TotalAskVolume,data.getTotalAskVol());
+		}		
+		if(dirty == null || dirty.getTotalBidVol() != data.getTotalBidVol()) {		
+			map.put(FDTFields.TotalBidVolume,data.getTotalBidVol());
+		}
+		
+		return map;
+	}	
 	
 	static public String publishIndexDataChanges(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data)
 	{
@@ -443,11 +595,54 @@ public class WindGateway {
 		return sb.toString();		
 	}
 	
+	static public HashMap<Integer,Object> publishIndexDataChangesToMap(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data) {	
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindIndexData);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());	
+		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
+			map.put(FDTFields.ActionDay,data.getActionDay());
+		}
+		if(dirty == null || dirty.getHighIndex() != data.getHighIndex()) {		
+			map.put(FDTFields.High,data.getHighIndex());
+		}
+		if(dirty == null || dirty.getLastIndex() != data.getLastIndex()) {		
+			map.put(FDTFields.Last,data.getLastIndex());
+		}
+		if(dirty == null || dirty.getLowIndex() != data.getLowIndex()) {		
+			map.put(FDTFields.Low,data.getLowIndex());
+		}
+		if(dirty == null || dirty.getOpenIndex() != data.getOpenIndex()) {		
+			map.put(FDTFields.Open,data.getOpenIndex());
+		}
+		if(dirty == null || dirty.getPreCloseIndex() != data.getPreCloseIndex()) {		
+			map.put(FDTFields.PreClose,data.getPreCloseIndex());
+		}
+		if(dirty == null || dirty.getTime() != data.getTime()) {		
+			map.put(FDTFields.Time,data.getTime());
+		}
+		if(dirty == null || dirty.getTotalVolume() != data.getTotalVolume()) {		
+			map.put(FDTFields.Volume,data.getTotalVolume());
+		}
+		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {	
+			map.put(FDTFields.TradingDay,data.getTradingDay());
+		}
+		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {		
+			map.put(FDTFields.Turnover,data.getTurnover());
+		}
+		return map;		
+	}	
+	
 	void publishWindData(String str,String symbol) {	
 		if(windGatewayInitializer != null )	{
 			WindGatewayHandler.publishWindData(str,symbol,true);
 		}		
 	}
+	
+	void publishWindDataNoHash(String str,String symbol) {	
+		if(windGatewayInitializer != null )	{
+			WindGatewayHandler.publishWindData(str,symbol,false);
+		}		
+	}	
 	
 	public void receiveHeartBeat() {	
 		publishWindData("API=Heart Beat",null);
@@ -460,7 +655,7 @@ public class WindGateway {
 		String symbol = transactionData.getWindCode();
 		TDF_TRANSACTION data = mapTransaction.get(symbol);
 		mapTransaction.put(symbol,transactionData);
-		String str = publishTransactionChanges(data,transactionData);
+		String str = publishTransactionChanges(transactionData);
 		publishWindData(str,symbol);
 		if(data != null) {
 			data = null;
@@ -479,6 +674,9 @@ public class WindGateway {
 			String str = publishFutureChanges(data,futureData);
 			publishWindData(str,symbol);
 		}
+		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol);
+		}		
 		if(data != null) {		
 			data = null;
 		}					
@@ -495,6 +693,9 @@ public class WindGateway {
 			String str = publishMarketDataChanges(data,marketData);
 			publishWindData(str,symbol);
 		}
+		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishMarketDataChangesToMap(data,marketData), symbol);
+		}		
 		if(data != null) {		
 			data = null;
 		}		
@@ -512,6 +713,9 @@ public class WindGateway {
 			String str = publishIndexDataChanges(data,indexData);
 			publishWindData(str,symbol);
 		}
+		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol);
+		}
 		if(data != null) {		
 			data = null;
 		}		
@@ -521,14 +725,17 @@ public class WindGateway {
 		String str = "API=MarketClose|Market=" + marketClose.getMarket() + 				
 				"|Time=" + marketClose.getTime() + "|Info=" + marketClose.getInfo();
 		log.info(str);
-		publishWindData(str,null);				
+		publishWindData(str,null);	
+		MsgPackLiteDataServerHandler.sendMarketClose(marketClose.getMarket(),marketClose.getTime(),marketClose.getInfo());
+		
 	}
 	
 	public void receiveQuotationDateChange(TDF_QUOTATIONDATE_CHANGE dateChange) {
 		String str = "API=QDateChange|Market=" + dateChange.getMarket() +
 				"|OldDate=" + dateChange.getOldDate() + "|NewDate=" + dateChange.getNewDate();
 		log.info(str);
-		publishWindData(str,null);			
+		publishWindData(str,null);	
+		MsgPackLiteDataServerHandler.sendQuotationDateChange(dateChange.getMarket(),dateChange.getOldDate(),dateChange.getNewDate());
 	}
 	
 	public void receiveCodeTable(String strMarket,TDF_CODE[] codes) {	
@@ -540,106 +747,134 @@ public class WindGateway {
 			lst = new ArrayList<TDF_CODE>();
 			mapCodeTable.put(strMarket, lst);
 		}
-		synchronized(lst) {		
-			lst.clear();
-			for(TDF_CODE code : codes) {			
-				lst.add(code);
+		if(codes != null) {
+			synchronized(lst) {		
+				lst.clear();
+				for(TDF_CODE code : codes) {			
+					lst.add(code);
+				}
 			}
 		}
-	}	
+	}		
 	
-	public void run() throws InterruptedException
+	public void convertMarkets(String[] in_arr) {
+		for(String str : in_arr) {
+			if(str.contains("Markets=")) {
+				String[] markets = str.substring(8).split(",");
+				for(String market : markets) {
+					if(market != null && market.isEmpty() == false) {
+						receiveCodeTable(market,null);
+					}
+				}
+			}
+		}
+	}
+	
+	public void requestSymbol(String sym) {
+		if(demoStock != null)
+		{
+			demoStock.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
+		}
+	}
+	
+	public void run()
 	{	
-		Demo demo = null,demoStock = null;
-		Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null;
-		DataWrite dw = null,dwStock = null;
-		WindDataClient windDataClient = null;
-		
-
-		if(cascading) {
-			windDataClient = new WindDataClient();
-			clientThread = new Thread(windDataClient,"windDataClient");
-			clientThread.start();						
-		} else {
-			if(windMFServerIP != null && windMFServerIP != "")
-			{
-				demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , typeFlags, this);
-				DataHandler dh = new DataHandler (demo);
-				t1 = new Thread(dh);
-				t1.start();
-				dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
-				t2 = new Thread ( dw );
-				t2.start();
-			}
+		try {
+			//Demo demo = null,demoStock = null;
+			Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null;
+			DataWrite dw = null,dwStock = null;
+			WindDataClient windDataClient = null;
 			
-			if(windSFServerIP != null && windSFServerIP != "")
-			{
-				demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , typeFlags, this);
-				DataHandler dhStock = new DataHandler (demoStock);
-				t1Stock = new Thread(dhStock);
-				t1Stock.start();
-				dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
-				t2Stock = new Thread ( dwStock );
-				t2Stock.start();
-			}
-		}
-		
-		if(msgPackLiteServer != null) {
-			mpServerThread = new Thread(msgPackLiteServer,"MsgPackLiteServer");
-			mpServerThread.start();
-		}
-
 	
-		EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(16);
-		
-		try
-		{
-			windGatewayInitializer = new WindGatewayInitializer();
-			ServerBootstrap  bootstrap = new ServerBootstrap()
-			.group(bossGroup,workerGroup)
-			.channel(NioServerSocketChannel.class)
-			.option(ChannelOption.SO_KEEPALIVE, true)
-			.option(ChannelOption.TCP_NODELAY, true)
-			.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
-			.childHandler(windGatewayInitializer);
-		
-			bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
-		}
-		finally
-		{
-
-
-			if(demo != null)
-			{
-				demo.setQuitFlag(true);
-				dw.setQuitFlag(true);	
-				t1.join();
-				System.out.println("Thread1 Quit!");
-				t2.join();			
-				System.out.println("Thread2 Quit!");
+			if(cascading) {
+				windDataClient = new WindDataClient();
+				clientThread = new Thread(windDataClient,"windDataClient");
+				clientThread.start();						
+			} else {
+				if(windMFServerIP != null && windMFServerIP != "")
+				{
+					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this);
+					DataHandler dh = new DataHandler (demo);
+					t1 = new Thread(dh,"windMerchandise");
+					t1.start();
+					dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
+					t2 = new Thread ( dw , "windMerchandiseConnectionCheck" );
+					t2.start();
+				}
+				
+				if(windSFServerIP != null && windSFServerIP != "")
+				{
+					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this);
+					DataHandler dhStock = new DataHandler (demoStock);
+					t1Stock = new Thread(dhStock,"windFutureAndStock");
+					t1Stock.start();
+					dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
+					t2Stock = new Thread ( dwStock,"windStockConnectionCheck" );
+					t2Stock.start();
+				}
 			}
 			
-			if(demoStock != null)
-			{
-				demoStock.setQuitFlag(true);
-				dwStock.setQuitFlag(true);	
-				t1Stock.join();
-				System.out.println("Thread1 for Stock Quit!");
-				t2Stock.join();			
-				System.out.println("Thread2 for Stock Quit!");			
+			if(msgPackLiteServer != null) {
+				mpServerThread = new Thread(msgPackLiteServer,"MsgPackLiteServer");
+				mpServerThread.start();
 			}
-			if(clientThread != null) {
-				windDataClient.stop();
-				clientThread.join();				
-			}
-			if(mpServerThread != null) {
-				msgPackLiteServer.stop();
-				mpServerThread.join();
-			}
+	
+		
+			EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
+			EventLoopGroup workerGroup = new NioEventLoopGroup(16);
 			
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();			
+			try
+			{
+				windGatewayInitializer = new WindGatewayInitializer();
+				ServerBootstrap  bootstrap = new ServerBootstrap()
+				.group(bossGroup,workerGroup)
+				.channel(NioServerSocketChannel.class)
+				.option(ChannelOption.SO_KEEPALIVE, true)
+				.option(ChannelOption.TCP_NODELAY, true)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
+				.childHandler(windGatewayInitializer);
+			
+				bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+			}
+			finally
+			{
+	
+	
+				if(demo != null)
+				{
+					demo.setQuitFlag(true);
+					dw.setQuitFlag(true);	
+					t1.join();
+					System.out.println("Thread1 Quit!");
+					t2.join();			
+					System.out.println("Thread2 Quit!");
+				}
+				
+				if(demoStock != null)
+				{
+					demoStock.setQuitFlag(true);
+					dwStock.setQuitFlag(true);	
+					t1Stock.join();
+					System.out.println("Thread1 for Stock Quit!");
+					t2Stock.join();			
+					System.out.println("Thread2 for Stock Quit!");			
+				}
+				if(clientThread != null) {
+					windDataClient.stop();
+					clientThread.join();				
+				}
+				if(mpServerThread != null) {
+					msgPackLiteServer.stop();
+					mpServerThread.join();
+				}
+				
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();			
+			}
+		} 
+		catch(Exception e)
+		{
+			log.error("Exception at WindGateway " + e.getMessage(),e);
 		}
 	}
 	
@@ -662,8 +897,8 @@ public class WindGateway {
         	msgPackLiteServer = (MsgPackLiteServer)context.getBean("MsgPackLiteServer");
         }
         instance = (WindGateway)context.getBean("WindGateway");
-        instance.run();
+        Thread serverThread = new Thread(instance,"windDataServer");
+        serverThread.start();
 	}
-
 		
 }

@@ -1,11 +1,30 @@
 package com.cyanspring.adaptor.future.wind.client;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+import com.cyanspring.Network.Transport.FDTFields;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -18,41 +37,63 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger log = LoggerFactory
 			.getLogger(MsgPackLiteDataClientHandler.class);	
 
-	public void channelRead(ChannelHandlerContext arg0, Object arg1) throws Exception {
-		String in = (String)arg1;
+	@SuppressWarnings("unchecked")
+	public void channelRead(ChannelHandlerContext arg0, Object msg) {
 		try {
-			if(in != null) {
-				System.out.println("Server Response : " + in);
+			if(msg instanceof byte[]) {
+				String in = new String((byte[])msg,"UTF-8");
+				if(in != null) {
+					System.out.println("Server Response : " + in);
+				}				
+			} else if(msg instanceof Map<?,?>) {
+				processMessagePack(msg);							
 			}
+		} catch(Exception e) {
+			log.error(e.getMessage(),e);
 	    } finally {
-	        ReferenceCountUtil.release(arg1); 
-	    }		
-	
+	        ReferenceCountUtil.release(msg); 
+	    }			
 	}
 
-	public void exceptionCaught(ChannelHandlerContext arg0, Throwable e)
-			throws Exception {
-		// TODO Auto-generated method stub
+	public void handlerActive(ChannelHandlerContext arg0) throws Exception {
+		ctx = arg0;
+		log.info("Connected with server : " + ctx.channel().remoteAddress().toString());
+	}
+
+
+	public void handlerInactive(ChannelHandlerContext arg0) throws Exception {
+		if(ctx == arg0) {
+			ctx = null;
+		}
+		log.info("Disconnect with server : " + ctx.channel().remoteAddress().toString());
+	}
+	
+	static public void processMessagePack(Object msg) {
+		try {
+			@SuppressWarnings("unchecked")
+			HashMap<Integer,Object> map = (HashMap<Integer,Object>)msg;
+			if(map.containsKey(1) == false) {		
+				return;
+			}
+			int packetType = (int)map.get(FDTFields.PacketType);
+			if(packetType == FDTFields.WindMarkets) {
+				@SuppressWarnings("unchecked")
+				ArrayList<byte[]> markets = (ArrayList<byte[]>)map.get(FDTFields.ArrayOfString);
+				for(byte[] market : markets) {
+					log.info("Market : " + new String(market,"UTF-8"));
+				}
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	
+	public void exceptionCaught(ChannelHandlerContext arg0, Throwable e) throws Exception {
 		log.error(e.getMessage(),e);
 		if(ctx != null) {
 			ctx.close();
 			ctx = null;
 		}
-	}
-
-
-	public void handlerAdded(ChannelHandlerContext arg0) throws Exception {
-		// TODO Auto-generated method stub
-		ctx = arg0;
-	}
-
-
-	public void handlerRemoved(ChannelHandlerContext arg0) throws Exception {
-		// TODO Auto-generated method stub
-		if(ctx == arg0) {
-			ctx = null;
-		}
-	}
-		
+	}	
 
 }

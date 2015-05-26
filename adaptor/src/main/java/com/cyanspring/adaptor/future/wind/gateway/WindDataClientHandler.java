@@ -1,5 +1,7 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +26,16 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 	public static ChannelHandlerContext ctx = null;
 	
 	private int bufLenMin = 0,bufLenMax = 0,blockCount = 0;
-	private long throughput = 0,dataReceived = 0,msLastTime = 0,msDiff = 0;	
+	private long throughput = 0,dataReceived = 0,msLastTime = 0,msDiff = 0;
 
+	
 	public void channelActive(ChannelHandlerContext arg0) throws Exception {
 		
 		msLastTime = System.currentTimeMillis();
 		ctx = arg0;
 		ctx.channel().write(WindGatewayHandler.addHashTail("API=ReqHeartBeat",true));
-		WindGatewayHandler.resubscribe(ctx.channel());
+		ctx.channel().write(WindGatewayHandler.addHashTail("API=GetMarkets",true));
+		WindGatewayHandler.resubscribe(ctx.channel(),MsgPackLiteDataServerHandler.registrationGlobal);
 		ctx.channel().flush();
 		log.info(ctx.channel().localAddress().toString() + " Connected with data server : " + ctx.channel().remoteAddress().toString());
 
@@ -51,12 +55,16 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 	
 	public void channelRead(ChannelHandlerContext arg0, Object arg1)
 			throws Exception {
-		String in = (String)arg1;
+
 		try {
-			if(in != null) {
-				processData(in);
-				calculateMessageFlow(in.length());					
-			}
+			if(arg1 instanceof String) {
+				String in;
+				in = (String)arg1;
+				if(in != null) {
+					processData(in);
+					calculateMessageFlow(in.length());					
+				}
+			} 
 	    } finally {
 	        ReferenceCountUtil.release(arg1);
 	    }		
@@ -117,6 +125,7 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 		}
 
 	}
+
 	
 	private void processData(String in) {
 		int dataType;
@@ -147,19 +156,20 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 					convertIndexData(in_arr,in);
 				}
 				if (strDataType.equals("Heart Beat")) {
-					WindGateway.instance.publishWindData(in, null);
+					WindGateway.instance.publishWindDataNoHash(in, null);
 				}
 				if (strDataType.equals("QDateChange")) {
-					WindGateway.instance.publishWindData(in, null);
+					WindGateway.instance.publishWindDataNoHash(in, null);
 				}
 				if (strDataType.equals("MarketClose")) {
-					WindGateway.instance.publishWindData(in, null);
+					WindGateway.instance.publishWindDataNoHash(in, null);
 				}
 				if (strDataType.equals("CODE")) {
-					WindGateway.instance.publishWindData(in, null);
+					WindGateway.instance.publishWindDataNoHash(in, null);
 				}
 				if (strDataType.equals("Markets")) {
-					WindGateway.instance.publishWindData(in, null);					
+					WindGateway.instance.convertMarkets(in_arr);
+					WindGateway.instance.publishWindDataNoHash(in, null);					
 				}
 			}
 		}		

@@ -62,7 +62,7 @@ public class MsgPackLiteServer implements Runnable {
                 	 	ch.pipeline().addLast("decoder",new FDTFrameDecoder());
                 	 	ch.pipeline().addLast("encoder",new FDTFrameEncoder());
                 		ch.pipeline().addLast("idleStateHandler", new IdleStateHandler(readIdleInterval, writeIdleInterval, 0));
-                		ch.pipeline().addLast("idleHandler", new idDataServerIdleHandler());                	
+                		ch.pipeline().addLast("idleHandler", new windDataServerIdleHandler());                	
                 		ch.pipeline().addLast(new MsgPackLiteDataServerHandler());
                  }
              })
@@ -127,9 +127,10 @@ public class MsgPackLiteServer implements Runnable {
 	}	
 }
 
-class idDataServerIdleHandler extends ChannelDuplexHandler {
+class windDataServerIdleHandler extends ChannelDuplexHandler {
 	private static final Logger log = LoggerFactory
-			.getLogger(idDataServerIdleHandler.class);
+			.getLogger(windDataServerIdleHandler.class);
+	private int heartbeatCounter = 0;
 	@Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
@@ -137,7 +138,9 @@ class idDataServerIdleHandler extends ChannelDuplexHandler {
             if (e.state() == IdleState.READER_IDLE) {            	
             		log.info("Read Idle for " + MsgPackLiteServer.readIdleInterval + " seconds , close client : " + ctx.channel().remoteAddress());
             		ctx.close();            	
-            } 
+            } else if(e.state() == IdleState.WRITER_IDLE) {
+            	MsgPackLiteDataServerHandler.sendHeartbeat(ctx.channel(),++heartbeatCounter);
+            }
         }
     } 	
 }

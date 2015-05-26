@@ -1,0 +1,100 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:annotation-config />
+
+    <import resource="md/md.xml" />
+    <import resource="fx/MarketSession.xml" />
+
+    <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>DEV</value>
+        </property>
+        <property name="category">
+            <value>MD</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://localHost:61616"/>
+    </bean>
+
+    <!-- MarketDataManager setting-->
+    <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
+        <constructor-arg>
+            <list>
+                <ref bean="idAdaptor" />
+                <ref bean="ibAdaptor" />
+            </list>
+        </constructor-arg>
+        <property name="quoteThrottle" value="1000"/>
+        <property name="timerInterval" value="1000"/>
+        <property name="quoteLogIsOpen" value="true"/>
+        <property name="quoteExtendEventIsSend" value="false"/>
+        <property name="sessionMonitor">
+            <map>
+                <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+                <entry key="PREOPEN" value="0" />
+                <entry key="CLOSE" value="0" />
+            </map>
+        </property>
+        <property name="quoteChecker" ref="quoteChecker"/> <!-- dont set this or cant test in weekend  -->
+        <property name="quoteSaver" ref="quoteSaver"/>
+        <property name="broadcastQuote" value="true"/>
+    </bean>
+
+    <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+        <property name="id" value="IB01" />
+        <property name="host" value="10.0.0.20" />
+        <property name="port" value="4001" />
+        <property name="clientId" value="200" />
+        <property name="reqMarketDepth" value="false" />
+        <property name="logMarketData" value="false" />
+        <!--<property name="cancelOpenOrders" value="true" /> -->
+    </bean>
+
+    <!-- IDAdaptor setting (Setting can be marked if not used) -->
+
+    <bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+        <property name="account" value="fdtcanned"></property>
+        <property name="password" value="MFW9dC26"></property>
+        <property name="gateway" value="false"></property>
+        <property name="reqIp" value="10.0.0.32"></property>
+        <property name="reqPort" value="6086"></property>
+        <property name="exch" value="687"></property>
+        <property name="preOpen" value="510"></property>
+        <property name="open" value="515"></property>
+        <property name="close" value="500"></property>
+        <property name="sendHeartBeat" value="3"></property>
+        <property name="nonFX">
+            <map>
+                <entry key="XAUUSD" value="691" />
+                <entry key="XAGUSD" value="691" />
+            </map>
+        </property>
+        <property name="contributeList">
+            <list>
+                <value>AXI</value>
+                <value>FXN</value>
+                <value>WBRS</value>
+                <value>DUBA</value>
+            </list>
+        </property>
+        <property name="unContributeList">
+            <list>
+            </list>
+        </property>
+        <property name="pluginContributeBySymbolMap">
+            <map>
+            </map>
+        </property>
+    </bean>
+
+</beans>

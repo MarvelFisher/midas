@@ -8,7 +8,7 @@
     <bean id="WindGateway" class="com.cyanspring.adaptor.future.wind.gateway.WindGateway">
 
     	<!-- Wind Merchandise Server -->
-    	<property name="windMFServerIP" value="114.80.154.34"/>      
+    	<property name="windMFServerIP" value=""/><!-- "114.80.154.34"/> -->     
     	<property name="windMFServerPort" value="10050"/> 	
     	<property name="windMFServerUserId" value="TD1001888002"/>
     	<property name="windMFServerUserPwd" value="35328058"/>	  	
@@ -16,12 +16,12 @@
     	<!-- Wind Stock / Index Future Server -->
     	<property name="windSFServerIP" value="114.80.154.34"/>      
     	<property name="windSFServerPort" value="10051"/> 	
-    	<property name="windSFServerUserId" value="TD1001888001"/>
-    	<property name="windSFServerUserPwd" value="62015725"/>
+    	<property name="windSFServerUserId" value="TD1004012004"/>
+    	<property name="windSFServerUserPwd" value="70173844"/>
     	
     	<!--  Wind Gateway Configure -->	     	
     	<property name="serverPort" value="10049"/>
-    	<property name="cascading" value="true"/>
+    	<property name="cascading" value="false"/>
     	<property name="upstreamIp" value="202.55.14.140"/>
     	<property name="upstreamPort" value="10049"/>
     	    	
