@@ -145,6 +145,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 						if(WindGateway.cascading) {
 							WindDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
 						} else {
+							WindGateway.instance.requestSymbol(str);
 							log.error("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
 						}
 					}

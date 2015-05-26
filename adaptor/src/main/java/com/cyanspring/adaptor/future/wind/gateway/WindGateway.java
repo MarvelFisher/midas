@@ -8,6 +8,7 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -28,21 +29,22 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import cn.com.wind.td.tdf.*;
 
-public class WindGateway {
+public class WindGateway implements Runnable {
 	
 	private static WindGatewayInitializer windGatewayInitializer = null; 
-	public static HashMap<String,TDF_FUTURE_DATA> mapFutureData = new HashMap<String,TDF_FUTURE_DATA>(); 
-	public static HashMap<String,TDF_MARKET_DATA> mapMarketData = new HashMap<String,TDF_MARKET_DATA>();
-	public static HashMap<String,TDF_INDEX_DATA>  mapIndexData  = new HashMap<String,TDF_INDEX_DATA>();
-	public static HashMap<String,TDF_TRANSACTION> mapTransaction = new HashMap<String,TDF_TRANSACTION>();
-	public static HashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new HashMap<String,ArrayList<TDF_CODE>>();
+	public static ConcurrentHashMap<String,TDF_FUTURE_DATA> mapFutureData = new ConcurrentHashMap<String,TDF_FUTURE_DATA>(); 
+	public static ConcurrentHashMap<String,TDF_MARKET_DATA> mapMarketData = new ConcurrentHashMap<String,TDF_MARKET_DATA>();
+	public static ConcurrentHashMap<String,TDF_INDEX_DATA>  mapIndexData  = new ConcurrentHashMap<String,TDF_INDEX_DATA>();
+	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
+	public static ConcurrentHashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ArrayList<TDF_CODE>>();
 	
 
 	
 
 
 	public static WindGateway instance = null;
-	private static int typeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;	
+	private static int stockTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_TRANSACTION | DATA_TYPE_FLAG.DATA_TYPE_INDEX;
+	private static int merchandiseTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX;
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);
@@ -63,6 +65,7 @@ public class WindGateway {
 	public static int upstreamPort = 10049;
 	
 	public static MsgPackLiteServer msgPackLiteServer = null;
+	Demo demo = null,demoStock = null;
 	
 	
 	public int getServerPort() {
@@ -179,14 +182,18 @@ public class WindGateway {
 		return sb.append("]").toString();
 	}
 	
-	static public String publishTransactionChanges(TDF_TRANSACTION dirty,TDF_TRANSACTION data) {
+	static public String publishTransactionChanges(TDF_TRANSACTION data) {
 		StringBuilder sb = new StringBuilder("API=TRANSACTION|Symbol=" + data.getWindCode());
-		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {
-			sb.append("|ActionDay=" + data.getActionDay()); 
-		}
-		if(dirty == null || dirty.getAskOrder() != data.getAskOrder()) {
+		sb.append("|AD=" + data.getActionDay());
+		sb.append("|Tm=" + data.getTime());
+		sb.append("|Id=" + data.getIndex());
+		sb.append("|Pr=" + data.getPrice());
+		sb.append("|Vl=" + data.getVolume());
+		sb.append("|To=" + data.getTurnover());
+		sb.append("|BS=" + data.getBSFlag());
+		sb.append("|OK=" + data.getOrderKind());
+		sb.append("|FC=" + data.getFunctionCode());
 
-		}
 		return sb.toString();
 	}
 	
@@ -648,7 +655,7 @@ public class WindGateway {
 		String symbol = transactionData.getWindCode();
 		TDF_TRANSACTION data = mapTransaction.get(symbol);
 		mapTransaction.put(symbol,transactionData);
-		String str = publishTransactionChanges(data,transactionData);
+		String str = publishTransactionChanges(transactionData);
 		publishWindData(str,symbol);
 		if(data != null) {
 			data = null;
@@ -761,100 +768,113 @@ public class WindGateway {
 				}
 			}
 		}
-	}	
+	}
 	
-	public void run() throws InterruptedException
+	public void requestSymbol(String sym) {
+		if(demoStock != null)
+		{
+			demoStock.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
+		}
+	}
+	
+	public void run()
 	{	
-		Demo demo = null,demoStock = null;
-		Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null;
-		DataWrite dw = null,dwStock = null;
-		WindDataClient windDataClient = null;
-		
-
-		if(cascading) {
-			windDataClient = new WindDataClient();
-			clientThread = new Thread(windDataClient,"windDataClient");
-			clientThread.start();						
-		} else {
-			if(windMFServerIP != null && windMFServerIP != "")
-			{
-				demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , typeFlags, this);
-				DataHandler dh = new DataHandler (demo);
-				t1 = new Thread(dh);
-				t1.start();
-				dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
-				t2 = new Thread ( dw );
-				t2.start();
-			}
+		try {
+			//Demo demo = null,demoStock = null;
+			Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null;
+			DataWrite dw = null,dwStock = null;
+			WindDataClient windDataClient = null;
 			
-			if(windSFServerIP != null && windSFServerIP != "")
-			{
-				demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , typeFlags, this);
-				DataHandler dhStock = new DataHandler (demoStock);
-				t1Stock = new Thread(dhStock);
-				t1Stock.start();
-				dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
-				t2Stock = new Thread ( dwStock );
-				t2Stock.start();
-			}
-		}
-		
-		if(msgPackLiteServer != null) {
-			mpServerThread = new Thread(msgPackLiteServer,"MsgPackLiteServer");
-			mpServerThread.start();
-		}
-
 	
-		EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(16);
-		
-		try
-		{
-			windGatewayInitializer = new WindGatewayInitializer();
-			ServerBootstrap  bootstrap = new ServerBootstrap()
-			.group(bossGroup,workerGroup)
-			.channel(NioServerSocketChannel.class)
-			.option(ChannelOption.SO_KEEPALIVE, true)
-			.option(ChannelOption.TCP_NODELAY, true)
-			.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
-			.childHandler(windGatewayInitializer);
-		
-			bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
-		}
-		finally
-		{
-
-
-			if(demo != null)
-			{
-				demo.setQuitFlag(true);
-				dw.setQuitFlag(true);	
-				t1.join();
-				System.out.println("Thread1 Quit!");
-				t2.join();			
-				System.out.println("Thread2 Quit!");
+			if(cascading) {
+				windDataClient = new WindDataClient();
+				clientThread = new Thread(windDataClient,"windDataClient");
+				clientThread.start();						
+			} else {
+				if(windMFServerIP != null && windMFServerIP != "")
+				{
+					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this);
+					DataHandler dh = new DataHandler (demo);
+					t1 = new Thread(dh,"windMerchandise");
+					t1.start();
+					dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
+					t2 = new Thread ( dw , "windMerchandiseConnectionCheck" );
+					t2.start();
+				}
+				
+				if(windSFServerIP != null && windSFServerIP != "")
+				{
+					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this);
+					DataHandler dhStock = new DataHandler (demoStock);
+					t1Stock = new Thread(dhStock,"windFutureAndStock");
+					t1Stock.start();
+					dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
+					t2Stock = new Thread ( dwStock,"windStockConnectionCheck" );
+					t2Stock.start();
+				}
 			}
 			
-			if(demoStock != null)
-			{
-				demoStock.setQuitFlag(true);
-				dwStock.setQuitFlag(true);	
-				t1Stock.join();
-				System.out.println("Thread1 for Stock Quit!");
-				t2Stock.join();			
-				System.out.println("Thread2 for Stock Quit!");			
+			if(msgPackLiteServer != null) {
+				mpServerThread = new Thread(msgPackLiteServer,"MsgPackLiteServer");
+				mpServerThread.start();
 			}
-			if(clientThread != null) {
-				windDataClient.stop();
-				clientThread.join();				
-			}
-			if(mpServerThread != null) {
-				msgPackLiteServer.stop();
-				mpServerThread.join();
-			}
+	
+		
+			EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
+			EventLoopGroup workerGroup = new NioEventLoopGroup(16);
 			
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();			
+			try
+			{
+				windGatewayInitializer = new WindGatewayInitializer();
+				ServerBootstrap  bootstrap = new ServerBootstrap()
+				.group(bossGroup,workerGroup)
+				.channel(NioServerSocketChannel.class)
+				.option(ChannelOption.SO_KEEPALIVE, true)
+				.option(ChannelOption.TCP_NODELAY, true)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
+				.childHandler(windGatewayInitializer);
+			
+				bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+			}
+			finally
+			{
+	
+	
+				if(demo != null)
+				{
+					demo.setQuitFlag(true);
+					dw.setQuitFlag(true);	
+					t1.join();
+					System.out.println("Thread1 Quit!");
+					t2.join();			
+					System.out.println("Thread2 Quit!");
+				}
+				
+				if(demoStock != null)
+				{
+					demoStock.setQuitFlag(true);
+					dwStock.setQuitFlag(true);	
+					t1Stock.join();
+					System.out.println("Thread1 for Stock Quit!");
+					t2Stock.join();			
+					System.out.println("Thread2 for Stock Quit!");			
+				}
+				if(clientThread != null) {
+					windDataClient.stop();
+					clientThread.join();				
+				}
+				if(mpServerThread != null) {
+					msgPackLiteServer.stop();
+					mpServerThread.join();
+				}
+				
+				bossGroup.shutdownGracefully();
+				workerGroup.shutdownGracefully();			
+			}
+		} 
+		catch(Exception e)
+		{
+			log.error("Exception at WindGateway " + e.getMessage(),e);
 		}
 	}
 	
@@ -877,7 +897,8 @@ public class WindGateway {
         	msgPackLiteServer = (MsgPackLiteServer)context.getBean("MsgPackLiteServer");
         }
         instance = (WindGateway)context.getBean("WindGateway");
-        instance.run();
+        Thread serverThread = new Thread(instance,"windDataServer");
+        serverThread.start();
 	}
 		
 }

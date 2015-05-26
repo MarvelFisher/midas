@@ -34,7 +34,7 @@
 	<category name="com.cyanspring.adaptor.future.wind.gateway">
         <priority value="INFO"/>
         <appender-ref ref="FILE" />
-        <appender-ref ref="CONSOLE"/>
+        <!-- appender-ref ref="CONSOLE"/ -->
     </category>
     
 

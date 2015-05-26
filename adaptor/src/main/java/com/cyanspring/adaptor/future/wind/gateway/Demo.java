@@ -1,5 +1,7 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,7 @@ public class Demo {
 	private final String openMarket = ""; 
 	private final int openData = 0;
 	private final int openTime = 0;
-	private final String subscription = "";
+	private StringBuilder  subscription = new StringBuilder("600000.SH;000001.SZ");
 	private int openTypeFlags = DATA_TYPE_FLAG.DATA_TYPE_FUTURE_CX | DATA_TYPE_FLAG.DATA_TYPE_INDEX; // DATA_TYPE_FLAG.DATA_TYPE_ALL;
 	private TDF_CONNECT_RESULT connectResult = null;
 	private TDF_LOGIN_RESULT loginResult = null;
@@ -43,6 +45,9 @@ public class Demo {
 	private String ip,username,password;
 	private int port;
 	TDFClient client = new TDFClient();
+	ConcurrentLinkedQueue<WindRequest> requestQueue = new ConcurrentLinkedQueue<WindRequest>();
+	boolean bServerReady = false;
+
 	
 	
 	public int getPort() {
@@ -81,7 +86,7 @@ public class Demo {
 		setting.setMarkets(openMarket);
 		setting.setDate(openData);
 		setting.setTime(openTime);
-		setting.setSubScriptions(subscription);
+		setting.setSubScriptions(subscription.toString());
 		setting.setTypeFlags(openTypeFlags);
 		setting.setConnectionID(0);
 		
@@ -115,7 +120,7 @@ public class Demo {
 		setting.setMarkets(openMarket);
 		setting.setDate(openData);
 		setting.setTime(openTime);
-		setting.setSubScriptions(subscription);
+		setting.setSubScriptions(subscription.toString());
 		setting.setTypeFlags(openTypeFlags);
 		setting.setConnectionID(0);
 		
@@ -136,6 +141,17 @@ public class Demo {
 	protected Boolean quitFlag;
 	private long LastPrintTime;
 	
+	public void AddRequest(WindRequest wr)
+	{
+		if(wr.reqId == WindRequest.Subscribe) {
+			if(subscription.indexOf(wr.strInfo) < 0)
+			{
+				subscription.append(";" + wr.strInfo);
+				requestQueue.add(wr);
+			}
+		}
+	}
+	
 	public void setQuitFlag(Boolean para){
 		this.quitFlag = para;
 	}
@@ -147,12 +163,38 @@ public class Demo {
 		TDF_CODE[] codes = client.getCodeTable("CZC");		
 		PrintHelper.printCodeTable(codes);		
 	}
+	
+	boolean processRequest()
+	{
+		if(bServerReady == false)
+		{
+			return false;
+		}
+		if(requestQueue.size() > 0) {
+			WindRequest wr = requestQueue.peek();
+			if(wr != null)
+			{
+				requestQueue.remove(wr);
+				if(wr.reqId == WindRequest.Subscribe)
+				{
+					client.setSubscription(wr.strInfo, SUBSCRIPTION_STYLE.SUBSCRIPTION_ADD);
+				}
+			}
+			return true;
+		}		
+		return false;
+	}
+	
 	void run() {
 		int err;
 		while (!quitFlag) {
+			
+			processRequest();
 			TDF_MSG msg = client.getMessage(10);
-			if (msg==null)
+			if (msg==null) {
+				while(processRequest()) ;
 				continue;
+			}
 			
 			switch(msg.getDataType()) {
 			//ϵͳ��Ϣ
@@ -189,12 +231,15 @@ public class Demo {
 				codeTableResult = data.getCodeTableResult();
 				PrintHelper.printCodeTableResult(data.getCodeTableResult());
 				if(windGateway != null)
-				{
-					for(String market : data.getCodeTableResult().getMarket())
+				{		
+					String markets[] = data.getCodeTableResult().getMarket();
+					for(int i= 0; i < data.getCodeTableResult().getMarkets();i++)
 					{
-						windGateway.receiveCodeTable(market, client.getCodeTable(market));
+						log.info("Receive Code Table - Market : " + markets[i] + " , Symbol Count : " + client.getCodeTable(markets[i]).length );
+						windGateway.receiveCodeTable(markets[i], client.getCodeTable(markets[i]));						
 					}
 				}
+				bServerReady = true;
 				//printCodeTable();
 				//err = client.setSubscription("AG1506.SHF", 1);
 				//System.out.println("Subscription Result : " + err);
@@ -279,18 +324,15 @@ public class Demo {
 				*/				
 				break;
 			case TDF_MSG_ID.MSG_DATA_TRANSACTION:
-				log.debug("TRANSACTION DATA Count : " + msg.getAppHead().getItemCount());	
-				/*
-				if (outputToScreen){					
-					for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-						TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
-						//PrintHelper.printTransaction(data.getTransaction());
-						if(windGateway != null) {						
-							//windGateway.receiveTransaction(data.getTransaction());
-						}							
-					}									
-				}
-				*/
+				log.debug("TRANSACTION DATA Count : " + msg.getAppHead().getItemCount());
+				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
+					//PrintHelper.printTransaction(data.getTransaction());
+					if(windGateway != null) {						
+						windGateway.receiveTransaction(data.getTransaction());
+					}							
+				}					
+
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printTransaction(TDFClient.getMessageData(msg, 0).getTransaction());
