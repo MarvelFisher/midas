@@ -1017,4 +1017,8 @@ public class BusinessManager implements ApplicationContextAware {
     public void setCancelPendingOrderTime(String cancelPendingOrderTime) {
         this.cancelPendingOrderTime = cancelPendingOrderTime;
     }
+    
+    public String getCancelPendingOrderTime() {
+        return cancelPendingOrderTime;
+    }
 }
