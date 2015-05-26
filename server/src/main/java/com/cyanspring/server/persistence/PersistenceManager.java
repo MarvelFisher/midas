@@ -1600,6 +1600,7 @@ public class PersistenceManager {
 		boolean isPendingTransfer = false;
 		boolean isOldThirdPartyUser = false;
         String userId = event.getUser();
+		String email = "";
 
         if (!Strings.isNullOrEmpty(event.getUser())) {
             userExist = centralDbConnector.isUserExist(event.getUser().toLowerCase());
@@ -1621,14 +1622,16 @@ public class PersistenceManager {
             }
 
 			if (!userThirdPartyExist && centralDbConnector.isUserExistAndNotTerminated(event.getUserThirdParty().toLowerCase())) {
+
 				isOldThirdPartyUser = true;
+				email = centralDbConnector.getUser(event.getUserThirdParty().toLowerCase()).getEmail();
 			}
         }
 
 		try {
             UserMappingReplyEvent reply = new UserMappingReplyEvent(event.getKey(), event.getSender(), event.getTxId(),
                     userId, event.getUserThirdParty(), userExist, userThirdPartyExist, event.getMarket(),
-                    event.getLanguage(), event.getClientId());
+                    event.getLanguage(), event.getClientId(), email);
             reply.setTransferring(isPendingTransfer);
 			reply.setOldThirdPartyUser(isOldThirdPartyUser);
 
