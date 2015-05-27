@@ -566,7 +566,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     synchronized private void publishQuote(Quote quote) {
-        if(!checkQuote(quote)) return;
+//        if(!checkQuote(quote)) return;
         quote = (Quote) quote.clone();
         quote.sourceId = 1;
         quote.setTimeStamp(new Date());
