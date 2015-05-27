@@ -215,6 +215,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
         }
 
+        if (quoteLogIsOpen) printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_GENERAL);
+
         //Check Forex TimeStamp
         if (inEvent.getSourceId() <= 100) {
 
@@ -229,9 +231,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
             if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
         }
-
-        if (quoteLogIsOpen) printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_GENERAL);
-
         if(null != quoteChecker && !quoteChecker.checkTime(prev, quote)){
             printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_TIME_ERROR);
         }
