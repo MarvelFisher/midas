@@ -13,21 +13,16 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 	private String original_id;
 	private String thirdPartyId;
 	private String market;
+	private boolean existUser;
 
 	@Deprecated
-	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
-								   String org_id, String txId) {
-		this(key, receiver, user, country, language, org_id, txId, null, null);
-	}
-
-	@Deprecated
-	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
-								   String org_id, String txId, String thirdPartyId) {
-		this(key, receiver, user, country, language, org_id, txId, thirdPartyId, null);
-	}
-
 	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
 								   String org_id, String txId, String thirdPartyId, String market) {
+		this(key, receiver, user, country, language, org_id, txId, thirdPartyId, market, false);
+	}
+
+	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
+								   String org_id, String txId, String thirdPartyId, String market, boolean existUser) {
 		super(key, receiver);
 		this.user = user;
 		this.country = country;
@@ -36,6 +31,7 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 		this.original_id = org_id;
 		this.thirdPartyId = thirdPartyId;
 		this.market = market;
+		this.existUser = existUser;
 		setPriority(EventPriority.HIGH);
 	}
 	
@@ -66,5 +62,9 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 
 	public String getMarket() {
 		return market;
+	}
+
+	public boolean isExistUser() {
+		return existUser;
 	}
 }

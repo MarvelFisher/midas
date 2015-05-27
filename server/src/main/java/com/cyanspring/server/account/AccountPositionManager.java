@@ -485,6 +485,11 @@ public class AccountPositionManager implements IPlugin {
                     Account account = new Account(defaultAccountId, event.getUser().getId());
                     accountKeeper.setupAccount(account);
 
+                    //user not exist, but it should
+                    if (event.isExistUser()) {
+                        throw new UserException("userid or password invalid", ErrorMessage.INVALID_USER_ACCOUNT_PWD);
+                    }
+
                     //user not exist
                     eventManager.sendEvent(new PmUserCreateAndLoginEvent(PersistenceManager.ID, event.getReceiver(), user, event, userKeeper, accountKeeper, Arrays.asList(account)));
                 } else {
