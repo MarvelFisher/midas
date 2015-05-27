@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.TimeUtil;
@@ -38,10 +39,9 @@ public class DayTrading implements IUserLiveTradingRule{
 		String settingDate = oldAccountSetting.getLiveTradingSettedDate();
 		
 		if(StringUtils.hasText(settingDate)){
-			
+			//defaultDays ==0 means not constraint by this rule
 			int defaultDays = liveTradingSetting.getChangeSettingFrozenDays();
-			
-			if(LiveTradingType.DAY_TRADING.equals(oldAccountSetting.getLiveTradingType())
+			if( defaultDays != 0 && LiveTradingType.DAY_TRADING.equals(oldAccountSetting.getLiveTradingType())
 					&& isOverDays(settingDate, defaultDays)){
 				
 				throw new AccountException("cant change live trading setting , because not over "+defaultDays+" days"
@@ -55,8 +55,12 @@ public class DayTrading implements IUserLiveTradingRule{
 		oldAccountSetting.setStopLossPercent(positionStopLoss);
 		oldAccountSetting.setFreezePercent(frozenStopLoss);
 		oldAccountSetting.setTerminatePercent(0.0);
-		oldAccountSetting.setLiveTrading(newAccountSetting.isLiveTrading());
-		oldAccountSetting.setUserLiveTrading(newAccountSetting.isUserLiveTrading());
+		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING.value())){
+			oldAccountSetting.setLiveTrading(newAccountSetting.isLiveTrading());
+		}
+		if(newAccountSetting.fieldExists(AccountSettingType.USER_LIVE_TRADING.value())){
+			oldAccountSetting.setUserLiveTrading(newAccountSetting.isUserLiveTrading());
+		}
 		oldAccountSetting.setLiveTradingType(LiveTradingType.DAY_TRADING);
 		oldAccountSetting.setLiveTradingSettedDate(TimeUtil.formatDate(TimeUtil.getOnlyDate(new Date()), dateFormat));
 		
@@ -66,14 +70,12 @@ public class DayTrading implements IUserLiveTradingRule{
 	private boolean isOverDays(String date,int days)throws AccountException {
 		
 		try{
-			log.info("check over days {}, days:{}",date,days);
+			
 			Date settedDate = TimeUtil.parseDate(date,dateFormat);
 			Calendar settedCalendar = Calendar.getInstance();
 			settedCalendar.setTime(settedDate);			
 			settedCalendar.add(Calendar.DATE, days);	
-		
 			Date now = TimeUtil.getOnlyDate(new Date());
-			log.info("settedDate: {}, now:{}",settedCalendar.getTime(),now);
 			if(TimeUtil.getTimePass(now, settedCalendar.getTime())<0){
 				return true;
 			}else{

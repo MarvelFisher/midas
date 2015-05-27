@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.util.TimeUtil;
 
@@ -29,8 +30,12 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		setting.setStopLossPercent(positionStopLoss);
 		setting.setFreezePercent(frozenStopLoss);
 		setting.setTerminatePercent(terminateStopLoss);
-		setting.setLiveTrading(newAccountSetting.isLiveTrading());
-		setting.setUserLiveTrading(newAccountSetting.isUserLiveTrading());
+		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING.value())){
+			oldAccountSetting.setLiveTrading(newAccountSetting.isLiveTrading());
+		}
+		if(newAccountSetting.fieldExists(AccountSettingType.USER_LIVE_TRADING.value())){
+			oldAccountSetting.setUserLiveTrading(newAccountSetting.isUserLiveTrading());
+		}
 		setting.setLiveTradingType(LiveTradingType.DEFAULT);
 		setting.setLiveTradingSettedDate(TimeUtil.formatDate(TimeUtil.getOnlyDate(new Date()), dateFormat));
 		System.out.printf("positionStopLoss:%s",positionStopLoss);

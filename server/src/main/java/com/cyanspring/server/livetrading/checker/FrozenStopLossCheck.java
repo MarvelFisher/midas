@@ -36,7 +36,7 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 	@Override
 	public boolean check(Account account, AccountSetting accountSetting) {
 
-		if(!accountSetting.checkLiveTrading()){
+		if(!accountSetting.isUserLiveTrading()){
 			return false;
 		}
 		if( !liveTradingSetting.isNeedCheckFreeze()){
@@ -54,7 +54,7 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 				, accountSetting.getFreezeValue());
 
 		dailyStopLoss = TradingUtil.getMinValue(dailyStopLoss,accountSetting.getDailyStopLoss());
-		
+
 		if(PriceUtils.isZero(dailyStopLoss)){
 				return true;
 		}

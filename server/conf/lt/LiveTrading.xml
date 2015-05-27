@@ -15,7 +15,7 @@
 		<property name="needCheckPosition" value="true"/>
 		<property name="needCheckFreeze" value="true"/>
 		<property name="needCheckTerminate" value="true"/>
-		<property name="changeSettingFrozenDays" value="7"/>
+		<property name="changeSettingFrozenDays" value="0"/>
 		<property name="userStopLiveTradingStartTime" value="2:00:00"/>
         <property name="userStopLiveTradingEndTime" value="7:00:00"/>
 	</bean>
