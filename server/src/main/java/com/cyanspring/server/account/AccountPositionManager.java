@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cyanspring.common.marketdata.QuoteExtDataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
@@ -90,6 +90,7 @@ import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
@@ -102,6 +103,7 @@ import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
@@ -872,20 +874,53 @@ public class AccountPositionManager implements IPlugin {
     }
 
     private boolean checkLiveTrading(Account account, AccountSetting accountSetting) {
-        if (null != liveTradingCheckHandler && accountSetting.checkLiveTrading()) {
+        if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
         	liveTradingCheckHandler.startCheckChain(account, accountSetting);
         	return true;
         }else{
         	return false;
         }
     }
-
+	private void closeAllPositoinAndOrder(Account account){
+		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
+		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true);
+	}
+    private boolean checkDailyStopLoss(Account account, AccountSetting accountSetting){
+    	
+    	double dailyStopLoss = accountSetting.getDailyStopLoss();
+		if(PriceUtils.isZero(dailyStopLoss)){
+			return false;
+		}
+		if(AccountState.FROZEN == account.getState() ){
+			closeAllPositoinAndOrder(account);
+			return false;
+		}
+    	
+		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
+			
+			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
+			account.setState(AccountState.FROZEN);
+			try {
+				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);
+			}
+			closeAllPositoinAndOrder(account);
+			return true;		
+		}
+		
+		return false;
+    }
     private boolean checkStopLoss(Account account, AccountSetting accountSetting) {
         if (!checkStoploss)
             return false;
 
         Double positionStopLoss = Default.getPositionStopLoss();
-
+        
+        if(checkDailyStopLoss(account,accountSetting)){
+        	return true;
+        }
+        
         try{
             if (null != accountSetting) {
                 positionStopLoss = accountSetting.getStopLossValue();

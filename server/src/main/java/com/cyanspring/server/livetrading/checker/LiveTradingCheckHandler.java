@@ -29,7 +29,7 @@ public class LiveTradingCheckHandler {
 	
 	public void startCheckChain(Account account, AccountSetting accountSetting){
 		
-		if(!accountSetting.checkLiveTrading()){
+		if(!accountSetting.isUserLiveTrading()){
 			return;
 		}
 		if( null == checkMap ){

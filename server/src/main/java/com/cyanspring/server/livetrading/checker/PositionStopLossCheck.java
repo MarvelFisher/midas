@@ -44,7 +44,7 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 	@Override
 	public boolean check(Account account, AccountSetting accountSetting) {
 
-		if(!accountSetting.checkLiveTrading()){
+		if(!accountSetting.isUserLiveTrading()){
 			return false;
 		}
 		
