@@ -22,7 +22,7 @@ import io.netty.util.ReferenceCountUtil;
 
 public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 
-	private static final Logger log = LoggerFactory.getLogger(WindDataClientIdleHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(WindDataClientHandler.class);
 	public static ChannelHandlerContext ctx = null;
 	
 	private int bufLenMin = 0,bufLenMax = 0,blockCount = 0;
@@ -146,6 +146,9 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 
 			// Compare hash code
 			if (hascode == Integer.parseInt(strHash)) {
+				if (strDataType.equals("TRANSACTION")) {
+					convertTransaction(in_arr,in);
+				}
 				if (strDataType.equals("DATA_FUTURE")) {
 					convertFutureData(in_arr,in);					
 				}
@@ -267,5 +270,34 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 		} catch (Exception e) {
 			log.error(e.getMessage() + " => " + in);
 		}	
+	}
+	
+	private void convertTransaction(String[] in_arr,String in) {
+		String key = null;
+		String value = null;
+		String[] kv_arr = null;
+		String symbol;
+
+		try {
+			for (int i = 0; i < in_arr.length; i++) {
+				if (in_arr[i] != null && !"".equals(in_arr[i])) {
+					kv_arr = in_arr[i].split("=");
+					if (kv_arr.length > 1) {
+						key = kv_arr[0];
+						value = kv_arr[1];
+						switch (key) {
+						case "Symbol" :
+							symbol = value;
+							WindGatewayHandler.publishWindTransaction(in,symbol,false);
+							return;
+						default:
+							break;
+						}
+					}
+				}
+			}	
+		} catch(Exception e) {
+			log.error(e.getMessage() + " => " + in);
+		}
 	}	
 }

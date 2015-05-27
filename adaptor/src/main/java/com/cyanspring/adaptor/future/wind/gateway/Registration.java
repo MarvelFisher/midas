@@ -7,10 +7,12 @@ public class Registration {
 
 	private ArrayList<String> symbolList;
 	private ArrayList<String> marketList;
+	private ArrayList<String> transactionList;
 	
 	Registration() {
 		symbolList = new ArrayList<String>();
 		marketList = new ArrayList<String>();
+		transactionList = new ArrayList<String>();
 	}
 	
 	public boolean hadSymbolMarket(String symbol) {
@@ -85,50 +87,74 @@ public class Registration {
 		if(hadSymbolMarket(symbol)) {
 			return true;
 		}
-		if(symbolPosition(symbol) < 0) {
+		if(symbolPosition(symbolList,symbol,false) < 0) {
 			return false;
 		}
 		return true;
 	}
 	
-	private int symbolPosition(String symbol) {
+	public boolean hadTransaction(String symbol) {
+		if(symbolPosition(transactionList,symbol,false) < 0) {
+			return false;
+		}
+		return true;		
+	}
+	
+	private int symbolPosition(ArrayList<String>lst,String symbol,boolean bAdd) {
 		int iPos;
-		synchronized(symbolList) {
-			iPos = Collections.binarySearch(symbolList,symbol);
+		synchronized(lst) {
+			iPos = Collections.binarySearch(lst,symbol);
+			if(bAdd && iPos < 0) {
+				lst.add(~iPos,symbol);
+			}
 		}
 		return iPos;
 	}
+	
 	
 	public boolean addSymbol(String symbol) {
 		if(hadSymbolMarket(symbol)) {
 			return false;
 		}
-		int iPos = symbolPosition(symbol);
+		int iPos = symbolPosition(symbolList,symbol,true);
 		if(iPos >= 0) {
 			return false;
 		}
-
-		synchronized(symbolList) {
-			symbolList.add(~iPos,symbol);
+		return true;
+	}
+	
+	public boolean addTransaction(String symbol) {
+		int iPos = symbolPosition(transactionList,symbol,true);
+		if(iPos >= 0) {
+			return false;
 		}
 		return true;
 	}
+	
 	public void clear() {
 		symbolList.clear();
 		marketList.clear();
+		transactionList.clear();
 	}
 	public void addRegistration(Registration o) {
 		this.addSymbols(o.symbolList);
 		this.addMarkets(o.marketList);
+		this.addTransaction(o.transactionList);
 	}	
-	private void addSymbols(ArrayList<String> symbolList) {
-		for(String symbol : symbolList) {
+	private void addSymbols(ArrayList<String> lst) {
+		for(String symbol : lst) {
 			addSymbol(symbol);
 		}
 	}	
-	private void addMarkets(ArrayList<String> marketlList) {
-		for(String market : marketList) {
+	private void addMarkets(ArrayList<String> lst) {
+		for(String market : lst) {
 			addMarket(market);
 		}
 	}
+	private void addTransaction(ArrayList<String>lst) {
+		for(String trans : lst) {
+			addTransaction(trans);
+		}
+	}
+	
 }

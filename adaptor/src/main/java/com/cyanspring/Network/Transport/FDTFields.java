@@ -11,6 +11,7 @@ public class FDTFields {
 	public final static int WindMarketData = 2015;
 	public final static int WindIndexData = 2016;
 	public final static int WindFutureData = 2017;
+	public final static int WindTransaction = 2019;
 	public final static int WindMarkets = 2021;
 	public final static int WindQuotationDateChange = 2022;
 	public final static int WindMarketClose = 20023;
@@ -51,4 +52,6 @@ public class FDTFields {
 	public final static int PreSettlePrice = 20012;
 	public final static int LastTradingDay = 20036;
 	public final static int Information = 20037;
+	public final static int IndexNumber = 20038;
+	public final static int BuySellFlag = 20039;
 }

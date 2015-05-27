@@ -35,7 +35,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,TDF_FUTURE_DATA> mapFutureData = new ConcurrentHashMap<String,TDF_FUTURE_DATA>(); 
 	public static ConcurrentHashMap<String,TDF_MARKET_DATA> mapMarketData = new ConcurrentHashMap<String,TDF_MARKET_DATA>();
 	public static ConcurrentHashMap<String,TDF_INDEX_DATA>  mapIndexData  = new ConcurrentHashMap<String,TDF_INDEX_DATA>();
-	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
+	//public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
 	public static ConcurrentHashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ArrayList<TDF_CODE>>();
 	
 
@@ -195,6 +195,21 @@ public class WindGateway implements Runnable {
 		sb.append("|FC=" + data.getFunctionCode());
 
 		return sb.toString();
+	}
+	
+	static public HashMap<Integer,Object> publishTransactionChangesToMap(TDF_TRANSACTION data) {	
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindTransaction);
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());
+		map.put(FDTFields.ActionDay, data.getActionDay());
+		map.put(FDTFields.Time,data.getTime());
+		map.put(FDTFields.IndexNumber,data.getIndex());
+		map.put(FDTFields.Last,data.getPrice());
+		map.put(FDTFields.Volume,data.getVolume());
+		map.put(FDTFields.Turnover,data.getTurnover());		
+		map.put(FDTFields.BuySellFlag,data.getBSFlag());		
+		
+		return map;
 	}
 	
 	static public String publishFutureChanges(TDF_FUTURE_DATA dirty,TDF_FUTURE_DATA data)
@@ -638,6 +653,12 @@ public class WindGateway implements Runnable {
 		}		
 	}
 	
+	void publishWindTransaction(String str,String symbol) {	
+		if(windGatewayInitializer != null )	{
+			WindGatewayHandler.publishWindTransaction(str,symbol,true);
+		}		
+	}	
+	
 	void publishWindDataNoHash(String str,String symbol) {	
 		if(windGatewayInitializer != null )	{
 			WindGatewayHandler.publishWindData(str,symbol,false);
@@ -648,19 +669,23 @@ public class WindGateway implements Runnable {
 		publishWindData("API=Heart Beat",null);
 	}
 	
-	public void receiveTransaction(TDF_TRANSACTION transactionData) {
-		if(transactionData == null) {
+	public void receiveTransaction(TDF_TRANSACTION data) {
+		if(data == null) {
 			return;
 		}
-		String symbol = transactionData.getWindCode();
-		TDF_TRANSACTION data = mapTransaction.get(symbol);
-		mapTransaction.put(symbol,transactionData);
-		String str = publishTransactionChanges(transactionData);
-		publishWindData(str,symbol);
-		if(data != null) {
-			data = null;
+		String symbol = data.getWindCode();
+		//TDF_TRANSACTION data = mapTransaction.get(symbol);
+		//mapTransaction.put(symbol,transactionData);
+		if(WindGatewayHandler.isRegisteredTransactionByClient(symbol)) {
+			String str = publishTransactionChanges(data);
+			publishWindTransaction(str,symbol);
 		}
-		
+		if(MsgPackLiteDataServerHandler.isRegisteredTransactionByClient(symbol)) {			
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistrationTransaction(publishTransactionChangesToMap(data), symbol);
+		}		
+		if(data != null) {		
+			data = null;
+		}				
 	}
 	
 	public void receiveFutureData(TDF_FUTURE_DATA futureData) {	

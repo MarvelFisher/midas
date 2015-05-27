@@ -84,6 +84,13 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		return registrationGlobal.hadSymbol(symbol);
 	}	
 	
+	static public boolean isRegisteredTransactionByClient(String symbol) {	
+		if(channels.size() == 0) {
+			return false;
+		}
+		return registrationGlobal.hadTransaction(symbol);
+	}		
+	
     private static void subscribeSymbols(Channel channel , String symbols,Registration lst) {
 		String[] sym_arr = symbols.split(";");
 		for(String str : sym_arr)
@@ -110,6 +117,23 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			}					
 		}    	
     }
+    
+    private static void subscribeTransactions(Channel channel , String symbols,Registration lst) {
+		String[] sym_arr = symbols.split(";");
+		for(String str : sym_arr)
+		{
+			if(WindGateway.cascading && registrationGlobal.hadTransaction(str) == false) {
+				WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SubsTrans|Symbol=" + str,true));	
+			}			
+			// 先加到  Global Register Symbol
+			registrationGlobal.addTransaction(str);								
+			// 加到 Client 的 Registration
+			if(lst.addTransaction(str) == false) {								
+				//log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
+			}					
+		}    	
+    }    
+        
     
     
     private static void subscribeMarkets(Channel channel , String markets, Registration lst) {
@@ -168,7 +192,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					}				
 					if(str.startsWith("Market=")) {					
 						strMarket = str.substring(7);
-					}
+					}				
 				}
 				if(false == clientHeartBeat) {				
         			String strlog = "in : [" + msg + "] , " + channel.remoteAddress();
@@ -193,13 +217,16 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 						log.warn(logstr);
 						return;
 					}	else	{
-						if (strDataType.equals("SUBSCRIBE") && symbols != null) {						
+						if ((strDataType.equals("SUBSCRIBE") || strDataType.equals("SubsTrans")) && symbols != null) {						
 							if(symbols != null) {
 								subscribeSymbols(channel,symbols,lst);
 							}
 							if(strMarket != null) {
 								subscribeMarkets(channel,strMarket,lst);
 							}
+							if(strDataType.equals("SubsTrans")) {
+								subscribeTransactions(channel,symbols,lst);
+							}								
 						}	else if(strDataType.equals("ClearSubscribe")) {						
 							lst.clear();
 							rearrangeRegistration();
@@ -448,6 +475,21 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			}
 		}		    
     }
+    
+    public static void sendMssagePackToAllClientByRegistrationTransaction(HashMap<Integer, Object> map,String symbol) {
+		Iterator<?> it = channels.entrySet().iterator();			
+		while (it.hasNext()) {
+			@SuppressWarnings("rawtypes")
+			Map.Entry pairs = (Map.Entry)it.next();			
+			Registration lst = (Registration)pairs.getValue();
+			if(lst == null) {					
+				continue;
+			}
+			if(lst.hadTransaction(symbol)) {
+				((Channel)pairs.getKey()).writeAndFlush(map);
+			}
+		}		    
+    }    
     
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
 			throws Exception {    	

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 
 
+
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_INDEX_DATA;
@@ -61,6 +62,14 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 		return registrationGlobal.hadSymbol(symbol);
 	}
 	
+	static public boolean isRegisteredTransactionByClient(String symbol)
+	{	
+		if(channels.size() == 0) {
+			return false;
+		}
+		return registrationGlobal.hadTransaction(symbol);
+	}	
+	
 	public static String addHashTail(String str,boolean bAddHash)
 	{
 		if(bAddHash) {
@@ -86,6 +95,24 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			}
 		}		
 	}
+	
+	synchronized static public void publishWindTransaction(String str,String symbol,boolean bAddHash) {	
+		String outString = addHashTail(str,bAddHash);
+		synchronized(channels) {		
+			Iterator<?> it = channels.entrySet().iterator();			
+			while (it.hasNext()) {
+				@SuppressWarnings("rawtypes")
+				Map.Entry pairs = (Map.Entry)it.next();
+				if(symbol != null) {				
+					Registration lst = (Registration)pairs.getValue();
+					if(lst == null || lst.hadTransaction(symbol) == false) {					
+						continue;
+					}
+				}
+				((Channel)pairs.getKey()).writeAndFlush(outString);
+			}
+		}		
+	}	
 
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();
@@ -159,6 +186,23 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			}					
 		}    	
     }
+    
+    
+    private static void subscribeTransactions(Channel channel , String symbols,Registration lst) {
+		String[] sym_arr = symbols.split(";");
+		for(String str : sym_arr)
+		{
+			if(WindGateway.cascading && registrationGlobal.hadTransaction(str) == false) {
+				WindDataClientHandler.sendRequest(addHashTail("API=SubsTrans|Symbol=" + str,true));	
+			}
+			// 先加到  Global Register Symbol
+			registrationGlobal.addTransaction(str);								
+			// 加到 Client 的 Registration
+			if(lst.addTransaction(str) == false) {								
+				//log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
+			}					
+		}    	
+    } 
     
     
     private static void subscribeMarkets(Channel channel , String markets, Registration lst) {
@@ -243,13 +287,16 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 						log.warn(logstr);
 						return;
 					}	else	{
-						if (strDataType.equals("SUBSCRIBE") && symbols != null) {						
+						if ((strDataType.equals("SUBSCRIBE") || strDataType.equals("SubsTrans")) && symbols != null) {					
 							if(symbols != null) {
 								subscribeSymbols(channel,symbols,lst);
 							}
 							if(strMarket != null) {
 								subscribeMarkets(channel,strMarket,lst);
 							}
+							if(strDataType.equals("SubsTrans")) {
+								subscribeTransactions(channel,symbols,lst);
+							}								
 						}	else if(strDataType.equals("ClearSubscribe")) {						
 							lst.clear();
 							rearrangeRegistration();
