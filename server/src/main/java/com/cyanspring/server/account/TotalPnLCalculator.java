@@ -28,7 +28,7 @@ public class TotalPnLCalculator {
 			cumTotalAccountValue += account.getStartAccountValue();
 		}
 		
-		if(setting.checkLiveTrading()) {
+		if(setting.isUserLiveTrading()) {
 			if(null == startLiveAccount || startLiveAccount.equals(account.getId())) {
 				startLiveAccount = account.getId();
 				liveTradingPnL = cumLiveTradingPnL;

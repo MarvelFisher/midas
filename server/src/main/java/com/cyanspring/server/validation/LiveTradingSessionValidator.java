@@ -53,7 +53,7 @@ public class LiveTradingSessionValidator implements IOrderValidator {
 			}
 
 			AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
-			if( null != account && accountSetting.checkLiveTrading()){			
+			if( null != account && accountSetting.isLiveTrading()){			
 				
 				if(!liveTradingSession.isAllowLiveTrading()){				
 					throw new OrderValidationException("Live trading on stop trading time"

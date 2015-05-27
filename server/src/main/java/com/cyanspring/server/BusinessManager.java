@@ -738,7 +738,7 @@ public class BusinessManager implements ApplicationContextAware {
 			List<Account> accounts = accountKeeper.getAllAccounts();
 			for(Account account:accounts){		
 				AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
-				if(accountSetting.checkLiveTrading()){
+				if(accountSetting.isLiveTrading()){
 					log.info("LiveTradingEndEvent:close position account:"+account.getId());
 					TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
 					TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, false);
