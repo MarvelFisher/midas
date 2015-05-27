@@ -16,9 +16,20 @@ public class UserCreateAndLoginReplyEvent extends RemoteAsyncEvent {
 	private List<Account> accounts;
 	private boolean first_created = false;
 
+	/**
+	 * True if user updates the email, when transferring 3rd id to FDT ID.
+	 */
+	private boolean updatedEmail = false;
+
+	public UserCreateAndLoginReplyEvent(String key, String receiver, User user,
+										Account defaultAccount, List<Account> accounts, boolean ok,
+										String org_id, String message, String txId, boolean fstCreated) {
+		this(key, receiver, user, defaultAccount, accounts, ok, org_id, message, txId, fstCreated, false);
+	}
+
 	public UserCreateAndLoginReplyEvent(String key, String receiver, User user,
 			Account defaultAccount, List<Account> accounts, boolean ok,
-			String org_id, String message, String txId, boolean fstCreated) {
+			String org_id, String message, String txId, boolean fstCreated, boolean updatedEmail) {
 		super(key, receiver);
 		this.user = user;
 		this.defaultAccount = defaultAccount;
@@ -28,6 +39,7 @@ public class UserCreateAndLoginReplyEvent extends RemoteAsyncEvent {
 		this.message = message;
 		this.txId = txId;
 		this.first_created = fstCreated;
+		this.updatedEmail = updatedEmail;
 	}
 	public boolean isFirstCreated()
 	{
@@ -59,5 +71,9 @@ public class UserCreateAndLoginReplyEvent extends RemoteAsyncEvent {
 
 	public List<Account> getAccounts() {
 		return accounts;
+	}
+
+	public boolean isUpdatedEmail() {
+		return updatedEmail;
 	}
 }
