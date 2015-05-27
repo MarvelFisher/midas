@@ -32,7 +32,7 @@
 	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
 	</bean>
 	
-	<bean id="useLocalMdManager" class="java.lang.Boolean">
+	<bean id="useLocalMdReceiver" class="java.lang.Boolean">
 		<constructor-arg value="false"/>
 	</bean>
 	
