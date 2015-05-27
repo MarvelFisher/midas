@@ -22,8 +22,31 @@
 	        </list>
 	    </constructor-arg>
 	</bean>	
+	
+	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
+	</bean>
+	
     <bean id="ceilFloorValidator" class="com.cyanspring.server.validation.CeilFloorValidator">  
 	</bean>
+	
+	<!-- For MarketSessionValidator -->
+	<bean id="availableTimeList" class="java.util.ArrayList">
+	 	<constructor-arg>
+	        <list>
+	             <bean id="rejectOrderTimeOnPreopenState" class="com.cyanspring.server.validation.bean.AvailableTimeBean">
+				 	 <property name="marketSession" value="PREOPEN"/>
+				 	 <property name="startTime" value="08:30:00"/>
+				 	 <property name="endTime" value="09:00:00"/>
+				 </bean>
+				 <bean id="rejectOrderTimeOnOpenState" class="com.cyanspring.server.validation.bean.AvailableTimeBean">
+				 	 <property name="marketSession" value="OPEN"/>
+				 	 <property name="startTime" value="09:00:00"/>
+				 	 <property name="endTime" value="09:10:00"/>
+				 </bean>
+	        </list>
+         </constructor-arg>
+	 </bean>
+	 
 	<!-- field specific validation -->
 	<bean id="orderFieldValidator" class="com.cyanspring.server.validation.OrderFieldValidator">       
 	    <property name="fieldValidators">
