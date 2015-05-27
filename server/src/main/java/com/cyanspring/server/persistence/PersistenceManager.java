@@ -711,6 +711,9 @@ public class PersistenceManager {
                     UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
                     AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
 
+					String newEmail = user.getEmail();
+					boolean updatedEmail = newEmail != centralDbConnector.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase()).getEmail();
+
                     // getAccount
                     user = userKeeper.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase());
 
@@ -727,9 +730,13 @@ public class PersistenceManager {
 
                     event.getUser().setDefaultAccount(defaultAccount.getId());
 
+					if (updatedEmail) {
+						user.setEmail(newEmail);
+					}
+
                     eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
                             event.getOriginalEvent().getSender(), user, defaultAccount, list, ok, event.getOriginalEvent().getOriginalID(),
-                            message, event.getOriginalEvent().getTxId(), true));
+                            message, event.getOriginalEvent().getTxId(), true, updatedEmail));
                     if(ok) {
                         user.setLastLogin(Clock.getInstance().now());
                         eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
@@ -940,9 +947,7 @@ public class PersistenceManager {
                     (checkEmailUnique.equals(CheckEmailType.onlyExist) && !Strings.isNullOrEmpty(user.getEmail()))) {
 
                 if (centralDbConnector.isEmailExist(user.getEmail())) {
-                    if (isTransfer) {
-                        user.setEmail("");
-                    } else {
+                    if (!isTransfer) {
                         throw new CentralDbException("Your " + user.getUserType().name() +
                                 " account email has been used to register an FDT Account. Please login it with " +
                                 user.getEmail() + " now.", ErrorMessage.CREATE_USER_FAILED);
@@ -954,16 +959,15 @@ public class PersistenceManager {
                     (checkPhoneUnique == CheckPhoneType.onlyExist && !Strings.isNullOrEmpty(user.getPhone()))) {
 
                 if (centralDbConnector.isPhoneExist(user.getPhone())) {
-                    if (isTransfer) {
-                        user.setPhone("");
-                    } else {
+                    if (!isTransfer) {
                         throw new CentralDbException("Your phone has been used to register an FDT Account.",
                                 ErrorMessage.USER_PHONE_EXIST);
                     }
                 }
             }
 
-            if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
+            if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(),
+					isTransfer ? "" : user.getEmail(),
                     user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
                     event.getOriginalEvent().getLanguage(), event.getOriginalEvent().getThirdPartyId(),
                     event.getOriginalEvent().getMarket())) {
