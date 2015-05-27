@@ -13,6 +13,7 @@
 	    <constructor-arg>
 	        <list>
 	        	<ref bean="accountStateValidator"/>
+	        	<ref bean="allowPlaceOrderTimeValidator"/>
 	        	<ref bean="liveTradingSessionValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
@@ -21,6 +22,9 @@
 	        </list>
 	    </constructor-arg>
 	</bean>	
+	<bean id="allowPlaceOrderTimeValidator" class="com.cyanspring.server.validation.AllowPlaceOrderTimeValidator">
+		<property name="howManyMinutes" value="60"></property>
+	</bean>  
 	
 	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
 	</bean>       
