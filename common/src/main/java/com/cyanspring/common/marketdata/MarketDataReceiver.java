@@ -90,14 +90,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         @Override
         public void subscribeToEvents() {
-
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
-
-            for (Class<? extends AsyncEvent> clz : subscribeEvent()) {
-                subscribeToEvent(clz, null);
-            }
         }
 
         @Override
@@ -105,10 +100,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             return eventManager;
         }
     };
-
-    protected List<Class<? extends AsyncEvent>> subscribeEvent() {
-        return new ArrayList<Class<? extends AsyncEvent>>();
-    }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
         marketSessionEvent = event; //RecordMarketSession

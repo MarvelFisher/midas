@@ -2,9 +2,7 @@ package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
@@ -15,28 +13,26 @@ import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.*;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
+ * The manager can collect and broadcast quote data to it's listener.
+ * Also manager will save quote/last trade date quote to a file and
+ * load it back while initialising.
  *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class MarketDataManager extends MarketDataReceiver {
     private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
+
+    @Autowired(required = false)
+    private IRemoteEventManager mdEventManager;
+    private AsyncEventProcessor mdProcessor;
     private IQuoteSaver quoteSaver;
     private String tickDir = "ticks";
     private String lastQuoteFile = "last.xml";
@@ -49,8 +45,7 @@ public class MarketDataManager extends MarketDataReceiver {
         super(adaptors);
     }
 
-    @Override
-    protected List<Class<? extends AsyncEvent>> subscribeEvent() {
+    private List<Class<? extends AsyncEvent>> subscribeEvent() {
         ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
         clzList.add(TradeSubEvent.class);
         clzList.add(QuoteExtSubEvent.class);
@@ -115,6 +110,35 @@ public class MarketDataManager extends MarketDataReceiver {
                         + "] " + entry.getValue().toString());
             }
         }
+
+        if (mdEventManager == null) {
+            mdEventManager = eventManager;
+            for (Class<? extends AsyncEvent> clz : subscribeEvent())
+                eventProcessor.subscribeToEvent(clz, null);
+        } else {
+            mdProcessor = new AsyncEventProcessor() {
+                @Override
+                public void subscribeToEvents() {
+                    for (Class<? extends AsyncEvent> clz : subscribeEvent())
+                        subscribeToEvent(clz, null);
+                }
+
+                @Override
+                public IAsyncEventManager getEventManager() {
+                    return mdEventManager;
+                }
+            };
+
+            try {
+                mdProcessor.setHandler(this);
+                mdProcessor.init();
+                if (mdProcessor.getThread() != null)
+                    mdProcessor.getThread().setName("MarketDataManager");
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+
         super.init();
     }
 
@@ -125,11 +149,11 @@ public class MarketDataManager extends MarketDataReceiver {
         Quote quote = quotes.get(symbol);
 
         if (quote != null) {
-            eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
+            mdEventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
             DataObject quoteExtend = quoteExtends.get(symbol);
             if (isQuoteExtendEventIsSend()) {
                 if (quoteExtend != null) {
-                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+                    mdEventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
                 }
             }
         }
@@ -158,7 +182,7 @@ public class MarketDataManager extends MarketDataReceiver {
             if (tradeDate == null) {
                 TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(
                         null, null);
-                eventManager.sendEvent(tdrEvent);
+                mdEventManager.sendEvent(tdrEvent);
             } else {
                 List<Quote> lst = new ArrayList<Quote>(
                         lastTradeDateQuotes.values());
@@ -166,7 +190,7 @@ public class MarketDataManager extends MarketDataReceiver {
                         + lst);
                 LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(
                         null, null, tradeDate, lst);
-                eventManager.sendRemoteEvent(lastTDQEvent);
+                mdEventManager.sendRemoteEvent(lastTDQEvent);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -206,7 +230,7 @@ public class MarketDataManager extends MarketDataReceiver {
                     quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
                     quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
                 }
-                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
+                mdEventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
@@ -240,7 +264,7 @@ public class MarketDataManager extends MarketDataReceiver {
                                 , quoteExtendSegmentMap, TimeUtil.parseDate(tradeDate, "yyyy-MM-dd"));
                         multiQuoteExtendEvent.setOffSet(transQuoteExtendOffset - dataSegmentSize);
                         multiQuoteExtendEvent.setTotalDataCount(-1);
-                        eventManager.sendEvent(multiQuoteExtendEvent);
+                        mdEventManager.sendEvent(multiQuoteExtendEvent);
                     }
                     quoteExtendSegmentMap = new HashMap<String, DataObject>();
                 }
@@ -259,7 +283,7 @@ public class MarketDataManager extends MarketDataReceiver {
                                     transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1 : transQuoteExtendOffset - dataSegmentSize + 1);
                     multiQuoteExtendEvent.setTotalDataCount(totalQuoteExtendCount);
                 }
-                eventManager.sendEvent(multiQuoteExtendEvent);
+                mdEventManager.sendEvent(multiQuoteExtendEvent);
             }
         }
     }
@@ -269,9 +293,9 @@ public class MarketDataManager extends MarketDataReceiver {
         if(isUninit) return;
         try {
             if (broadcastQuote)
-                eventManager.sendGlobalEvent(event);
+                mdEventManager.sendGlobalEvent(event);
             else
-                eventManager.sendEvent(event);
+                mdEventManager.sendEvent(event);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
