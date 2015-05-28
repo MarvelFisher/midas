@@ -1,24 +1,10 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
-import java.util.HashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
-import cn.com.wind.td.tdf.TDF_INDEX_DATA;
-import cn.com.wind.td.tdf.TDF_MARKET_DATA;
-import cn.com.wind.td.tdf.TDF_MSG_ID;
-import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
-
-import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
-import com.cyanspring.id.Library.Util.LogUtil;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -288,7 +274,7 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 						switch (key) {
 						case "Symbol" :
 							symbol = value;
-							WindGatewayHandler.publishWindTransaction(in,symbol,false);
+							WindGatewayHandler.publishWindTransaction(in, symbol, false);
 							return;
 						default:
 							break;
