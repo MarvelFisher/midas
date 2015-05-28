@@ -13,8 +13,6 @@ import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.util.*;
@@ -30,11 +28,6 @@ import java.util.*;
  */
 public class MarketDataManager extends MarketDataReceiver {
     private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
-
-    @Autowired(required = false)
-    @Qualifier("mdEventManager")
-    private IRemoteEventManager mdEventManager;
-    private AsyncEventProcessor mdProcessor;
     private IQuoteSaver quoteSaver;
     private String tickDir = "ticks";
     private String lastQuoteFile = "last.xml";
@@ -113,34 +106,8 @@ public class MarketDataManager extends MarketDataReceiver {
             }
         }
 
-        if (mdEventManager == null) {
-            mdEventManager = eventManager;
-            for (Class<? extends AsyncEvent> clz : subscribeEvent())
-                eventProcessor.subscribeToEvent(clz, null);
-        } else {
-            mdProcessor = new AsyncEventProcessor() {
-                @Override
-                public void subscribeToEvents() {
-                    for (Class<? extends AsyncEvent> clz : subscribeEvent())
-                        subscribeToEvent(clz, null);
-                }
-
-                @Override
-                public IAsyncEventManager getEventManager() {
-                    return mdEventManager;
-                }
-            };
-
-            try {
-                mdProcessor.setHandler(this);
-                mdProcessor.init();
-                if (mdProcessor.getThread() != null)
-                    mdProcessor.getThread().setName("MarketDataManager");
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
+        for (Class<? extends AsyncEvent> clz : subscribeEvent())
+            eventProcessor.subscribeToEvent(clz, null);
         super.init();
     }
 
@@ -151,11 +118,11 @@ public class MarketDataManager extends MarketDataReceiver {
         Quote quote = quotes.get(symbol);
 
         if (quote != null) {
-            mdEventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
+            eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
             DataObject quoteExtend = quoteExtends.get(symbol);
             if (isQuoteExtendEventIsSend()) {
                 if (quoteExtend != null) {
-                    mdEventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
                 }
             }
         }
@@ -168,10 +135,10 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
-    public void processRefDataEvent(RefDataEvent event){
+    public void processRefDataEvent(RefDataEvent event) {
         super.processRefDataEvent(event);
         //Check last.xml Symbol
-        if(event != null && event.isOk() && event.getRefDataList().size() > 0){
+        if (event != null && event.isOk() && event.getRefDataList().size() > 0) {
             log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
             quotes.keySet().retainAll(preSubscriptionList);
             quoteExtends.keySet().retainAll(preSubscriptionList);
@@ -184,7 +151,7 @@ public class MarketDataManager extends MarketDataReceiver {
             if (tradeDate == null) {
                 TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(
                         null, null);
-                mdEventManager.sendEvent(tdrEvent);
+                eventManager.sendEvent(tdrEvent);
             } else {
                 List<Quote> lst = new ArrayList<Quote>(
                         lastTradeDateQuotes.values());
@@ -192,7 +159,7 @@ public class MarketDataManager extends MarketDataReceiver {
                         + lst);
                 LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(
                         null, null, tradeDate, lst);
-                mdEventManager.sendRemoteEvent(lastTDQEvent);
+                eventManager.sendRemoteEvent(lastTDQEvent);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -232,7 +199,7 @@ public class MarketDataManager extends MarketDataReceiver {
                     quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
                     quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
                 }
-                mdEventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
+                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
@@ -266,7 +233,7 @@ public class MarketDataManager extends MarketDataReceiver {
                                 , quoteExtendSegmentMap, TimeUtil.parseDate(tradeDate, "yyyy-MM-dd"));
                         multiQuoteExtendEvent.setOffSet(transQuoteExtendOffset - dataSegmentSize);
                         multiQuoteExtendEvent.setTotalDataCount(-1);
-                        mdEventManager.sendEvent(multiQuoteExtendEvent);
+                        eventManager.sendEvent(multiQuoteExtendEvent);
                     }
                     quoteExtendSegmentMap = new HashMap<String, DataObject>();
                 }
@@ -285,19 +252,19 @@ public class MarketDataManager extends MarketDataReceiver {
                                     transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1 : transQuoteExtendOffset - dataSegmentSize + 1);
                     multiQuoteExtendEvent.setTotalDataCount(totalQuoteExtendCount);
                 }
-                mdEventManager.sendEvent(multiQuoteExtendEvent);
+                eventManager.sendEvent(multiQuoteExtendEvent);
             }
         }
     }
 
     @Override
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
-        if(isUninit) return;
+        if (isUninit) return;
         try {
             if (broadcastQuote)
-                mdEventManager.sendGlobalEvent(event);
+                eventManager.sendGlobalEvent(event);
             else
-                mdEventManager.sendEvent(event);
+                eventManager.sendEvent(event);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
