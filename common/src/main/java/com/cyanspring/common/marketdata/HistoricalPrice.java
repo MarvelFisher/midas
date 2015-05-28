@@ -21,6 +21,8 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	double low ;
 	double close ;
 	long   volume ;
+	private double turnover;
+	private double totalVolume;
 	
 	public HistoricalPrice()
 	{
@@ -186,6 +188,18 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	}
 	public void setDatatime(Date datatime) {
 		this.datatime = datatime;
+	}
+	public double getTurnover() {
+		return turnover;
+	}
+	public void setTurnover(double turnover) {
+		this.turnover = turnover;
+	}
+	public double getTotalVolume() {
+		return totalVolume;
+	}
+	public void setTotalVolume(double totalVolume) {
+		this.totalVolume = totalVolume;
 	}
 
 }
