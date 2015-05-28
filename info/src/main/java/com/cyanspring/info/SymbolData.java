@@ -43,9 +43,9 @@ public class SymbolData implements Comparable<SymbolData>
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(SymbolData.class);
-	private static final String insertPrice = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME) " + 
-            "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d) ON DUPLICATE KEY " + 
-            "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d;";
+	private static final String insertPrice = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME,TOTALVOLUME,TURNOVER) " + 
+            "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d,%.0f,%.5f) ON DUPLICATE KEY " + 
+            "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d,TOTALVOLUME=%.0f,TURNOVER=%.5f;";
 	private static final String DateFormat = "yyyy-MM-dd";
 	private static final String DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
@@ -344,17 +344,21 @@ public class SymbolData implements Comparable<SymbolData>
 				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
 				getStrSymbol(), lastPrice.getOpen(), lastPrice.getClose(), 
 				lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
+				lastPrice.getTotalVolume(), lastPrice.getTurnover(), 
 				tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
-				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
+				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
+				lastPrice.getTotalVolume(), lastPrice.getTurnover()) ;
 		centralDB.getDbhnd().updateSQL(sqlcmd);
 		if (strSymbol.equals(getStrSymbol()) == false)
 		{
 			sqlcmd = String.format(insertPrice, 
 					strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
 					strSymbol, lastPrice.getOpen(), lastPrice.getClose(), 
-					lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
+					lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(),  
+					lastPrice.getTotalVolume(), lastPrice.getTurnover(), 
 					tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
-					lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume()) ;
+					lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
+					lastPrice.getTotalVolume(), lastPrice.getTurnover()) ;
 			centralDB.getDbhnd().updateSQL(sqlcmd);
 		}
 		logHistoricalPrice(lastPrice);
@@ -727,18 +731,22 @@ public class SymbolData implements Comparable<SymbolData>
 			sqlcmd = String.format(insertPrice, 
 					strTable, price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 					getStrSymbol(), price.getOpen(), price.getClose(), 
-					price.getHigh(), price.getLow(), price.getVolume(), 
-					strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
-					price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
+					price.getHigh(), price.getLow(), price.getVolume(),  
+					price.getTotalVolume(), price.getTurnover(), 
+					price.getTradedate(), sdf.format(price.getDatatime()), price.getOpen(), 
+					price.getClose(), price.getHigh(), price.getLow(), price.getVolume(),  
+					price.getTotalVolume(), price.getTurnover()) ;
 			centralDB.getDbhnd().addBatch(sqlcmd);
 			if (strSymbol.equals(getStrSymbol()) == false)
 			{
 				sqlcmd = String.format(insertPrice, 
 						strTable, price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 						strSymbol, price.getOpen(), price.getClose(), 
-						price.getHigh(), price.getLow(), price.getVolume(), 
-						strKeyTime, sdf.format(price.getDatatime()), price.getOpen(), 
-						price.getClose(), price.getHigh(), price.getLow(), price.getVolume()) ;
+						price.getHigh(), price.getLow(), price.getVolume(),  
+						price.getTotalVolume(), price.getTurnover(),
+						price.getTradedate(), sdf.format(price.getDatatime()), price.getOpen(), 
+						price.getClose(), price.getHigh(), price.getLow(), price.getVolume(),  
+						price.getTotalVolume(), price.getTurnover()) ;
 				centralDB.getDbhnd().addBatch(sqlcmd);
 			}
 			logHistoricalPrice(price);

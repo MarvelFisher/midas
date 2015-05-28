@@ -23,7 +23,7 @@ public class DBHandler
 	private String     jdbcUrl;
 	private Connection connect = null ;
 	private Statement  stat = null ;
-	DBHandler(String jdbcUrl, String driverClass) throws Exception
+	public DBHandler(String jdbcUrl, String driverClass) throws Exception
 	{
 		this.jdbcUrl = jdbcUrl ;
 		Class.forName(driverClass);
@@ -283,6 +283,8 @@ public class DBHandler
 				price.setHigh(rs.getDouble("HIGH_PRICE"));
 				price.setLow(rs.getDouble("LOW_PRICE"));
 				price.setVolume(rs.getLong("VOLUME"));
+				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+				price.setTurnover(rs.getLong("TURNOVER"));
 				getPrice = true;
 			}
 			if (getPrice)

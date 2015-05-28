@@ -64,9 +64,6 @@ public class InfoServer
 	MarketDataReceiver mdReceiver;
 	
 	@Autowired
-	private Boolean useLocalMdManager;
-	
-	@Autowired
 	private Boolean useLocalMdReceiver;
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
