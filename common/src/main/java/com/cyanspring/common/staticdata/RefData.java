@@ -160,6 +160,10 @@ public class RefData extends DataObject {
 		return this.get(String.class, RefDataField.SPELL_NAME.value());
 	}
 		
+	public String getCommodity(){
+		return this.get(String.class, RefDataField.COMMODITY.value());
+	}
+	
 	public void setSymbol(String symbol){
 		this.set(symbol, RefDataField.SYMBOL.value());
 	}
@@ -186,5 +190,9 @@ public class RefData extends DataObject {
 	
 	public void setSpellName(String spellName){
 		this.set(spellName, RefDataField.SPELL_NAME.value());
+	}
+	
+	public void setCommodity(String commodity){
+		this.set(commodity, RefDataField.COMMODITY.value());
 	}
 }

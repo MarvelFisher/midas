@@ -12,6 +12,7 @@
 	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
 	    <constructor-arg>
 	        <list>
+	        	<ref bean="accountStateValidator"/>
 				<ref bean="marketSessionValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>

@@ -109,6 +109,10 @@
         <string>Market maximum lot</string>
         <int>499</int>
       </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -220,6 +224,10 @@
       <entry>
         <string>Market maximum lot</string>
         <int>499</int>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -334,6 +342,10 @@
         <string>Market maximum lot</string>
         <int>50</int>
       </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
 
@@ -447,7 +459,11 @@
         <string>Market maximum lot</string>
         <int>50</int>
       </entry>
-    </fields>
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
+      </entry>
+    </fields> 
   </com.cyanspring.common.staticdata.RefData>
 
   <com.cyanspring.common.staticdata.RefData>
@@ -559,6 +575,10 @@
       <entry>
         <string>Market maximum lot</string>
         <int>50</int>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -673,6 +693,10 @@
       <entry>
         <string>Market maximum lot</string>
         <int>50</int>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
