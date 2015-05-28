@@ -36,6 +36,9 @@
 	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
 	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
 	 			<entry key="TERMINATE_STOP_LOSS" value="0.3"/>
+	 			<entry key="COMPANY_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="FROZEN_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="TERMINATE_STOP_LOSS_VALUE" value="0"/>
 	 		</map>
 		</constructor-arg>
 	 </bean>
@@ -45,6 +48,8 @@
 	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
 	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
 	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
+	 			<entry key="COMPANY_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="FROZEN_STOP_LOSS_VALUE" value="0"/>
 	 		</map>
 		</constructor-arg>
 	 </bean>

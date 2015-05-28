@@ -23,13 +23,20 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		if(null == setting){
 			setting = AccountSetting.createEmptySettings(oldAccountSetting.getId());
 		}	
-		System.out.println("DefaultUserTrading setRule");	
 		double positionStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.POSITION_STOP_LOSS));
 		double frozenStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS));
 		double terminateStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS));
+		double positionStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.COMPANY_STOP_LOSS_VALUE));
+		double frozenStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS_VALUE));
+		double terminateStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS_VALUE));
+	
 		setting.setStopLossPercent(positionStopLoss);
 		setting.setFreezePercent(frozenStopLoss);
 		setting.setTerminatePercent(terminateStopLoss);
+		setting.setCompanySLValue(positionStopLossValue);
+		setting.setFreezeValue(frozenStopLossValue);
+		setting.setTerminateValue(terminateStopLossValue);
+		
 		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING.value())){
 			oldAccountSetting.setLiveTrading(newAccountSetting.isLiveTrading());
 		}
@@ -38,7 +45,6 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		}
 		setting.setLiveTradingType(LiveTradingType.DEFAULT);
 		setting.setLiveTradingSettedDate(TimeUtil.formatDate(TimeUtil.getOnlyDate(new Date()), dateFormat));
-		System.out.printf("positionStopLoss:%s",positionStopLoss);
 		return setting;
 		
 	}

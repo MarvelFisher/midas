@@ -52,8 +52,13 @@ public class DayTrading implements IUserLiveTradingRule{
 		
 		double positionStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.POSITION_STOP_LOSS));
 		double frozenStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS));
+		double positionStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.COMPANY_STOP_LOSS_VALUE));
+		double frozenStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS_VALUE));
+
 		oldAccountSetting.setStopLossPercent(positionStopLoss);
 		oldAccountSetting.setFreezePercent(frozenStopLoss);
+		oldAccountSetting.setCompanySLValue(positionStopLossValue);
+		oldAccountSetting.setFreezeValue(frozenStopLossValue);
 		oldAccountSetting.setTerminatePercent(0.0);
 		if(newAccountSetting.fieldExists(AccountSettingType.LIVE_TRADING.value())){
 			oldAccountSetting.setLiveTrading(newAccountSetting.isLiveTrading());
