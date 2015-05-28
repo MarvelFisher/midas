@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class ClientIdleHandler extends ChannelDuplexHandler {
 
     private static final Logger log = LoggerFactory
-            .getLogger(WindFutureDataAdaptor.class);
+            .getLogger(WindGateWayAdapter.class);
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt)

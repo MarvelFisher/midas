@@ -1,8 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
-
-import cn.com.wind.td.tdf.TDF_CODE;
-import cn.com.wind.td.tdf.TDF_MARKET_DATA;
+import com.cyanspring.adaptor.future.wind.data.AbstractWindDataParser;
+import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
@@ -13,7 +12,9 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.id.Library.Util.*;
+import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.id.Library.Util.FinalizeHelper;
+import com.cyanspring.id.Library.Util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,6 @@ public class StockItem implements AutoCloseable {
     protected static ConcurrentHashMap<String, StockItem> stockItemBySymbolMap = new ConcurrentHashMap<String, StockItem>();
     private String symbolId;
     private int sessionStatus = -1;
-    private int tDate = 0;
     private long totalVolume = 0;
     private long volume = 0;
     private double highLimit = 0;
@@ -51,21 +51,16 @@ public class StockItem implements AutoCloseable {
     private String market;
     private String cnName;
     private String enName;
-//	private static int lastShow = 0;
 
     public static StockItem getItem(String symbolId, String windCode,
                                     boolean enableCreateNew) {
 
         synchronized (stockItemBySymbolMap) {
-            if (stockItemBySymbolMap.containsKey(symbolId) == true) {
+            if (stockItemBySymbolMap.containsKey(symbolId)) {
                 return stockItemBySymbolMap.get(symbolId);
             }
-
-            // else
             if (enableCreateNew) {
                 StockItem item = new StockItem(symbolId);
-                if (WindFutureDataAdaptor.instance.isGateway())
-                    item.setMarket(windCode.split("\\.")[1]);
                 stockItemBySymbolMap.put(symbolId, item);
                 return item;
             }
@@ -136,62 +131,20 @@ public class StockItem implements AutoCloseable {
         }
     }
 
-    public String getEnName() {
-        return enName;
-    }
+    public static void processMarketData(StockData stockData) {
 
-    public void setEnName(String enName) {
-        this.enName = enName;
-    }
-
-    public String getMarket() {
-        return market;
-    }
-
-    public void setMarket(String market) {
-        this.market = market;
-    }
-
-    public String getCnName() {
-        return cnName;
-    }
-
-    public void setCnName(String cnName) {
-        this.cnName = cnName;
-    }
-
-    public static SymbolInfo processCODE(TDF_CODE code) {
-        String symbolId = code.getCode();
-        String windCode = code.getWindCode();
-        StockItem item = StockItem.getItem(symbolId, windCode, true);
-
-        item.setMarket(code.getMarket());
-        String cnName = WindFutureDataAdaptor.convertGBString(code.getCNName());
-        item.setCnName(cnName);
-        String enName = code.getENName();
-        if (enName.isEmpty()) {
-            enName = symbolId;
-        }
-        item.setEnName(enName);
-
-        return item.getSymbolInfo();
-
-    }
-
-    public static void processMarketData(TDF_MARKET_DATA data) {
-
-        String symbolId = data.getWindCode();
-        String windCode = data.getWindCode();
+        String symbolId = stockData.getWindCode();
+        String windCode = stockData.getWindCode();
 
         StockItem item = getItem(symbolId, windCode, true);
 
         //Get MarketSession
-        String index = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
+        String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
         MarketSessionData marketSessionData = null;
         Date endDate;
         Date startDate;
         try {
-            marketSessionData = WindFutureDataAdaptor.marketSessionByIndexMap.get(index);
+            marketSessionData = WindGateWayAdapter.marketSessionByIndexMap.get(index);
             endDate = marketSessionData.getEndDate();
             startDate = marketSessionData.getStartDate();
         } catch (Exception e) {
@@ -200,12 +153,12 @@ public class StockItem implements AutoCloseable {
         }
 
         // tick time
-        String timeStamp = String.format("%d-%d", data.getTradingDay(),
-                data.getTime());
+        String timeStamp = String.format("%d-%d", stockData.getTradingDay(),
+                stockData.getTime());
         Date tickTime;
 
         try {
-            if (data.getTime() < WindFutureDataAdaptor.AM10) {
+            if (stockData.getTime() < WindDef.AM10) {
                 tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
             } else {
                 tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
@@ -214,7 +167,7 @@ public class StockItem implements AutoCloseable {
             tickTime = DateUtil.now();
         }
 
-        if (PriceUtils.GreaterThan(data.getMatch(), 0)) {
+        if (PriceUtils.GreaterThan(stockData.getMatch(), 0)) {
         	
             //modify tick Time
         	if (QuoteMgr.isModifyTickTime()) {
@@ -230,9 +183,9 @@ public class StockItem implements AutoCloseable {
 	
 	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
 	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
-	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
 	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
-	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
+	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
 	                    tickTime = endDate;
 	            }
         	}
@@ -240,8 +193,8 @@ public class StockItem implements AutoCloseable {
             List<QtyPrice> bids = new ArrayList<QtyPrice>();
             List<QtyPrice> asks = new ArrayList<QtyPrice>();
 
-            makeBidAskList(data.getBidPrice(), data.getBidVol(),
-                    data.getAskPrice(), data.getAskVol(), bids, asks);
+            makeBidAskList(stockData.getBidPrice(), stockData.getBidVol(),
+                    stockData.getAskPrice(), stockData.getAskVol(), bids, asks);
 
             Quote quote = new Quote(symbolId, bids, asks);
 
@@ -253,7 +206,7 @@ public class StockItem implements AutoCloseable {
                 quote.setStale(true);
             }
             if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
-                switch (data.getStatus()) {
+                switch (stockData.getStatus()) {
                     case STATUS_MARKET_CLOSE:
                     case STATUS_MARKET_CLOSE_2:
                     case STATUS_NEW_SYMBOL:
@@ -280,15 +233,15 @@ public class StockItem implements AutoCloseable {
             setBidAsk(quote, bid, ask);
 
             // update price
-            quote.setOpen((double) data.getOpen() / 10000);
-            quote.setHigh((double) data.getHigh() / 10000);
-            quote.setLow((double) data.getLow() / 10000);
-            quote.setLast((double) data.getMatch() / 10000);
-            quote.setClose((double) data.getPreClose() / 10000);
-            quote.setTurnover((double) data.getTurnover());
+            quote.setOpen((double) stockData.getOpen() / 10000);
+            quote.setHigh((double) stockData.getHigh() / 10000);
+            quote.setLow((double) stockData.getLow() / 10000);
+            quote.setLast((double) stockData.getMatch() / 10000);
+            quote.setClose((double) stockData.getPreClose() / 10000);
+            quote.setTurnover((double) stockData.getTurnover());
 
             // volume
-            long totalVolume = data.getVolume();
+            long totalVolume = stockData.getVolume();
 
             if (PriceUtils.GreaterThan(totalVolume, item.totalVolume)) {
                 item.volume = totalVolume - item.totalVolume;
@@ -300,8 +253,8 @@ public class StockItem implements AutoCloseable {
             quote.setLastVol(item.volume);
 
             //process send quote
-            WindFutureDataAdaptor.instance.saveLastQuote(quote);
-            WindFutureDataAdaptor.instance.sendInnerQuote(new InnerQuote(101, quote));
+            WindGateWayAdapter.instance.saveLastQuote(quote);
+            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
         }else{
             log.debug("STOCK QUOTE WARNING:LAST LESS THAN ZERO");
         }
@@ -309,21 +262,21 @@ public class StockItem implements AutoCloseable {
         boolean quoteExtendIsChange = false;
         DataObject quoteExtend = new DataObject();
 
-        double highLimit = (double) data.getHighLimited() / 10000;
+        double highLimit = (double) stockData.getHighLimited() / 10000;
         if (PriceUtils.Compare(item.highLimit, highLimit) != 0) {
             item.highLimit = highLimit;
             quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
             quoteExtendIsChange = true;
         }
 
-        double lowLimit = (double) data.getLowLimited() / 10000;
+        double lowLimit = (double) stockData.getLowLimited() / 10000;
         if (PriceUtils.Compare(item.lowLimit, lowLimit) != 0) {
             item.lowLimit = lowLimit;
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
             quoteExtendIsChange = true;
         }
 
-        int sessionStatus = WindParser.getItemSessionStatus(marketSessionData);
+        int sessionStatus = AbstractWindDataParser.getItemSessionStatus(marketSessionData);
         if(sessionStatus!=item.sessionStatus){
             item.sessionStatus = sessionStatus;
             quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
@@ -334,8 +287,8 @@ public class StockItem implements AutoCloseable {
         if (quoteExtendIsChange) {
             quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbolId);
             quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
-            WindFutureDataAdaptor.instance.saveLastQuoteExtend(quoteExtend);
-            WindFutureDataAdaptor.instance.sendQuoteExtend(quoteExtend);
+            WindGateWayAdapter.instance.saveLastQuoteExtend(quoteExtend);
+            WindGateWayAdapter.instance.sendQuoteExtend(quoteExtend);
         }
     }
 
@@ -355,25 +308,32 @@ public class StockItem implements AutoCloseable {
         this.symbolId = symbolId;
     }
 
-    public void loadData(String file) {
-        String[] arr = StringUtil.split(file, ',');
-
-        if (arr.length < 2)
-            return;
-
-        tDate = Integer.parseInt(arr[0]);
-        totalVolume = Long.parseLong(arr[1]);
-    }
-
-    public String writeData() {
-        FixStringBuilder sb = new FixStringBuilder(',');
-        sb.append(tDate);
-        sb.append(totalVolume);
-        return sb.toString();
-    }
-
     @Override
     public void close() throws Exception {
         FinalizeHelper.suppressFinalize(this);
+    }
+
+    public String getEnName() {
+        return enName;
+    }
+
+    public void setEnName(String enName) {
+        this.enName = enName;
+    }
+
+    public String getMarket() {
+        return market;
+    }
+
+    public void setMarket(String market) {
+        this.market = market;
+    }
+
+    public String getCnName() {
+        return cnName;
+    }
+
+    public void setCnName(String cnName) {
+        this.cnName = cnName;
     }
 }

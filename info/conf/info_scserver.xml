@@ -173,13 +173,8 @@
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 
 	<bean id="windAdaptor"
-		class="com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor">
+		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="showGui" value="true"/>
-		<property name="reqIp" value="114.80.154.34"/>
-		<property name="reqPort" value="10051"/>
-		<property name="userName" value="TD1001888001"/>
-		<property name="password" value="62015725"/>
-		<property name="gateway" value="true"/>
 		<property name="gatewayIp" value="10.0.0.20"/>
 		<property name="gatewayPort" value="10049"/>
 		<property name="marketDataLog" value="false"/>

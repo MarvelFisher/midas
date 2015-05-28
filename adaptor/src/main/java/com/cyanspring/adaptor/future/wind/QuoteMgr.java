@@ -1,8 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
-import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
-import cn.com.wind.td.tdf.TDF_MARKET_DATA;
-import cn.com.wind.td.tdf.TDF_MSG_ID;
+import com.cyanspring.adaptor.future.wind.data.FutureData;
+import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import org.slf4j.Logger;
@@ -82,18 +81,18 @@ public class QuoteMgr implements IReqThreadCallback {
 
 	void process(int type, Object objMsg) {
 		switch (type) {
-		case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT:
+		case WindDef.MSG_SYS_CODETABLE_RESULT:
 			break;
-		case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE:
+		case WindDef.MSG_SYS_QUOTATIONDATE_CHANGE:
 			break;
-		case TDF_MSG_ID.MSG_DATA_FUTURE: {
-			TDF_FUTURE_DATA future = (TDF_FUTURE_DATA) objMsg;
-			FutureItem.processFutureData(future);
+		case WindDef.MSG_DATA_FUTURE: {
+			FutureData futureData = (FutureData) objMsg;
+			FutureItem.processFutureData(futureData);
 		}
 			break;
-		case TDF_MSG_ID.MSG_DATA_MARKET: {
-			TDF_MARKET_DATA market = (TDF_MARKET_DATA) objMsg;
-			StockItem.processMarketData(market);
+		case WindDef.MSG_DATA_MARKET: {
+			StockData stockData = (StockData) objMsg;
+			StockItem.processMarketData(stockData);
 		}
 			break;
 		default:

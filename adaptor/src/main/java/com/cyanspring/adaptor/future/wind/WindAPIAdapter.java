@@ -11,15 +11,11 @@ import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,37 +25,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-public class WindFutureDataAdaptor implements IMarketDataAdaptor,
+@Deprecated
+public class WindAPIAdapter implements IMarketDataAdaptor,
         IReqThreadCallback {
 
     private static final Logger log = LoggerFactory
-            .getLogger(WindFutureDataAdaptor.class);
+            .getLogger(WindAPIAdapter.class);
 
-    private String gatewayIp = "";
-    private int gatewayPort = 0;
-    private boolean gateway = false;
     private boolean showGui = false;
     private boolean marketDataLog = false; // log control
     private String marketType = "";
     protected long timerInterval = 5000;
-    static final long SmallSessionTimeInterval = 30 * 60 * 1000;
-    static final int AM10 = 100000000;
     static volatile boolean bigSessionIsClose = false;
     static volatile int tradeDateForWindFormat = 0;
     static volatile Date bigSessionCloseDate = Clock.getInstance().now();
-    static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
-    private boolean closeOverTimeControlIsOpen = true;
-    private boolean tradeDateCheckIsOpen = true;
 	private boolean modifyTickTime = true;
-    private final String TITLE_FUTURE = "FUTURE";
-    private final String TITLE_STOCK = "STOCK";
-    private final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
-    private final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : TradeDate NOT match";
-    private final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format fault";
-    private final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
-            + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 
     boolean isClose = false;
     static NioEventLoopGroup nioEventLoopGroup = null;
@@ -69,7 +50,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected ScheduleManager scheduleManager = new ScheduleManager();
-    public static WindFutureDataAdaptor instance = null;
+    public static WindAPIAdapter instance = null;
 
     static ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap = new ConcurrentHashMap<String, TDF_FUTURE_DATA>(); // future
     static ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap = new ConcurrentHashMap<String, TDF_MARKET_DATA>(); // stock
@@ -98,95 +79,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     TDFClient tdfClient = new TDFClient();
     TDF_OPEN_SETTING tdf_open_setting = new TDF_OPEN_SETTING();
-
-
-    public void setTradeDateCheckIsOpen(boolean tradeDateCheckIsOpen) {
-        this.tradeDateCheckIsOpen = tradeDateCheckIsOpen;
-    }
-
-    public void setCloseOverTimeControlIsOpen(boolean closeOverTimeControlIsOpen) {
-        this.closeOverTimeControlIsOpen = closeOverTimeControlIsOpen;
-    }
-
-    public String getMarketType() {
-        return marketType;
-    }
-
-    public void setMarketType(String marketType) {
-        this.marketType = marketType;
-    }
-
-    public boolean isShowGui() {
-        return showGui;
-    }
-
-    public void setShowGui(boolean showGui) {
-        this.showGui = showGui;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String account) {
-        this.userName = account;
-    }
-
-    public String getReqIp() {
-        return reqIp;
-    }
-
-    public void setReqIp(String reqIp) {
-        this.reqIp = reqIp;
-    }
-
-    public int getReqPort() {
-        return reqPort;
-    }
-
-    public void setReqPort(int reqPort) {
-        this.reqPort = reqPort;
-    }
-
-    public String getGatewayIp() {
-        return gatewayIp;
-    }
-
-    public void setGatewayIp(String gatewayIp) {
-        this.gatewayIp = gatewayIp;
-    }
-
-    public int getGatewayPort() {
-        return gatewayPort;
-    }
-
-    public void setGatewayPort(int gatewayPort) {
-        this.gatewayPort = gatewayPort;
-    }
-
-    public boolean isGateway() {
-        return gateway;
-    }
-
-    public void setGateway(boolean gateway) {
-        this.gateway = gateway;
-    }
-
-    public boolean isMarketDataLog() {
-        return marketDataLog;
-    }
-
-    public void setMarketDataLog(boolean marketDataLog) {
-        this.marketDataLog = marketDataLog;
-    }
 
     public String[] getRefSymbol() {
         List<String> list = new ArrayList<String>();
@@ -280,36 +172,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         return tdfClient.getOptionCodeInfo(szWindCode);
     }
 
-    public List<SymbolInfo> updateCodeTable(String market) {
-        TDF_CODE[] codes = tdfClient.getCodeTable(market);
-        List<SymbolInfo> list = new ArrayList<SymbolInfo>();
-        try {
-
-            for (TDF_CODE code : codes) {
-                SymbolInfo info = FutureItem.processCODE(code);
-                String s = printSymbolInfo(info);
-                LogUtil.logInfo(log, s);
-                list.add(info);
-            }
-
-        } catch (Exception e) {
-            LogUtil.logException(log, e);
-        }
-        return list;
-    }
-
-    void printCodeTable(String market) {
-        TDF_CODE[] codes = tdfClient.getCodeTable(market);
-        try {
-
-            for (TDF_CODE code : codes) {
-                FutureItem.processCODE(code);
-            }
-        } catch (Exception e) {
-            LogUtil.logException(log, e);
-        }
-    }
-
     void disconnect() {
         isClosed = true;
         tdfClient.delete();
@@ -334,88 +196,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
                     sendInnerQuote(new InnerQuote(101, lastQuote));
                 }
             }
-        }
-    }
-
-    public void processGateWayMessage(int datatype, String[] in_arr) {
-
-        if (in_arr == null)
-            return;
-        switch (datatype) {
-            case TDF_MSG_ID.MSG_SYS_HEART_BEAT:
-            case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:
-            case TDF_MSG_ID.MSG_SYS_CONNECT_RESULT:
-            case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT:
-            case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT:
-            case TDF_MSG_ID.MSG_SYS_MARKET_CLOSE:
-            case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE:
-                break;
-            case TDF_MSG_ID.MSG_DATA_MARKET:
-                TDF_MARKET_DATA stock = WindParser.convertToStockData(in_arr, stockDataBySymbolMap);
-                if (stock.getTime() >= 240000000) {
-                    log.debug(String.format("%s %s,%s", this.TITLE_STOCK,
-                            this.WARN_TIME_FORMAT_ERROR, stock.getWindCode()));
-                    return;
-                }
-//                if (stock.getMatch() <= 0) {
-//                    log.debug(String.format("%s %s", this.TITLE_STOCK,
-//                            this.WARN_LAST_LESS_THAN_ZERO));
-//                    return;
-//                }
-                if (this.tradeDateCheckIsOpen
-                        && stock.getTradingDay() != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s %s", this.TITLE_STOCK,
-                            this.WARN_TRADEDATE_NOT_MATCH, stock.getWindCode()));
-                    return;
-                }
-                if (this.closeOverTimeControlIsOpen
-                        && bigSessionIsClose
-                        && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            this.TITLE_STOCK, this.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString(), stock.getWindCode()));
-                    return;
-                }
-                QuoteMgr.instance.AddRequest(new Object[]{
-                        TDF_MSG_ID.MSG_DATA_MARKET, stock});
-                break;
-            case TDF_MSG_ID.MSG_DATA_INDEX:
-                break;
-            case TDF_MSG_ID.MSG_DATA_FUTURE:
-                TDF_FUTURE_DATA future = WindParser.convertToFutureData(in_arr, futureDataBySymbolMap);
-                if (future.getTime() >= 240000000) {
-                    log.debug(String.format("%s %s,%s", this.TITLE_FUTURE,
-                            this.WARN_TIME_FORMAT_ERROR, future.getWindCode()));
-                    return;
-                }
-//                if (future.getMatch() <= 0) {
-//                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
-//                            this.WARN_LAST_LESS_THAN_ZERO));
-//                    return;
-//                }
-                if (this.tradeDateCheckIsOpen
-                        && future.getTradingDay() != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s,%s", this.TITLE_FUTURE,
-                            this.WARN_TRADEDATE_NOT_MATCH,future.getWindCode()));
-                    return;
-                }
-                if (this.closeOverTimeControlIsOpen
-                        && bigSessionIsClose
-                        && TimeUtil.getTimePass(bigSessionCloseDate) > ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            this.TITLE_FUTURE, this.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString(),future.getWindCode()));
-                    return;
-                }
-                QuoteMgr.instance.AddRequest(new Object[]{
-                        TDF_MSG_ID.MSG_DATA_FUTURE, future});
-                break;
-            case TDF_MSG_ID.MSG_DATA_TRANSACTION:
-            case TDF_MSG_ID.MSG_DATA_ORDERQUEUE:
-            case TDF_MSG_ID.MSG_DATA_ORDER:
-                break;
-            default:
-                break;
         }
     }
 
@@ -516,57 +296,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
             }
         }
         tdfClient.close();
-    }
-
-    /**
-     * Wind Client link Gateway Server
-     *
-     * @param ip
-     * @param port
-     */
-    public void connectGateWay(String ip, int port) {
-
-        isConnecting = true;
-        WindFutureDataAdaptor.instance.closeClient();
-        LogUtil.logInfo(log, "Wind initClient enter %s:%d", ip, port);
-
-        // Configure the client.
-        nioEventLoopGroup = new NioEventLoopGroup();
-        try {
-            Bootstrap bootstrap = new Bootstrap().group(nioEventLoopGroup)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ClientInitializer());
-
-            ChannelFuture fClient = bootstrap.connect(ip, port).sync();
-
-            if (fClient.isSuccess()) {
-                LogUtil.logInfo(log, "client socket connected : %s:%d", ip,
-                        port);
-            } else {
-                LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
-                isConnecting = true;
-                io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
-                        .shutdownGracefully();
-                f.await();
-                nioEventLoopGroup = null;
-
-                fClient.channel().eventLoop().schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            LogUtil.logDebug(log, "Channel EventLoop Schedule!");
-                            WindFutureDataAdaptor.instance.doConnect();
-                        } catch (Exception e) {
-                            LogUtil.logException(log, e);
-                        }
-                    }
-                }, 10, TimeUnit.SECONDS);
-            }
-        } catch (Exception e) {
-            isConnecting = false;
-            WindFutureDataAdaptor.instance.closeClient();
-            LogUtil.logException(log, e);
-        }
     }
 
     public void updateState(boolean connected) {
@@ -684,7 +413,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("WFDA eventProcessor");
 
-        WindFutureDataAdaptor.instance = this;
+        WindAPIAdapter.instance = this;
 
         QuoteMgr.instance.init();
         QuoteMgr.setModifyTickTime(modifyTickTime);
@@ -739,24 +468,6 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
         if (symbol.isEmpty())
             return;
-
-        if (gateway) {
-            log.info("subscribeMarketData Symbol: " + symbol);
-            // Future
-            if ("F".equals(marketType)) {
-                if (!QuoteMgr.instance().checkFutureSymbol(symbol)) {
-                    ClientHandler.subscribe(symbol);
-                }
-                QuoteMgr.instance().addFutureSymbol(symbol, null);
-            }
-            // Stock
-            if ("S".equals(marketType)) {
-                if (!QuoteMgr.instance().checkStockSymbol(symbol)) {
-                    ClientHandler.subscribe(symbol);
-                }
-                QuoteMgr.instance().addStockSymbol(symbol, null);
-            }
-        }
 
         boolean bFound = false;
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
@@ -845,10 +556,10 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 
     @Override
     public void refreshSymbolInfo(String market) {
-        if (!gateway) {
-            List<SymbolInfo> list = updateCodeTable(market);
-            sendSymbolInfo(list);
-        }
+//        if (!gateway) {
+//            List<SymbolInfo> list = updateCodeTable(market);
+//            sendSymbolInfo(list);
+//        }
     }
 
     @Override
@@ -942,13 +653,7 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
         if (type == doConnect) {
             if (isConnected)
                 return;
-            if (gateway) {
-                log.info(String.format("connect to Wind GW %s:%d",
-                        gatewayIp, gatewayPort));
-                connectGateWay(gatewayIp, gatewayPort);
-            } else {
                 connectUseAPI(reqIp, reqPort, userName, password);
-            }
         }
     }
 
@@ -964,5 +669,61 @@ public class WindFutureDataAdaptor implements IMarketDataAdaptor,
 	public void setModifyTickTime(boolean modifyTickTime) {
 		this.modifyTickTime = modifyTickTime;
 	}
+
+    public String getMarketType() {
+        return marketType;
+    }
+
+    public void setMarketType(String marketType) {
+        this.marketType = marketType;
+    }
+
+    public boolean isShowGui() {
+        return showGui;
+    }
+
+    public void setShowGui(boolean showGui) {
+        this.showGui = showGui;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String account) {
+        this.userName = account;
+    }
+
+    public String getReqIp() {
+        return reqIp;
+    }
+
+    public void setReqIp(String reqIp) {
+        this.reqIp = reqIp;
+    }
+
+    public int getReqPort() {
+        return reqPort;
+    }
+
+    public void setReqPort(int reqPort) {
+        this.reqPort = reqPort;
+    }
+
+    public boolean isMarketDataLog() {
+        return marketDataLog;
+    }
+
+    public void setMarketDataLog(boolean marketDataLog) {
+        this.marketDataLog = marketDataLog;
+    }
 }
 

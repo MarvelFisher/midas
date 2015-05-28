@@ -1,6 +1,6 @@
 package com.cyanspring.adaptor.future.wind.test;
 
-import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
+import com.cyanspring.adaptor.future.wind.WindGateWayAdapter;
 import com.cyanspring.common.marketdata.MarketDataException;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.QtyPrice;
@@ -35,7 +35,7 @@ public class FutureFeed implements IFrameClose {
     }
 
     public static FutureFeed instance = new FutureFeed();
-    public WindFutureDataAdaptor adaptor = null;
+    public WindGateWayAdapter adaptor = null;
 
     public void showQuote(Quote quote) {
         if (mainframe != null) {
@@ -99,15 +99,15 @@ public class FutureFeed implements IFrameClose {
         if (mainframe == null) {
             return;
         }
-        JButton buttonRecon = new JButton("Reconnect");
-        buttonRecon.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adaptor.reconnect();
-            }
-        });
-        mainframe.addButton(buttonRecon);
+//        JButton buttonRecon = new JButton("Reconnect");
+//        buttonRecon.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                adaptor.reconnect();
+//            }
+//        });
+//        mainframe.addButton(buttonRecon);
 
         JButton buttonRefreshSymbol = new JButton("refreh Symbol");
         buttonRefreshSymbol.addActionListener(new ActionListener() {
@@ -231,8 +231,8 @@ public class FutureFeed implements IFrameClose {
                     configFile);
 
             // start server
-            WindFutureDataAdaptor bean = (WindFutureDataAdaptor) context
-                    .getBean("windFutureDataAdaptor");
+            WindGateWayAdapter bean = (WindGateWayAdapter) context
+                    .getBean("windGateWayAdapter");
 
             future.adaptor = bean;
 

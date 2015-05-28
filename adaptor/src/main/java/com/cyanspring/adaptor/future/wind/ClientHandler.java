@@ -1,6 +1,5 @@
 package com.cyanspring.adaptor.future.wind;
 
-import cn.com.wind.td.tdf.TDF_MSG_ID;
 import com.cyanspring.id.Library.Threading.TimerThread;
 import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.*;
@@ -18,7 +17,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		TimerEventHandler, AutoCloseable {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(WindFutureDataAdaptor.class);
+			.getLogger(WindGateWayAdapter.class);
 
 	public static Date lastRecv = DateUtil.now();
 	public static Date lastCheck = DateUtil.now();
@@ -61,31 +60,31 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 					// Compare hash code
 					if (hascode == Integer.parseInt(strHash)) {
-						if (WindFutureDataAdaptor.instance.isMarketDataLog()) {
+						if (WindGateWayAdapter.instance.isMarketDataLog()) {
 							LogUtil.logDebug(log, in);
 						}
 						if (strDataType.equals("DATA_FUTURE")) {
-							dataType = TDF_MSG_ID.MSG_DATA_FUTURE;
+							dataType = WindDef.MSG_DATA_FUTURE;
 						}
 						if (strDataType.equals("DATA_MARKET")) {
-							dataType = TDF_MSG_ID.MSG_DATA_MARKET;
+							dataType = WindDef.MSG_DATA_MARKET;
 						}
 						if (strDataType.equals("DATA_INDEX")) {
-							dataType = TDF_MSG_ID.MSG_DATA_INDEX;
+							dataType = WindDef.MSG_DATA_INDEX;
 						}
 						if (strDataType.equals("Heart Beat")) {
-							dataType = TDF_MSG_ID.MSG_SYS_HEART_BEAT;
+							dataType = WindDef.MSG_SYS_HEART_BEAT;
 						}
 						if (strDataType.equals("QDateChange")) {
-							dataType = TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE;
+							dataType = WindDef.MSG_SYS_QUOTATIONDATE_CHANGE;
 							LogUtil.logDebug(log, in);
 						}
 						if (strDataType.equals("MarketClose")) {
-							dataType = TDF_MSG_ID.MSG_SYS_MARKET_CLOSE;
+							dataType = WindDef.MSG_SYS_MARKET_CLOSE;
 							LogUtil.logDebug(log, in);
 						}
 
-						WindFutureDataAdaptor.instance.processGateWayMessage(
+						WindGateWayAdapter.instance.processGateWayMessage(
 								dataType, in_arr);
 
 					}
@@ -144,10 +143,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		// Close the connection when an exception is raised.
 		LogUtil.logException(log, (Exception) cause);
 		ctx.close();
-		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		WindFutureDataAdaptor.isConnected = false;
-		adaptor.updateState(WindFutureDataAdaptor.isConnected );
-		WindFutureDataAdaptor.instance.reconClient();
+		WindGateWayAdapter adaptor = WindGateWayAdapter.instance;
+		WindGateWayAdapter.isConnected = false;
+		adaptor.updateState(WindGateWayAdapter.isConnected );
+		WindGateWayAdapter.instance.reconClient();
 
 	}
 
@@ -156,17 +155,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 		LogUtil.logInfo(log, "Wind channel Active");
 		context = ctx;
 
-		String[] arrSymbol = WindFutureDataAdaptor.instance.getRefSymbol();
+		String[] arrSymbol = WindGateWayAdapter.instance.getRefSymbol();
 		if (arrSymbol.length > 0) {
 			for (String symbol : arrSymbol) {
 				subscribe(symbol);
 			}
 		}
 
-		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		WindFutureDataAdaptor.isConnected = true;
-		WindFutureDataAdaptor.isConnecting = false;
-		adaptor.updateState(WindFutureDataAdaptor.isConnected);
+		WindGateWayAdapter adaptor = WindGateWayAdapter.instance;
+		WindGateWayAdapter.isConnected = true;
+		WindGateWayAdapter.isConnecting = false;
+		adaptor.updateState(WindGateWayAdapter.isConnected);
 
 		msLastTime = System.currentTimeMillis();
 
@@ -182,9 +181,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		LogUtil.logInfo(log, "Wind channel InActive");
-		WindFutureDataAdaptor adaptor = WindFutureDataAdaptor.instance;
-		WindFutureDataAdaptor.isConnected = false;
-		adaptor.updateState(WindFutureDataAdaptor.isConnected );
+		WindGateWayAdapter adaptor = WindGateWayAdapter.instance;
+		WindGateWayAdapter.isConnected = false;
+		adaptor.updateState(WindGateWayAdapter.isConnected );
 	}
 
 	@Override
@@ -195,11 +194,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 		Date now = DateUtil.now();
 		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
-		if (!WindFutureDataAdaptor.isConnecting
-				&& !WindFutureDataAdaptor.isConnected
+		if (!WindGateWayAdapter.isConnecting
+				&& !WindGateWayAdapter.isConnected
 				&& lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
 			lastCheck = now;
-			WindFutureDataAdaptor.instance.reconClient();
+			WindGateWayAdapter.instance.reconClient();
 		}
 	}
 

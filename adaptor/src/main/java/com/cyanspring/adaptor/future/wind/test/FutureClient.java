@@ -1,25 +1,20 @@
 package com.cyanspring.adaptor.future.wind.test;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
-
-import com.cyanspring.common.marketdata.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.cyanspring.adaptor.future.wind.WindFutureDataAdaptor;
+import com.cyanspring.adaptor.future.wind.WindGateWayAdapter;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.marketdata.*;
 import com.cyanspring.id.Library.Frame.IFrameClose;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 import com.cyanspring.id.Library.Util.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.List;
 
 public class FutureClient implements IMarketDataListener,
 		IMarketDataStateListener, ISymbolDataListener, IFrameClose, AutoCloseable {
@@ -161,10 +156,8 @@ public class FutureClient implements IMarketDataListener,
 	@Override
 	public void onSymbol(List<SymbolInfo> symbol) {
 		for (SymbolInfo info : symbol) {
-			//String symbolId = (String) info.getValue(SymbolField.symbolId);
-			//onAddSymbol(symbolId);
-			
-			String s = WindFutureDataAdaptor.printSymbolInfo(info);
+
+			String s = WindGateWayAdapter.printSymbolInfo(info);
 			dialog.addLog(s);
 		}
 		

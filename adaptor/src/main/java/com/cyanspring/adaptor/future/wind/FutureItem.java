@@ -1,8 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
-import cn.com.wind.td.tdf.TDF_CODE;
-import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
-
+import com.cyanspring.adaptor.future.wind.data.AbstractWindDataParser;
+import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
@@ -13,8 +12,9 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.id.Library.Util.*;
-
+import com.cyanspring.id.Library.Util.DateUtil;
+import com.cyanspring.id.Library.Util.FinalizeHelper;
+import com.cyanspring.id.Library.Util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,15 +48,11 @@ public class FutureItem implements AutoCloseable {
                                      boolean enableCreateNew) {
 
         synchronized (futureItemBySymbolMap) {
-            if (futureItemBySymbolMap.containsKey(symbolId) == true) {
+            if (futureItemBySymbolMap.containsKey(symbolId)) {
                 return futureItemBySymbolMap.get(symbolId);
             }
-
-            // else
             if (enableCreateNew) {
                 FutureItem item = new FutureItem(symbolId);
-                if (WindFutureDataAdaptor.instance.isGateway())
-                    item.setMarket(windCode.split("\\.")[1]);
                 futureItemBySymbolMap.put(symbolId, item);
                 return item;
             }
@@ -126,6 +122,187 @@ public class FutureItem implements AutoCloseable {
         }
     }
 
+    public static void processFutureData(FutureData futureData) {
+
+        String symbolId = futureData.getWindCode();
+        String windCode = futureData.getWindCode();
+
+        FutureItem item = getItem(symbolId, windCode, true);
+
+        //Get MarketSession
+        String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        MarketSessionData marketSessionData = null;
+        Date endDate;
+        Date startDate;
+        try {
+            marketSessionData = WindGateWayAdapter.marketSessionByIndexMap.get(index);
+            endDate = marketSessionData.getEndDate();
+            startDate = marketSessionData.getStartDate();
+        } catch (Exception e) {
+            LogUtil.logException(log, e);
+            return;
+        }
+
+        // tick time
+        String timeStamp = String.format("%d-%d", futureData.getTradingDay(),
+                futureData.getTime());
+        Date tickTime;
+
+        try {
+            if (futureData.getTime() < WindDef.AM10) {
+                tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
+            } else {
+                tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
+            }
+        } catch (ParseException e) {
+            tickTime = DateUtil.now();
+        }
+
+        if (PriceUtils.GreaterThan(futureData.getMatch(), 0)) {
+
+            //modify tick Time
+        	if (QuoteMgr.isModifyTickTime()) {
+	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
+	                tickTime = endDate;
+	            }
+	
+	            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
+	                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
+	                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
+	            }
+	
+	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
+	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
+	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
+	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
+	                    tickTime = endDate;
+	            }
+        	}
+
+            List<QtyPrice> bids = new ArrayList<QtyPrice>();
+            List<QtyPrice> asks = new ArrayList<QtyPrice>();
+
+            makeBidAskList(futureData.getBidPrice(), futureData.getBidVol(),
+                    futureData.getAskPrice(), futureData.getAskVol(), bids, asks);
+
+            Quote quote = new Quote(symbolId, bids, asks);
+
+            quote.setTimeStamp(tickTime);
+
+            // bid/ask
+            QtyPrice bid = bids.size() > 0 ? bids.get(0) : null;
+            QtyPrice ask = asks.size() > 0 ? asks.get(0) : null;
+
+            setBidAsk(quote, bid, ask);
+
+            // update price
+            quote.setOpen((double) futureData.getOpen() / 10000);
+            quote.setHigh((double) futureData.getHigh() / 10000);
+            quote.setLow((double) futureData.getLow() / 10000);
+            quote.setLast((double) futureData.getMatch() / 10000);
+            quote.setClose((double) futureData.getPreClose() / 10000);
+            quote.setTurnover((double) futureData.getTurnover());
+
+            //Check Stale
+            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+                    || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
+                quote.setStale(true);
+            }
+
+            if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
+                quote.setStale(false);
+            }
+
+            //volume
+            long totalVolume = futureData.getVolume();
+
+            if (PriceUtils.GreaterThan(totalVolume, item.totalVolume)) {
+                item.volume = totalVolume - item.totalVolume;
+                item.totalVolume = totalVolume;
+            } else {
+                item.volume = 0;
+            }
+            quote.setTotalVolume(totalVolume);
+            quote.setLastVol(item.volume);
+
+            //process send quote
+            WindGateWayAdapter.instance.saveLastQuote(quote);
+            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
+        }else{
+            log.debug("FUTURE QUOTE WARNING:LAST LESS THAN ZERO");
+        }
+
+        boolean quoteExtendIsChange = false;
+        DataObject quoteExtend = new DataObject();
+
+        double settlePrice = (double) futureData.getSettlePrice() / 10000;
+        if (PriceUtils.Compare(item.settlePrice, settlePrice) != 0) {
+            item.settlePrice = settlePrice;
+            quoteExtend.put(QuoteExtDataField.SETTLEPRICE.value(), settlePrice);
+            quoteExtendIsChange = true;
+        }
+
+        long openInterest = futureData.getOpenInterest();
+        if (PriceUtils.Compare(item.openInterest, openInterest) != 0) {
+            item.openInterest = openInterest;
+            quoteExtend.put(QuoteExtDataField.OPENINTEREST.value(), openInterest);
+            quoteExtendIsChange = true;
+        }
+
+        double highLimit = (double) futureData.getHighLimited() / 10000;
+        if (PriceUtils.Compare(item.highLimit, highLimit) != 0) {
+            item.highLimit = highLimit;
+            quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
+            quoteExtendIsChange = true;
+        }
+
+        double lowLimit = (double) futureData.getLowLimited() / 10000;
+        if (PriceUtils.Compare(item.lowLimit, lowLimit) != 0) {
+            item.lowLimit = lowLimit;
+            quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+            quoteExtendIsChange = true;
+        }
+
+        int sessionStatus = AbstractWindDataParser.getItemSessionStatus(marketSessionData);
+        if(sessionStatus!=item.sessionStatus){
+            item.sessionStatus = sessionStatus;
+            quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
+            quoteExtendIsChange = true;
+        }
+
+        // process send quote Extend
+        if (quoteExtendIsChange) {
+            quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbolId);
+            quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
+            WindGateWayAdapter.instance.saveLastQuoteExtend(quoteExtend);
+            WindGateWayAdapter.instance.sendQuoteExtend(quoteExtend);
+        }
+
+    }
+
+    public String windCode() {
+        return String.format(symbolId);
+    }
+
+    public SymbolInfo getSymbolInfo() {
+        SymbolInfo info = new SymbolInfo(getMarket(), symbolId);
+        info.setWindCode(windCode());
+        info.setCnName(getCnName());
+        info.setEnName(getEnName());
+        return info;
+    }
+
+    public FutureItem(String symbolId) {
+        this.symbolId = symbolId;
+    }
+
+    @Override
+    public void close() throws Exception {
+        FinalizeHelper.suppressFinalize(this);
+    }
+
     public String getEnName() {
         return enName;
     }
@@ -148,222 +325,6 @@ public class FutureItem implements AutoCloseable {
 
     public void setCnName(String cnName) {
         this.cnName = cnName;
-    }
-
-    public static SymbolInfo processCODE(TDF_CODE code) {
-        String symbolId = code.getCode();
-        String windCode = code.getWindCode();
-        FutureItem item = FutureItem.getItem(symbolId, windCode, true);
-
-        item.setMarket(code.getMarket());
-        String cnName = WindFutureDataAdaptor.convertGBString(code.getCNName());
-        item.setCnName(cnName);
-        String enName = code.getENName();
-        if (enName.isEmpty()) {
-            enName = symbolId;
-        }
-        item.setEnName(enName);
-
-        return item.getSymbolInfo();
-
-    }
-
-    public static void processFutureData(TDF_FUTURE_DATA data) {
-
-        String symbolId = data.getWindCode();
-        String windCode = data.getWindCode();
-
-        FutureItem item = getItem(symbolId, windCode, true);
-
-        //Get MarketSession
-        String index = WindFutureDataAdaptor.marketRuleBySymbolMap.get(symbolId);
-        MarketSessionData marketSessionData = null;
-        Date endDate;
-        Date startDate;
-        try {
-            marketSessionData = WindFutureDataAdaptor.marketSessionByIndexMap.get(index);
-            endDate = marketSessionData.getEndDate();
-            startDate = marketSessionData.getStartDate();
-        } catch (Exception e) {
-            LogUtil.logException(log, e);
-            return;
-        }
-
-        // tick time
-        String timeStamp = String.format("%d-%d", data.getTradingDay(),
-                data.getTime());
-        Date tickTime;
-
-        try {
-            if (data.getTime() < WindFutureDataAdaptor.AM10) {
-                tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HmmssSSS");
-            } else {
-                tickTime = DateUtil.parseDate(timeStamp, "yyyyMMdd-HHmmssSSS");
-            }
-        } catch (ParseException e) {
-            tickTime = DateUtil.now();
-        }
-
-        if (PriceUtils.GreaterThan(data.getMatch(), 0)) {
-
-            //modify tick Time
-        	if (QuoteMgr.isModifyTickTime()) {
-	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
-	                tickTime = endDate;
-	            }
-	
-	            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
-	                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
-	                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
-	            }
-	
-	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
-	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
-	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
-	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindFutureDataAdaptor.SmallSessionTimeInterval)
-	                    tickTime = endDate;
-	            }
-        	}
-
-            List<QtyPrice> bids = new ArrayList<QtyPrice>();
-            List<QtyPrice> asks = new ArrayList<QtyPrice>();
-
-            makeBidAskList(data.getBidPrice(), data.getBidVol(),
-                    data.getAskPrice(), data.getAskVol(), bids, asks);
-
-            Quote quote = new Quote(symbolId, bids, asks);
-
-            quote.setTimeStamp(tickTime);
-
-            // bid/ask
-            QtyPrice bid = bids.size() > 0 ? bids.get(0) : null;
-            QtyPrice ask = asks.size() > 0 ? asks.get(0) : null;
-
-            setBidAsk(quote, bid, ask);
-
-            // update price
-            quote.setOpen((double) data.getOpen() / 10000);
-            quote.setHigh((double) data.getHigh() / 10000);
-            quote.setLow((double) data.getLow() / 10000);
-            quote.setLast((double) data.getMatch() / 10000);
-            quote.setClose((double) data.getPreClose() / 10000);
-            quote.setTurnover((double) data.getTurnover());
-
-            //Check Stale
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-                    || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
-                quote.setStale(true);
-            }
-
-            if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
-                quote.setStale(false);
-            }
-
-            //volume
-            long totalVolume = data.getVolume();
-
-            if (PriceUtils.GreaterThan(totalVolume, item.totalVolume)) {
-                item.volume = totalVolume - item.totalVolume;
-                item.totalVolume = totalVolume;
-            } else {
-                item.volume = 0;
-            }
-            quote.setTotalVolume(totalVolume);
-            quote.setLastVol(item.volume);
-
-            //process send quote
-            WindFutureDataAdaptor.instance.saveLastQuote(quote);
-            WindFutureDataAdaptor.instance.sendInnerQuote(new InnerQuote(101, quote));
-        }else{
-            log.debug("FUTURE QUOTE WARNING:LAST LESS THAN ZERO");
-        }
-
-        boolean quoteExtendIsChange = false;
-        DataObject quoteExtend = new DataObject();
-
-        double settlePrice = (double) data.getSettlePrice() / 10000;
-        if (PriceUtils.Compare(item.settlePrice, settlePrice) != 0) {
-            item.settlePrice = settlePrice;
-            quoteExtend.put(QuoteExtDataField.SETTLEPRICE.value(), settlePrice);
-            quoteExtendIsChange = true;
-        }
-
-        long openInterest = data.getOpenInterest();
-        if (PriceUtils.Compare(item.openInterest, openInterest) != 0) {
-            item.openInterest = openInterest;
-            quoteExtend.put(QuoteExtDataField.OPENINTEREST.value(), openInterest);
-            quoteExtendIsChange = true;
-        }
-
-        double highLimit = (double) data.getHighLimited() / 10000;
-        if (PriceUtils.Compare(item.highLimit, highLimit) != 0) {
-            item.highLimit = highLimit;
-            quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
-            quoteExtendIsChange = true;
-        }
-
-        double lowLimit = (double) data.getLowLimited() / 10000;
-        if (PriceUtils.Compare(item.lowLimit, lowLimit) != 0) {
-            item.lowLimit = lowLimit;
-            quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
-            quoteExtendIsChange = true;
-        }
-
-        int sessionStatus = WindParser.getItemSessionStatus(marketSessionData);
-        if(sessionStatus!=item.sessionStatus){
-            item.sessionStatus = sessionStatus;
-            quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
-            quoteExtendIsChange = true;
-        }
-
-        // process send quote Extend
-        if (quoteExtendIsChange) {
-            quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbolId);
-            quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
-            WindFutureDataAdaptor.instance.saveLastQuoteExtend(quoteExtend);
-            WindFutureDataAdaptor.instance.sendQuoteExtend(quoteExtend);
-        }
-
-    }
-
-    public String windCode() {
-        return String.format(symbolId);
-    }
-
-    public SymbolInfo getSymbolInfo() {
-        SymbolInfo info = new SymbolInfo(getMarket(), symbolId);
-        info.setWindCode(windCode());
-        info.setCnName(getCnName());
-        info.setEnName(getEnName());
-        return info;
-    }
-
-    public FutureItem(String symbolId) {
-        this.symbolId = symbolId;
-    }
-
-    public void loadData(String file) {
-        String[] arr = StringUtil.split(file, ',');
-
-        if (arr.length < 2)
-            return;
-
-        tDate = Integer.parseInt(arr[0]);
-        totalVolume = Long.parseLong(arr[1]);
-    }
-
-    public String writeData() {
-        FixStringBuilder sb = new FixStringBuilder(',');
-        sb.append(tDate);
-        sb.append(totalVolume);
-        return sb.toString();
-    }
-
-    @Override
-    public void close() throws Exception {
-        FinalizeHelper.suppressFinalize(this);
     }
 
     public static void main(String[] args) {

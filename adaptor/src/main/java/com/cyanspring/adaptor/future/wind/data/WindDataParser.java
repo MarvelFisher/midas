@@ -1,56 +1,9 @@
-package com.cyanspring.adaptor.future.wind;
+package com.cyanspring.adaptor.future.wind.data;
 
-
-import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
-import cn.com.wind.td.tdf.TDF_MARKET_DATA;
-import cn.com.wind.td.tdf.TDF_QUOTATIONDATE_CHANGE;
-import com.cyanspring.common.marketsession.MarketSessionData;
-import com.cyanspring.common.marketsession.MarketSessionType;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WindParser {
-
-    private static final int INDEXSESSION_PREOPEN = 0;
-    private static final int INDEXSESSION_OPEN = 1;
-    private static final int INDEXSESSION_CLOSE = 2;
-
-    public static int getItemSessionStatus(MarketSessionData marketSessionData){
-        int sessionStatus = -1;
-        if(MarketSessionType.PREOPEN == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_PREOPEN;
-        if(MarketSessionType.OPEN == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_OPEN;
-        if(MarketSessionType.CLOSE == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_CLOSE;
-        return sessionStatus;
-    }
-
-    /**
-     * Parser InputMessage Array To Wind Quotation Date Change Object
-     * @param inputMessageArray
-     * @return
-     */
-    public static TDF_QUOTATIONDATE_CHANGE convertToQuotaDate(String[] inputMessageArray) {
-        TDF_QUOTATIONDATE_CHANGE quotationdateChange = new TDF_QUOTATIONDATE_CHANGE();
-        String key = null;
-        String value = null;
-        for (String anInputMessageArray : inputMessageArray) {
-            key = anInputMessageArray.split("=")[0];
-            value = anInputMessageArray.split("=")[1];
-            switch (key) {
-                case "Market":
-                    break;
-                case "OldDate":
-                    quotationdateChange.setOldDate(Integer.parseInt(value));
-                    break;
-                case "NewDate":
-                    quotationdateChange.setNewDate(Integer.parseInt(value));
-                    break;
-                default:
-                    break;
-            }
-        }
-        return quotationdateChange;
-    }
-
+public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parset InputMessage Array To Wind FutureData Object
@@ -58,8 +11,8 @@ public class WindParser {
      * @param futureDataBySymbolMap
      * @return
      */
-    public static TDF_FUTURE_DATA convertToFutureData(String[] inputMessageArray, ConcurrentHashMap<String, TDF_FUTURE_DATA> futureDataBySymbolMap) {
-        TDF_FUTURE_DATA futureData = null;
+    public FutureData convertToFutureData(String[] inputMessageArray, ConcurrentHashMap<String, FutureData> futureDataBySymbolMap) {
+        FutureData futureData = null;
         String key = null;
         String value = null;
         String[] kv_arr = null;
@@ -72,10 +25,10 @@ public class WindParser {
                     value = kv_arr[1];
                     if (key.equals("Symbol")) {
                         if (futureDataBySymbolMap.containsKey(value)) {
-                            futureData = futureDataBySymbolMap.get(value);
+                            futureData = (FutureData)futureDataBySymbolMap.get(value);
                         } else {
                             // add future data
-                            futureData = new TDF_FUTURE_DATA();
+                            futureData = new FutureData();
                             futureData.setWindCode(value);
                             futureData.setCode(value.split("\\.")[0]);
                             futureDataBySymbolMap.put(value, futureData);
@@ -161,8 +114,8 @@ public class WindParser {
      * @param stockDataBySymbolMap
      * @return
      */
-    public static TDF_MARKET_DATA convertToStockData(String[] inputMessageArray, ConcurrentHashMap<String, TDF_MARKET_DATA> stockDataBySymbolMap) {
-        TDF_MARKET_DATA stockData = null;
+    public StockData convertToStockData(String[] inputMessageArray, ConcurrentHashMap<String, StockData> stockDataBySymbolMap) {
+        StockData stockData = null;
         String key = null;
         String value = null;
         String[] kv_arr = null;
@@ -175,9 +128,9 @@ public class WindParser {
                     value = kv_arr[1];
                     if (key.equals("Symbol")) {
                         if (stockDataBySymbolMap.containsKey(value)) {
-                            stockData = stockDataBySymbolMap.get(value);
+                            stockData = (StockData)stockDataBySymbolMap.get(value);
                         } else {
-                            stockData = new TDF_MARKET_DATA();
+                            stockData = new StockData();
                             stockData.setWindCode(value);
                             stockData.setCode(value.split("\\.")[0]);
                             stockDataBySymbolMap.put(value, stockData);
@@ -276,20 +229,6 @@ public class WindParser {
             }
         }
         return stockData;
-    }
-
-    /**
-     * Convert String Array To long Array
-     *
-     * @param str_arr
-     * @return long array
-     */
-    public static long[] parseStringTolong(String[] str_arr) {
-        long[] long_arr = new long[str_arr.length];
-        for (int i = 0; i < str_arr.length; i++) {
-            long_arr[i] = Long.parseLong(str_arr[i]);
-        }
-        return long_arr;
     }
 
 }
