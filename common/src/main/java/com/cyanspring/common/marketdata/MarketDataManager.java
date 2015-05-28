@@ -14,6 +14,7 @@ import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.util.*;
@@ -31,6 +32,7 @@ public class MarketDataManager extends MarketDataReceiver {
     private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
 
     @Autowired(required = false)
+    @Qualifier("mdEventManager")
     private IRemoteEventManager mdEventManager;
     private AsyncEventProcessor mdProcessor;
     private IQuoteSaver quoteSaver;
