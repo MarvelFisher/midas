@@ -44,7 +44,8 @@ public enum RefDataField {
 	NUMERATOR_DP("Nnumerator DP"),   // 分子小數位數 
 	TRADABLE("Tradable"),
 	STRATEGY("Strategy"),
-	SPELL_NAME("Spell name")
+	SPELL_NAME("Spell name"),
+	COMMODITY("Commodity")
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

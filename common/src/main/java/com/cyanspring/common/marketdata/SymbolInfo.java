@@ -46,6 +46,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private double Denominator = 0.0;
 	private String Tradable = null;
 	private String SpellName = null;
+	private String Commodity = null;
 	
 	public SymbolInfo(String market, String code) 
 	{
@@ -393,4 +394,11 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setSpellName(String spellName) {
 		SpellName = spellName;
 	}
+	public String getCommodity() {
+		return Commodity;
+	}
+	public void setCommodity(String commodity) {
+		Commodity = commodity;
+	}
+	
 }
