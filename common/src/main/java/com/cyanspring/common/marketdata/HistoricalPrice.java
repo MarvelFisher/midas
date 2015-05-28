@@ -113,6 +113,8 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 			this.low = price.low;
 		}
 		this.volume += price.volume;
+		this.totalVolume = price.totalVolume;
+		this.turnover = price.turnover;
 	}
 	
 	public String getSymbol() {
@@ -169,6 +171,8 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 		price.setHigh(this.high);
 		price.setLow(this.low);
 		price.setVolume(this.volume);
+		price.setTotalVolume(this.totalVolume);
+		price.setTurnover(this.turnover);
 		return price ;
 	}
 	public String getTradedate() {
