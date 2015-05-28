@@ -25,6 +25,7 @@ public final class WindDef {
     public static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
     public static final String TITLE_FUTURE = "FUTURE";
     public static final String TITLE_STOCK = "STOCK";
+    public static final String TITLE_INDEX = "INDEX";
     public static final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
     public static final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : TradeDate NOT match";
     public static final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format fault";

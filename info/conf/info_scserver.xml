@@ -178,7 +178,6 @@
 		<property name="gatewayIp" value="10.0.0.20"/>
 		<property name="gatewayPort" value="10049"/>
 		<property name="marketDataLog" value="false"/>
-		<property name="marketType" value="S"/> <!-- Stock:S,Future:F -->
 		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 	</bean>

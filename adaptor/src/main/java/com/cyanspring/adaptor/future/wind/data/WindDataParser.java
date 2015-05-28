@@ -6,6 +6,75 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WindDataParser extends AbstractWindDataParser {
 
     /**
+     * Parset InputMessage Array To Wind IndexData Object
+     * @param inputMessageArray
+     * @param indexDataBySymbolMap
+     * @return
+     */
+    public IndexData convertToIndexData(String[] inputMessageArray, ConcurrentHashMap<String, IndexData> indexDataBySymbolMap) {
+        IndexData indexData = null;
+        String key = null;
+        String value = null;
+        String[] kv_arr = null;
+
+        for (String anInputMessageArray : inputMessageArray) {
+            if (anInputMessageArray != null && !"".equals(anInputMessageArray)) {
+                kv_arr = anInputMessageArray.split("=");
+                if (kv_arr.length > 1) {
+                    key = kv_arr[0];
+                    value = kv_arr[1];
+                    if (key.equals("Symbol")) {
+                        if (indexDataBySymbolMap.containsKey(value)) {
+                            indexData = (IndexData)indexDataBySymbolMap.get(value);
+                        } else {
+                            // add future data
+                            indexData = new IndexData();
+                            indexData.setWindCode(value);
+                            indexData.setCode(value.split("\\.")[0]);
+                            indexDataBySymbolMap.put(value, indexData);
+                        }
+                    }
+                    switch (key) {
+                        case "ActionDay":
+                            indexData.setActionDay(Integer.parseInt(value));
+                            break;
+                        case "HighIndex":
+                            indexData.setHighIndex(Long.parseLong(value));
+                            break;
+                        case "LastIndex":
+                            indexData.setLastIndex(Long.parseLong(value));
+                            break;
+                        case "LowIndex":
+                            indexData.setLowIndex(Long.parseLong(value));
+                            break;
+                        case "OpenIndex":
+                            indexData.setOpenIndex(Long.parseLong(value));
+                            break;
+                        case "PrevIndex":
+                            indexData.setPrevIndex(Long.parseLong(value));
+                            break;
+                        case "TotalVolume":
+                            indexData.setTotalVolume(Long.parseLong(value));
+                            break;
+                        case "Time":
+                            indexData.setTime(Integer.parseInt(value));
+                            break;
+                        case "TradingDay":
+                            indexData.setTradingDay(Integer.parseInt(value));
+                            break;
+                        case "Turnover":
+                            indexData.setTurnover(Long.parseLong(value));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        return indexData;
+    }
+
+    /**
      * Parset InputMessage Array To Wind FutureData Object
      * @param inputMessageArray
      * @param futureDataBySymbolMap

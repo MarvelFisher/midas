@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
 import com.cyanspring.adaptor.future.wind.data.FutureData;
+import com.cyanspring.adaptor.future.wind.data.IndexData;
 import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.common.Clock;
@@ -42,14 +43,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     private int gatewayPort = 0;
     private boolean showGui = false;
     private boolean marketDataLog = false; // log control
-    private String marketType = "";
     protected long timerInterval = 5000;
     static volatile boolean bigSessionIsClose = false;
     static volatile int tradeDateForWindFormat = 0;
     static volatile Date bigSessionCloseDate = Clock.getInstance().now();
     private boolean closeOverTimeControlIsOpen = true;
     private boolean tradeDateCheckIsOpen = true;
-	private boolean modifyTickTime = true;
+    private boolean modifyTickTime = true;
 
     boolean isClose = false;
     static NioEventLoopGroup nioEventLoopGroup = null;
@@ -64,10 +64,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
 
     static ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<String, FutureData>();
     static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<String, StockData>();
+    static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<String, IndexData>();
     static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
     static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
     static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<String, MarketSessionData>(); //SaveIndexMarketSession
     static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
+    static ConcurrentHashMap<String, String> commodityBySymbolMap = new ConcurrentHashMap<String, String>(); //Save Commodity
 
     RequestThread thread = null;
     private static final int doConnect = 0;
@@ -156,64 +158,23 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             case WindDef.MSG_SYS_QUOTATIONDATE_CHANGE:
                 break;
             case WindDef.MSG_DATA_MARKET:
-                StockData stock = windDataParser.convertToStockData(in_arr, stockDataBySymbolMap);
-                if (stock.getTime() >= 240000000) {
-                    log.debug(String.format("%s %s,%s", WindDef.TITLE_STOCK,
-                            WindDef.WARN_TIME_FORMAT_ERROR, stock.getWindCode()));
-                    return;
-                }
-//                if (stock.getMatch() <= 0) {
-//                    log.debug(String.format("%s %s", this.TITLE_STOCK,
-//                            this.WARN_LAST_LESS_THAN_ZERO));
-//                    return;
-//                }
-                if (this.tradeDateCheckIsOpen
-                        && stock.getTradingDay() != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s %s", WindDef.TITLE_STOCK,
-                            WindDef.WARN_TRADEDATE_NOT_MATCH, stock.getWindCode()));
-                    return;
-                }
-                if (this.closeOverTimeControlIsOpen
-                        && bigSessionIsClose
-                        && TimeUtil.getTimePass(bigSessionCloseDate) > WindDef.ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            WindDef.TITLE_STOCK, WindDef.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString(), stock.getWindCode()));
-                    return;
-                }
+                StockData stockData = windDataParser.convertToStockData(in_arr, stockDataBySymbolMap);
+                if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay())) return;
                 QuoteMgr.instance.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_MARKET, stock});
+                        WindDef.MSG_DATA_MARKET, stockData});
                 break;
             case WindDef.MSG_DATA_INDEX:
+                IndexData indexData = windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
+                if(!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay())) return;
+                QuoteMgr.instance.AddRequest(new Object[]{
+                        WindDef.MSG_DATA_INDEX, indexData});
                 break;
             case WindDef.MSG_DATA_FUTURE:
-                FutureData future = windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
-                if (future.getTime() >= 240000000) {
-                    log.debug(String.format("%s %s,%s", WindDef.TITLE_FUTURE,
-                            WindDef.WARN_TIME_FORMAT_ERROR, future.getWindCode()));
-                    return;
-                }
-//                if (future.getMatch() <= 0) {
-//                    log.debug(String.format("%s %s", this.TITLE_FUTURE,
-//                            this.WARN_LAST_LESS_THAN_ZERO));
-//                    return;
-//                }
-                if (this.tradeDateCheckIsOpen
-                        && future.getTradingDay() != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s,%s", WindDef.TITLE_FUTURE,
-                            WindDef.WARN_TRADEDATE_NOT_MATCH,future.getWindCode()));
-                    return;
-                }
-                if (this.closeOverTimeControlIsOpen
-                        && bigSessionIsClose
-                        && TimeUtil.getTimePass(bigSessionCloseDate) > WindDef.ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            WindDef.TITLE_FUTURE, WindDef.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString(),future.getWindCode()));
-                    return;
-                }
+                FutureData futureData = windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
+                if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay())) return;
+                ;
                 QuoteMgr.instance.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_FUTURE, future});
+                        WindDef.MSG_DATA_FUTURE, futureData});
                 break;
             case WindDef.MSG_DATA_TRANSACTION:
             case WindDef.MSG_DATA_ORDERQUEUE:
@@ -224,6 +185,33 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
+    private boolean dataCheck(String type, String symbol, long time, int tradingDay){
+        boolean isCorrect = true;
+        String title = "";
+        if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
+        if ("S".equals(type)) title = WindDef.TITLE_STOCK;
+        if ("I".equals(type)) title = WindDef.TITLE_INDEX;
+        if (time >= 240000000) {
+            log.debug(String.format("%s %s,%s", title,
+                    WindDef.WARN_TIME_FORMAT_ERROR, symbol));
+            return false;
+        }
+        if (this.tradeDateCheckIsOpen
+                && tradingDay != tradeDateForWindFormat) {
+            log.debug(String.format("%s %s,%s", title,
+                    WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
+            return false;
+        }
+        if (this.closeOverTimeControlIsOpen
+                && bigSessionIsClose
+                && TimeUtil.getTimePass(bigSessionCloseDate) > WindDef.ReceiveQuoteTimeInterval) {
+            log.debug(String.format("%s %s,Session Close Time=%s,%s",
+                    title, WindDef.WARN_CLOSE_OVER_TIME,
+                    bigSessionCloseDate.toString(), symbol));
+            return false;
+        }
+        return isCorrect;
+    }
 
     /**
      * Wind Client link Gateway Server
@@ -277,7 +265,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     }
 
     public void updateState(boolean connected) {
-        if(!isClose) sendState(connected);
+        if (!isClose) sendState(connected);
     }
 
     /**
@@ -388,19 +376,28 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             return;
 
         log.info("subscribeMarketData Symbol: " + symbol);
+
+        String commodity = commodityBySymbolMap.get(symbol);
         // Future
-        if ("F".equals(marketType)) {
+        if ("F".equals(commodity)) {
             if (!QuoteMgr.instance().checkFutureSymbol(symbol)) {
                 ClientHandler.subscribe(symbol);
             }
             QuoteMgr.instance().addFutureSymbol(symbol, null);
         }
         // Stock
-        if ("S".equals(marketType)) {
+        if ("S".equals(commodity)) {
             if (!QuoteMgr.instance().checkStockSymbol(symbol)) {
                 ClientHandler.subscribe(symbol);
             }
             QuoteMgr.instance().addStockSymbol(symbol, null);
+        }
+        //Index
+        if("I".equals(commodity)){
+            if (!QuoteMgr.instance().checkIndexSymbol(symbol)) {
+                ClientHandler.subscribe(symbol);
+            }
+            QuoteMgr.instance().addIndexSymbol(symbol, null);
         }
 
         boolean bFound = false;
@@ -439,25 +436,25 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
-    public void sendInnerQuote(InnerQuote innerQuote){
+    public void sendInnerQuote(InnerQuote innerQuote) {
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients) {
             client.sendInnerQuote(innerQuote);
         }
     }
 
-    public void sendQuoteExtend(DataObject quoteExtend){
+    public void sendQuoteExtend(DataObject quoteExtend) {
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients) {
             client.sendQuoteExtend(quoteExtend);
         }
     }
 
-    public void saveLastQuote(Quote quote){
-        lastQuoteBySymbolMap.put(quote.getSymbol(),quote);
+    public void saveLastQuote(Quote quote) {
+        lastQuoteBySymbolMap.put(quote.getSymbol(), quote);
     }
 
-    public void saveLastQuoteExtend(DataObject quoteExtend){
+    public void saveLastQuoteExtend(DataObject quoteExtend) {
         lastQuoteExtendBySymbolMap.put(quoteExtend.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExtend);
     }
 
@@ -497,15 +494,15 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     public void processEvent(Object object) {
 
         //RefDataEvent
-        if (object instanceof RefDataEvent)
-        {
+        if (object instanceof RefDataEvent) {
             log.debug("Wind Adapter Receive RefDataEvent");
             RefDataEvent refDataEvent = (RefDataEvent) object;
-            for(RefData refData : refDataEvent.getRefDataList()){
-                if("S".equals(marketType))
-                    marketRuleBySymbolMap.put(refData.getSymbol(),refData.getExchange());
-                if("F".equals(marketType))
-                    marketRuleBySymbolMap.put(refData.getSymbol(),refData.getSymbol());
+            for (RefData refData : refDataEvent.getRefDataList()) {
+                commodityBySymbolMap.put(refData.getSymbol(), refData.getCommodity());
+                if ("S".equals(refData.getCommodity()) || "I".equals(refData.getCommodity()))
+                    marketRuleBySymbolMap.put(refData.getSymbol(), refData.getExchange());
+                if ("F".equals(refData.getCommodity()))
+                    marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
             }
         }
 
@@ -567,6 +564,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         lastQuoteExtendBySymbolMap.clear();
         futureDataBySymbolMap.clear();
         stockDataBySymbolMap.clear();
+        indexDataBySymbolMap.clear();
         FutureItem.futureItemBySymbolMap.clear();
         StockItem.stockItemBySymbolMap.clear();
         ClientHandler.sendClearSubscribe();
@@ -584,9 +582,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         if (type == doConnect) {
             if (isConnected)
                 return;
-                log.info(String.format("connect to Wind GW %s:%d",
-                        gatewayIp, gatewayPort));
-                connectGateWay(gatewayIp, gatewayPort);
+            log.info(String.format("connect to Wind GW %s:%d",
+                    gatewayIp, gatewayPort));
+            connectGateWay(gatewayIp, gatewayPort);
         }
     }
 
@@ -595,13 +593,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
 
     }
 
-	public boolean isModifyTickTime() {
-		return modifyTickTime;
-	}
+    public boolean isModifyTickTime() {
+        return modifyTickTime;
+    }
 
-	public void setModifyTickTime(boolean modifyTickTime) {
-		this.modifyTickTime = modifyTickTime;
-	}
+    public void setModifyTickTime(boolean modifyTickTime) {
+        this.modifyTickTime = modifyTickTime;
+    }
 
     public void setTradeDateCheckIsOpen(boolean tradeDateCheckIsOpen) {
         this.tradeDateCheckIsOpen = tradeDateCheckIsOpen;
@@ -609,14 +607,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
 
     public void setCloseOverTimeControlIsOpen(boolean closeOverTimeControlIsOpen) {
         this.closeOverTimeControlIsOpen = closeOverTimeControlIsOpen;
-    }
-
-    public String getMarketType() {
-        return marketType;
-    }
-
-    public void setMarketType(String marketType) {
-        this.marketType = marketType;
     }
 
     public boolean isShowGui() {

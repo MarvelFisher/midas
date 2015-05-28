@@ -33,7 +33,6 @@ public class FutureItem implements AutoCloseable {
     protected static ConcurrentHashMap<String, FutureItem> futureItemBySymbolMap = new ConcurrentHashMap<String, FutureItem>();
     private String symbolId;
     private int sessionStatus = -1;
-    private int tDate = 0;
     private long totalVolume = 0;
     private long volume = 0;
     private double settlePrice = 0;
@@ -231,7 +230,7 @@ public class FutureItem implements AutoCloseable {
             WindGateWayAdapter.instance.saveLastQuote(quote);
             WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
         }else{
-            log.debug("FUTURE QUOTE WARNING:LAST LESS THAN ZERO");
+            log.debug(WindDef.TITLE_FUTURE + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + futureData.getWindCode());
         }
 
         boolean quoteExtendIsChange = false;

@@ -180,7 +180,6 @@
 		<property name="gatewayPort" value="10049"></property>	
 		<property name="marketDataLog" value="false"></property>
 		<property name="tradeDateCheckIsOpen" value="true"></property>
-		<property name="marketType" value="F"></property> <!-- Stock:S,Future:F -->		
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 	</bean>
 </beans>
