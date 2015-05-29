@@ -26,7 +26,7 @@
         <property name="quoteSaver" ref="quoteSaver"/>
     </bean>
 
-    <bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+    <bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
     <bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
         <property name="quotePriceWarningIsOpen" value="true"></property>
         <property name="quotePriceWarningPercent" value="50"></property>

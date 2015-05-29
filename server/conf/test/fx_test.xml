@@ -110,7 +110,7 @@
 		<property name="syncCentralDb" value="false"/>
 	</bean>
 
-	<bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
 	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
 		<property name="quotePriceWarningIsOpen" value="true"/>
 		<property name="quotePriceWarningPercent" value="50"/>
@@ -357,7 +357,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregator">
+	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregator">
 	</bean>
 
 </beans>

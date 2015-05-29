@@ -1,9 +1,7 @@
-package com.cyanspring.adaptor;
+package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.marketdata.IQuoteSaver;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

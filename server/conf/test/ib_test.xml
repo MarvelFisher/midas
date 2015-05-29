@@ -392,7 +392,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregator">
+	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregator">
 	</bean>
 
 </beans>

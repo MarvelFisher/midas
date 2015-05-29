@@ -24,7 +24,7 @@
 		<property name="embedBroker" value="true"/>
 	</bean>
 
-	<bean id="quoteSaver" class="com.cyanspring.adaptor.QuoteSaver"/>
+	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
 	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
 		<property name="quotePriceWarningIsOpen" value="true"/>
 		<property name="quotePriceWarningPercent" value="50"/>
@@ -43,7 +43,7 @@
 
     <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
 
-	<bean id="quoteAggregator" class="com.cyanspring.adaptor.QuoteAggregatorSimple">
+	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
 
 </beans>
