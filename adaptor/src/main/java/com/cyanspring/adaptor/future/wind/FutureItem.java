@@ -6,7 +6,6 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
-import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
@@ -39,9 +38,6 @@ public class FutureItem implements AutoCloseable {
     private long openInterest = 0;
     private double highLimit = 0;
     private double lowLimit = 0;
-    private String market;
-    private String cnName;
-    private String enName;
 
     public static FutureItem getItem(String symbolId, String windCode,
                                      boolean enableCreateNew) {
@@ -57,36 +53,6 @@ public class FutureItem implements AutoCloseable {
             }
             return null;
         }
-    }
-
-    public static List<SymbolInfo> getSymbolInfoList() {
-        List<FutureItem> list = new ArrayList<FutureItem>();
-        synchronized (futureItemBySymbolMap) {
-            list.addAll(futureItemBySymbolMap.values());
-        }
-
-        List<SymbolInfo> outList = new ArrayList<SymbolInfo>();
-        for (FutureItem item : list) {
-            SymbolInfo info = item.getSymbolInfo();
-            outList.add(info);
-        }
-        return outList;
-    }
-
-    public static void clearSymbols() {
-        List<FutureItem> list = new ArrayList<FutureItem>();
-        synchronized (futureItemBySymbolMap) {
-            list.addAll(futureItemBySymbolMap.values());
-            futureItemBySymbolMap.clear();
-        }
-        for (FutureItem item : list) {
-            try {
-                item.close();
-            } catch (Exception e) {
-                LogUtil.logException(log, e);
-            }
-        }
-        list.clear();
     }
 
     public static boolean makeBidAskList(long[] bids, long[] bidsizes,
@@ -281,18 +247,6 @@ public class FutureItem implements AutoCloseable {
 
     }
 
-    public String windCode() {
-        return String.format(symbolId);
-    }
-
-    public SymbolInfo getSymbolInfo() {
-        SymbolInfo info = new SymbolInfo(getMarket(), symbolId);
-        info.setWindCode(windCode());
-        info.setCnName(getCnName());
-        info.setEnName(getEnName());
-        return info;
-    }
-
     public FutureItem(String symbolId) {
         this.symbolId = symbolId;
     }
@@ -300,30 +254,6 @@ public class FutureItem implements AutoCloseable {
     @Override
     public void close() throws Exception {
         FinalizeHelper.suppressFinalize(this);
-    }
-
-    public String getEnName() {
-        return enName;
-    }
-
-    public void setEnName(String enName) {
-        this.enName = enName;
-    }
-
-    public String getMarket() {
-        return market;
-    }
-
-    public void setMarket(String market) {
-        this.market = market;
-    }
-
-    public String getCnName() {
-        return cnName;
-    }
-
-    public void setCnName(String cnName) {
-        this.cnName = cnName;
     }
 
     public static void main(String[] args) {

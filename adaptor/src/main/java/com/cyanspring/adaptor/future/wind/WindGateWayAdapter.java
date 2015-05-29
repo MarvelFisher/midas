@@ -76,7 +76,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     static volatile boolean isConnected = false;
     static volatile boolean isConnecting = false;
 
-    List<ISymbolDataListener> symbolList = new ArrayList<ISymbolDataListener>();
     List<IMarketDataStateListener> stateList = new ArrayList<IMarketDataStateListener>();
     List<UserClient> clientsList = new ArrayList<UserClient>();
 
@@ -383,21 +382,21 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             if (!QuoteMgr.instance().checkFutureSymbol(symbol)) {
                 ClientHandler.subscribe(symbol);
             }
-            QuoteMgr.instance().addFutureSymbol(symbol, null);
+            QuoteMgr.instance().addFutureSymbol(symbol);
         }
         // Stock
         if ("S".equals(commodity)) {
             if (!QuoteMgr.instance().checkStockSymbol(symbol)) {
                 ClientHandler.subscribe(symbol);
             }
-            QuoteMgr.instance().addStockSymbol(symbol, null);
+            QuoteMgr.instance().addStockSymbol(symbol);
         }
         //Index
         if("I".equals(commodity)){
             if (!QuoteMgr.instance().checkIndexSymbol(symbol)) {
                 ClientHandler.subscribe(symbol);
             }
-            QuoteMgr.instance().addIndexSymbol(symbol, null);
+            QuoteMgr.instance().addIndexSymbol(symbol);
         }
 
         boolean bFound = false;
@@ -458,31 +457,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         lastQuoteExtendBySymbolMap.put(quoteExtend.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExtend);
     }
 
-    public void sendSymbolInfo(List<SymbolInfo> list) {
-        List<ISymbolDataListener> listeners = new ArrayList<ISymbolDataListener>(
-                symbolList);
-        for (ISymbolDataListener listener : listeners) {
-            listener.onSymbol(list);
-        }
-    }
-
     @Override
     public void subscirbeSymbolData(ISymbolDataListener listener) {
-        if (!symbolList.contains(listener)) {
-            // do Action
-            List<SymbolInfo> list = FutureItem.getSymbolInfoList();
-            List<SymbolInfo> stock_list = StockItem.getSymbolInfoList();
-            list.addAll(stock_list);
-            listener.onSymbol(list);
-            symbolList.add(listener);
-        }
     }
 
     @Override
     public void unsubscribeSymbolData(ISymbolDataListener listener) {
-        if (symbolList.contains(listener)) {
-            symbolList.remove(listener);
-        }
     }
 
     @Override
@@ -540,22 +520,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
 
     public static String printSymbolInfo(SymbolInfo info) {
         FixStringBuilder sb = new FixStringBuilder('=', '|');
-
         SymbolField field = SymbolField.symbolId;
         sb.append(field.toString());
         sb.append(info.getCode());
-        field = SymbolField.market;
-        sb.append(field.toString());
-        sb.append(info.getMarket());
-        field = SymbolField.cnName;
-        sb.append(field.toString());
-        sb.append(info.getCnName());
-        field = SymbolField.enName;
-        sb.append(field.toString());
-        sb.append(info.getEnName());
-
         return sb.toString();
-
     }
 
     @Override
@@ -567,6 +535,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         indexDataBySymbolMap.clear();
         FutureItem.futureItemBySymbolMap.clear();
         StockItem.stockItemBySymbolMap.clear();
+        IndexItem.indexItemBySymbolMap.clear();
         ClientHandler.sendClearSubscribe();
     }
 

@@ -3,7 +3,6 @@ package com.cyanspring.adaptor.future.wind;
 import com.cyanspring.adaptor.future.wind.data.IndexData;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
@@ -30,9 +29,6 @@ public class IndexItem implements AutoCloseable {
     private String symbolId;
     private long totalVolume = 0;
     private long volume = 0;
-    private String market;
-    private String cnName;
-    private String enName;
 
     public static IndexItem getItem(String symbolId, String windCode,
                                     boolean enableCreateNew) {
@@ -48,58 +44,6 @@ public class IndexItem implements AutoCloseable {
             }
             return null;
         }
-    }
-
-    public static List<SymbolInfo> getSymbolInfoList() {
-        List<IndexItem> list = new ArrayList<IndexItem>();
-        synchronized (indexItemBySymbolMap) {
-            list.addAll(indexItemBySymbolMap.values());
-        }
-
-        List<SymbolInfo> outList = new ArrayList<SymbolInfo>();
-        for (IndexItem item : list) {
-            SymbolInfo info = item.getSymbolInfo();
-            outList.add(info);
-        }
-        list.clear();
-        return outList;
-    }
-
-    public static void clearSymbols() {
-        List<IndexItem> list = new ArrayList<IndexItem>();
-        synchronized (indexItemBySymbolMap) {
-            list.addAll(indexItemBySymbolMap.values());
-            indexItemBySymbolMap.clear();
-        }
-        for (IndexItem item : list) {
-            try {
-                item.close();
-            } catch (Exception e) {
-                LogUtil.logException(log, e);
-            }
-        }
-        list.clear();
-    }
-
-    public static boolean makeBidAskList(long[] bids, long[] bidsizes,
-                                         long[] asks, long[] asksizes, List<QtyPrice> bidList,
-                                         List<QtyPrice> askList) {
-
-        for (int i = 0; i < bids.length; i++) {
-            double price = (double) bids[i] / 10000;
-            long size = bidsizes[i];
-            QtyPrice bidask = new QtyPrice(size, price);
-            bidList.add(bidask);
-        }
-
-        for (int i = 0; i < asks.length; i++) {
-            double price = (double) asks[i] / 10000;
-            long size = asksizes[i];
-            QtyPrice bidask = new QtyPrice(size, price);
-            askList.add(bidask);
-        }
-
-        return true;
     }
 
     public static void setBidAsk(Quote quote, QtyPrice bid, QtyPrice ask) {
@@ -217,48 +161,12 @@ public class IndexItem implements AutoCloseable {
         }
     }
 
-    public String windCode() {
-        return String.format(symbolId);
-    }
-
-    public SymbolInfo getSymbolInfo() {
-        SymbolInfo info = new SymbolInfo(getMarket(), symbolId);
-        info.setWindCode(windCode());
-        info.setCnName(getCnName());
-        info.setEnName(getEnName());
-        return info;
-    }
-
-    public IndexItem(String symbolId) {
-        this.symbolId = symbolId;
-    }
-
     @Override
     public void close() throws Exception {
         FinalizeHelper.suppressFinalize(this);
     }
 
-    public String getEnName() {
-        return enName;
-    }
-
-    public void setEnName(String enName) {
-        this.enName = enName;
-    }
-
-    public String getMarket() {
-        return market;
-    }
-
-    public void setMarket(String market) {
-        this.market = market;
-    }
-
-    public String getCnName() {
-        return cnName;
-    }
-
-    public void setCnName(String cnName) {
-        this.cnName = cnName;
+    public IndexItem(String symbolId) {
+        this.symbolId = symbolId;
     }
 }

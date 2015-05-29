@@ -537,21 +537,21 @@ public class WindAPIAdapter implements IMarketDataAdaptor,
 
     @Override
     public void subscirbeSymbolData(ISymbolDataListener listener) {
-        if (!symbolList.contains(listener)) {
-            // do Action
-            List<SymbolInfo> list = FutureItem.getSymbolInfoList();
-            List<SymbolInfo> stock_list = StockItem.getSymbolInfoList();
-            list.addAll(stock_list);
-            listener.onSymbol(list);
-            symbolList.add(listener);
-        }
+//        if (!symbolList.contains(listener)) {
+//            // do Action
+//            List<SymbolInfo> list = FutureItem.getSymbolInfoList();
+//            List<SymbolInfo> stock_list = StockItem.getSymbolInfoList();
+//            list.addAll(stock_list);
+//            listener.onSymbol(list);
+//            symbolList.add(listener);
+//        }
     }
 
     @Override
     public void unsubscribeSymbolData(ISymbolDataListener listener) {
-        if (symbolList.contains(listener)) {
-            symbolList.remove(listener);
-        }
+//        if (symbolList.contains(listener)) {
+//            symbolList.remove(listener);
+//        }
     }
 
     @Override

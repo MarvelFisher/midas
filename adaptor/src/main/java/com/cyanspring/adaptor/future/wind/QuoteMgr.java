@@ -53,10 +53,9 @@ public class QuoteMgr implements IReqThreadCallback {
         return FutureItem.futureItemBySymbolMap.containsKey(strSymbol); //Future
     }
 
-    public void addFutureSymbol(String symbol, String exchange) {
+    public void addFutureSymbol(String symbol){
         if (!checkFutureSymbol(symbol)) {
             FutureItem item = new FutureItem(symbol);
-            item.setMarket(exchange);
             FutureItem.futureItemBySymbolMap.put(symbol, item);
         }
     }
@@ -65,10 +64,9 @@ public class QuoteMgr implements IReqThreadCallback {
         return StockItem.stockItemBySymbolMap.containsKey(strSymbol); //Stock
     }
 
-    public void addStockSymbol(String symbol, String exchange) {
+    public void addStockSymbol(String symbol) {
         if (!checkStockSymbol(symbol)) {
             StockItem item = new StockItem(symbol);
-            item.setMarket(exchange);
             StockItem.stockItemBySymbolMap.put(symbol, item);
         }
     }
@@ -77,10 +75,9 @@ public class QuoteMgr implements IReqThreadCallback {
         return IndexItem.indexItemBySymbolMap.containsKey(strSymbol); //Stock
     }
 
-    public void addIndexSymbol(String symbol, String exchange) {
+    public void addIndexSymbol(String symbol) {
         if (!checkIndexSymbol(symbol)) {
             IndexItem item = new IndexItem(symbol);
-            item.setMarket(exchange);
             IndexItem.indexItemBySymbolMap.put(symbol, item);
         }
     }

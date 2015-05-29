@@ -177,12 +177,12 @@ public class FutureFeed implements IFrameClose {
     }
 
     public void addState(FutureClient client) {
-        adaptor.subscirbeSymbolData(client);
+//        adaptor.subscirbeSymbolData(client);
         adaptor.subscribeMarketDataState(client);
     }
 
     public void removeState(FutureClient client) {
-        adaptor.unsubscribeSymbolData(client);
+//        adaptor.unsubscribeSymbolData(client);
         adaptor.unsubscribeMarketDataState(client);
     }
 
