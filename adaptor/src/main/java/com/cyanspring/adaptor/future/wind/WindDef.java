@@ -29,6 +29,7 @@ public final class WindDef {
     public static final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
     public static final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : TradeDate NOT match";
     public static final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format fault";
+    public static final String WARN_TURNOVER_LESS_THAN_ZERO = "QUOTE WARNING : Turnover less than Zero";
     public static final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
 }

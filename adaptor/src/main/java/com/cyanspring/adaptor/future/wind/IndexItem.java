@@ -30,8 +30,7 @@ public class IndexItem implements AutoCloseable {
     private long totalVolume = 0;
     private long volume = 0;
 
-    public static IndexItem getItem(String symbolId, String windCode,
-                                    boolean enableCreateNew) {
+    public static IndexItem getItem(String symbolId, boolean enableCreateNew) {
 
         synchronized (indexItemBySymbolMap) {
             if (indexItemBySymbolMap.containsKey(symbolId)) {
@@ -60,9 +59,7 @@ public class IndexItem implements AutoCloseable {
     public static void processIndexData(IndexData indexData) {
 
         String symbolId = indexData.getWindCode();
-        String windCode = indexData.getWindCode();
-
-        IndexItem item = getItem(symbolId, windCode, true);
+        IndexItem item = getItem(symbolId, true);
 
         //Get MarketSession
         String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
@@ -93,72 +90,78 @@ public class IndexItem implements AutoCloseable {
             tickTime = DateUtil.now();
         }
 
-        if (PriceUtils.GreaterThan(indexData.getLastIndex(), 0)) {
-
-            //modify tick Time
-        	if (QuoteMgr.isModifyTickTime()) {
-	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
-	                tickTime = endDate;
-	            }
-
-	            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
-	                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
-	                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
-	            }
-
-	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
-	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
-	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
-	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
-	                    tickTime = endDate;
-	            }
-        	}
-
-            List<QtyPrice> bids = new ArrayList<QtyPrice>();
-            List<QtyPrice> asks = new ArrayList<QtyPrice>();
-            Quote quote = new Quote(symbolId, bids, asks);
-            quote.setTimeStamp(tickTime);
-
-            //Check Stale
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-                    || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
-                quote.setStale(true);
-            }
-
-            // bid/ask
-            QtyPrice bid = bids.size() > 0 ? bids.get(0) : null;
-            QtyPrice ask = asks.size() > 0 ? asks.get(0) : null;
-
-            setBidAsk(quote, bid, ask);
-
-            // update price
-            quote.setOpen((double) indexData.getOpenIndex() / 10000);
-            quote.setHigh((double) indexData.getHighIndex() / 10000);
-            quote.setLow((double) indexData.getLowIndex() / 10000);
-            quote.setLast((double) indexData.getLastIndex() / 10000);
-            quote.setClose((double) indexData.getPrevIndex() / 10000);
-            quote.setTurnover((double) indexData.getTurnover());
-
-            // volume
-            long totalVolume = indexData.getTotalVolume();
-
-            if (PriceUtils.GreaterThan(totalVolume, item.totalVolume)) {
-                item.volume = totalVolume - item.totalVolume;
-                item.totalVolume = totalVolume;
-            } else {
-                item.volume = 0;
-            }
-            quote.setTotalVolume(totalVolume);
-            quote.setLastVol(item.volume);
-
-            //process send quote
-            WindGateWayAdapter.instance.saveLastQuote(quote);
-            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(102, quote));
-        }else{
-            log.debug(WindDef.TITLE_INDEX + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + indexData.getWindCode());
+        //Check Quote
+        if (PriceUtils.EqualLessThan(indexData.getTurnover(), 0)) {
+            log.debug(WindDef.TITLE_INDEX + " " + WindDef.WARN_TURNOVER_LESS_THAN_ZERO + "," + indexData.getWindCode());
+            return;
         }
+
+        if (PriceUtils.EqualLessThan(indexData.getLastIndex(), 0)) {
+            log.debug(WindDef.TITLE_INDEX + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + indexData.getWindCode());
+            return;
+        }
+
+        //modify tick Time
+        if (QuoteMgr.isModifyTickTime()) {
+            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+                    && DateUtil.compareDate(tickTime, endDate) < 0) {
+                tickTime = endDate;
+            }
+
+            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
+                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
+                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
+            }
+
+            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
+                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
+                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
+                if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
+                    tickTime = endDate;
+            }
+        }
+
+        List<QtyPrice> bids = new ArrayList<QtyPrice>();
+        List<QtyPrice> asks = new ArrayList<QtyPrice>();
+        Quote quote = new Quote(symbolId, bids, asks);
+        quote.setTimeStamp(tickTime);
+
+        //Check Stale
+        if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+                || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
+            quote.setStale(true);
+        }
+
+        // bid/ask
+        QtyPrice bid = bids.size() > 0 ? bids.get(0) : null;
+        QtyPrice ask = asks.size() > 0 ? asks.get(0) : null;
+
+        setBidAsk(quote, bid, ask);
+
+        // update price
+        quote.setOpen((double) indexData.getOpenIndex() / 10000);
+        quote.setHigh((double) indexData.getHighIndex() / 10000);
+        quote.setLow((double) indexData.getLowIndex() / 10000);
+        quote.setLast((double) indexData.getLastIndex() / 10000);
+        quote.setClose((double) indexData.getPrevIndex() / 10000);
+        quote.setTurnover((double) indexData.getTurnover());
+
+        // volume
+        long totalVolume = indexData.getTotalVolume();
+
+        if (PriceUtils.GreaterThan(totalVolume, item.totalVolume)) {
+            item.volume = totalVolume - item.totalVolume;
+            item.totalVolume = totalVolume;
+        } else {
+            item.volume = 0;
+        }
+        quote.setTotalVolume(totalVolume);
+        quote.setLastVol(item.volume);
+
+        //process send quote
+        WindGateWayAdapter.instance.saveLastQuote(quote);
+        WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(102, quote));
     }
 
     @Override

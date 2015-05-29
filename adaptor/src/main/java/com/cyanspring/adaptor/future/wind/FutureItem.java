@@ -39,8 +39,7 @@ public class FutureItem implements AutoCloseable {
     private double highLimit = 0;
     private double lowLimit = 0;
 
-    public static FutureItem getItem(String symbolId, String windCode,
-                                     boolean enableCreateNew) {
+    public static FutureItem getItem(String symbolId, boolean enableCreateNew) {
 
         synchronized (futureItemBySymbolMap) {
             if (futureItemBySymbolMap.containsKey(symbolId)) {
@@ -90,9 +89,7 @@ public class FutureItem implements AutoCloseable {
     public static void processFutureData(FutureData futureData) {
 
         String symbolId = futureData.getWindCode();
-        String windCode = futureData.getWindCode();
-
-        FutureItem item = getItem(symbolId, windCode, true);
+        FutureItem item = getItem(symbolId, true);
 
         //Get MarketSession
         String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
