@@ -40,8 +40,15 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 			//byte[] data = message.toByteArray();			
 			//String message = (String)obj;
 			//byte[] data = message.getBytes();
+			byte[] data;
 			boolean isCompressed = false;
-			byte[] data = MsgPack.pack(obj);
+			try {
+				data = MsgPack.pack(obj);
+			} 
+			catch(Exception e)
+			{
+				throw e;
+			}
 			byte[] compressedData = null;
 			int compressedLen = 0,datalen = data.length + 2 + 1;
 			if(data.length >= FDTPacket.PKT_COMPRESS_SIZE ) {
@@ -66,8 +73,8 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 
 		   	byte byHead0, byHead1, byHead2;
 			byHead0 = (byte)(FDTPacket.PKT_LEAD);
-			byHead1 = (byte)(datalen%256);
-			byHead2 = (byte)(datalen/256);
+			byHead1 = (byte)(datalen/256);
+			byHead2 = (byte)(datalen%256);
 			
 			// LEAD BYTE
 			buf.writeByte(byHead0);

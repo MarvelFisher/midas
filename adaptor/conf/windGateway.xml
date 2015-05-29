@@ -22,7 +22,10 @@
     	<!--  Wind Gateway Configure -->	     	
     	<property name="serverPort" value="10049"/>
     	<property name="cascading" value="false"/>
+    	<!-- 
     	<property name="upstreamIp" value="202.55.14.140"/>
+    	-->
+    	<property name="upstreamIp" value="10.0.0.20"/>
     	<property name="upstreamPort" value="10049"/>
     	    	
     </bean>

@@ -39,8 +39,8 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 			}
 			
 
-			int packetlen_low = unsignedByteToInt(in.readByte());
 			int packetlen_hi = unsignedByteToInt(in.readByte());
+			int packetlen_low = unsignedByteToInt(in.readByte());
 			int packetlen = packetlen_low + packetlen_hi*256;
 			if(in.readableBytes() < (packetlen + FDTPacket.PKT_TAIL_SIZE)) {			
 				in.resetReaderIndex(); //more data needed;
@@ -62,7 +62,8 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 				continue; 
 			}
 			if(byIsCompressed == 0) {
-				out.add(MsgPack.unpack(body_buf));
+				Object obj = MsgPack.unpack(body_buf);
+				out.add(obj);
 			} else {
 				byte[] decompBuf = CompressUtil.decompress(body_buf);			
 				out.add(MsgPack.unpack(decompBuf));

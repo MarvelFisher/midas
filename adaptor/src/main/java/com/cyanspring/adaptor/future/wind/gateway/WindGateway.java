@@ -35,7 +35,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,TDF_FUTURE_DATA> mapFutureData = new ConcurrentHashMap<String,TDF_FUTURE_DATA>(); 
 	public static ConcurrentHashMap<String,TDF_MARKET_DATA> mapMarketData = new ConcurrentHashMap<String,TDF_MARKET_DATA>();
 	public static ConcurrentHashMap<String,TDF_INDEX_DATA>  mapIndexData  = new ConcurrentHashMap<String,TDF_INDEX_DATA>();
-	//public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
+	public static ConcurrentHashMap<String,BuySellVolume>   mapBuySell = new ConcurrentHashMap<String,BuySellVolume>();
 	public static ConcurrentHashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ArrayList<TDF_CODE>>();
 	
 
@@ -167,6 +167,7 @@ public class WindGateway implements Runnable {
         }
         return true;
     }
+
 	
 	public static String arrayToString(long[] array)
 	{
@@ -180,6 +181,14 @@ public class WindGateway implements Runnable {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		return sb.append("]").toString();
+	}
+	
+	public static ArrayList<Long> convertLongArrayToList(long[] array) {
+		ArrayList<Long>lst = new ArrayList<Long>();
+		for(int i = 0; i < array.length; i++) {
+			lst.add(array[i]);
+		}
+		return lst;
 	}
 	
 	static public String publishTransactionChanges(TDF_TRANSACTION data) {
@@ -312,16 +321,16 @@ public class WindGateway implements Runnable {
 			map.put(FDTFields.ActionDay, data.getActionDay());
 		}
 		if(dirty == null || false == compareArrays(dirty.getAskPrice(),data.getAskPrice()))	{			
-			map.put(FDTFields.AskPriceArray,data.getAskPrice());
+			map.put(FDTFields.AskPriceArray,convertLongArrayToList(data.getAskPrice()) );
 		}		
 		if(dirty == null || false == compareArrays(dirty.getAskVol(),data.getAskVol()))	{
-			map.put(FDTFields.AskVolumeArray, data.getAskVol());
+			map.put(FDTFields.AskVolumeArray, convertLongArrayToList(data.getAskVol()));
 		}			
 		if(dirty == null || false == compareArrays(dirty.getBidPrice(),data.getBidPrice())) {				
-			map.put(FDTFields.BidPriceArray, data.getBidPrice());			
+			map.put(FDTFields.BidPriceArray, convertLongArrayToList(data.getBidPrice()));			
 		}
 		if(dirty == null || false == compareArrays(dirty.getBidVol(),data.getBidVol())) {			
-			map.put(FDTFields.BidVolumeArray,data.getBidVol());			
+			map.put(FDTFields.BidVolumeArray,convertLongArrayToList(data.getBidVol()));			
 		}		
 		if(dirty == null || dirty.getClose() != data.getClose()) {		
 			map.put(FDTFields.Close,data.getClose());								
@@ -376,7 +385,8 @@ public class WindGateway implements Runnable {
 	
 	static public String publishMarketDataChanges(TDF_MARKET_DATA dirty,TDF_MARKET_DATA data)
 	{
-		StringBuilder sb = new StringBuilder("API=DATA_MARKET|Symbol=" + data.getWindCode());
+		String symbol = data.getWindCode();
+		StringBuilder sb = new StringBuilder("API=DATA_MARKET|Symbol=" + symbol);
 		if(dirty == null || dirty.getActionDay() != data.getActionDay())
 		{
 			sb.append("|ActionDay=" + data.getActionDay());
@@ -448,6 +458,15 @@ public class WindGateway implements Runnable {
 		if(dirty == null || dirty.getVolume() != data.getVolume())
 		{
 			sb.append("|Volume=" + data.getVolume());
+			BuySellVolume bs = mapBuySell.get(symbol);
+			if(bs != null) {
+				sb.append("|BuyVolume=" + bs.lBuyVolume);
+				sb.append("|BuyTurnover=" + bs.lBuyTurnover);
+				sb.append("|SellVolume=" + bs.lSellVolume);
+				sb.append("|SellTurnover=" + bs.lSellTurnover);
+				sb.append("|UnclassifiedVolume=" + bs.lUnclassifiedVolume);
+				sb.append("|UnclassifiedTurnover=" + bs.lUnclassifiedTurnover);
+			}			
 		}		
 		if(dirty == null || dirty.getNumTrades() != data.getNumTrades())
 		{
@@ -494,24 +513,25 @@ public class WindGateway implements Runnable {
 	}
 	
 	static public HashMap<Integer,Object> publishMarketDataChangesToMap(TDF_MARKET_DATA dirty,TDF_MARKET_DATA data)
-	{
+	{		
+		String symbol = data.getWindCode();
 		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
 		map.put(FDTFields.PacketType,FDTFields.WindMarketData);
-		map.put(FDTFields.WindSymbolCode, data.getWindCode());		
+		map.put(FDTFields.WindSymbolCode, symbol);		
 		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
 			map.put(FDTFields.ActionDay,data.getActionDay());
 		}
 		if(dirty == null || false == compareArrays(dirty.getAskPrice(),data.getAskPrice())) {					
-			map.put(FDTFields.AskPriceArray,data.getAskPrice());			
+			map.put(FDTFields.AskPriceArray,convertLongArrayToList(data.getAskPrice()));			
 		}
 		if(dirty == null || false == compareArrays(dirty.getAskVol(),data.getAskVol()))	{		
-			map.put(FDTFields.AskVolumeArray,data.getAskVol());			
+			map.put(FDTFields.AskVolumeArray,convertLongArrayToList(data.getAskVol()));			
 		}
 		if(dirty == null || false == compareArrays(dirty.getBidPrice(),data.getBidPrice())) {					
-			map.put(FDTFields.BidPriceArray,data.getBidPrice());			
+			map.put(FDTFields.BidPriceArray,convertLongArrayToList(data.getBidPrice()));			
 		}
 		if(dirty == null || false == compareArrays(dirty.getBidVol(),data.getBidVol())) {					
-			map.put(FDTFields.BidVolumeArray,data.getBidVol());			
+			map.put(FDTFields.BidVolumeArray,convertLongArrayToList(data.getBidVol()));			
 		}		
 		if(dirty == null || dirty.getHigh() != data.getHigh()) {		
 			map.put(FDTFields.High,data.getHigh());	
@@ -550,6 +570,15 @@ public class WindGateway implements Runnable {
 		if(dirty == null || dirty.getVolume() != data.getVolume())
 		{
 			map.put(FDTFields.Volume,data.getVolume());
+			BuySellVolume bs = mapBuySell.get(symbol);
+			if(bs != null) {
+				map.put(FDTFields.BuyVolume, bs.lBuyVolume);
+				map.put(FDTFields.BuyTurnover, bs.lBuyTurnover);
+				map.put(FDTFields.SellVolume, bs.lSellVolume);
+				map.put(FDTFields.SellTurnover, bs.lSellTurnover);
+				map.put(FDTFields.UnclassifiedVolume, bs.lUnclassifiedVolume);
+				map.put(FDTFields.UnclassifiedTurnover, bs.lUnclassifiedTurnover);
+			}
 		}		
 		if(dirty == null || dirty.getNumTrades() != data.getNumTrades()) {		
 			map.put(FDTFields.NumberOfTrades,data.getNumTrades());
@@ -560,6 +589,34 @@ public class WindGateway implements Runnable {
 		if(dirty == null || dirty.getTotalBidVol() != data.getTotalBidVol()) {		
 			map.put(FDTFields.TotalBidVolume,data.getTotalBidVol());
 		}
+		if(dirty == null || dirty.getWeightedAvgAskPrice() != data.getWeightedAvgAskPrice())
+		{
+			map.put(FDTFields.WgtAvgAskPrice,data.getWeightedAvgAskPrice());
+		}
+		if(dirty == null || dirty.getWeightedAvgBidPrice() != data.getWeightedAvgBidPrice())
+		{
+			map.put(FDTFields.WgtAvgBidPrice,data.getWeightedAvgBidPrice());
+		}		
+		if(dirty == null || dirty.getYieldToMaturity() != data.getYieldToMaturity())
+		{
+			map.put(FDTFields.YieldToMaturity,data.getYieldToMaturity());
+		}
+		if(dirty == null || dirty.getPrefix() != data.getPrefix())
+		{
+			map.put(FDTFields.Prefix,data.getPrefix());
+		}
+		if(dirty == null || dirty.getSyl1() != data.getSyl1())
+		{
+			map.put(FDTFields.Syl1,data.getSyl1());
+		}
+		if(dirty == null || dirty.getSyl2() != data.getSyl2())
+		{
+			map.put(FDTFields.Syl2,data.getSyl2());
+		}		
+		if(dirty == null || dirty.getSD2() != data.getSD2())
+		{
+			map.put(FDTFields.SD2,data.getSD2());
+		}		
 		
 		return map;
 	}	
@@ -674,7 +731,13 @@ public class WindGateway implements Runnable {
 			return;
 		}
 		String symbol = data.getWindCode();
-		//TDF_TRANSACTION data = mapTransaction.get(symbol);
+		BuySellVolume bs = mapBuySell.get(symbol);
+		if(bs == null) {
+			mapBuySell.put(symbol, new BuySellVolume(data));
+		} else {
+			bs.Calculate(data);
+		}
+		
 		//mapTransaction.put(symbol,transactionData);
 		if(WindGatewayHandler.isRegisteredTransactionByClient(symbol)) {
 			String str = publishTransactionChanges(data);
@@ -713,7 +776,15 @@ public class WindGateway implements Runnable {
 		}
 		String symbol = marketData.getWindCode();
 		TDF_MARKET_DATA data = mapMarketData.get(symbol);
-		mapMarketData.put(marketData.getWindCode(),marketData);		
+		mapMarketData.put(marketData.getWindCode(),marketData);	
+		if(marketData.getVolume() == 0)
+		{
+			BuySellVolume bs = mapBuySell.get(symbol);
+			if(bs != null) {
+				bs.Reset();	
+			}
+		}
+			
 		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishMarketDataChanges(data,marketData);
 			publishWindData(str,symbol);
@@ -926,4 +997,40 @@ public class WindGateway implements Runnable {
         serverThread.start();
 	}
 		
+}
+
+class BuySellVolume {
+	long lBuyVolume,lSellVolume,lUnclassifiedVolume;
+	long lBuyTurnover,lSellTurnover,lUnclassifiedTurnover;
+	
+	public BuySellVolume() {
+		Reset();
+	}
+	
+	public BuySellVolume(TDF_TRANSACTION t) {
+		Reset();
+		Calculate(t);
+		
+	}
+	
+	public void Calculate(TDF_TRANSACTION t) {
+		int bs = t.getBSFlag();
+		if( bs == 66) { // Buy
+			lBuyVolume   += t.getVolume();
+			lBuyTurnover += t.getTurnover();
+		} else if(bs == 83) { // Sell
+			lSellVolume   += t.getVolume();
+			lSellTurnover += t.getTurnover();			
+		} else {
+			lUnclassifiedVolume   += t.getVolume();
+			lUnclassifiedTurnover += t.getTurnover();			
+		}
+		
+	}
+	
+	public void Reset() {
+		lBuyVolume = lSellVolume = lUnclassifiedVolume = 
+		lBuyTurnover = lSellTurnover = lUnclassifiedTurnover = 0;
+		
+	}
 }

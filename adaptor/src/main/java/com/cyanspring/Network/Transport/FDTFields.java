@@ -54,4 +54,17 @@ public class FDTFields {
 	public final static int Information = 20037;
 	public final static int IndexNumber = 20038;
 	public final static int BuySellFlag = 20039;
+	public final static int BuyVolume = 20040;
+	public final static int BuyTurnover = 20041;
+	public final static int SellVolume = 20042;
+	public final static int SellTurnover = 20043;
+	public final static int UnclassifiedVolume = 20044;
+	public final static int UnclassifiedTurnover = 20045;
+	public final static int WgtAvgAskPrice = 20046;
+	public final static int WgtAvgBidPrice = 20047;
+	public final static int YieldToMaturity = 20048;
+	public final static int Prefix = 20049;
+	public final static int Syl1 = 20050;
+	public final static int Syl2 = 20051;
+	public final static int SD2 = 20052;
 }

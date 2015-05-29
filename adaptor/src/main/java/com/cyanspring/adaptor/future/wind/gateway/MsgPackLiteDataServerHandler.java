@@ -90,8 +90,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		}
 		return registrationGlobal.hadTransaction(symbol);
 	}		
-	
-    private static void subscribeSymbols(Channel channel , String symbols,Registration lst) {
+		
+    private static void subscribeSymbols(Channel channel , String symbols,Registration lst,boolean bTransaction) {
 		String[] sym_arr = symbols.split(";");
 		for(String str : sym_arr)
 		{
@@ -102,9 +102,12 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					if(sendIndexData(channel,str) == false)
 					{	
 						if(WindGateway.cascading) {
-							WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
+							if(bTransaction == false) {
+								WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
+							}
 						} else {
-							log.error("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
+							WindGateway.instance.requestSymbol(str);
+							log.info("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
 						}
 					}
 				}						
@@ -219,7 +222,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					}	else	{
 						if ((strDataType.equals("SUBSCRIBE") || strDataType.equals("SubsTrans")) && symbols != null) {						
 							if(symbols != null) {
-								subscribeSymbols(channel,symbols,lst);
+								subscribeSymbols(channel,symbols,lst,strDataType.equals("SubsTrans"));
 							}
 							if(strMarket != null) {
 								subscribeMarkets(channel,strMarket,lst);
