@@ -43,9 +43,9 @@
 				</bean>		
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>PREOPEN</value></constructor-arg>
-		        	<constructor-arg><value>00:00:00</value></constructor-arg>
+		        	<constructor-arg><value>-4:30:00</value></constructor-arg>
 		        	<constructor-arg><value>09:15:00</value></constructor-arg>
-				</bean>		
+				</bean>
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>OPEN</value></constructor-arg>
 		        	<constructor-arg><value>09:15:00</value></constructor-arg>
@@ -118,7 +118,7 @@
 				</bean>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 					<constructor-arg><value>PREOPEN</value></constructor-arg>
-					<constructor-arg><value>00:00:00</value></constructor-arg>
+					<constructor-arg><value>-4:30:00</value></constructor-arg>
 					<constructor-arg><value>09:15:00</value></constructor-arg>
 				</bean>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
