@@ -304,6 +304,8 @@ public class SymbolData implements Comparable<SymbolData>
 				lastPrice.setLow(0.0);
 				lastPrice.setClose(0.0);
 				lastPrice.setVolume((long)dCurVolume);
+				lastPrice.setTotalVolume(0);
+				lastPrice.setTurnover(0);
 			}
 			else
 			{
@@ -323,8 +325,10 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				lastPrice.setClose(getdClose());
 			}
-			lastPrice.setTotalVolume(getdCurTotalVolume());
-			lastPrice.setTurnover(getdCurTurnover());
+			double dTotalVolume = lastPrice.getTotalVolume();
+			double dTurnover = lastPrice.getTurnover();
+			lastPrice.setTotalVolume(dTotalVolume + getdCurTotalVolume());
+			lastPrice.setTurnover(dTurnover + getdCurTurnover());
 		}
 		else
 		{

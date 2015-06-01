@@ -750,14 +750,15 @@ public class CentralDbProcessor implements IPlugin
 			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
 		switch (serverMarket)
 		{
-		case "FC":
-			this.refSymbolInfo = new FCRefSymbolInfo(serverMarket);
-			SymbolData.setSetter(new DefPriceSetter());
-			break;
 		case "FX":
-		default:
 			this.refSymbolInfo = new FXRefSymbolInfo(serverMarket);
 			SymbolData.setSetter(new FXPriceSetter());
+			break;
+		case "FC":
+		case "SC":
+		default:
+			this.refSymbolInfo = new FCRefSymbolInfo(serverMarket);
+			SymbolData.setSetter(new DefPriceSetter());
 			break;
 		}
 		if (getnChefCount() <= 1)
@@ -858,10 +859,19 @@ public class CentralDbProcessor implements IPlugin
 	public void insertSQL()
 	{
 		isProcessQuote = false;
-		for (SymbolChef chef : SymbolChefList)
+		Thread insertThread = new Thread(new Runnable() 
 		{
-			chef.insertSQL();
-		}
+			@Override
+			public void run() 
+			{
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.insertSQL();
+				}
+			}
+		});
+		insertThread.setName("CDP_Insert_SQL");
+		insertThread.start();
 	}
 
 	public int getnChefCount() {
