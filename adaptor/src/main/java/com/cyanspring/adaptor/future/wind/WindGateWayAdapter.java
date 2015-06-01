@@ -171,7 +171,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             case WindDef.MSG_DATA_FUTURE:
                 FutureData futureData = windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay())) return;
-                ;
                 QuoteMgr.instance.AddRequest(new Object[]{
                         WindDef.MSG_DATA_FUTURE, futureData});
                 break;

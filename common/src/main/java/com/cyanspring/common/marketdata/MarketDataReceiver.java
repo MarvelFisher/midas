@@ -20,10 +20,7 @@ import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
-import com.cyanspring.common.event.marketsession.IndexSessionEvent;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
@@ -93,6 +90,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
+            subscribeToEvent(TradeDateEvent.class, null);
         }
 
         @Override
@@ -295,6 +293,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
         quotesToBeSent.clear();
         broadCastStaleQuotes();
+    }
+
+    public void processTradeDateEvent(TradeDateEvent event) {
+        String newTradeDate = event.getTradeDate();
+        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
+            tradeDate = newTradeDate;
+        }
     }
 
     public void processTradeEvent(TradeEvent event) {

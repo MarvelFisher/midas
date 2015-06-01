@@ -188,6 +188,7 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
+    @Override
     public void processTradeDateEvent(TradeDateEvent event) {
         String newTradeDate = event.getTradeDate();
         if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
