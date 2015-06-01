@@ -20,6 +20,7 @@ import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_INDEX_DATA;
 import cn.com.wind.td.tdf.TDF_MARKET_DATA;
+import cn.com.wind.td.tdf.TDF_TRANSACTION;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -31,7 +32,8 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	private static final ConcurrentHashMap<Channel,Registration> channels = new ConcurrentHashMap<Channel,Registration>();
-	public static final Registration registrationGlobal = new Registration();  
+	public static final Registration registrationGlobal = new Registration();
+	public static final int maxMsgPackCount = 128;
 
 	private static final Logger log = LoggerFactory.getLogger(MsgPackLiteDataServerHandler.class);
 
@@ -93,13 +95,18 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		
     private static void subscribeSymbols(Channel channel , String symbols,Registration lst,boolean bTransaction) {
 		String[] sym_arr = symbols.split(";");
+		HashMap<Integer, Object> map;
+		int cnt = 0;
 		for(String str : sym_arr)
 		{
-			if(sendMarketData(channel,str) == false)
+			map = getMarketData(str);
+			if(map == null)
 			{
-				if(sendFutureData(channel,str) == false)
+				map = getFutureData(str);
+				if(map == null)
 				{
-					if(sendIndexData(channel,str) == false)
+					map = getIndexData(str);
+					if(map == null)
 					{	
 						if(WindGateway.cascading) {
 							if(bTransaction == false) {
@@ -112,6 +119,11 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					}
 				}						
 			}
+			
+			cnt = lst.addMsgPack(map);
+			if(cnt >= maxMsgPackCount) {
+				channel.writeAndFlush(lst.flushMsgPack());
+			}
 			// 先加到  Global Register Symbol
 			registrationGlobal.addSymbol(str);								
 			// 加到 Client 的 Registration
@@ -119,15 +131,20 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
 			}					
 		}    	
+		if(cnt > 0) {
+			channel.writeAndFlush(lst.flushMsgPack());
+		}
     }
     
     private static void subscribeTransactions(Channel channel , String symbols,Registration lst) {
 		String[] sym_arr = symbols.split(";");
 		for(String str : sym_arr)
 		{
-			if(WindGateway.cascading && registrationGlobal.hadTransaction(str) == false) {
-				WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SubsTrans|Symbol=" + str,true));	
-			}			
+			if(sendTransaction(channel,str) == false) {
+				if(WindGateway.cascading && registrationGlobal.hadTransaction(str) == false) {
+					WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SubsTrans|Symbol=" + str,true));	
+				}			
+			}
 			// 先加到  Global Register Symbol
 			registrationGlobal.addTransaction(str);								
 			// 加到 Client 的 Registration
@@ -340,32 +357,60 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	}    	
     }
     
+    public static boolean sendTransaction(Channel channel,String symbol) {
+    	TDF_TRANSACTION data = WindGateway.mapTransaction.get(symbol);
+    	if(data == null) {
+    		return false;
+    	}
+    	HashMap<Integer, Object> map = WindGateway.publishTransactionChangesToMap(null, data);
+    	channel.writeAndFlush(map);
+    	return true;
+    }
     
-    public static boolean sendMarketData(Channel channel,String symbol) {    
+    public static HashMap<Integer, Object> getMarketData(String symbol) {
     	TDF_MARKET_DATA data = WindGateway.mapMarketData.get(symbol);
     	if(data == null) {    	
-    		return false;
+    		return null;
     	}
-		HashMap<Integer, Object> map = WindGateway.publishMarketDataChangesToMap(null, data);
+		return WindGateway.publishMarketDataChangesToMap(null, data);    	
+    }    
+    public static boolean sendMarketData(Channel channel,String symbol) {    
+		HashMap<Integer, Object> map = getMarketData(symbol);
+		if(map == null) {
+			return false;
+		}
 		channel.writeAndFlush(map);
 		return true;
     }
-    
-    public static boolean sendFutureData(Channel channel,String symbol) {    
+           
+    public static HashMap<Integer, Object> getFutureData(String symbol) {    
     	TDF_FUTURE_DATA data = WindGateway.mapFutureData.get(symbol);
     	if(data == null) {    	
+    		return null;
+    	}
+    	return WindGateway.publishFutureChangesToMap(null, data);
+    }
+    public static boolean sendFutureData(Channel channel,String symbol) {    
+    	HashMap<Integer, Object> map = getFutureData(symbol);
+    	if(map == null) {
     		return false;
     	}
-    	HashMap<Integer, Object> map = WindGateway.publishFutureChangesToMap(null, data);
 		channel.writeAndFlush(map);
 		return true;
     }
-    public static boolean sendIndexData(Channel channel,String symbol) {    
+       
+    public static HashMap<Integer, Object> getIndexData(String symbol) {    
     	TDF_INDEX_DATA data = WindGateway.mapIndexData.get(symbol);
     	if(data == null) {    	
+    		return null;
+    	}
+    	return WindGateway.publishIndexDataChangesToMap(null, data);
+    }
+    public static boolean sendIndexData(Channel channel,String symbol) {    
+    	HashMap<Integer, Object> map = getIndexData(symbol);
+    	if(map == null) {
     		return false;
     	}
-    	HashMap<Integer, Object> map = WindGateway.publishIndexDataChangesToMap(null, data);
 		channel.writeAndFlush(map);
 		return true;
     }
@@ -465,7 +510,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     }
     
     public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol) {
-		Iterator<?> it = channels.entrySet().iterator();			
+		Iterator<?> it = channels.entrySet().iterator();
+		int cnt;
 		while (it.hasNext()) {
 			@SuppressWarnings("rawtypes")
 			Map.Entry pairs = (Map.Entry)it.next();			
@@ -474,13 +520,17 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				continue;
 			}
 			if(lst.hadSymbol(symbol)) {
-				((Channel)pairs.getKey()).writeAndFlush(map);
+				cnt = lst.addMsgPack(map);
+				if(cnt >= maxMsgPackCount) {
+					((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+				}
 			}
 		}		    
     }
     
     public static void sendMssagePackToAllClientByRegistrationTransaction(HashMap<Integer, Object> map,String symbol) {
-		Iterator<?> it = channels.entrySet().iterator();			
+		Iterator<?> it = channels.entrySet().iterator();
+		int cnt;
 		while (it.hasNext()) {
 			@SuppressWarnings("rawtypes")
 			Map.Entry pairs = (Map.Entry)it.next();			
@@ -489,10 +539,26 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				continue;
 			}
 			if(lst.hadTransaction(symbol)) {
-				((Channel)pairs.getKey()).writeAndFlush(map);
+				cnt = lst.addMsgPack(map);
+				if(cnt >= maxMsgPackCount) {
+					((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+				}
 			}
 		}		    
     }    
+    
+    public static void flushAllClientMsgPack() {
+		Iterator<?> it = channels.entrySet().iterator();
+		while (it.hasNext()) {
+			@SuppressWarnings("rawtypes")
+			Map.Entry pairs = (Map.Entry)it.next();			
+			Registration lst = (Registration)pairs.getValue();
+			if(lst == null) {					
+				continue;
+			}
+			((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+		}		      	
+    }
     
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
 			throws Exception {    	

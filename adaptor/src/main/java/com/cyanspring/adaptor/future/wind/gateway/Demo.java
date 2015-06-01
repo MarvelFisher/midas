@@ -266,7 +266,8 @@ public class Demo {
 				break;
 			}
 			//�����Ϣ
-			case TDF_MSG_ID.MSG_DATA_MARKET:					
+			case TDF_MSG_ID.MSG_DATA_MARKET:
+				log.debug("MARKET DATA Count : " + msg.getAppHead().getItemCount());
 				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
 					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i); 
 					//PrintHelper.printDataMarket(data.getMarketData());
@@ -275,7 +276,9 @@ public class Demo {
 						windGateway.receiveMarketData(data.getMarketData());
 					}							
 				}			
-				log.debug("MARKET DATA Count : " + msg.getAppHead().getItemCount());
+				if(windGateway != null) {
+					windGateway.flushAllClientMsgPack();
+				}								
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printDataMarket(TDFClient.getMessageData(msg, 0).getMarketData());
@@ -286,7 +289,8 @@ public class Demo {
 				*/
 								
 				break;
-			case TDF_MSG_ID.MSG_DATA_INDEX:						
+			case TDF_MSG_ID.MSG_DATA_INDEX:
+				log.debug("INDEX DATA Count : " + msg.getAppHead().getItemCount());
 				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
 					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
 					if(windGateway != null)
@@ -295,7 +299,9 @@ public class Demo {
 					}					
 					//PrintHelper.printIndexData(data.getIndexData());
 				}	
-				log.debug("INDEX DATA Count : " + msg.getAppHead().getItemCount());
+				if(windGateway != null) {
+					windGateway.flushAllClientMsgPack();
+				}								
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printIndexData(TDFClient.getMessageData(msg, 0).getIndexData());
@@ -305,7 +311,8 @@ public class Demo {
 				PrintHelper.SaveData( new DataInfo(msg,PrintHelper.GetCurrentTime()) );
 				*/				
 				break;
-			case TDF_MSG_ID.MSG_DATA_FUTURE:				
+			case TDF_MSG_ID.MSG_DATA_FUTURE:
+				log.debug("FUTURE DATA Count : " + msg.getAppHead().getItemCount());
 				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
 					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
 					//PrintHelper.printFutureData(data.getFutureData());
@@ -313,7 +320,9 @@ public class Demo {
 						windGateway.receiveFutureData(data.getFutureData());
 					}						
 				}					
-				log.debug("FUTURE DATA Count : " + msg.getAppHead().getItemCount());
+				if(windGateway != null) {
+					windGateway.flushAllClientMsgPack();
+				}								
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printFutureData(TDFClient.getMessageData(msg, 0).getFutureData());
@@ -331,7 +340,10 @@ public class Demo {
 					if(windGateway != null) {						
 						windGateway.receiveTransaction(data.getTransaction());
 					}							
-				}					
+				}
+				if(windGateway != null) {
+					windGateway.flushAllClientMsgPack();
+				}
 
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){

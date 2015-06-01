@@ -2,12 +2,16 @@ package com.cyanspring.adaptor.future.wind.gateway;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+
+import com.cyanspring.Network.Transport.FDTFields;
 
 public class Registration {
 
 	private ArrayList<String> symbolList;
 	private ArrayList<String> marketList;
 	private ArrayList<String> transactionList;
+	private ArrayList<HashMap<Integer,Object>> mpList = new ArrayList<HashMap<Integer,Object>>();
 	
 	Registration() {
 		symbolList = new ArrayList<String>();
@@ -156,5 +160,29 @@ public class Registration {
 			addTransaction(trans);
 		}
 	}
+	
+	public int addMsgPack(HashMap<Integer,Object> mp) {
+		if(mp != null) {
+			synchronized(mpList) {
+				mpList.add(mp);
+			}
+		}
+		return mpList.size();
+	}
+	
+	public HashMap<Integer,Object> flushMsgPack() {
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.PacketArray);
+		synchronized(mpList) {
+			if(mpList.size() == 1) {
+				map = mpList.get(0);
+			} else {
+				map.put(FDTFields.ArrayOfPacket,  new ArrayList<HashMap<Integer,Object>>(mpList));
+			}
+			mpList.clear();
+		}
+		return map;
+	}
+	
 	
 }
