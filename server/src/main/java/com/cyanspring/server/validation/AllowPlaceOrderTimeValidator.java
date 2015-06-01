@@ -123,7 +123,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 			Date time = timeFormat.parse(cancelOpenOrderTime);
 			Calendar timeCal = Calendar.getInstance();
 			timeCal.setTime(time);
-			cal.set(Calendar.HOUR, timeCal.get(Calendar.HOUR_OF_DAY));
+			cal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
 			cal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
 			cal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
 		}
