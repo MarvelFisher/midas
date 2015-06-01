@@ -69,7 +69,7 @@ public class CentralDbEventProc implements Runnable
 		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
 		
 		listPrice = centraldb.getChefBySymbol(symbol).retrieveHistoricalPrice(type, symbol, start, end);
-		if (listPrice == null || listPrice.isEmpty())
+		if (listPrice == null)
 		{
 			retEvent.setOk(false) ;
 //			retEvent.setMessage("Get price list fail");

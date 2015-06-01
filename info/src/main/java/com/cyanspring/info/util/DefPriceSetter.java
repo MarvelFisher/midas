@@ -59,6 +59,8 @@ public class DefPriceSetter implements IPriceSetter
 		{
 			symboldata.setdClose(dPrice);
 		}
+		symboldata.setdCurTotalVolume(quote.getTotalVolume());
+		symboldata.setdCurTurnover(quote.getTurnover());
 		return true;
 	}
 }

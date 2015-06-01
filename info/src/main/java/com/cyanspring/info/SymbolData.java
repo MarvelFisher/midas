@@ -1,15 +1,10 @@
 package com.cyanspring.info;
 
-import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -63,6 +58,8 @@ public class SymbolData implements Comparable<SymbolData>
 	private double dOpen = 0;
 	private double dClose = 0;
 	private double dCurVolume = 0;
+	private double dCurTotalVolume = 0;
+	private double dCurTurnover = 0;
 	private TreeMap<Date, HistoricalPrice> priceData = new TreeMap<Date, HistoricalPrice>() ;
 	private LinkedBlockingQueue<Quote> quoteTmp = new LinkedBlockingQueue<Quote>() ;
 	
@@ -140,6 +137,7 @@ public class SymbolData implements Comparable<SymbolData>
 		return changed;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void readFromTick()
 	{
 		resetPriceData();
@@ -325,6 +323,8 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				lastPrice.setClose(getdClose());
 			}
+			lastPrice.setTotalVolume(getdCurTotalVolume());
+			lastPrice.setTurnover(getdCurTurnover());
 		}
 		else
 		{
@@ -337,6 +337,8 @@ public class SymbolData implements Comparable<SymbolData>
 											getdCurLow(),
 											getdClose(),
 											(int)dCurVolume);
+			lastPrice.setTotalVolume(getdCurTotalVolume());
+			lastPrice.setTurnover(getdCurTurnover());
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -872,9 +874,10 @@ public class SymbolData implements Comparable<SymbolData>
 	public void logHistoricalPrice(HistoricalPrice hp)
 	{
 		//if (...)
-		log.debug(String.format("%s|%s : %s open: %.5f, high: %.5f, low: %.5f, close:%.5f, volume: %d", 
+		log.debug(String.format("%s|%s : %s open: %.5f, high: %.5f, low: %.5f, close:%.5f, volume: %d tvol: %.0f tovr: %.0f", 
 				hp.getKeytime(), hp.getDatatime(), hp.getSymbol(), hp.getOpen(),
-				hp.getHigh(), hp.getLow(), hp.getClose(), hp.getVolume()));
+				hp.getHigh(), hp.getLow(), hp.getClose(), hp.getVolume(),
+				hp.getTotalVolume(), hp.getTurnover()));
 	}
 	@Override
 	public int compareTo(SymbolData o) {
@@ -939,6 +942,18 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setdClose(double dClose) {
 		this.dClose = dClose;
+	}
+	public double getdCurTotalVolume() {
+		return dCurTotalVolume;
+	}
+	public void setdCurTotalVolume(double dCurTotalVolume) {
+		this.dCurTotalVolume = dCurTotalVolume;
+	}
+	public double getdCurTurnover() {
+		return dCurTurnover;
+	}
+	public void setdCurTurnover(double dCurTurnover) {
+		this.dCurTurnover = dCurTurnover;
 	}
 	
 }
