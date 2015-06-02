@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.account.ThirdPartyUser;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
@@ -146,6 +147,7 @@ public class PersistenceManager {
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(UserTerminateEvent.class, null);
             subscribeToEvent(UserMappingEvent.class, null);
+			subscribeToEvent(UserMappingListEvent.class, null);
             subscribeToEvent(UserMappingDetachEvent.class, null);
 		}
 
@@ -1645,6 +1647,24 @@ public class PersistenceManager {
             log.error(e.getMessage(), e);
         }
     }
+
+	public void processUserMappingListEvent(UserMappingListEvent event) {
+
+		if (!syncCentralDb) {
+			return;
+		}
+
+		try {
+			List<ThirdPartyUser> thirdPartyUsers = centralDbConnector.getThirdPartyUsers(event.getUser(), event.getMarket(), event.getLanguage());
+
+			UserMappingListReplyEvent reply = new UserMappingListReplyEvent(event.getKey(), event.getSender(),
+					event.getTxId(), event.getUser(), event.getMarket(), event.getLanguage(), thirdPartyUsers);
+
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
 
     public void processUserMappingDetachEvent(UserMappingDetachEvent event) {
 

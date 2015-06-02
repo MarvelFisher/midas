@@ -6,10 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cyanspring.common.account.TerminationStatus;
+import com.cyanspring.common.account.ThirdPartyUser;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import org.slf4j.Logger;
@@ -32,6 +37,7 @@ public class CentralDbConnector {
 	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s' AND `STATUS` IS NULL";
     private static String insertPendingTransfer = "INSERT INTO ToDoCvtFDT(`ID3RD`, `USERID`) VALUES('%s', '%s')";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String getUserThirdPartyIds = "SELECT `ID`, `USERTYPE` FROM THIRD_PARTY_USER `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String deleteSameTypeThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `USERTYPE` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
@@ -624,6 +630,45 @@ public class CentralDbConnector {
             closeStmt(stmt);
             log.warn(e.getMessage(), e);
             return null;
+
+        } finally {
+            if (stmt != null) {
+                closeStmt(stmt);
+            }
+            if (conn != null) {
+                closeConn(conn);
+            }
+        }
+    }
+
+    public List<ThirdPartyUser> getThirdPartyUsers(String userId, String market, String language) {
+
+        Connection conn = connect();
+
+        if (null == conn) {
+            return ImmutableList.of();
+        }
+
+        Statement stmt = null;
+
+        try {
+            String sql = String.format(getUserThirdPartyIds, userId, market, language);
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            List<ThirdPartyUser> result = new ArrayList<>();
+
+            while (rs.next()) {
+                result.add(new ThirdPartyUser(rs.getString("ID"), UserType.fromCode(rs.getInt("USERTYPE"))));
+            }
+
+            return result;
+
+        } catch (SQLException e) {
+
+            closeStmt(stmt);
+            log.warn(e.getMessage(), e);
+            return ImmutableList.of();
 
         } finally {
             if (stmt != null) {
