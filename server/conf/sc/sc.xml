@@ -271,14 +271,12 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
-				<entry key="SH"><ref bean="shSessionChecker"/></entry>
-				<entry key="SZ"><ref bean="szSessionChecker"/></entry>
+				<entry key="STOCK"><ref bean="shSessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
-				<entry key="SH"><ref bean="shTradeDateManager"/></entry>
-				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
+				<entry key="STOCK"><ref bean="shTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>

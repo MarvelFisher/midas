@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -24,9 +22,9 @@ import com.cyanspring.common.staticdata.fu.IRefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class FuRefDataManager implements IPlugin, IRefDataManager{
+public class RefDataFactory implements IPlugin, IRefDataManager{
 	private static final Logger log = LoggerFactory
-			.getLogger(FuRefDataManager.class);
+			.getLogger(RefDataFactory.class);
 	String refDataFile;	
     List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -59,9 +57,29 @@ public class FuRefDataManager implements IPlugin, IRefDataManager{
         IRefDataStrategy strategy;
         for(RefData refData: refDataList) {
             if(!strategyMap.containsKey(refData.getStrategy())){
-                Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>)Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy");
-                Constructor<IRefDataStrategy> ctor = tempClz.getConstructor(MarketSessionUtil.class);
-                strategy = ctor.newInstance(marketSessionUtil);
+                try {
+                    Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>)Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy");
+                    Constructor<IRefDataStrategy> ctor = tempClz.getConstructor(MarketSessionUtil.class);
+                    strategy = ctor.newInstance(marketSessionUtil);
+                } catch (RuntimeException e) {
+                    log.warn("Can't find strategy: {}", refData.getStrategy());
+                    strategy = new IRefDataStrategy() {
+                        @Override
+                        public void init(Calendar cal) {
+
+                        }
+
+                        @Override
+                        public boolean update(Calendar tradeDate) {
+                            return false;
+                        }
+
+                        @Override
+                        public void setExchangeRefData(RefData refData) {
+
+                        }
+                    };
+                }
                 strategyMap.put(refData.getStrategy(), strategy);
             }else{
                 strategy = strategyMap.get(refData.getStrategy());

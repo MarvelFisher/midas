@@ -127,11 +127,7 @@ public class IndexMarketSessionManager implements IPlugin {
             if (searchBySymbol)
                 refDataMap.put(refData.getSymbol(), refData);
             else {
-                String index;
-                if (refData.getStrategy() != null)
-                    index = refData.getStrategy();
-                else
-                    index = refData.getExchange();
+                String index = refData.getStrategy();
                 if (!refDataMap.containsKey(index))
                     refDataMap.put(index, refData);
             }
