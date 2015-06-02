@@ -31,10 +31,11 @@ public class CentralDbEventProc implements Runnable
     private Thread m_Thread;
     private CentralDbProcessor centraldb = null;
     private LinkedBlockingQueue<RemoteAsyncEvent> m_q = new LinkedBlockingQueue<RemoteAsyncEvent>();
-    private String strName = "CentralDbProcessor-Event";
+    private String strName = "";
     
-    public CentralDbEventProc(CentralDbProcessor centraldb)
+    public CentralDbEventProc(CentralDbProcessor centraldb, String strName)
     {
+    	this.strName = strName;
     	this.centraldb = centraldb;
     	m_Thread = new Thread(this);
     	m_Thread.setName(strName);
