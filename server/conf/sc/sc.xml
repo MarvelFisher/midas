@@ -272,11 +272,13 @@
 		<constructor-arg>
 			<map>
 				<entry key="STOCK"><ref bean="shSessionChecker"/></entry>
+				<entry key="INDEX"><ref bean="shSessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
 				<entry key="STOCK"><ref bean="shTradeDateManager"/></entry>
+				<entry key="INDEX"><ref bean="shTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>
