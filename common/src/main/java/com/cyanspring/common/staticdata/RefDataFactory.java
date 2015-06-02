@@ -62,7 +62,7 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
                     Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
                     strategy = ctor.newInstance();
                     strategy.setMarketSessionUtil(marketSessionUtil);
-                } catch (RuntimeException e) {
+                } catch (Exception e) {
                     log.error("Can't find strategy: {}", refData.getStrategy());
                     strategy = new IRefDataStrategy() {
                         @Override
