@@ -32,10 +32,6 @@ public class IFStrategy implements IRefDataStrategy {
     private Calendar cal;
     private String symbol = "IF";
 
-    public IFStrategy(MarketSessionUtil marketSessionUtil) {
-        this.marketSessionUtil = marketSessionUtil;
-    }
-
     @Override
     public void init(Calendar cal) {
         if (this.cal == null) {
@@ -75,6 +71,11 @@ public class IFStrategy implements IRefDataStrategy {
             refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1ID);
             refData.setSymbol(refData.getSymbol().substring(0, 2) + n1ID + "." + refData.getExchange());
         }
+    }
+
+    @Override
+    public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
+        this.marketSessionUtil = marketSessionUtil;
     }
 
     private void setStrategyData(Calendar cal) {

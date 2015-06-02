@@ -59,10 +59,11 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
             if(!strategyMap.containsKey(refData.getStrategy())){
                 try {
                     Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>)Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy");
-                    Constructor<IRefDataStrategy> ctor = tempClz.getConstructor(MarketSessionUtil.class);
-                    strategy = ctor.newInstance(marketSessionUtil);
+                    Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
+                    strategy = ctor.newInstance();
+                    strategy.setMarketSessionUtil(marketSessionUtil);
                 } catch (RuntimeException e) {
-                    log.warn("Can't find strategy: {}", refData.getStrategy());
+                    log.error("Can't find strategy: {}", refData.getStrategy());
                     strategy = new IRefDataStrategy() {
                         @Override
                         public void init(Calendar cal) {
@@ -76,6 +77,11 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
 
                         @Override
                         public void setExchangeRefData(RefData refData) {
+
+                        }
+
+                        @Override
+                        public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
 
                         }
                     };
