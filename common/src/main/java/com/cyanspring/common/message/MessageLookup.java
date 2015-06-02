@@ -218,6 +218,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP, getBean(523, "This third party id is already used in the new version app"));
 			addAndCheck(ErrorMessage.LIVE_TRADING_SETTING_NOT_OVER_FROZEN_DAYS, getBean(524, "cant change live trading setting , because not over frozen setted days"));
 			addAndCheck(ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP, getBean(525, "can't find this rule in live trading"));
+			addAndCheck(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, getBean(526, "Attach third party id failed"));
 
 			
 			

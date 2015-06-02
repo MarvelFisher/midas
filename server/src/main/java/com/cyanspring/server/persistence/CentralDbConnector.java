@@ -155,7 +155,7 @@ public class CentralDbConnector {
 
     public boolean detachThirdPartyUser(String userId, String password, String thirdPartyId, String market, String language) {
 
-        if (!userLogin(userId, password))
+        if (!Strings.isNullOrEmpty(password) && !userLogin(userId, password))
             return false;
 
         Connection conn = connect();

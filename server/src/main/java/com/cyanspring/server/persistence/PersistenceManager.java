@@ -746,8 +746,8 @@ public class PersistenceManager {
                 } else {
 
                     eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
-                            event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
-                            , message, event.getOriginalEvent().getTxId(), true));
+							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
+							, message, event.getOriginalEvent().getTxId(), true));
                     if (ok) {
                         for (Account account : event.getAccounts())
                             eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
@@ -1655,24 +1655,44 @@ public class PersistenceManager {
         boolean ok = false;
         String message = "";
 
-        try {
-            if (centralDbConnector.detachThirdPartyUser(event.getUser(), event.getPassword(), event.getUserThirdParty(),
-                    event.getMarket(), event.getLanguage())) {
+		if (!event.isAttach()) {
+			// detach
+			try {
+				if (centralDbConnector.detachThirdPartyUser(event.getUser(), event.getPassword(), event.getUserThirdParty(),
+						event.getMarket(), event.getLanguage())) {
 
-                ok = true;
-                log.info("Detach third party id, {}", event.toString());
-            } else {
-                MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id"));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            ok = false;
-            message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
+					ok = true;
+					log.info("Detach third party id, {}", event.toString());
+				} else {
+					MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id"));
+				}
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				ok = false;
+				message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
+			}
+		} else {
+			// attach
+			try {
+				if (centralDbConnector.registerThirdPartyUser(event.getUser(), event.getUserType(),
+						event.getUserThirdParty(), event.getMarket(), event.getLanguage())) {
+
+					ok = true;
+					log.info("Attach third party id, {}", event.toString());
+				} else {
+					MessageLookup.buildEventMessage(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, String.format("Can't attach third party id"));
+				}
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				ok = false;
+				message = MessageLookup.buildEventMessage(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, String.format("Can't attach third party id, err=[%s]", e.getMessage()));
+			}
 		}
 
 		try {
 			eventManager.sendRemoteEvent(new UserMappingDetachReplyEvent(event.getKey(), event.getSender(), ok, message,
-					event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage()));
+					event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage(),
+					event.isAttach(), event.getUserType()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
