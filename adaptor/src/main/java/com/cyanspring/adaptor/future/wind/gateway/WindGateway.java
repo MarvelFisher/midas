@@ -65,6 +65,10 @@ public class WindGateway implements Runnable {
 	public static String upstreamIp = "202.55.14.140";
 	public static int upstreamPort = 10049;
 	
+	public static boolean mpCascading = false;
+	public static String mpUpstreamIp = "202.55.14.140";
+	public static int mpUpstreamPort = 10048;
+	
 	public static MsgPackLiteServer msgPackLiteServer = null;
 	Demo demo = null,demoStock = null;
 	
@@ -152,6 +156,30 @@ public class WindGateway implements Runnable {
 	public void setUpstreamPort(int port) {
 		upstreamPort = port;
 	}
+	
+	
+	public boolean getMpCascading() {
+		return mpCascading;
+	}
+	public void setMpCascading(boolean b) {
+		mpCascading = b;
+	}
+
+	public String getMpUpstreamIp() {
+		return mpUpstreamIp;
+	}
+	public void setMpUpstreamIp(String ip) {
+		mpUpstreamIp = ip;
+	}
+	
+	public int getMpUpstreamPort() {
+		return mpUpstreamPort;
+	}
+	public void setMpUpstreamPort(int port) {
+		mpUpstreamPort = port;
+	}
+
+		
 	
 	public static boolean compareArrays(long[] array1, long[] array2) {
         if (array1 != null && array2 != null){
@@ -754,6 +782,8 @@ public class WindGateway implements Runnable {
 			WindGatewayHandler.publishWindData(str,symbol,false);
 		}		
 	}	
+		
+	
 	
 	public void receiveHeartBeat() {	
 		publishWindData("API=Heart Beat",null);
@@ -914,15 +944,24 @@ public class WindGateway implements Runnable {
 	{	
 		try {
 			//Demo demo = null,demoStock = null;
-			Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null;
+			Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null,mpClientThread = null;
 			DataWrite dw = null,dwStock = null;
 			WindDataClient windDataClient = null;
+			MsgPackLiteDataClient mpDataClient = null;
 			
 	
-			if(cascading) {
-				windDataClient = new WindDataClient();
-				clientThread = new Thread(windDataClient,"windDataClient");
-				clientThread.start();						
+			if(cascading || mpCascading) {
+				if(cascading) {
+					windDataClient = new WindDataClient();
+					clientThread = new Thread(windDataClient,"windDataClient");
+					clientThread.start();
+				}
+				if(mpCascading) 
+				{
+					mpDataClient = new MsgPackLiteDataClient();
+					mpClientThread = new Thread(mpDataClient,"MsgPackLiteDataClient");
+					mpClientThread.start();
+				}
 			} else {
 				if(windMFServerIP != null && windMFServerIP != "")
 				{
@@ -996,6 +1035,10 @@ public class WindGateway implements Runnable {
 					windDataClient.stop();
 					clientThread.join();				
 				}
+				if(mpClientThread != null) {
+					mpDataClient.stop();
+					mpClientThread.join();				
+				}				
 				if(mpServerThread != null) {
 					msgPackLiteServer.stop();
 					mpServerThread.join();
