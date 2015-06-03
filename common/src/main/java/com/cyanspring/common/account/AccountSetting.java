@@ -18,23 +18,23 @@ public class AccountSetting extends DataObject {
 		
 		AccountSetting settings = new AccountSetting(accountId);
 		settings.setDefaultQty(Default.getOrderQuantity());
-		settings.setStopLossValue(Default.getPositionStopLoss());
-		settings.setCompanySLValue(0.0);
+		settings.setStopLossValue(Default.getPositionStopLoss());	//user position stop loss value
+		settings.setCompanySLValue(0.0);							//company position stop loss value
 		settings.setMargin(0.0);
 		settings.setRoute("");
 		settings.setCommission(0.0);
 		settings.setLeverageRate(0.0);
-		settings.setDailyStopLoss(0.0);
+		settings.setDailyStopLoss(0.0);								//user daily stop loss value
 		settings.setTrailingStop(0.0);		
-		settings.setStopLossPercent(Default.getStopLossPercent());
-		settings.setFreezePercent(Default.getFreezePercent());
-		settings.setTerminatePercent(Default.getTerminatePecent());		
+		settings.setStopLossPercent(Default.getStopLossPercent());	//company position stop loss percent
+		settings.setFreezePercent(Default.getFreezePercent());		//company daily stop loss percent
+		settings.setTerminatePercent(Default.getTerminatePecent());	//company account stop loss percent	
 		settings.setLiveTrading(Default.isLiveTrading());
 		settings.setUserLiveTrading(Default.isUserLiveTrading());
 		settings.setLiveTradingType(Default.getLiveTradingType());
 		settings.setLiveTradingSettedDate("");
-		settings.setFreezeValue(Default.getFreezeValue());
-		settings.setTerminateValue(Default.getTerminateValue());
+		settings.setFreezeValue(Default.getFreezeValue());			//company daily stop loss value
+		settings.setTerminateValue(Default.getTerminateValue());	//company account stop loss percent
 		return settings;
 	}
 	

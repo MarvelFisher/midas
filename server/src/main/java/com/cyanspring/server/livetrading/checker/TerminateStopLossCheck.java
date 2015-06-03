@@ -49,10 +49,6 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 			return true;
 		}
 		
-		if(PriceUtils.isZero(accountSetting.getTerminatePercent())){
-			return true;
-		}
-		
 		if(AccountState.TERMINATED == account.getState() ){
 			closeAllPositoinAndOrder(account);
 			return false;
