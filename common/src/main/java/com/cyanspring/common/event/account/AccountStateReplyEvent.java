@@ -42,4 +42,14 @@ public class AccountStateReplyEvent extends RemoteAsyncEvent{
 		return msg;
 	}
 
+	@Override
+	public String toString() {
+		return "AccountStateReplyEvent{" +
+				"accountId='" + accountId + '\'' +
+				", userId='" + userId + '\'' +
+				", state=" + state +
+				", ok=" + ok +
+				", msg='" + msg + '\'' +
+				'}';
+	}
 }

@@ -16,4 +16,11 @@ public class AccountStateRequestEvent extends RemoteAsyncEvent{
 	public String getId() {
 		return id;
 	}
+
+	@Override
+	public String toString() {
+		return "AccountStateRequestEvent{" +
+				"id='" + id + '\'' +
+				'}';
+	}
 }
