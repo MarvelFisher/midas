@@ -727,17 +727,18 @@ public class AccountPositionManager implements IPlugin {
     	String message = "";
     	String id = event.getId();
     	Account account = accountKeeper.getAccount(id);
+    	AccountStateReplyEvent reply = null;
     	
     	if(null == account){
     		isOk = false;
             message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST,"Account not exist"); 
+            reply = new AccountStateReplyEvent(event.getKey()
+        			,event.getSender(),isOk,message,id,null,null);
+    	}else{
+    		reply = new AccountStateReplyEvent(event.getKey()
+        			,event.getSender(),isOk,message,id,account.getUserId(),account.getState());
     	}
-    	
-    	String userId = account.getUserId();	
-    	
-    	AccountStateReplyEvent reply = new AccountStateReplyEvent(event.getKey()
-    			,event.getSender(),isOk,message,id,userId,account.getState());
-    	
+    		
         try {
             eventManager.sendRemoteEvent(reply);
         } catch (Exception e) {
@@ -1002,6 +1003,7 @@ public class AccountPositionManager implements IPlugin {
             return false;
         boolean result = false;
         List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+        
         if (PriceUtils.EqualLessThan(account.getCashAvailable(), 0.0) && positions.size() > 0) {
             log.info("Margin call: " + account.getId() + ", " + account.getCash() + ", " + account.getUrPnL() + ", " + account.getCashAvailable());
 
