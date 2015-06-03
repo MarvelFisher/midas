@@ -51,13 +51,8 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 		
 		Double dailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue() * accountSetting.getFreezePercent()
 				, accountSetting.getFreezeValue());
-		log.info("account.getStartAccountValue() * accountSetting.getFreezePercent():{}",account.getStartAccountValue() * accountSetting.getFreezePercent());
-		log.info("accountSetting.getFreezeValue():{}",accountSetting.getFreezeValue());
-		log.info("dailyStopLoss:{}",dailyStopLoss);
 		
 		dailyStopLoss = TradingUtil.getMinValue(dailyStopLoss,accountSetting.getDailyStopLoss());
-
-		log.info("{} dailyStopLoss:{}",account.getId(),dailyStopLoss);
 		
 		if(PriceUtils.isZero(dailyStopLoss)){
 				return true;
