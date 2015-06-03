@@ -273,62 +273,44 @@ public class SymbolData implements Comparable<SymbolData>
 			lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
-			boolean bDelete = false ;
+			List<HistoricalPrice> listBase = null;
+			HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
+					keyDate, 
+					keyDate, 
+					getStrSymbol(), 
+					getdOpen(), 
+					getdCurHigh(), 
+					getdCurLow(), 
+					getdClose(), 
+					(int)dCurVolume) ;
+			curPrice.setTotalVolume(getdCurTotalVolume());
+			curPrice.setTurnover(getdCurTurnover());
+			
 			if (lastPrice != null && lastPrice.getKeytime() != null)
 			{
 				cal_.setTime(lastPrice.getKeytime());
 				if (strType.equals("W"))
 				{
-					bDelete = getWeek(sdf.format(cal_.getTime())) == getWeek(sdf.format(cal.getTime())) ;
+					if (getWeek(sdf.format(cal_.getTime())) == getWeek(sdf.format(cal.getTime())))
+						listBase = centralDB.getDbhnd().getPeriodValue(market, "W", getStrSymbol(), lastPrice.getKeytime());
 				}
 				else
 				{
-					bDelete = (cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
-								&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)) ;
+					if ((cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
+							&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)))
+						listBase = centralDB.getDbhnd().getPeriodValue(market, "M", getStrSymbol(), lastPrice.getKeytime());
 				}
 			}
-			else
+			HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
+			if (listBase != null)
 			{
-				lastPrice = new HistoricalPrice() ;
-			}
-			lastPrice.setTradedate(tradeDate);
-			lastPrice.setKeytime(keyDate);
-			lastPrice.setDatatime(currentDate);
-			if (!bDelete)
-			{
-				if (PriceUtils.isZero(getdOpen()) == false) 
+				for (HistoricalPrice price : listBase)
 				{
-					lastPrice.setOpen(getdOpen());
+					newPrice.update(price);
 				}
-				lastPrice.setHigh(0.0);
-				lastPrice.setLow(0.0);
-				lastPrice.setClose(0.0);
-				lastPrice.setVolume((long)dCurVolume);
-				lastPrice.setTotalVolume(0);
-				lastPrice.setTurnover(0);
 			}
-			else
-			{
-				lastPrice.setVolume(lastPrice.getVolume() + (long)dCurVolume);
-			}
-			if (PriceUtils.isZero(lastPrice.getHigh()) 
-					|| (lastPrice.getHigh() < getdCurHigh() && PriceUtils.isZero(getdCurHigh()) == false))
-			{
-				lastPrice.setHigh(getdCurHigh());
-			}
-			if (PriceUtils.isZero(lastPrice.getLow()) 
-					|| (lastPrice.getLow() > getdCurLow() && PriceUtils.isZero(getdCurLow()) == false))
-			{
-				lastPrice.setLow(getdCurLow());
-			}
-			if (PriceUtils.isZero(getdClose()) == false) 
-			{
-				lastPrice.setClose(getdClose());
-			}
-			double dTotalVolume = lastPrice.getTotalVolume();
-			double dTurnover = lastPrice.getTurnover();
-			lastPrice.setTotalVolume(dTotalVolume + getdCurTotalVolume());
-			lastPrice.setTurnover(dTurnover + getdCurTurnover());
+			newPrice.update(curPrice);
+			lastPrice = (HistoricalPrice) newPrice.clone();
 		}
 		else
 		{
@@ -610,14 +592,14 @@ public class SymbolData implements Comparable<SymbolData>
 		curPrice.setTotalVolume(getdCurTotalVolume());
 		curPrice.setTurnover(getdCurTurnover());
 		HistoricalPrice lastPrice = null ;
-		if (pricelist.size() > 1)
+		if (pricelist.size() > 0)
 		{
 			lastPrice = pricelist.get(pricelist.size()-1) ;
 			pricetime.setTime(lastPrice.getKeytime());
 		}
 		if (strType.equals("D") && lastPrice != null)
 		{
-			if (emptytime.get(Calendar.DATE) == pricetime.get(Calendar.DATE))
+			if (sdf.format(emptytime).equals(sdf.format(pricetime)))
 			{
 				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
 				{
@@ -642,20 +624,19 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			if (getWeek(sdf.format(emptytime.getTime())) == getWeek(sdf.format(pricetime.getTime())))
 			{
-				lastPrice.setDatatime(date);
-				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
+				pricelist.remove(lastPrice);
+				emptytime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				List<HistoricalPrice> listWeek = centralDB.getDbhnd().getPeriodValue(market, "W", getStrSymbol(), lastPrice.getKeytime());
+				HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
+				if (listWeek != null)
 				{
-					lastPrice.setHigh(getdCurHigh());
+					for (HistoricalPrice price : listWeek)
+					{
+						newPrice.update(price);
+					}
 				}
-				if (PriceUtils.isZero(getdCurLow()) && lastPrice.getLow() > getdCurLow())
-				{
-					lastPrice.setLow(getdCurLow());
-				}
-				if (!PriceUtils.isZero(getdClose()))
-				{
-					lastPrice.setClose(getdClose());
-				}
-				lastPrice.setDatatime(date);
+				newPrice.update(curPrice);
+				pricelist.add(newPrice);
 			}
 			else
 			{
@@ -667,20 +648,19 @@ public class SymbolData implements Comparable<SymbolData>
 			if (emptytime.get(Calendar.MONTH) == pricetime.get(Calendar.MONTH) 
 					&& emptytime.get(Calendar.YEAR) == pricetime.get(Calendar.YEAR))
 			{
-				lastPrice.setDatatime(date);
-				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
+				pricelist.remove(lastPrice);
+				emptytime.set(Calendar.DAY_OF_MONTH, 1);
+				List<HistoricalPrice> listMon = centralDB.getDbhnd().getPeriodValue(market, "M", getStrSymbol(), lastPrice.getKeytime());
+				HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
+				if (listMon != null)
 				{
-					lastPrice.setHigh(getdCurHigh());
+					for (HistoricalPrice price : listMon)
+					{
+						newPrice.update(price);
+					}
 				}
-				if (PriceUtils.isZero(getdCurLow()) && lastPrice.getLow() > getdCurLow())
-				{
-					lastPrice.setLow(getdCurLow());
-				}
-				if (!PriceUtils.isZero(getdClose()))
-				{
-					lastPrice.setClose(getdClose());
-				}
-				lastPrice.setDatatime(date);
+				newPrice.update(curPrice);
+				pricelist.add(newPrice);
 			}
 			else
 			{

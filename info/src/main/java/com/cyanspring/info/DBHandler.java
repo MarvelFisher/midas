@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -294,6 +297,52 @@ public class DBHandler
 			else
 			{
 				return null;
+			}
+		} catch (SQLException e) {
+            log.error(e.getMessage(), e) ;
+            log.trace(sqlcmd);
+			return null ;
+		} catch (ParseException e) {
+            log.error(e.getMessage(), e) ;
+			return null ;
+		}
+    }
+    public List<HistoricalPrice> getPeriodValue(String market, String type, String symbol, Date startdate)
+    {
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+    	String strTable = String.format("%s_%s", prefix, type) ;
+    	String sqlcmd = "" ;
+		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' ORDER BY `KEYTIME`;", 
+				strTable, symbol, sdf.format(startdate));
+    	ResultSet rs = querySQL(sqlcmd) ;
+    	try {
+    		HistoricalPrice price;
+    		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
+			while (rs.next())
+			{
+				price = new HistoricalPrice();
+				price.setTradedate(rs.getString("TRADEDATE"));
+				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+				price.setSymbol(rs.getString("SYMBOL")) ;
+				price.setOpen(rs.getDouble("OPEN_PRICE"));
+				price.setClose(rs.getDouble("CLOSE_PRICE"));
+				price.setHigh(rs.getDouble("HIGH_PRICE"));
+				price.setLow(rs.getDouble("LOW_PRICE"));
+				price.setVolume(rs.getLong("VOLUME"));
+				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+				price.setTurnover(rs.getLong("TURNOVER"));
+				retList.add(price);
+			}
+			if (retList.isEmpty())
+			{
+				return null;
+			}
+			else
+			{
+				return retList;
 			}
 		} catch (SQLException e) {
             log.error(e.getMessage(), e) ;
