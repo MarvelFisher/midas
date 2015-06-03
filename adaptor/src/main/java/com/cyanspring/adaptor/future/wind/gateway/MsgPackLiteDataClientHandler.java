@@ -26,8 +26,8 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		
 		msLastTime = System.currentTimeMillis();
 		ctx = arg0;
-		ctx.channel().write(WindGatewayHandler.addHashTail("API=ReqHeartBeat",true));
-		ctx.channel().write(WindGatewayHandler.addHashTail("API=GetMarkets",true));
+		//ctx.channel().write(MsgPackLiteDataServerHandler.addHashTail("API=ReqHeartBeat",true));
+		//ctx.channel().write(MsgPackLiteDataServerHandler.addHashTail("API=GetMarkets",true));
 		WindGatewayHandler.resubscribe(ctx.channel(),MsgPackLiteDataServerHandler.registrationGlobal);
 		ctx.channel().flush();
 		log.info(ctx.channel().localAddress().toString() + " Connected with data server : " + ctx.channel().remoteAddress().toString());
@@ -129,9 +129,30 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			case FDTFields.WindMarkets :
 				if(in.containsKey(FDTFields.ArrayOfString)) {
 					processMarkets(in.get(FDTFields.ArrayOfString));
+					MsgPackLiteDataServerHandler.sendMessagePackToAllClient(in);
 				}
 				break;
-			}	
+			case FDTFields.WindTransaction :
+				if(in.containsKey(FDTFields.WindSymbolCode)) {
+					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
+					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistrationTransaction(in, symbol);
+				}
+				break;
+			case FDTFields.WindIndexData :
+			case FDTFields.WindMarketData :
+			case FDTFields.WindFutureData :
+				if(in.containsKey(FDTFields.WindSymbolCode)) {
+					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
+					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(in, symbol);
+				}
+				break;
+			case FDTFields.WindHeartBeat :
+			case FDTFields.WindCodeTable :
+			case FDTFields.WindMarketClose :
+			case FDTFields.WindQuotationDateChange :
+				MsgPackLiteDataServerHandler.sendMessagePackToAllClient(in);
+				break;				
+			}
 		}
 		catch(Exception e) {
 			
@@ -148,7 +169,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		ArrayList<byte[]> lst = (ArrayList<byte[]>)obj;
 		for(byte[] bytes : lst) {
 			markets.add(new String(bytes,"UTF-8"));
-		}
-
+		}		
+		WindGateway.instance.convertMarketsMP(markets);
 	}
 }

@@ -37,7 +37,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,TDF_INDEX_DATA>  mapIndexData  = new ConcurrentHashMap<String,TDF_INDEX_DATA>();
 	public static ConcurrentHashMap<String,BuySellVolume>   mapBuySell = new ConcurrentHashMap<String,BuySellVolume>();
 	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
-	public static ConcurrentHashMap<String,ArrayList<TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ArrayList<TDF_CODE>>();
+	public static ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>>();
 	
 
 	
@@ -787,6 +787,10 @@ public class WindGateway implements Runnable {
 	
 	public void receiveHeartBeat() {	
 		publishWindData("API=Heart Beat",null);
+
+		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
+		map.put(FDTFields.PacketType,FDTFields.WindIndexData);
+		MsgPackLiteDataServerHandler.sendMessagePackToAllClient(map);
 	}
 	
 	public void receiveTransaction(TDF_TRANSACTION transactionData) {
@@ -898,21 +902,19 @@ public class WindGateway implements Runnable {
 	}
 	
 	public void receiveCodeTable(String strMarket,TDF_CODE[] codes) {	
-		ArrayList<TDF_CODE> lst;
+		ConcurrentHashMap<String,TDF_CODE> mapCode;
 		if(mapCodeTable.containsKey(strMarket))
 		{
-			lst = mapCodeTable.get(strMarket);
+			mapCode = mapCodeTable.get(strMarket);
 		}	else	{
-			lst = new ArrayList<TDF_CODE>();
-			mapCodeTable.put(strMarket, lst);
+			mapCode = new ConcurrentHashMap<String,TDF_CODE>();
+			mapCodeTable.put(strMarket, mapCode);
 		}
 		if(codes != null) {
-			synchronized(lst) {		
-				lst.clear();
+				mapCode.clear();
 				for(TDF_CODE code : codes) {			
-					lst.add(code);
-				}
-			}
+					mapCode.put(code.getWindCode(),code);
+				}			
 		}
 	}
 	
@@ -932,6 +934,15 @@ public class WindGateway implements Runnable {
 			}
 		}
 	}
+	
+	public void convertMarketsMP(ArrayList<String> markets) {
+
+		for(String market : markets) {
+			if(market != null && market.isEmpty() == false) {
+				receiveCodeTable(market,null);
+			}
+		}
+	}	
 	
 	public void requestSymbol(String sym) {
 		if(demoStock != null)
