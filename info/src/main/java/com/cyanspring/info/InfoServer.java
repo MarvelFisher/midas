@@ -111,6 +111,7 @@ public class InfoServer
 			if(!event.getServer() && readyList.allUp()) {
 				try {
 					waitForCDbPReady();
+					log.info("publishRemoteEvent caused by " + event.getInbox());
 					eventManager.publishRemoteEvent(channel, new ServerReadyEvent(true));
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
