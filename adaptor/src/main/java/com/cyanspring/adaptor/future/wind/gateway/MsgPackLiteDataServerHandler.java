@@ -108,9 +108,9 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					map = getIndexData(str);
 					if(map == null)
 					{	
-						if(WindGateway.cascading) {
+						if(WindGateway.mpCascading) {
 							if(bTransaction == false) {
-								WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
+								MsgPackLiteDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
 							}
 						} else {
 							WindGateway.instance.requestSymbol(str);
