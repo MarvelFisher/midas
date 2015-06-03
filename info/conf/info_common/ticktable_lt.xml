@@ -12,6 +12,22 @@
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
 
+	<bean id="eurrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.0001</value></array>
+			</array>
+		</property>
+	</bean>
+
+	<bean id="usdrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>
+
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">

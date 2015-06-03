@@ -9,8 +9,15 @@
 
 	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
 	</bean>
-	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
+    <bean id="scTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+        <property name="tickTable">
+            <array>
+                <array><value>0</value><value>10000000</value><value>0.01</value></array>
+            </array>
+        </property>
+    </bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">

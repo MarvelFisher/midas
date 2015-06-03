@@ -7,9 +7,26 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
+
 	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
 	</bean>
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+	</bean>
+	
+	<bean id="eurrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.0001</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="usdrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
 	</bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">

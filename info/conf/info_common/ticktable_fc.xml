@@ -7,7 +7,10 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd"
 >
 
+
 	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
+	</bean>
+	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
 	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
 	</bean>
