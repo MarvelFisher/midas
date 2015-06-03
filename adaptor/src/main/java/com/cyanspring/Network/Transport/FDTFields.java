@@ -44,9 +44,9 @@ public class FDTFields {
 	public final static int TradingDay = 75;
 	public final static int Turnover = 13;
 	public final static int Volume = 14;
-	public final static int NumberOfTrades = 22;
-	public final static int TotalBidVolume = 23;
-	public final static int TotalAskVolume = 24;
+	public final static int NumberOfTrades = 42;
+	public final static int TotalBidVolume = 43;
+	public final static int TotalAskVolume = 44;
 	public final static int SecurityType = 67;    
 	public final static int SecurityExchange = 7;	
 	public final static int OpenInterest = 60;
