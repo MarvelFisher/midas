@@ -37,6 +37,13 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 
 	private static final Logger log = LoggerFactory.getLogger(MsgPackLiteDataServerHandler.class);
 
+	public static String addHashTail(String str,boolean bAddHash)
+	{
+		if(bAddHash) {
+			return str + "|Hash=" + str.hashCode();
+		}
+		return str;
+	}	
 
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();			
@@ -110,7 +117,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					{	
 						if(WindGateway.mpCascading) {
 							if(bTransaction == false) {
-								MsgPackLiteDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
+								MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
 							}
 						} else {
 							WindGateway.instance.requestSymbol(str);
@@ -131,7 +138,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
 			}					
 		}    	
-		if(cnt > 0) {
+		if(lst.MsgPackArrayCount() > 0) {
 			channel.writeAndFlush(lst.flushMsgPack());
 		}
     }
@@ -141,8 +148,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		for(String str : sym_arr)
 		{
 			if(sendTransaction(channel,str) == false) {
-				if(WindGateway.cascading && registrationGlobal.hadTransaction(str) == false) {
-					WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SubsTrans|Symbol=" + str,true));	
+				if(WindGateway.mpCascading && registrationGlobal.hadTransaction(str) == false) {
+					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SubsTrans|Symbol=" + str,true));	
 				}			
 			}
 			// 先加到  Global Register Symbol
@@ -163,8 +170,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			newlyAdded = lst.addMarket(market);
 			weDontHave = registrationGlobal.addMarket(market);
 			log.info((newlyAdded ? "Subscribe Makret : " : "Re-subscribe Market : " ) + market + " , from " + channel.remoteAddress().toString());
-			if(weDontHave && WindGateway.cascading) {				
-				WindDataClientHandler.sendRequest(WindGatewayHandler.addHashTail("API=SUBSCRIBE|Market=" + market,true));			
+			if(weDontHave && WindGateway.mpCascading) {				
+				MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Market=" + market,true));			
 			} else {				
 				sendDataByMarket(channel,market);				
 			}
@@ -252,14 +259,14 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 							rearrangeRegistration();
 							log.info("Clear Subscribe from : " + channel.remoteAddress().toString());							
 						}	else if(strDataType.equals("GetMarkets")) {						
-							if(WindGateway.cascading) {
-								WindDataClientHandler.sendRequest(msg);
+							if(WindGateway.mpCascading) {
+								MsgPackLiteDataClientHandler.sendRequest(msg);
 							} else {
 								sendMarkets(channel);
 							}
 						}	else if(strDataType.equals("GetCodeTable")) {						
-							if(WindGateway.cascading) {
-								WindDataClientHandler.sendRequest(msg);
+							if(WindGateway.mpCascading) {
+								MsgPackLiteDataClientHandler.sendRequest(msg);
 							} else {
 								sendCodeTable(channel,strMarket);
 							}															
@@ -332,16 +339,20 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			System.out.println(logstr);
 			log.warn(logstr);    		
     	}
-    	ArrayList<TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
+    	ConcurrentHashMap<String,TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
     	if(lst == null || lst.size() == 0) {    	
 			String logstr = "No symbol at market : " + market + " , request from : " + channel.remoteAddress();
 			System.out.println(logstr);
 			log.warn(logstr);    		
     	}
-    	synchronized(lst) {
+
     		ArrayList<HashMap<Integer,Object>>packetArray = new ArrayList<HashMap<Integer,Object>>();
     		int i = 0;
-    		for(TDF_CODE code : lst) {
+    		TDF_CODE code;		
+    	    Iterator it = lst.entrySet().iterator();
+    	    while (it.hasNext()) {
+    	        Map.Entry pair = (Map.Entry)it.next();
+    	        code = (TDF_CODE) pair.getValue();
     			packetArray.add(codeToMap(code));
     			i += 1;
     			if(i % 100 == 0) {
@@ -349,12 +360,13 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     				packetArray.clear();
     				i = 0;
     			}
+    	        it.remove(); // avoids a ConcurrentModificationException
     		}
     		if(packetArray.size() > 0) {
 				sendCodeTablePacketArray(channel,packetArray);
 				packetArray.clear();
     		}
-    	}    	
+  	
     }
     
     public static boolean sendTransaction(Channel channel,String symbol) {
@@ -556,7 +568,9 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			if(lst == null) {					
 				continue;
 			}
-			((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+			if(lst.MsgPackArrayCount() > 0) {
+				((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+			}
 		}		      	
     }
     

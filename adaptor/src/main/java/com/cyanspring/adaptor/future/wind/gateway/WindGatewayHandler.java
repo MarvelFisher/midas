@@ -5,9 +5,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 
@@ -365,26 +367,29 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			System.out.println(logstr);
 			log.warn(logstr);    		
     	}
-    	ArrayList<TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
+    	ConcurrentHashMap<String,TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
     	if(lst == null || lst.size() == 0) {    	
 			String logstr = "No symbol at market : " + market + " , request from : " + channel.remoteAddress();
 			System.out.println(logstr);
 			log.warn(logstr);    		
-    	}
-    	synchronized(lst) {    	
-    		String strCode;
-    		int i = 0;
-    		for(TDF_CODE code : lst) {    		
-    			i += 1;
-    			strCode = tdfCodeToString(code);
-    			if(i == lst.size()) {    			
-    				strCode = strCode + "|Ser=-" + i;    						
-    			}	else	{
-    				strCode = strCode + "|Ser=" + i;
-    			}
-    			channel.writeAndFlush(addHashTail(strCode,true));
-    		}
-    	}    	
+    	}   	
+		String strCode;
+		int i = 0;
+		TDF_CODE code;		
+	    Iterator it = lst.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        code = (TDF_CODE) pair.getValue();
+			strCode = tdfCodeToString(code);
+			i += 1;			
+			if(i == lst.size()) {    			
+				strCode = strCode + "|Ser=-" + i;    						
+			}	else	{
+				strCode = strCode + "|Ser=" + i;
+			}       
+	        it.remove(); // avoids a ConcurrentModificationException
+			channel.writeAndFlush(addHashTail(strCode,true));	 
+		}  	
     }
     
     public static String tdfCodeToString(TDF_CODE code) {    

@@ -102,7 +102,7 @@ class MsgPackLiteDataClientIdleHandler extends ChannelDuplexHandler {
             		ctx.close();
             } 
             if (e.state() == IdleState.WRITER_IDLE) {
-            	ctx.channel().writeAndFlush(WindGatewayHandler.addHashTail("API=ClientHeartBeat",true));
+            	ctx.channel().writeAndFlush(MsgPackLiteDataServerHandler.addHashTail("API=ClientHeartBeat",true));
             }
         }
     } 	

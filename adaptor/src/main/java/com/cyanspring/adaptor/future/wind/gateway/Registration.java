@@ -184,5 +184,8 @@ public class Registration {
 		return map;
 	}
 	
+	public int MsgPackArrayCount() {
+		return mpList.size();
+	}
 	
 }
