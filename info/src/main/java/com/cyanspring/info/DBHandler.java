@@ -344,6 +344,7 @@ public class DBHandler
     }
     public void checkTableExist(String table)
     {
+    	this.checkSQLConnect();
     	if (table == null)
     		return;
     	try 

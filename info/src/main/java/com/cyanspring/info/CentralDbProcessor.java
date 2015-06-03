@@ -76,7 +76,7 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<String> preSubscriptionList;
 	private ArrayList<SymbolChef> SymbolChefList = new ArrayList<SymbolChef>();
 	private ChartCacheProc chartCacheProcessor;
-	private CentralDbEventProc centralDbEventProcessor;
+	private HashMap<String, CentralDbEventProc> mapCentralDbEventProc;
 	
 	private MarketSessionType sessionType = null ;
 	private String tradedate ;
@@ -234,17 +234,17 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
 	
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		mapCentralDbEventProc.get("Historical").onEvent(event);
 	}
 	
 	public void processSymbolEvent(SymbolEvent event)
@@ -271,7 +271,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
-		centralDbEventProcessor.onEvent(event);
+		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
 	
 	public void processRefDataEvent(RefDataEvent event) 
@@ -773,7 +773,9 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		chartCacheProcessor = new ChartCacheProc();
-		centralDbEventProcessor = new CentralDbEventProc(this);
+		mapCentralDbEventProc = new HashMap<String, CentralDbEventProc>();
+		mapCentralDbEventProc.put("Historical", new CentralDbEventProc(this, "CDP-Event-Historical"));
+		mapCentralDbEventProc.put("Request", new CentralDbEventProc(this, "CDP-Event-Request"));
 		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;

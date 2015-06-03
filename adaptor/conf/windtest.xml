@@ -29,7 +29,7 @@
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://0.0.0.0:61626"></property>
 	</bean>
-	<bean id="refDataManager" class="com.cyanspring.common.staticdata.FuRefDataManager">
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataFile">
 			<value>refData/refData_sc.xml</value>
 		</property>
@@ -51,14 +51,12 @@
 <!-- 	Stocks setting -->
 		<constructor-arg>
 			<map>
-				<entry key="SH"><ref bean="SessionChecker"/></entry>
-				<entry key="SZ"><ref bean="SessionChecker"/></entry>
+				<entry key="STOCK"><ref bean="SessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
-				<entry key="SH"><ref bean="TradeDateManager"/></entry>
-				<entry key="SZ"><ref bean="TradeDateManager"/></entry>
+				<entry key="STOCK"><ref bean="TradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>

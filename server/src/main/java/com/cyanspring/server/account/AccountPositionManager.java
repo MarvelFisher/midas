@@ -46,6 +46,8 @@ import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AccountStateReplyEvent;
+import com.cyanspring.common.event.account.AccountStateRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
@@ -198,6 +200,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(TradeDateEvent.class, null);
             subscribeToEvent(InternalResetAccountRequestEvent.class, null);
             subscribeToEvent(SettlementEvent.class, null);
+            subscribeToEvent(AccountStateRequestEvent.class,null);
         }
 
         @Override
@@ -718,7 +721,32 @@ public class AccountPositionManager implements IPlugin {
             eventManager.sendEvent(new QuoteSubEvent(AccountPositionManager.ID, null, symbol));
         }
     }
-
+    public void processAccountStateRequestEvent(AccountStateRequestEvent event){
+    	
+    	boolean isOk = true;
+    	String message = "";
+    	String id = event.getId();
+    	Account account = accountKeeper.getAccount(id);
+    	
+    	if(null == account){
+    		isOk = false;
+            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST,"Account not exist"); 
+    	}
+    	
+    	String userId = account.getUserId();	
+    	
+    	AccountStateReplyEvent reply = new AccountStateReplyEvent(event.getKey()
+    			,event.getSender(),isOk,message,id,userId,account.getState());
+    	
+        try {
+            eventManager.sendRemoteEvent(reply);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    	
+    }
+    
+    
     public void processAccountSettingSnapshotRequestEvent(AccountSettingSnapshotRequestEvent event) {
         boolean ok = true;
         String message = null;
@@ -1063,6 +1091,19 @@ public class AccountPositionManager implements IPlugin {
         log.info("Account day end processing start");
         List<Account> list = accountKeeper.getAllAccounts();
         for (Account account : list) {
+        	
+        	if(AccountState.FROZEN.equals(account.getState())){
+        		
+    			AccountStateReplyEvent accountStateEvent = new AccountStateReplyEvent(null
+    	    			,null,true,"",account.getId(),account.getUserId(),AccountState.ACTIVE);
+    	    	
+    			try {
+					eventManager.sendRemoteEvent(accountStateEvent);
+				} catch (Exception e) {
+					log.info(e.getMessage(),e);
+				}
+        	}
+        	
             Account copy = positionKeeper.rollAccount(account);
             eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, copy));
             account.resetDailyPnL();

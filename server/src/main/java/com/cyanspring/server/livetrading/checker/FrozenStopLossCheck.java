@@ -10,6 +10,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.account.AccountStateReplyEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
@@ -80,6 +81,9 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 	private void sendUpdateAccountEvent(Account account){
 		try {
 			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
+	    	AccountStateReplyEvent accountStateEvent = new AccountStateReplyEvent(null
+	    			,null,true,"",account.getId(),account.getUserId(),account.getState());
+	    	eventManager.sendRemoteEvent(accountStateEvent);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}

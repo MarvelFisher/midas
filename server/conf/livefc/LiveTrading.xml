@@ -1,0 +1,96 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="liveTradingSessionValidator" class="com.cyanspring.server.validation.LiveTradingSessionValidator">
+	</bean> 
+	
+	<bean id="liveTradingSession" class="com.cyanspring.server.livetrading.LiveTradingSession">
+	</bean>
+
+	<bean id="liveTradingSetting" class="com.cyanspring.server.livetrading.LiveTradingSetting">
+		<property name="needCheckPosition" value="true"/>
+		<property name="needCheckFreeze" value="true"/>
+		<property name="needCheckTerminate" value="true"/>
+		<property name="changeSettingFrozenDays" value="0"/>
+		<property name="userStopLiveTradingStartTime" value="2:00:00"/>
+        <property name="userStopLiveTradingEndTime" value="7:00:00"/>
+	</bean>
+
+	<bean id="liveTradingRuleHandler" class="com.cyanspring.server.livetrading.rule.LiveTradingRuleHandler">		
+		<constructor-arg>
+			<map key-type="com.cyanspring.common.account.LiveTradingType" value-type="com.cyanspring.server.livetrading.rule.IUserLiveTradingRule">
+				<entry key="DEFAULT" value-ref="defaultUserTrading"/>
+				<entry key="CUSTOM" value-ref="customTrading"/>
+				<entry key="DAY_TRADING" value-ref="dayTrading"/>				
+			</map>
+		</constructor-arg>	
+	 </bean>
+	 
+	 <bean id="defaultUserTrading" class="com.cyanspring.server.livetrading.rule.DefaultUserTrading">
+	 	<constructor-arg>
+	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
+	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
+	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
+	 			<entry key="TERMINATE_STOP_LOSS" value="0.3"/>
+	 			<entry key="COMPANY_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="FROZEN_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="TERMINATE_STOP_LOSS_VALUE" value="0"/>
+	 		</map>
+		</constructor-arg>
+	 </bean>
+	
+	 <bean id="dayTrading" class="com.cyanspring.server.livetrading.rule.DayTrading">
+	 	<constructor-arg>
+	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
+	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
+	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
+	 			<entry key="COMPANY_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="FROZEN_STOP_LOSS_VALUE" value="0"/>
+	 		</map>
+		</constructor-arg>
+	 </bean>
+	
+	
+	 <bean id="customTrading" class="com.cyanspring.server.livetrading.rule.CustomTrading"/>
+	
+	
+	
+	 
+	 <bean id="liveTradingCheckHandler" class="com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler">		
+		<constructor-arg>
+			<map key-type="com.cyanspring.common.account.LiveTradingType" value-type="java.util.ArrayList">
+				<entry key="DEFAULT" value-ref="defaultCheckChain"/>
+				<entry key="CUSTOM" value-ref="defaultCheckChain"/>
+				<entry key="DAY_TRADING" value-ref="dayTradingCheckChain"/>
+			</map>
+		</constructor-arg>	
+	 </bean>
+
+	 <bean id="defaultCheckChain" class="java.util.ArrayList">
+	 	<constructor-arg>
+	        <list>
+	            <ref bean="terminateStopLossCheck" />
+	            <ref bean="frozenStopLossCheck" />
+	            <ref bean="positionStopLossCheck" />                 
+	        </list>
+         </constructor-arg>
+	 </bean>
+	 
+	 <bean id="dayTradingCheckChain" class="java.util.ArrayList">
+	 	<constructor-arg>
+	        <list>
+	            <ref bean="frozenStopLossCheck" />
+	            <ref bean="positionStopLossCheck" />                 
+	        </list>
+         </constructor-arg>
+	 </bean>
+	 
+	 <bean id="positionStopLossCheck" class="com.cyanspring.server.livetrading.checker.PositionStopLossCheck"/>
+	 <bean id="frozenStopLossCheck" class="com.cyanspring.server.livetrading.checker.FrozenStopLossCheck"/>
+	 <bean id="terminateStopLossCheck" class="com.cyanspring.server.livetrading.checker.TerminateStopLossCheck"/>
+	 
+</beans>

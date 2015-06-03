@@ -475,13 +475,22 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         //RefDataEvent
         if (object instanceof RefDataEvent) {
             log.debug("Wind Adapter Receive RefDataEvent");
+            String mainMarket = "S"; //default main market
             RefDataEvent refDataEvent = (RefDataEvent) object;
             for (RefData refData : refDataEvent.getRefDataList()) {
                 commodityBySymbolMap.put(refData.getSymbol(), refData.getCommodity());
-                if ("S".equals(refData.getCommodity()) || "I".equals(refData.getCommodity()))
-                    marketRuleBySymbolMap.put(refData.getSymbol(), refData.getExchange());
-                if ("F".equals(refData.getCommodity()))
+                if ("S".equals(refData.getCommodity())) {
+                    marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
+                    mainMarket = "S";
+                }
+                if ("F".equals(refData.getCommodity())) {
                     marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
+                    mainMarket = "F";
+                }
+                if ("I".equals(refData.getCommodity())){
+                    if("S".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
+                    if("F".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
+                }
             }
         }
 

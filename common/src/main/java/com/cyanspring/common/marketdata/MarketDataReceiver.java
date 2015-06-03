@@ -27,6 +27,7 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
-            subscribeToEvent(TradeDateEvent.class, null);
         }
 
         @Override
@@ -137,7 +137,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) {
                     adaptor.processEvent(event);
-                    if (adaptor.getClass().getSimpleName().equals("WindFutureDataAdaptor")
+                    if (adaptor.getClass().getSimpleName().equals("WindGateWayAdapter")
                             && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN && isInitReqDataEnd) {
                         adaptor.clean();
                         preSubscribe();
@@ -198,10 +198,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         //Calculate Future Quote last Volume
         if (inEvent.getSourceId() > 100) {
-            if (prev != null && TimeUtil.formatDate(prev.getTimeStamp(), "yyyy-MM-dd").equals(tradeDate)) {
+            if (prev != null && PriceUtils.GreaterThan(quote.getTotalVolume(), prev.getTotalVolume())) {
                 quote.setLastVol(quote.getTotalVolume() - prev.getTotalVolume());
             } else {
-                quote.setLastVol(quote.getTotalVolume());
+                quote.setLastVol(0);
             }
         }
 
@@ -293,13 +293,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
         quotesToBeSent.clear();
         broadCastStaleQuotes();
-    }
-
-    public void processTradeDateEvent(TradeDateEvent event) {
-        String newTradeDate = event.getTradeDate();
-        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
-            tradeDate = newTradeDate;
-        }
     }
 
     public void processTradeEvent(TradeEvent event) {

@@ -607,6 +607,8 @@ public class SymbolData implements Comparable<SymbolData>
 													   getdCurLow(), 
 													   getdClose(), 
 													   (int)dCurVolume) ;
+		curPrice.setTotalVolume(getdCurTotalVolume());
+		curPrice.setTurnover(getdCurTurnover());
 		HistoricalPrice lastPrice = null ;
 		if (pricelist.size() > 1)
 		{
@@ -804,6 +806,8 @@ public class SymbolData implements Comparable<SymbolData>
 				price.setClose(rs.getDouble("CLOSE_PRICE"));
 				price.setHigh(rs.getDouble("HIGH_PRICE"));
 				price.setLow(rs.getDouble("LOW_PRICE"));
+				price.setTotalVolume(rs.getDouble("TOTALVOLUME"));
+				price.setTurnover(rs.getDouble("TURNOVER"));
 				strtmp = rs.getString("VOLUME") ;
 				if (strtmp != null && !strtmp.toLowerCase().equals("null"))
 				{

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.account.ThirdPartyUser;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
@@ -146,6 +147,7 @@ public class PersistenceManager {
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(UserTerminateEvent.class, null);
             subscribeToEvent(UserMappingEvent.class, null);
+			subscribeToEvent(UserMappingListEvent.class, null);
             subscribeToEvent(UserMappingDetachEvent.class, null);
 		}
 
@@ -746,8 +748,8 @@ public class PersistenceManager {
                 } else {
 
                     eventManager.sendRemoteEvent(new UserCreateAndLoginReplyEvent(event.getOriginalEvent().getKey(),
-                            event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
-                            , message, event.getOriginalEvent().getTxId(), true));
+							event.getOriginalEvent().getSender(), user, defaultAccount, event.getAccounts(), ok, event.getOriginalEvent().getOriginalID()
+							, message, event.getOriginalEvent().getTxId(), true));
                     if (ok) {
                         for (Account account : event.getAccounts())
                             eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
@@ -1646,6 +1648,24 @@ public class PersistenceManager {
         }
     }
 
+	public void processUserMappingListEvent(UserMappingListEvent event) {
+
+		if (!syncCentralDb) {
+			return;
+		}
+
+		try {
+			List<ThirdPartyUser> thirdPartyUsers = centralDbConnector.getThirdPartyUsers(event.getUser(), event.getMarket(), event.getLanguage());
+
+			UserMappingListReplyEvent reply = new UserMappingListReplyEvent(event.getKey(), event.getSender(),
+					event.getTxId(), event.getUser(), event.getMarket(), event.getLanguage(), thirdPartyUsers);
+
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+
     public void processUserMappingDetachEvent(UserMappingDetachEvent event) {
 
         if (!syncCentralDb) {
@@ -1655,24 +1675,44 @@ public class PersistenceManager {
         boolean ok = false;
         String message = "";
 
-        try {
-            if (centralDbConnector.detachThirdPartyUser(event.getUser(), event.getPassword(), event.getUserThirdParty(),
-                    event.getMarket(), event.getLanguage())) {
+		if (!event.isAttach()) {
+			// detach
+			try {
+				if (centralDbConnector.detachThirdPartyUser(event.getUser(), event.getPassword(), event.getUserThirdParty(),
+						event.getMarket(), event.getLanguage())) {
 
-                ok = true;
-                log.info("Detach third party id, {}", event.toString());
-            } else {
-                MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id"));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            ok = false;
-            message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
+					ok = true;
+					log.info("Detach third party id, {}", event.toString());
+				} else {
+					MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id"));
+				}
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				ok = false;
+				message = MessageLookup.buildEventMessage(ErrorMessage.DETACH_THIRD_PARTY_ID_FAILED, String.format("Can't detach third party id, err=[%s]", e.getMessage()));
+			}
+		} else {
+			// attach
+			try {
+				if (centralDbConnector.registerThirdPartyUser(event.getUser(), event.getUserType(),
+						event.getUserThirdParty(), event.getMarket(), event.getLanguage())) {
+
+					ok = true;
+					log.info("Attach third party id, {}", event.toString());
+				} else {
+					MessageLookup.buildEventMessage(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, String.format("Can't attach third party id"));
+				}
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				ok = false;
+				message = MessageLookup.buildEventMessage(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, String.format("Can't attach third party id, err=[%s]", e.getMessage()));
+			}
 		}
 
 		try {
 			eventManager.sendRemoteEvent(new UserMappingDetachReplyEvent(event.getKey(), event.getSender(), ok, message,
-					event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage()));
+					event.getTxId(), event.getUser(), event.getUserThirdParty(), event.getMarket(), event.getLanguage(),
+					event.isAttach(), event.getUserType()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

@@ -163,15 +163,20 @@
 	</bean>
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
-	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
-	</bean>
+    <bean id="scTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+        <property name="tickTable">
+            <array>
+                <array><value>0</value><value>10000000</value><value>0.01</value></array>
+            </array>
+        </property>
+    </bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.AbstractTickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
-				<entry key="IF" value-ref="ifTickTable" />
+				<entry key="SC" value-ref="scTickTable" />
 			</map>
 		</property>
 	</bean>
@@ -271,14 +276,14 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<map>
-				<entry key="SH"><ref bean="shSessionChecker"/></entry>
-				<entry key="SZ"><ref bean="szSessionChecker"/></entry>
+				<entry key="STOCK"><ref bean="shSessionChecker"/></entry>
+				<entry key="INDEX"><ref bean="shSessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
-				<entry key="SH"><ref bean="shTradeDateManager"/></entry>
-				<entry key="SZ"><ref bean="szTradeDateManager"/></entry>
+				<entry key="STOCK"><ref bean="shTradeDateManager"/></entry>
+				<entry key="INDEX"><ref bean="shTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>
