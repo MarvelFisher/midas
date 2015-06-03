@@ -39,7 +39,7 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
         int fsbhashCode = fsb.toString().hashCode();
         fsb.append("Hash");
         fsb.append(String.valueOf(fsbhashCode));
-        return fsb.toString() + "\r\n";
-
+        if(!WindGateWayAdapter.instance.isMsgPack()) fsb.append("\r\n");
+        return fsb.toString();
     }
 }

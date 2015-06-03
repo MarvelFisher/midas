@@ -1,9 +1,19 @@
 package com.cyanspring.adaptor.future.wind.data;
 
 
+import com.cyanspring.Network.Transport.FDTFields;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WindDataParser extends AbstractWindDataParser {
+
+    private static final Logger log = LoggerFactory
+            .getLogger(WindDataParser.class);
 
     /**
      * Parset InputMessage Array To Wind IndexData Object
@@ -25,7 +35,7 @@ public class WindDataParser extends AbstractWindDataParser {
                     value = kv_arr[1];
                     if (key.equals("Symbol")) {
                         if (indexDataBySymbolMap.containsKey(value)) {
-                            indexData = (IndexData)indexDataBySymbolMap.get(value);
+                            indexData = indexDataBySymbolMap.get(value);
                         } else {
                             // add future data
                             indexData = new IndexData();
@@ -74,6 +84,45 @@ public class WindDataParser extends AbstractWindDataParser {
         return indexData;
     }
 
+    public IndexData convertToIndexData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, IndexData> indexDataBySymbolMap) {
+        IndexData indexData = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String symbol = null;
+            try {
+                symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            if (indexDataBySymbolMap.containsKey(symbol)) {
+                indexData = indexDataBySymbolMap.get(symbol);
+            } else {
+                indexData = new IndexData();
+                indexData.setWindCode(symbol);
+                indexData.setCode(symbol.split("\\.")[0]);
+                indexDataBySymbolMap.put(symbol, indexData);
+            }
+            if (null != inputHashMap.get(FDTFields.ActionDay))
+                indexData.setActionDay(((Number) inputHashMap.get(FDTFields.ActionDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.High))
+                indexData.setHighIndex(((Number) inputHashMap.get(FDTFields.High)).longValue());
+            if (null != inputHashMap.get(FDTFields.Last))
+                indexData.setLastIndex(((Number) inputHashMap.get(FDTFields.Last)).longValue());
+            if (null != inputHashMap.get(FDTFields.Low)) indexData.setLowIndex(((Number) inputHashMap.get(FDTFields.Low)).longValue());
+            if (null != inputHashMap.get(FDTFields.Open))
+                indexData.setOpenIndex(((Number) inputHashMap.get(FDTFields.Open)).longValue());
+            if (null != inputHashMap.get(FDTFields.PreClose))
+                indexData.setPrevIndex(((Number) inputHashMap.get(FDTFields.PreClose)).longValue());
+            if (null != inputHashMap.get(FDTFields.Volume))
+                indexData.setTotalVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
+            if (null != inputHashMap.get(FDTFields.Time)) indexData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
+            if (null != inputHashMap.get(FDTFields.TradingDay))
+                indexData.setTradingDay(((Number) inputHashMap.get(FDTFields.TradingDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.Turnover))
+                indexData.setTurnover(((Number) inputHashMap.get(FDTFields.Turnover)).longValue());
+        }
+        return indexData;
+    }
+
     /**
      * Parset InputMessage Array To Wind FutureData Object
      * @param inputMessageArray
@@ -94,7 +143,7 @@ public class WindDataParser extends AbstractWindDataParser {
                     value = kv_arr[1];
                     if (key.equals("Symbol")) {
                         if (futureDataBySymbolMap.containsKey(value)) {
-                            futureData = (FutureData)futureDataBySymbolMap.get(value);
+                            futureData = futureDataBySymbolMap.get(value);
                         } else {
                             // add future data
                             futureData = new FutureData();
@@ -177,6 +226,67 @@ public class WindDataParser extends AbstractWindDataParser {
         return futureData;
     }
 
+    public FutureData convertToFutureData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, FutureData> futureDataBySymbolMap) {
+        FutureData futureData = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String symbol = null;
+            try {
+                symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            if (futureDataBySymbolMap.containsKey(symbol)) {
+                futureData = futureDataBySymbolMap.get(symbol);
+            } else {
+                futureData = new FutureData();
+                futureData.setWindCode(symbol);
+                futureData.setCode(symbol.split("\\.")[0]);
+                futureDataBySymbolMap.put(symbol, futureData);
+            }
+            if (null != inputHashMap.get(FDTFields.ActionDay))
+                futureData.setActionDay(((Number) inputHashMap.get(FDTFields.ActionDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.AskPriceArray))
+                futureData.setAskPrice(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.AskPriceArray)));
+            if (null != inputHashMap.get(FDTFields.AskVolumeArray))
+                futureData.setAskVol(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.AskVolumeArray)));
+            if (null != inputHashMap.get(FDTFields.BidPriceArray))
+                futureData.setBidPrice(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.BidPriceArray)));
+            if (null != inputHashMap.get(FDTFields.BidVolumeArray))
+                futureData.setBidVol(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.BidVolumeArray)));
+            if (null != inputHashMap.get(FDTFields.Close))
+                futureData.setClose(((Number)inputHashMap.get(FDTFields.Close)).longValue());
+            if (null != inputHashMap.get(FDTFields.High))
+                futureData.setHigh(((Number)inputHashMap.get(FDTFields.High)).longValue());
+            if (null != inputHashMap.get(FDTFields.HighLimit))
+                futureData.setHighLimited(((Number)inputHashMap.get(FDTFields.HighLimit)).longValue());
+            if (null != inputHashMap.get(FDTFields.Low))
+                futureData.setLow(((Number)inputHashMap.get(FDTFields.Low)).longValue());
+            if (null != inputHashMap.get(FDTFields.LowLimit))
+                futureData.setLowLimited(((Number)inputHashMap.get(FDTFields.LowLimit)).longValue());
+            if (null != inputHashMap.get(FDTFields.Last))
+                futureData.setMatch(((Number)inputHashMap.get(FDTFields.Last)).longValue());
+            if (null != inputHashMap.get(FDTFields.Open))
+                futureData.setOpen(((Number)inputHashMap.get(FDTFields.Open)).longValue());
+            if (null != inputHashMap.get(FDTFields.OpenInterest))
+                futureData.setOpenInterest(((Number)inputHashMap.get(FDTFields.OpenInterest)).longValue());
+            if (null != inputHashMap.get(FDTFields.PreSettlePrice))
+                futureData.setPreClose(((Number)inputHashMap.get(FDTFields.PreSettlePrice)).longValue());
+            if (null != inputHashMap.get(FDTFields.SettlePrice))
+                futureData.setSettlePrice(((Number)inputHashMap.get(FDTFields.SettlePrice)).longValue());
+            if (null != inputHashMap.get(FDTFields.Status))
+                futureData.setStatus(((Number)inputHashMap.get(FDTFields.Status)).intValue());
+            if (null != inputHashMap.get(FDTFields.Time))
+                futureData.setTime(((Number)inputHashMap.get(FDTFields.Time)).intValue());
+            if (null != inputHashMap.get(FDTFields.TradingDay))
+                futureData.setTradingDay(((Number)inputHashMap.get(FDTFields.TradingDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.Volume))
+                futureData.setVolume(((Number)inputHashMap.get(FDTFields.Volume)).longValue());
+            if (null != inputHashMap.get(FDTFields.Turnover))
+                futureData.setTurnover(((Number)inputHashMap.get(FDTFields.Turnover)).longValue());
+        }
+        return futureData;
+    }
+
     /**
      * Parser inputMessage to wind StockData Object
      * @param inputMessageArray
@@ -197,7 +307,7 @@ public class WindDataParser extends AbstractWindDataParser {
                     value = kv_arr[1];
                     if (key.equals("Symbol")) {
                         if (stockDataBySymbolMap.containsKey(value)) {
-                            stockData = (StockData)stockDataBySymbolMap.get(value);
+                            stockData = stockDataBySymbolMap.get(value);
                         } else {
                             stockData = new StockData();
                             stockData.setWindCode(value);
@@ -299,5 +409,4 @@ public class WindDataParser extends AbstractWindDataParser {
         }
         return stockData;
     }
-
 }

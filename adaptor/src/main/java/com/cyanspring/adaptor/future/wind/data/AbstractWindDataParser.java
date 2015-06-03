@@ -3,6 +3,8 @@ package com.cyanspring.adaptor.future.wind.data;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 
+import java.util.ArrayList;
+
 public abstract class AbstractWindDataParser {
 
     private static final int INDEXSESSION_PREOPEN = 0;
@@ -24,10 +26,23 @@ public abstract class AbstractWindDataParser {
      * @return long array
      */
     public static long[] parseStringTolong(String[] str_arr) {
-        long[] long_arr = new long[str_arr.length];
+        long[] longs = new long[str_arr.length];
         for (int i = 0; i < str_arr.length; i++) {
-            long_arr[i] = Long.parseLong(str_arr[i]);
+            longs[i] = Long.parseLong(str_arr[i]);
         }
-        return long_arr;
+        return longs;
+    }
+
+    /**
+     * Convert Number ArrayList to long[]
+     * @param arrayList
+     * @return
+     */
+    public static long[] parseArrayListTolongArray(ArrayList<Number> arrayList){
+        long[] longs = new long[arrayList.size()];
+        for(int i =0; i<arrayList.size(); i++){
+            longs[i] = arrayList.get(i).longValue();
+        }
+        return longs;
     }
 }

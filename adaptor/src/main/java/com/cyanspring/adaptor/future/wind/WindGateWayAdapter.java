@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +50,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     static volatile Date bigSessionCloseDate = Clock.getInstance().now();
     private boolean closeOverTimeControlIsOpen = true;
     private boolean tradeDateCheckIsOpen = true;
+    private boolean isMsgPack = false;
+    private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
 
     boolean isClose = false;
@@ -143,10 +146,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
-    public void processGateWayMessage(int datatype, String[] in_arr) {
 
-        if (in_arr == null)
-            return;
+    public void processGateWayMessage(int datatype, String[] in_arr, HashMap<Integer, Object> inputMessageHashMap) {
+        if (isMsgPack) {
+            if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) return;
+        } else {
+            if (in_arr == null) return;
+        }
         switch (datatype) {
             case WindDef.MSG_SYS_HEART_BEAT:
             case WindDef.MSG_SYS_DISCONNECT_NETWORK:
@@ -163,13 +169,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                         WindDef.MSG_DATA_MARKET, stockData});
                 break;
             case WindDef.MSG_DATA_INDEX:
-                IndexData indexData = windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
-                if(!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay())) return;
+                IndexData indexData = isMsgPack
+                        ? windDataParser.convertToIndexData(inputMessageHashMap, indexDataBySymbolMap)
+                        : windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
+                if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay())) return;
                 QuoteMgr.instance.AddRequest(new Object[]{
                         WindDef.MSG_DATA_INDEX, indexData});
                 break;
             case WindDef.MSG_DATA_FUTURE:
-                FutureData futureData = windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
+                FutureData futureData = isMsgPack
+                        ? windDataParser.convertToFutureData(inputMessageHashMap, futureDataBySymbolMap)
+                        : windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay())) return;
                 QuoteMgr.instance.AddRequest(new Object[]{
                         WindDef.MSG_DATA_FUTURE, futureData});
@@ -183,7 +193,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
-    private boolean dataCheck(String type, String symbol, long time, int tradingDay){
+    private boolean dataCheck(String type, String symbol, long time, int tradingDay) {
         boolean isCorrect = true;
         String title = "";
         if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
@@ -228,7 +238,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         try {
             Bootstrap bootstrap = new Bootstrap().group(nioEventLoopGroup)
                     .channel(NioSocketChannel.class)
-                    .handler(new ClientInitializer());
+                    .handler(isMsgPack ? new MsgPackClientInitializer() : new ClientInitializer());
 
             ChannelFuture fClient = bootstrap.connect(ip, port).sync();
 
@@ -391,7 +401,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             QuoteMgr.instance().addStockSymbol(symbol);
         }
         //Index
-        if("I".equals(commodity)){
+        if ("I".equals(commodity)) {
             if (!QuoteMgr.instance().checkIndexSymbol(symbol)) {
                 ClientHandler.subscribe(symbol);
             }
@@ -487,9 +497,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                     marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
                     mainMarket = "F";
                 }
-                if ("I".equals(refData.getCommodity())){
-                    if("S".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
-                    if("F".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
+                if ("I".equals(refData.getCommodity())) {
+                    if ("S".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
+                    if ("F".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
                 }
             }
         }
@@ -616,6 +626,22 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
 
     public void setMarketDataLog(boolean marketDataLog) {
         this.marketDataLog = marketDataLog;
+    }
+
+    public boolean isMsgPack() {
+        return isMsgPack;
+    }
+
+    public void setIsMsgPack(boolean isMsgPack) {
+        this.isMsgPack = isMsgPack;
+    }
+
+    public void setIsSubTrans(boolean isSubTrans) {
+        this.isSubTrans = isSubTrans;
+    }
+
+    public boolean isSubTrans() {
+        return isSubTrans;
     }
 }
 
