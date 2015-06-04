@@ -90,7 +90,8 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 			if(cal.getTimeInMillis() > tomorrow.getTimeInMillis()){
 				break;
 			}
-			data = sessionChecker.getState(cal.getTime(), null);	
+			
+			data = sessionChecker.searchState(cal.getTime(), null);	
 			if(null == data){
 				break;
 			}	
