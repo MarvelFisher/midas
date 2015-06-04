@@ -60,12 +60,9 @@ public class XMLUtils
 	public static void main(String args[]) throws Exception
 	{
 		HistoricalPriceRequestEvent event = new HistoricalPriceRequestEvent(null, "Test.Info.I1");
-		Calendar cal = Calendar.getInstance();
-		event.setEndDate(cal.getTime());
-		cal.add(Calendar.DATE, -1);
-		event.setStartDate(cal.getTime());
-		event.setHistoryType("Q");
-		event.setSymbol("IFC1.CF");
+		event.setHistoryType("W");
+		event.setSymbol("USDJPY");
+		event.setDataCount(52);
 		eventToXML(event);
 	}/**/
 	
