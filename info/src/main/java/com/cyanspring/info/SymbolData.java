@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -276,7 +277,7 @@ public class SymbolData implements Comparable<SymbolData>
 			List<HistoricalPrice> listBase = null;
 			HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
 					keyDate, 
-					keyDate, 
+					currentDate, 
 					getStrSymbol(), 
 					getdOpen(), 
 					getdCurHigh(), 
@@ -421,8 +422,6 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	
 	public ArrayList<HistoricalPrice> getPriceList(String strType, 
-												   Date end, 
-												   boolean fill,
 												   ArrayList<HistoricalPrice> prices) throws ParseException
 	{
 		HistoricalPrice priceEmpty = null ;
@@ -457,10 +456,6 @@ public class SymbolData implements Comparable<SymbolData>
 					{
 						continue;
 					}
-					else if (end != null && 0 < price.getDatatime().compareTo(end))
-					{
-						return prices ;
-					}
 					prices.add(price) ;
 				}
 			}
@@ -482,10 +477,6 @@ public class SymbolData implements Comparable<SymbolData>
 					{
 						priceEmpty.update(price);
 						continue;
-					}
-					if (end != null && 0 < price.getDatatime().compareTo(end))
-					{
-						return prices ;
 					}
 					pricetime.setTime(price.getDatatime());
 					emptytime.setTime(priceEmpty.getDatatime());
@@ -679,7 +670,7 @@ public class SymbolData implements Comparable<SymbolData>
     	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
 		try {
-			prices = getPriceList(strType, null, true, prices);
+			prices = getPriceList(strType, prices);
 		} catch (ParseException e) {
 			log.error(e.getMessage(), e);
 			return ;
@@ -743,7 +734,7 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
-	public List<HistoricalPrice> getHistoricalPrice(String type, String symbol, Date start, Date end)
+	public List<HistoricalPrice> getHistoricalPrice(String type, String symbol, int dataCount)
 	{
     	if (market == null)
     	{
@@ -753,7 +744,6 @@ public class SymbolData implements Comparable<SymbolData>
 		SimpleDateFormat sdfprice = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 		sdfprice.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String tradedate = centralDB.getTradedate() ;
-		String enddate = sdf.format(end) ;
 		String strtmp ;
 		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
 		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
@@ -771,8 +761,8 @@ public class SymbolData implements Comparable<SymbolData>
 			strSymbol = symbol;
 		}
     	String prefix = (market.equals("FX")) ? "0040" : market;
-		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' AND `KEYTIME`<'%s' ORDER BY `KEYTIME`;", 
-				prefix, type, strSymbol, sdfprice.format(start), sdfprice.format(end)) ;
+		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
+				prefix, type, strSymbol, dataCount) ;
 		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
 		try {
 			while(rs.next())
@@ -799,7 +789,7 @@ public class SymbolData implements Comparable<SymbolData>
 			log.error(e.getMessage(), e);
 			return null ;
 		}
-		if (0 <= tradedate.compareTo(enddate) && centralDB.getSessionType() == MarketSessionType.OPEN)
+		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
 			try {
 				switch(type)
@@ -812,7 +802,7 @@ public class SymbolData implements Comparable<SymbolData>
 				case "6":
 				case "T":
 				{
-					getPriceList(type, end, false, listPrice) ;
+					getPriceList(type, listPrice) ;
 					break ;
 				}
 				case "D":
@@ -830,6 +820,7 @@ public class SymbolData implements Comparable<SymbolData>
 				return null ;
 			}
 		}
+		Collections.sort(listPrice);
 		return listPrice ;
 	}
 	

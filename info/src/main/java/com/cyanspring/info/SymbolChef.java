@@ -67,14 +67,14 @@ public class SymbolChef implements Runnable{
     }
     
     public List<HistoricalPrice> retrieveHistoricalPrice(
-    		String type, String symbol, Date start, Date end)
+    		String type, String symbol, int dataCount)
     {
     	SymbolData symboldata = mapSymboldata.get(symbol);
     	if (symboldata == null)
     	{
     		return null;
     	}
-		return symboldata.getHistoricalPrice(type, symbol, start, end) ;
+		return symboldata.getHistoricalPrice(type, symbol, dataCount) ;
     }
     
     public PriceHighLow retrievePriceHighLow(String symbol, PriceHighLowType type)

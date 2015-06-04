@@ -64,12 +64,11 @@ public class CentralDbEventProc implements Runnable
 		retEvent.setSymbol(symbol);
 		log.info("Process Historical Price Request");
 		String type   = event.getHistoryType() ;
-		Date   start  = event.getStartDate() ;
-		Date   end    = event.getEndDate() ;
+		int dataCount = event.getDataCount(); 
 		List<HistoricalPrice> listPrice = null;
-		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " Start: " +  start + " End: " + end);
+		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " DataCounts: " + dataCount);
 		
-		listPrice = centraldb.getChefBySymbol(symbol).retrieveHistoricalPrice(type, symbol, start, end);
+		listPrice = centraldb.getChefBySymbol(symbol).retrieveHistoricalPrice(type, symbol, dataCount);
 		if (listPrice == null)
 		{
 			retEvent.setOk(false) ;

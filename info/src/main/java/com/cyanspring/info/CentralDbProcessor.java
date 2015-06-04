@@ -126,6 +126,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(HistoricalPriceRequestEvent.class, null);
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
+			subscribeToEvent(MarketSessionEvent.class, null);
 		}
 
 		@Override

@@ -10,8 +10,7 @@ public class HistoricalPriceRequestEvent extends RemoteAsyncEvent
 {
 	private String symbol;
 	private String historyType ;
-	private Date   startDate ;
-	private Date   endDate ;
+	private int dataCount;
 
 	public HistoricalPriceRequestEvent(String key, String receiver)
 	{
@@ -21,44 +20,31 @@ public class HistoricalPriceRequestEvent extends RemoteAsyncEvent
 								  	   String receiver,
 								  	   String symbol, 
 								  	   String historyType, 
-								  	   Date startDate, 
-								  	   Date endDate) 
+								  	   int dataCount) 
 	{
 		super(key, receiver);
 		this.setSymbol(symbol) ;
 		this.historyType = historyType ;
-		this.startDate = startDate ;
-		this.endDate = endDate ;
+		this.setDataCount(dataCount);
 	}
 
 	public String getHistoryType() {
 		return historyType;
 	}
-
 	public void setHistoryType(String historyType) {
 		this.historyType = historyType;
-	}
-
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
 	}
 	public String getSymbol() {
 		return symbol;
 	}
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
+	}
+	public int getDataCount() {
+		return dataCount;
+	}
+	public void setDataCount(int dataCount) {
+		this.dataCount = dataCount;
 	}
 
 }
