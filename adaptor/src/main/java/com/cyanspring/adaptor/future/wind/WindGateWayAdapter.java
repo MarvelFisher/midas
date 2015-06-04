@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -146,7 +147,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
-
     public void processGateWayMessage(int datatype, String[] in_arr, HashMap<Integer, Object> inputMessageHashMap) {
         if (isMsgPack) {
             if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) return;
@@ -163,24 +163,47 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             case WindDef.MSG_SYS_QUOTATIONDATE_CHANGE:
                 break;
             case WindDef.MSG_DATA_MARKET:
-                StockData stockData = windDataParser.convertToStockData(in_arr, stockDataBySymbolMap);
-                if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay())) return;
+                StockData stockData = null;
+                try {
+                    stockData = isMsgPack
+                            ? windDataParser.convertToStockData(inputMessageHashMap, stockDataBySymbolMap)
+                            : windDataParser.convertToStockData(in_arr, stockDataBySymbolMap);
+                } catch (UnsupportedEncodingException e) {
+                    LogUtil.logException(log, e);
+                    return;
+                }
+                if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
+                    return;
                 QuoteMgr.instance.AddRequest(new Object[]{
                         WindDef.MSG_DATA_MARKET, stockData});
                 break;
             case WindDef.MSG_DATA_INDEX:
-                IndexData indexData = isMsgPack
-                        ? windDataParser.convertToIndexData(inputMessageHashMap, indexDataBySymbolMap)
-                        : windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
-                if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay())) return;
+                IndexData indexData = null;
+                try {
+                    indexData = isMsgPack
+                            ? windDataParser.convertToIndexData(inputMessageHashMap, indexDataBySymbolMap)
+                            : windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
+                } catch (UnsupportedEncodingException e) {
+                    LogUtil.logException(log, e);
+                    return;
+                }
+                if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
+                    return;
                 QuoteMgr.instance.AddRequest(new Object[]{
                         WindDef.MSG_DATA_INDEX, indexData});
                 break;
             case WindDef.MSG_DATA_FUTURE:
-                FutureData futureData = isMsgPack
-                        ? windDataParser.convertToFutureData(inputMessageHashMap, futureDataBySymbolMap)
-                        : windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
-                if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay())) return;
+                FutureData futureData = null;
+                try {
+                    futureData = isMsgPack
+                            ? windDataParser.convertToFutureData(inputMessageHashMap, futureDataBySymbolMap)
+                            : windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
+                } catch (UnsupportedEncodingException e) {
+                    LogUtil.logException(log, e);
+                    return;
+                }
+                if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
+                    return;
                 QuoteMgr.instance.AddRequest(new Object[]{
                         WindDef.MSG_DATA_FUTURE, futureData});
                 break;
@@ -193,12 +216,21 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
-    private boolean dataCheck(String type, String symbol, long time, int tradingDay) {
+    private boolean dataCheck(String type, String symbol, long time, int tradingDay, int status) {
         boolean isCorrect = true;
         String title = "";
         if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
         if ("S".equals(type)) title = WindDef.TITLE_STOCK;
         if ("I".equals(type)) title = WindDef.TITLE_INDEX;
+        if ("S".equals(type)) {
+            switch (status) {
+                case WindDef.STOCK_STATUS_STOP_SYMBOL:
+                case WindDef.STOCK_STATUS_STOP_SYMBOL_2:
+                    return true;
+                default:
+                    break;
+            }
+        }
         if (time >= 240000000) {
             log.debug(String.format("%s %s,%s", title,
                     WindDef.WARN_TIME_FORMAT_ERROR, symbol));
@@ -217,6 +249,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                     title, WindDef.WARN_CLOSE_OVER_TIME,
                     bigSessionCloseDate.toString(), symbol));
             return false;
+        }
+        if ("S".equals(type) && !bigSessionIsClose) {
+            int nowTime = Integer.parseInt(TimeUtil.formatDate(Clock.getInstance().now(), "HHmmssSSS"));
+            if ((nowTime - time) >= WindDef.STOCK_WARNING_SECONDS)
+                log.debug(String.format("%s come large than %d sec,%d,%s", title, WindDef.STOCK_WARNING_SECONDS, (nowTime - time), symbol));
         }
         return isCorrect;
     }

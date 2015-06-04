@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
 import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.Network.Transport.FDTFrameDecoder;
 import com.cyanspring.id.Library.Threading.TimerThread;
 import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.*;
@@ -43,9 +44,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         lastRecv = DateUtil.now();
         try {
             if(WindGateWayAdapter.instance.isMsgPack()){
-                if(msg instanceof HashMap) processMsgPackRead((HashMap)msg);
+                if(msg instanceof HashMap){
+                    processMsgPackRead((HashMap)msg);
+                    if(calculateMessageFlow(FDTFrameDecoder.getPacketLen(),FDTFrameDecoder.getReceivedBytes())) FDTFrameDecoder.ResetCounter();
+                }
             }else{
-                if(msg instanceof String) processNoMsgPackRead((String)msg);
+                if(msg instanceof String) {
+                    String msgStr = (String) msg;
+                    processNoMsgPackRead(msgStr);
+                    if(calculateMessageFlow(msgStr.length(), dataReceived)) dataReceived = 0;
+                }
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -58,22 +66,19 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
             sb.append(key + "=" + hashMap.get(key) + ",");
         }
         log.debug(sb.toString());
-        //Check packType
+//        Check packType
         int packType = (int)hashMap.get(FDTFields.PacketType);
         if(packType == FDTFields.PacketArray){
-            log.debug("PacketArray");
             ArrayList<HashMap> arrayList = (ArrayList<HashMap>)hashMap.get(FDTFields.ArrayOfPacket);
-            if(arrayList.size()>0) System.out.println("Size:" + arrayList.size());
             for(HashMap innerHashMap : arrayList){
-                sb = new StringBuffer();
-                for(Object key: innerHashMap.keySet()){
-                    sb.append(key + "=" + innerHashMap.get(key) + ",");
-                }
-                log.debug(sb.toString());
+//                sb = new StringBuffer();
+//                for(Object key: innerHashMap.keySet()){
+//                    sb.append(key + "=" + innerHashMap.get(key) + ",");
+//                }
+//                log.debug(sb.toString());
                 WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int)innerHashMap.get(FDTFields.PacketType)), null, innerHashMap);
             }
         }else {
-            log.debug("General Packet");
             WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType(packType), null, hashMap);
         }
     }
@@ -137,43 +142,40 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
                 }
             }
         }
-        calculateMessageFlow(in.length());
     }
 
-    public void calculateMessageFlow(int rBytes) {
-
-        if (bufLenMin > rBytes) {
+    private boolean calculateMessageFlow(int rBytes,int dataReceived) {
+        if(bufLenMin > rBytes)
+        {
             bufLenMin = rBytes;
-            log.info("WindC-minimal recv len from id : " + bufLenMin);
+            log.info("WindC-minimal recv len from wind gateway : " + bufLenMin);
         } else {
-            if (bufLenMin == 0) {
+            if(bufLenMin == 0) {
                 bufLenMin = rBytes;
-                log.info("WindC-first time recv len from id : " + bufLenMin);
+                log.info("WindC-first time recv len from wind gateway : " + bufLenMin);
             }
         }
-
-        if (bufLenMax < rBytes) {
+        if(bufLenMax < rBytes) {
             bufLenMax = rBytes;
-            log.info("WindC-maximal recv len from id : " + bufLenMax);
+            log.info("WindC-maximal recv len from gateway : " + bufLenMax);
         }
 
-        dataReceived += rBytes;
         blockCount += 1;
         msDiff = System.currentTimeMillis() - msLastTime;
-        if (msDiff > 1000) {
+        if(msDiff > 1000) {
             msLastTime = System.currentTimeMillis();
-            if (throughput < dataReceived * 1000 / msDiff) {
+            if(throughput < dataReceived * 1000 / msDiff) {
                 throughput = dataReceived * 1000 / msDiff;
-                if (throughput < 1024) {
-                    log.info("WindC-maximal throughput : " + throughput + " Bytes/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
+                if(throughput > 1024) {
+                    log.info("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec , " + blockCount + " blocks/Sec");
                 } else {
-                    log.info("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec, " + blockCount + " blocks/Sec, MaxBuf:" + bufLenMax);
-
+                    log.info("WindC-maximal throughput : " + throughput + " Bytes/Sec , " + blockCount + " blocks/Sec");
                 }
             }
-            dataReceived = 0;
             blockCount = 0;
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -249,11 +251,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
     public static void sendData(String data) {
         if(!WindGateWayAdapter.instance.isMsgPack()) data = data + "\r\n";
         ChannelFuture future = context.channel().writeAndFlush(data);
-        // ChannelFuture future = context.writeAndFlush(data);
         future.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture arg0) throws Exception {
-                LogUtil.logInfo(log, "ChannelFuture operationComplete!");
+                LogUtil.logDebug(log, "ChannelFuture operationComplete!");
             }
         });
     }

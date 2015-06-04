@@ -28,18 +28,6 @@ public class StockItem implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(StockItem.class);
 
-    private static final int STATUS_STOP_TRA_IN_OPEN = (int) 'R';
-    private static final int STATUS_SLEEP = (int) 'P';
-    private static final int STATUS_STOP_SYMBOL = (int) 'B';
-    private static final int STATUS_MARKET_CLOSE = (int) 'C';
-    private static final int STATUS_STOP_SYMBOL_2 = (int) 'D';
-    private static final int STATUS_NEW_SYMBOL = (int) 'Y';
-    private static final int STATUS_PENDING = (int) 'W';
-    private static final int STATUS_PENDING_2 = (int) 'X';
-    private static final int STATUS_NOT_SERVICE = (int) 'S';
-    private static final int STATUS_VAR_STOP = (int) 'Q';
-    private static final int STATUS_MARKET_CLOSE_2 = (int) 'V';
-
     protected static ConcurrentHashMap<String, StockItem> stockItemBySymbolMap = new ConcurrentHashMap<String, StockItem>();
     private String symbolId;
     private int sessionStatus = -1;
@@ -129,28 +117,31 @@ public class StockItem implements AutoCloseable {
             tickTime = DateUtil.now();
         }
 
-        if (PriceUtils.GreaterThan(stockData.getMatch(), 0)) {
-        	
+        if (PriceUtils.GreaterThan(stockData.getMatch(), 0)
+                || stockData.getStatus() == WindDef.STOCK_STATUS_STOP_SYMBOL
+                || stockData.getStatus() == WindDef.STOCK_STATUS_STOP_SYMBOL_2
+                ) {
+
             //modify tick Time
-        	if (QuoteMgr.isModifyTickTime()) {
-	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
-	                tickTime = endDate;
-	            }
-	
-	            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
-	                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
-	                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
-	            }
-	
-	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
-	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
-	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
-	                if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
-	                    tickTime = endDate;
-	            }
-        	}
+            if (QuoteMgr.isModifyTickTime()) {
+                if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+                        && DateUtil.compareDate(tickTime, endDate) < 0) {
+                    tickTime = endDate;
+                }
+
+                if (marketSessionData.getSessionType() == MarketSessionType.OPEN
+                        && DateUtil.compareDate(tickTime, endDate) >= 0) {
+                    tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
+                }
+
+                if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                        && DateUtil.compareDate(tickTime, startDate) >= 0) {
+                    if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
+                        tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
+                    if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
+                        tickTime = endDate;
+                }
+            }
 
             List<QtyPrice> bids = new ArrayList<QtyPrice>();
             List<QtyPrice> asks = new ArrayList<QtyPrice>();
@@ -169,17 +160,17 @@ public class StockItem implements AutoCloseable {
             }
             if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
                 switch (stockData.getStatus()) {
-                    case STATUS_MARKET_CLOSE:
-                    case STATUS_MARKET_CLOSE_2:
-                    case STATUS_NEW_SYMBOL:
-                    case STATUS_NOT_SERVICE:
-                    case STATUS_PENDING:
-                    case STATUS_PENDING_2:
-                    case STATUS_SLEEP:
-                    case STATUS_STOP_SYMBOL:
-                    case STATUS_STOP_SYMBOL_2:
-                    case STATUS_STOP_TRA_IN_OPEN:
-                    case STATUS_VAR_STOP:
+                    case WindDef.STOCK_STATUS_MARKET_CLOSE:
+                    case WindDef.STOCK_STATUS_MARKET_CLOSE_2:
+                    case WindDef.STOCK_STATUS_NEW_SYMBOL:
+                    case WindDef.STOCK_STATUS_NOT_SERVICE:
+                    case WindDef.STOCK_STATUS_PENDING:
+                    case WindDef.STOCK_STATUS_PENDING_2:
+                    case WindDef.STOCK_STATUS_SLEEP:
+                    case WindDef.STOCK_STATUS_STOP_SYMBOL:
+                    case WindDef.STOCK_STATUS_STOP_SYMBOL_2:
+                    case WindDef.STOCK_STATUS_STOP_TRA_IN_OPEN:
+                    case WindDef.STOCK_STATUS_VAR_STOP:
                         quote.setStale(true);
                         break;
                     default:
@@ -217,7 +208,7 @@ public class StockItem implements AutoCloseable {
             //process send quote
             WindGateWayAdapter.instance.saveLastQuote(quote);
             WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
-        }else{
+        } else {
             log.debug(WindDef.TITLE_STOCK + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + stockData.getWindCode());
         }
 
@@ -239,7 +230,7 @@ public class StockItem implements AutoCloseable {
         }
 
         int sessionStatus = AbstractWindDataParser.getItemSessionStatus(marketSessionData);
-        if(sessionStatus!=item.sessionStatus){
+        if (sessionStatus != item.sessionStatus) {
             item.sessionStatus = sessionStatus;
             quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
             quoteExtendIsChange = true;

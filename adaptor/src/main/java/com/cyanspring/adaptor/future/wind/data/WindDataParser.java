@@ -84,15 +84,17 @@ public class WindDataParser extends AbstractWindDataParser {
         return indexData;
     }
 
-    public IndexData convertToIndexData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, IndexData> indexDataBySymbolMap) {
+    /**
+     * Parser inputHashMap to Wind IndexData Object
+     * @param inputHashMap
+     * @param indexDataBySymbolMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public IndexData convertToIndexData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, IndexData> indexDataBySymbolMap) throws UnsupportedEncodingException {
         IndexData indexData = null;
         if (inputHashMap != null && inputHashMap.size() > 0) {
-            String symbol = null;
-            try {
-                symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
             if (indexDataBySymbolMap.containsKey(symbol)) {
                 indexData = indexDataBySymbolMap.get(symbol);
             } else {
@@ -226,15 +228,17 @@ public class WindDataParser extends AbstractWindDataParser {
         return futureData;
     }
 
-    public FutureData convertToFutureData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, FutureData> futureDataBySymbolMap) {
+    /**
+     * Parser input HashMap to Wind FutureData Object
+     * @param inputHashMap
+     * @param futureDataBySymbolMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public FutureData convertToFutureData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, FutureData> futureDataBySymbolMap) throws UnsupportedEncodingException {
         FutureData futureData = null;
         if (inputHashMap != null && inputHashMap.size() > 0) {
-            String symbol = null;
-            try {
-                symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
             if (futureDataBySymbolMap.containsKey(symbol)) {
                 futureData = futureDataBySymbolMap.get(symbol);
             } else {
@@ -380,6 +384,9 @@ public class WindDataParser extends AbstractWindDataParser {
                         case "TotalBidVol":
                             stockData.setTotalBidVol(Long.parseLong(value));
                             break;
+                        case "TotalAskVol":
+                            stockData.setTotalAskVol(Long.parseLong(value));
+                            break;
                         case "WgtAvgAskPrice":
                             stockData.setWeightedAvgAskPrice(Long.parseLong(value));
                             break;
@@ -406,6 +413,87 @@ public class WindDataParser extends AbstractWindDataParser {
                     }
                 }
             }
+        }
+        return stockData;
+    }
+
+    /**
+     * Parser input HashMap to Wind StockData Object
+     * @param inputHashMap
+     * @param stockDataBySymbolMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public StockData convertToStockData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, StockData> stockDataBySymbolMap) throws UnsupportedEncodingException {
+        StockData stockData = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
+            if (stockDataBySymbolMap.containsKey(symbol)) {
+                stockData = stockDataBySymbolMap.get(symbol);
+            } else {
+                stockData = new StockData();
+                stockData.setWindCode(symbol);
+                stockData.setCode(symbol.split("\\.")[0]);
+                stockDataBySymbolMap.put(symbol, stockData);
+            }
+            if (null != inputHashMap.get(FDTFields.ActionDay))
+                stockData.setActionDay(((Number) inputHashMap.get(FDTFields.ActionDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.AskPriceArray))
+                stockData.setAskPrice(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.AskPriceArray)));
+            if (null != inputHashMap.get(FDTFields.AskVolumeArray))
+                stockData.setAskVol(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.AskVolumeArray)));
+            if (null != inputHashMap.get(FDTFields.BidPriceArray))
+                stockData.setBidPrice(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.BidPriceArray)));
+            if (null != inputHashMap.get(FDTFields.BidVolumeArray))
+                stockData.setBidVol(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.BidVolumeArray)));
+            if (null != inputHashMap.get(FDTFields.Close))
+                stockData.setClose(((Number) inputHashMap.get(FDTFields.Close)).longValue());
+            if (null != inputHashMap.get(FDTFields.High))
+                stockData.setHigh(((Number) inputHashMap.get(FDTFields.High)).longValue());
+            if (null != inputHashMap.get(FDTFields.HighLimit))
+                stockData.setHighLimited(((Number) inputHashMap.get(FDTFields.HighLimit)).longValue());
+            if (null != inputHashMap.get(FDTFields.Low))
+                stockData.setLow(((Number) inputHashMap.get(FDTFields.Low)).longValue());
+            if (null != inputHashMap.get(FDTFields.LowLimit))
+                stockData.setLowLimited(((Number) inputHashMap.get(FDTFields.LowLimit)).longValue());
+            if (null != inputHashMap.get(FDTFields.Last))
+                stockData.setMatch(((Number) inputHashMap.get(FDTFields.Last)).longValue());
+            if (null != inputHashMap.get(FDTFields.Open))
+                stockData.setOpen(((Number) inputHashMap.get(FDTFields.Open)).longValue());
+            if (null != inputHashMap.get(FDTFields.PreClose))
+                stockData.setPreClose(((Number) inputHashMap.get(FDTFields.PreClose)).longValue());
+            if (null != inputHashMap.get(FDTFields.Status))
+                stockData.setStatus(((Number) inputHashMap.get(FDTFields.Status)).intValue());
+            if (null != inputHashMap.get(FDTFields.Time))
+                stockData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
+            if (null != inputHashMap.get(FDTFields.TradingDay))
+                stockData.setTradingDay(((Number) inputHashMap.get(FDTFields.TradingDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.Volume))
+                stockData.setVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
+            if (null != inputHashMap.get(FDTFields.Turnover))
+                stockData.setTurnover(((Number) inputHashMap.get(FDTFields.Turnover)).longValue());
+            if (null != inputHashMap.get(FDTFields.NumberOfTrades))
+                stockData.setNumTrades(((Number) inputHashMap.get(FDTFields.NumberOfTrades)).longValue());
+            if (null != inputHashMap.get(FDTFields.TotalBidVolume))
+                stockData.setTotalBidVol(((Number) inputHashMap.get(FDTFields.TotalBidVolume)).longValue());
+            if (null != inputHashMap.get(FDTFields.TotalAskVolume))
+                stockData.setTotalAskVol(((Number) inputHashMap.get(FDTFields.TotalAskVolume)).longValue());
+            if (null != inputHashMap.get(FDTFields.WgtAvgAskPrice))
+                stockData.setWeightedAvgAskPrice(((Number) inputHashMap.get(FDTFields.WgtAvgAskPrice)).longValue());
+            if (null != inputHashMap.get(FDTFields.WgtAvgBidPrice))
+                stockData.setWeightedAvgBidPrice(((Number) inputHashMap.get(FDTFields.WgtAvgBidPrice)).longValue());
+            if (null != inputHashMap.get(FDTFields.WgtAvgAskPrice))
+                stockData.setWeightedAvgAskPrice(((Number) inputHashMap.get(FDTFields.WgtAvgAskPrice)).longValue());
+            if (null != inputHashMap.get(FDTFields.YieldToMaturity))
+                stockData.setYieldToMaturity(((Number) inputHashMap.get(FDTFields.YieldToMaturity)).intValue());
+            if (null != inputHashMap.get(FDTFields.Prefix))
+                stockData.setPrefix(new String((byte[]) inputHashMap.get(FDTFields.Prefix), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.Syl1))
+                stockData.setYieldToMaturity(((Number) inputHashMap.get(FDTFields.Syl1)).intValue());
+            if (null != inputHashMap.get(FDTFields.Syl2))
+                stockData.setYieldToMaturity(((Number) inputHashMap.get(FDTFields.Syl2)).intValue());
+            if (null != inputHashMap.get(FDTFields.SD2))
+                stockData.setYieldToMaturity(((Number) inputHashMap.get(FDTFields.SD2)).intValue());
         }
         return stockData;
     }

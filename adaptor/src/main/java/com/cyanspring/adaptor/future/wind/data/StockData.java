@@ -27,6 +27,7 @@ public class StockData {
     private long volume;
     private long numTrades;
     private long totalBidVol;
+    private long totalAskVol;
     private long WeightedAvgAskPrice;
     private long WeightedAvgBidPrice;
     private int yieldToMaturity;
@@ -217,6 +218,14 @@ public class StockData {
 
     public void setTotalBidVol(long totalBidVol) {
         this.totalBidVol = totalBidVol;
+    }
+
+    public long getTotalAskVol() {
+        return totalAskVol;
+    }
+
+    public void setTotalAskVol(long totalAskVol) {
+        this.totalAskVol = totalAskVol;
     }
 
     public long getWeightedAvgAskPrice() {
