@@ -62,6 +62,22 @@ public class MarketSessionChecker implements IMarketSession {
     }
 
     @Override
+    public MarketSessionData searchState(Date date, RefData refData) throws Exception {
+        MarketSessionData sessionData = null;
+        String currentIndex = getCurrentIndex(date, refData);
+        MarketSession session = stateMap.get(currentIndex);
+        if (session == null)
+            session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+        for (MarketSessionData data : session.getSessionDatas()) {
+            if (!compare(data, date))
+                continue;
+            sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
+            sessionData.setDate(date);
+        }
+        return sessionData;
+    }
+
+    @Override
     public String getTradeDate() {
         return sdf.format(this.tradeDate);
     }
