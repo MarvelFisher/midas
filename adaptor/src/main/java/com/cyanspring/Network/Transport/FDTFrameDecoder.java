@@ -26,6 +26,20 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 	■ 一個 packet的最大長度為 65535 + 2 + 2，也就是packet 內容 + length 欄位 + 開頭結尾
 	■ MessagePack Packet 內容的第一個 byte 永遠為壓縮碼，代表目前使用的壓縮方式或是不壓縮。
 	*/	
+	static private volatile int iReceivedBytes = 0;
+	static private volatile int iPacketLen = 0;
+	
+	public static void ResetCounter() {
+		iReceivedBytes = 0;
+	}
+	
+	public static int getReceivedBytes() {
+		return iReceivedBytes;
+	}
+	public static int getPacketLen() {
+		return iPacketLen;
+	}
+	
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in,List<Object> out) throws Exception {
 		while(in.readableBytes() > (FDTPacket.PKT_HEAD_SIZE + FDTPacket.PKT_TAIL_SIZE)) {
@@ -34,7 +48,8 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 		
 			in.markReaderIndex();
 			byte head_byte = in.readByte();
-			if(head_byte != FDTPacket.PKT_LEAD) {			
+			if(head_byte != FDTPacket.PKT_LEAD) {	
+				iReceivedBytes += 1;
 				continue; //discard head byte that is not 0x02;
 			}
 			
@@ -59,8 +74,12 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 				//discard tail byte that is not 0x03, skill one byte, keep checking head byte(0x02)
 				in.resetReaderIndex();
 				in.readByte();
+				iReceivedBytes += 1;
 				continue; 
 			}
+			
+			iPacketLen = packetlen + 4;
+			iReceivedBytes += iPacketLen; 
 			if(byIsCompressed == 0) {
 				Object obj = MsgPack.unpack(body_buf);
 				out.add(obj);

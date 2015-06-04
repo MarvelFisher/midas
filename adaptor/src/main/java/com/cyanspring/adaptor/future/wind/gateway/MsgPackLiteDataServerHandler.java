@@ -148,7 +148,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		for(String str : sym_arr)
 		{
 			if(sendTransaction(channel,str) == false) {
-				if(WindGateway.mpCascading && registrationGlobal.hadTransaction(str) == false) {
+				if(WindGateway.mpCascading) { //) && registrationGlobal.hadTransaction(str) == false) {
 					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SubsTrans|Symbol=" + str,true));	
 				}			
 			}
