@@ -37,7 +37,7 @@ public class CentralDbConnector {
 	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s' AND `STATUS` IS NULL";
     private static String insertPendingTransfer = "INSERT INTO ToDoCvtFDT(`ID3RD`, `USERID`) VALUES('%s', '%s')";
     private static String getUserIdFromThirdPartyId = "SELECT `USERID` FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
-    private static String getUserThirdPartyIds = "SELECT `ID`, `USERTYPE` FROM THIRD_PARTY_USER `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
+    private static String getUserThirdPartyIds = "SELECT `ID`, `USERTYPE` FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String detachThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `USERID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
     private static String deleteSameTypeThirdPartyUser = "DELETE FROM THIRD_PARTY_USER WHERE `USERID` = '%s' AND `USERTYPE` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isEmailExist = "SELECT COUNT(*) FROM AUTH WHERE `EMAIL` = '%s'";
