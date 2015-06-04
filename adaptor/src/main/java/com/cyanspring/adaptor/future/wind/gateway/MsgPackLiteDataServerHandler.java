@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -126,10 +127,12 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 					}
 				}						
 			}
-			
-			cnt = lst.addMsgPack(map);
-			if(cnt >= maxMsgPackCount) {
-				channel.writeAndFlush(lst.flushMsgPack());
+						
+			if(bTransaction == false) {
+				cnt = lst.addMsgPack(map);
+				if(cnt >= maxMsgPackCount) {
+					channel.writeAndFlush(lst.flushMsgPack());
+				}
 			}
 			// 先加到  Global Register Symbol
 			registrationGlobal.addSymbol(str);								
@@ -160,6 +163,31 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			}					
 		}    	
     }    
+    
+    private static void unsubscribeTransactions(Channel channel , String symbols,Registration lst) {
+		String[] sym_arr = symbols.split(";");
+		boolean canRemove = true;
+		for(String symbol : sym_arr)
+		{
+			lst.removeTransaction(symbol);
+			log.info("Unsubscribe Transaction : " + symbol + " , from : " + channel.remoteAddress().toString());
+			// 檢查看看還有沒有人訂閱這個 Symbol 的 Transaction , 都沒人訂閱才從 list 裡面刪除
+			Collection<Registration> regs = channels.values();
+			for(Registration reg : regs) {
+				if(reg == lst)
+				{
+					continue;
+				}
+				if(reg.hadTransaction(symbol)) {
+					canRemove = false;
+				}				
+			}					
+			if(canRemove) {
+				registrationGlobal.removeTransaction(symbol);
+				log.info("Remove transaction from registrationGlobal : " + symbol);
+			}
+		}    	
+    }     
         
     
     
@@ -223,7 +251,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				}
 				if(false == clientHeartBeat) {				
         			String strlog = "in : [" + msg + "] , " + channel.remoteAddress();
-        			System.out.println(strlog);
+        			//System.out.println(strlog);
         			log.info(strlog);					
 				}
 				int endindex = msg.indexOf("|Hash=");
@@ -270,6 +298,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 							} else {
 								sendCodeTable(channel,strMarket);
 							}															
+						}	else if(strDataType.equals("UnSubsTrans")) {
+							unsubscribeTransactions(channel,symbols,lst);
 						}
 					}	
 				}	else	{

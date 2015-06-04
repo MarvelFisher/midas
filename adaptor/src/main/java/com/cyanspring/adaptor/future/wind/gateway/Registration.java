@@ -97,12 +97,7 @@ public class Registration {
 		return true;
 	}
 	
-	public boolean hadTransaction(String symbol) {
-		if(symbolPosition(transactionList,symbol,false) < 0) {
-			return false;
-		}
-		return true;		
-	}
+
 	
 	private int symbolPosition(ArrayList<String>lst,String symbol,boolean bAdd) {
 		int iPos;
@@ -125,6 +120,13 @@ public class Registration {
 			return false;
 		}
 		return true;
+	}	
+	
+	public boolean hadTransaction(String symbol) {
+		if(symbolPosition(transactionList,symbol,false) < 0) {
+			return false;
+		}
+		return true;		
 	}
 	
 	public boolean addTransaction(String symbol) {
@@ -133,6 +135,18 @@ public class Registration {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean removeTransaction(String symbol) {
+		int iPos;
+		synchronized(transactionList) {
+			iPos = Collections.binarySearch(transactionList,symbol);
+			if(iPos >= 0) {
+				transactionList.remove(iPos);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void clear() {
