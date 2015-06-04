@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.Network.Transport.FDTFrameDecoder;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,7 +21,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	public static ChannelHandlerContext ctx = null;
 	
 	private int bufLenMin = 0,bufLenMax = 0,blockCount = 0;
-	private long throughput = 0,dataReceived = 0,msLastTime = 0,msDiff = 0;
+	private long throughput = 0,msLastTime = 0,msDiff = 0;
 	
 	public void channelActive(ChannelHandlerContext arg0) throws Exception {
 		
@@ -54,7 +55,11 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				HashMap<Integer,Object> in = (HashMap<Integer,Object>)arg1;
 				if(in != null) {
 					processData(in);
-					//calculateMessageFlow(in.length());					
+					MsgPackLiteDataServerHandler.flushAllClientMsgPack();
+					if(calculateMessageFlow(FDTFrameDecoder.getPacketLen(),FDTFrameDecoder.getReceivedBytes()))
+					{
+						FDTFrameDecoder.ResetCounter();
+					}
 				}
 			} 
 	    } finally {
@@ -63,7 +68,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	
 	}
 	
-	private void calculateMessageFlow(int rBytes) {
+	private boolean calculateMessageFlow(int rBytes,int dataReceived) {
 		if(bufLenMin > rBytes) 
 		{
 			bufLenMin = rBytes;
@@ -78,8 +83,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			bufLenMax = rBytes;
 			log.info("maximal recv len from gateway : " + bufLenMax);				
 		}
-		
-		dataReceived += rBytes;		
+			
 		blockCount += 1;
 		msDiff = System.currentTimeMillis() - msLastTime;
 		if(msDiff > 1000) {
@@ -91,10 +95,11 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				} else {
 					log.info("maximal throughput : " + throughput + " Bytes/Sec , " + blockCount + " blocks/Sec");
 				}
-			}
-			dataReceived = 0;
+			}			
 			blockCount = 0;
+			return true;
 		}
+		return false;
 	}
 	
 	public void channelReadComplete(ChannelHandlerContext arg0)
@@ -126,6 +131,14 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			}
 			int iPacketType = (int)in.get(FDTFields.PacketType);
 			switch(iPacketType) {
+			case FDTFields.PacketArray :
+				ArrayList<HashMap<Integer,Object>> lst = (ArrayList<HashMap<Integer,Object>>)in.get(FDTFields.ArrayOfPacket);
+				if(lst != null) {
+					for(HashMap<Integer,Object> map : lst) {
+						processData(map);
+					}
+				}
+				break;
 			case FDTFields.WindMarkets :
 				if(in.containsKey(FDTFields.ArrayOfString)) {
 					processMarkets(in.get(FDTFields.ArrayOfString));
@@ -139,7 +152,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				}
 				break;
 			case FDTFields.WindIndexData :
-			case FDTFields.WindMarketData :
+			case FDTFields.WindMarketData :			
 			case FDTFields.WindFutureData :
 				if(in.containsKey(FDTFields.WindSymbolCode)) {
 					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
