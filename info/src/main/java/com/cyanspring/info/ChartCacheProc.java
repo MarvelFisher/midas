@@ -36,15 +36,18 @@ public class ChartCacheProc implements Runnable
 		SymbolData symboldata = null;
 		while (true)
 		{
-			symboldata = m_q.poll();
-			if (symboldata != null)
-			{
-				symboldata.writeToMin();
-			}
+			do {
+				symboldata = m_q.poll();
+				if (symboldata != null)
+				{
+					symboldata.writeToMin();
+				}
+			} while(symboldata != null);
+			
 			try 
 			{
 				Thread.sleep(periodTime);
-			} 
+			}			
 			catch (InterruptedException e) 
 			{
 				log.error(e.getMessage(), e);
