@@ -120,6 +120,14 @@ public class SymbolChef implements Runnable{
 		log.debug("Quote: " + quote);
     }
 
+	public void getAllChartPrice()
+	{
+		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		{
+			entry.getValue().getAllChartPrice();
+		}
+	}
+
 	@Override
 	public void run() 
 	{

@@ -75,7 +75,6 @@ public class SymbolData implements Comparable<SymbolData>
 		this.market = market;
 		readFromTick() ;
 		get52WHighLow() ;
-		getAllChartPrice();
 		isUpdating = false ;
 	}
 	public SymbolData(String symbol) {
@@ -272,8 +271,14 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-//			lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
-			lastPrice = mapHistorical.get(strType).get(0);
+			if (mapHistorical.get(strType) == null)
+			{
+				lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+			}
+			else
+			{
+				lastPrice = mapHistorical.get(strType).get(0);
+			}
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
 			List<HistoricalPrice> listBase = null;
@@ -413,10 +418,12 @@ public class SymbolData implements Comparable<SymbolData>
 		getChartPrice("D");
 		getChartPrice("W");
 		getChartPrice("M");
+		log.debug("Retrieve chart data finish");
 	}
 	
 	public void getChartPrice(String strType)
 	{
+		log.debug(String.format("Retrieve chart data [%s,%s,%d]", market, strSymbol, centralDB.getHistoricalDataCount().get(strType)));
 		List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType));
 		if (historical != null)
 		{
@@ -430,8 +437,14 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-//			priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
-			priceEmpty = mapHistorical.get(strType).get(0);
+			if (mapHistorical.get(strType) == null)
+			{
+				priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+			}
+			else
+			{
+				priceEmpty = mapHistorical.get(strType).get(0);
+			}
 			if (priceEmpty != null)
 			{
 				prices.add(priceEmpty) ;
@@ -761,12 +774,19 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			strSymbol = symbol;
 		}
-//		ArrayList<HistoricalPrice> listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
-//		if (listPrice == null)
-//		{
-//			return null;
-//		}
-		ArrayList<HistoricalPrice> listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, dataCount);
+		ArrayList<HistoricalPrice> listPrice;
+		if (mapHistorical.get(type) == null)
+		{
+			listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
+			if (listPrice == null)
+			{
+				return null;
+			}
+		}
+		else
+		{
+			listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, dataCount);
+		}
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
 			try {
