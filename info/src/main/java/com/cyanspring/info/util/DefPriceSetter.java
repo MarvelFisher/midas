@@ -55,6 +55,10 @@ public class DefPriceSetter implements IPriceSetter
 		{
 			symboldata.setdOpen(dPrice);
 		}
+		if(quote.getOpen() > 0 && PriceUtils.Equal(symboldata.getdOpen(),quote.getOpen()) == false) 
+		{
+			symboldata.setdOpen(quote.getOpen());
+		}
 		if (!PriceUtils.Equal(symboldata.getdClose(), dPrice))
 		{
 			symboldata.setdClose(dPrice);
