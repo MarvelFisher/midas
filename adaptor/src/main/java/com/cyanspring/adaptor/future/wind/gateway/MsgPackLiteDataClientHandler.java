@@ -56,7 +56,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				if(in != null) {
 					processData(in);
 					MsgPackLiteDataServerHandler.flushAllClientMsgPack();
-					if(calculateMessageFlow(FDTFrameDecoder.getPacketLen(),FDTFrameDecoder.getReceivedBytes()))
+					if(calculateMessageFlow(FDTFrameDecoder.getPacketLen(),FDTFrameDecoder.getReceivedBytes(),FDTFrameDecoder.getDropBytes()))
 					{
 						FDTFrameDecoder.ResetCounter();
 					}
@@ -68,7 +68,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	
 	}
 	
-	private boolean calculateMessageFlow(int rBytes,int dataReceived) {
+	private boolean calculateMessageFlow(int rBytes,int dataReceived,int dropBytes) {
 		if(bufLenMin > rBytes) 
 		{
 			bufLenMin = rBytes;
@@ -91,9 +91,9 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			if(throughput < dataReceived * 1000 / msDiff) {
 				throughput = dataReceived * 1000 / msDiff;
 				if(throughput > 1024) {
-					log.info("maximal throughput : " + throughput / 1024 + " KB/Sec , " + blockCount + " blocks/Sec");
+					log.info("maximal throughput : " + throughput / 1024 + " KB/Sec , " + blockCount + " packets/Sec , Drop " + dropBytes + " Bytes." );
 				} else {
-					log.info("maximal throughput : " + throughput + " Bytes/Sec , " + blockCount + " blocks/Sec");
+					log.info("maximal throughput : " + throughput + " Bytes/Sec , " + blockCount + " packets/Sec , Drop " + dropBytes + " Bytes." );
 				}
 			}			
 			blockCount = 0;

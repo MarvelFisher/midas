@@ -3,6 +3,7 @@ package com.cyanspring.adaptor.future.wind.gateway;
 import java.util.HashMap;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.HashMap;
@@ -178,7 +179,20 @@ public class WindGateway implements Runnable {
 	public void setMpUpstreamPort(int port) {
 		mpUpstreamPort = port;
 	}
+	
+	public int getStockTypeFlags() {
+		return stockTypeFlags;
+	}
+	public void setStockTypeFlags(int flag) {
+		stockTypeFlags = flag;
+	}
 
+	public int getMerchandiseTypeFlags() {
+		return merchandiseTypeFlags;
+	}
+	public void setMerchandiseTypeFlags(int flag) {
+		merchandiseTypeFlags = flag;
+	}
 		
 	
 	public static boolean compareArrays(long[] array1, long[] array2) {
@@ -789,7 +803,7 @@ public class WindGateway implements Runnable {
 		publishWindData("API=Heart Beat",null);
 
 		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
-		map.put(FDTFields.PacketType,FDTFields.WindIndexData);
+		map.put(FDTFields.PacketType,FDTFields.WindHeartBeat);
 		MsgPackLiteDataServerHandler.sendMessagePackToAllClient(map);
 	}
 	
@@ -910,12 +924,28 @@ public class WindGateway implements Runnable {
 			mapCode = new ConcurrentHashMap<String,TDF_CODE>();
 			mapCodeTable.put(strMarket, mapCode);
 		}
-		if(codes != null) {
-				mapCode.clear();
-				for(TDF_CODE code : codes) {			
-					mapCode.put(code.getWindCode(),code);
-				}			
+		try {
+			if(codes != null) {
+					mapCode.clear();
+					for(TDF_CODE code : codes) {			
+						mapCode.put(code.getWindCode(),code);
+						/*
+						String cnName = code.getCNName();
+						byte[] cn = code.getCNName().getBytes("UTF8");
+						String result = new String(cnName.getBytes(),"GB2312");
+						if(result != null) {
+							result = null;
+						}
+						if(cn != null) {
+							cn = null;
+						}
+						*/						
+					}			
+			}
+		} catch(Exception e)  {
+			
 		}
+		
 	}
 	
 	public void flushAllClientMsgPack() {
@@ -948,8 +978,15 @@ public class WindGateway implements Runnable {
 		if(demoStock != null)
 		{
 			demoStock.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
-		}
+		}	
 	}
+	
+	public void requestCodeTable(String market) {
+		if(demoStock != null)
+		{
+			demoStock.AddRequest(new WindRequest(WindRequest.RequestCodeTable,market.toUpperCase()));
+		}
+	}	
 	
 	public void run()
 	{	

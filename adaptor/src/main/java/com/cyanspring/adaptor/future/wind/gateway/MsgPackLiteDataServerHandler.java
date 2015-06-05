@@ -356,8 +356,18 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	HashMap<Integer,Object> map = new HashMap<Integer,Object>();
     	map.put(FDTFields.PacketType, FDTFields.WindCodeTable);
     	map.put(FDTFields.WindSymbolCode,code.getWindCode());
-    	map.put(FDTFields.ShortName, code.getClass());
-    	map.put(FDTFields.SecurityExchange, code.getMarket());
+    	if(code.getCode() != null && code.getCode().isEmpty() == false) {
+    		map.put(FDTFields.ShortName, code.getCode());
+    	}
+    	if(code.getMarket() != null && code.getMarket().isEmpty() == false) {
+    		map.put(FDTFields.SecurityExchange, code.getMarket());
+    	}
+    	if(code.getCNName() != null && code.getCNName().isEmpty() == false) {
+    		map.put(FDTFields.CNName, code.getCNName());
+    	}
+    	if(code.getENName() != null && code.getENName().isEmpty() == false) {
+    		map.put(FDTFields.EnglishName, code.getENName());
+    	}
     	map.put(FDTFields.SecurityType, code.getType());
     	return map;
     }
@@ -389,8 +399,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     				sendCodeTablePacketArray(channel,packetArray);
     				packetArray.clear();
     				i = 0;
-    			}
-    	        it.remove(); // avoids a ConcurrentModificationException
+    			}    	        
     		}
     		if(packetArray.size() > 0) {
 				sendCodeTablePacketArray(channel,packetArray);

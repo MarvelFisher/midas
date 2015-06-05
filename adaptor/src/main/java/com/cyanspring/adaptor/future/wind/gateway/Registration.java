@@ -87,6 +87,25 @@ public class Registration {
 		return strb.toString();		
 	}
 	
+	public String getSubscribeTransaction(Registration other) {
+		if(transactionList.size() <= 0) {
+			return null;
+		}
+		StringBuilder strb = new StringBuilder("API=SubsTrans|Symbol=");
+		int iCount = 0;
+		for(String symbol : transactionList) {
+			if(iCount != 0) {
+				strb.append(";");
+			}
+			strb.append(symbol);
+			iCount += 1;
+		}
+		if(iCount == 0) {
+			return null;
+		}
+		return strb.toString();		
+	}	
+	
 	public boolean hadSymbol(String symbol) {
 		if(hadSymbolMarket(symbol)) {
 			return true;

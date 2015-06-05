@@ -1,5 +1,7 @@
 package com.cyanspring.Network.Transport;
 
+import java.util.HashMap;
+
 import net.asdfa.msgpack.MsgPack;
 
 import org.slf4j.Logger;
@@ -30,6 +32,17 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 	■ MessagePack Packet 內容的第一個 byte 永遠為壓縮碼，代表目前使用的壓縮方式或是不壓縮。
 	*/
 	
+	/*
+	static private volatile int iSentBytes = 0;
+	public void resetCounter() {
+		iSentBytes = 0;
+	}
+	public int getSentBytes() {
+		return iSentBytes;
+	}
+	*/
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Object obj,ByteBuf buf) throws Exception { // (3)
 
@@ -44,11 +57,12 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 			boolean isCompressed = false;
 			try {
 				data = MsgPack.pack(obj);
-			} 
+			}
 			catch(Exception e)
 			{
 				throw e;
 			}
+							
 			byte[] compressedData = null;
 			int compressedLen = 0,datalen = data.length + 2 + 1;
 			if(data.length >= FDTPacket.PKT_COMPRESS_SIZE ) {
@@ -97,6 +111,7 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 			buf.writeByte(FDTPacket.PKT_END);
 			data = null;
 			compressedData = null;
+			//iSentBytes += datalen + 4;
 		}
 		catch(Exception e)
 		{

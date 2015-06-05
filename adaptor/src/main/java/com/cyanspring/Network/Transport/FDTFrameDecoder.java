@@ -28,6 +28,7 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 	*/	
 	static private volatile int iReceivedBytes = 0;
 	static private volatile int iPacketLen = 0;
+	static private volatile int iDropBytes = 0;
 	
 	public static void ResetCounter() {
 		iReceivedBytes = 0;
@@ -38,6 +39,9 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 	}
 	public static int getPacketLen() {
 		return iPacketLen;
+	}
+	public static int getDropBytes() {
+		return iDropBytes;
 	}
 	
 	@Override
@@ -50,6 +54,7 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 			byte head_byte = in.readByte();
 			if(head_byte != FDTPacket.PKT_LEAD) {	
 				iReceivedBytes += 1;
+				iDropBytes += 1;
 				continue; //discard head byte that is not 0x02;
 			}
 			
@@ -75,6 +80,7 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 				in.resetReaderIndex();
 				in.readByte();
 				iReceivedBytes += 1;
+				iDropBytes += 1;
 				continue; 
 			}
 			

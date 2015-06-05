@@ -46,6 +46,10 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
 		}
+		strSubscribe = registrationGlobal.getSubscribeTransaction(null);
+		if(strSubscribe != null) {
+			channel.write(addHashTail(strSubscribe,true));
+		}		
 		if(reg != null) {
 			strSubscribe = registrationGlobal.getSubscribeMarket(reg);
 			if(strSubscribe != null) {

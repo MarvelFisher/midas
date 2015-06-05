@@ -7,35 +7,54 @@
     
     <bean id="WindGateway" class="com.cyanspring.adaptor.future.wind.gateway.WindGateway">
 
-    	<!-- Wind Merchandise Server -->
+    	<!-- Wind Merchandise Server , 若 IP 設為空字串,就不會登入 Wind -->
     	<property name="windMFServerIP" value=""/><!-- "114.80.154.34"/> -->     
     	<property name="windMFServerPort" value="10050"/> 	
     	<property name="windMFServerUserId" value="TD1001888002"/>
-    	<property name="windMFServerUserPwd" value="35328058"/>	  	
+    	<property name="windMFServerUserPwd" value="35328058"/>
+    	<property name="stockTypeFlags" value="17"/>
+    	<!--
+		DATA_TYPE_ALL = 0,//所有数据    
+		DATA_TYPE_INDEX = 0x1,  // 指数 
+		DATA_TYPE_TRANSACTION = 0x2,//逐笔成交  
+		DATA_TYPE_ORDER = 0x4, //逐笔 委托    
+		DATA_TYPE_ORDERQUEUE=0x8,//委 托队列 
+		DATA_TYPE_FUTURE_CX=0x10 
+		-->		
     	
-    	<!-- Wind Stock / Index Future Server -->
+    	<!-- Wind Stock / Index Future Server , 若 IP 設為空字串,就不會登入 Wind -->
     	<property name="windSFServerIP" value="114.80.154.34"/>      
     	<property name="windSFServerPort" value="10051"/> 	
     	<property name="windSFServerUserId" value="TD1004012004"/>
     	<property name="windSFServerUserPwd" value="70173844"/>
+    	<property name="merchandiseTypeFlags" value="3"/>
+		<!--
+		DATA_TYPE_ALL = 0,//所有数据    
+		DATA_TYPE_INDEX = 0x1,  // 指数 
+		DATA_TYPE_TRANSACTION = 0x2,//逐笔成交  
+		DATA_TYPE_ORDER = 0x4, //逐笔 委托    
+		DATA_TYPE_ORDERQUEUE=0x8,//委 托队列 
+		DATA_TYPE_FUTURE_CX=0x10 
+		-->		    	
+    	    	
     	
-    	<!--  Wind Gateway Configure -->	     	
-    	<property name="serverPort" value="10149"/>
+    	<!-- 若 cacading 或是 mpCascading 設為 true , 就是 cacading mode , 不會直接與 Wind 連線 -->	
+    	<!--  DelimiterBased String Gateway and Cascading Configure -->	     	     	
+    	<property name="serverPort" value="10049"/>
     	<property name="cascading" value="false"/>
-    	<!-- 
-    	<property name="upstreamIp" value="202.55.14.140"/>
-    	-->
     	<property name="upstreamIp" value="10.0.0.20"/>
     	<property name="upstreamPort" value="10049"/>
-    	
-    	<property name="mpCascading" value="true"/>
-    	<property name="mpUpstreamIp" value="127.0.0.1"/>
+    
+		<!--  Msg Pack Lite Cascading Configure -->    	
+    	<property name="mpCascading" value="false"/>
+    	<property name="mpUpstreamIp" value="10.0.0.32"/>
     	<property name="mpUpstreamPort" value="10048"/>    	
     	    	
     </bean>
  
+ 	<!--  Msg Pack Lite Gateway Configure -->
     <bean id="MsgPackLiteServer" class="com.cyanspring.adaptor.future.wind.gateway.MsgPackLiteServer">    
-    	<property name="serverPort" value="10148"/>
+    	<property name="serverPort" value="10048"/>
     	<property name="readIdleInterval" value="5"/>
     	<property name="writeIdleInterval" value="3"/>
     </bean>
