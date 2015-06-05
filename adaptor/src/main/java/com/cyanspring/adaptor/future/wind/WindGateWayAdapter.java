@@ -166,7 +166,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                     stockData = isMsgPack
                             ? windDataParser.convertToStockData(inputMessageHashMap, stockDataBySymbolMap)
                             : windDataParser.convertToStockData(in_arr, stockDataBySymbolMap);
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     LogUtil.logException(log, e);
                     return;
                 }
@@ -181,7 +181,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                     indexData = isMsgPack
                             ? windDataParser.convertToIndexData(inputMessageHashMap, indexDataBySymbolMap)
                             : windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     LogUtil.logException(log, e);
                     return;
                 }
@@ -196,7 +196,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                     futureData = isMsgPack
                             ? windDataParser.convertToFutureData(inputMessageHashMap, futureDataBySymbolMap)
                             : windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
-                } catch (UnsupportedEncodingException e) {
+                } catch (Exception e) {
                     LogUtil.logException(log, e);
                     return;
                 }

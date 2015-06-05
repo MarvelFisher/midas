@@ -43,16 +43,17 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
         lastRecv = DateUtil.now();
         try {
-            if(WindGateWayAdapter.instance.isMsgPack()){
-                if(msg instanceof HashMap){
-                    processMsgPackRead((HashMap)msg);
-                    if(calculateMessageFlow(FDTFrameDecoder.getPacketLen(),FDTFrameDecoder.getReceivedBytes())) FDTFrameDecoder.ResetCounter();
+            if (WindGateWayAdapter.instance.isMsgPack()) {
+                if (msg instanceof HashMap) {
+                    processMsgPackRead((HashMap) msg);
+                    if (calculateMessageFlow(FDTFrameDecoder.getPacketLen(), FDTFrameDecoder.getReceivedBytes()))
+                        FDTFrameDecoder.ResetCounter();
                 }
-            }else{
-                if(msg instanceof String) {
+            } else {
+                if (msg instanceof String) {
                     String msgStr = (String) msg;
                     processNoMsgPackRead(msgStr);
-                    if(calculateMessageFlow(msgStr.length(), dataReceived)) dataReceived = 0;
+                    if (calculateMessageFlow(msgStr.length(), dataReceived)) dataReceived = 0;
                 }
             }
         } finally {
@@ -60,30 +61,25 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         }
     }
 
-    public void processMsgPackRead(HashMap hashMap){
+    public void processMsgPackRead(HashMap hashMap) {
         StringBuffer sb = new StringBuffer();
-        for(Object key: hashMap.keySet()){
+        for (Object key : hashMap.keySet()) {
             sb.append(key + "=" + hashMap.get(key) + ",");
         }
-        log.debug(sb.toString());
+        if(WindGateWayAdapter.instance.isMarketDataLog()) log.debug(sb.toString());
 //        Check packType
-        int packType = (int)hashMap.get(FDTFields.PacketType);
-        if(packType == FDTFields.PacketArray){
-            ArrayList<HashMap> arrayList = (ArrayList<HashMap>)hashMap.get(FDTFields.ArrayOfPacket);
-            for(HashMap innerHashMap : arrayList){
-//                sb = new StringBuffer();
-//                for(Object key: innerHashMap.keySet()){
-//                    sb.append(key + "=" + innerHashMap.get(key) + ",");
-//                }
-//                log.debug(sb.toString());
-                WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int)innerHashMap.get(FDTFields.PacketType)), null, innerHashMap);
+        int packType = (int) hashMap.get(FDTFields.PacketType);
+        if (packType == FDTFields.PacketArray) {
+            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
+            for (HashMap innerHashMap : arrayList) {
+                WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType)), null, innerHashMap);
             }
-        }else {
+        } else {
             WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType(packType), null, hashMap);
         }
     }
 
-    public int parsePackTypeToDataType(int packType){
+    public int parsePackTypeToDataType(int packType) {
         int dataType = -1;
         if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
         if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
@@ -91,7 +87,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         return dataType;
     }
 
-    public void processNoMsgPackRead(String in){
+    public void processNoMsgPackRead(String in) {
         String strHash = null;
         String strDataType = null;
         int dataType = -1;
@@ -144,29 +140,28 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         }
     }
 
-    private boolean calculateMessageFlow(int rBytes,int dataReceived) {
-        if(bufLenMin > rBytes)
-        {
+    private boolean calculateMessageFlow(int rBytes, int dataReceived) {
+        if (bufLenMin > rBytes) {
             bufLenMin = rBytes;
             log.info("WindC-minimal recv len from wind gateway : " + bufLenMin);
         } else {
-            if(bufLenMin == 0) {
+            if (bufLenMin == 0) {
                 bufLenMin = rBytes;
                 log.info("WindC-first time recv len from wind gateway : " + bufLenMin);
             }
         }
-        if(bufLenMax < rBytes) {
+        if (bufLenMax < rBytes) {
             bufLenMax = rBytes;
             log.info("WindC-maximal recv len from gateway : " + bufLenMax);
         }
 
         blockCount += 1;
         msDiff = System.currentTimeMillis() - msLastTime;
-        if(msDiff > 1000) {
+        if (msDiff > 1000) {
             msLastTime = System.currentTimeMillis();
-            if(throughput < dataReceived * 1000 / msDiff) {
+            if (throughput < dataReceived * 1000 / msDiff) {
                 throughput = dataReceived * 1000 / msDiff;
-                if(throughput > 1024) {
+                if (throughput > 1024) {
                     log.info("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec , " + blockCount + " blocks/Sec");
                 } else {
                     log.info("WindC-maximal throughput : " + throughput + " Bytes/Sec , " + blockCount + " blocks/Sec");
@@ -249,7 +244,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
      * @param data
      */
     public static void sendData(String data) {
-        if(!WindGateWayAdapter.instance.isMsgPack()) data = data + "\r\n";
+        if (!WindGateWayAdapter.instance.isMsgPack()) data = data + "\r\n";
         ChannelFuture future = context.channel().writeAndFlush(data);
         future.addListener(new ChannelFutureListener() {
             @Override
@@ -322,9 +317,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
 
         sbSymbol.append("API");
-        if(WindGateWayAdapter.instance.isSubTrans()){
+        if (WindGateWayAdapter.instance.isSubTrans()) {
             sbSymbol.append("SubsTrans");
-        }else{
+        } else {
             sbSymbol.append("SUBSCRIBE");
         }
         sbSymbol.append("Symbol");

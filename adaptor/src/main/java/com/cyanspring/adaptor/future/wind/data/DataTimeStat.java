@@ -17,24 +17,24 @@ public class DataTimeStat {
     private long quoteOverTimeCount = 0;
     private long maxOverTime;
 
-    public DataTimeStat(String symbol){
+    public DataTimeStat(String symbol) {
         this.symbol = symbol;
     }
 
-    public void processReceiveQuoteTime(Date tickTime){
+    public void processReceiveQuoteTime(Date tickTime) {
         quoteReceiveCount++;
         long overTime = TimeUtil.getTimePass(tickTime);
-        if(overTime > WindDef.STOCK_WARNING_MILLISECONDS) {
+        if (overTime > WindDef.STOCK_WARNING_MILLISECONDS) {
             quoteOverTimeCount++;
-            if(overTime > maxOverTime) {
+            if (overTime > maxOverTime) {
                 maxOverTime = overTime;
-                log.debug(symbol+" Come OverTime " + maxOverTime);
+                log.debug(symbol + " Come OverTime " + maxOverTime);
             }
         }
     }
 
-    public void printStat(){
-        log.debug("Symbol=" + symbol + ",max=" + maxOverTime + ",QRC=" + quoteReceiveCount + ",QOTC=" + quoteOverTimeCount);
+    public void printStat() {
+        log.info("Symbol=" + symbol + ",max=" + maxOverTime + ",QRC=" + quoteReceiveCount + ",QOTC=" + quoteOverTimeCount);
     }
 
     public String getSymbol() {
