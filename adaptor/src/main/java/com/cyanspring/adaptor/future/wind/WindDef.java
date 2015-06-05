@@ -20,6 +20,7 @@ public final class WindDef {
     public static final int MSG_DATA_ORDER = -87;
 
     //Wind Stock Status field
+    public static final int STOCK_STATUS_NORMAL = 0;
     public static final int STOCK_STATUS_STOP_TRA_IN_OPEN = (int) 'R';
     public static final int STOCK_STATUS_SLEEP = (int) 'P';
     public static final int STOCK_STATUS_STOP_SYMBOL = (int) 'B';
@@ -30,8 +31,9 @@ public final class WindDef {
     public static final int STOCK_STATUS_PENDING_2 = (int) 'X';
     public static final int STOCK_STATUS_NOT_SERVICE = (int) 'S';
     public static final int STOCK_STATUS_VAR_STOP = (int) 'Q';
-    public static final int STOCK_STATUS_MARKET_CLOSE_2 = (int) 'V';
-    public static final int STOCK_WARNING_SECONDS = 3;
+    public static final int STOCK_STATUS_STOP_TRAN = (int) 'V';
+    public static final int STOCK_STATUS_WAIT_DELETE = (int) 'Z';
+    public static final int STOCK_WARNING_MILLISECONDS = 4000;
 
     public static final int AM10 = 100000000;
     public static final long timerInterval = 5000;

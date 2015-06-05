@@ -252,8 +252,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
         if ("S".equals(type) && !bigSessionIsClose) {
             int nowTime = Integer.parseInt(TimeUtil.formatDate(Clock.getInstance().now(), "HHmmssSSS"));
-            if ((nowTime - time) >= WindDef.STOCK_WARNING_SECONDS)
-                log.debug(String.format("%s come large than %d sec,%d,%s", title, WindDef.STOCK_WARNING_SECONDS, (nowTime - time), symbol));
+            if ((nowTime - time) >= WindDef.STOCK_WARNING_MILLISECONDS)
+                log.debug(String.format("%s come large than %d sec,%d,%s", title, WindDef.STOCK_WARNING_MILLISECONDS, (nowTime - time), symbol));
         }
         return isCorrect;
     }

@@ -30,6 +30,7 @@ public class StockItem implements AutoCloseable {
 
     protected static ConcurrentHashMap<String, StockItem> stockItemBySymbolMap = new ConcurrentHashMap<String, StockItem>();
     private String symbolId;
+    private int status = -1;
     private int sessionStatus = -1;
     private long totalVolume = 0;
     private long volume = 0;
@@ -161,7 +162,7 @@ public class StockItem implements AutoCloseable {
             if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
                 switch (stockData.getStatus()) {
                     case WindDef.STOCK_STATUS_MARKET_CLOSE:
-                    case WindDef.STOCK_STATUS_MARKET_CLOSE_2:
+                    case WindDef.STOCK_STATUS_STOP_TRAN:
                     case WindDef.STOCK_STATUS_NEW_SYMBOL:
                     case WindDef.STOCK_STATUS_NOT_SERVICE:
                     case WindDef.STOCK_STATUS_PENDING:
@@ -170,7 +171,7 @@ public class StockItem implements AutoCloseable {
                     case WindDef.STOCK_STATUS_STOP_SYMBOL:
                     case WindDef.STOCK_STATUS_STOP_SYMBOL_2:
                     case WindDef.STOCK_STATUS_STOP_TRA_IN_OPEN:
-                    case WindDef.STOCK_STATUS_VAR_STOP:
+                    case WindDef.STOCK_STATUS_WAIT_DELETE:
                         quote.setStale(true);
                         break;
                     default:
@@ -233,6 +234,13 @@ public class StockItem implements AutoCloseable {
         if (sessionStatus != item.sessionStatus) {
             item.sessionStatus = sessionStatus;
             quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
+            quoteExtendIsChange = true;
+        }
+
+        int status = stockData.getStatus();
+        if (status != item.status) {
+            item.status = status;
+            quoteExtend.put(QuoteExtDataField.STATUS.value(), status);
             quoteExtendIsChange = true;
         }
 
