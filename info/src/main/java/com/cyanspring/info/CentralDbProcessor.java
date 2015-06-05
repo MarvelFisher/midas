@@ -181,10 +181,19 @@ public class CentralDbProcessor implements IPlugin
 //		}
 		else if (event == chartEvent)
 		{
-			for (SymbolChef chef : SymbolChefList)
+			Thread retrieveThread = new Thread(new Runnable() 
 			{
-				chef.getAllChartPrice();
-			}
+				@Override
+				public void run() 
+				{
+					for (SymbolChef chef : SymbolChefList)
+					{
+						chef.getAllChartPrice();
+					}
+				}
+			});
+			retrieveThread.setName("CDP_Retrieve_Chart");
+			retrieveThread.start();
 		}
 		else if (event == insertEvent)
 		{
