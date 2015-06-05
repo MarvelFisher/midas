@@ -221,9 +221,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
             if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
         }
-        if(null != quoteChecker && !quoteChecker.checkTime(prev, quote)){
-            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_TIME_ERROR);
-        }
+//        if(null != quoteChecker && !quoteChecker.checkTime(prev, quote)){
+//            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_TIME_ERROR);
+//        }
         if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote) && inEvent.getSourceId() <= 100) {
             printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_PRICE_ERROR);
             return;
@@ -271,7 +271,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void printQuoteLog(int sourceId, String contributor, Quote quote, int logType){
         StringBuffer sb = new StringBuffer();
         sb.append("Sc=" + sourceId
-                + ",Symbol=" + quote.getSymbol() + ",A=" + quote.getAsk()
+                + ",S=" + quote.getSymbol() + ",A=" + quote.getAsk()
                 + ",B=" + quote.getBid() + ",C=" + quote.getClose()
                 + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                 + ",L=" + quote.getLow() + ",Last=" + quote.getLast()

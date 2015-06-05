@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
 import com.cyanspring.adaptor.future.wind.data.AbstractWindDataParser;
+import com.cyanspring.adaptor.future.wind.data.DataTimeStat;
 import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
@@ -176,6 +177,14 @@ public class StockItem implements AutoCloseable {
                         break;
                     default:
                         quote.setStale(false);
+                        //record time stat
+                        if(WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.containsKey(symbolId)){
+                            DataTimeStat dataTimeStat = WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.get(symbolId);
+                            dataTimeStat.processReceiveQuoteTime(tickTime);
+                        }else{
+                            DataTimeStat dataTimeStat = new DataTimeStat(symbolId);
+                            dataTimeStat.processReceiveQuoteTime(tickTime);
+                        }
                         break;
                 }
             }

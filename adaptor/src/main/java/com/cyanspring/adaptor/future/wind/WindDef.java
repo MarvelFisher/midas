@@ -33,7 +33,7 @@ public final class WindDef {
     public static final int STOCK_STATUS_VAR_STOP = (int) 'Q';
     public static final int STOCK_STATUS_STOP_TRAN = (int) 'V';
     public static final int STOCK_STATUS_WAIT_DELETE = (int) 'Z';
-    public static final int STOCK_WARNING_MILLISECONDS = 4000;
+    public static final long STOCK_WARNING_MILLISECONDS = 4000;
 
     public static final int AM10 = 100000000;
     public static final long timerInterval = 5000;

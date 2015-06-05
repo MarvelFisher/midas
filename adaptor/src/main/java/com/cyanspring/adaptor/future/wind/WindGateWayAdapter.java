@@ -1,9 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
-import com.cyanspring.adaptor.future.wind.data.FutureData;
-import com.cyanspring.adaptor.future.wind.data.IndexData;
-import com.cyanspring.adaptor.future.wind.data.StockData;
-import com.cyanspring.adaptor.future.wind.data.WindDataParser;
+import com.cyanspring.adaptor.future.wind.data.*;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.*;
@@ -74,6 +71,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<String, MarketSessionData>(); //SaveIndexMarketSession
     static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
     static ConcurrentHashMap<String, String> commodityBySymbolMap = new ConcurrentHashMap<String, String>(); //Save Commodity
+    HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<String, DataTimeStat>();
 
     RequestThread thread = null;
     private static final int doConnect = 0;
@@ -249,11 +247,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                     title, WindDef.WARN_CLOSE_OVER_TIME,
                     bigSessionCloseDate.toString(), symbol));
             return false;
-        }
-        if ("S".equals(type) && !bigSessionIsClose) {
-            int nowTime = Integer.parseInt(TimeUtil.formatDate(Clock.getInstance().now(), "HHmmssSSS"));
-            if ((nowTime - time) >= WindDef.STOCK_WARNING_MILLISECONDS)
-                log.debug(String.format("%s come large than %d sec,%d,%s", title, WindDef.STOCK_WARNING_MILLISECONDS, (nowTime - time), symbol));
         }
         return isCorrect;
     }
@@ -569,6 +562,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             if (marketSessionType == MarketSessionType.CLOSE) {
                 bigSessionIsClose = true;
                 bigSessionCloseDate = marketSessionEvent.getStart();
+                //print time stat log.0
+                if(recordReceiveQuoteInfoBySymbolMap!=null && recordReceiveQuoteInfoBySymbolMap.size()>0){
+                    for(DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()){
+                        dataTimeStat.printStat();
+                    }
+                }
             }
         }
     }
