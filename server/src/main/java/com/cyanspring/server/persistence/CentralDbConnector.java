@@ -26,7 +26,7 @@ public class CentralDbConnector {
 	private static String insertUser = "INSERT INTO AUTH(`USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`) VALUES('%s', '%s', md5('%s'), '%s', '%s', '%s', '%s', %d, '%s', '%s', %d)";
 	private static String insertThirdPartyUser = "INSERT INTO THIRD_PARTY_USER(`ID`, `MARKET`, `LANGUAGE`, `USERID`, `USERTYPE`) VALUES('%s', '%s', '%s', '%s', '%s')";
 	private static String isUserExist = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s'";
-	private static String isUserExistAndNotTerminated = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s' AND ISTERMINATED=0";
+	private static String isUserExistAndNotTerminated = "SELECT COUNT(*) FROM AUTH WHERE `USERID` = '%s' AND (ISTERMINATED=0 OR ISTERMINATED is null)";
     private static String isThirdPartyUserExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s' AND `MARKET` = '%s' AND `LANGUAGE` = '%s'";
 	private static String isThirdPartyUserAnyMappingExist = "SELECT COUNT(*) FROM THIRD_PARTY_USER WHERE `ID` = '%s'";
 	private static String isPendingTransfer = "SELECT COUNT(*) FROM ToDoCvtFDT WHERE `ID3RD` = '%s' AND `STATUS` IS NULL";
