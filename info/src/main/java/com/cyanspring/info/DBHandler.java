@@ -16,7 +16,11 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.marketdata.HistoricalPrice;
+import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.util.PriceUtils;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class DBHandler 
 {
@@ -24,8 +28,12 @@ public class DBHandler
 			.getLogger(DBHandler.class);
 	private final String createTable = "CREATE TABLE `%s` (`TRADEDATE`  date NULL DEFAULT NULL ,`KEYTIME`  datetime NOT NULL ,`DATATIME`  datetime NULL DEFAULT NULL ,`SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ,`OPEN_PRICE`  double NULL DEFAULT NULL ,`CLOSE_PRICE`  double NULL DEFAULT NULL ,`HIGH_PRICE`  double NULL DEFAULT NULL ,`LOW_PRICE`  double NULL DEFAULT NULL ,`VOLUME`  int(11) NULL DEFAULT NULL ,`TOTALVOLUME`  bigint(20) NULL DEFAULT NULL ,UNIQUE INDEX `TradeDate_Symbol` USING BTREE (`KEYTIME`, `SYMBOL`)) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0 ;";
 	private String     jdbcUrl;
+	
+	/*-- for batch --*/
 	private Connection connect = null ;
 	private Statement  stat = null ;
+	
+	private ComboPooledDataSource cpds;	
 	public DBHandler(String jdbcUrl, String driverClass) throws Exception
 	{
 		this.jdbcUrl = jdbcUrl ;
@@ -39,6 +47,26 @@ public class DBHandler
 			log.error(e.getMessage(), e);
 		}
 	}
+	public DBHandler(ComboPooledDataSource cpds) throws Exception
+	{
+		setCpds(cpds);
+	}
+	public Connection getConnect()
+	{
+		try {
+			return cpds.getConnection();
+		} catch (SQLException e) {
+            log.error(e.getMessage(), e);
+		}
+		return null;
+	}
+	private void closeConnect(Connection conn) {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            log.warn("Cannot close connection", e);
+        }
+    }
 	public boolean isConnected()
     {
         try
@@ -75,7 +103,7 @@ public class DBHandler
         		connect.close();
         	}
         	log.info("Reconnect to SQL, discard old connection");
-        	connect = DriverManager.getConnection(jdbcUrl);
+        	connect = cpds.getConnection();
         }
         catch (SQLException e)
         {
@@ -98,9 +126,10 @@ public class DBHandler
     }
     public void updateSQL(String sqlcmd)
     {
-        if (!isConnected())
+        Connection connect = getConnect();
+        if (connect == null)
         {
-            reconnectSQL();
+        	return;
         }
         Statement stat = null ;
         try {
@@ -129,14 +158,11 @@ public class DBHandler
 					log.error(e.getMessage(), e);
 				}
 	    	}
+			closeConnect(connect);
 		}
     }
-    public ResultSet querySQL(String sqlcmd)
+    public ResultSet querySQL(Connection connect, String sqlcmd)
     {
-        if (!isConnected())
-        {
-            reconnectSQL();
-        }
         ResultSet rs = null;
         Statement stat = null ;
         try
@@ -150,7 +176,6 @@ public class DBHandler
         {
             log.error(se.getMessage(), se);
 			log.warn("Exception while: " + sqlcmd);
-            this.reconnectSQL();
         }
         return rs;
     }
@@ -223,7 +248,11 @@ public class DBHandler
     }
     public void addBatch(String sqlcmd)
     {
-    	this.checkSQLConnect();
+        connect = getConnect();
+        if (connect == null)
+        {
+        	return;
+        }
     	createStatement();
         try
         {
@@ -236,7 +265,6 @@ public class DBHandler
     }
     public void executeBatch()
     {
-    	this.checkSQLConnect();
         try 
         {
 			stat.executeBatch();
@@ -248,7 +276,96 @@ public class DBHandler
         finally 
         {
         	closeStatement();
+        	disconnectSQL();
         }
+    }
+    public void get52WHighLow(SymbolData symboldata, String market, String symbol)
+    {
+        Connection connect = getConnect();
+        if (connect == null)
+        {
+        	return ;
+        }
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
+				prefix, symbol) ;
+        ResultSet rs = null;
+        Statement stat = null ;
+        try
+        {
+            stat = connect.createStatement();
+        	connect.setAutoCommit(false);
+            rs = stat.executeQuery(sqlcmd);
+			connect.commit();
+        }
+        catch (SQLException se)
+        {
+            log.error(se.getMessage(), se);
+			log.warn("Exception while: " + sqlcmd);
+			closeConnect(connect);
+        }
+		try 
+		{
+			double dHigh = 0 ; 
+			double dLow = 0 ;
+			while(rs.next())
+			{
+				dHigh = rs.getDouble("HIGH_PRICE") ;
+				dLow = rs.getDouble("LOW_PRICE") ;
+				if (symboldata.getD52WHigh() < dHigh)
+				{
+					symboldata.setD52WHigh(dHigh) ;
+				}
+				if (PriceUtils.isZero(symboldata.getD52WLow()) || symboldata.getD52WLow() > dLow)
+				{
+					symboldata.setD52WLow(dLow) ;
+				}
+			}
+			rs.close();
+		} 
+        catch (SQLException e) 
+        {
+			log.error(e.getMessage(), e) ;
+		}
+		finally
+		{
+			closeConnect(connect);
+		}
+    }
+    public List<SymbolInfo> getGroupSymbol(String user, String group, String market, IRefSymbolInfo refSymbolInfo)
+    {
+    	ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>(); 
+		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
+				user, group, market) ;
+
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return retsymbollist;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
+		SymbolInfo symbolinfo;
+		int index;
+		try {
+			while(rs.next())
+			{
+				index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+				if (index >= 0)
+				{
+					symbolinfo = refSymbolInfo.get(index);
+					retsymbollist.add(symbolinfo);
+				}
+			}
+		}
+        catch (SQLException e) 
+        {
+			log.error(e.getMessage(), e) ;
+		}
+		finally
+		{
+			closeConnect(connect);
+		}
+		return retsymbollist;
     }
     public HistoricalPrice getLastValue(String market, String type, String symbol, boolean dir)
     {
@@ -271,7 +388,12 @@ public class DBHandler
     		sqlcmd = String.format("select * from %s where `SYMBOL` = '%s' order by `KEYTIME` desc limit 1 ;", 
     				strTable, symbol) ;
     	}
-    	ResultSet rs = querySQL(sqlcmd) ;
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return null;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
     	try {
     		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -290,6 +412,7 @@ public class DBHandler
 				price.setTurnover(rs.getLong("TURNOVER"));
 				getPrice = true;
 			}
+			rs.close();
 			if (getPrice)
 			{
 				return price ;
@@ -298,14 +421,22 @@ public class DBHandler
 			{
 				return null;
 			}
-		} catch (SQLException e) {
+		} 
+    	catch (SQLException e) 
+    	{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
 			return null ;
-		} catch (ParseException e) {
+		} 
+    	catch (ParseException e) 
+    	{
             log.error(e.getMessage(), e) ;
 			return null ;
 		}
+    	finally
+    	{
+    		closeConnect(connect);
+    	}
     }
     public List<HistoricalPrice> getPeriodValue(String market, String type, String symbol, Date startdate)
     {
@@ -316,8 +447,15 @@ public class DBHandler
     	String sqlcmd = "" ;
 		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' ORDER BY `KEYTIME`;", 
 				strTable, symbol, sdf.format(startdate));
-    	ResultSet rs = querySQL(sqlcmd) ;
-    	try {
+
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return null;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
+    	try 
+    	{
     		HistoricalPrice price;
     		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
@@ -336,6 +474,7 @@ public class DBHandler
 				price.setTurnover(rs.getLong("TURNOVER"));
 				retList.add(price);
 			}
+			rs.close();
 			if (retList.isEmpty())
 			{
 				return null;
@@ -344,14 +483,83 @@ public class DBHandler
 			{
 				return retList;
 			}
-		} catch (SQLException e) {
+		} 
+    	catch (SQLException e) 
+		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
 			return null ;
-		} catch (ParseException e) {
+		} 
+    	catch (ParseException e) 
+    	{
             log.error(e.getMessage(), e) ;
 			return null ;
 		}
+    	finally
+    	{
+    		closeConnect(connect);
+    	}
+    }
+    public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount)
+    {
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+    	String strTable = String.format("%s_%s", prefix, type) ;
+    	String sqlcmd = "" ;
+		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
+				strTable, symbol, dataCount);
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return null;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
+    	try 
+    	{
+    		HistoricalPrice price;
+    		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
+			while (rs.next())
+			{
+				price = new HistoricalPrice();
+				price.setTradedate(rs.getString("TRADEDATE"));
+				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+				price.setSymbol(rs.getString("SYMBOL")) ;
+				price.setOpen(rs.getDouble("OPEN_PRICE"));
+				price.setClose(rs.getDouble("CLOSE_PRICE"));
+				price.setHigh(rs.getDouble("HIGH_PRICE"));
+				price.setLow(rs.getDouble("LOW_PRICE"));
+				price.setVolume(rs.getLong("VOLUME"));
+				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+				price.setTurnover(rs.getLong("TURNOVER"));
+				retList.add(price);
+			}
+			rs.close();
+			if (retList.isEmpty())
+			{
+				return null;
+			}
+			else
+			{
+				return retList;
+			}
+		} 
+    	catch (SQLException e) 
+		{
+            log.error(e.getMessage(), e) ;
+            log.trace(sqlcmd);
+			return null ;
+		} 
+    	catch (ParseException e) 
+    	{
+            log.error(e.getMessage(), e) ;
+			return null ;
+		}
+    	finally
+    	{
+    		closeConnect(connect);
+    	}
     }
     public void deletePrice(String market, String type, String symbol, HistoricalPrice price)
     {
@@ -393,7 +601,11 @@ public class DBHandler
     }
     public void checkTableExist(String table)
     {
-    	this.checkSQLConnect();
+        Connection connect = getConnect();
+        if (connect == null)
+        {
+        	return;
+        }
     	if (table == null)
     		return;
     	try 
@@ -411,5 +623,15 @@ public class DBHandler
     	catch (SQLException e) {
 			log.error(e.getMessage(), e);
 		}
+    	finally
+    	{
+    		closeConnect(connect);
+    	}
     }
+	public ComboPooledDataSource getCpds() {
+		return cpds;
+	}
+	public void setCpds(ComboPooledDataSource cpds) {
+		this.cpds = cpds;
+	}
 }

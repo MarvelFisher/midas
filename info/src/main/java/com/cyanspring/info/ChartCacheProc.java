@@ -29,6 +29,11 @@ public class ChartCacheProc implements Runnable
 			log.error(e.getMessage(), e);
 		}
     }
+    
+    public void clear()
+    {
+    	m_q.clear();
+    }
 
 	@Override
 	public void run() 

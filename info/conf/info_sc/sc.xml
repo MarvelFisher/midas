@@ -38,6 +38,7 @@
 	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
+		<property name="cpds" ref="cpds"/>
 		<property name="serverMarket">
 			<value>SC</value>
 		</property>
@@ -58,6 +59,20 @@
 				<value>002230.SZ</value>
 	        </list>    
 		</property>
+		<property name="historicalDataCount">
+			<map>
+				<entry key="1" value="1440" />
+				<entry key="R" value="300" />
+				<entry key="A" value="150" />
+				<entry key="Q" value="300" />
+				<entry key="H" value="150" />
+				<entry key="6" value="80" />
+				<entry key="T" value="60" />
+				<entry key="D" value="100" />
+				<entry key="W" value="60" />
+				<entry key="M" value="80" />
+			</map>
+		</property>
 		<property name="SQLDelayInterval">
 			<value>300000</value>
 		</property>
@@ -67,6 +82,26 @@
 		<property name="checkSQLInterval">
 			<value>600000</value>
 		</property>
+	</bean>
+	
+	<bean id="cpds" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" ref="jdbcUrl" />
+<!-- 		<property name="user" ref="dataBaseUser"/> -->
+<!-- 		<property name="password" ref="dataBasePwd"/> -->
+
+		<property name="initialPoolSize" value="3" />
+		<property name="maxPoolSize" value="10" />
+		<property name="maxIdleTime" value="600"/>
+		<property name="minPoolSize" value="2" />
+				
+		<property name="acquireRetryAttempts" value="30" />
+		<property name="numHelperThreads" value="3" />
+        <property name="testConnectionOnCheckin" value="false"/>
+        <property name="testConnectionOnCheckout" value="true"/>
+        <property name="preferredTestQuery" value="SELECT 1"/>
+        <property name="automaticTestTable" value="Test"/>
+        <property name="idleConnectionTestPeriod" value="60"/>
 	</bean>
 	
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">

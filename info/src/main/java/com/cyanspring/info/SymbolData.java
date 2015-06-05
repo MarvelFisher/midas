@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.TimeZone;
@@ -62,16 +63,20 @@ public class SymbolData implements Comparable<SymbolData>
 	private double dCurTotalVolume = 0;
 	private double dCurTurnover = 0;
 	private TreeMap<Date, HistoricalPrice> priceData = new TreeMap<Date, HistoricalPrice>() ;
+	private HashMap<String, List<HistoricalPrice>> mapHistorical = new HashMap<String, List<HistoricalPrice>>();
 	private LinkedBlockingQueue<Quote> quoteTmp = new LinkedBlockingQueue<Quote>() ;
 	
 	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
 	{
 		log.info("Create SymbolData " + strSymbol + " Market=" + market + " TradeDate=" + centralDB.getTradedate());
+		isUpdating = true ;
 		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
 		this.market = market;
 		readFromTick() ;
 		get52WHighLow() ;
+		getAllChartPrice();
+		isUpdating = false ;
 	}
 	public SymbolData(String symbol) {
 		this.setStrSymbol(symbol) ;
@@ -142,11 +147,9 @@ public class SymbolData implements Comparable<SymbolData>
 	public void readFromTick()
 	{
 		resetPriceData();
-		isUpdating = true ;
 		String tradedate = centralDB.getTradedate();
 		if (tradedate == null)
 		{
-			isUpdating = false ;
 			return;
 		}
 		String strFile = String.format("./DAT/%s/%s", 
@@ -155,7 +158,6 @@ public class SymbolData implements Comparable<SymbolData>
 		File fileCache = new File(strFile + ".Ch");
 		if (fileMins.exists() == false)
 		{
-			isUpdating = false ;
 			return;
 		}
 	    try
@@ -165,7 +167,6 @@ public class SymbolData implements Comparable<SymbolData>
             priceData = (TreeMap<Date, HistoricalPrice>) in.readObject(TreeMap.class);
             in.close();
             fis.close();
-			isUpdating = false ;
 			
 			if (fileCache.exists())
 			{
@@ -191,7 +192,6 @@ public class SymbolData implements Comparable<SymbolData>
         catch (Exception e)
         {
         	log.error(e.getMessage(), e);
-			isUpdating = false ;
         }
 	}
 	
@@ -209,6 +209,7 @@ public class SymbolData implements Comparable<SymbolData>
         try
         {
         	FileWriter fwrite = new FileWriter(strFile + ".Ch");
+        	log.debug(String.format("Cache: D:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));;
         	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));
         	fwrite.flush();
         	fwrite.close();
@@ -271,7 +272,8 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+//			lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+			lastPrice = mapHistorical.get(strType).get(0);
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
 			List<HistoricalPrice> listBase = null;
@@ -395,30 +397,31 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
     	}
-    	String prefix = (market.equals("FX")) ? "0040" : market;
-		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
-				prefix, symbol) ;
-		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
-		try {
-			double dHigh = 0 ; 
-			double dLow = 0 ;
-			while(rs.next())
-			{
-				dHigh = rs.getDouble("HIGH_PRICE") ;
-				dLow = rs.getDouble("LOW_PRICE") ;
-				if (this.getD52WHigh() < dHigh)
-				{
-					this.setD52WHigh(dHigh) ;
-				}
-				if (PriceUtils.isZero(this.getD52WLow()) || this.getD52WLow() > dLow)
-				{
-					this.setD52WLow(dLow) ;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		centralDB.getDbhnd().get52WHighLow(this, market, symbol);
 		return ;
+	}
+	
+	public void getAllChartPrice()
+	{
+		getChartPrice("1");
+		getChartPrice("R");
+		getChartPrice("A");
+		getChartPrice("Q");
+		getChartPrice("H");
+		getChartPrice("6");
+		getChartPrice("T");
+		getChartPrice("D");
+		getChartPrice("W");
+		getChartPrice("M");
+	}
+	
+	public void getChartPrice(String strType)
+	{
+		List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType));
+		if (historical != null)
+		{
+			mapHistorical.put(strType,  historical);
+		}
 	}
 	
 	public ArrayList<HistoricalPrice> getPriceList(String strType, 
@@ -427,7 +430,8 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-			priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+//			priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+			priceEmpty = mapHistorical.get(strType).get(0);
 			if (priceEmpty != null)
 			{
 				prices.add(priceEmpty) ;
@@ -740,12 +744,9 @@ public class SymbolData implements Comparable<SymbolData>
     	{
     		return null;
     	}
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd") ;
 		SimpleDateFormat sdfprice = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 		sdfprice.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String tradedate = centralDB.getTradedate() ;
 		String strtmp ;
-		ArrayList<HistoricalPrice> listPrice = new ArrayList<HistoricalPrice>() ;
 		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
 		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), symbol)));
 		String strSymbol = null;
@@ -760,35 +761,12 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			strSymbol = symbol;
 		}
-    	String prefix = (market.equals("FX")) ? "0040" : market;
-		String sqlcmd = String.format("SELECT * FROM %s_%s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
-				prefix, type, strSymbol, dataCount) ;
-		ResultSet rs = centralDB.getDbhnd().querySQL(sqlcmd) ;
-		try {
-			while(rs.next())
-			{
-				HistoricalPrice price = new HistoricalPrice(); 
-				price.setTradedate(rs.getString("TRADEDATE"));
-				if (rs.getString("KEYTIME") != null) price.setKeytime(sdfprice.parse(rs.getString("KEYTIME")));
-				if (rs.getString("DATATIME") != null) price.setDatatime(sdfprice.parse(rs.getString("DATATIME")));
-				price.setSymbol(rs.getString("SYMBOL"));
-				price.setOpen(rs.getDouble("OPEN_PRICE"));
-				price.setClose(rs.getDouble("CLOSE_PRICE"));
-				price.setHigh(rs.getDouble("HIGH_PRICE"));
-				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setTotalVolume(rs.getDouble("TOTALVOLUME"));
-				price.setTurnover(rs.getDouble("TURNOVER"));
-				strtmp = rs.getString("VOLUME") ;
-				if (strtmp != null && !strtmp.toLowerCase().equals("null"))
-				{
-					price.setVolume(Long.parseLong(strtmp));
-				}
-				listPrice.add(price) ;
-			}
-		} catch (SQLException | ParseException e) {
-			log.error(e.getMessage(), e);
-			return null ;
-		}
+//		ArrayList<HistoricalPrice> listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
+//		if (listPrice == null)
+//		{
+//			return null;
+//		}
+		ArrayList<HistoricalPrice> listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, dataCount);
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
 			try {
