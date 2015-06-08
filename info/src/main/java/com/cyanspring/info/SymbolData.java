@@ -423,7 +423,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void getChartPrice(String strType)
 	{
-		log.debug(String.format("Retrieve chart data [%s,%s,%d]", market, strSymbol, centralDB.getHistoricalDataCount().get(strType)));
+		log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
 		List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType));
 		if (historical != null)
 		{

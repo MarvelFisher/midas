@@ -92,7 +92,6 @@ public class CentralDbProcessor implements IPlugin
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent checkEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent insertEvent = new AsyncTimerEvent();
-	private AsyncTimerEvent chartEvent = new AsyncTimerEvent();
 	private long SQLDelayInterval = 1;
 	private long timeInterval = 60000;
 	private long checkSQLInterval = 10 * 60 * 1000;
@@ -179,23 +178,6 @@ public class CentralDbProcessor implements IPlugin
 //			log.info("Check SQL connection");
 //			getDbhnd().checkSQLConnect();
 //		}
-		else if (event == chartEvent)
-		{
-			scheduleManager.cancelTimerEvent(chartEvent);
-			Thread retrieveThread = new Thread(new Runnable() 
-			{
-				@Override
-				public void run() 
-				{
-					for (SymbolChef chef : SymbolChefList)
-					{
-						chef.getAllChartPrice();
-					}
-				}
-			});
-			retrieveThread.setName("CDP_Retrieve_Chart");
-			retrieveThread.start();
-		}
 		else if (event == insertEvent)
 		{
 			insertSQL();
@@ -521,7 +503,7 @@ public class CentralDbProcessor implements IPlugin
 					}
 				}
 				outSymbol.close();
-				scheduleManager.scheduleRepeatTimerEvent(1, eventProcessor, chartEvent);
+				retrieveChart();
 				calledRefdata = true;
 			} 
 			catch (IOException e) 
@@ -539,6 +521,23 @@ public class CentralDbProcessor implements IPlugin
 			chef.chefStart();
 		}
 		log.info("Call refData finish");
+	}
+	
+	protected void retrieveChart()
+	{
+		Thread retrieveThread = new Thread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.getAllChartPrice();
+				}
+			}
+		});
+		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.start();
 	}
 	
 	public void resetStatement()
