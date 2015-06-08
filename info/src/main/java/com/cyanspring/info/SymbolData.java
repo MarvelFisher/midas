@@ -607,7 +607,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("D") && lastPrice != null)
 		{
-			if (sdf.format(emptytime).equals(sdf.format(pricetime)))
+			if (sdf.format(emptytime.getTime()).equals(sdf.format(pricetime.getTime())))
 			{
 				if (PriceUtils.isZero(getdCurHigh()) && lastPrice.getHigh() < getdCurHigh())
 				{

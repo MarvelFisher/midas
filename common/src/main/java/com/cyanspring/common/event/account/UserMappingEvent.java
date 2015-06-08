@@ -46,4 +46,16 @@ public class UserMappingEvent extends RemoteAsyncEvent {
     public String getLanguage() {
         return language;
     }
+
+    @Override
+    public String toString() {
+        return "UserMappingEvent{" +
+                "txId='" + txId + '\'' +
+                ", user='" + user + '\'' +
+                ", userThirdParty='" + userThirdParty + '\'' +
+                ", market='" + market + '\'' +
+                ", language='" + language + '\'' +
+                ", clientId='" + clientId + '\'' +
+                '}';
+    }
 }
