@@ -418,7 +418,7 @@ public class SymbolData implements Comparable<SymbolData>
 		getChartPrice("D");
 		getChartPrice("W");
 		getChartPrice("M");
-		log.debug("Retrieve chart data finish");
+		log.debug("Retrieve chart data [" + strSymbol + "] finish");
 	}
 	
 	public void getChartPrice(String strType)
@@ -786,7 +786,8 @@ public class SymbolData implements Comparable<SymbolData>
 		else
 		{
 			int limit = (dataCount > mapHistorical.get(type).size()) ? mapHistorical.get(type).size() : dataCount;
-			listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, limit);
+			listPrice = new ArrayList<HistoricalPrice>();
+			listPrice.addAll(mapHistorical.get(type).subList(0, limit));
 		}
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
