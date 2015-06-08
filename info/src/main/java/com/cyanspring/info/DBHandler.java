@@ -117,6 +117,7 @@ public class DBHandler
         	if (connect != null)
         	{
         		connect.close();
+        		connect = null;
         	}
         }
         catch (SQLException e)
@@ -248,10 +249,9 @@ public class DBHandler
     }
     public void addBatch(String sqlcmd)
     {
-        connect = getConnect();
         if (connect == null)
         {
-        	return;
+            connect = getConnect();
         }
     	createStatement();
         try
