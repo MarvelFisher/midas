@@ -58,6 +58,20 @@
 								<packaging>jar</packaging>
 							</configuration>
 						</execution>
+						<execution>
+							<id>install-6</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>install-file</goal>
+							</goals> 
+							<configuration>
+								<artifactId>bridj</artifactId>
+								<groupId>com.nativelibs4java</groupId>
+								<version>0.7.1-FDT</version>
+								<file>bridj-0.7.1-FDT.jar</file>
+								<packaging>jar</packaging>
+							</configuration>
+						</execution>
 					</executions>
 				</plugin>
 			</plugins>

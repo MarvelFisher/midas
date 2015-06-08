@@ -1,4 +1,4 @@
-package com.cyanspring.adaptor.future.ctp;
+package com.cyanspring.adaptor.future.ctp.trader;
 
 import java.util.Map;
 
@@ -11,9 +11,9 @@ import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
 
-public class CtpConnection implements IDownStreamConnection {
+public class CtpTradeConnection implements IDownStreamConnection {
 	private static final Logger log = LoggerFactory
-			.getLogger(CtpConnection.class);
+			.getLogger(CtpTradeConnection.class);
 
 	private String url;
 	private String conLog;
@@ -21,7 +21,7 @@ public class CtpConnection implements IDownStreamConnection {
 	private boolean state; 
 	private IDownStreamListener listener;
 	
-	public CtpConnection(String id, String url, String conLog) {
+	public CtpTradeConnection(String id, String url, String conLog) {
 		this.id = id;
 		this.url = url;
 		this.conLog = conLog;
@@ -32,6 +32,7 @@ public class CtpConnection implements IDownStreamConnection {
 		// TODO does login and initialization
 
 	}
+	
 
 	@Override
 	public void uninit() {
@@ -44,6 +45,10 @@ public class CtpConnection implements IDownStreamConnection {
 		return id;
 	}
 
+//	private void onOrder() {
+//		listener.onOrder(execType, order, execution, message);
+//	}
+	
 	@Override
 	public boolean getState() {
 		// TODO Auto-generated method stub
@@ -72,7 +77,7 @@ public class CtpConnection implements IDownStreamConnection {
 
 		@Override
 		public boolean getState() {
-			return CtpConnection.this.getState();
+			return CtpTradeConnection.this.getState();
 		}
 		
 	}
