@@ -181,6 +181,7 @@ public class CentralDbProcessor implements IPlugin
 //		}
 		else if (event == chartEvent)
 		{
+			scheduleManager.cancelTimerEvent(chartEvent);
 			Thread retrieveThread = new Thread(new Runnable() 
 			{
 				@Override

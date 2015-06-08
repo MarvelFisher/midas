@@ -785,7 +785,8 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else
 		{
-			listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, dataCount);
+			int limit = (dataCount > mapHistorical.get(type).size()) ? mapHistorical.get(type).size() : dataCount;
+			listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, limit);
 		}
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
