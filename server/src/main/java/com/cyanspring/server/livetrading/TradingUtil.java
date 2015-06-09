@@ -31,9 +31,8 @@ public class TradingUtil {
             return false;
         return !quote.isStale();
     }
-
-    public static void cancelAllOrders(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager) {
-
+    public static void cancelAllOrders(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager,OrderReason orderReason) {
+    
         List<ParentOrder> orderList = positionKeeper.getParentOrders(account.getId());
         if (orderList.size() > 0)
             log.info("Cancelling of orders: ", orderList.size());
@@ -42,14 +41,19 @@ public class TradingUtil {
                 String source = order.get(String.class, OrderField.SOURCE.value());
                 String txId = order.get(String.class, OrderField.CLORDERID.value());
                 CancelStrategyOrderEvent cancel =
-                        new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, OrderReason.CompanyStopLoss, false);
+                        new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, orderReason, false);
                 eventManager.sendEvent(cancel);
             }
         }
     }
-
-    public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote) {
-
+    
+    public static void cancelAllOrders(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager) {
+    	
+    	cancelAllOrders( account,  positionKeeper,  eventManager,OrderReason.CompanyStopLoss);
+    }
+    
+    public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason) {
+    
         List<OpenPosition> positionList = positionKeeper.getOverallPosition(account);
         if (positionList.size() <= 0)
             return;
@@ -69,11 +73,16 @@ public class TradingUtil {
                     position.getSymbol() + ", " + position.getAcPnL() + ", " +
                     quote);
             ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
-                    null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.CompanyStopLoss,
+                    null, position.getAccount(), position.getSymbol(), 0.0, orderReason,
                     IdGenerator.getInstance().getNextID());
 
             eventManager.sendEvent(event);
         }
+    }
+
+    public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote) {
+    	
+    	closeOpenPositions( account, positionKeeper, eventManager, checkValidQuote,OrderReason.CompanyStopLoss); 
     }
     
 	public static double getMinValue(double x,double y){

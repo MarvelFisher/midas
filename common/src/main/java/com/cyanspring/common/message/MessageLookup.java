@@ -1,6 +1,9 @@
 package com.cyanspring.common.message;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -219,6 +222,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.LIVE_TRADING_SETTING_NOT_OVER_FROZEN_DAYS, getBean(524, "cant change live trading setting , because not over frozen setted days"));
 			addAndCheck(ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP, getBean(525, "can't find this rule in live trading"));
 			addAndCheck(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, getBean(526, "Attach third party id failed"));
+			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
+			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
 
 			
 			
@@ -322,6 +327,35 @@ public class MessageLookup {
 		return eventMsg;
 		
 	}
+	
+	public static List<String> searchObjectMessage(Object[] object){
+		
+		if( null == object || object.length <=0)
+			return null;
+		
+		log.info("object size:{}",object.length);
+		List <String> msgs = new ArrayList<>();
+
+		for(Object obj:object){
+			
+			if(obj == null)
+				continue;
+						
+			if( obj instanceof Map){	
+				
+				Iterator c =((Map)obj).values().iterator();
+				
+				while(c.hasNext()){
+					msgs.add(c.next().toString());
+				}				
+			}else {
+				msgs.add(String.valueOf(obj));
+			}
+		}
+		
+		return msgs;
+	}
+	
 	public static MessageBean lookup(ErrorMessage m) {
 		return map.get(m);
 	}

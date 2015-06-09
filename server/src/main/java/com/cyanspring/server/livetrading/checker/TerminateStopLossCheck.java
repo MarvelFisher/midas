@@ -9,6 +9,7 @@ import webcurve.util.PriceUtils;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.TerminationStatus;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.AccountStateReplyEvent;
@@ -50,7 +51,7 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 		}
 		
 		if(AccountState.TERMINATED == account.getState() ){
-			closeAllPositoinAndOrder(account);
+			closeAllPositoinAndOrder(account,OrderReason.AccountStopLoss);
 			return false;
 		}
 		
@@ -61,16 +62,16 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 			log.info("Account:"+account.getId()+"Terminate loss: " + currentLoss + " over " + -totalLossLimit);
 			account.setState(AccountState.TERMINATED);
 			sendUpdateAccountEvent(account);
-			closeAllPositoinAndOrder(account);
+			closeAllPositoinAndOrder(account,OrderReason.AccountStopLoss);
 			return false;
 		}
 			
 		return true;
 	}
 
-	private void closeAllPositoinAndOrder(Account account){
+	private void closeAllPositoinAndOrder(Account account,OrderReason orderReason){
 		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true);
+		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true, orderReason);
 	}
 
 	private void sendUpdateAccountEvent(Account account){

@@ -6,11 +6,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import webcurve.util.PriceUtils;
+
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.server.livetrading.TradingUtil;
 
 public class LiveTradingRuleHandler{
 	
@@ -23,7 +27,7 @@ public class LiveTradingRuleHandler{
 		ruleMap = map;
 	}
 	
-	public AccountSetting setTradingRule(AccountSetting oldAccountSetting,AccountSetting newAccountSetting)throws AccountException{
+	public AccountSetting setTradingRule(AccountSetting oldAccountSetting,AccountSetting newAccountSetting,Account account)throws AccountException{
 		LiveTradingType type = newAccountSetting.getLiveTradingType();
 		if(null == type){
 			type = oldAccountSetting.getLiveTradingType();
@@ -40,7 +44,32 @@ public class LiveTradingRuleHandler{
 		IUserLiveTradingRule rule = ruleMap.get(type);		
 		oldAccountSetting = rule.setRule(oldAccountSetting,newAccountSetting);
 		
+		if(null != account)
+			oldAccountSetting = checkLiveTradingStopLossValue(oldAccountSetting,account);
+		
 		return oldAccountSetting;	
+	}
+	
+	private AccountSetting checkLiveTradingStopLossValue(AccountSetting oldSetting,Account account)throws AccountException{
+		
+		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getFreezePercent()
+				, oldSetting.getFreezeValue());
+		
+		double comPositionStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getStopLossPercent()
+				, oldSetting.getCompanySLValue());
+		
+		if(!PriceUtils.isZero(comDailyStopLoss) 
+				&& PriceUtils.GreaterThan(oldSetting.getDailyStopLoss(), comDailyStopLoss)){
+			
+			oldSetting.setDailyStopLoss(comDailyStopLoss);
+		}
+		
+		if(!PriceUtils.isZero(comPositionStopLoss) 
+				&& PriceUtils.GreaterThan(oldSetting.getStopLossValue(), comPositionStopLoss)){
+			
+			oldSetting.setStopLossValue(comPositionStopLoss);
+		}
+		return oldSetting;
 	}
 	
 	public boolean isNeedSetting(AccountSetting oldAccountSetting,AccountSetting newAccountSetting) {
