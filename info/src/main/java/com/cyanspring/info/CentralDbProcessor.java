@@ -95,6 +95,8 @@ public class CentralDbProcessor implements IPlugin
 	private long SQLDelayInterval = 1;
 	private long timeInterval = 60000;
 	private long checkSQLInterval = 10 * 60 * 1000;
+	private int numOfHisThreads = 5;
+	private int curHisThread = 0;
 	
 	private Date sessionEnd;
 	
@@ -248,7 +250,8 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
 	{
-		mapCentralDbEventProc.get("Historical").onEvent(event);
+		mapCentralDbEventProc.get("Historical" + curHisThread).onEvent(event);
+		curHisThread = (curHisThread + 1) % numOfHisThreads;  
 	}
 	
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
@@ -550,6 +553,7 @@ public class CentralDbProcessor implements IPlugin
 			getRefSymbolInfo().reset();
 			chartCacheProcessor.clear();
 			calledRefdata = false;
+			setCurHisThread(0);
 		}
 	}
 	
@@ -685,8 +689,11 @@ public class CentralDbProcessor implements IPlugin
 		}
 		chartCacheProcessor = new ChartCacheProc();
 		mapCentralDbEventProc = new HashMap<String, CentralDbEventProc>();
-		mapCentralDbEventProc.put("Historical", new CentralDbEventProc(this, "CDP-Event-Historical"));
-		mapCentralDbEventProc.put("Request", new CentralDbEventProc(this, "CDP-Event-Request"));
+		for (int ii = 0; ii < numOfHisThreads; ii++)
+		{
+			mapCentralDbEventProc.put("Historical" + ii, new CentralDbEventProc(this, "CDP-Event-His" + ii));
+		}
+		mapCentralDbEventProc.put("Request", new CentralDbEventProc(this, "CDP-Event-Req"));
 		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;
@@ -865,6 +872,33 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setHistoricalDataCount(HashMap<String, Integer> historicalDataCount) {
 		this.historicalDataCount = historicalDataCount;
+	}
+
+	public int getNumOfHisThreads() {
+		return numOfHisThreads;
+	}
+
+	public void setNumOfHisThreads(int numOfHisThreads) {
+		if (numOfHisThreads < 1)
+		{
+			this.numOfHisThreads = 1;
+		}
+		else if (numOfHisThreads > 5)
+		{
+			this.numOfHisThreads = 5;
+		}
+		else
+		{
+			this.numOfHisThreads = numOfHisThreads;
+		}
+	}
+
+	public int getCurHisThread() {
+		return curHisThread;
+	}
+
+	public void setCurHisThread(int curHisThread) {
+		this.curHisThread = curHisThread;
 	}
 	
 }
