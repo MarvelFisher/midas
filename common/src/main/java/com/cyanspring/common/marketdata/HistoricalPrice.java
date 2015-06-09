@@ -113,8 +113,8 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 			this.low = price.low;
 		}
 		this.volume += price.volume;
-		this.totalVolume += price.totalVolume;
-		this.turnover += price.turnover;
+		this.totalVolume = price.totalVolume;
+		this.turnover = price.turnover;
 	}
 	
 	public String getSymbol() {
