@@ -26,6 +26,12 @@ public class QuoteChecker implements IQuoteChecker {
         this.session = session;
     }
 
+    /**
+     * Fix Forex Price
+     * @param prev
+     * @param quote
+     * @return
+     */
     public Quote fixPriceQuote(Quote prev, Quote quote) {
         if (prev != null) {
             if (PriceUtils.EqualLessThan(quote.getClose(), 0)) {
@@ -48,6 +54,13 @@ public class QuoteChecker implements IQuoteChecker {
             }
         }
         return quote;
+    }
+
+    public boolean checkBidAskPirce(Quote quote){
+        boolean isCorrect = true;
+        if(PriceUtils.EqualLessThan(quote.getBid(),0) || PriceUtils.EqualLessThan(quote.getAsk(),0))
+            isCorrect = false;
+        return isCorrect;
     }
 
     public boolean checkTime(Quote prev, Quote quote){
