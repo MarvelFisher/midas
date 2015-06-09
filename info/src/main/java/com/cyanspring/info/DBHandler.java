@@ -475,14 +475,7 @@ public class DBHandler
 				retList.add(price);
 			}
 			rs.close();
-			if (retList.isEmpty())
-			{
-				return null;
-			}
-			else
-			{
-				return retList;
-			}
+			return retList;
 		} 
     	catch (SQLException e) 
 		{
@@ -536,14 +529,7 @@ public class DBHandler
 				retList.add(price);
 			}
 			rs.close();
-			if (retList.isEmpty())
-			{
-				return null;
-			}
-			else
-			{
-				return retList;
-			}
+			return retList;
 		} 
     	catch (SQLException e) 
 		{
