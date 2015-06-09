@@ -13,6 +13,10 @@ public class FXPriceSetter implements IPriceSetter
 	@Override
 	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume) 
 	{
+		if (quote.getBid() < 0 || quote.getAsk() < 0)
+		{
+			return false;
+		}
 		double dPrice = (quote.getBid() + quote.getAsk()) / 2;
 		boolean changed = price.setPrice(dPrice);
 		price.setDatatime(quote.getTimeStamp()) ;
@@ -22,6 +26,10 @@ public class FXPriceSetter implements IPriceSetter
 	@Override
 	public boolean setDataPrice(SymbolData symboldata, Quote quote) 
 	{
+		if (quote.getBid() < 0 || quote.getAsk() < 0)
+		{
+			return false;
+		}
 		double dPrice = (quote.getBid() + quote.getAsk()) / 2;
 		if (PriceUtils.isZero(dPrice))
 		{

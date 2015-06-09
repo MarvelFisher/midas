@@ -13,6 +13,10 @@ public class DefPriceSetter implements IPriceSetter
 	@Override
 	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume) 
 	{
+		if (quote.getLast() < 0)
+		{
+			return false;
+		}
 		double dPrice = quote.getLast();
 		boolean pricechanged = price.setPrice(dPrice);
 		price.setDatatime(quote.getTimeStamp()) ;
@@ -30,6 +34,10 @@ public class DefPriceSetter implements IPriceSetter
 	@Override
 	public boolean setDataPrice(SymbolData symboldata, Quote quote) 
 	{
+		if (quote.getLast() < 0)
+		{
+			return false;
+		}
 		double dPrice = quote.getLast();
 		if (PriceUtils.isZero(dPrice))
 		{
