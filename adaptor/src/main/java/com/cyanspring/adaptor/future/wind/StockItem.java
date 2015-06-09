@@ -184,6 +184,7 @@ public class StockItem implements AutoCloseable {
                         }else{
                             DataTimeStat dataTimeStat = new DataTimeStat(symbolId);
                             dataTimeStat.processReceiveQuoteTime(tickTime);
+                            WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.put(symbolId, dataTimeStat);
                         }
                         break;
                 }
