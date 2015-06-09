@@ -54,7 +54,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     protected ScheduleManager scheduleManager = new ScheduleManager();
     private QuoteChecker quoteChecker;
-
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long quoteThrottle = 100; // 0 = no throttle
     protected long timerInterval = 300;
@@ -62,9 +61,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected String tradeDate;
-    private static final int QUOTE_GENERAL = 1;
-    private static final int QUOTE_PRICE_ERROR = 2;
-    private static final int QUOTE_TIME_ERROR = 3;
     private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
@@ -120,7 +116,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processRefDataEvent(RefDataEvent event) {
-        if (isPreSubscribing){
+        if (isPreSubscribing) {
             log.warn("RefData Event coming in presubscribe");
             event = null;
             return;
@@ -169,7 +165,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void sendQuoteEvent(RemoteAsyncEvent event) {
-        if(isUninit) return;
+        if (isUninit) return;
         try {
             eventManager.sendEvent(event);
 
@@ -197,7 +193,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         Quote prev = quotes.get(quote.getSymbol());
 
         //Calculate Future Quote last Volume
-        if (inEvent.getSourceId() > 100) {
+        if (inEvent.getSourceId() == MarketDataDef.QUOTE_SOURCE_WIND_GENERAL
+                || inEvent.getSourceId() == MarketDataDef.QUOTE_SOURCE_WIND_INDEX) {
             if (prev != null && PriceUtils.GreaterThan(quote.getTotalVolume(), prev.getTotalVolume())) {
                 quote.setLastVol(quote.getTotalVolume() - prev.getTotalVolume());
             } else {
@@ -205,13 +202,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
         }
 
-        if (quoteLogIsOpen) printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_GENERAL);
+        if (quoteLogIsOpen)
+            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, MarketDataDef.QUOTE_GENERAL);
 
         //Check Forex TimeStamp
-        if (inEvent.getSourceId() <= 100) {
-
+        if (inEvent.getSourceId()==MarketDataDef.QUOTE_SOUECE_ID || inEvent.getSourceId()==MarketDataDef.QUOTE_SOURCE_IB) {
             if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
-                        || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
+                    || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
                 return;
             }
             if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN) {
@@ -219,16 +216,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(), 1, TimeUnit.SECONDS));
                 }
             }
-            if(null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
+            if (null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
+            if (null != quoteChecker && (!quoteChecker.checkQuotePrice(quote) || !quoteChecker.checkBidAskPirce(quote))) {
+                printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, MarketDataDef.QUOTE_PRICE_ERROR);
+                return;
+            }
         }
-//        if(null != quoteChecker && !quoteChecker.checkTime(prev, quote)){
-//            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_TIME_ERROR);
-//        }
-        if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote) && inEvent.getSourceId() <= 100) {
-            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QUOTE_PRICE_ERROR);
-            return;
-        }
-
         if (null == prev) {
             logStaleInfo(prev, quote, quote.isStale());
             quotes.put(quote.getSymbol(), quote);
@@ -268,21 +261,21 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         clearAndSendQuoteEvent(event);
     }
 
-    public void printQuoteLog(int sourceId, String contributor, Quote quote, int logType){
+    public void printQuoteLog(int sourceId, String contributor, Quote quote, int logType) {
         StringBuffer sb = new StringBuffer();
         sb.append("Sc=" + sourceId
-                + ",S=" + quote.getSymbol() + ",A=" + quote.getAsk()
-                + ",B=" + quote.getBid() + ",C=" + quote.getClose()
-                + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
-                + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
-                + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
-                + ",ts=" + quote.getTimeStamp().toString()
-                + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-                + (sourceId==2?",Cb="+contributor:"")
+                        + ",S=" + quote.getSymbol() + ",A=" + quote.getAsk()
+                        + ",B=" + quote.getBid() + ",C=" + quote.getClose()
+                        + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
+                        + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
+                        + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
+                        + ",ts=" + quote.getTimeStamp().toString()
+                        + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+                        + (sourceId == MarketDataDef.QUOTE_SOUECE_ID ? ",Cb=" + contributor : "")
         );
-        if(logType==QUOTE_GENERAL) quoteLog.debug("Quote Receive : " + sb.toString());
-        if(logType==QUOTE_TIME_ERROR) quoteLog.warn("Quote Time BBBBB!:" + sb.toString());
-        if(logType==QUOTE_PRICE_ERROR) quoteLog.error("Quote Price BBBBB!:" + sb.toString());
+        if (logType == MarketDataDef.QUOTE_GENERAL) quoteLog.debug("Quote Receive : " + sb.toString());
+        if (logType == MarketDataDef.QUOTE_TIME_ERROR) quoteLog.warn("Quote Time BBBBB!:" + sb.toString());
+        if (logType == MarketDataDef.QUOTE_PRICE_ERROR) quoteLog.error("Quote Price BBBBB!:" + sb.toString());
 
     }
 
@@ -377,13 +370,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     private void broadCastStaleQuotes() {
-        if(marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.CLOSE){
-            for(Quote quote : quotes.values()){
-                if(quote != null && !quote.isStale()){
+        if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.CLOSE) {
+            for (Quote quote : quotes.values()) {
+                if (quote != null && !quote.isStale()) {
                     log.debug("MDR send final stale quote event:" + quote.getSymbol());
                     quote.setStale(true);
                     clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
-                    printQuoteLog(0,null,quote,QUOTE_GENERAL);
+                    printQuoteLog(MarketDataDef.QUOTE_SOURCE_RESEND, null, quote, MarketDataDef.QUOTE_GENERAL);
                 }
             }
         }
