@@ -333,7 +333,6 @@ public class MessageLookup {
 		if( null == object || object.length <=0)
 			return null;
 		
-		log.info("object size:{}",object.length);
 		List <String> msgs = new ArrayList<>();
 
 		for(Object obj:object){
