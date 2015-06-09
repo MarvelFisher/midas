@@ -72,18 +72,19 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         if (packType == FDTFields.PacketArray) {
             ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
             for (HashMap innerHashMap : arrayList) {
-                WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType)), null, innerHashMap);
+                WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType),innerHashMap), null, innerHashMap);
             }
         } else {
-            WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType(packType), null, hashMap);
+            WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType(packType,hashMap), null, hashMap);
         }
     }
 
-    public int parsePackTypeToDataType(int packType) {
+    public int parsePackTypeToDataType(int packType, HashMap hashMap) {
         int dataType = -1;
         if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
         if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
         if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
+        if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         return dataType;
     }
 
