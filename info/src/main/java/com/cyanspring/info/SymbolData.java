@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -418,7 +416,7 @@ public class SymbolData implements Comparable<SymbolData>
 		getChartPrice("D");
 		getChartPrice("W");
 		getChartPrice("M");
-		log.debug("Retrieve chart data finish");
+		log.debug("Retrieve chart data [" + strSymbol + "] finish");
 	}
 	
 	public void getChartPrice(String strType)
@@ -759,7 +757,6 @@ public class SymbolData implements Comparable<SymbolData>
     	}
 		SimpleDateFormat sdfprice = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 		sdfprice.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String strtmp ;
 		IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
 		SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), symbol)));
 		String strSymbol = null;
@@ -786,7 +783,8 @@ public class SymbolData implements Comparable<SymbolData>
 		else
 		{
 			int limit = (dataCount > mapHistorical.get(type).size()) ? mapHistorical.get(type).size() : dataCount;
-			listPrice = (ArrayList<HistoricalPrice>) mapHistorical.get(type).subList(0, limit);
+			listPrice = new ArrayList<HistoricalPrice>();
+			listPrice.addAll(mapHistorical.get(type).subList(0, limit));
 		}
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
