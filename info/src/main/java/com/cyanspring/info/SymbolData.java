@@ -306,17 +306,21 @@ public class SymbolData implements Comparable<SymbolData>
 							&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)))
 						listBase = centralDB.getDbhnd().getPeriodValue(market, "M", getStrSymbol(), lastPrice.getKeytime());
 				}
-			}
-			HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
-			if (listBase != null)
-			{
-				for (HistoricalPrice price : listBase)
+				HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
+				if (listBase != null)
 				{
-					newPrice.update(price);
+					for (HistoricalPrice price : listBase)
+					{
+						newPrice.update(price);
+					}
 				}
+				newPrice.update(curPrice);
+				lastPrice = (HistoricalPrice) newPrice.clone();
 			}
-			newPrice.update(curPrice);
-			lastPrice = (HistoricalPrice) newPrice.clone();
+			else
+			{
+				lastPrice = (HistoricalPrice) curPrice.clone();
+			}
 		}
 		else
 		{
