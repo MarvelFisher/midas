@@ -269,7 +269,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			if (mapHistorical.get(strType) == null)
+			if (mapHistorical.get(strType) == null || mapHistorical.get(strType).size() < 1)
 			{
 				lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			}
@@ -421,11 +421,22 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void getChartPrice(String strType)
 	{
-		log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
-		List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType));
-		if (historical != null)
+		synchronized(mapHistorical)
 		{
-			mapHistorical.put(strType,  historical);
+			if (mapHistorical.get(strType) != null)
+			{
+				return;
+			}
+			log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, centralDB.getHistoricalDataPeriod().get(strType));
+			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+			List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(
+					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()));
+			if (historical != null)
+			{
+				mapHistorical.put(strType,  historical);
+			}
 		}
 	}
 	
@@ -771,21 +782,21 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			strSymbol = symbol;
 		}
+		
 		ArrayList<HistoricalPrice> listPrice;
 		if (mapHistorical.get(type) == null)
 		{
-			listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
-			if (listPrice == null)
-			{
-				return null;
-			}
+//			listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
+//			if (listPrice == null)
+//			{
+//				return null;
+//			}
+			getChartPrice(type);
 		}
-		else
-		{
-			int limit = (dataCount > mapHistorical.get(type).size()) ? mapHistorical.get(type).size() : dataCount;
-			listPrice = new ArrayList<HistoricalPrice>();
-			listPrice.addAll(mapHistorical.get(type).subList(0, limit));
-		}
+		int limit = (dataCount > mapHistorical.get(type).size()) ? mapHistorical.get(type).size() : dataCount;
+		listPrice = new ArrayList<HistoricalPrice>();
+		listPrice.addAll(mapHistorical.get(type).subList(0, limit));
+		
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
 			try {

@@ -80,6 +80,7 @@ public class CentralDbProcessor implements IPlugin
 	private ChartCacheProc chartCacheProcessor;
 	private HashMap<String, CentralDbEventProc> mapCentralDbEventProc;
 	private HashMap<String, Integer> historicalDataCount;
+	private HashMap<String, Integer> historicalDataPeriod;
 	
 	private MarketSessionType sessionType = null ;
 	private String tradedate ;
@@ -537,6 +538,7 @@ public class CentralDbProcessor implements IPlugin
 				{
 					chef.getAllChartPrice();
 				}
+				log.debug("Retrieve Chart thread finish");
 			}
 		});
 		retrieveThread.setName("CDP_Retrieve_Chart");
@@ -899,6 +901,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setCurHisThread(int curHisThread) {
 		this.curHisThread = curHisThread;
+	}
+
+	public HashMap<String, Integer> getHistoricalDataPeriod() {
+		return historicalDataPeriod;
+	}
+
+	public void setHistoricalDataPeriod(HashMap<String, Integer> historicalDataPeriod) {
+		this.historicalDataPeriod = historicalDataPeriod;
 	}
 	
 }
