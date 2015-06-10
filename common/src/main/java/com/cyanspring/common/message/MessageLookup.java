@@ -189,6 +189,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Sell quantity exceeded available position quantity"));
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_AFTER_OPEN, getBean(461, "Your order can’t be placed. We start to take orders at 9:10 am."));
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_BEFORE_OPEN_ONE_HOUR, getBean(462, "Your order can’t be placed. We start taking orders at 1 hour before market open."));
+			addAndCheck(ErrorMessage.SYMBOL_NOT_TRADABLE, getBean(463, "Trade-related functions are not available for this contract."));
 
 			
 			
