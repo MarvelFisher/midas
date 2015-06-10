@@ -26,9 +26,9 @@
 		<property name="createThreadCount" value="5" />
 		<property name="maxRetrytimes" value="3" />
 		<property name="killTimeoutSecond" value="60000" />
-		<property name="parseApplicationId" value="17lAccEUiyp6nz8xfKZfzShX1kJgiRQhIjYQlzMR" />
-		<property name="parseRestApiId" value="CnHeNtHHQbz2I2bDErsi4CYArhr1BdAApu1YLykT" />
-		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.FC"/>
+		<property name="parseApplicationId" value="E1DRvFY3pE9wY2BXNs9MFDCLAuIifItMDk1NB3Q7" />
+		<property name="parseRestApiId" value="OXhtEwG6MFxxODCTgAr5tU7f4N6RzxvSm6lrDpTs" />
+		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.LFFC"/>
 	</bean>	
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
@@ -58,7 +58,7 @@
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_China"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_FC_SZ"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	  <property name="maxActive"><value>20</value></property> 
