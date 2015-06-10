@@ -378,6 +378,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     public void uninit() {
         log.info("Wind uninit begin");
         isClose = true;
+        printDataTimeStat();
         closeClient();
         QuoteMgr.instance.uninit();
         closeReqThread();
@@ -562,12 +563,16 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             if (marketSessionType == MarketSessionType.CLOSE) {
                 bigSessionIsClose = true;
                 bigSessionCloseDate = marketSessionEvent.getStart();
-                //print time stat log.0
-                if(recordReceiveQuoteInfoBySymbolMap!=null && recordReceiveQuoteInfoBySymbolMap.size()>0){
-                    for(DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()){
-                        dataTimeStat.printStat();
-                    }
-                }
+                printDataTimeStat();
+            }
+        }
+    }
+
+    public void printDataTimeStat(){
+        //print time stat log
+        if(recordReceiveQuoteInfoBySymbolMap!=null && recordReceiveQuoteInfoBySymbolMap.size()>0){
+            for(DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()){
+                dataTimeStat.printStat();
             }
         }
     }
