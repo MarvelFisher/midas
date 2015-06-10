@@ -867,10 +867,14 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
 
-	                if(checkLiveTrading(account, accountSetting)){
-	                	continue;
-	                }else if (checkStopLoss(account, accountSetting)){
-	                	continue;
+	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
+	                	if(liveTradingCheckHandler.startCheckChain(account, accountSetting)){
+	                		continue;
+	                	}
+	                }else{
+		                if (checkStopLoss(account, accountSetting)){
+	                		continue;
+		                }
 	                }
 
 	                checkMarginCall(account);
@@ -900,15 +904,6 @@ public class AccountPositionManager implements IPlugin {
             return false;
 
         return !quote.isStale();
-    }
-
-    private boolean checkLiveTrading(Account account, AccountSetting accountSetting) {
-        if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
-        	liveTradingCheckHandler.startCheckChain(account, accountSetting);
-        	return true;
-        }else{
-        	return false;
-        }
     }
 	private void closeAllPositoinAndOrder(Account account){
 		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
