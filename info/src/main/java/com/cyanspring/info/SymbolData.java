@@ -306,17 +306,21 @@ public class SymbolData implements Comparable<SymbolData>
 							&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)))
 						listBase = centralDB.getDbhnd().getPeriodValue(market, "M", getStrSymbol(), lastPrice.getKeytime());
 				}
-			}
-			HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
-			if (listBase != null)
-			{
-				for (HistoricalPrice price : listBase)
+				HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
+				if (listBase != null)
 				{
-					newPrice.update(price);
+					for (HistoricalPrice price : listBase)
+					{
+						newPrice.update(price);
+					}
 				}
+				newPrice.update(curPrice);
+				lastPrice = (HistoricalPrice) newPrice.clone();
 			}
-			newPrice.update(curPrice);
-			lastPrice = (HistoricalPrice) newPrice.clone();
+			else
+			{
+				lastPrice = (HistoricalPrice) curPrice.clone();
+			}
 		}
 		else
 		{
@@ -429,7 +433,7 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, centralDB.getHistoricalDataPeriod().get(strType));
+			cal.add(Calendar.DATE, (-1) * centralDB.getHistoricalDataPeriod().get(strType));
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(
 					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()));
