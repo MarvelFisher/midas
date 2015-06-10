@@ -63,13 +63,10 @@
 					<bean class="com.cyanspring.server.validation.InstrumentValidator"/>
 				</entry>
 	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.StockOrderQuantityValidator"/>
 				</entry>
 	  			<entry key="Dis Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
-				</entry>
-	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.StockOrderQuantityValidator"/>
 				</entry>
 	  			<entry key="Start Time">
 					<bean class="com.cyanspring.server.validation.StartTimeValidator"/>
