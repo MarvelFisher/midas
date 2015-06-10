@@ -66,6 +66,7 @@
                 <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
                 <entry key="PREOPEN" value="0" />
                 <entry key="CLOSE" value="0" />
+                <entry key="PRECLOSE" value="0" />
             </map>
         </property>
         <property name="quoteChecker" ref="quoteChecker"/>
