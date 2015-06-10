@@ -21,17 +21,17 @@ public class LiveTradingCheckHandler {
 		checkMap = map;
 	}
 	
-	public void startCheckChain(Account account, AccountSetting accountSetting){
+	public boolean startCheckChain(Account account, AccountSetting accountSetting){
 		
 		if(!accountSetting.isUserLiveTrading()){
-			return;
+			return false;
 		}
 		if( null == checkMap ){
-			return;
+			return false;
 		}
 		if(!checkMap.containsKey(accountSetting.getLiveTradingType())){
 			log.warn("Live trading : can't find this checkchain - {}",accountSetting.getLiveTradingType());
-			return;
+			return false;
 		}
 		
 		List <ILiveTradingChecker>checkList = checkMap.get(accountSetting.getLiveTradingType());
@@ -39,9 +39,10 @@ public class LiveTradingCheckHandler {
 		for(ILiveTradingChecker checker: checkList){
 			boolean needNextCheck = checker.check(account, accountSetting);
 			if(!needNextCheck){
-				break;
+				return true;//find need stop loss
 			}
 		}
+		return false;
 	
 	}
 
