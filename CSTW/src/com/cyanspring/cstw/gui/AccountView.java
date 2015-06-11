@@ -49,6 +49,7 @@ import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class AccountView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -70,9 +71,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Button searchButton;
 	private ImageRegistry imageRegistry;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long maxRefreshInterval = 60000;
+	private long maxRefreshInterval = 10000;
 	private boolean show;
-
 	@Override
 	public void createPartControl(Composite parent) {
 		log.info("Creating account view");
@@ -132,7 +132,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 		});
-		createManualRefreshAction(parent);
+		createManualRefreshToggleAction(parent);
 		createUserAccountAction(parent);
 		createCountAccountAction(parent);
 		createResetAccountAction(parent);
@@ -144,8 +144,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					.subscribe(ServerStatusEvent.class, this);
 
 		log.info("no auto refresh account version");
-		// Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
-		// this, timerEvent);
+//		 Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
+//		 this, timerEvent);
 
 	}
 	
@@ -194,20 +194,25 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	}
 
+	private void createManualRefreshToggleAction(final Composite parent) {
 
-	private void createManualRefreshAction(final Composite parent) {
-		createManualRefreshAction = new Action() {
+		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				log.info("refresh start");
-				MessageBox messageBox = new MessageBox(parent.getShell(),
-						SWT.ICON_INFORMATION);
-				messageBox.setText("Info");
-				messageBox.setMessage("Refresh Start");
-				messageBox.open();
-				showAccounts();
+
+				if(!createManualRefreshAction.isChecked()) {
+					Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
+				} else { 
+					Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
+							AccountView.this, timerEvent);
+				}
+
 			}
 		};
-		createManualRefreshAction.setText("Refresh All Accounts");
+		
+		createManualRefreshAction.setChecked(false);		
+		createManualRefreshAction.setText("AutoRefresh");
+		createManualRefreshAction.setToolTipText("AutoRefresh");
+
 		ImageDescriptor imageDesc = imageRegistry
 				.getDescriptor(ImageID.REFRESH_ICON.toString());
 		createManualRefreshAction.setImageDescriptor(imageDesc);
@@ -215,7 +220,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createManualRefreshAction);
 	}
-
+	
 	private void createUserAccountAction(final Composite parent) {
 		createUserDialog = new CreateUserDialog(parent.getShell());
 		// create local toolbars
@@ -441,7 +446,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			processAccountUpdate(((AccountDynamicUpdateEvent) event)
 					.getAccount());
 		} else if (event instanceof AsyncTimerEvent) {
-			log.info("refresh start");
+			//log.info("refresh start");
 			showAccounts();
 		}
 	}
