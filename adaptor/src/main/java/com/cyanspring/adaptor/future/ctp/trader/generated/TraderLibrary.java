@@ -42,2281 +42,2281 @@ public class TraderLibrary {
 		}
 	};
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EXP_Normal = (char)'0';
+	public static final byte THOST_FTDC_EXP_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EXP_GenOrderByTrade = (char)'1';
+	public static final byte THOST_FTDC_EXP_GenOrderByTrade = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_EID = (char)'0';
+	public static final byte THOST_FTDC_ICT_EID = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_IDCard = (char)'1';
+	public static final byte THOST_FTDC_ICT_IDCard = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_OfficerIDCard = (char)'2';
+	public static final byte THOST_FTDC_ICT_OfficerIDCard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_PoliceIDCard = (char)'3';
+	public static final byte THOST_FTDC_ICT_PoliceIDCard = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_SoldierIDCard = (char)'4';
+	public static final byte THOST_FTDC_ICT_SoldierIDCard = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_HouseholdRegister = (char)'5';
+	public static final byte THOST_FTDC_ICT_HouseholdRegister = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_Passport = (char)'6';
+	public static final byte THOST_FTDC_ICT_Passport = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_TaiwanCompatriotIDCard = (char)'7';
+	public static final byte THOST_FTDC_ICT_TaiwanCompatriotIDCard = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_HomeComingCard = (char)'8';
+	public static final byte THOST_FTDC_ICT_HomeComingCard = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_LicenseNo = (char)'9';
+	public static final byte THOST_FTDC_ICT_LicenseNo = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_TaxNo = (char)'A';
+	public static final byte THOST_FTDC_ICT_TaxNo = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_HMMainlandTravelPermit = (char)'B';
+	public static final byte THOST_FTDC_ICT_HMMainlandTravelPermit = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_TwMainlandTravelPermit = (char)'C';
+	public static final byte THOST_FTDC_ICT_TwMainlandTravelPermit = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_DrivingLicense = (char)'D';
+	public static final byte THOST_FTDC_ICT_DrivingLicense = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_SocialID = (char)'F';
+	public static final byte THOST_FTDC_ICT_SocialID = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_LocalID = (char)'G';
+	public static final byte THOST_FTDC_ICT_LocalID = (byte)'G';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_BusinessRegistration = (char)'H';
+	public static final byte THOST_FTDC_ICT_BusinessRegistration = (byte)'H';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_HKMCIDCard = (char)'I';
+	public static final byte THOST_FTDC_ICT_HKMCIDCard = (byte)'I';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_AccountsPermits = (char)'J';
+	public static final byte THOST_FTDC_ICT_AccountsPermits = (byte)'J';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICT_OtherCard = (char)'x';
+	public static final byte THOST_FTDC_ICT_OtherCard = (byte)'x';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IR_All = (char)'1';
+	public static final byte THOST_FTDC_IR_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IR_Group = (char)'2';
+	public static final byte THOST_FTDC_IR_Group = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IR_Single = (char)'3';
+	public static final byte THOST_FTDC_IR_Single = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DR_All = (char)'1';
+	public static final byte THOST_FTDC_DR_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DR_Group = (char)'2';
+	public static final byte THOST_FTDC_DR_Group = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DR_Single = (char)'3';
+	public static final byte THOST_FTDC_DR_Single = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DS_Asynchronous = (char)'1';
+	public static final byte THOST_FTDC_DS_Asynchronous = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DS_Synchronizing = (char)'2';
+	public static final byte THOST_FTDC_DS_Synchronizing = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DS_Synchronized = (char)'3';
+	public static final byte THOST_FTDC_DS_Synchronized = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BDS_Synchronized = (char)'1';
+	public static final byte THOST_FTDC_BDS_Synchronized = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BDS_Synchronizing = (char)'2';
+	public static final byte THOST_FTDC_BDS_Synchronizing = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ECS_NoConnection = (char)'1';
+	public static final byte THOST_FTDC_ECS_NoConnection = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ECS_QryInstrumentSent = (char)'2';
+	public static final byte THOST_FTDC_ECS_QryInstrumentSent = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ECS_GotInformation = (char)'9';
+	public static final byte THOST_FTDC_ECS_GotInformation = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TCS_NotConnected = (char)'1';
+	public static final byte THOST_FTDC_TCS_NotConnected = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TCS_Connected = (char)'2';
+	public static final byte THOST_FTDC_TCS_Connected = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TCS_QryInstrumentSent = (char)'3';
+	public static final byte THOST_FTDC_TCS_QryInstrumentSent = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TCS_SubPrivateFlow = (char)'4';
+	public static final byte THOST_FTDC_TCS_SubPrivateFlow = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_DataAsync = (char)'1';
+	public static final byte THOST_FTDC_FC_DataAsync = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_ForceUserLogout = (char)'2';
+	public static final byte THOST_FTDC_FC_ForceUserLogout = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_UserPasswordUpdate = (char)'3';
+	public static final byte THOST_FTDC_FC_UserPasswordUpdate = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_BrokerPasswordUpdate = (char)'4';
+	public static final byte THOST_FTDC_FC_BrokerPasswordUpdate = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_InvestorPasswordUpdate = (char)'5';
+	public static final byte THOST_FTDC_FC_InvestorPasswordUpdate = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_OrderInsert = (char)'6';
+	public static final byte THOST_FTDC_FC_OrderInsert = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_OrderAction = (char)'7';
+	public static final byte THOST_FTDC_FC_OrderAction = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_SyncSystemData = (char)'8';
+	public static final byte THOST_FTDC_FC_SyncSystemData = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_SyncBrokerData = (char)'9';
+	public static final byte THOST_FTDC_FC_SyncBrokerData = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_BachSyncBrokerData = (char)'A';
+	public static final byte THOST_FTDC_FC_BachSyncBrokerData = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_SuperQuery = (char)'B';
+	public static final byte THOST_FTDC_FC_SuperQuery = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_ParkedOrderInsert = (char)'C';
+	public static final byte THOST_FTDC_FC_ParkedOrderInsert = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_ParkedOrderAction = (char)'D';
+	public static final byte THOST_FTDC_FC_ParkedOrderAction = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_SyncOTP = (char)'E';
+	public static final byte THOST_FTDC_FC_SyncOTP = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FC_DeleteOrder = (char)'F';
+	public static final byte THOST_FTDC_FC_DeleteOrder = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_ForceUserLogout = (char)'1';
+	public static final byte THOST_FTDC_BFC_ForceUserLogout = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_UserPasswordUpdate = (char)'2';
+	public static final byte THOST_FTDC_BFC_UserPasswordUpdate = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_SyncBrokerData = (char)'3';
+	public static final byte THOST_FTDC_BFC_SyncBrokerData = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_BachSyncBrokerData = (char)'4';
+	public static final byte THOST_FTDC_BFC_BachSyncBrokerData = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_OrderInsert = (char)'5';
+	public static final byte THOST_FTDC_BFC_OrderInsert = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_OrderAction = (char)'6';
+	public static final byte THOST_FTDC_BFC_OrderAction = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_AllQuery = (char)'7';
+	public static final byte THOST_FTDC_BFC_AllQuery = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_log = (char)'a';
+	public static final byte THOST_FTDC_BFC_log = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_BaseQry = (char)'b';
+	public static final byte THOST_FTDC_BFC_BaseQry = (byte)'b';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_TradeQry = (char)'c';
+	public static final byte THOST_FTDC_BFC_TradeQry = (byte)'c';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_Trade = (char)'d';
+	public static final byte THOST_FTDC_BFC_Trade = (byte)'d';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_Virement = (char)'e';
+	public static final byte THOST_FTDC_BFC_Virement = (byte)'e';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_Risk = (char)'f';
+	public static final byte THOST_FTDC_BFC_Risk = (byte)'f';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_Session = (char)'g';
+	public static final byte THOST_FTDC_BFC_Session = (byte)'g';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_RiskNoticeCtl = (char)'h';
+	public static final byte THOST_FTDC_BFC_RiskNoticeCtl = (byte)'h';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_RiskNotice = (char)'i';
+	public static final byte THOST_FTDC_BFC_RiskNotice = (byte)'i';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_BrokerDeposit = (char)'j';
+	public static final byte THOST_FTDC_BFC_BrokerDeposit = (byte)'j';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryFund = (char)'k';
+	public static final byte THOST_FTDC_BFC_QueryFund = (byte)'k';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryOrder = (char)'l';
+	public static final byte THOST_FTDC_BFC_QueryOrder = (byte)'l';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryTrade = (char)'m';
+	public static final byte THOST_FTDC_BFC_QueryTrade = (byte)'m';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryPosition = (char)'n';
+	public static final byte THOST_FTDC_BFC_QueryPosition = (byte)'n';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryMarketData = (char)'o';
+	public static final byte THOST_FTDC_BFC_QueryMarketData = (byte)'o';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryUserEvent = (char)'p';
+	public static final byte THOST_FTDC_BFC_QueryUserEvent = (byte)'p';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryRiskNotify = (char)'q';
+	public static final byte THOST_FTDC_BFC_QueryRiskNotify = (byte)'q';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryFundChange = (char)'r';
+	public static final byte THOST_FTDC_BFC_QueryFundChange = (byte)'r';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryInvestor = (char)'s';
+	public static final byte THOST_FTDC_BFC_QueryInvestor = (byte)'s';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QueryTradingCode = (char)'t';
+	public static final byte THOST_FTDC_BFC_QueryTradingCode = (byte)'t';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_ForceClose = (char)'u';
+	public static final byte THOST_FTDC_BFC_ForceClose = (byte)'u';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_PressTest = (char)'v';
+	public static final byte THOST_FTDC_BFC_PressTest = (byte)'v';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_RemainCalc = (char)'w';
+	public static final byte THOST_FTDC_BFC_RemainCalc = (byte)'w';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_NetPositionInd = (char)'x';
+	public static final byte THOST_FTDC_BFC_NetPositionInd = (byte)'x';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_RiskPredict = (char)'y';
+	public static final byte THOST_FTDC_BFC_RiskPredict = (byte)'y';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_DataExport = (char)'z';
+	public static final byte THOST_FTDC_BFC_DataExport = (byte)'z';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_RiskTargetSetup = (char)'A';
+	public static final byte THOST_FTDC_BFC_RiskTargetSetup = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_MarketDataWarn = (char)'B';
+	public static final byte THOST_FTDC_BFC_MarketDataWarn = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_QryBizNotice = (char)'C';
+	public static final byte THOST_FTDC_BFC_QryBizNotice = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_CfgBizNotice = (char)'D';
+	public static final byte THOST_FTDC_BFC_CfgBizNotice = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_SyncOTP = (char)'E';
+	public static final byte THOST_FTDC_BFC_SyncOTP = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_SendBizNotice = (char)'F';
+	public static final byte THOST_FTDC_BFC_SendBizNotice = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_CfgRiskLevelStd = (char)'G';
+	public static final byte THOST_FTDC_BFC_CfgRiskLevelStd = (byte)'G';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_TbCommand = (char)'H';
+	public static final byte THOST_FTDC_BFC_TbCommand = (byte)'H';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_DeleteOrder = (char)'J';
+	public static final byte THOST_FTDC_BFC_DeleteOrder = (byte)'J';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_ParkedOrderInsert = (char)'K';
+	public static final byte THOST_FTDC_BFC_ParkedOrderInsert = (byte)'K';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BFC_ParkedOrderAction = (char)'L';
+	public static final byte THOST_FTDC_BFC_ParkedOrderAction = (byte)'L';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OAS_Submitted = (char)'a';
+	public static final byte THOST_FTDC_OAS_Submitted = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OAS_Accepted = (char)'b';
+	public static final byte THOST_FTDC_OAS_Accepted = (byte)'b';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OAS_Rejected = (char)'c';
+	public static final byte THOST_FTDC_OAS_Rejected = (byte)'c';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_AllTraded = (char)'0';
+	public static final byte THOST_FTDC_OST_AllTraded = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_PartTradedQueueing = (char)'1';
+	public static final byte THOST_FTDC_OST_PartTradedQueueing = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_PartTradedNotQueueing = (char)'2';
+	public static final byte THOST_FTDC_OST_PartTradedNotQueueing = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_NoTradeQueueing = (char)'3';
+	public static final byte THOST_FTDC_OST_NoTradeQueueing = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_NoTradeNotQueueing = (char)'4';
+	public static final byte THOST_FTDC_OST_NoTradeNotQueueing = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_Canceled = (char)'5';
+	public static final byte THOST_FTDC_OST_Canceled = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_Unknown = (char)'a';
+	public static final byte THOST_FTDC_OST_Unknown = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_NotTouched = (char)'b';
+	public static final byte THOST_FTDC_OST_NotTouched = (byte)'b';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OST_Touched = (char)'c';
+	public static final byte THOST_FTDC_OST_Touched = (byte)'c';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_InsertSubmitted = (char)'0';
+	public static final byte THOST_FTDC_OSS_InsertSubmitted = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_CancelSubmitted = (char)'1';
+	public static final byte THOST_FTDC_OSS_CancelSubmitted = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_ModifySubmitted = (char)'2';
+	public static final byte THOST_FTDC_OSS_ModifySubmitted = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_Accepted = (char)'3';
+	public static final byte THOST_FTDC_OSS_Accepted = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_InsertRejected = (char)'4';
+	public static final byte THOST_FTDC_OSS_InsertRejected = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_CancelRejected = (char)'5';
+	public static final byte THOST_FTDC_OSS_CancelRejected = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSS_ModifyRejected = (char)'6';
+	public static final byte THOST_FTDC_OSS_ModifyRejected = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSD_Today = (char)'1';
+	public static final byte THOST_FTDC_PSD_Today = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSD_History = (char)'2';
+	public static final byte THOST_FTDC_PSD_History = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PDT_UseHistory = (char)'1';
+	public static final byte THOST_FTDC_PDT_UseHistory = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PDT_NoUseHistory = (char)'2';
+	public static final byte THOST_FTDC_PDT_NoUseHistory = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ER_Broker = (char)'1';
+	public static final byte THOST_FTDC_ER_Broker = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ER_Host = (char)'2';
+	public static final byte THOST_FTDC_ER_Host = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ER_Maker = (char)'3';
+	public static final byte THOST_FTDC_ER_Maker = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PC_Futures = (char)'1';
+	public static final byte THOST_FTDC_PC_Futures = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PC_Options = (char)'2';
+	public static final byte THOST_FTDC_PC_Options = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PC_Combination = (char)'3';
+	public static final byte THOST_FTDC_PC_Combination = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PC_Spot = (char)'4';
+	public static final byte THOST_FTDC_PC_Spot = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PC_EFP = (char)'5';
+	public static final byte THOST_FTDC_PC_EFP = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PC_SpotOption = (char)'6';
+	public static final byte THOST_FTDC_PC_SpotOption = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IP_NotStart = (char)'0';
+	public static final byte THOST_FTDC_IP_NotStart = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IP_Started = (char)'1';
+	public static final byte THOST_FTDC_IP_Started = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IP_Pause = (char)'2';
+	public static final byte THOST_FTDC_IP_Pause = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IP_Expired = (char)'3';
+	public static final byte THOST_FTDC_IP_Expired = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_D_Buy = (char)'0';
+	public static final byte THOST_FTDC_D_Buy = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_D_Sell = (char)'1';
+	public static final byte THOST_FTDC_D_Sell = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PT_Net = (char)'1';
+	public static final byte THOST_FTDC_PT_Net = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PT_Gross = (char)'2';
+	public static final byte THOST_FTDC_PT_Gross = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PD_Net = (char)'1';
+	public static final byte THOST_FTDC_PD_Net = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PD_Long = (char)'2';
+	public static final byte THOST_FTDC_PD_Long = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PD_Short = (char)'3';
+	public static final byte THOST_FTDC_PD_Short = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SS_NonActive = (char)'1';
+	public static final byte THOST_FTDC_SS_NonActive = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SS_Startup = (char)'2';
+	public static final byte THOST_FTDC_SS_Startup = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SS_Operating = (char)'3';
+	public static final byte THOST_FTDC_SS_Operating = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SS_Settlement = (char)'4';
+	public static final byte THOST_FTDC_SS_Settlement = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SS_SettlementFinished = (char)'5';
+	public static final byte THOST_FTDC_SS_SettlementFinished = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RA_Trade = (char)'0';
+	public static final byte THOST_FTDC_RA_Trade = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RA_Settlement = (char)'1';
+	public static final byte THOST_FTDC_RA_Settlement = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HF_Speculation = (char)'1';
+	public static final byte THOST_FTDC_HF_Speculation = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HF_Arbitrage = (char)'2';
+	public static final byte THOST_FTDC_HF_Arbitrage = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HF_Hedge = (char)'3';
+	public static final byte THOST_FTDC_HF_Hedge = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BHF_Speculation = (char)'1';
+	public static final byte THOST_FTDC_BHF_Speculation = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BHF_Arbitrage = (char)'2';
+	public static final byte THOST_FTDC_BHF_Arbitrage = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BHF_Hedge = (char)'3';
+	public static final byte THOST_FTDC_BHF_Hedge = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CIDT_Speculation = (char)'1';
+	public static final byte THOST_FTDC_CIDT_Speculation = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CIDT_Arbitrage = (char)'2';
+	public static final byte THOST_FTDC_CIDT_Arbitrage = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CIDT_Hedge = (char)'3';
+	public static final byte THOST_FTDC_CIDT_Hedge = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_AnyPrice = (char)'1';
+	public static final byte THOST_FTDC_OPT_AnyPrice = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_LimitPrice = (char)'2';
+	public static final byte THOST_FTDC_OPT_LimitPrice = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_BestPrice = (char)'3';
+	public static final byte THOST_FTDC_OPT_BestPrice = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_LastPrice = (char)'4';
+	public static final byte THOST_FTDC_OPT_LastPrice = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_LastPricePlusOneTicks = (char)'5';
+	public static final byte THOST_FTDC_OPT_LastPricePlusOneTicks = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_LastPricePlusTwoTicks = (char)'6';
+	public static final byte THOST_FTDC_OPT_LastPricePlusTwoTicks = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_LastPricePlusThreeTicks = (char)'7';
+	public static final byte THOST_FTDC_OPT_LastPricePlusThreeTicks = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_AskPrice1 = (char)'8';
+	public static final byte THOST_FTDC_OPT_AskPrice1 = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_AskPrice1PlusOneTicks = (char)'9';
+	public static final byte THOST_FTDC_OPT_AskPrice1PlusOneTicks = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_AskPrice1PlusTwoTicks = (char)'A';
+	public static final byte THOST_FTDC_OPT_AskPrice1PlusTwoTicks = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_AskPrice1PlusThreeTicks = (char)'B';
+	public static final byte THOST_FTDC_OPT_AskPrice1PlusThreeTicks = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_BidPrice1 = (char)'C';
+	public static final byte THOST_FTDC_OPT_BidPrice1 = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_BidPrice1PlusOneTicks = (char)'D';
+	public static final byte THOST_FTDC_OPT_BidPrice1PlusOneTicks = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_BidPrice1PlusTwoTicks = (char)'E';
+	public static final byte THOST_FTDC_OPT_BidPrice1PlusTwoTicks = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_BidPrice1PlusThreeTicks = (char)'F';
+	public static final byte THOST_FTDC_OPT_BidPrice1PlusThreeTicks = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OPT_FiveLevelPrice = (char)'G';
+	public static final byte THOST_FTDC_OPT_FiveLevelPrice = (byte)'G';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_Open = (char)'0';
+	public static final byte THOST_FTDC_OF_Open = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_Close = (char)'1';
+	public static final byte THOST_FTDC_OF_Close = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_ForceClose = (char)'2';
+	public static final byte THOST_FTDC_OF_ForceClose = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_CloseToday = (char)'3';
+	public static final byte THOST_FTDC_OF_CloseToday = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_CloseYesterday = (char)'4';
+	public static final byte THOST_FTDC_OF_CloseYesterday = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_ForceOff = (char)'5';
+	public static final byte THOST_FTDC_OF_ForceOff = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OF_LocalForceClose = (char)'6';
+	public static final byte THOST_FTDC_OF_LocalForceClose = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_NotForceClose = (char)'0';
+	public static final byte THOST_FTDC_FCC_NotForceClose = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_LackDeposit = (char)'1';
+	public static final byte THOST_FTDC_FCC_LackDeposit = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_ClientOverPositionLimit = (char)'2';
+	public static final byte THOST_FTDC_FCC_ClientOverPositionLimit = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_MemberOverPositionLimit = (char)'3';
+	public static final byte THOST_FTDC_FCC_MemberOverPositionLimit = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_NotMultiple = (char)'4';
+	public static final byte THOST_FTDC_FCC_NotMultiple = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_Violation = (char)'5';
+	public static final byte THOST_FTDC_FCC_Violation = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_Other = (char)'6';
+	public static final byte THOST_FTDC_FCC_Other = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCC_PersonDeliv = (char)'7';
+	public static final byte THOST_FTDC_FCC_PersonDeliv = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORDT_Normal = (char)'0';
+	public static final byte THOST_FTDC_ORDT_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORDT_DeriveFromQuote = (char)'1';
+	public static final byte THOST_FTDC_ORDT_DeriveFromQuote = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORDT_DeriveFromCombination = (char)'2';
+	public static final byte THOST_FTDC_ORDT_DeriveFromCombination = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORDT_Combination = (char)'3';
+	public static final byte THOST_FTDC_ORDT_Combination = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORDT_ConditionalOrder = (char)'4';
+	public static final byte THOST_FTDC_ORDT_ConditionalOrder = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORDT_Swap = (char)'5';
+	public static final byte THOST_FTDC_ORDT_Swap = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TC_IOC = (char)'1';
+	public static final byte THOST_FTDC_TC_IOC = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TC_GFS = (char)'2';
+	public static final byte THOST_FTDC_TC_GFS = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TC_GFD = (char)'3';
+	public static final byte THOST_FTDC_TC_GFD = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TC_GTD = (char)'4';
+	public static final byte THOST_FTDC_TC_GTD = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TC_GTC = (char)'5';
+	public static final byte THOST_FTDC_TC_GTC = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TC_GFA = (char)'6';
+	public static final byte THOST_FTDC_TC_GFA = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VC_AV = (char)'1';
+	public static final byte THOST_FTDC_VC_AV = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VC_MV = (char)'2';
+	public static final byte THOST_FTDC_VC_MV = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VC_CV = (char)'3';
+	public static final byte THOST_FTDC_VC_CV = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_Immediately = (char)'1';
+	public static final byte THOST_FTDC_CC_Immediately = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_Touch = (char)'2';
+	public static final byte THOST_FTDC_CC_Touch = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_TouchProfit = (char)'3';
+	public static final byte THOST_FTDC_CC_TouchProfit = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_ParkedOrder = (char)'4';
+	public static final byte THOST_FTDC_CC_ParkedOrder = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_LastPriceGreaterThanStopPrice = (char)'5';
+	public static final byte THOST_FTDC_CC_LastPriceGreaterThanStopPrice = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_LastPriceGreaterEqualStopPrice = (char)'6';
+	public static final byte THOST_FTDC_CC_LastPriceGreaterEqualStopPrice = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_LastPriceLesserThanStopPrice = (char)'7';
+	public static final byte THOST_FTDC_CC_LastPriceLesserThanStopPrice = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_LastPriceLesserEqualStopPrice = (char)'8';
+	public static final byte THOST_FTDC_CC_LastPriceLesserEqualStopPrice = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_AskPriceGreaterThanStopPrice = (char)'9';
+	public static final byte THOST_FTDC_CC_AskPriceGreaterThanStopPrice = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_AskPriceGreaterEqualStopPrice = (char)'A';
+	public static final byte THOST_FTDC_CC_AskPriceGreaterEqualStopPrice = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_AskPriceLesserThanStopPrice = (char)'B';
+	public static final byte THOST_FTDC_CC_AskPriceLesserThanStopPrice = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_AskPriceLesserEqualStopPrice = (char)'C';
+	public static final byte THOST_FTDC_CC_AskPriceLesserEqualStopPrice = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_BidPriceGreaterThanStopPrice = (char)'D';
+	public static final byte THOST_FTDC_CC_BidPriceGreaterThanStopPrice = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_BidPriceGreaterEqualStopPrice = (char)'E';
+	public static final byte THOST_FTDC_CC_BidPriceGreaterEqualStopPrice = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_BidPriceLesserThanStopPrice = (char)'F';
+	public static final byte THOST_FTDC_CC_BidPriceLesserThanStopPrice = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CC_BidPriceLesserEqualStopPrice = (char)'H';
+	public static final byte THOST_FTDC_CC_BidPriceLesserEqualStopPrice = (byte)'H';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AF_Delete = (char)'0';
+	public static final byte THOST_FTDC_AF_Delete = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AF_Modify = (char)'3';
+	public static final byte THOST_FTDC_AF_Modify = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TR_Allow = (char)'0';
+	public static final byte THOST_FTDC_TR_Allow = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TR_CloseOnly = (char)'1';
+	public static final byte THOST_FTDC_TR_CloseOnly = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TR_Forbidden = (char)'2';
+	public static final byte THOST_FTDC_TR_Forbidden = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSRC_Participant = (char)'0';
+	public static final byte THOST_FTDC_OSRC_Participant = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OSRC_Administrator = (char)'1';
+	public static final byte THOST_FTDC_OSRC_Administrator = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRDT_SplitCombination = (char)'#';
+	public static final byte THOST_FTDC_TRDT_SplitCombination = (byte)'#';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRDT_Common = (char)'0';
+	public static final byte THOST_FTDC_TRDT_Common = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRDT_OptionsExecution = (char)'1';
+	public static final byte THOST_FTDC_TRDT_OptionsExecution = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRDT_OTC = (char)'2';
+	public static final byte THOST_FTDC_TRDT_OTC = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRDT_EFPDerived = (char)'3';
+	public static final byte THOST_FTDC_TRDT_EFPDerived = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRDT_CombinationDerived = (char)'4';
+	public static final byte THOST_FTDC_TRDT_CombinationDerived = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSRC_LastPrice = (char)'0';
+	public static final byte THOST_FTDC_PSRC_LastPrice = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSRC_Buy = (char)'1';
+	public static final byte THOST_FTDC_PSRC_Buy = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSRC_Sell = (char)'2';
+	public static final byte THOST_FTDC_PSRC_Sell = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_BeforeTrading = (char)'0';
+	public static final byte THOST_FTDC_IS_BeforeTrading = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_NoTrading = (char)'1';
+	public static final byte THOST_FTDC_IS_NoTrading = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_Continous = (char)'2';
+	public static final byte THOST_FTDC_IS_Continous = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_AuctionOrdering = (char)'3';
+	public static final byte THOST_FTDC_IS_AuctionOrdering = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_AuctionBalance = (char)'4';
+	public static final byte THOST_FTDC_IS_AuctionBalance = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_AuctionMatch = (char)'5';
+	public static final byte THOST_FTDC_IS_AuctionMatch = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IS_Closed = (char)'6';
+	public static final byte THOST_FTDC_IS_Closed = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IER_Automatic = (char)'1';
+	public static final byte THOST_FTDC_IER_Automatic = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IER_Manual = (char)'2';
+	public static final byte THOST_FTDC_IER_Manual = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IER_Fuse = (char)'3';
+	public static final byte THOST_FTDC_IER_Fuse = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BS_NoUpload = (char)'1';
+	public static final byte THOST_FTDC_BS_NoUpload = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BS_Uploaded = (char)'2';
+	public static final byte THOST_FTDC_BS_Uploaded = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BS_Failed = (char)'3';
+	public static final byte THOST_FTDC_BS_Failed = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RS_All = (char)'1';
+	public static final byte THOST_FTDC_RS_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RS_ByProduct = (char)'2';
+	public static final byte THOST_FTDC_RS_ByProduct = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RP_ByVolume = (char)'1';
+	public static final byte THOST_FTDC_RP_ByVolume = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RP_ByFeeOnHand = (char)'2';
+	public static final byte THOST_FTDC_RP_ByFeeOnHand = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level1 = (char)'1';
+	public static final byte THOST_FTDC_RL_Level1 = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level2 = (char)'2';
+	public static final byte THOST_FTDC_RL_Level2 = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level3 = (char)'3';
+	public static final byte THOST_FTDC_RL_Level3 = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level4 = (char)'4';
+	public static final byte THOST_FTDC_RL_Level4 = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level5 = (char)'5';
+	public static final byte THOST_FTDC_RL_Level5 = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level6 = (char)'6';
+	public static final byte THOST_FTDC_RL_Level6 = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level7 = (char)'7';
+	public static final byte THOST_FTDC_RL_Level7 = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level8 = (char)'8';
+	public static final byte THOST_FTDC_RL_Level8 = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RL_Level9 = (char)'9';
+	public static final byte THOST_FTDC_RL_Level9 = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RSD_ByPeriod = (char)'1';
+	public static final byte THOST_FTDC_RSD_ByPeriod = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RSD_ByStandard = (char)'2';
+	public static final byte THOST_FTDC_RSD_ByStandard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MT_Out = (char)'0';
+	public static final byte THOST_FTDC_MT_Out = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MT_In = (char)'1';
+	public static final byte THOST_FTDC_MT_In = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ISPI_MortgageRatio = (char)'4';
+	public static final byte THOST_FTDC_ISPI_MortgageRatio = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ISPI_MarginWay = (char)'5';
+	public static final byte THOST_FTDC_ISPI_MarginWay = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ISPI_BillDeposit = (char)'9';
+	public static final byte THOST_FTDC_ISPI_BillDeposit = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_MortgageRatio = (char)'1';
+	public static final byte THOST_FTDC_ESPI_MortgageRatio = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_OtherFundItem = (char)'2';
+	public static final byte THOST_FTDC_ESPI_OtherFundItem = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_OtherFundImport = (char)'3';
+	public static final byte THOST_FTDC_ESPI_OtherFundImport = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_CFFEXMinPrepa = (char)'6';
+	public static final byte THOST_FTDC_ESPI_CFFEXMinPrepa = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_CZCESettlementType = (char)'7';
+	public static final byte THOST_FTDC_ESPI_CZCESettlementType = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_ExchDelivFeeMode = (char)'9';
+	public static final byte THOST_FTDC_ESPI_ExchDelivFeeMode = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_DelivFeeMode = (char)'0';
+	public static final byte THOST_FTDC_ESPI_DelivFeeMode = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_CZCEComMarginType = (char)'A';
+	public static final byte THOST_FTDC_ESPI_CZCEComMarginType = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_DceComMarginType = (char)'B';
+	public static final byte THOST_FTDC_ESPI_DceComMarginType = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_OptOutDisCountRate = (char)'a';
+	public static final byte THOST_FTDC_ESPI_OptOutDisCountRate = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESPI_OptMiniGuarantee = (char)'b';
+	public static final byte THOST_FTDC_ESPI_OptMiniGuarantee = (byte)'b';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_InvestorIDMinLength = (char)'1';
+	public static final byte THOST_FTDC_SPI_InvestorIDMinLength = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_AccountIDMinLength = (char)'2';
+	public static final byte THOST_FTDC_SPI_AccountIDMinLength = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_UserRightLogon = (char)'3';
+	public static final byte THOST_FTDC_SPI_UserRightLogon = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_SettlementBillTrade = (char)'4';
+	public static final byte THOST_FTDC_SPI_SettlementBillTrade = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_TradingCode = (char)'5';
+	public static final byte THOST_FTDC_SPI_TradingCode = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_CheckFund = (char)'6';
+	public static final byte THOST_FTDC_SPI_CheckFund = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_CommModelRight = (char)'7';
+	public static final byte THOST_FTDC_SPI_CommModelRight = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_MarginModelRight = (char)'9';
+	public static final byte THOST_FTDC_SPI_MarginModelRight = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_IsStandardActive = (char)'8';
+	public static final byte THOST_FTDC_SPI_IsStandardActive = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_UploadSettlementFile = (char)'U';
+	public static final byte THOST_FTDC_SPI_UploadSettlementFile = (byte)'U';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_DownloadCSRCFile = (char)'D';
+	public static final byte THOST_FTDC_SPI_DownloadCSRCFile = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_SettlementBillFile = (char)'S';
+	public static final byte THOST_FTDC_SPI_SettlementBillFile = (byte)'S';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_CSRCOthersFile = (char)'C';
+	public static final byte THOST_FTDC_SPI_CSRCOthersFile = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_InvestorPhoto = (char)'P';
+	public static final byte THOST_FTDC_SPI_InvestorPhoto = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_CSRCData = (char)'R';
+	public static final byte THOST_FTDC_SPI_CSRCData = (byte)'R';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_InvestorPwdModel = (char)'I';
+	public static final byte THOST_FTDC_SPI_InvestorPwdModel = (byte)'I';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_CFFEXInvestorSettleFile = (char)'F';
+	public static final byte THOST_FTDC_SPI_CFFEXInvestorSettleFile = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_InvestorIDType = (char)'a';
+	public static final byte THOST_FTDC_SPI_InvestorIDType = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_FreezeMaxReMain = (char)'r';
+	public static final byte THOST_FTDC_SPI_FreezeMaxReMain = (byte)'r';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_IsSync = (char)'A';
+	public static final byte THOST_FTDC_SPI_IsSync = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_RelieveOpenLimit = (char)'O';
+	public static final byte THOST_FTDC_SPI_RelieveOpenLimit = (byte)'O';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_IsStandardFreeze = (char)'X';
+	public static final byte THOST_FTDC_SPI_IsStandardFreeze = (byte)'X';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPI_CZCENormalProductHedge = (char)'B';
+	public static final byte THOST_FTDC_SPI_CZCENormalProductHedge = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_EncryptionStandard = (char)'E';
+	public static final byte THOST_FTDC_TPID_EncryptionStandard = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_RiskMode = (char)'R';
+	public static final byte THOST_FTDC_TPID_RiskMode = (byte)'R';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_RiskModeGlobal = (char)'G';
+	public static final byte THOST_FTDC_TPID_RiskModeGlobal = (byte)'G';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_modeEncode = (char)'P';
+	public static final byte THOST_FTDC_TPID_modeEncode = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_tickMode = (char)'T';
+	public static final byte THOST_FTDC_TPID_tickMode = (byte)'T';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_SingleUserSessionMaxNum = (char)'S';
+	public static final byte THOST_FTDC_TPID_SingleUserSessionMaxNum = (byte)'S';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_LoginFailMaxNum = (char)'L';
+	public static final byte THOST_FTDC_TPID_LoginFailMaxNum = (byte)'L';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPID_IsAuthForce = (char)'A';
+	public static final byte THOST_FTDC_TPID_IsAuthForce = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_SettlementFund = (char)'F';
+	public static final byte THOST_FTDC_FI_SettlementFund = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_Trade = (char)'T';
+	public static final byte THOST_FTDC_FI_Trade = (byte)'T';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_InvestorPosition = (char)'P';
+	public static final byte THOST_FTDC_FI_InvestorPosition = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_SubEntryFund = (char)'O';
+	public static final byte THOST_FTDC_FI_SubEntryFund = (byte)'O';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_CZCECombinationPos = (char)'C';
+	public static final byte THOST_FTDC_FI_CZCECombinationPos = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_CSRCData = (char)'R';
+	public static final byte THOST_FTDC_FI_CSRCData = (byte)'R';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_CZCEClose = (char)'L';
+	public static final byte THOST_FTDC_FI_CZCEClose = (byte)'L';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_CZCENoClose = (char)'N';
+	public static final byte THOST_FTDC_FI_CZCENoClose = (byte)'N';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_PositionDtl = (char)'D';
+	public static final byte THOST_FTDC_FI_PositionDtl = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_OptionStrike = (char)'S';
+	public static final byte THOST_FTDC_FI_OptionStrike = (byte)'S';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_SettlementPriceComparison = (char)'M';
+	public static final byte THOST_FTDC_FI_SettlementPriceComparison = (byte)'M';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FI_NonTradePosChange = (char)'B';
+	public static final byte THOST_FTDC_FI_NonTradePosChange = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUT_Settlement = (char)'0';
+	public static final byte THOST_FTDC_FUT_Settlement = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUT_Check = (char)'1';
+	public static final byte THOST_FTDC_FUT_Check = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FFT_Txt = (char)'0';
+	public static final byte THOST_FTDC_FFT_Txt = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FFT_Zip = (char)'1';
+	public static final byte THOST_FTDC_FFT_Zip = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FFT_DBF = (char)'2';
+	public static final byte THOST_FTDC_FFT_DBF = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUS_SucceedUpload = (char)'1';
+	public static final byte THOST_FTDC_FUS_SucceedUpload = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUS_FailedUpload = (char)'2';
+	public static final byte THOST_FTDC_FUS_FailedUpload = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUS_SucceedLoad = (char)'3';
+	public static final byte THOST_FTDC_FUS_SucceedLoad = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUS_PartSucceedLoad = (char)'4';
+	public static final byte THOST_FTDC_FUS_PartSucceedLoad = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUS_FailedLoad = (char)'5';
+	public static final byte THOST_FTDC_FUS_FailedLoad = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TD_Out = (char)'0';
+	public static final byte THOST_FTDC_TD_Out = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TD_In = (char)'1';
+	public static final byte THOST_FTDC_TD_In = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SC_NoSpecialRule = (char)'0';
+	public static final byte THOST_FTDC_SC_NoSpecialRule = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SC_NoSpringFestival = (char)'1';
+	public static final byte THOST_FTDC_SC_NoSpringFestival = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IPT_LastSettlement = (char)'1';
+	public static final byte THOST_FTDC_IPT_LastSettlement = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IPT_LaseClose = (char)'2';
+	public static final byte THOST_FTDC_IPT_LaseClose = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PLP_Active = (char)'1';
+	public static final byte THOST_FTDC_PLP_Active = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PLP_NonActive = (char)'2';
+	public static final byte THOST_FTDC_PLP_NonActive = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PLP_Canceled = (char)'3';
+	public static final byte THOST_FTDC_PLP_Canceled = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DM_CashDeliv = (char)'1';
+	public static final byte THOST_FTDC_DM_CashDeliv = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DM_CommodityDeliv = (char)'2';
+	public static final byte THOST_FTDC_DM_CommodityDeliv = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIOT_FundIO = (char)'1';
+	public static final byte THOST_FTDC_FIOT_FundIO = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIOT_Transfer = (char)'2';
+	public static final byte THOST_FTDC_FIOT_Transfer = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIOT_SwapCurrency = (char)'3';
+	public static final byte THOST_FTDC_FIOT_SwapCurrency = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FT_Deposite = (char)'1';
+	public static final byte THOST_FTDC_FT_Deposite = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FT_ItemFund = (char)'2';
+	public static final byte THOST_FTDC_FT_ItemFund = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FT_Company = (char)'3';
+	public static final byte THOST_FTDC_FT_Company = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FT_InnerTransfer = (char)'4';
+	public static final byte THOST_FTDC_FT_InnerTransfer = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FD_In = (char)'1';
+	public static final byte THOST_FTDC_FD_In = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FD_Out = (char)'2';
+	public static final byte THOST_FTDC_FD_Out = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FS_Record = (char)'1';
+	public static final byte THOST_FTDC_FS_Record = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FS_Check = (char)'2';
+	public static final byte THOST_FTDC_FS_Check = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FS_Charge = (char)'3';
+	public static final byte THOST_FTDC_FS_bytege = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PS_None = (char)'1';
+	public static final byte THOST_FTDC_PS_None = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PS_Publishing = (char)'2';
+	public static final byte THOST_FTDC_PS_Publishing = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PS_Published = (char)'3';
+	public static final byte THOST_FTDC_PS_Published = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_NonActive = (char)'1';
+	public static final byte THOST_FTDC_ES_NonActive = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_Startup = (char)'2';
+	public static final byte THOST_FTDC_ES_Startup = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_Initialize = (char)'3';
+	public static final byte THOST_FTDC_ES_Initialize = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_Initialized = (char)'4';
+	public static final byte THOST_FTDC_ES_Initialized = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_Close = (char)'5';
+	public static final byte THOST_FTDC_ES_Close = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_Closed = (char)'6';
+	public static final byte THOST_FTDC_ES_Closed = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ES_Settlement = (char)'7';
+	public static final byte THOST_FTDC_ES_Settlement = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STS_Initialize = (char)'0';
+	public static final byte THOST_FTDC_STS_Initialize = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STS_Settlementing = (char)'1';
+	public static final byte THOST_FTDC_STS_Settlementing = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STS_Settlemented = (char)'2';
+	public static final byte THOST_FTDC_STS_Settlemented = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STS_Finished = (char)'3';
+	public static final byte THOST_FTDC_STS_Finished = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CT_Person = (char)'0';
+	public static final byte THOST_FTDC_CT_Person = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CT_Company = (char)'1';
+	public static final byte THOST_FTDC_CT_Company = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CT_Fund = (char)'2';
+	public static final byte THOST_FTDC_CT_Fund = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CT_SpecialOrgan = (char)'3';
+	public static final byte THOST_FTDC_CT_SpecialOrgan = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CT_Asset = (char)'4';
+	public static final byte THOST_FTDC_CT_Asset = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Trade = (char)'0';
+	public static final byte THOST_FTDC_BT_Trade = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_TradeSettle = (char)'1';
+	public static final byte THOST_FTDC_BT_TradeSettle = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_Low = (char)'1';
+	public static final byte THOST_FTDC_FAS_Low = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_Normal = (char)'2';
+	public static final byte THOST_FTDC_FAS_Normal = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_Focus = (char)'3';
+	public static final byte THOST_FTDC_FAS_Focus = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_Risk = (char)'4';
+	public static final byte THOST_FTDC_FAS_Risk = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_ByTrade = (char)'1';
+	public static final byte THOST_FTDC_FAS_ByTrade = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_ByDeliv = (char)'2';
+	public static final byte THOST_FTDC_FAS_ByDeliv = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_None = (char)'3';
+	public static final byte THOST_FTDC_FAS_None = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAS_FixFee = (char)'4';
+	public static final byte THOST_FTDC_FAS_FixFee = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWDT_Trade = (char)'1';
+	public static final byte THOST_FTDC_PWDT_Trade = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWDT_Account = (char)'2';
+	public static final byte THOST_FTDC_PWDT_Account = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AG_All = (char)'1';
+	public static final byte THOST_FTDC_AG_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AG_OnlyLost = (char)'2';
+	public static final byte THOST_FTDC_AG_OnlyLost = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AG_OnlyGain = (char)'3';
+	public static final byte THOST_FTDC_AG_OnlyGain = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AG_None = (char)'4';
+	public static final byte THOST_FTDC_AG_None = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICP_Include = (char)'0';
+	public static final byte THOST_FTDC_ICP_Include = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICP_NotInclude = (char)'2';
+	public static final byte THOST_FTDC_ICP_NotInclude = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AWT_Enable = (char)'0';
+	public static final byte THOST_FTDC_AWT_Enable = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AWT_Disable = (char)'2';
+	public static final byte THOST_FTDC_AWT_Disable = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AWT_NoHoldEnable = (char)'3';
+	public static final byte THOST_FTDC_AWT_NoHoldEnable = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FPWD_UnCheck = (char)'0';
+	public static final byte THOST_FTDC_FPWD_UnCheck = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FPWD_Check = (char)'1';
+	public static final byte THOST_FTDC_FPWD_Check = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TT_BankToFuture = (char)'0';
+	public static final byte THOST_FTDC_TT_BankToFuture = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TT_FutureToBank = (char)'1';
+	public static final byte THOST_FTDC_TT_FutureToBank = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TVF_Invalid = (char)'0';
+	public static final byte THOST_FTDC_TVF_Invalid = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TVF_Valid = (char)'1';
+	public static final byte THOST_FTDC_TVF_Valid = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TVF_Reverse = (char)'2';
+	public static final byte THOST_FTDC_TVF_Reverse = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RN_CD = (char)'0';
+	public static final byte THOST_FTDC_RN_CD = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RN_ZT = (char)'1';
+	public static final byte THOST_FTDC_RN_ZT = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RN_QT = (char)'2';
+	public static final byte THOST_FTDC_RN_QT = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SEX_None = (char)'0';
+	public static final byte THOST_FTDC_SEX_None = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SEX_Man = (char)'1';
+	public static final byte THOST_FTDC_SEX_Man = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SEX_Woman = (char)'2';
+	public static final byte THOST_FTDC_SEX_Woman = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UT_Investor = (char)'0';
+	public static final byte THOST_FTDC_UT_Investor = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UT_Operator = (char)'1';
+	public static final byte THOST_FTDC_UT_Operator = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UT_SuperUser = (char)'2';
+	public static final byte THOST_FTDC_UT_SuperUser = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RATETYPE_MarginRate = (char)'2';
+	public static final byte THOST_FTDC_RATETYPE_MarginRate = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NOTETYPE_TradeSettleBill = (char)'1';
+	public static final byte THOST_FTDC_NOTETYPE_TradeSettleBill = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NOTETYPE_TradeSettleMonth = (char)'2';
+	public static final byte THOST_FTDC_NOTETYPE_TradeSettleMonth = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NOTETYPE_CallMarginNotes = (char)'3';
+	public static final byte THOST_FTDC_NOTETYPE_CallMarginNotes = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NOTETYPE_ForceCloseNotes = (char)'4';
+	public static final byte THOST_FTDC_NOTETYPE_ForceCloseNotes = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NOTETYPE_TradeNotes = (char)'5';
+	public static final byte THOST_FTDC_NOTETYPE_TradeNotes = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NOTETYPE_DelivNotes = (char)'6';
+	public static final byte THOST_FTDC_NOTETYPE_DelivNotes = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SBS_Day = (char)'1';
+	public static final byte THOST_FTDC_SBS_Day = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SBS_Volume = (char)'2';
+	public static final byte THOST_FTDC_SBS_Volume = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ST_Day = (char)'0';
+	public static final byte THOST_FTDC_ST_Day = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ST_Month = (char)'1';
+	public static final byte THOST_FTDC_ST_Month = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_URT_Logon = (char)'1';
+	public static final byte THOST_FTDC_URT_Logon = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_URT_Transfer = (char)'2';
+	public static final byte THOST_FTDC_URT_Transfer = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_URT_EMail = (char)'3';
+	public static final byte THOST_FTDC_URT_EMail = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_URT_Fax = (char)'4';
+	public static final byte THOST_FTDC_URT_Fax = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_URT_ConditionOrder = (char)'5';
+	public static final byte THOST_FTDC_URT_ConditionOrder = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MPT_PreSettlementPrice = (char)'1';
+	public static final byte THOST_FTDC_MPT_PreSettlementPrice = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MPT_SettlementPrice = (char)'2';
+	public static final byte THOST_FTDC_MPT_SettlementPrice = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MPT_AveragePrice = (char)'3';
+	public static final byte THOST_FTDC_MPT_AveragePrice = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MPT_OpenPrice = (char)'4';
+	public static final byte THOST_FTDC_MPT_OpenPrice = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BGS_None = (char)'0';
+	public static final byte THOST_FTDC_BGS_None = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BGS_NoGenerated = (char)'1';
+	public static final byte THOST_FTDC_BGS_NoGenerated = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BGS_Generated = (char)'2';
+	public static final byte THOST_FTDC_BGS_Generated = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AT_HandlePositionAlgo = (char)'1';
+	public static final byte THOST_FTDC_AT_HandlePositionAlgo = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AT_FindMarginRateAlgo = (char)'2';
+	public static final byte THOST_FTDC_AT_FindMarginRateAlgo = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HPA_Base = (char)'1';
+	public static final byte THOST_FTDC_HPA_Base = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HPA_DCE = (char)'2';
+	public static final byte THOST_FTDC_HPA_DCE = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HPA_CZCE = (char)'3';
+	public static final byte THOST_FTDC_HPA_CZCE = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMRA_Base = (char)'1';
+	public static final byte THOST_FTDC_FMRA_Base = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMRA_DCE = (char)'2';
+	public static final byte THOST_FTDC_FMRA_DCE = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMRA_CZCE = (char)'3';
+	public static final byte THOST_FTDC_FMRA_CZCE = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HTAA_Base = (char)'1';
+	public static final byte THOST_FTDC_HTAA_Base = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HTAA_DCE = (char)'2';
+	public static final byte THOST_FTDC_HTAA_DCE = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HTAA_CZCE = (char)'3';
+	public static final byte THOST_FTDC_HTAA_CZCE = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Order = (char)'1';
+	public static final byte THOST_FTDC_PST_Order = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Open = (char)'2';
+	public static final byte THOST_FTDC_PST_Open = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Fund = (char)'3';
+	public static final byte THOST_FTDC_PST_Fund = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Settlement = (char)'4';
+	public static final byte THOST_FTDC_PST_Settlement = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Company = (char)'5';
+	public static final byte THOST_FTDC_PST_Company = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Corporation = (char)'6';
+	public static final byte THOST_FTDC_PST_Corporation = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_LinkMan = (char)'7';
+	public static final byte THOST_FTDC_PST_LinkMan = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Ledger = (char)'8';
+	public static final byte THOST_FTDC_PST_Ledger = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_Trustee = (char)'9';
+	public static final byte THOST_FTDC_PST_Trustee = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_TrusteeCorporation = (char)'A';
+	public static final byte THOST_FTDC_PST_TrusteeCorporation = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_TrusteeOpen = (char)'B';
+	public static final byte THOST_FTDC_PST_TrusteeOpen = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_TrusteeContact = (char)'C';
+	public static final byte THOST_FTDC_PST_TrusteeContact = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_ForeignerRefer = (char)'D';
+	public static final byte THOST_FTDC_PST_ForeignerRefer = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PST_CorporationRefer = (char)'E';
+	public static final byte THOST_FTDC_PST_CorporationRefer = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_QIR_All = (char)'1';
+	public static final byte THOST_FTDC_QIR_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_QIR_Group = (char)'2';
+	public static final byte THOST_FTDC_QIR_Group = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_QIR_Single = (char)'3';
+	public static final byte THOST_FTDC_QIR_Single = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IRS_Normal = (char)'1';
+	public static final byte THOST_FTDC_IRS_Normal = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IRS_Warn = (char)'2';
+	public static final byte THOST_FTDC_IRS_Warn = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IRS_Call = (char)'3';
+	public static final byte THOST_FTDC_IRS_Call = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IRS_Force = (char)'4';
+	public static final byte THOST_FTDC_IRS_Force = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_IRS_Exception = (char)'5';
+	public static final byte THOST_FTDC_IRS_Exception = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_Login = (char)'1';
+	public static final byte THOST_FTDC_UET_Login = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_Logout = (char)'2';
+	public static final byte THOST_FTDC_UET_Logout = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_Trading = (char)'3';
+	public static final byte THOST_FTDC_UET_Trading = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_TradingError = (char)'4';
+	public static final byte THOST_FTDC_UET_TradingError = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_UpdatePassword = (char)'5';
+	public static final byte THOST_FTDC_UET_UpdatePassword = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_Authenticate = (char)'6';
+	public static final byte THOST_FTDC_UET_Authenticate = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UET_Other = (char)'9';
+	public static final byte THOST_FTDC_UET_Other = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICS_Close = (char)'0';
+	public static final byte THOST_FTDC_ICS_Close = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ICS_CloseToday = (char)'1';
+	public static final byte THOST_FTDC_ICS_CloseToday = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Non = (char)'0';
+	public static final byte THOST_FTDC_SM_Non = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Instrument = (char)'1';
+	public static final byte THOST_FTDC_SM_Instrument = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Product = (char)'2';
+	public static final byte THOST_FTDC_SM_Product = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Investor = (char)'3';
+	public static final byte THOST_FTDC_SM_Investor = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PAOS_NotSend = (char)'1';
+	public static final byte THOST_FTDC_PAOS_NotSend = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PAOS_Send = (char)'2';
+	public static final byte THOST_FTDC_PAOS_Send = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PAOS_Deleted = (char)'3';
+	public static final byte THOST_FTDC_PAOS_Deleted = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VDS_Dealing = (char)'1';
+	public static final byte THOST_FTDC_VDS_Dealing = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VDS_DeaclSucceed = (char)'2';
+	public static final byte THOST_FTDC_VDS_DeaclSucceed = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORGS_Standard = (char)'0';
+	public static final byte THOST_FTDC_ORGS_Standard = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORGS_ESunny = (char)'1';
+	public static final byte THOST_FTDC_ORGS_ESunny = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORGS_KingStarV6 = (char)'2';
+	public static final byte THOST_FTDC_ORGS_KingStarV6 = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_NaturalDeal = (char)'0';
+	public static final byte THOST_FTDC_VTS_NaturalDeal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_SucceedEnd = (char)'1';
+	public static final byte THOST_FTDC_VTS_SucceedEnd = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_FailedEND = (char)'2';
+	public static final byte THOST_FTDC_VTS_FailedEND = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_Exception = (char)'3';
+	public static final byte THOST_FTDC_VTS_Exception = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_ManualDeal = (char)'4';
+	public static final byte THOST_FTDC_VTS_ManualDeal = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_MesException = (char)'5';
+	public static final byte THOST_FTDC_VTS_MesException = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VTS_SysException = (char)'6';
+	public static final byte THOST_FTDC_VTS_SysException = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VBAT_BankBook = (char)'1';
+	public static final byte THOST_FTDC_VBAT_BankBook = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VBAT_BankCard = (char)'2';
+	public static final byte THOST_FTDC_VBAT_BankCard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VBAT_CreditCard = (char)'3';
+	public static final byte THOST_FTDC_VBAT_CreditCard = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VMS_Natural = (char)'0';
+	public static final byte THOST_FTDC_VMS_Natural = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VMS_Canceled = (char)'9';
+	public static final byte THOST_FTDC_VMS_Canceled = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VAA_NoAvailAbility = (char)'0';
+	public static final byte THOST_FTDC_VAA_NoAvailAbility = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VAA_AvailAbility = (char)'1';
+	public static final byte THOST_FTDC_VAA_AvailAbility = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VAA_Repeal = (char)'2';
+	public static final byte THOST_FTDC_VAA_Repeal = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GEN_Program = (char)'0';
+	public static final byte THOST_FTDC_GEN_Program = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GEN_HandWork = (char)'1';
+	public static final byte THOST_FTDC_GEN_HandWork = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFMMCKK_REQUEST = (char)'R';
+	public static final byte THOST_FTDC_CFMMCKK_REQUEST = (byte)'R';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFMMCKK_AUTO = (char)'A';
+	public static final byte THOST_FTDC_CFMMCKK_AUTO = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFMMCKK_MANUAL = (char)'M';
+	public static final byte THOST_FTDC_CFMMCKK_MANUAL = (byte)'M';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_IDCard = (char)'0';
+	public static final byte THOST_FTDC_CFT_IDCard = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_Passport = (char)'1';
+	public static final byte THOST_FTDC_CFT_Passport = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_OfficerIDCard = (char)'2';
+	public static final byte THOST_FTDC_CFT_OfficerIDCard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_SoldierIDCard = (char)'3';
+	public static final byte THOST_FTDC_CFT_SoldierIDCard = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_HomeComingCard = (char)'4';
+	public static final byte THOST_FTDC_CFT_HomeComingCard = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_HouseholdRegister = (char)'5';
+	public static final byte THOST_FTDC_CFT_HouseholdRegister = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_LicenseNo = (char)'6';
+	public static final byte THOST_FTDC_CFT_LicenseNo = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_InstitutionCodeCard = (char)'7';
+	public static final byte THOST_FTDC_CFT_InstitutionCodeCard = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_TempLicenseNo = (char)'8';
+	public static final byte THOST_FTDC_CFT_TempLicenseNo = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_NoEnterpriseLicenseNo = (char)'9';
+	public static final byte THOST_FTDC_CFT_NoEnterpriseLicenseNo = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_OtherCard = (char)'x';
+	public static final byte THOST_FTDC_CFT_OtherCard = (byte)'x';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFT_SuperDepAgree = (char)'a';
+	public static final byte THOST_FTDC_CFT_SuperDepAgree = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_Others = (char)'0';
+	public static final byte THOST_FTDC_FBC_Others = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_TransferDetails = (char)'1';
+	public static final byte THOST_FTDC_FBC_TransferDetails = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CustAccStatus = (char)'2';
+	public static final byte THOST_FTDC_FBC_CustAccStatus = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_AccountTradeDetails = (char)'3';
+	public static final byte THOST_FTDC_FBC_AccountTradeDetails = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_FutureAccountChangeInfoDetails = (char)'4';
+	public static final byte THOST_FTDC_FBC_FutureAccountChangeInfoDetails = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CustMoneyDetail = (char)'5';
+	public static final byte THOST_FTDC_FBC_CustMoneyDetail = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CustCancelAccountInfo = (char)'6';
+	public static final byte THOST_FTDC_FBC_CustCancelAccountInfo = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CustMoneyResult = (char)'7';
+	public static final byte THOST_FTDC_FBC_CustMoneyResult = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_OthersExceptionResult = (char)'8';
+	public static final byte THOST_FTDC_FBC_OthersExceptionResult = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CustInterestNetMoneyDetails = (char)'9';
+	public static final byte THOST_FTDC_FBC_CustInterestNetMoneyDetails = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CustMoneySendAndReceiveDetails = (char)'a';
+	public static final byte THOST_FTDC_FBC_CustMoneySendAndReceiveDetails = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_CorporationMoneyTotal = (char)'b';
+	public static final byte THOST_FTDC_FBC_CorporationMoneyTotal = (byte)'b';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_MainbodyMoneyTotal = (char)'c';
+	public static final byte THOST_FTDC_FBC_MainbodyMoneyTotal = (byte)'c';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_MainPartMonitorData = (char)'d';
+	public static final byte THOST_FTDC_FBC_MainPartMonitorData = (byte)'d';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_PreparationMoney = (char)'e';
+	public static final byte THOST_FTDC_FBC_PreparationMoney = (byte)'e';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBC_BankMoneyMonitorData = (char)'f';
+	public static final byte THOST_FTDC_FBC_BankMoneyMonitorData = (byte)'f';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CEC_Exchange = (char)'1';
+	public static final byte THOST_FTDC_CEC_Exchange = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CEC_Cash = (char)'2';
+	public static final byte THOST_FTDC_CEC_Cash = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_YNI_Yes = (char)'0';
+	public static final byte THOST_FTDC_YNI_Yes = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_YNI_No = (char)'1';
+	public static final byte THOST_FTDC_YNI_No = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BLT_CurrentMoney = (char)'0';
+	public static final byte THOST_FTDC_BLT_CurrentMoney = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BLT_UsableMoney = (char)'1';
+	public static final byte THOST_FTDC_BLT_UsableMoney = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BLT_FetchableMoney = (char)'2';
+	public static final byte THOST_FTDC_BLT_FetchableMoney = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BLT_FreezeMoney = (char)'3';
+	public static final byte THOST_FTDC_BLT_FreezeMoney = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GD_Unknown = (char)'0';
+	public static final byte THOST_FTDC_GD_Unknown = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GD_Male = (char)'1';
+	public static final byte THOST_FTDC_GD_Male = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GD_Female = (char)'2';
+	public static final byte THOST_FTDC_GD_Female = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FPF_BEN = (char)'0';
+	public static final byte THOST_FTDC_FPF_BEN = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FPF_OUR = (char)'1';
+	public static final byte THOST_FTDC_FPF_OUR = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FPF_SHA = (char)'2';
+	public static final byte THOST_FTDC_FPF_SHA = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWKT_ExchangeKey = (char)'0';
+	public static final byte THOST_FTDC_PWKT_ExchangeKey = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWKT_PassWordKey = (char)'1';
+	public static final byte THOST_FTDC_PWKT_PassWordKey = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWKT_MACKey = (char)'2';
+	public static final byte THOST_FTDC_PWKT_MACKey = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWKT_MessageKey = (char)'3';
+	public static final byte THOST_FTDC_PWKT_MessageKey = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWT_Query = (char)'0';
+	public static final byte THOST_FTDC_PWT_Query = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWT_Fetch = (char)'1';
+	public static final byte THOST_FTDC_PWT_Fetch = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWT_Transfer = (char)'2';
+	public static final byte THOST_FTDC_PWT_Transfer = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PWT_Trade = (char)'3';
+	public static final byte THOST_FTDC_PWT_Trade = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EM_NoEncry = (char)'0';
+	public static final byte THOST_FTDC_EM_NoEncry = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EM_DES = (char)'1';
+	public static final byte THOST_FTDC_EM_DES = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EM_3DES = (char)'2';
+	public static final byte THOST_FTDC_EM_3DES = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BRF_BankNotNeedRepeal = (char)'0';
+	public static final byte THOST_FTDC_BRF_BankNotNeedRepeal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BRF_BankWaitingRepeal = (char)'1';
+	public static final byte THOST_FTDC_BRF_BankWaitingRepeal = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BRF_BankBeenRepealed = (char)'2';
+	public static final byte THOST_FTDC_BRF_BankBeenRepealed = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BRORF_BrokerNotNeedRepeal = (char)'0';
+	public static final byte THOST_FTDC_BRORF_BrokerNotNeedRepeal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BRORF_BrokerWaitingRepeal = (char)'1';
+	public static final byte THOST_FTDC_BRORF_BrokerWaitingRepeal = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BRORF_BrokerBeenRepealed = (char)'2';
+	public static final byte THOST_FTDC_BRORF_BrokerBeenRepealed = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TS_Bank = (char)'0';
+	public static final byte THOST_FTDC_TS_Bank = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TS_Future = (char)'1';
+	public static final byte THOST_FTDC_TS_Future = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TS_Store = (char)'2';
+	public static final byte THOST_FTDC_TS_Store = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LF_Yes = (char)'0';
+	public static final byte THOST_FTDC_LF_Yes = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LF_No = (char)'1';
+	public static final byte THOST_FTDC_LF_No = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAS_Normal = (char)'0';
+	public static final byte THOST_FTDC_BAS_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAS_Freeze = (char)'1';
+	public static final byte THOST_FTDC_BAS_Freeze = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAS_ReportLoss = (char)'2';
+	public static final byte THOST_FTDC_BAS_ReportLoss = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MAS_Normal = (char)'0';
+	public static final byte THOST_FTDC_MAS_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MAS_Cancel = (char)'1';
+	public static final byte THOST_FTDC_MAS_Cancel = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MSS_Point = (char)'0';
+	public static final byte THOST_FTDC_MSS_Point = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MSS_PrePoint = (char)'1';
+	public static final byte THOST_FTDC_MSS_PrePoint = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MSS_CancelPoint = (char)'2';
+	public static final byte THOST_FTDC_MSS_CancelPoint = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYT_FutureBankTransfer = (char)'0';
+	public static final byte THOST_FTDC_SYT_FutureBankTransfer = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYT_StockBankTransfer = (char)'1';
+	public static final byte THOST_FTDC_SYT_StockBankTransfer = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYT_TheThirdPartStore = (char)'2';
+	public static final byte THOST_FTDC_SYT_TheThirdPartStore = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_NormalProcessing = (char)'0';
+	public static final byte THOST_FTDC_TEF_NormalProcessing = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_Success = (char)'1';
+	public static final byte THOST_FTDC_TEF_Success = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_Failed = (char)'2';
+	public static final byte THOST_FTDC_TEF_Failed = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_Abnormal = (char)'3';
+	public static final byte THOST_FTDC_TEF_Abnormal = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_ManualProcessedForException = (char)'4';
+	public static final byte THOST_FTDC_TEF_ManualProcessedForException = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_CommuFailedNeedManualProcess = (char)'5';
+	public static final byte THOST_FTDC_TEF_CommuFailedNeedManualProcess = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TEF_SysErrorNeedManualProcess = (char)'6';
+	public static final byte THOST_FTDC_TEF_SysErrorNeedManualProcess = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSS_NotProcess = (char)'0';
+	public static final byte THOST_FTDC_PSS_NotProcess = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSS_StartProcess = (char)'1';
+	public static final byte THOST_FTDC_PSS_StartProcess = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PSS_Finished = (char)'2';
+	public static final byte THOST_FTDC_PSS_Finished = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUSTT_Person = (char)'0';
+	public static final byte THOST_FTDC_CUSTT_Person = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUSTT_Institution = (char)'1';
+	public static final byte THOST_FTDC_CUSTT_Institution = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTTD_FromBankToFuture = (char)'1';
+	public static final byte THOST_FTDC_FBTTD_FromBankToFuture = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTTD_FromFutureToBank = (char)'2';
+	public static final byte THOST_FTDC_FBTTD_FromFutureToBank = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OOD_Open = (char)'1';
+	public static final byte THOST_FTDC_OOD_Open = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OOD_Destroy = (char)'0';
+	public static final byte THOST_FTDC_OOD_Destroy = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AVAF_Invalid = (char)'0';
+	public static final byte THOST_FTDC_AVAF_Invalid = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AVAF_Valid = (char)'1';
+	public static final byte THOST_FTDC_AVAF_Valid = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AVAF_Repeal = (char)'2';
+	public static final byte THOST_FTDC_AVAF_Repeal = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OT_Bank = (char)'1';
+	public static final byte THOST_FTDC_OT_Bank = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OT_Future = (char)'2';
+	public static final byte THOST_FTDC_OT_Future = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OT_PlateForm = (char)'9';
+	public static final byte THOST_FTDC_OT_PlateForm = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OL_HeadQuarters = (char)'1';
+	public static final byte THOST_FTDC_OL_HeadQuarters = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OL_Branch = (char)'2';
+	public static final byte THOST_FTDC_OL_Branch = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_FutureProtocal = (char)'0';
+	public static final byte THOST_FTDC_PID_FutureProtocal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_ICBCProtocal = (char)'1';
+	public static final byte THOST_FTDC_PID_ICBCProtocal = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_ABCProtocal = (char)'2';
+	public static final byte THOST_FTDC_PID_ABCProtocal = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_CBCProtocal = (char)'3';
+	public static final byte THOST_FTDC_PID_CBCProtocal = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_CCBProtocal = (char)'4';
+	public static final byte THOST_FTDC_PID_CCBProtocal = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_BOCOMProtocal = (char)'5';
+	public static final byte THOST_FTDC_PID_BOCOMProtocal = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PID_FBTPlateFormProtocal = (char)'X';
+	public static final byte THOST_FTDC_PID_FBTPlateFormProtocal = (byte)'X';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CM_ShortConnect = (char)'0';
+	public static final byte THOST_FTDC_CM_ShortConnect = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CM_LongConnect = (char)'1';
+	public static final byte THOST_FTDC_CM_LongConnect = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SRM_ASync = (char)'0';
+	public static final byte THOST_FTDC_SRM_ASync = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SRM_Sync = (char)'1';
+	public static final byte THOST_FTDC_SRM_Sync = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAT_BankBook = (char)'1';
+	public static final byte THOST_FTDC_BAT_BankBook = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAT_SavingCard = (char)'2';
+	public static final byte THOST_FTDC_BAT_SavingCard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAT_CreditCard = (char)'3';
+	public static final byte THOST_FTDC_BAT_CreditCard = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAT_BankBook = (char)'1';
+	public static final byte THOST_FTDC_FAT_BankBook = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAT_SavingCard = (char)'2';
+	public static final byte THOST_FTDC_FAT_SavingCard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FAT_CreditCard = (char)'3';
+	public static final byte THOST_FTDC_FAT_CreditCard = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_Ready = (char)'0';
+	public static final byte THOST_FTDC_OS_Ready = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_CheckIn = (char)'1';
+	public static final byte THOST_FTDC_OS_CheckIn = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_CheckOut = (char)'2';
+	public static final byte THOST_FTDC_OS_CheckOut = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_CheckFileArrived = (char)'3';
+	public static final byte THOST_FTDC_OS_CheckFileArrived = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_CheckDetail = (char)'4';
+	public static final byte THOST_FTDC_OS_CheckDetail = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_DayEndClean = (char)'5';
+	public static final byte THOST_FTDC_OS_DayEndClean = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OS_Invalid = (char)'9';
+	public static final byte THOST_FTDC_OS_Invalid = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CCBFM_ByAmount = (char)'1';
+	public static final byte THOST_FTDC_CCBFM_ByAmount = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CCBFM_ByMonth = (char)'2';
+	public static final byte THOST_FTDC_CCBFM_ByMonth = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAPIT_Client = (char)'1';
+	public static final byte THOST_FTDC_CAPIT_Client = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAPIT_Server = (char)'2';
+	public static final byte THOST_FTDC_CAPIT_Server = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAPIT_UserApi = (char)'3';
+	public static final byte THOST_FTDC_CAPIT_UserApi = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LS_Connected = (char)'1';
+	public static final byte THOST_FTDC_LS_Connected = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LS_Disconnected = (char)'2';
+	public static final byte THOST_FTDC_LS_Disconnected = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BPWDF_NoCheck = (char)'0';
+	public static final byte THOST_FTDC_BPWDF_NoCheck = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BPWDF_BlankCheck = (char)'1';
+	public static final byte THOST_FTDC_BPWDF_BlankCheck = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BPWDF_EncryptCheck = (char)'2';
+	public static final byte THOST_FTDC_BPWDF_EncryptCheck = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAT_AccountID = (char)'1';
+	public static final byte THOST_FTDC_SAT_AccountID = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAT_CardID = (char)'2';
+	public static final byte THOST_FTDC_SAT_CardID = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAT_SHStockholderID = (char)'3';
+	public static final byte THOST_FTDC_SAT_SHStockholderID = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAT_SZStockholderID = (char)'4';
+	public static final byte THOST_FTDC_SAT_SZStockholderID = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRFS_Normal = (char)'0';
+	public static final byte THOST_FTDC_TRFS_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TRFS_Repealed = (char)'1';
+	public static final byte THOST_FTDC_TRFS_Repealed = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPTYPE_Broker = (char)'0';
+	public static final byte THOST_FTDC_SPTYPE_Broker = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPTYPE_Bank = (char)'1';
+	public static final byte THOST_FTDC_SPTYPE_Bank = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_REQRSP_Request = (char)'0';
+	public static final byte THOST_FTDC_REQRSP_Request = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_REQRSP_Response = (char)'1';
+	public static final byte THOST_FTDC_REQRSP_Response = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_SignIn = (char)'0';
+	public static final byte THOST_FTDC_FBTUET_SignIn = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_FromBankToFuture = (char)'1';
+	public static final byte THOST_FTDC_FBTUET_FromBankToFuture = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_FromFutureToBank = (char)'2';
+	public static final byte THOST_FTDC_FBTUET_FromFutureToBank = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_OpenAccount = (char)'3';
+	public static final byte THOST_FTDC_FBTUET_OpenAccount = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_CancelAccount = (char)'4';
+	public static final byte THOST_FTDC_FBTUET_CancelAccount = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_ChangeAccount = (char)'5';
+	public static final byte THOST_FTDC_FBTUET_ChangeAccount = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_RepealFromBankToFuture = (char)'6';
+	public static final byte THOST_FTDC_FBTUET_RepealFromBankToFuture = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_RepealFromFutureToBank = (char)'7';
+	public static final byte THOST_FTDC_FBTUET_RepealFromFutureToBank = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_QueryBankAccount = (char)'8';
+	public static final byte THOST_FTDC_FBTUET_QueryBankAccount = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_QueryFutureAccount = (char)'9';
+	public static final byte THOST_FTDC_FBTUET_QueryFutureAccount = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_SignOut = (char)'A';
+	public static final byte THOST_FTDC_FBTUET_SignOut = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_SyncKey = (char)'B';
+	public static final byte THOST_FTDC_FBTUET_SyncKey = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBTUET_Other = (char)'Z';
+	public static final byte THOST_FTDC_FBTUET_Other = (byte)'Z';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DBOP_Insert = (char)'0';
+	public static final byte THOST_FTDC_DBOP_Insert = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DBOP_Update = (char)'1';
+	public static final byte THOST_FTDC_DBOP_Update = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DBOP_Delete = (char)'2';
+	public static final byte THOST_FTDC_DBOP_Delete = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYNF_Yes = (char)'0';
+	public static final byte THOST_FTDC_SYNF_Yes = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYNF_No = (char)'1';
+	public static final byte THOST_FTDC_SYNF_No = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYNT_OneOffSync = (char)'0';
+	public static final byte THOST_FTDC_SYNT_OneOffSync = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYNT_TimerSync = (char)'1';
+	public static final byte THOST_FTDC_SYNT_TimerSync = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SYNT_TimerFullSync = (char)'2';
+	public static final byte THOST_FTDC_SYNT_TimerFullSync = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEDIR_Settlement = (char)'0';
+	public static final byte THOST_FTDC_FBEDIR_Settlement = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEDIR_Sale = (char)'1';
+	public static final byte THOST_FTDC_FBEDIR_Sale = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERES_Success = (char)'0';
+	public static final byte THOST_FTDC_FBERES_Success = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERES_InsufficientBalance = (char)'1';
+	public static final byte THOST_FTDC_FBERES_InsufficientBalance = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERES_UnknownTrading = (char)'8';
+	public static final byte THOST_FTDC_FBERES_UnknownTrading = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERES_Fail = (char)'x';
+	public static final byte THOST_FTDC_FBERES_Fail = (byte)'x';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEES_Normal = (char)'0';
+	public static final byte THOST_FTDC_FBEES_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEES_ReExchange = (char)'1';
+	public static final byte THOST_FTDC_FBEES_ReExchange = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEFG_DataPackage = (char)'0';
+	public static final byte THOST_FTDC_FBEFG_DataPackage = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEFG_File = (char)'1';
+	public static final byte THOST_FTDC_FBEFG_File = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEAT_NotTrade = (char)'0';
+	public static final byte THOST_FTDC_FBEAT_NotTrade = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEAT_Trade = (char)'1';
+	public static final byte THOST_FTDC_FBEAT_Trade = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_SignIn = (char)'0';
+	public static final byte THOST_FTDC_FBEUET_SignIn = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_Exchange = (char)'1';
+	public static final byte THOST_FTDC_FBEUET_Exchange = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_ReExchange = (char)'2';
+	public static final byte THOST_FTDC_FBEUET_ReExchange = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_QueryBankAccount = (char)'3';
+	public static final byte THOST_FTDC_FBEUET_QueryBankAccount = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_QueryExchDetial = (char)'4';
+	public static final byte THOST_FTDC_FBEUET_QueryExchDetial = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_QueryExchSummary = (char)'5';
+	public static final byte THOST_FTDC_FBEUET_QueryExchSummary = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_QueryExchRate = (char)'6';
+	public static final byte THOST_FTDC_FBEUET_QueryExchRate = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_CheckBankAccount = (char)'7';
+	public static final byte THOST_FTDC_FBEUET_CheckBankAccount = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_SignOut = (char)'8';
+	public static final byte THOST_FTDC_FBEUET_SignOut = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBEUET_Other = (char)'Z';
+	public static final byte THOST_FTDC_FBEUET_Other = (byte)'Z';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERF_UnProcessed = (char)'0';
+	public static final byte THOST_FTDC_FBERF_UnProcessed = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERF_WaitSend = (char)'1';
+	public static final byte THOST_FTDC_FBERF_WaitSend = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERF_SendSuccess = (char)'2';
+	public static final byte THOST_FTDC_FBERF_SendSuccess = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERF_SendFailed = (char)'3';
+	public static final byte THOST_FTDC_FBERF_SendFailed = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FBERF_WaitReSend = (char)'4';
+	public static final byte THOST_FTDC_FBERF_WaitReSend = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NC_NOERROR = (char)'0';
+	public static final byte THOST_FTDC_NC_NOERROR = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NC_Warn = (char)'1';
+	public static final byte THOST_FTDC_NC_Warn = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NC_Call = (char)'2';
+	public static final byte THOST_FTDC_NC_Call = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NC_Force = (char)'3';
+	public static final byte THOST_FTDC_NC_Force = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NC_CHUANCANG = (char)'4';
+	public static final byte THOST_FTDC_NC_CHUANCANG = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_NC_Exception = (char)'5';
+	public static final byte THOST_FTDC_NC_Exception = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCT_Manual = (char)'0';
+	public static final byte THOST_FTDC_FCT_Manual = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCT_Single = (char)'1';
+	public static final byte THOST_FTDC_FCT_Single = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FCT_Group = (char)'2';
+	public static final byte THOST_FTDC_FCT_Group = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNM_System = (char)'0';
+	public static final byte THOST_FTDC_RNM_System = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNM_SMS = (char)'1';
+	public static final byte THOST_FTDC_RNM_SMS = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNM_EMail = (char)'2';
+	public static final byte THOST_FTDC_RNM_EMail = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNM_Manual = (char)'3';
+	public static final byte THOST_FTDC_RNM_Manual = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNS_NotGen = (char)'0';
+	public static final byte THOST_FTDC_RNS_NotGen = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNS_Generated = (char)'1';
+	public static final byte THOST_FTDC_RNS_Generated = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNS_SendError = (char)'2';
+	public static final byte THOST_FTDC_RNS_SendError = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNS_SendOk = (char)'3';
+	public static final byte THOST_FTDC_RNS_SendOk = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNS_Received = (char)'4';
+	public static final byte THOST_FTDC_RNS_Received = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RNS_Confirmed = (char)'5';
+	public static final byte THOST_FTDC_RNS_Confirmed = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RUE_ExportData = (char)'0';
+	public static final byte THOST_FTDC_RUE_ExportData = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COST_LastPriceAsc = (char)'0';
+	public static final byte THOST_FTDC_COST_LastPriceAsc = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COST_LastPriceDesc = (char)'1';
+	public static final byte THOST_FTDC_COST_LastPriceDesc = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COST_AskPriceAsc = (char)'2';
+	public static final byte THOST_FTDC_COST_AskPriceAsc = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COST_AskPriceDesc = (char)'3';
+	public static final byte THOST_FTDC_COST_AskPriceDesc = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COST_BidPriceAsc = (char)'4';
+	public static final byte THOST_FTDC_COST_BidPriceAsc = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COST_BidPriceDesc = (char)'5';
+	public static final byte THOST_FTDC_COST_BidPriceDesc = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_NoSend = (char)'0';
+	public static final byte THOST_FTDC_UOAST_NoSend = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_Sended = (char)'1';
+	public static final byte THOST_FTDC_UOAST_Sended = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_Generated = (char)'2';
+	public static final byte THOST_FTDC_UOAST_Generated = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_SendFail = (char)'3';
+	public static final byte THOST_FTDC_UOAST_SendFail = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_Success = (char)'4';
+	public static final byte THOST_FTDC_UOAST_Success = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_Fail = (char)'5';
+	public static final byte THOST_FTDC_UOAST_Fail = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAST_Cancel = (char)'6';
+	public static final byte THOST_FTDC_UOAST_Cancel = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOACS_NoApply = (char)'1';
+	public static final byte THOST_FTDC_UOACS_NoApply = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOACS_Submited = (char)'2';
+	public static final byte THOST_FTDC_UOACS_Submited = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOACS_Sended = (char)'3';
+	public static final byte THOST_FTDC_UOACS_Sended = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOACS_Success = (char)'4';
+	public static final byte THOST_FTDC_UOACS_Success = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOACS_Refuse = (char)'5';
+	public static final byte THOST_FTDC_UOACS_Refuse = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOACS_Cancel = (char)'6';
+	public static final byte THOST_FTDC_UOACS_Cancel = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_QT_Radio = (char)'1';
+	public static final byte THOST_FTDC_QT_Radio = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_QT_Option = (char)'2';
+	public static final byte THOST_FTDC_QT_Option = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_QT_Blank = (char)'3';
+	public static final byte THOST_FTDC_QT_Blank = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Request = (char)'1';
+	public static final byte THOST_FTDC_BT_Request = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Response = (char)'2';
+	public static final byte THOST_FTDC_BT_Response = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Notice = (char)'3';
+	public static final byte THOST_FTDC_BT_Notice = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CRC_Success = (char)'0';
+	public static final byte THOST_FTDC_CRC_Success = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CRC_Working = (char)'1';
+	public static final byte THOST_FTDC_CRC_Working = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CRC_InfoFail = (char)'2';
+	public static final byte THOST_FTDC_CRC_InfoFail = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CRC_IDCardFail = (char)'3';
+	public static final byte THOST_FTDC_CRC_IDCardFail = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CRC_OtherFail = (char)'4';
+	public static final byte THOST_FTDC_CRC_OtherFail = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CfMMCCT_All = (char)'0';
+	public static final byte THOST_FTDC_CfMMCCT_All = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CfMMCCT_Person = (char)'1';
+	public static final byte THOST_FTDC_CfMMCCT_Person = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CfMMCCT_Company = (char)'2';
+	public static final byte THOST_FTDC_CfMMCCT_Company = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CfMMCCT_Other = (char)'3';
+	public static final byte THOST_FTDC_CfMMCCT_Other = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CfMMCCT_SpecialOrgan = (char)'4';
+	public static final byte THOST_FTDC_CfMMCCT_SpecialOrgan = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CfMMCCT_Asset = (char)'5';
+	public static final byte THOST_FTDC_CfMMCCT_Asset = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EIDT_SHFE = (char)'S';
+	public static final byte THOST_FTDC_EIDT_SHFE = (byte)'S';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EIDT_CZCE = (char)'Z';
+	public static final byte THOST_FTDC_EIDT_CZCE = (byte)'Z';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EIDT_DCE = (char)'D';
+	public static final byte THOST_FTDC_EIDT_DCE = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EIDT_CFFEX = (char)'J';
+	public static final byte THOST_FTDC_EIDT_CFFEX = (byte)'J';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EIDT_INE = (char)'N';
+	public static final byte THOST_FTDC_EIDT_INE = (byte)'N';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ECIDT_Hedge = (char)'1';
+	public static final byte THOST_FTDC_ECIDT_Hedge = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ECIDT_Arbitrage = (char)'2';
+	public static final byte THOST_FTDC_ECIDT_Arbitrage = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ECIDT_Speculation = (char)'3';
+	public static final byte THOST_FTDC_ECIDT_Speculation = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UF_NoUpdate = (char)'0';
+	public static final byte THOST_FTDC_UF_NoUpdate = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UF_Success = (char)'1';
+	public static final byte THOST_FTDC_UF_Success = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UF_Fail = (char)'2';
+	public static final byte THOST_FTDC_UF_Fail = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UF_TCSuccess = (char)'3';
+	public static final byte THOST_FTDC_UF_TCSuccess = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UF_TCFail = (char)'4';
+	public static final byte THOST_FTDC_UF_TCFail = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UF_Cancel = (char)'5';
+	public static final byte THOST_FTDC_UF_Cancel = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_OpenInvestor = (char)'1';
+	public static final byte THOST_FTDC_AOID_OpenInvestor = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_ModifyIDCard = (char)'2';
+	public static final byte THOST_FTDC_AOID_ModifyIDCard = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_ModifyNoIDCard = (char)'3';
+	public static final byte THOST_FTDC_AOID_ModifyNoIDCard = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_ApplyTradingCode = (char)'4';
+	public static final byte THOST_FTDC_AOID_ApplyTradingCode = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_CancelTradingCode = (char)'5';
+	public static final byte THOST_FTDC_AOID_CancelTradingCode = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_CancelInvestor = (char)'6';
+	public static final byte THOST_FTDC_AOID_CancelInvestor = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_FreezeAccount = (char)'8';
+	public static final byte THOST_FTDC_AOID_FreezeAccount = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AOID_ActiveFreezeAccount = (char)'9';
+	public static final byte THOST_FTDC_AOID_ActiveFreezeAccount = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASID_NoComplete = (char)'1';
+	public static final byte THOST_FTDC_ASID_NoComplete = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASID_Submited = (char)'2';
+	public static final byte THOST_FTDC_ASID_Submited = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASID_Checked = (char)'3';
+	public static final byte THOST_FTDC_ASID_Checked = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASID_Refused = (char)'4';
+	public static final byte THOST_FTDC_ASID_Refused = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASID_Deleted = (char)'5';
+	public static final byte THOST_FTDC_ASID_Deleted = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOASM_ByAPI = (char)'1';
+	public static final byte THOST_FTDC_UOASM_ByAPI = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOASM_ByFile = (char)'2';
+	public static final byte THOST_FTDC_UOASM_ByFile = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_ADD = (char)'1';
+	public static final byte THOST_FTDC_EvM_ADD = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_UPDATE = (char)'2';
+	public static final byte THOST_FTDC_EvM_UPDATE = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_DELETE = (char)'3';
+	public static final byte THOST_FTDC_EvM_DELETE = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_CHECK = (char)'4';
+	public static final byte THOST_FTDC_EvM_CHECK = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_COPY = (char)'5';
+	public static final byte THOST_FTDC_EvM_COPY = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_CANCEL = (char)'6';
+	public static final byte THOST_FTDC_EvM_CANCEL = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_Reverse = (char)'7';
+	public static final byte THOST_FTDC_EvM_Reverse = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAA_ASR = (char)'1';
+	public static final byte THOST_FTDC_UOAA_ASR = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAA_ASNR = (char)'2';
+	public static final byte THOST_FTDC_UOAA_ASNR = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAA_NSAR = (char)'3';
+	public static final byte THOST_FTDC_UOAA_NSAR = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAA_NSR = (char)'4';
+	public static final byte THOST_FTDC_UOAA_NSR = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_InvestorGroupFlow = (char)'1';
+	public static final byte THOST_FTDC_EvM_InvestorGroupFlow = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_InvestorRate = (char)'2';
+	public static final byte THOST_FTDC_EvM_InvestorRate = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EvM_InvestorCommRateModel = (char)'3';
+	public static final byte THOST_FTDC_EvM_InvestorCommRateModel = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CL_Zero = (char)'0';
+	public static final byte THOST_FTDC_CL_Zero = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CL_One = (char)'1';
+	public static final byte THOST_FTDC_CL_One = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CL_Two = (char)'2';
+	public static final byte THOST_FTDC_CL_Two = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHS_Init = (char)'0';
+	public static final byte THOST_FTDC_CHS_Init = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHS_Checking = (char)'1';
+	public static final byte THOST_FTDC_CHS_Checking = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHS_Checked = (char)'2';
+	public static final byte THOST_FTDC_CHS_Checked = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHS_Refuse = (char)'3';
+	public static final byte THOST_FTDC_CHS_Refuse = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHS_Cancel = (char)'4';
+	public static final byte THOST_FTDC_CHS_Cancel = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHU_Unused = (char)'0';
+	public static final byte THOST_FTDC_CHU_Unused = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHU_Used = (char)'1';
+	public static final byte THOST_FTDC_CHU_Used = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CHU_Fail = (char)'2';
+	public static final byte THOST_FTDC_CHU_Fail = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAO_ByAccProperty = (char)'0';
+	public static final byte THOST_FTDC_BAO_ByAccProperty = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BAO_ByFBTransfer = (char)'1';
+	public static final byte THOST_FTDC_BAO_ByFBTransfer = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MBTS_ByInstrument = (char)'0';
+	public static final byte THOST_FTDC_MBTS_ByInstrument = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MBTS_ByDayInsPrc = (char)'1';
+	public static final byte THOST_FTDC_MBTS_ByDayInsPrc = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MBTS_ByDayIns = (char)'2';
+	public static final byte THOST_FTDC_MBTS_ByDayIns = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OTP_NONE = (char)'0';
+	public static final byte THOST_FTDC_OTP_NONE = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OTP_TOTP = (char)'1';
+	public static final byte THOST_FTDC_OTP_TOTP = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OTPS_Unused = (char)'0';
+	public static final byte THOST_FTDC_OTPS_Unused = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OTPS_Used = (char)'1';
+	public static final byte THOST_FTDC_OTPS_Used = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OTPS_Disuse = (char)'2';
+	public static final byte THOST_FTDC_OTPS_Disuse = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BUT_Investor = (char)'1';
+	public static final byte THOST_FTDC_BUT_Investor = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BUT_BrokerUser = (char)'2';
+	public static final byte THOST_FTDC_BUT_BrokerUser = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUTT_Commodity = (char)'1';
+	public static final byte THOST_FTDC_FUTT_Commodity = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FUTT_Financial = (char)'2';
+	public static final byte THOST_FTDC_FUTT_Financial = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_Restriction = (char)'0';
+	public static final byte THOST_FTDC_FET_Restriction = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_TodayRestriction = (char)'1';
+	public static final byte THOST_FTDC_FET_TodayRestriction = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_Transfer = (char)'2';
+	public static final byte THOST_FTDC_FET_Transfer = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_Credit = (char)'3';
+	public static final byte THOST_FTDC_FET_Credit = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_InvestorWithdrawAlm = (char)'4';
+	public static final byte THOST_FTDC_FET_InvestorWithdrawAlm = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_BankRestriction = (char)'5';
+	public static final byte THOST_FTDC_FET_BankRestriction = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_Accountregister = (char)'6';
+	public static final byte THOST_FTDC_FET_Accountregister = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_ExchangeFundIO = (char)'7';
+	public static final byte THOST_FTDC_FET_ExchangeFundIO = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FET_InvestorFundIO = (char)'8';
+	public static final byte THOST_FTDC_FET_InvestorFundIO = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AST_FBTransfer = (char)'0';
+	public static final byte THOST_FTDC_AST_FBTransfer = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AST_ManualEntry = (char)'1';
+	public static final byte THOST_FTDC_AST_ManualEntry = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CST_UnifyAccount = (char)'0';
+	public static final byte THOST_FTDC_CST_UnifyAccount = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CST_ManualEntry = (char)'1';
+	public static final byte THOST_FTDC_CST_ManualEntry = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UR_All = (char)'0';
+	public static final byte THOST_FTDC_UR_All = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UR_Single = (char)'1';
+	public static final byte THOST_FTDC_UR_Single = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BG_Investor = (char)'2';
+	public static final byte THOST_FTDC_BG_Investor = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BG_Group = (char)'1';
+	public static final byte THOST_FTDC_BG_Group = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TSSM_Instrument = (char)'1';
+	public static final byte THOST_FTDC_TSSM_Instrument = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TSSM_Product = (char)'2';
+	public static final byte THOST_FTDC_TSSM_Product = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TSSM_Exchange = (char)'3';
+	public static final byte THOST_FTDC_TSSM_Exchange = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESM_Relative = (char)'1';
+	public static final byte THOST_FTDC_ESM_Relative = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ESM_Typical = (char)'2';
+	public static final byte THOST_FTDC_ESM_Typical = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RIR_All = (char)'1';
+	public static final byte THOST_FTDC_RIR_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RIR_Model = (char)'2';
+	public static final byte THOST_FTDC_RIR_Model = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RIR_Single = (char)'3';
+	public static final byte THOST_FTDC_RIR_Single = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SDS_Initialize = (char)'0';
+	public static final byte THOST_FTDC_SDS_Initialize = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SDS_Settlementing = (char)'1';
+	public static final byte THOST_FTDC_SDS_Settlementing = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SDS_Settlemented = (char)'2';
+	public static final byte THOST_FTDC_SDS_Settlemented = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TSRC_NORMAL = (char)'0';
+	public static final byte THOST_FTDC_TSRC_NORMAL = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TSRC_QUERY = (char)'1';
+	public static final byte THOST_FTDC_TSRC_QUERY = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FSM_Product = (char)'1';
+	public static final byte THOST_FTDC_FSM_Product = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FSM_Exchange = (char)'2';
+	public static final byte THOST_FTDC_FSM_Exchange = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FSM_All = (char)'3';
+	public static final byte THOST_FTDC_FSM_All = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BIR_Property = (char)'1';
+	public static final byte THOST_FTDC_BIR_Property = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BIR_All = (char)'2';
+	public static final byte THOST_FTDC_BIR_All = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PIR_All = (char)'1';
+	public static final byte THOST_FTDC_PIR_All = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PIR_Property = (char)'2';
+	public static final byte THOST_FTDC_PIR_Property = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PIR_Single = (char)'3';
+	public static final byte THOST_FTDC_PIR_Single = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIS_NoCreate = (char)'0';
+	public static final byte THOST_FTDC_FIS_NoCreate = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIS_Created = (char)'1';
+	public static final byte THOST_FTDC_FIS_Created = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIS_Failed = (char)'2';
+	public static final byte THOST_FTDC_FIS_Failed = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FGS_FileTransmit = (char)'0';
+	public static final byte THOST_FTDC_FGS_FileTransmit = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FGS_FileGen = (char)'1';
+	public static final byte THOST_FTDC_FGS_FileGen = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_Add = (char)'1';
+	public static final byte THOST_FTDC_SoM_Add = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_Update = (char)'2';
+	public static final byte THOST_FTDC_SoM_Update = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_Delete = (char)'3';
+	public static final byte THOST_FTDC_SoM_Delete = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_Copy = (char)'4';
+	public static final byte THOST_FTDC_SoM_Copy = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_AcTive = (char)'5';
+	public static final byte THOST_FTDC_SoM_AcTive = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_CanCel = (char)'6';
+	public static final byte THOST_FTDC_SoM_CanCel = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoM_ReSet = (char)'7';
+	public static final byte THOST_FTDC_SoM_ReSet = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_UpdatePassword = (char)'0';
+	public static final byte THOST_FTDC_SoT_UpdatePassword = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_UserDepartment = (char)'1';
+	public static final byte THOST_FTDC_SoT_UserDepartment = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_RoleManager = (char)'2';
+	public static final byte THOST_FTDC_SoT_RoleManager = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_RoleFunction = (char)'3';
+	public static final byte THOST_FTDC_SoT_RoleFunction = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_BaseParam = (char)'4';
+	public static final byte THOST_FTDC_SoT_BaseParam = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_SetUserID = (char)'5';
+	public static final byte THOST_FTDC_SoT_SetUserID = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_SetUserRole = (char)'6';
+	public static final byte THOST_FTDC_SoT_SetUserRole = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_UserIpRestriction = (char)'7';
+	public static final byte THOST_FTDC_SoT_UserIpRestriction = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_DepartmentManager = (char)'8';
+	public static final byte THOST_FTDC_SoT_DepartmentManager = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_DepartmentCopy = (char)'9';
+	public static final byte THOST_FTDC_SoT_DepartmentCopy = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_Tradingcode = (char)'A';
+	public static final byte THOST_FTDC_SoT_Tradingcode = (byte)'A';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_InvestorStatus = (char)'B';
+	public static final byte THOST_FTDC_SoT_InvestorStatus = (byte)'B';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_InvestorAuthority = (char)'C';
+	public static final byte THOST_FTDC_SoT_InvestorAuthority = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_PropertySet = (char)'D';
+	public static final byte THOST_FTDC_SoT_PropertySet = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_ReSetInvestorPasswd = (char)'E';
+	public static final byte THOST_FTDC_SoT_ReSetInvestorPasswd = (byte)'E';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SoT_InvestorPersonalityInfo = (char)'F';
+	public static final byte THOST_FTDC_SoT_InvestorPersonalityInfo = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSRCQ_Current = (char)'0';
+	public static final byte THOST_FTDC_CSRCQ_Current = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSRCQ_History = (char)'1';
+	public static final byte THOST_FTDC_CSRCQ_History = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FRS_Normal = (char)'1';
+	public static final byte THOST_FTDC_FRS_Normal = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FRS_Freeze = (char)'0';
+	public static final byte THOST_FTDC_FRS_Freeze = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STST_Standard = (char)'0';
+	public static final byte THOST_FTDC_STST_Standard = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STST_NonStandard = (char)'1';
+	public static final byte THOST_FTDC_STST_NonStandard = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RPT_Freeze = (char)'1';
+	public static final byte THOST_FTDC_RPT_Freeze = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RPT_FreezeActive = (char)'2';
+	public static final byte THOST_FTDC_RPT_FreezeActive = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RPT_OpenLimit = (char)'3';
+	public static final byte THOST_FTDC_RPT_OpenLimit = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RPT_RelieveOpenLimit = (char)'4';
+	public static final byte THOST_FTDC_RPT_RelieveOpenLimit = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLDS_Normal = (char)'0';
+	public static final byte THOST_FTDC_AMLDS_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLDS_Deleted = (char)'1';
+	public static final byte THOST_FTDC_AMLDS_Deleted = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCHS_Init = (char)'0';
+	public static final byte THOST_FTDC_AMLCHS_Init = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCHS_Checking = (char)'1';
+	public static final byte THOST_FTDC_AMLCHS_Checking = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCHS_Checked = (char)'2';
+	public static final byte THOST_FTDC_AMLCHS_Checked = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCHS_RefuseReport = (char)'3';
+	public static final byte THOST_FTDC_AMLCHS_RefuseReport = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLDT_DrawDay = (char)'0';
+	public static final byte THOST_FTDC_AMLDT_DrawDay = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLDT_TouchDay = (char)'1';
+	public static final byte THOST_FTDC_AMLDT_TouchDay = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCL_CheckLevel0 = (char)'0';
+	public static final byte THOST_FTDC_AMLCL_CheckLevel0 = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCL_CheckLevel1 = (char)'1';
+	public static final byte THOST_FTDC_AMLCL_CheckLevel1 = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCL_CheckLevel2 = (char)'2';
+	public static final byte THOST_FTDC_AMLCL_CheckLevel2 = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMLCL_CheckLevel3 = (char)'3';
+	public static final byte THOST_FTDC_AMLCL_CheckLevel3 = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EFT_CSV = (char)'0';
+	public static final byte THOST_FTDC_EFT_CSV = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EFT_EXCEL = (char)'1';
+	public static final byte THOST_FTDC_EFT_EXCEL = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EFT_DBF = (char)'2';
+	public static final byte THOST_FTDC_EFT_DBF = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMT_Before = (char)'1';
+	public static final byte THOST_FTDC_SMT_Before = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMT_Settlement = (char)'2';
+	public static final byte THOST_FTDC_SMT_Settlement = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMT_After = (char)'3';
+	public static final byte THOST_FTDC_SMT_After = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMT_Settlemented = (char)'4';
+	public static final byte THOST_FTDC_SMT_Settlemented = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SML_Must = (char)'1';
+	public static final byte THOST_FTDC_SML_Must = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SML_Alarm = (char)'2';
+	public static final byte THOST_FTDC_SML_Alarm = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SML_Prompt = (char)'3';
+	public static final byte THOST_FTDC_SML_Prompt = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SML_Ignore = (char)'4';
+	public static final byte THOST_FTDC_SML_Ignore = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMG_Exhcange = (char)'1';
+	public static final byte THOST_FTDC_SMG_Exhcange = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMG_ASP = (char)'2';
+	public static final byte THOST_FTDC_SMG_ASP = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SMG_CSRC = (char)'3';
+	public static final byte THOST_FTDC_SMG_CSRC = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LUT_Repeatable = (char)'1';
+	public static final byte THOST_FTDC_LUT_Repeatable = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LUT_Unrepeatable = (char)'2';
+	public static final byte THOST_FTDC_LUT_Unrepeatable = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DAR_Settle = (char)'1';
+	public static final byte THOST_FTDC_DAR_Settle = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DAR_Exchange = (char)'2';
+	public static final byte THOST_FTDC_DAR_Exchange = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DAR_CSRC = (char)'3';
+	public static final byte THOST_FTDC_DAR_CSRC = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MGT_ExchMarginRate = (char)'0';
+	public static final byte THOST_FTDC_MGT_ExchMarginRate = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MGT_InstrMarginRate = (char)'1';
+	public static final byte THOST_FTDC_MGT_InstrMarginRate = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MGT_InstrMarginRateTrade = (char)'2';
+	public static final byte THOST_FTDC_MGT_InstrMarginRateTrade = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ACT_Intraday = (char)'1';
+	public static final byte THOST_FTDC_ACT_Intraday = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ACT_Long = (char)'2';
+	public static final byte THOST_FTDC_ACT_Long = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MRT_Exchange = (char)'1';
+	public static final byte THOST_FTDC_MRT_Exchange = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MRT_Investor = (char)'2';
+	public static final byte THOST_FTDC_MRT_Investor = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MRT_InvestorTrade = (char)'3';
+	public static final byte THOST_FTDC_MRT_InvestorTrade = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BUS_UnBak = (char)'0';
+	public static final byte THOST_FTDC_BUS_UnBak = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BUS_BakUp = (char)'1';
+	public static final byte THOST_FTDC_BUS_BakUp = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BUS_BakUped = (char)'2';
+	public static final byte THOST_FTDC_BUS_BakUped = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BUS_BakFail = (char)'3';
+	public static final byte THOST_FTDC_BUS_BakFail = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SIS_UnInitialize = (char)'0';
+	public static final byte THOST_FTDC_SIS_UnInitialize = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SIS_Initialize = (char)'1';
+	public static final byte THOST_FTDC_SIS_Initialize = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SIS_Initialized = (char)'2';
+	public static final byte THOST_FTDC_SIS_Initialized = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SRS_NoCreate = (char)'0';
+	public static final byte THOST_FTDC_SRS_NoCreate = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SRS_Create = (char)'1';
+	public static final byte THOST_FTDC_SRS_Create = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SRS_Created = (char)'2';
+	public static final byte THOST_FTDC_SRS_Created = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SRS_CreateFail = (char)'3';
+	public static final byte THOST_FTDC_SRS_CreateFail = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SSS_UnSaveData = (char)'0';
+	public static final byte THOST_FTDC_SSS_UnSaveData = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SSS_SaveDatad = (char)'1';
+	public static final byte THOST_FTDC_SSS_SaveDatad = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAS_UnArchived = (char)'0';
+	public static final byte THOST_FTDC_SAS_UnArchived = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAS_Archiving = (char)'1';
+	public static final byte THOST_FTDC_SAS_Archiving = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAS_Archived = (char)'2';
+	public static final byte THOST_FTDC_SAS_Archived = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SAS_ArchiveFail = (char)'3';
+	public static final byte THOST_FTDC_SAS_ArchiveFail = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CTPT_Unkown = (char)'0';
+	public static final byte THOST_FTDC_CTPT_Unkown = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CTPT_MainCenter = (char)'1';
+	public static final byte THOST_FTDC_CTPT_MainCenter = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CTPT_BackUp = (char)'2';
+	public static final byte THOST_FTDC_CTPT_BackUp = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CDT_Normal = (char)'0';
+	public static final byte THOST_FTDC_CDT_Normal = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CDT_SpecFirst = (char)'1';
+	public static final byte THOST_FTDC_CDT_SpecFirst = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MFUR_None = (char)'0';
+	public static final byte THOST_FTDC_MFUR_None = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MFUR_Margin = (char)'1';
+	public static final byte THOST_FTDC_MFUR_Margin = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MFUR_All = (char)'2';
+	public static final byte THOST_FTDC_MFUR_All = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPT_CzceHedge = (char)'1';
+	public static final byte THOST_FTDC_SPT_CzceHedge = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPT_IneForeignCurrency = (char)'2';
+	public static final byte THOST_FTDC_SPT_IneForeignCurrency = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SPT_DceOpenClose = (char)'3';
+	public static final byte THOST_FTDC_SPT_DceOpenClose = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMT_Mortgage = (char)'1';
+	public static final byte THOST_FTDC_FMT_Mortgage = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMT_Redemption = (char)'2';
+	public static final byte THOST_FTDC_FMT_Redemption = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASPI_BaseMargin = (char)'1';
+	public static final byte THOST_FTDC_ASPI_BaseMargin = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASPI_LowestInterest = (char)'2';
+	public static final byte THOST_FTDC_ASPI_LowestInterest = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMD_In = (char)'1';
+	public static final byte THOST_FTDC_FMD_In = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMD_Out = (char)'2';
+	public static final byte THOST_FTDC_FMD_Out = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Profit = (char)'0';
+	public static final byte THOST_FTDC_BT_Profit = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Loss = (char)'1';
+	public static final byte THOST_FTDC_BT_Loss = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BT_Other = (char)'Z';
+	public static final byte THOST_FTDC_BT_Other = (byte)'Z';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SST_Manual = (char)'0';
+	public static final byte THOST_FTDC_SST_Manual = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SST_Automatic = (char)'1';
+	public static final byte THOST_FTDC_SST_Automatic = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CED_Settlement = (char)'0';
+	public static final byte THOST_FTDC_CED_Settlement = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CED_Sale = (char)'1';
+	public static final byte THOST_FTDC_CED_Sale = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Entry = (char)'1';
+	public static final byte THOST_FTDC_CSS_Entry = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Approve = (char)'2';
+	public static final byte THOST_FTDC_CSS_Approve = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Refuse = (char)'3';
+	public static final byte THOST_FTDC_CSS_Refuse = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Revoke = (char)'4';
+	public static final byte THOST_FTDC_CSS_Revoke = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Send = (char)'5';
+	public static final byte THOST_FTDC_CSS_Send = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Success = (char)'6';
+	public static final byte THOST_FTDC_CSS_Success = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CSS_Failure = (char)'7';
+	public static final byte THOST_FTDC_CSS_Failure = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_REQF_NoSend = (char)'0';
+	public static final byte THOST_FTDC_REQF_NoSend = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_REQF_SendSuccess = (char)'1';
+	public static final byte THOST_FTDC_REQF_SendSuccess = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_REQF_SendFailed = (char)'2';
+	public static final byte THOST_FTDC_REQF_SendFailed = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_REQF_WaitReSend = (char)'3';
+	public static final byte THOST_FTDC_REQF_WaitReSend = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RESF_Success = (char)'0';
+	public static final byte THOST_FTDC_RESF_Success = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RESF_InsuffiCient = (char)'1';
+	public static final byte THOST_FTDC_RESF_InsuffiCient = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_RESF_UnKnown = (char)'8';
+	public static final byte THOST_FTDC_RESF_UnKnown = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EXS_Before = (char)'0';
+	public static final byte THOST_FTDC_EXS_Before = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EXS_After = (char)'1';
+	public static final byte THOST_FTDC_EXS_After = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CR_Domestic = (char)'1';
+	public static final byte THOST_FTDC_CR_Domestic = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CR_GMT = (char)'2';
+	public static final byte THOST_FTDC_CR_GMT = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CR_Foreign = (char)'3';
+	public static final byte THOST_FTDC_CR_Foreign = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HB_No = (char)'0';
+	public static final byte THOST_FTDC_HB_No = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HB_Yes = (char)'1';
+	public static final byte THOST_FTDC_HB_Yes = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Normal = (char)'1';
+	public static final byte THOST_FTDC_SM_Normal = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Emerge = (char)'2';
+	public static final byte THOST_FTDC_SM_Emerge = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SM_Restore = (char)'3';
+	public static final byte THOST_FTDC_SM_Restore = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPT_Full = (char)'1';
+	public static final byte THOST_FTDC_TPT_Full = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPT_Increment = (char)'2';
+	public static final byte THOST_FTDC_TPT_Increment = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_TPT_BackUp = (char)'3';
+	public static final byte THOST_FTDC_TPT_BackUp = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LM_Trade = (char)'0';
+	public static final byte THOST_FTDC_LM_Trade = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LM_Transfer = (char)'1';
+	public static final byte THOST_FTDC_LM_Transfer = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CPT_Instrument = (char)'1';
+	public static final byte THOST_FTDC_CPT_Instrument = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CPT_Margin = (char)'2';
+	public static final byte THOST_FTDC_CPT_Margin = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HT_Yes = (char)'1';
+	public static final byte THOST_FTDC_HT_Yes = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HT_No = (char)'0';
+	public static final byte THOST_FTDC_HT_No = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMT_Bank = (char)'1';
+	public static final byte THOST_FTDC_AMT_Bank = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMT_Securities = (char)'2';
+	public static final byte THOST_FTDC_AMT_Securities = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMT_Fund = (char)'3';
+	public static final byte THOST_FTDC_AMT_Fund = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMT_Insurance = (char)'4';
+	public static final byte THOST_FTDC_AMT_Insurance = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMT_Trust = (char)'5';
+	public static final byte THOST_FTDC_AMT_Trust = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMT_Other = (char)'9';
+	public static final byte THOST_FTDC_AMT_Other = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFIOT_FundIO = (char)'0';
+	public static final byte THOST_FTDC_CFIOT_FundIO = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFIOT_SwapCurrency = (char)'1';
+	public static final byte THOST_FTDC_CFIOT_SwapCurrency = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAT_Futures = (char)'1';
+	public static final byte THOST_FTDC_CAT_Futures = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAT_AssetmgrFuture = (char)'2';
+	public static final byte THOST_FTDC_CAT_AssetmgrFuture = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAT_AssetmgrTrustee = (char)'3';
+	public static final byte THOST_FTDC_CAT_AssetmgrTrustee = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CAT_AssetmgrTransfer = (char)'4';
+	public static final byte THOST_FTDC_CAT_AssetmgrTransfer = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LT_Chinese = (char)'1';
+	public static final byte THOST_FTDC_LT_Chinese = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_LT_English = (char)'2';
+	public static final byte THOST_FTDC_LT_English = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMCT_Person = (char)'1';
+	public static final byte THOST_FTDC_AMCT_Person = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMCT_Organ = (char)'2';
+	public static final byte THOST_FTDC_AMCT_Organ = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_AMCT_SpecialOrgan = (char)'4';
+	public static final byte THOST_FTDC_AMCT_SpecialOrgan = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASST_Futures = (char)'3';
+	public static final byte THOST_FTDC_ASST_Futures = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ASST_SpecialOrgan = (char)'4';
+	public static final byte THOST_FTDC_ASST_SpecialOrgan = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CIT_HasExch = (char)'0';
+	public static final byte THOST_FTDC_CIT_HasExch = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CIT_HasATP = (char)'1';
+	public static final byte THOST_FTDC_CIT_HasATP = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CIT_HasDiff = (char)'2';
+	public static final byte THOST_FTDC_CIT_HasDiff = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DT_HandDeliv = (char)'1';
+	public static final byte THOST_FTDC_DT_HandDeliv = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DT_PersonDeliv = (char)'2';
+	public static final byte THOST_FTDC_DT_PersonDeliv = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MMSA_NO = (char)'0';
+	public static final byte THOST_FTDC_MMSA_NO = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_MMSA_YES = (char)'1';
+	public static final byte THOST_FTDC_MMSA_YES = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CACT_Person = (char)'0';
+	public static final byte THOST_FTDC_CACT_Person = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CACT_Company = (char)'1';
+	public static final byte THOST_FTDC_CACT_Company = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CACT_Other = (char)'2';
+	public static final byte THOST_FTDC_CACT_Other = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAAT_Futures = (char)'1';
+	public static final byte THOST_FTDC_UOAAT_Futures = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_UOAAT_SpecialOrgan = (char)'2';
+	public static final byte THOST_FTDC_UOAAT_SpecialOrgan = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DEN_Buy = (char)'0';
+	public static final byte THOST_FTDC_DEN_Buy = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DEN_Sell = (char)'1';
+	public static final byte THOST_FTDC_DEN_Sell = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_Open = (char)'0';
+	public static final byte THOST_FTDC_OFEN_Open = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_Close = (char)'1';
+	public static final byte THOST_FTDC_OFEN_Close = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_ForceClose = (char)'2';
+	public static final byte THOST_FTDC_OFEN_ForceClose = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_CloseToday = (char)'3';
+	public static final byte THOST_FTDC_OFEN_CloseToday = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_CloseYesterday = (char)'4';
+	public static final byte THOST_FTDC_OFEN_CloseYesterday = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_ForceOff = (char)'5';
+	public static final byte THOST_FTDC_OFEN_ForceOff = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OFEN_LocalForceClose = (char)'6';
+	public static final byte THOST_FTDC_OFEN_LocalForceClose = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HFEN_Speculation = (char)'1';
+	public static final byte THOST_FTDC_HFEN_Speculation = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HFEN_Arbitrage = (char)'2';
+	public static final byte THOST_FTDC_HFEN_Arbitrage = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_HFEN_Hedge = (char)'3';
+	public static final byte THOST_FTDC_HFEN_Hedge = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIOTEN_FundIO = (char)'1';
+	public static final byte THOST_FTDC_FIOTEN_FundIO = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIOTEN_Transfer = (char)'2';
+	public static final byte THOST_FTDC_FIOTEN_Transfer = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FIOTEN_SwapCurrency = (char)'3';
+	public static final byte THOST_FTDC_FIOTEN_SwapCurrency = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FTEN_Deposite = (char)'1';
+	public static final byte THOST_FTDC_FTEN_Deposite = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FTEN_ItemFund = (char)'2';
+	public static final byte THOST_FTDC_FTEN_ItemFund = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FTEN_Company = (char)'3';
+	public static final byte THOST_FTDC_FTEN_Company = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FTEN_InnerTransfer = (char)'4';
+	public static final byte THOST_FTDC_FTEN_InnerTransfer = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FDEN_In = (char)'1';
+	public static final byte THOST_FTDC_FDEN_In = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FDEN_Out = (char)'2';
+	public static final byte THOST_FTDC_FDEN_Out = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMDEN_In = (char)'1';
+	public static final byte THOST_FTDC_FMDEN_In = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FMDEN_Out = (char)'2';
+	public static final byte THOST_FTDC_FMDEN_Out = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CP_CallOptions = (char)'1';
+	public static final byte THOST_FTDC_CP_CallOptions = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CP_PutOptions = (char)'2';
+	public static final byte THOST_FTDC_CP_PutOptions = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STM_Continental = (char)'0';
+	public static final byte THOST_FTDC_STM_Continental = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STM_American = (char)'1';
+	public static final byte THOST_FTDC_STM_American = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STM_Bermuda = (char)'2';
+	public static final byte THOST_FTDC_STM_Bermuda = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STT_Hedge = (char)'0';
+	public static final byte THOST_FTDC_STT_Hedge = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_STT_Match = (char)'1';
+	public static final byte THOST_FTDC_STT_Match = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_APPT_NotStrikeNum = (char)'4';
+	public static final byte THOST_FTDC_APPT_NotStrikeNum = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GUDS_Gen = (char)'0';
+	public static final byte THOST_FTDC_GUDS_Gen = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_GUDS_Hand = (char)'1';
+	public static final byte THOST_FTDC_GUDS_Hand = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoExec = (char)'n';
+	public static final byte THOST_FTDC_OER_NoExec = (byte)'n';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_Canceled = (char)'c';
+	public static final byte THOST_FTDC_OER_Canceled = (byte)'c';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_OK = (char)'0';
+	public static final byte THOST_FTDC_OER_OK = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoPosition = (char)'1';
+	public static final byte THOST_FTDC_OER_NoPosition = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoDeposit = (char)'2';
+	public static final byte THOST_FTDC_OER_NoDeposit = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoParticipant = (char)'3';
+	public static final byte THOST_FTDC_OER_NoParticipant = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoClient = (char)'4';
+	public static final byte THOST_FTDC_OER_NoClient = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoInstrument = (char)'6';
+	public static final byte THOST_FTDC_OER_NoInstrument = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoRight = (char)'7';
+	public static final byte THOST_FTDC_OER_NoRight = (byte)'7';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_InvalidVolume = (char)'8';
+	public static final byte THOST_FTDC_OER_InvalidVolume = (byte)'8';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_NoEnoughHistoryTrade = (char)'9';
+	public static final byte THOST_FTDC_OER_NoEnoughHistoryTrade = (byte)'9';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_OER_Unknown = (char)'a';
+	public static final byte THOST_FTDC_OER_Unknown = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_Future = (char)'0';
+	public static final byte THOST_FTDC_COMBT_Future = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_BUL = (char)'1';
+	public static final byte THOST_FTDC_COMBT_BUL = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_BER = (char)'2';
+	public static final byte THOST_FTDC_COMBT_BER = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_STD = (char)'3';
+	public static final byte THOST_FTDC_COMBT_STD = (byte)'3';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_STG = (char)'4';
+	public static final byte THOST_FTDC_COMBT_STG = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_PRT = (char)'5';
+	public static final byte THOST_FTDC_COMBT_PRT = (byte)'5';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_COMBT_CLD = (char)'6';
+	public static final byte THOST_FTDC_COMBT_CLD = (byte)'6';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORPT_PreSettlementPrice = (char)'1';
+	public static final byte THOST_FTDC_ORPT_PreSettlementPrice = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ORPT_OpenPrice = (char)'4';
+	public static final byte THOST_FTDC_ORPT_OpenPrice = (byte)'4';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BLAG_Default = (char)'1';
+	public static final byte THOST_FTDC_BLAG_Default = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_BLAG_IncludeOptValLost = (char)'2';
+	public static final byte THOST_FTDC_BLAG_IncludeOptValLost = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ACTP_Exec = (char)'1';
+	public static final byte THOST_FTDC_ACTP_Exec = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_ACTP_Abandon = (char)'2';
+	public static final byte THOST_FTDC_ACTP_Abandon = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FQST_Submitted = (char)'a';
+	public static final byte THOST_FTDC_FQST_Submitted = (byte)'a';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FQST_Accepted = (char)'b';
+	public static final byte THOST_FTDC_FQST_Accepted = (byte)'b';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_FQST_Rejected = (char)'c';
+	public static final byte THOST_FTDC_FQST_Rejected = (byte)'c';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VM_Absolute = (char)'0';
+	public static final byte THOST_FTDC_VM_Absolute = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_VM_Ratio = (char)'1';
+	public static final byte THOST_FTDC_VM_Ratio = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EOPF_Reserve = (char)'0';
+	public static final byte THOST_FTDC_EOPF_Reserve = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EOPF_UnReserve = (char)'1';
+	public static final byte THOST_FTDC_EOPF_UnReserve = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EOCF_AutoClose = (char)'0';
+	public static final byte THOST_FTDC_EOCF_AutoClose = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_EOCF_NotToClose = (char)'1';
+	public static final byte THOST_FTDC_EOCF_NotToClose = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PTE_Futures = (char)'1';
+	public static final byte THOST_FTDC_PTE_Futures = (byte)'1';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_PTE_Options = (char)'2';
+	public static final byte THOST_FTDC_PTE_Options = (byte)'2';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_O = (char)'O';
+	public static final byte THOST_FTDC_CUFN_CUFN_O = (byte)'O';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_T = (char)'T';
+	public static final byte THOST_FTDC_CUFN_CUFN_T = (byte)'T';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_P = (char)'P';
+	public static final byte THOST_FTDC_CUFN_CUFN_P = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_N = (char)'N';
+	public static final byte THOST_FTDC_CUFN_CUFN_N = (byte)'N';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_L = (char)'L';
+	public static final byte THOST_FTDC_CUFN_CUFN_L = (byte)'L';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_F = (char)'F';
+	public static final byte THOST_FTDC_CUFN_CUFN_F = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_C = (char)'C';
+	public static final byte THOST_FTDC_CUFN_CUFN_C = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CUFN_CUFN_M = (char)'M';
+	public static final byte THOST_FTDC_CUFN_CUFN_M = (byte)'M';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_O = (char)'O';
+	public static final byte THOST_FTDC_DUFN_DUFN_O = (byte)'O';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_T = (char)'T';
+	public static final byte THOST_FTDC_DUFN_DUFN_T = (byte)'T';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_P = (char)'P';
+	public static final byte THOST_FTDC_DUFN_DUFN_P = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_F = (char)'F';
+	public static final byte THOST_FTDC_DUFN_DUFN_F = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_C = (char)'C';
+	public static final byte THOST_FTDC_DUFN_DUFN_C = (byte)'C';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_D = (char)'D';
+	public static final byte THOST_FTDC_DUFN_DUFN_D = (byte)'D';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_M = (char)'M';
+	public static final byte THOST_FTDC_DUFN_DUFN_M = (byte)'M';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_DUFN_DUFN_S = (char)'S';
+	public static final byte THOST_FTDC_DUFN_DUFN_S = (byte)'S';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SUFN_SUFN_O = (char)'O';
+	public static final byte THOST_FTDC_SUFN_SUFN_O = (byte)'O';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SUFN_SUFN_T = (char)'T';
+	public static final byte THOST_FTDC_SUFN_SUFN_T = (byte)'T';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SUFN_SUFN_P = (char)'P';
+	public static final byte THOST_FTDC_SUFN_SUFN_P = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_SUFN_SUFN_F = (char)'F';
+	public static final byte THOST_FTDC_SUFN_SUFN_F = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFUFN_SUFN_T = (char)'T';
+	public static final byte THOST_FTDC_CFUFN_SUFN_T = (byte)'T';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFUFN_SUFN_P = (char)'P';
+	public static final byte THOST_FTDC_CFUFN_SUFN_P = (byte)'P';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFUFN_SUFN_F = (char)'F';
+	public static final byte THOST_FTDC_CFUFN_SUFN_F = (byte)'F';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CFUFN_SUFN_S = (char)'S';
+	public static final byte THOST_FTDC_CFUFN_SUFN_S = (byte)'S';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CMDR_Comb = (char)'0';
+	public static final byte THOST_FTDC_CMDR_Comb = (byte)'0';
 	/** <i>native declaration : ThostFtdcUserApiDataType.h</i> */
-	public static final char THOST_FTDC_CMDR_UnComb = (char)'1';
+	public static final byte THOST_FTDC_CMDR_UnComb = (byte)'1';
 }

@@ -9,12 +9,69 @@
 
 	<context:annotation-config />
 
-	<bean id="ctpAdaptor" class="com.cyanspring.adaptor.future.ctp.CtpAdaptor">
+	<bean id="ctpAdaptor" class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeAdaptor">
 		<property name="url">
 			<value>tcp://180.168.146.181:10200</value>
 		</property>
 		<property name="conLog">
-			<value>./tradeCon/</value>
+			<value>./tradeCon</value>
+		</property>
+		<property name="user">
+			<value>00071</value>
+		</property>
+		<property name="password">
+			<value>hkfdt1234</value>
+		</property>
+		<property name="broker">
+			<value>0253</value>
+		</property>
+		<property name="connectionCount">
+			<value>2</value>
+		</property>
+		<property name="connections">
+			<list>
+				<bean class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeConnection">
+					<constructor-arg index="0">
+						<value>CTP1</value>
+					</constructor-arg>
+					<constructor-arg index="1">
+						<value>tcp://180.168.146.181:10200</value>
+					</constructor-arg>	
+					<constructor-arg index="2">
+						<value>0253</value>
+					</constructor-arg>	
+					<constructor-arg index="3">
+						<value>./tradeCon1</value>
+					</constructor-arg>	
+					<constructor-arg index="4">
+						<value>00071</value>
+					</constructor-arg>	
+					<constructor-arg index="5">
+						<value>hkfdt1234</value>
+					</constructor-arg>			
+					
+				</bean>
+				<bean class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeConnection">
+					<constructor-arg index="0">
+						<value>CTP2</value>
+					</constructor-arg>
+					<constructor-arg index="1">
+						<value>tcp://180.168.146.181:10200</value>
+					</constructor-arg>	
+					<constructor-arg index="2">
+						<value>0253</value>
+					</constructor-arg>	
+					<constructor-arg index="3">
+						<value>./tradeCon2</value>
+					</constructor-arg>	
+					<constructor-arg index="4">
+						<value>00090</value>
+					</constructor-arg>	
+					<constructor-arg index="5">
+						<value>hkfdt1234</value>
+					</constructor-arg>	
+				</bean>
+			</list>
 		</property>
 	</bean>
 

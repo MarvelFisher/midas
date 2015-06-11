@@ -90,14 +90,24 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcUserPassword
 public class LtsTraderSpi extends CThostFtdcTraderSpi {
 	
 	private final static Logger log = LoggerFactory.getLogger(LtsTraderSpi.class);
+	private String connectId;
 	
+	public LtsTraderSpi(String connectId) {
+		super();
+		this.connectId = connectId;
+	}
 	
+	public String getConnectId() {
+		return connectId;
+	}
+
 	/**
 	 * 当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 	 */	
 	@Virtual(0) 
 	public void OnFrontConnected() {
 		log.info("Network connected");
+		TraderHelper.notifyNetworkReady(getConnectId());
 	}
 	
 	/**
@@ -150,16 +160,15 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 	public  void OnRspUserLogin(Pointer<CThostFtdcRspUserLoginField > pRspUserLogin, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
 		if ( pRspInfo == null ) {			
 			log.warn("Response UserLogin Pointer<CThostFtdcRspInfoField > pRspInfo = null");	
-		} else {
-			
-			CtpTraderHelper.handleRspMsg(pRspInfo.get());								
+		} else {			
+			TraderHelper.handleRspMsg(getConnectId(), pRspInfo.get());								
 		}
 
 		if ( pRspUserLogin == null ) {
 			log.error("Response UserLogin Pointer<CThostFtdcRspUserLoginField > pRspUserLogin = null");
 		} else {
 			log.info("Response UserLogin: ");
-			CtpTraderHelper.fireEventChange(pRspUserLogin.get());
+			TraderHelper.fireEventChange(getConnectId(), pRspUserLogin.get());
 		}
 		
 	}
@@ -235,7 +244,7 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 		if ( pRspInfo == null ) {
 			log.warn("Response OrderInsert Pointer<CThostFtdcRspInfoField > pRspInfo = null");
 		} else {
-			// TODO
+			TraderHelper.handleRspMsg(getConnectId(), pRspInfo.get());
 		}
 		
 		if ( pInputOrder == null ) {
@@ -243,7 +252,7 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			
 		} else {
 			log.info("Response OrderInsert:");
-			// TODO
+			TraderHelper.fireEventChange(getConnectId(), pInputOrder.get());
 		}
 		
 	}
@@ -299,13 +308,13 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			
 		} else {
 			log.info("Response OrderAction:");
-			//TODO
+			TraderHelper.fireEventChange(getConnectId(), pInputOrderAction.get());
 		}
 		
 		if ( pRspInfo == null ) {
 			log.warn("Response OrderAction Pointer<CThostFtdcRspInfoField > pRspInfo = null");
 		} else {
-			//TODO
+			TraderHelper.handleRspMsg(getConnectId(), pRspInfo.get());
 		}
 		
 	}
@@ -339,7 +348,7 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 		if ( pRspInfo == null ) {
 			log.warn("Response SettlementInfoConfirm Pointer<CThostFtdcRspInfoField > pRspInfo = null");
 		} else {
-			//TODO
+			TraderHelper.handleRspMsg(getConnectId(), pRspInfo.get());
 		}
 		
 		if ( pSettlementInfoConfirm == null ) {
@@ -347,7 +356,7 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			
 		} else {
 			log.info("Response SettlementInfoConfirm:");
-			//TODO			
+			TraderHelper.fireEventChange(getConnectId(), pSettlementInfoConfirm.get());			
 		}	
 		
 	}
@@ -860,6 +869,7 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			
 		} else {
 			log.info("Message On Order: ");
+			TraderHelper.fireEventChange(getConnectId(), pOrder.get());			
 		}
 		
 	}
@@ -873,6 +883,7 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			log.error("Message On Trade: Pointer<CThostFtdcTradeField > pTrade");
 			
 		} else {
+			TraderHelper.fireEventChange(getConnectId(), pTrade.get());
 			log.info("Message On Trade:");
 		}
 		

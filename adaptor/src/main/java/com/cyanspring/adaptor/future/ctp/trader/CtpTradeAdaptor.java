@@ -16,17 +16,20 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 	private String url;
 	private String conLog;
 	private String connectionPrefix = "CTP";
+	private String user = "";
+	private String password = "";	
+
+	private String broker = "";
 	private int connectionCount = 2;
 	private List<IDownStreamConnection> connections = new ArrayList<IDownStreamConnection>();
 
 	@Override
 	public void init() throws Exception {
-		for(int i=0; i < connectionCount; i++) {
-			connections.add(new CtpTradeConnection(connectionPrefix + i, url, conLog));
-		}
-
-		for(IDownStreamConnection connection: connections)
+		
+		for(IDownStreamConnection connection: connections) {
 			connection.init();
+		}
+			
 	}
 
 	@Override
@@ -39,6 +42,10 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 	public List<IDownStreamConnection> getConnections() {
 		return connections;
 	}
+	
+	public void setConnections(List<IDownStreamConnection> connections) {
+		this.connections = connections;
+	}
 
 	public String getUrl() {
 		return url;
@@ -46,6 +53,30 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getBroker() {
+		return broker;
+	}
+
+	public void setBroker(String broker) {
+		this.broker = broker;
 	}
 
 	public String getConLog() {
