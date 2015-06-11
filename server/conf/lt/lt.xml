@@ -143,15 +143,6 @@
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
-				<value>AUDUSD</value>
-	            <value>USDJPY</value>
-	            <value>USDCHF</value>
-	            <value>USDCAD</value>
-	            <value>EURUSD</value>
-	            <value>EURJPY</value>
-	            <value>GBPUSD</value>
-	            <value>NZDUSD</value>
-	            <value>GBPJPY</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -254,7 +245,7 @@
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>refdata/refData_fdt.xml</value>
+			<value>refdata/refData_lt.xml</value>
 		</property>
 	</bean>
 
