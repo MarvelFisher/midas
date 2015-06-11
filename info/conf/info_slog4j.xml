@@ -41,6 +41,10 @@
  	<category name="quickfix.mina.message">
         <priority value="INFO"/>
     </category>
+    
+ 	<category name="com.mchange.v2.c3p0">
+        <priority value="INFO"/>
+    </category>
 
   	<root>
 		<priority value="DEBUG" />

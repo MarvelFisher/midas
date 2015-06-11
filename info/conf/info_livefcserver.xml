@@ -8,8 +8,8 @@
 >
 
 	<context:annotation-config />
-	<import resource="info_sc/*"/>
-	<import resource="info_common/ticktable_sc.xml"/>
+	<import resource="info_lfc/*"/>
+	<import resource="info_common/ticktable_lfc.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
@@ -26,9 +26,9 @@
 		<property name="createThreadCount" value="5" />
 		<property name="maxRetrytimes" value="3" />
 		<property name="killTimeoutSecond" value="60000" />
-		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
-		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
-		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.SC"/>
+		<property name="parseApplicationId" value="E1DRvFY3pE9wY2BXNs9MFDCLAuIifItMDk1NB3Q7" />
+		<property name="parseRestApiId" value="OXhtEwG6MFxxODCTgAr5tU7f4N6RzxvSm6lrDpTs" />
+		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.LFFC"/>
 	</bean>	
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
@@ -40,7 +40,7 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_SC_S1"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_FC_F1"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	  <property name="maxActive"><value>20</value></property> 
@@ -58,7 +58,7 @@
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_China"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LT_FC_SZ"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	  <property name="maxActive"><value>20</value></property> 
@@ -104,12 +104,12 @@
 	</bean>	
 	
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61637"></property>
+		<property name="url" value="nio://0.0.0.0:61627"></property>
 	</bean>
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<!-- 	Solve channel is inactive problem -->
 <!-- 		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
-		<property name="url" value="failover:(nio://localhost:61636?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
+		<property name="url" value="failover:(nio://localhost:61626?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
 	</bean>
 	
 		<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -140,6 +140,7 @@
        	</props>
        </property>
 	</bean>
+
 	<!-- MarketDataManager setting -->
 	<bean id="mdReceiver" class="com.cyanspring.common.marketdata.MarketDataReceiver">
 		<constructor-arg>
@@ -172,15 +173,13 @@
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 
-	<bean id="windAdaptor"
-		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
-		<property name="showGui" value="true"/>
-		<property name="gatewayIp" value="10.0.0.32"/>
-		<property name="gatewayPort" value="10048"/>
-		<property name="marketDataLog" value="false"/>
-		<property name="tradeDateCheckIsOpen" value="true"></property>
-		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="isMsgPack" value="true"></property>
-		<property name="isSubTrans" value="false"></property>
-	</bean>
+    <bean id="windAdaptor"
+          class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+        <property name="showGui" value="true"></property>
+        <property name="gatewayIp" value="10.0.0.20"></property>
+        <property name="gatewayPort" value="10049"></property>
+        <property name="marketDataLog" value="true"></property>
+        <property name="tradeDateCheckIsOpen" value="true"></property>
+        <property name="closeOverTimeControlIsOpen" value="true"></property>
+    </bean>
 </beans>

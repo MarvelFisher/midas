@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -26,6 +27,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
+import com.cyanspring.common.account.LiveTradingSettingType;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.PositionException;
@@ -105,6 +107,7 @@ import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.server.livetrading.LiveTradingSetting;
 import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.persistence.PersistenceManager;
@@ -169,6 +172,9 @@ public class AccountPositionManager implements IPlugin {
 
     @Autowired(required = false)
     LiveTradingCheckHandler liveTradingCheckHandler;
+    
+    @Autowired(required = false)
+    LiveTradingSetting liveTradingSetting;
 
     private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -666,7 +672,7 @@ public class AccountPositionManager implements IPlugin {
             }
 
             reply = new AccountSnapshotReplyEvent(event.getKey(), event.getSender(),
-                    account, accountSetting, openPositions, closedPosition, executions, event.getTxId());
+                    account, accountSetting, openPositions, closedPosition, executions, event.getTxId(),getUserLiveTradingTime(accountSetting));
         }
 
         try {
@@ -722,7 +728,7 @@ public class AccountPositionManager implements IPlugin {
         }
     }
     public void processAccountStateRequestEvent(AccountStateRequestEvent event){
-    	
+    	log.info("!!!!processAccountStateRequestEvent");
     	boolean isOk = true;
     	String message = "";
     	String id = event.getId();
@@ -752,8 +758,10 @@ public class AccountPositionManager implements IPlugin {
         boolean ok = true;
         String message = null;
         AccountSetting accountSetting = null;
+
         try {
             accountSetting = accountKeeper.getAccountSetting(event.getAccountId());
+            
         } catch (AccountException e) {
             ok = false;
             //message =  e.getMessage();
@@ -762,7 +770,8 @@ public class AccountPositionManager implements IPlugin {
         }
 
         AccountSettingSnapshotReplyEvent reply = new AccountSettingSnapshotReplyEvent(event.getKey(),
-                event.getSender(), accountSetting, ok, message, event.getTxId());
+                event.getSender(), accountSetting, ok, message, event.getTxId(),getUserLiveTradingTime(accountSetting));
+       
         try {
             eventManager.sendRemoteEvent(reply);
         } catch (Exception e) {
@@ -770,7 +779,22 @@ public class AccountPositionManager implements IPlugin {
         }
 
     }
+    private Map<LiveTradingSettingType,String> getUserLiveTradingTime(AccountSetting accountSetting){
 
+    	if( null != liveTradingSetting 
+    			 && null != accountSetting && accountSetting.isLiveTrading() ){
+    		 
+    	    	Map <LiveTradingSettingType,String> paramMap = new LinkedHashMap<>();
+    	    	paramMap.put(LiveTradingSettingType.USER_STOP_LIVE_TRADING_START_TIME
+    	    			, liveTradingSetting.getUserStopLiveTradingStartTime());
+    	    	paramMap.put(LiveTradingSettingType.USER_STOP_LIVE_TRADING_END_TIME
+    	    			, liveTradingSetting.getUserStopLiveTradingEndTime());
+    	    	
+    	    	return paramMap;
+    	 }
+    	
+    	return null;  	
+    }
     public void processChangeAccountSettingRequestEvent(ChangeAccountSettingRequestEvent event) {
         boolean ok = true;
         String message = null;
@@ -780,22 +804,23 @@ public class AccountPositionManager implements IPlugin {
             accountSetting = accountKeeper.setAccountSetting(event.getAccountSetting());
         } catch (AccountException e) {
             ok = false;
-            //message =  e.getMessage();
             message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-
+            accountSetting = event.getAccountSetting();
         }
 
         ChangeAccountSettingReplyEvent reply = new ChangeAccountSettingReplyEvent(event.getKey(),
-                event.getSender(), accountSetting, ok, message);
+                event.getSender(), accountSetting, ok, message,getUserLiveTradingTime(accountSetting));
         try {
             eventManager.sendRemoteEvent(reply);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+        if(ok){
+            PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID,
+                    null, accountSetting);
+            eventManager.sendEvent(pmEvent);
+        }
 
-        PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID,
-                null, accountSetting);
-        eventManager.sendEvent(pmEvent);
     }
 
     public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
@@ -867,10 +892,14 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
 
-	                if(checkLiveTrading(account, accountSetting)){
-	                	continue;
-	                }else if (checkStopLoss(account, accountSetting)){
-	                	continue;
+	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
+	                	if(liveTradingCheckHandler.startCheckChain(account, accountSetting)){
+	                		continue;
+	                	}
+	                }else{
+		                if (checkStopLoss(account, accountSetting)){
+	                		continue;
+		                }
 	                }
 
 	                checkMarginCall(account);
@@ -900,15 +929,6 @@ public class AccountPositionManager implements IPlugin {
             return false;
 
         return !quote.isStale();
-    }
-
-    private boolean checkLiveTrading(Account account, AccountSetting accountSetting) {
-        if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
-        	liveTradingCheckHandler.startCheckChain(account, accountSetting);
-        	return true;
-        }else{
-        	return false;
-        }
     }
 	private void closeAllPositoinAndOrder(Account account){
 		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
@@ -988,7 +1008,7 @@ public class AccountPositionManager implements IPlugin {
                         position.getSymbol() + ", " + position.getAcPnL() + ", " +
                         positionStopLoss + ", " + quote);
                 ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
-                        null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.StopLoss,
+                        null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.PositionStopLoss,
                         IdGenerator.getInstance().getNextID());
 
                 eventManager.sendEvent(event);

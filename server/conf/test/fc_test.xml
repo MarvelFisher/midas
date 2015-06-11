@@ -26,7 +26,7 @@
 				<ref bean="apiBridgeManager" />
 				<!-- <ref bean="alertManager" /> -->
 				<ref bean="autoRunner" />
-				<ref bean="ceilFloorValidator"/>
+				<ref bean="validationDataProvider"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -36,6 +36,10 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="validationDataProvider" class="com.cyanspring.server.validation.data.ValidationDataProvider">
+	</bean>
+	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="transportService" />

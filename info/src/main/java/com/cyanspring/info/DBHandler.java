@@ -117,6 +117,7 @@ public class DBHandler
         	if (connect != null)
         	{
         		connect.close();
+        		connect = null;
         	}
         }
         catch (SQLException e)
@@ -248,10 +249,9 @@ public class DBHandler
     }
     public void addBatch(String sqlcmd)
     {
-        connect = getConnect();
         if (connect == null)
         {
-        	return;
+            connect = getConnect();
         }
     	createStatement();
         try
@@ -475,14 +475,7 @@ public class DBHandler
 				retList.add(price);
 			}
 			rs.close();
-			if (retList.isEmpty())
-			{
-				return null;
-			}
-			else
-			{
-				return retList;
-			}
+			return retList;
 		} 
     	catch (SQLException e) 
 		{
@@ -500,15 +493,15 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
-    public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount)
+    public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount, String retrieveDate)
     {
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
-		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
-				strTable, symbol, dataCount);
+		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
+				strTable, symbol, retrieveDate, dataCount);
 		Connection connect = getConnect();
 		if (connect == null)
 		{
@@ -536,14 +529,7 @@ public class DBHandler
 				retList.add(price);
 			}
 			rs.close();
-			if (retList.isEmpty())
-			{
-				return null;
-			}
-			else
-			{
-				return retList;
-			}
+			return retList;
 		} 
     	catch (SQLException e) 
 		{

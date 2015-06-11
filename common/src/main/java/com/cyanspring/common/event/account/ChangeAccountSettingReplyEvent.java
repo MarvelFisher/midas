@@ -7,13 +7,14 @@ public class ChangeAccountSettingReplyEvent extends RemoteAsyncEvent {
 	private AccountSetting accountSetting;
 	private boolean ok;
 	private String message;
-	
+	private Object infos[];
 	public ChangeAccountSettingReplyEvent(String key, String receiver,
-			AccountSetting accountSetting, boolean ok, String message) {
+			AccountSetting accountSetting, boolean ok, String message,Object... infos) {
 		super(key, receiver);
 		this.accountSetting = accountSetting;
 		this.ok = ok;
 		this.message = message;
+		this.infos = infos;
 	}
 
 	public AccountSetting getAccountSetting() {
@@ -27,5 +28,8 @@ public class ChangeAccountSettingReplyEvent extends RemoteAsyncEvent {
 	public String getMessage() {
 		return message;
 	}
-	
+
+	public Object[] getInfos() {
+		return infos;
+	}
 }

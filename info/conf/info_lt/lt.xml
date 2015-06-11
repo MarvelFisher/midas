@@ -72,6 +72,20 @@
 				<entry key="M" value="80" />
 			</map>
 		</property>
+		<property name="historicalDataPeriod">
+			<map>
+				<entry key="1" value="3" />
+				<entry key="R" value="3" />
+				<entry key="A" value="7" />
+				<entry key="Q" value="7" />
+				<entry key="H" value="10" />
+				<entry key="6" value="10" />
+				<entry key="T" value="30" />
+				<entry key="D" value="100" />
+				<entry key="W" value="400" />
+				<entry key="M" value="2000" />
+			</map>
+		</property>
 		<property name="SQLDelayInterval">
 			<value>0</value>
 		</property>
@@ -116,7 +130,7 @@
 	
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">
-			<value>refdata/refData_fdt.xml</value>
+			<value>refdata/refData_lt.xml</value>
 		</property>
 	</bean>
 	

@@ -49,7 +49,8 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 		}
 		
 		Double positionStopLoss = Default.getPositionStopLoss();
-
+		OrderReason orderReason = OrderReason.PositionStopLoss;
+		
 		if (null != accountSetting) {
 			
 			positionStopLoss = accountSetting.getStopLossValue();
@@ -67,7 +68,10 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 
 			positionStopLoss = getPositionStopLoss(account, accountSetting,
 					positionStopLoss);
-
+			
+			if(!PriceUtils.Equal(positionStopLoss, accountSetting.getStopLossValue())){
+				orderReason = OrderReason.CompanyPositionStopLoss;
+			}
 		}
 
 		if (PriceUtils.isZero(positionStopLoss)){
@@ -92,7 +96,7 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 						+ ", " + quote);
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(
 						position.getAccount(), null, position.getAccount(),
-						position.getSymbol(), 0.0, OrderReason.StopLoss,
+						position.getSymbol(), 0.0, orderReason,
 						IdGenerator.getInstance().getNextID());
 
 				eventManager.sendEvent(event);

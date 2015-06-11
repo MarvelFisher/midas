@@ -1,6 +1,9 @@
 package com.cyanspring.common.message;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -164,7 +167,7 @@ public class MessageLookup {
 
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_LOT_SIZE_ERROR,getBean(439, "Can not determine symbol for quantity lot size validation"));
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_NOT_FOUND,getBean(440, "Can't find symbol in refdata"));
-			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity! Quantity should be the multiple of 1000."));
+			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity!"));
 			addAndCheck(ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT,getBean(442, "This order would have caused account over credit limit"));
 			addAndCheck(ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT,getBean(443, "Amendment would have caused the account over credit limit"));
 			addAndCheck(ErrorMessage.ENDTIME_IN_THE_PASS,getBean(444, "end time is in the pass"));
@@ -186,6 +189,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY, getBean(460, "Sell quantity exceeded available position quantity"));
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_AFTER_OPEN, getBean(461, "Your order can’t be placed. We start to take orders at 9:10 am."));
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_BEFORE_OPEN_ONE_HOUR, getBean(462, "Your order can’t be placed. We start taking orders at 1 hour before market open."));
+			addAndCheck(ErrorMessage.SYMBOL_NOT_TRADABLE, getBean(463, "Trade-related functions are not available for this contract."));
 
 			
 			
@@ -219,6 +223,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.LIVE_TRADING_SETTING_NOT_OVER_FROZEN_DAYS, getBean(524, "cant change live trading setting , because not over frozen setted days"));
 			addAndCheck(ErrorMessage.LIVE_TRADING_NO_RULE_IN_MAP, getBean(525, "can't find this rule in live trading"));
 			addAndCheck(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, getBean(526, "Attach third party id failed"));
+			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
+			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
 
 			
 			
@@ -322,6 +328,34 @@ public class MessageLookup {
 		return eventMsg;
 		
 	}
+	
+	public static List<String> searchObjectMessage(Object[] object){
+		
+		if( null == object || object.length <=0)
+			return null;
+		
+		List <String> msgs = new ArrayList<>();
+
+		for(Object obj:object){
+			
+			if(obj == null)
+				continue;
+						
+			if( obj instanceof Map){	
+				
+				Iterator c =((Map)obj).values().iterator();
+				
+				while(c.hasNext()){
+					msgs.add(c.next().toString());
+				}				
+			}else {
+				msgs.add(String.valueOf(obj));
+			}
+		}
+		
+		return msgs;
+	}
+	
 	public static MessageBean lookup(ErrorMessage m) {
 		return map.get(m);
 	}

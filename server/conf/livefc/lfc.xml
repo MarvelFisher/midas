@@ -36,7 +36,7 @@
                 <ref bean="accountPositionManager" />
                 <ref bean="premiumFollowManager"/>
                 <ref bean="trailingStopManager"/>
-                <ref bean="ceilFloorValidator"/>
+				<ref bean="validationDataProvider"/>
             </list>
         </property>
         <property name="readyMap">
@@ -46,6 +46,10 @@
             </map>
         </property>
     </bean>
+    
+    <bean id="validationDataProvider" class="com.cyanspring.server.validation.data.ValidationDataProvider">
+	</bean>
+    
     <bean id="trailingStopManager" class="com.cyanspring.server.account.TrailingStopManager">
     </bean>
     <bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
