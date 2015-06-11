@@ -28,6 +28,7 @@
 		<property name="connectionCount">
 			<value>2</value>
 		</property>
+		<!--
 		<property name="connections">
 			<list>
 				<bean class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeConnection">
@@ -73,6 +74,7 @@
 				</bean>
 			</list>
 		</property>
+		-->
 	</bean>
 
 

@@ -92,7 +92,8 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
-			
+			client.cancelOrder(order);
+			log.info("Cancel Order: " + order.getClOrderId());
 		}
 
 		@Override

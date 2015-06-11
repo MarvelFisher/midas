@@ -131,7 +131,18 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	}
 	
 	public void cancelOrder( ChildOrder order ) throws DownStreamException {
+		// get from order		
+		String orderRef = order.getClOrderId();
+		String symbol = order.getSymbol();
 		
+		CThostFtdcInputOrderActionField req = new CThostFtdcInputOrderActionField();
+		req.BrokerID().setCString(brokerId);
+		req.InvestorID().setCString(user);
+		req.OrderRef().setCString(orderRef);
+		req.FrontID(FRONT_ID);
+		req.SessionID(SESSION_ID);
+		req.ActionFlag(TraderLibrary.THOST_FTDC_AF_Delete);
+		req.InstrumentID().setCString(symbol);
 	}
 	
 	@Override
@@ -233,8 +244,10 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 				listener.onOrder(orderRef, execType, ltsOrdStatus, null);
 			}
 		}
-		else if ( event instanceof CThostFtdcInputOrderActionField) {
-			
+		else if ( event instanceof CThostFtdcInputOrderActionField ) {
+			if (rspInfo != null) {
+				
+			}
 		}
 		
 	}

@@ -25,6 +25,10 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 
 	@Override
 	public void init() throws Exception {
+//		for (int i = 0 ; i < 2 ; i ++) {
+			connections.add(new CtpTradeConnection(connectionPrefix + 1, url, broker, conLog, user, password));
+//		}
+		
 		
 		for(IDownStreamConnection connection: connections) {
 			connection.init();
