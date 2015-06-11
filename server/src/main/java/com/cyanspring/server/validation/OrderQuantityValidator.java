@@ -53,7 +53,7 @@ public class OrderQuantityValidator implements IFieldValidator {
 				throw new OrderValidationException("Can't find symbol in refdata: " + symbol,ErrorMessage.ORDER_SYMBOL_NOT_FOUND);
 			
 			if(qty.longValue() % refData.getLotSize() != 0)
-				throw new OrderValidationException("Invalid Quantity! Quantity should be the multiple of 1000.",ErrorMessage.INVALID_QUANTITY);
+				throw new OrderValidationException("Invalid Quantity!",ErrorMessage.INVALID_QUANTITY);
 //				throw new OrderValidationException(field + " not in round lot of " + refData.getLotSize() +": " + qty.longValue());
 		} catch (OrderValidationException e){
 			throw e;

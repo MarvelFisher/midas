@@ -53,7 +53,7 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 			OrderSide side = (OrderSide) map.get(OrderField.SIDE.value());
 				
 			if( side.isBuy() && qty.longValue() % refData.getLotSize() != 0)
-				throw new OrderValidationException("Invalid Quantity! Quantity should be the multiple of 1000.",ErrorMessage.INVALID_QUANTITY);
+				throw new OrderValidationException("Invalid Quantity!",ErrorMessage.INVALID_QUANTITY);
 		
 		} catch (OrderValidationException e){
 			throw e;

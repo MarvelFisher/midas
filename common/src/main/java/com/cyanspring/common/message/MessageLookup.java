@@ -167,7 +167,7 @@ public class MessageLookup {
 
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_LOT_SIZE_ERROR,getBean(439, "Can not determine symbol for quantity lot size validation"));
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_NOT_FOUND,getBean(440, "Can't find symbol in refdata"));
-			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity! Quantity should be the multiple of 1000."));
+			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity!"));
 			addAndCheck(ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT,getBean(442, "This order would have caused account over credit limit"));
 			addAndCheck(ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT,getBean(443, "Amendment would have caused the account over credit limit"));
 			addAndCheck(ErrorMessage.ENDTIME_IN_THE_PASS,getBean(444, "end time is in the pass"));
