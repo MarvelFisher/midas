@@ -153,8 +153,13 @@ public class Parser implements IReqThreadCallback {
 
                     String str = new String(data2, Charset.defaultCharset());
 
-                    boolean bOk = parseLine(time, str);
-
+                    boolean bOk = false;
+                    try {
+                        bOk = parseLine(time, str);
+                    }catch (Exception ex){
+                        log.warn("parseLine String:" + str);
+                        throw ex;
+                    }
                     if (!bOk)
                         continue;
 
