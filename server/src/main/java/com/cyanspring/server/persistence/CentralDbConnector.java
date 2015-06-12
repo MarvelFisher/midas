@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.cyanspring.common.account.TerminationStatus;
 import com.cyanspring.common.account.ThirdPartyUser;
+import com.cyanspring.common.account.UserLoginType;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -44,6 +45,8 @@ public class CentralDbConnector {
 	private static String isPhoneExist = "SELECT COUNT(*) FROM AUTH WHERE `PHONE` = '%s'";
 	private static String getUserPasswordSalt = "SELECT `PASSWORD`, `SALT` FROM AUTH WHERE `USERID` = '%s'";
 	private static String getUserAllInfo = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `USERID` = '%s'";
+    private static String getUserAllInfoByEmail = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `EMAIL` = '%s' LIMIT 1";
+    private static String getUserAllInfoByPhone = "SELECT `USERID`, `USERNAME`, `PASSWORD`, `SALT`, `EMAIL`, `PHONE`, `CREATED`, `USERTYPE`, `COUNTRY`, `LANGUAGE`, `USERLEVEL`, `ISTERMINATED` FROM AUTH WHERE `PHONE` = '%s' LIMIT 1";
 	private static String setUserPassword = "UPDATE AUTH SET `PASSWORD` = '%s' WHERE `USERID` = '%s'";
 	private static String setUserTermination = "UPDATE AUTH SET `ISTERMINATED` =  '%s' WHERE `USERID` = '%s'";
 	private static final Logger log = LoggerFactory.getLogger(CentralDbConnector.class);
@@ -470,7 +473,12 @@ public class CentralDbConnector {
 	public boolean userLogin(String sUser, String sPassword) {
 		return userLoginEx(sUser, sPassword) != null;
 	}
-	public User userLoginEx(String sUser, String sPassword) {
+
+    public User userLoginEx(String sUser, String sPassword) {
+        return userLoginEx(sUser, sPassword, UserLoginType.USER_ID);
+    }
+
+	public User userLoginEx(String sUser, String sPassword, UserLoginType loginType) {
 
         Connection conn = connect();
 
@@ -479,7 +487,21 @@ public class CentralDbConnector {
 			return null;
 		}
 
-		String sQuery = String.format(getUserAllInfo, sUser);
+		String sQuery;
+
+        switch (loginType) {
+            case EMAIL:
+                sQuery = String.format(getUserAllInfoByEmail, sUser);
+                break;
+            case PHONE:
+                sQuery = String.format(getUserAllInfoByPhone, sUser);
+                break;
+            case USER_ID:
+            default:
+                sQuery = String.format(getUserAllInfo, sUser);
+                break;
+        }
+
 		log.debug("[userLoginEx] SQL:" + sQuery);
 		Statement stmt = null;
 
@@ -496,6 +518,7 @@ public class CentralDbConnector {
 			ResultSet rs = stmt.executeQuery(sQuery);
 
 			if (rs.next()){
+                sUser = rs.getString("USERID"); // It may be email or phone, change back to user id.
 				md5Password = rs.getString("PASSWORD");
 				salt = rs.getString("SALT");
 				username = rs.getString("USERNAME");
