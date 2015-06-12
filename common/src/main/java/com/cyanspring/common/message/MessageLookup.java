@@ -190,6 +190,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_AFTER_OPEN, getBean(461, "Your order can’t be placed. We start to take orders at 9:10 am."));
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_BEFORE_OPEN_ONE_HOUR, getBean(462, "Your order can’t be placed. We start taking orders at 1 hour before market open."));
 			addAndCheck(ErrorMessage.SYMBOL_NOT_TRADABLE, getBean(463, "Trade-related functions are not available for this contract."));
+			addAndCheck(ErrorMessage.TRADING_SUSPENSION, getBean(464, "Trading Suspenstion!"));
 
 			
 			
@@ -225,7 +226,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, getBean(526, "Attach third party id failed"));
 			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
 			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
-
+			
 			
 			
 			

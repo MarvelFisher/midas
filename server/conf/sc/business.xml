@@ -15,6 +15,7 @@
 	        	<ref bean="accountStateValidator"/>
 				<ref bean="marketSessionValidator"/>
 				<ref bean="tradableValidator"/>
+				<ref bean="stockStatusValidator"/>
 				<ref bean="orderFieldValidator"/>
 				<ref bean="strategyOrderValidator"/>
 				<ref bean="creditValidator"/>
@@ -26,6 +27,8 @@
 	    </constructor-arg>
 	</bean>	
 	
+	<bean id="stockStatusValidator" class="com.cyanspring.server.validation.StockStatusValidator">
+	</bean>
 	<bean id="tradableValidator" class="com.cyanspring.server.validation.TradableValidator">
 	</bean>
 	<bean id="accountStateValidator" class="com.cyanspring.server.validation.AccountStateValidator">
