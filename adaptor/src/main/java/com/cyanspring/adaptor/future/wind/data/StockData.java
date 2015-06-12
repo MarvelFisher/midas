@@ -35,6 +35,10 @@ public class StockData {
     private int syl1;
     private int syl2;
     private int SD2;
+    private long buyVol;
+    private long sellVol;
+    private long buyTurnover;
+    private long sellTurnover;
 
     public String getWindCode() {
         return windCode;
@@ -282,5 +286,37 @@ public class StockData {
 
     public void setWeightedAvgBidPrice(long weightedAvgBidPrice) {
         WeightedAvgBidPrice = weightedAvgBidPrice;
+    }
+
+    public long getBuyVol() {
+        return buyVol;
+    }
+
+    public void setBuyVol(long buyVol) {
+        this.buyVol = buyVol;
+    }
+
+    public long getSellVol() {
+        return sellVol;
+    }
+
+    public void setSellVol(long sellVol) {
+        this.sellVol = sellVol;
+    }
+
+    public long getBuyTurnover() {
+        return buyTurnover;
+    }
+
+    public void setBuyTurnover(long buyTurnover) {
+        this.buyTurnover = buyTurnover;
+    }
+
+    public long getSellTurnover() {
+        return sellTurnover;
+    }
+
+    public void setSellTurnover(long sellTurnover) {
+        this.sellTurnover = sellTurnover;
     }
 }

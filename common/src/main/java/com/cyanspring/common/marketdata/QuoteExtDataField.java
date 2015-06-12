@@ -12,7 +12,9 @@ public enum QuoteExtDataField {
 	SESSIONSTATUS("SessionStatus"),
 	STATUS("Status"),
 	TIMESTAMP("TimeStamp"),
-	TIMESENT("TimeSent")
+	TIMESENT("TimeSent"),
+	BUYVOL("BuyVol"),
+	SELLVOL("SellVol")
 	;
 	
 	static HashMap<String, QuoteExtDataField> map = new HashMap<String, QuoteExtDataField>();
