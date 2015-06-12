@@ -47,7 +47,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	private int SESSION_ID;
 	private int ORDER_REF;
 	
-	private boolean clientReady = false;
+	private boolean connectionReady = false;
 	
 	
 	public CtpTraderProxy(String id, String frontUrl, String brokerId, String traderFlow, String user, String password ) {
@@ -63,7 +63,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	// join the thread
 	public void init() {
 		// setNativeLibraryFile
-		initNativeLibrary();
+		//initNativeLibrary();
 		
 		// mkdir traderFlow
 		File conPath = new File(traderFlow);
@@ -82,6 +82,10 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		seqId.set(0);
 	}
 	
+	public boolean getState() {
+		return connectionReady;
+	}
+	
 	public void newOrder ( String sn, ChildOrder order ) throws DownStreamException {
 		byte priceType = 0;
 		if ( ExchangeOrderType.MARKET == order.getType() ) {
@@ -89,7 +93,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		} else if ( ExchangeOrderType.LIMIT == order.getType() ) {
 			priceType = TraderLibrary.THOST_FTDC_OPT_LimitPrice;
 		} else {
-			throw new DownStreamException("No Recognized OrderType");
+			throw new DownStreamException("OrderType not support");
 		}
 		byte direction = 0;
 		if ( OrderSide.Buy == order.getSide() ) {
@@ -203,11 +207,11 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	@Override
 	protected void responseSettlementInfoConfirm(
 			CThostFtdcSettlementInfoConfirmField event) {		
-		clientReady = true;
+		connectionReady = true;
 			
 		log.info("CTP Connection: " +  clientId + " Ready!");
 		if ( listener != null ) {
-			listener.onState(true);
+			listener.onState(connectionReady);
 		}		
 	}
 	
@@ -382,7 +386,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	}
 	
 	public boolean getClientReady() {
-		return clientReady;
+		return connectionReady;
 	}
 
 	public int getFRONT_ID() {

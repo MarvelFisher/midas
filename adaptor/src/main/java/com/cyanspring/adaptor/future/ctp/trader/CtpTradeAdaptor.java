@@ -1,8 +1,10 @@
 package com.cyanspring.adaptor.future.ctp.trader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bridj.BridJ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,19 +23,41 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 
 	private String broker = "";
 	private int connectionCount = 2;
+	private String libPath;
 	private List<IDownStreamConnection> connections = new ArrayList<IDownStreamConnection>();
 
 	@Override
 	public void init() throws Exception {
-//		for (int i = 0 ; i < 2 ; i ++) {
-			connections.add(new CtpTradeConnection(connectionPrefix + 1, url, broker, conLog, user, password));
-//		}
+		initNativeLibrary();
 		
+		for (int i = 0 ; i < connectionCount ; i ++) {
+			connections.add(new CtpTradeConnection(connectionPrefix + i, url, broker, conLog, user, password));
+		}
 		
 		for(IDownStreamConnection connection: connections) {
 			connection.init();
 		}
 			
+	}
+
+	private void initNativeLibrary() {
+		String os = System.getProperty("os.name");
+		String arch = System.getProperty("os.arch");
+		if(null != libPath) {
+			BridJ.setNativeLibraryFile("Trader", new File(libPath));
+		} else if ( os.toLowerCase().contains("win") ) {
+			if ( arch.contains("x64") ) {
+				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\win64\\thosttraderapi.dll"));
+			} else {
+				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\win32\\thosttraderapi.dll"));
+			}			
+		} else if ( os.toLowerCase().contains("linux") ) {
+			if ( arch.contains("x64") ) {
+				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\linux64\\thosttraderapi.so"));
+			} else {
+				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\linux32\\thosttraderapi.so"));
+			}
+		}
 	}
 
 	@Override
@@ -97,6 +121,14 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 
 	public void setConnectionCount(int connectionCount) {
 		this.connectionCount = connectionCount;
+	}
+
+	public String getLibPath() {
+		return libPath;
+	}
+
+	public void setLibPath(String libPath) {
+		this.libPath = libPath;
 	}
 
 	

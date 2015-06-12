@@ -36,20 +36,20 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	
 	
 	// client to delegate ctp
-	private CtpTraderProxy client;
+	private CtpTraderProxy proxy;
 	
 	public CtpTradeConnection(String id, String url, String broker, String conLog, String user, String password) {
 		this.id = id;
 		this.url = url;
 		this.broker = broker;
 		this.conLog = conLog;
-		client = new CtpTraderProxy(id, url, broker, conLog, user, password);
+		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password);
 	}
 	
 	@Override
 	public void init() throws Exception {
 		// TODO does login and initialization		
-		client.init();
+		proxy.init();
 	}
 	
 
@@ -70,7 +70,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	
 	@Override
 	public boolean getState() {
-		return false;
+		return proxy.getState();
 	}
 
 	class DownStreamSender implements IDownStreamSender {
@@ -80,7 +80,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 			serialToOrder.put(sn, order);			
 			String snStr = String.valueOf(sn);			
 			order.setClOrderId(snStr);
-			client.newOrder(snStr, order);
+			proxy.newOrder(snStr, order);
 			log.info("Send Order: " + snStr);
 		}
 
@@ -92,7 +92,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
-			client.cancelOrder(order);
+			proxy.cancelOrder(order);
 			log.info("Cancel Order: " + order.getClOrderId());
 		}
 
@@ -112,7 +112,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 		}
 		// lintner chain
 		this.listener = listener;
-		client.addListener(this);
+		proxy.addListener(this);
 		return this.downStreamSender;
 	}
 
