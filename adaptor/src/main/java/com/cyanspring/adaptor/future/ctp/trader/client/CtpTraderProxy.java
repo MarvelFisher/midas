@@ -143,6 +143,8 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		req.SessionID(SESSION_ID);
 		req.ActionFlag(TraderLibrary.THOST_FTDC_AF_Delete);
 		req.InstrumentID().setCString(symbol);
+		
+		traderApi.ReqOrderAction(Pointer.getPointer(req), getNextSeq());
 	}
 	
 	@Override
@@ -219,17 +221,20 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		if ( (event instanceof CThostFtdcInputOrderField) && (rspInfo != null) ) {
 			CThostFtdcInputOrderField rsp = (CThostFtdcInputOrderField)event;
 			String orderRef = rsp.OrderRef().getCString();
-			
-			listener.onError(orderRef, rspInfo.ErrorMsg().getCString());
+			ExecType execType = ExecType.REJECTED;
+			OrdStatus ltsOrdStatus = OrdStatus.REJECTED;
+			String msg = TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
+			listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
 		}
 		else if ( event instanceof CThostFtdcOrderField) {
 			CThostFtdcOrderField rsp = (CThostFtdcOrderField)event;
 			String orderRef = rsp.OrderRef().getCString();
 			byte status = rsp.OrderStatus();
+			log.info("CTP Order Status Code: " + status);
 			ExecType execType = CtpOrderStatus2ExecType(status);
 			OrdStatus ltsOrdStatus = CtpOrderStatus2Lts(status);
 			String msg = TraderHelper.toGBKString(rsp.StatusMsg().getBytes());
-			log.info("CThostFtdcOrderField Status: " + msg);
+//			log.info("CThostFtdcOrderField Status: " + msg);
 			if ( listener != null ) {
 				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
 			}
@@ -239,14 +244,32 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 			String orderRef = rsp.OrderRef().getCString();
 			ExecType execType = ExecType.FILLED;
 			OrdStatus ltsOrdStatus = OrdStatus.FILLED;
-			//String msg = TraderHelper.toGBKString(rsp.StatusMsg().getBytes());
+			String msg = rsp.InstrumentID().getCString();
+			msg += " Filled";
 			if ( listener != null ) {
-				listener.onOrder(orderRef, execType, ltsOrdStatus, null);
+				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
 			}
 		}
 		else if ( event instanceof CThostFtdcInputOrderActionField ) {
+			CThostFtdcInputOrderActionField rsp = (CThostFtdcInputOrderActionField)event;
+			String orderRef = rsp.OrderRef().getCString();
+			
 			if (rspInfo != null) {
-				
+				ExecType execType = ExecType.REJECTED;
+				String msg = rsp.InstrumentID().getCString();
+				String errMsg =  TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
+				if ( (rspInfo.ErrorID() != 0) && (listener != null) ) {
+					listener.onOrder(orderRef, execType, null, errMsg);
+					//listener.onError(orderRef,errMsg);
+					return;
+				}
+			}
+			ExecType execType = ExecType.CANCELED;
+			OrdStatus ltsOrdStatus = OrdStatus.CANCELED;
+			String msg = rsp.InstrumentID().getCString();
+			msg += " Cancelled";
+			if ( listener != null ) {
+				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
 			}
 		}
 		
@@ -265,7 +288,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 				
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
-				
+				execType = ExecType.NEW;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
 				
@@ -301,7 +324,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 				
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
-				
+				ltsOrdStatus = OrdStatus.NEW;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
 				

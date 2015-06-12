@@ -308,13 +308,17 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			
 		} else {
 			log.info("Response OrderAction:");
-			TraderHelper.fireEventChange(getConnectId(), pInputOrderAction.get());
+			if ( pRspInfo != null ) {
+				TraderHelper.fireEventChange(getConnectId(), pInputOrderAction.get(), pRspInfo.get());
+			} else {
+				TraderHelper.fireEventChange(getConnectId(), pInputOrderAction.get());
+			}
 		}
 		
 		if ( pRspInfo == null ) {
 			log.warn("Response OrderAction Pointer<CThostFtdcRspInfoField > pRspInfo = null");
 		} else {
-			TraderHelper.handleRspMsg(getConnectId(), pRspInfo.get());
+//			TraderHelper.handleRspMsg(getConnectId(), pRspInfo.get());
 		}
 		
 	}
@@ -883,8 +887,8 @@ public class LtsTraderSpi extends CThostFtdcTraderSpi {
 			log.error("Message On Trade: Pointer<CThostFtdcTradeField > pTrade");
 			
 		} else {
-			TraderHelper.fireEventChange(getConnectId(), pTrade.get());
 			log.info("Message On Trade:");
+			TraderHelper.fireEventChange(getConnectId(), pTrade.get());
 		}
 		
 	}

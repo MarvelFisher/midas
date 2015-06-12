@@ -52,7 +52,27 @@ public class TraderHelper {
 		client.responseOnError(rspInfo);
 	}
 	
+	
+	
+	static void notifyNetworkReady(String id) {
+		AbstractTraderProxy client = clientMaps.get(id);
+		client.doLogin();		
+	}
+	
+	static String toGBKString(byte[] bytes) {
+		try {
+			return new String(bytes, "GB2312");
+		} catch (UnsupportedEncodingException e) {
+			log.info(e.getMessage());
+		}
+		return "";
+	}
+	
 	static void fireEventChange(String id, StructObject event) {
+		fireEventChange(id, event, null);
+	}
+
+	public static void fireEventChange(String id, StructObject event, CThostFtdcRspInfoField rspInfo) {
 		AbstractTraderProxy client = clientMaps.get(id);
 		if ( event instanceof CThostFtdcRspUserLoginField ) {
 			client.responseLogin((CThostFtdcRspUserLoginField) event);
@@ -74,25 +94,11 @@ public class TraderHelper {
 			client.responseOnOrder(event);
 		}
 		else if ( event instanceof CThostFtdcInputOrderActionField ) {
-			client.responseOnOrder(event);
+			client.responseOnOrder(event, rspInfo);
 		}
 		else {
 			
 		}
-	}
-	
-	static void notifyNetworkReady(String id) {
-		AbstractTraderProxy client = clientMaps.get(id);
-		client.doLogin();		
-	}
-	
-	static String toGBKString(byte[] bytes) {
-		try {
-			return new String(bytes, "GB2312");
-		} catch (UnsupportedEncodingException e) {
-			log.info(e.getMessage());
-		}
-		return "";
 	}
 
 }

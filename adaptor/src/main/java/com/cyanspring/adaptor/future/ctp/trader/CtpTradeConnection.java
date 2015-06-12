@@ -130,15 +130,22 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 			log.info("Order not found: " + sn);
 			return;
 		}
-		order.setOrdStatus(status);
+		if ( status != null ) {
+			order.setOrdStatus(status);
+		}	
 		this.listener.onOrder(type, order, null, message);
 	}
 
 	@Override
-	public void onError(String orderId, String message) {
-		
-		
-		this.listener.onError(null, message);
+	public void onError(String orderId, String message) {		
+		log.error("Response Error On Order:" + orderId + " " + message);
+		Long sn = Long.parseLong(orderId);
+		ChildOrder order = serialToOrder.get(sn);	
+		if ( null == order ) {
+			log.info("Order not found: " + sn);
+			return;
+		}
+		this.listener.onError(order.getId(), message);	
 	}
 
 	private long genSerialId() {

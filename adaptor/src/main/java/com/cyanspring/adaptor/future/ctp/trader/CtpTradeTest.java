@@ -70,7 +70,7 @@ public class CtpTradeTest implements IDownStreamListener {
 			public void run() {
 				try {
 					
-					ChildOrder order = new ChildOrder("rb1510", OrderSide.Buy, 1, 2345, ExchangeOrderType.LIMIT,
+					ChildOrder order = new ChildOrder("au1606", OrderSide.Buy, 35, 243, ExchangeOrderType.LIMIT,
 							 "", "", "", "", null);
 					array.add(order);
 					sender.newOrder(order);
@@ -96,8 +96,10 @@ public class CtpTradeTest implements IDownStreamListener {
 		};
 		//new Timer().schedule(task, 5000, 5000);
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(task1, 5000, 5000);
-		timer.scheduleAtFixedRate(task2, 7000, 6000);
+		timer.schedule(task1, 5000);
+		timer.schedule(task2, 10000);
+//		timer.scheduleAtFixedRate(task1, 5000, 5000);
+//		timer.scheduleAtFixedRate(task2, 7000, 6000);
 		
 		while(true) {
 			
