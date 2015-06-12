@@ -120,6 +120,12 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	public void onState(boolean on) {
 		this.listener.onState(on);
 	}
+	
+	@Override
+	public void onOrder(String orderId, ExecType type, String message) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void onOrder(String orderId, ExecType type , OrdStatus status, String message) {
@@ -134,8 +140,15 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 			order.setOrdStatus(status);
 		}	
 		this.listener.onOrder(type, order, null, message);
+	}	
+	
+	@Override
+	public void onOrder(String orderId, ExecType type, OrdStatus status,
+			int volume, String message) {
+		// TODO Auto-generated method stub
+		
 	}
-
+	
 	@Override
 	public void onError(String orderId, String message) {		
 		log.error("Response Error On Order:" + orderId + " " + message);
@@ -147,7 +160,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 		}
 		this.listener.onError(order.getId(), message);	
 	}
-
+	
 	private long genSerialId() {
 		AtomicLong id = new AtomicLong();
 		return id.getAndIncrement();
@@ -157,4 +170,6 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	public void onError(String message) {		
 		log.error("Response Error:" + message);
 	}
+
+	
 }

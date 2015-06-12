@@ -234,10 +234,19 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 			ExecType execType = CtpOrderStatus2ExecType(status);
 			OrdStatus ltsOrdStatus = CtpOrderStatus2Lts(status);
 			String msg = TraderHelper.toGBKString(rsp.StatusMsg().getBytes());
-//			log.info("CThostFtdcOrderField Status: " + msg);
-			if ( listener != null ) {
+			int volumeTraded = rsp.VolumeTraded();
+			
+			if ( listener == null ) {
+				log.error("listner null!!");
+				return;
+			}
+			
+			if ( status == TraderLibrary.THOST_FTDC_OST_PartTradedQueueing ) {
+				listener.onOrder(orderRef, execType, ltsOrdStatus,volumeTraded, msg);
+			} else {
 				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
 			}
+			
 		}
 		else if ( event instanceof CThostFtdcTradeField) {
 			CThostFtdcTradeField rsp = (CThostFtdcTradeField)event;
