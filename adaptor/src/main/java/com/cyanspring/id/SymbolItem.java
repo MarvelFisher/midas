@@ -92,34 +92,16 @@ public class SymbolItem implements AutoCloseable {
         symbol = strID;
     }
 
-    /**
-     * SymbolItem
-     */
     SymbolItem() {
         clear(false);
         symbol = "";
     }
 
-    /**
-     *
-     */
-    public void sunrise() {
-        clear(true);
-    }
-
-    /**
-     *
-     */
     void uninit() {
         clear(false);
         vecTickPrice.clear();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
     @Override
     public void close() {
         uninit();
@@ -130,12 +112,10 @@ public class SymbolItem implements AutoCloseable {
      * @param bSunrise
      */
     void clear(boolean bSunrise) {
-
         if (bSunrise) {
             if (0 == close) {
                 return;
             }
-
             preclose = close;
             close = 0;
             if (bSunrise) {
@@ -149,13 +129,6 @@ public class SymbolItem implements AutoCloseable {
         priceKey = 0;
         open = high = low = price = priceLast = 0.0;
         tick.clear();
-    }
-
-    /**
-     *
-     */
-    public void doSendPrecloseJob() {
-        // Preclose
     }
 
     /**
@@ -294,7 +267,6 @@ public class SymbolItem implements AutoCloseable {
         quote.setAsk(tick.ask);
         if (price != 0)
             quote.setLast(price);
-
         if (open != 0)
             quote.setOpen(open);
         if (high != 0)
@@ -338,70 +310,6 @@ public class SymbolItem implements AutoCloseable {
         tick.price = price;
     }
 
-    /**
-     * @param strLine
-     * @return
-     */
-    boolean loadFromFile(String strLine) {
-        clear(false);
-
-        String[] vec = StringUtil.split(strLine, (char) 0x06);
-        if (vec.length != 4)
-            return false;
-
-        try {
-            this.symbol = vec[0];
-            // DP
-            dp = Integer.parseInt(vec[1]);
-            // Header
-            String[] vec1 = StringUtil.split(vec[2], '|');
-            for (int i = 0; i < vec1.length; i++) {
-                String[] vecTokens = StringUtil.split(vec1[i], '=');
-                if (vecTokens.length != 2)
-                    return false;
-
-                switch (vecTokens[0]) {
-                    case "Open": {
-                        open = Double.parseDouble(vecTokens[1]);
-                    }
-                    break;
-                    case "High": {
-                        high = Double.parseDouble(vecTokens[1]);
-                    }
-                    break;
-                    case "Low": {
-                        low = Double.parseDouble(vecTokens[1]);
-                    }
-                    break;
-                    case "Preclose": {
-                        preclose = Double.parseDouble(vecTokens[1]);
-                    }
-                    break;
-                    case "Price": {
-                        price = Double.parseDouble(vecTokens[1]);
-                    }
-                    break;
-                    case "Close": {
-                        close = Double.parseDouble(vecTokens[1]);
-                    }
-                    break;
-                    default:
-                        break;
-                }
-            }
-
-            // Tick
-            tick.loadFromFile(vec[3]);
-
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     *
-     */
     public String toString() {
 
         String strValue;

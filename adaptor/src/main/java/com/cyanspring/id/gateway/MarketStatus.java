@@ -6,7 +6,7 @@ public class MarketStatus {
 	public static final int OPEN = 2;
 	public static final int CLOSE = 0;
 
-	public static String Tostring(int nStatus) {
+	public static String toString(int nStatus) {
 		switch (nStatus) {
 		case MarketStatus.OPEN:
 			return "Open";

@@ -8,7 +8,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.id.MarketStatus;
+import com.cyanspring.id.gateway.MarketStatus;
 import com.cyanspring.id.Library.Util.BitConverter;
 import com.cyanspring.id.Library.Util.DateUtil;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
@@ -78,31 +78,15 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 	 * Creates a client-side handler.
 	 */
 	public ClientHandler() {
-		//if (timer == null) {			
-		//	timer = new TimerThread();
-		//	timer.setName("ClientHandler.Timer");
-		//	timer.TimerEvent = this;
-		//	timer.start();
-		//}
 	}
 
-	/**
-     * 
-     */
 	@Override
-	//public void channelUnregistered(ChannelHandlerContext ctx) {
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		ClientHandler.ctx = null;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.disConnected);
 	}
 
-	/**
-	 * (non-Javadoc)
-	 * 
-	 * @see io.netty.channel.ChannelInboundHandlerAdapter#channelActive(io.netty.channel.ChannelHandlerContext)
-	 */
 	@Override
-	//public void channelActive(ChannelHandlerContext ctx) {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		ClientHandler.ctx = ctx;
 		ctx.pipeline().fireUserEventTriggered(ClientHandler.connected);
@@ -123,13 +107,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 					log.error("Read idle");
 				}				
 			}
-			/*			
-			else if (e.state() == IdleState.WRITER_IDLE) {
-				// String str =
-				// WindGatewayHandler.addHashTail("API=ServerHeartBeat");
-				// ctx.writeAndFlush(str);
-			}
-*/			
 		}
 		else {
 		if (evt == ClientHandler.connected) {
@@ -333,25 +310,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
 	}
 
-/*	
-	@Override
-	public void onTimer(TimerThread objSender) {
-		if (lastCheck.getTime() < lastRecv.getTime()) {
-			lastCheck = lastRecv;
-		}
-			
-		Date now = DateUtil.now();
-		TimeSpan ts = TimeSpan.getTimeSpan(now, lastCheck);
-		IdGateway.instance();
-		if (IdGateway.isConnecting == false && lastCheck.getTime() != 0 && ts.getTotalSeconds() > 20) {
-			IdGateway.isConnected = false;
-			lastCheck = now;
-			if (IdGateway.instance().getStatus() != MarketStatus.CLOSE) {
-				IdGateway.instance().reconClient();
-			}
-		}
-	}
-*/
 	void uninit() throws Exception {
 	}
 

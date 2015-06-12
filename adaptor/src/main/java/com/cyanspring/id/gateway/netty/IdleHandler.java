@@ -3,7 +3,7 @@ package com.cyanspring.id.gateway.netty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.id.MarketStatus;
+import com.cyanspring.id.gateway.MarketStatus;
 import com.cyanspring.id.gateway.IdGateway;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -30,13 +30,13 @@ public class IdleHandler extends ChannelDuplexHandler {
 				}
 				
 			}
-/*			
+/*
 			else if (e.state() == IdleState.WRITER_IDLE) {
 				// String str =
 				// WindGatewayHandler.addHashTail("API=ServerHeartBeat");
 				// ctx.writeAndFlush(str);
 			}
-*/			
+*/
 		}
 	}
 }

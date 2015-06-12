@@ -1,11 +1,11 @@
 package com.cyanspring.id;
 
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.id.Library.Frame.InfoString;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
-import com.cyanspring.id.Library.Util.DateUtil;
-import com.cyanspring.id.Library.Util.FileMgr;
 import com.cyanspring.id.Library.Util.LogUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -50,41 +50,17 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     Date time = new Date(0);
     String account = "";
-
     String password = "";
-
     boolean gateway = false;
     String reqIp = "";
-
-    public String getReqIp() {
-        return reqIp;
-    }
-
-    public void setReqIp(String reqIp) {
-        this.reqIp = reqIp;
-    }
-
-    public int getReqPort() {
-        return reqPort;
-    }
-
-    public void setReqPort(int reqPort) {
-        this.reqPort = reqPort;
-    }
-
     int reqPort = 0;
-    int preOpen = 0;
-    int open = 0;
-    int close = 0;
     int exch = 0;
-
-    boolean overNight = false;
     String path = "";
     volatile boolean isClose = false;
     Object m_lock = new Object();
+    MarketSessionType marketSessionType = MarketSessionType.DEFAULT;
 
     List<IMarketDataStateListener> stateList = new ArrayList<IMarketDataStateListener>();
-
     List<UserClient> clientsList = new ArrayList<UserClient>();
     Hashtable<String, Integer> refTable = new Hashtable<String, Integer>();
     private Map<String, Integer> nonFX;
@@ -92,127 +68,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     private List<String> unContributeList;
     private Map<String,String> pluginContributeBySymbolMap;
 
-    public Map<String, Integer> getNonFX() {
-        return nonFX;
-    }
-
-    public void setNonFX(Map<String, Integer> nonFX) {
-        this.nonFX = nonFX;
-    }
-
-    public List<String> getContributeList() {
-        return contributeList;
-    }
-
-    public void setContributeList(List<String> contributeList) {
-        this.contributeList = contributeList;
-    }
-
-    public List<String> getUnContributeList() {
-        return unContributeList;
-    }
-
-    public void setUnContributeList(List<String> unContributeList) {
-        this.unContributeList = unContributeList;
-    }
-
-    public Map<String, String> getPluginContributeBySymbolMap() {
-        return pluginContributeBySymbolMap;
-    }
-
-    public void setPluginContributeBySymbolMap(Map<String, String> pluginContributeBySymbolMap) {
-        this.pluginContributeBySymbolMap = pluginContributeBySymbolMap;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date srcTime) {
-        time = srcTime;
-    }
-
-    static boolean m_bClose = false;
-
-    public void setIsClose(boolean bClose) {
-        m_bClose = bClose;
-    }
-
-    public boolean getIsClose() {
-        return m_bClose;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isGateway() {
-        return gateway;
-    }
-
-    public void setGateway(boolean gateway) {
-        this.gateway = gateway;
-    }
-
-    public int getPreOpen() {
-        return preOpen;
-    }
-
-    public void setPreOpen(int preOpen) {
-        this.preOpen = preOpen;
-    }
-
-    public int getOpen() {
-        return open;
-    }
-
-    public void setOpen(int open) {
-        this.open = open;
-    }
-
-    public int getClose() {
-        return close;
-    }
-
-    public void setClose(int close) {
-        this.close = close;
-    }
-
-    public int getExch() {
-        return exch;
-    }
-
-    public void setExch(int exch) {
-        this.exch = exch;
-    }
-
-    List<String> preSubscriptionList = new ArrayList<String>();
-
-    public List<String> getPreSubscriptionList() {
-        return preSubscriptionList;
-    }
-
-    public void setPreSubscriptionList(List<String> preSubscriptionList) {
-        this.preSubscriptionList = preSubscriptionList;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#init()
-     */
     @Override
     public void init() throws Exception {
         log.debug("Id Adapter init begin");
@@ -224,26 +79,17 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         instance = this;
         config();
         QuoteMgr.instance().init();
-        FileMgr.instance().init();
         Collections.sort(contributeList);
         Collections.sort(unContributeList);
         connect();
     }
 
     void config() {
-
-        QuoteMgr.instance().initSymbols(getPreSubscriptionList());
         List<String> list = new ArrayList<String>(nonFX.keySet());
-        //list.addAll(nonFX.keySet());
         QuoteMgr.instance().initSymbols(list);
-
-        setSession(getPreOpen(), getOpen(), getClose());
-
         Path path1 = Paths.get("");
-
         this.path = path1.toAbsolutePath().toString();
         list.clear();
-        list = null;
     }
 
     @Override
@@ -253,7 +99,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         closeClient();
         Parser.instance().close();
         QuoteMgr.instance().close();
-        FileMgr.instance().close();
         if (thread != null) {
             thread.close();
             thread = null;
@@ -273,7 +118,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     void connect() {
         thread.addRequest(new Object());
     }
-
 
     /**
      * connect to Id GateWay
@@ -328,9 +172,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
             try {
                 Thread.sleep(3000);
-                if (IdMarketDataAdaptor.instance.getStatus() == MarketStatus.CLOSE) {
+                if (IdMarketDataAdaptor.instance.getStatus() == MarketSessionType.CLOSE) {
                     log.info("Market is Closed , wait for pre-open");
-                    while (IdMarketDataAdaptor.instance.getStatus() == MarketStatus.CLOSE) {
+                    while (IdMarketDataAdaptor.instance.getStatus() == MarketSessionType.CLOSE) {
                         Thread.sleep(1000);
                         continue;
                     }
@@ -339,10 +183,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
             }
         }
     }
-
-    /**
-     *
-     */
 
     public void closeClient() {
         log.debug("IdMarketDataAdapter close client begin");
@@ -359,14 +199,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         log.info("IdMarketDataAdapter close client end");
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.cyanspring.common.marketdata.IMarketDataAdaptor#subscribeMarketDataState
-     * (com.cyanspring.common.marketdata.IMarketDataStateListener)
-     */
     @Override
     public void subscribeMarketDataState(IMarketDataStateListener listener) {
         if (!stateList.contains(listener)) {
@@ -375,13 +207,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.cyanspring.common.marketdata.IMarketDataAdaptor#
-     * unsubscribeMarketDataState
-     * (com.cyanspring.common.marketdata.IMarketDataStateListener)
-     */
     @Override
     public void unsubscribeMarketDataState(IMarketDataStateListener listener) {
         if (stateList.contains(listener)) {
@@ -389,13 +214,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.cyanspring.common.marketdata.IMarketDataAdaptor#subscribeMarketData
-     * (java.lang.String, com.cyanspring.common.marketdata.IMarketDataListener)
-     */
     @Override
     public void subscribeMarketData(String instrument,
                                     IMarketDataListener listener) throws MarketDataException {
@@ -433,13 +251,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.cyanspring.common.marketdata.IMarketDataAdaptor#unsubscribeMarketData
-     * (java.lang.String, com.cyanspring.common.marketdata.IMarketDataListener)
-     */
     @Override
     public void unsubscribeMarketData(String instrument,
                                       IMarketDataListener listener) {
@@ -505,84 +316,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     }
 
     /**
-     * @param nPreOpen
-     * @param nOpen
-     * @param nClose
-     */
-    void setSession(int nPreOpen, int nOpen, int nClose) {
-        preOpen = DateUtil.HHMMSS2Time(nPreOpen * 100);
-        open = DateUtil.HHMMSS2Time(nOpen * 100);
-        close = DateUtil.HHMMSS2Time(nClose * 100);
-        overNight = close < preOpen;
-    }
-
-    /**
-     * @param time
      * @return
      */
-    public boolean isValidTime(Date time) {
-        int nTime = DateUtil.dateTime2Time(time);
-
-        if (overNight) {
-            return nTime >= preOpen || nTime <= close;
-        } else {
-            return nTime >= preOpen && nTime <= close;
-        }
-    }
-
-    /**
-     * @return
-     */
-    public int getStatus() {
-        return getStatus(new Date());
-    }
-
-    /**
-     * @param time
-     * @return
-     */
-    public int getStatus(Date time) {
-        int nDow = DateUtil.getDayofWeek(time);
-        int nTime = DateUtil.dateTime2Time(time);
-        if (Calendar.SUNDAY == nDow) // Sunday
-        {
-            return MarketStatus.CLOSE;
-        }
-
-        if (overNight) {
-            if (nTime >= open || nTime <= close) {
-                if (nTime <= close && Calendar.MONDAY == nDow) // Monday
-                {
-                    return MarketStatus.CLOSE;
-                } else if (nTime >= open && Calendar.SATURDAY == nDow) // Saturday
-                {
-                    return MarketStatus.CLOSE;
-                } else {
-                    return MarketStatus.OPEN;
-                }
-            } else if (nTime >= preOpen && nTime < open) {
-                if (Calendar.SATURDAY == nDow) // Saturday
-                {
-                    return MarketStatus.CLOSE;
-                }
-                return MarketStatus.PREOPEN;
-            } else {
-                return MarketStatus.CLOSE;
-            }
-        } else {
-            if (Calendar.SATURDAY == nDow) // Saturday
-            {
-                return MarketStatus.CLOSE;
-            }
-
-            if (nTime >= open && nTime <= close) {
-                return MarketStatus.OPEN;
-            } else if (nTime >= preOpen || nTime < open) {
-                return MarketStatus.PREOPEN;
-            } else {
-                return MarketStatus.CLOSE;
-            }
-        }
+    public MarketSessionType getStatus() {
+        return marketSessionType;
     }
 
     boolean addSymbol(String symbol) {
@@ -645,7 +382,10 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     @Override
     public void processEvent(Object object) {
-
+        //MarketSession
+        if(object instanceof MarketSessionEvent){
+            marketSessionType = ((MarketSessionEvent) object).getSession();
+        }
     }
 
     @Override
@@ -674,4 +414,92 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     public void onStopEvent(RequestThread sender) {    	
     	bAlive = false;
     }
+
+    public String getReqIp() {
+        return reqIp;
+    }
+
+    public void setReqIp(String reqIp) {
+        this.reqIp = reqIp;
+    }
+
+    public int getReqPort() {
+        return reqPort;
+    }
+
+    public void setReqPort(int reqPort) {
+        this.reqPort = reqPort;
+    }
+    public Map<String, Integer> getNonFX() {
+        return nonFX;
+    }
+
+    public void setNonFX(Map<String, Integer> nonFX) {
+        this.nonFX = nonFX;
+    }
+
+    public List<String> getContributeList() {
+        return contributeList;
+    }
+
+    public void setContributeList(List<String> contributeList) {
+        this.contributeList = contributeList;
+    }
+
+    public List<String> getUnContributeList() {
+        return unContributeList;
+    }
+
+    public void setUnContributeList(List<String> unContributeList) {
+        this.unContributeList = unContributeList;
+    }
+
+    public Map<String, String> getPluginContributeBySymbolMap() {
+        return pluginContributeBySymbolMap;
+    }
+
+    public void setPluginContributeBySymbolMap(Map<String, String> pluginContributeBySymbolMap) {
+        this.pluginContributeBySymbolMap = pluginContributeBySymbolMap;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date srcTime) {
+        time = srcTime;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isGateway() {
+        return gateway;
+    }
+
+    public void setGateway(boolean gateway) {
+        this.gateway = gateway;
+    }
+
+    public int getExch() {
+        return exch;
+    }
+
+    public void setExch(int exch) {
+        this.exch = exch;
+    }
+
 }

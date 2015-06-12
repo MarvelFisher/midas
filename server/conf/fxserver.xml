@@ -65,8 +65,8 @@
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <ref bean="idAdaptor" />
                 <ref bean="ibAdaptor" />
+                <ref bean="idAdaptor" />
             </list>
         </constructor-arg>
         <property name="quoteThrottle" value="1000"/>
@@ -115,9 +115,6 @@
         <property name="reqIp" value="10.0.0.32"></property>
         <property name="reqPort" value="6086"></property>
         <property name="exch" value="687"></property>
-        <property name="preOpen" value="510"></property>
-        <property name="open" value="515"></property>
-        <property name="close" value="500"></property>
         <property name="sendHeartBeat" value="3"></property>
         <property name="nonFX">
             <map>

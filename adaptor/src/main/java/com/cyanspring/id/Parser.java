@@ -249,10 +249,6 @@ public class Parser implements IReqThreadCallback {
             }
         }
 
-        // Date tGmtTime = DateUtil.toGmt(tTime);
-        // System.out.printf("Time : %s\n", DateUtil.formatDate(tGmtTime,
-        // "yyyy-MM-dd HH:mm:ss"));
-
         if (strID.isEmpty()) {
             return false;
         }
@@ -262,19 +258,6 @@ public class Parser implements IReqThreadCallback {
         }
 
         IdMarketDataAdaptor adaptor = IdMarketDataAdaptor.instance;
-        adaptor.setTime(tTime);
-        int nStatus = adaptor.getStatus(tTime);
-
-        if (MarketStatus.CLOSE == nStatus) {
-            if (!adaptor.getIsClose()) {
-                if (adaptor.getStatus() == MarketStatus.CLOSE) {
-                    adaptor.setIsClose(true);
-                    QuoteMgr.instance().writeFile(true, true);
-                }
-            }
-            return false;
-        }
-
         //check Contribute
         List<String> contributeList = adaptor.getContributeList();
         List<String> unContributeList = adaptor.getUnContributeList();
@@ -294,14 +277,6 @@ public class Parser implements IReqThreadCallback {
                 if (Collections.binarySearch(unContributeList, nContributeCode) >= 0) {
                     return false;
                 }
-            }
-        }
-
-        if (adaptor.getIsClose()) {
-            if (nStatus == MarketStatus.OPEN) {
-                adaptor.setIsClose(false);
-                QuoteMgr.instance().sunrise();
-                QuoteMgr.instance().writeFile(false, true);
             }
         }
 
