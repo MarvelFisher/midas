@@ -408,6 +408,18 @@ public class WindDataParser extends AbstractWindDataParser {
                         case "SD2":
                             stockData.setSD2(Integer.parseInt(value));
                             break;
+                        case "BuyVolume":
+                            stockData.setBuyVol(Long.parseLong(value));
+                            break;
+                        case "BuyTurnover":
+                            stockData.setBuyTurnover(Long.parseLong(value));
+                            break;
+                        case "SellVolume":
+                            stockData.setSellVol(Long.parseLong(value));
+                            break;
+                        case "SellTurnover":
+                            stockData.setSellTurnover(Long.parseLong(value));
+                            break;
                         default:
                             break;
                     }
@@ -494,6 +506,14 @@ public class WindDataParser extends AbstractWindDataParser {
                 stockData.setYieldToMaturity(((Number) inputHashMap.get(FDTFields.Syl2)).intValue());
             if (null != inputHashMap.get(FDTFields.SD2))
                 stockData.setYieldToMaturity(((Number) inputHashMap.get(FDTFields.SD2)).intValue());
+            if (null != inputHashMap.get(FDTFields.BuyVolume))
+                stockData.setBuyVol(((Number) inputHashMap.get(FDTFields.BuyVolume)).longValue());
+            if (null != inputHashMap.get(FDTFields.BuyTurnover))
+                stockData.setBuyTurnover(((Number) inputHashMap.get(FDTFields.BuyTurnover)).longValue());
+            if (null != inputHashMap.get(FDTFields.SellVolume))
+                stockData.setSellVol(((Number) inputHashMap.get(FDTFields.SellVolume)).longValue());
+            if (null != inputHashMap.get(FDTFields.SellTurnover))
+                stockData.setSellTurnover(((Number) inputHashMap.get(FDTFields.SellTurnover)).longValue());
         }
         return stockData;
     }
