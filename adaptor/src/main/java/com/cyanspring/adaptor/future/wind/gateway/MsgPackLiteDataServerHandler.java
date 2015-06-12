@@ -148,20 +148,30 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     
     private static void subscribeTransactions(Channel channel , String symbols,Registration lst) {
 		String[] sym_arr = symbols.split(";");
+		HashMap<Integer, Object> map;
 		for(String str : sym_arr)
 		{
-			if(sendTransaction(channel,str) == false) {
+			map = getTransaction(str);
+			if(map == null) {
 				if(WindGateway.mpCascading) { //) && registrationGlobal.hadTransaction(str) == false) {
 					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SubsTrans|Symbol=" + str,true));	
 				}			
+			} else {
+				if(lst.addMsgPack(map) >= maxMsgPackCount) {
+					channel.writeAndFlush(lst.flushMsgPack());
+				}				
 			}
+			
 			// 先加到  Global Register Symbol
 			registrationGlobal.addTransaction(str);								
 			// 加到 Client 的 Registration
 			if(lst.addTransaction(str) == false) {								
 				//log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
 			}					
-		}    	
+		}   
+		if(lst.MsgPackArrayCount() > 0) {
+			channel.writeAndFlush(lst.flushMsgPack());
+		}		
     }    
     
     private static void unsubscribeTransactions(Channel channel , String symbols,Registration lst) {
@@ -408,14 +418,12 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
   	
     }
     
-    public static boolean sendTransaction(Channel channel,String symbol) {
+    public static HashMap<Integer,Object> getTransaction(String symbol) {
     	TDF_TRANSACTION data = WindGateway.mapTransaction.get(symbol);
     	if(data == null) {
-    		return false;
+    		return null;
     	}
-    	HashMap<Integer, Object> map = WindGateway.publishTransactionChangesToMap(null, data);
-    	channel.writeAndFlush(map);
-    	return true;
+    	return WindGateway.publishTransactionChangesToMap(null, data);
     }
     
     public static HashMap<Integer, Object> getMarketData(String symbol) {
