@@ -172,9 +172,9 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
             try {
                 Thread.sleep(3000);
-                if (IdMarketDataAdaptor.instance.getStatus() == MarketSessionType.CLOSE) {
+                if (IdMarketDataAdaptor.instance.marketSessionType == MarketSessionType.CLOSE) {
                     log.info("Market is Closed , wait for pre-open");
-                    while (IdMarketDataAdaptor.instance.getStatus() == MarketSessionType.CLOSE) {
+                    while (IdMarketDataAdaptor.instance.marketSessionType == MarketSessionType.CLOSE) {
                         Thread.sleep(1000);
                         continue;
                     }
@@ -313,13 +313,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         list.toArray(arr);
         list.clear();
         return arr;
-    }
-
-    /**
-     * @return
-     */
-    public MarketSessionType getStatus() {
-        return marketSessionType;
     }
 
     boolean addSymbol(String symbol) {
