@@ -12,6 +12,7 @@ import com.cyanspring.adaptor.future.ctp.trader.client.CtpTraderProxy;
 import com.cyanspring.adaptor.future.ctp.trader.client.IChainListener;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
@@ -38,12 +39,12 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
 	
-	public CtpTradeConnection(String id, String url, String broker, String conLog, String user, String password) {
+	public CtpTradeConnection(String id, String url, String broker, String conLog, String user, String password, ISymbolConverter symbolConverter) {
 		this.id = id;
 		this.url = url;
 		this.broker = broker;
 		this.conLog = conLog;
-		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password);
+		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password, symbolConverter);
 	}
 	
 	@Override
@@ -76,6 +77,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	class DownStreamSender implements IDownStreamSender {
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
+			order = order.clone();
 			long sn = serial.getAndIncrement();
 			serialToOrder.put(sn, order);			
 			String snStr = String.valueOf(sn);			

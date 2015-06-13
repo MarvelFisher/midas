@@ -32,7 +32,10 @@ public class PerfFrequencyCounter {
 		
 		if(throttler.check() && count > 0) {
 			long duration = (new Date().getTime() - start.getTime())/1000;
-			log.info(this.name + ": " + (count/duration));
+			if(duration != 0)
+				log.info(this.name + ": " + (count/duration));
+			else
+				log.info(this.name + ":" + count + "/" + duration);
 			reset();
 		}
 		

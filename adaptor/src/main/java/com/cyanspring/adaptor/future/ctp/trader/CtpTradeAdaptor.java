@@ -8,6 +8,7 @@ import org.bridj.BridJ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.stream.IStreamAdaptor;
 
@@ -25,19 +26,20 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 	private int connectionCount = 2;
 	private String libPath;
 	private List<IDownStreamConnection> connections = new ArrayList<IDownStreamConnection>();
+	private ISymbolConverter symbolConverter;
 
 	@Override
 	public void init() throws Exception {
 		initNativeLibrary();
 		
 		for (int i = 0 ; i < connectionCount ; i ++) {
-			connections.add(new CtpTradeConnection(connectionPrefix + i, url, broker, conLog, user, password));
+			connections.add(new CtpTradeConnection(connectionPrefix + i, url, broker, conLog, user, password, symbolConverter));
 		}
 		
 		for(IDownStreamConnection connection: connections) {
 			connection.init();
 		}
-			
+		log.info("Ctp connection initialized: " + connectionPrefix + " " + connectionCount);	
 	}
 
 	private void initNativeLibrary() {
@@ -129,6 +131,14 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 
 	public void setLibPath(String libPath) {
 		this.libPath = libPath;
+	}
+
+	public ISymbolConverter getSymbolConverter() {
+		return symbolConverter;
+	}
+
+	public void setSymbolConverter(ISymbolConverter symbolConverter) {
+		this.symbolConverter = symbolConverter;
 	}
 
 	

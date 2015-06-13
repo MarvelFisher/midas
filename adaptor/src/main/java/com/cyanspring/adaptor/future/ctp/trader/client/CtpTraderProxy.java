@@ -23,6 +23,7 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTraderSpi;
 import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary;
 import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary.THOST_TE_RESUME_TYPE;
 import com.cyanspring.common.business.ChildOrder;
+import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.type.ExchangeOrderType;
@@ -48,15 +49,17 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	private int ORDER_REF;
 	
 	private boolean connectionReady = false;
+	private ISymbolConverter symbolConverter;
 	
-	
-	public CtpTraderProxy(String id, String frontUrl, String brokerId, String traderFlow, String user, String password ) {
+	public CtpTraderProxy(String id, String frontUrl, String brokerId, String traderFlow, 
+			String user, String password, ISymbolConverter symbolConverter) {
 		this.clientId = id;
 		this.frontUrl = frontUrl;
 		this.brokerId = brokerId;
 		this.user = user;
 		this.password = password;
 		this.traderFlow = traderFlow;
+		this.symbolConverter = symbolConverter;
 	}
 	
 	// connect to front	
@@ -106,7 +109,10 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		CThostFtdcInputOrderField req = new CThostFtdcInputOrderField();
 		req.BrokerID().setCString(brokerId);
 		req.InvestorID().setCString(user);
-		req.InstrumentID().setCString(order.getSymbol());
+		String symbol = order.getSymbol();
+		if(null != symbolConverter)
+			symbol = symbolConverter.convert(symbol);
+		req.InstrumentID().setCString(symbol);
 		//
 		req.OrderRef().setCString(String.valueOf(sn));		
 		req.OrderPriceType(priceType);
@@ -138,6 +144,8 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		// get from order		
 		String orderRef = order.getClOrderId();
 		String symbol = order.getSymbol();
+		if(null != symbolConverter)
+			symbol = symbolConverter.convert(symbol);
 		
 		CThostFtdcInputOrderActionField req = new CThostFtdcInputOrderActionField();
 		req.BrokerID().setCString(brokerId);
@@ -222,12 +230,14 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	
 	@Override
 	protected void responseOnOrder(StructObject event, CThostFtdcRspInfoField rspInfo) {
-		if ( (event instanceof CThostFtdcInputOrderField) && (rspInfo != null) ) {
+		if ( (event instanceof CThostFtdcInputOrderField)) {
 			CThostFtdcInputOrderField rsp = (CThostFtdcInputOrderField)event;
 			String orderRef = rsp.OrderRef().getCString();
 			ExecType execType = ExecType.REJECTED;
 			OrdStatus ltsOrdStatus = OrdStatus.REJECTED;
-			String msg = TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
+			String msg = null;
+			if(null != rspInfo)
+				msg = TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
 			listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
 		}
 		else if ( event instanceof CThostFtdcOrderField) {
@@ -365,24 +375,6 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 			String msg = TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
 			listener.onError(msg);
 		}			
-	}
-	
-	private void initNativeLibrary() {
-		String os = System.getProperty("os.name");
-		String arch = System.getProperty("os.arch");
-		if ( os.toLowerCase().contains("win") ) {
-			if ( arch.contains("x64") ) {
-				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\win64\\thosttraderapi.dll"));
-			} else {
-				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\win32\\thosttraderapi.dll"));
-			}			
-		} else if ( os.toLowerCase().contains("linux") ) {
-			if ( arch.contains("x64") ) {
-				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\linux64\\thosttraderapi.so"));
-			} else {
-				BridJ.setNativeLibraryFile("Trader", new File(".\\ctplib\\linux32\\thosttraderapi.so"));
-			}
-		}
 	}
 	
 	public boolean getClientReady() {

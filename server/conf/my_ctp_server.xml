@@ -75,4 +75,19 @@
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
 
+	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
+	    <constructor-arg>
+	        <list>
+	        	<ref bean="accountStateValidator"/>
+	        	<ref bean="tradableValidator"/>         
+				<ref bean="orderFieldValidator"/>
+				<ref bean="strategyOrderValidator"/>
+				<ref bean="creditValidator"/>
+				<ref bean="orderCountValidator"/>
+				<ref bean="maxLotValidator"/>			
+				<ref bean="ceilFloorValidator"/>
+	        </list>
+	    </constructor-arg>
+	</bean>	
+	
 </beans>
