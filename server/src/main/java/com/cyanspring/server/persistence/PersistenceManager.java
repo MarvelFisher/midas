@@ -18,6 +18,7 @@ import com.cyanspring.common.account.ThirdPartyUser;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -40,6 +41,7 @@ import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.business.Instrument;
 import com.cyanspring.common.business.MultiInstrumentStrategyData;
 import com.cyanspring.common.business.OrderField;
@@ -1283,6 +1285,22 @@ public class PersistenceManager {
 			if(session!=null)
 				session.close();
 			
+		}
+		return result;
+	}
+	
+	public List<GroupManagement> recoverGroupManagement() {
+		List<GroupManagement> result = new ArrayList<GroupManagement>();
+		Session session = null;
+		try {
+			session = sessionFactory.openSession();
+			result = (List<GroupManagement>)session.createCriteria(GroupManagement.class)
+				.list();
+		} catch (HibernateException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			if(session!=null)
+				session.close();
 		}
 		return result;
 	}

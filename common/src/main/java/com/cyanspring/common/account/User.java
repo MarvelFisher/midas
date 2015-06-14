@@ -14,6 +14,7 @@ public class User implements Cloneable, Serializable {
 	private Date created;
 	private Date lastLogin;
 	private UserType userType = UserType.NORMAL;
+	private UserRole role = UserRole.Trader;
 	private String defaultAccount;
 	private TerminationStatus terminationStatus = TerminationStatus.NOT_TERMINATED;
 	
@@ -122,6 +123,15 @@ public class User implements Cloneable, Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	
+	public UserRole getRole() {
+		return role;
+	}
+
+	public void setRole(UserRole role) {
+		this.role = role;
 	}
 
 	public synchronized boolean login(String id, String password) {

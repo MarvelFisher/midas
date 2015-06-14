@@ -12,6 +12,7 @@ public enum UserType
 	RISKMANAGER(4),
 	FRONTMANAGER(5),
 	BACKMANAGER(6),
+	RISKADMIN(7),
 	
 	// Third-Party Authentication
 	FACEBOOK(50),

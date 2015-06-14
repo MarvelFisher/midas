@@ -1,17 +1,33 @@
 package com.cyanspring.server.account;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserType;
+import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.server.persistence.PersistenceManager;
 
 public class UserKeeper {
+	private static final Logger log = LoggerFactory
+			.getLogger(UserKeeper.class);
+	
 	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();
+	private Map<String, String> pairs = new ConcurrentHashMap<String, String>();
+	private Map<String, Set<String>> groups = new ConcurrentHashMap<String, Set<String>>();
+	private static final int maxGroupLevel = 20;
 
 	public void createUser(User user) throws UserException {
 		String lowCases = user.getId().toLowerCase();
@@ -60,4 +76,56 @@ public class UserKeeper {
 			this.users.put(user.getId(), user);
 		}
 	}
+
+	private void buildNextLevel(Map<String, GroupManagement> current, int level){
+		if(current.size() <= 0)
+			return;
+		
+		if(level > maxGroupLevel) {
+			log.error("User group exceeding max level of " + maxGroupLevel);
+			return;
+		}
+		
+		Map<String, GroupManagement> remaining = new HashMap<String, GroupManagement>();
+		for(GroupManagement gm: current.values()) {
+			Set<String> list = groups.get(gm.getManaged());
+			if(null != list) {
+				Set<String> existing = groups.get(gm.getManager());
+				if(null == existing) {
+					existing = new HashSet<String>(list);
+					groups.put(gm.getManager(), existing);
+				} else {
+					existing.addAll(list);
+				}
+				
+			} else {
+				GroupManagement next = current.get(gm.getManaged());
+				if(null != next)
+					remaining.put(gm.getManager(), gm);
+			}
+		}
+		
+		buildNextLevel(remaining, level++);
+	}
+	
+	public void injectGroup(List<GroupManagement> list) {
+		Map<String, GroupManagement> remaining = new HashMap<String, GroupManagement>();
+		for(GroupManagement gm: list) {
+			pairs.put(gm.getManager(), gm.getManaged());
+			User user = users.get(gm.getManaged());
+			if(user.getRole().equals(UserType.TRADER)) {
+				Set<String> subList = groups.get(gm.getManager());
+				if(null == subList) {
+					subList = new HashSet<String>();
+					groups.put(gm.getManager(), subList);
+				}
+				subList.add(gm.getManaged());
+			} else {
+				remaining.put(gm.getManager(), gm);
+			}
+		}
+		
+		buildNextLevel(remaining, 0);
+	}
+
 }
