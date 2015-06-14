@@ -23,7 +23,7 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 	private String password = "";	
 
 	private String broker = "";
-	private int connectionCount = 2;
+	private int connectionCount = 1;
 	private String libPath;
 	private List<IDownStreamConnection> connections = new ArrayList<IDownStreamConnection>();
 	private ISymbolConverter symbolConverter;

@@ -3,6 +3,7 @@ package com.cyanspring.adaptor.future.ctp.trader.client;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bridj.BridJ;
 import org.bridj.Pointer;
@@ -46,9 +47,9 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	
 	private int FRONT_ID;
 	private int SESSION_ID;
-	private int ORDER_REF;
+	private AtomicInteger ORDER_REF = new AtomicInteger();
 	
-	private boolean connectionReady = false;
+	private boolean ready = false;
 	private ISymbolConverter symbolConverter;
 	
 	public CtpTraderProxy(String id, String frontUrl, String brokerId, String traderFlow, 
@@ -86,7 +87,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	}
 	
 	public boolean getState() {
-		return connectionReady;
+		return ready;
 	}
 	
 	public void newOrder ( String sn, ChildOrder order ) throws DownStreamException {
@@ -207,19 +208,19 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	protected void responseLogin(CThostFtdcRspUserLoginField event) {
 		FRONT_ID = event.FrontID();
 		SESSION_ID = event.SessionID();
-		int iNextOrderRef = event.MaxOrderRef().getInt();
-		ORDER_REF = iNextOrderRef++ ;
+		int nextOrderRef = event.MaxOrderRef().getInt();
+		ORDER_REF = new AtomicInteger(++nextOrderRef) ;
 		log.info("FRONT_ID = " + FRONT_ID + "; SESSION_ID = " + SESSION_ID + "; ORDER_REF = " + ORDER_REF);
 	}
 
 	@Override
 	protected void responseSettlementInfoConfirm(
 			CThostFtdcSettlementInfoConfirmField event) {		
-		connectionReady = true;
+		ready = true;
 			
 		log.info("CTP Connection: " +  clientId + " Ready!");
 		if ( listener != null ) {
-			listener.onState(connectionReady);
+			listener.onState(ready);
 		}		
 	}
 	
@@ -377,8 +378,8 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		}			
 	}
 	
-	public boolean getClientReady() {
-		return connectionReady;
+	public boolean isReady() {
+		return ready;
 	}
 
 	public int getFRONT_ID() {
@@ -390,7 +391,7 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	}
 
 	public int getORDER_REF() {
-		return ORDER_REF;
+		return ORDER_REF.getAndIncrement();
 	}
 	
 }

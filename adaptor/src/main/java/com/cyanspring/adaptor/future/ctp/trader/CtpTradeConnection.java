@@ -33,8 +33,6 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 	private DownStreamSender downStreamSender = new DownStreamSender();
 	
 	private Map<Long, ChildOrder> serialToOrder = new ConcurrentHashMap<Long, ChildOrder>();
-	private AtomicLong serial = new AtomicLong(0);
-	
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -78,7 +76,7 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
 			order = order.clone();
-			long sn = serial.getAndIncrement();
+			long sn = proxy.getORDER_REF();
 			serialToOrder.put(sn, order);			
 			String snStr = String.valueOf(sn);			
 			order.setClOrderId(snStr);

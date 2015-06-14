@@ -290,7 +290,7 @@
 			<value>0253</value>
 		</property>
 		<property name="connectionCount">
-			<value>2</value>
+			<value>1</value>
 		</property>
 		<property name="libPath">
 			<value>../adaptor/ctplib/win32/thosttraderapi.dll</value>
