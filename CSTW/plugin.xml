@@ -114,6 +114,14 @@
             name="Account Setting View"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.gui.AccountStatisticView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.AccountStatisticViewer"
+            name="Account Statistic View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -203,6 +211,11 @@
             <command
                   commandId="CSTW.SignalView"
                   label="Watch list"
+                  style="push">
+            </command>
+            <command
+                  commandId="CSTW.AccountStatisticView"
+                  label="Account Statistic"
                   style="push">
             </command>
             <menu
@@ -317,6 +330,12 @@
             description="Account Settings"
             id="CSTW.AccountSettingView"
             name="Account Settings">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.AccountStatisticViewCommand"
+            description="Account Statistic"
+            id="CSTW.AccountStatisticView"
+            name="Account Statistic">
       </command>
    </extension>
 
