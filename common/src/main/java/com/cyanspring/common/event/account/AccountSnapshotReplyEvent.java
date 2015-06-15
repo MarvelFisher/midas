@@ -1,5 +1,6 @@
 package com.cyanspring.common.event.account;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import com.cyanspring.common.account.Account;
@@ -8,6 +9,8 @@ import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.message.ExtraEventMessage;
+import com.cyanspring.common.message.ExtraEventMessageBuilder;
 
 public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	private Account account;
@@ -16,13 +19,13 @@ public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	private List<ClosedPosition> closedPositions;
 	private List<Execution> executions;
 	private String txId;
-	private Object infos[];
+	private ExtraEventMessageBuilder messageBuilder;
 
 	public AccountSnapshotReplyEvent(String key, String receiver,
 			Account account, AccountSetting accountSetting,
 			List<OpenPosition> openPositions,
 			List<ClosedPosition> closedPositions, List<Execution> executions,
-			String txId,Object... infos) {
+			String txId,ExtraEventMessageBuilder messageBuilder) {
 		super(key, receiver);
 		this.account = account;
 		this.accountSetting = accountSetting;
@@ -30,7 +33,7 @@ public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 		this.closedPositions = closedPositions;
 		this.executions = executions;
 		this.txId = txId;
-		this.infos = infos;
+		this.messageBuilder = messageBuilder;
 	}
 
 	public Account getAccount() {
@@ -51,8 +54,18 @@ public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	public String getTxId() {
 		return txId;
 	}
-	public Object[] getInfos() {
-		return infos;
+	public String getStopLiveTradingStartTime(){
+		
+		if( null == messageBuilder)
+			return null;
+		
+		return messageBuilder.getMessage(ExtraEventMessage.USER_STOP_LIVE_TRADING_START_TIME);
 	}
-
+	public String getStopLiveTradingEndTime(){
+		
+		if( null == messageBuilder)
+			return null;
+		
+		return messageBuilder.getMessage(ExtraEventMessage.USER_STOP_LIVE_TRADING_END_TIME);
+	}
 }

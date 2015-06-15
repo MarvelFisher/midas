@@ -27,7 +27,6 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
-import com.cyanspring.common.account.LiveTradingSettingType;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.PositionException;
@@ -97,6 +96,8 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.ExtraEventMessage;
+import com.cyanspring.common.message.ExtraEventMessageBuilder;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -658,7 +659,7 @@ public class AccountPositionManager implements IPlugin {
         AccountSnapshotReplyEvent reply;
         if (null == account) {
             reply = new AccountSnapshotReplyEvent(event.getKey(), event.getSender(),
-                    null, null, null, null, null, event.getTxId());
+                    null, null, null, null, null, event.getTxId(),null);
             log.warn("processAccountSnapshotRequestEvent, account doesn't exist: " + event.getAccountId());
         } else {
             List<OpenPosition> openPositions = positionKeeper.getOverallPosition(account);
@@ -779,18 +780,17 @@ public class AccountPositionManager implements IPlugin {
         }
 
     }
-    private Map<LiveTradingSettingType,String> getUserLiveTradingTime(AccountSetting accountSetting){
+    private ExtraEventMessageBuilder getUserLiveTradingTime(AccountSetting accountSetting){
 
     	if( null != liveTradingSetting 
     			 && null != accountSetting && accountSetting.isLiveTrading() ){
     		 
-    	    	Map <LiveTradingSettingType,String> paramMap = new LinkedHashMap<>();
-    	    	paramMap.put(LiveTradingSettingType.USER_STOP_LIVE_TRADING_START_TIME
-    	    			, liveTradingSetting.getUserStopLiveTradingStartTime());
-    	    	paramMap.put(LiveTradingSettingType.USER_STOP_LIVE_TRADING_END_TIME
-    	    			, liveTradingSetting.getUserStopLiveTradingEndTime());
+    			ExtraEventMessageBuilder builder = new ExtraEventMessageBuilder();
+    			
+    			builder.putMessage(ExtraEventMessage.USER_STOP_LIVE_TRADING_START_TIME, liveTradingSetting.getUserStopLiveTradingStartTime())
+    			.putMessage(ExtraEventMessage.USER_STOP_LIVE_TRADING_END_TIME, liveTradingSetting.getUserStopLiveTradingEndTime());
     	    	
-    	    	return paramMap;
+    	    	return builder;
     	 }
     	
     	return null;  	
