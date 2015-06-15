@@ -33,23 +33,16 @@ public class AccountStatisticView extends ViewPart implements
 	public static final String ID = "com.cyanspring.cstw.gui.AccountStatisticViewer";
 	private PropertyTableViewer viewer;
 	private Action refreshAction;
-	private boolean editMode;
 	private ImageRegistry imageRegistry;
-	private String objectId;
-	@SuppressWarnings("rawtypes")
-	private Class clazz;
-	private List<String> editableFields;
 	private Composite composite= null;
-
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long maxRefreshInterval = 10000;
+	private long maxRefreshInterval = 5000;
 	
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if(event instanceof AsyncTimerEvent) {
 			sendAccountStatisticRequest();
 		}else if(event instanceof AccountStatisticReplyEvent){
-			log.info("get reply");		
 			displayObject(((AccountStatisticReplyEvent) event).getAccount());
 		}else{
 			log.error("Unhandle Event:{}",event.getClass().getSimpleName());
@@ -65,13 +58,14 @@ public class AccountStatisticView extends ViewPart implements
 				| SWT.V_SCROLL, BeanHolder.getInstance().getDataConverter());
 		viewer.init();
 		createRefreshAction(parent);
-		
+		sendAccountStatisticRequest();
 	}
 
 	private void displayObject(final Map<String, Object> object) {
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
+				viewer.setSorter(null);
 				viewer.setInput(object);
 				viewer.refresh();
 			}
@@ -109,7 +103,6 @@ public class AccountStatisticView extends ViewPart implements
 		Business.getInstance().getEventManager().subscribe(clazz, this);		
 	}
 	private void sendAccountStatisticRequest(){
-		log.info("sendAccountStatisticRequest");
 		AccountStatisticRequestEvent evt = new AccountStatisticRequestEvent(ID, Business.getInstance().getFirstServer());
 		sendRemoteEvent(evt);
 	}

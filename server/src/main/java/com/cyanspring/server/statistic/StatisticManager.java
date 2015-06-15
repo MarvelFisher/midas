@@ -33,7 +33,6 @@ public class StatisticManager implements IPlugin{
 	@Autowired
     AccountKeeper accountKeeper;
 
-
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -51,13 +50,11 @@ public class StatisticManager implements IPlugin{
 	
 	@Override
 	public void init() throws Exception {
-		log.info("into StatisticManager");
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null){
 			eventProcessor.getThread().setName("StatisticManager");
-		}
-		
+		}	
 	}
 
 	@Override
@@ -68,10 +65,8 @@ public class StatisticManager implements IPlugin{
 	
 	public void processAccountStatisticRequestEvent(AccountStatisticRequestEvent event){		
 		
-		log.info(" into processAccountStatisticRequestEvent");
 		AccountStatisticCollector cal = new AccountStatisticCollector();
 		List <Account>accounts = accountKeeper.getAllAccounts();
-		log.info("accounts:{}",accounts.size());
 		try {
 			
 			for(Account account:accounts){		
@@ -85,7 +80,6 @@ public class StatisticManager implements IPlugin{
 			map.put(AccountStatistic.ALL_TIME_PNL.value(), cal.getTotalAllTimePnl());	
 			map.put(AccountStatistic.UR_PNL.value(), cal.getTotalUrPnL());
 			AccountStatisticReplyEvent reply = new AccountStatisticReplyEvent(event.getKey(),event.getSender(),map);
-			log.info("map:{}",map.size());
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
