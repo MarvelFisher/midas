@@ -37,7 +37,6 @@
                 <ref bean="premiumFollowManager"/>
                 <ref bean="trailingStopManager"/>
 				<ref bean="validationDataProvider"/>
-                <ref bean="ceilFloorValidator"/>
                 <ref bean="liveTradingSession" />
             </list>
         </property>
