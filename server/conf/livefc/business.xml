@@ -13,6 +13,7 @@
         <constructor-arg>
             <list>
                 <ref bean="accountStateValidator"/>
+                <ref bean="liveTradingSessionValidator"/>
                 <ref bean="marketSessionValidator"/>
                 <ref bean="orderFieldValidator"/>
                 <ref bean="strategyOrderValidator"/>

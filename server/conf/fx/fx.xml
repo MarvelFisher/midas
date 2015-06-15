@@ -36,7 +36,7 @@
 				<ref bean="premiumFollowManager"/>
 				<ref bean="trailingStopManager"/>
 				<ref bean="liveTradingSession" />	
-
+				<ref bean="statisticManager" />	
 			</list>
 		</property>
 		<property name="readyMap">
@@ -46,8 +46,13 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
+	</bean>
+	
 	<bean id="trailingStopManager" class="com.cyanspring.server.account.TrailingStopManager">
 	</bean>
+	
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="transportService" />
