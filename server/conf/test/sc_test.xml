@@ -27,6 +27,7 @@
 				<!-- <ref bean="alertManager" /> -->
 				<ref bean="autoRunner" />
 				<ref bean="validationDataProvider"/>
+				<ref bean="statisticManager"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -35,6 +36,9 @@
 				<entry key="Recovery" value="false" />
 			</map>
 		</property>
+	</bean>
+	
+	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 	
 	<bean id="validationDataProvider" class="com.cyanspring.server.validation.data.ValidationDataProvider">
