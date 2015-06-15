@@ -70,16 +70,9 @@ public class StatisticManager implements IPlugin{
 		try {
 			
 			for(Account account:accounts){		
-				cal.calculate(account);
+				cal.calculate(account,accountKeeper.getAccountSetting(account.getId()));
 			}
-			Map <String,Object>map = new LinkedHashMap<>();
-			map.put(AccountStatistic.CASH_DEPOSITED.value(), cal.getTotalCashDeposited());
-			map.put(AccountStatistic.ACCOUNT_VALUE.value(), cal.getTotalAccountValue());
-			map.put(AccountStatistic.VALUE.value(), cal.getTotalValue());		
-			map.put(AccountStatistic.DAILY_PNL.value(), cal.getTotalDailyPnL());
-			map.put(AccountStatistic.ALL_TIME_PNL.value(), cal.getTotalAllTimePnl());	
-			map.put(AccountStatistic.UR_PNL.value(), cal.getTotalUrPnL());
-			AccountStatisticReplyEvent reply = new AccountStatisticReplyEvent(event.getKey(),event.getSender(),map);
+			AccountStatisticReplyEvent reply = new AccountStatisticReplyEvent(event.getKey(),event.getSender(),cal.toDefaultCaculatedMap());
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);

@@ -8,7 +8,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +31,8 @@ import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class AccountStatisticView extends ViewPart implements
 		IAsyncEventListener {
+	public AccountStatisticView() {
+	}
 	
 	private static final Logger log = LoggerFactory.getLogger(AccountStatisticView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.AccountStatisticViewer";
@@ -35,6 +40,9 @@ public class AccountStatisticView extends ViewPart implements
 	private Action refreshAction;
 	private ImageRegistry imageRegistry;
 	private Composite composite= null;
+	private Composite topComposite= null;
+	private Composite bottomComposite= null;
+
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 5000;
 	
@@ -56,6 +64,7 @@ public class AccountStatisticView extends ViewPart implements
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		viewer = new PropertyTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, BeanHolder.getInstance().getDataConverter());
+		
 		viewer.init();
 		createRefreshAction(parent);
 		sendAccountStatisticRequest();
@@ -65,7 +74,6 @@ public class AccountStatisticView extends ViewPart implements
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				viewer.setSorter(null);
 				viewer.setInput(object);
 				viewer.refresh();
 			}
