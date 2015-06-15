@@ -14,7 +14,7 @@
 			<value>tcp://180.168.146.181:10200</value>
 		</property>
 		<property name="conLog">
-			<value>./tradeCon</value>
+			<value>./tradeCon/</value>
 		</property>
 		<property name="user">
 			<value>00071</value>
@@ -26,7 +26,7 @@
 			<value>0253</value>
 		</property>
 		<property name="connectionCount">
-			<value>2</value>
+			<value>1</value>
 		</property>
 		<!--
 		<property name="connections">

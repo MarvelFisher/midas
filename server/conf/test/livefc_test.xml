@@ -278,7 +278,7 @@
 			<value>tcp://180.168.146.181:10200</value>
 		</property>
 		<property name="conLog">
-			<value>./tradeCon</value>
+			<value>./tradeCon/</value>
 		</property>
 		<property name="user">
 			<value>00090</value>
