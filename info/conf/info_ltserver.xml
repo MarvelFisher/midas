@@ -185,7 +185,7 @@
 	</bean>
 
 	<!-- IDAdaptor setting (Setting can be marked if not used) -->
-
+	<!-- 
 	<bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>
 		<property name="password" value="MFW9dC26"></property>
@@ -204,4 +204,5 @@
 			</map>
 		</property>
 	</bean>
+	 -->
 </beans>

@@ -484,7 +484,12 @@ public class SymbolData implements Comparable<SymbolData>
 				for(Map.Entry<Date, HistoricalPrice> entry : priceData.entrySet())
 				{
 					price = entry.getValue();
-					if (price.getDatatime() == null)
+					if (priceEmpty == null)
+					{
+						priceEmpty = (HistoricalPrice)price.clone();
+					}
+					if (price.getDatatime() == null 
+							|| price.getDatatime().getTime() < priceEmpty.getDatatime().getTime())
 					{
 						continue;
 					}
@@ -508,6 +513,10 @@ public class SymbolData implements Comparable<SymbolData>
 					if (priceEmpty.getDatatime() == null)
 					{
 						priceEmpty.update(price);
+						continue;
+					}
+					if (price.getDatatime().getTime() < priceEmpty.getDatatime().getTime())
+					{
 						continue;
 					}
 					pricetime.setTime(price.getDatatime());
