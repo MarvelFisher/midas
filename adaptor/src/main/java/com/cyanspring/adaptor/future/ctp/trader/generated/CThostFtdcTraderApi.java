@@ -121,7 +121,7 @@ public class CThostFtdcTraderApi extends CPPObject {
 	 * ///@param pSpi 派生自回调接口类的实例
 	 */
 	@Virtual(7) 
-	public void RegisterSpi(Pointer<CThostFtdcTraderSpi > pSpi) {
+	public void RegisterSpi(Pointer<? extends CThostFtdcTraderSpi > pSpi) {
 		RegisterSpi(Pointer.getPeer(pSpi));
 	}
 	@Virtual(7) 

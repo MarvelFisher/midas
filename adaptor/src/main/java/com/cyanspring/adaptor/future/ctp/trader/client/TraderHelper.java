@@ -14,52 +14,62 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.adaptor.future.ctp.trader.generated.*;
 import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary.THOST_TE_RESUME_TYPE;
+import com.cyanspring.common.type.ExecType;
+import com.cyanspring.common.type.OrdStatus;
 
 public class TraderHelper {
-	private final static Logger log = LoggerFactory.getLogger(TraderHelper.class);
+	private final static Logger log = LoggerFactory.getLogger(TraderHelper.class);	
 	
-	private static CThostFtdcTraderApi traderApi;
-	private static CThostFtdcTraderSpi traderSpi;
-	private static AtomicInteger seqId;
-	
-	private static String FRONT_ADDR = "tcp://180.168.146.181:10200";
-	private static String BROKER_ID = "0253";
-	
-	// Session Info
-	private static int FRONT_ID;
-	private static int SESSION_ID;
-	private static String ORDER_REF;
-	
-	// test resource
-	private static String INVESTOR_ID = "00071";
-	private static String PASSWORD = "hkfdt1234";
-	private static String INSTRUMENT_ID = "rb1510";
-	private static byte DIRECTION = TraderLibrary.THOST_FTDC_D_Sell;
-	private static double LIMIT_PRICE = 2350;
-	
-	
-	private static Map<String , AbstractTraderProxy> clientMaps = new ConcurrentHashMap<String , AbstractTraderProxy>();	
-	
-	
-	static void registClient(String id, CtpTraderProxy client) {
-		if ( (id != null) && (client != null ) ) {
-			clientMaps.put(id, client);
-		}	
+	public static OrdStatus convert2OrdStatus(byte code) {
+		OrdStatus ltsOrdStatus = null;		
+		switch (code) {
+			case TraderLibrary.THOST_FTDC_OST_AllTraded: 
+				ltsOrdStatus = OrdStatus.FILLED;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_PartTradedQueueing:
+				ltsOrdStatus = OrdStatus.PARTIALLY_FILLED;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing:
+				ltsOrdStatus = null;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
+				ltsOrdStatus = OrdStatus.NEW;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
+				ltsOrdStatus = OrdStatus.CANCELED;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_Canceled:
+				ltsOrdStatus = OrdStatus.CANCELED;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_Unknown:
+				ltsOrdStatus = OrdStatus.PENDING_NEW;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_NotTouched:
+				ltsOrdStatus = null;
+				break;
+			case TraderLibrary.THOST_FTDC_OST_Touched:
+				ltsOrdStatus = null;
+				break;
+			default:
+				ltsOrdStatus = null;
+		}
+		return ltsOrdStatus;
 	}
 	
-	static void handleRspMsg(String id, CThostFtdcRspInfoField rspInfo) {
-		AbstractTraderProxy client = clientMaps.get(id);
-		client.responseOnError(rspInfo);
+	public static boolean isTradedStatus( byte code ) {
+		if ( (code == TraderLibrary.THOST_FTDC_OST_AllTraded) || 
+				(code == TraderLibrary.THOST_FTDC_OST_PartTradedQueueing) || 
+				(code == TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing) ) {
+			return true;
+		}
+		return false;
 	}
 	
-	
-	
-	static void notifyNetworkReady(String id) {
-		AbstractTraderProxy client = clientMaps.get(id);
-		client.doLogin();		
+	public static ExecType OrdStatus2ExecType( OrdStatus status ) {
+		return ExecType.getType(status.value());
 	}
 	
-	static String toGBKString(byte[] bytes) {
+	public static String toGBKString(byte[] bytes) {
 		try {
 			return new String(bytes, "GB2312");
 		} catch (UnsupportedEncodingException e) {
@@ -68,37 +78,16 @@ public class TraderHelper {
 		return "";
 	}
 	
-	static void fireEventChange(String id, StructObject event) {
-		fireEventChange(id, event, null);
-	}
-
-	public static void fireEventChange(String id, StructObject event, CThostFtdcRspInfoField rspInfo) {
-		AbstractTraderProxy client = clientMaps.get(id);
-		if ( event instanceof CThostFtdcRspUserLoginField ) {
-			client.responseLogin((CThostFtdcRspUserLoginField) event);
-			client.doReqSettlementInfoConfirm();
-		}
-		else if ( event instanceof CThostFtdcSettlementInfoConfirmField) {
-			client.responseSettlementInfoConfirm((CThostFtdcSettlementInfoConfirmField) event);
-		}		
-		else if ( event instanceof CThostFtdcUserLogoutField ) {
-			
-		}
-		else if ( event instanceof CThostFtdcInputOrderField) {
-			client.responseOnOrder(event);
-		}
-		else if ( event instanceof CThostFtdcOrderField) {
-			client.responseOnOrder(event);
-		}
-		else if ( event instanceof CThostFtdcTradeField ) {
-			client.responseOnOrder(event);
-		}
-		else if ( event instanceof CThostFtdcInputOrderActionField ) {
-			client.responseOnOrder(event, rspInfo);
-		}
-		else {
-			
-		}
+	/**
+	 * 获得Field
+	 * 
+	 * 对可能出现的null值做处理
+	 * @param <T>
+	 * @param field field的指针对象
+	 * @return
+	 */
+	public static <T extends StructObject> T getStructObject(Pointer<T> field) {
+		return field == null ? null : field.get();
 	}
 
 }
