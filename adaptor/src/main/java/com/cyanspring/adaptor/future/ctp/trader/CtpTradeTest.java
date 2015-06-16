@@ -70,7 +70,7 @@ public class CtpTradeTest implements IDownStreamListener {
 			public void run() {
 				try {
 					
-					ChildOrder order = new ChildOrder("au1606", OrderSide.Buy, 35, 243, ExchangeOrderType.LIMIT,
+					ChildOrder order = new ChildOrder("rb1604", OrderSide.Buy, 10, 2360, ExchangeOrderType.LIMIT,
 							 "", "", "", "", null);
 					array.add(order);
 					sender.newOrder(order);

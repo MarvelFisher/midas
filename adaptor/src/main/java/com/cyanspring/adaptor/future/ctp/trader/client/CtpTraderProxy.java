@@ -32,12 +32,12 @@ import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 
-public class CtpTraderProxy extends AbstractTraderProxy {
+public class CtpTraderProxy implements ILtsLoginListener {
 	
 	private final static Logger log = LoggerFactory.getLogger(CtpTraderProxy.class);
 	
 	private CThostFtdcTraderApi traderApi;
-	private CThostFtdcTraderSpi traderSpi;
+	private LtsTraderSpiAdaptor traderSpi;
 	private String clientId;
 	private String frontUrl;
 	private String brokerId;
@@ -48,6 +48,10 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 	private int FRONT_ID;
 	private int SESSION_ID;
 	private AtomicInteger ORDER_REF = new AtomicInteger();
+	
+	protected AtomicInteger seqId = new AtomicInteger();
+	
+	protected ILtsTraderListener listener;
 	
 	private boolean ready = false;
 	private ISymbolConverter symbolConverter;
@@ -105,7 +109,6 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		} else if ( OrderSide.Sell == order.getSide() ) {
 			direction = TraderLibrary.THOST_FTDC_D_Sell;
 		}
-//		order.setClOrderId(String.valueOf(orderRef));
 		
 		CThostFtdcInputOrderField req = new CThostFtdcInputOrderField();
 		req.BrokerID().setCString(brokerId);
@@ -160,13 +163,48 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		traderApi.ReqOrderAction(Pointer.getPointer(req), getNextSeq());
 	}
 	
-	@Override
+	private Thread workThread1;
+	protected void connect() {
+		if ( workThread1 == null ) {
+			workThread1 = new Thread() {
+				@Override
+				public void run() {
+					startThreadProcess();
+				}
+			};
+			workThread1.setDaemon(true);
+			workThread1.start();
+		} else {
+			log.info("Already connecting, disconnect first");
+		}
+	}
+	
+	private Thread workThread2;
+	protected void disConnect() {
+		if ( workThread2 == null ) {
+			workThread2 = new Thread() {
+				@Override
+				public void run() {
+					stopThreadProcess();
+				}
+			};
+			workThread2.setDaemon(true);
+			workThread2.start();
+		} else {
+			log.info("Already disconnected, connect first");
+		}
+	}
+	
 	protected void startThreadProcess() {
 		Pointer<CThostFtdcTraderApi > pTraderApi = CThostFtdcTraderApi.CreateFtdcTraderApi(BridjUtils.stringToBytePointer(traderFlow));
 		traderApi = pTraderApi.get();
-		traderSpi = new LtsTraderSpi(clientId);
+		traderSpi = new LtsTraderSpiAdaptor();
+		traderSpi.setCtpTraderProxy(this);
+		if( listener != null ) {
+			traderSpi.addTraderListener(listener);
+		}
+		traderSpi.addLoginListener(this);
 		traderApi.RegisterSpi(Pointer.getPointer(traderSpi));
-		TraderHelper.registClient(((LtsTraderSpi)traderSpi).getConnectId(), this);
 		traderApi.RegisterFront(BridjUtils.stringToBytePointer(frontUrl));
 		traderApi.SubscribePrivateTopic(THOST_TE_RESUME_TYPE.THOST_TERT_QUICK);
 		traderApi.SubscribePublicTopic(THOST_TE_RESUME_TYPE.THOST_TERT_QUICK);
@@ -174,13 +212,13 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		traderApi.Join();
 	}
 	
-	@Override
 	protected void stopThreadProcess() {
+		traderSpi.removeTraderListerner(listener);
+		traderSpi.removeLoginListener(this);
 		traderApi.Release();
 	}
 	
 	private boolean loginSend = false;
-	@Override
 	protected void doLogin() {
 		if ( !loginSend ) {
 			CThostFtdcReqUserLoginField req = new CThostFtdcReqUserLoginField();
@@ -203,33 +241,8 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 			log.info("Send SettlementInfoConfirm");
 		}		
 	}
-
-	@Override
-	protected void responseLogin(CThostFtdcRspUserLoginField event) {
-		FRONT_ID = event.FrontID();
-		SESSION_ID = event.SessionID();
-		int nextOrderRef = event.MaxOrderRef().getInt();
-		ORDER_REF = new AtomicInteger(++nextOrderRef) ;
-		log.info("FRONT_ID = " + FRONT_ID + "; SESSION_ID = " + SESSION_ID + "; ORDER_REF = " + ORDER_REF);
-	}
-
-	@Override
-	protected void responseSettlementInfoConfirm(
-			CThostFtdcSettlementInfoConfirmField event) {		
-		ready = true;
-			
-		log.info("CTP Connection: " +  clientId + " Ready!");
-		if ( listener != null ) {
-			listener.onState(ready);
-		}		
-	}
 	
-	@Override
-	protected void responseOnOrder(StructObject event) {
-		responseOnOrder(event, null);
-	}
-	
-	@Override
+	/*
 	protected void responseOnOrder(StructObject event, CThostFtdcRspInfoField rspInfo) {
 		if ( (event instanceof CThostFtdcInputOrderField)) {
 			CThostFtdcInputOrderField rsp = (CThostFtdcInputOrderField)event;
@@ -298,90 +311,31 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 		}
 		
 	}
-
-	private ExecType CtpOrderStatus2ExecType(byte status) {
-		ExecType execType = null;		
-		switch (status) {
-			case TraderLibrary.THOST_FTDC_OST_AllTraded: 
-				execType = ExecType.FILLED;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_PartTradedQueueing:
-				execType = ExecType.PARTIALLY_FILLED;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing:
-				
-				break;
-			case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
-				execType = ExecType.NEW;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
-				
-				break;
-			case TraderLibrary.THOST_FTDC_OST_Canceled:
-				execType = ExecType.CANCELED;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_Unknown:
-				execType = ExecType.PENDING_NEW;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_NotTouched:
-				
-				break;
-			case TraderLibrary.THOST_FTDC_OST_Touched:
-				
-				break;
-			default:
-				execType = null;
+	*/
+	
+	public void addListener(ILtsTraderListener listener) throws DownStreamException {
+		if(listener != null && this.listener != null) {
+			throw new DownStreamException("Support only one listener");	
 		}
-		return execType;
+				
+		this.listener = listener;
+		if ( traderSpi != null ) {
+			traderSpi.addTraderListener(listener);
+		}
 	}
 	
-	private OrdStatus CtpOrderStatus2Lts(byte status) {
-		OrdStatus ltsOrdStatus = null;		
-		switch (status) {
-			case TraderLibrary.THOST_FTDC_OST_AllTraded: 
-				ltsOrdStatus = OrdStatus.FILLED;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_PartTradedQueueing:
-				ltsOrdStatus = OrdStatus.PARTIALLY_FILLED;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing:
-				
-				break;
-			case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
-				ltsOrdStatus = OrdStatus.NEW;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
-				
-				break;
-			case TraderLibrary.THOST_FTDC_OST_Canceled:
-				ltsOrdStatus = OrdStatus.CANCELED;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_Unknown:
-				ltsOrdStatus = OrdStatus.PENDING_NEW;
-				break;
-			case TraderLibrary.THOST_FTDC_OST_NotTouched:
-				
-				break;
-			case TraderLibrary.THOST_FTDC_OST_Touched:
-				
-				break;
-			default:
-				ltsOrdStatus = null;
-		}
-		return ltsOrdStatus;
-	}
-	
-	protected void responseOnError(CThostFtdcRspInfoField rspInfo) {		
-		if ( rspInfo.ErrorID() != 0 ) {
-			String msg = TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
-			listener.onError(msg);
-		}			
+	public synchronized int getNextSeq() {
+		return seqId.incrementAndGet();
 	}
 	
 	public boolean isReady() {
 		return ready;
 	}
-
+	
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+	
 	public int getFRONT_ID() {
 		return FRONT_ID;
 	}
@@ -392,6 +346,15 @@ public class CtpTraderProxy extends AbstractTraderProxy {
 
 	public int getORDER_REF() {
 		return ORDER_REF.getAndIncrement();
+	}
+	
+	@Override
+	public void onLogin(CThostFtdcRspUserLoginField field) {
+		FRONT_ID = field.FrontID();
+		SESSION_ID = field.SessionID();
+		int nextOrderRef = field.MaxOrderRef().getInt();
+		ORDER_REF = new AtomicInteger(++nextOrderRef) ;
+		log.info("FRONT_ID = " + FRONT_ID + "; SESSION_ID = " + SESSION_ID + "; ORDER_REF = " + ORDER_REF);
 	}
 	
 }

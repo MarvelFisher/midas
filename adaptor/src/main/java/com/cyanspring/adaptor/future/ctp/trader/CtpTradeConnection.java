@@ -1,6 +1,5 @@
 package com.cyanspring.adaptor.future.ctp.trader;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -9,9 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.adaptor.future.ctp.trader.client.CtpTraderProxy;
-import com.cyanspring.adaptor.future.ctp.trader.client.IChainListener;
+import com.cyanspring.adaptor.future.ctp.trader.client.ILtsTraderListener;
+import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
 import com.cyanspring.common.business.ChildOrder;
-import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
@@ -20,7 +22,7 @@ import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 
-public class CtpTradeConnection implements IDownStreamConnection, IChainListener {
+public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(CtpTradeConnection.class);
 
@@ -116,59 +118,75 @@ public class CtpTradeConnection implements IDownStreamConnection, IChainListener
 		return this.downStreamSender;
 	}
 
-	@Override
-	public void onState(boolean on) {
-		this.listener.onState(on);
-	}
-	
-	@Override
-	public void onOrder(String orderId, ExecType type, String message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onOrder(String orderId, ExecType type , OrdStatus status, String message) {
-		log.info("onOrder: " + orderId + " Type: " + type + " Message: " + message);
-		Long sn = Long.parseLong(orderId);
-		ChildOrder order = serialToOrder.get(sn);
-		if ( null == order ) {
-			log.info("Order not found: " + sn);
-			return;
-		}
-		if ( status != null ) {
-			order.setOrdStatus(status);
-		}	
-		this.listener.onOrder(type, order, null, message);
-	}	
-	
-	@Override
-	public void onOrder(String orderId, ExecType type, OrdStatus status,
-			int volume, String message) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void onError(String orderId, String message) {		
-		log.error("Response Error On Order:" + orderId + " " + message);
-		Long sn = Long.parseLong(orderId);
-		ChildOrder order = serialToOrder.get(sn);	
-		if ( null == order ) {
-			log.info("Order not found: " + sn);
-			return;
-		}
-		this.listener.onError(order.getId(), message);	
-	}
 	
 	private long genSerialId() {
 		AtomicLong id = new AtomicLong();
 		return id.getAndIncrement();
 	}
 
-	@Override
 	public void onError(String message) {		
 		log.error("Response Error:" + message);
+	}
+
+	@Override
+	public void onConnectReady(boolean isReady) {
+		proxy.setReady(isReady);
+		this.listener.onState(isReady);	
+	}
+	
+	/**
+	 * Notify Order Status except TradeStatus
+	 */
+	@Override
+	public void onOrder(CThostFtdcOrderField order) {
+		String orderId = order.OrderRef().getCString();
+		byte statusCode = order.OrderStatus();
+		int volumeTraded = order.VolumeTraded();
+		String msg = TraderHelper.toGBKString(order.StatusMsg().getBytes());
+		OrdStatus status = TraderHelper.convert2OrdStatus(statusCode);
+		ExecType execType = TraderHelper.OrdStatus2ExecType(status);		
+		log.info("onOrder: " + orderId + " Type: " + status + "Volume: " + volumeTraded + " Message: " + msg );
+		
+		Long sn = Long.parseLong(orderId);
+		ChildOrder childOrder = serialToOrder.get(sn);
+		if ( null == childOrder ) {
+			log.info("Order not found: " + sn);
+			return;
+		}
+		if ( status != null ) {
+			childOrder.setOrdStatus(status);
+			double volTraded = childOrder.getCumQty();
+			if ( !TraderHelper.isTradedStatus(statusCode) ) {				
+				this.listener.onOrder(execType, childOrder, null, msg);
+			}
+			
+		}
+	}
+	
+	/**
+	 * Notify Trade
+	 */
+	@Override
+	public void onTrade(CThostFtdcTradeField trade) {
+		log.info("Traded:");
+		
+	}
+
+	@Override
+	public void onCancel(CThostFtdcInputOrderActionField field) {
+		log.info("Cancelled:");
+	}
+
+	@Override
+	public void onError(String orderId, String msg) {
+		log.error("Response Error On Order:" + orderId + " " + msg);
+		Long sn = Long.parseLong(orderId);
+		ChildOrder order = serialToOrder.get(sn);	
+		if ( null == order ) {
+			log.info("Order not found: " + sn);
+			return;
+		}
+		this.listener.onError(order.getId(), msg);	
 	}
 
 	
