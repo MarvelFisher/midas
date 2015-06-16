@@ -34,7 +34,6 @@
                 <ref bean="mdManager" />
                 <ref bean="downStreamManager" />
                 <ref bean="accountPositionManager" />
-                <ref bean="premiumFollowManager"/>
                 <ref bean="trailingStopManager"/>
 				<ref bean="validationDataProvider"/>
                 <ref bean="liveTradingSession" />
@@ -75,8 +74,6 @@
         </constructor-arg>
         <property name="embedBroker" value="false"/>
     </bean>
-
-    <bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"/>
 
     <bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
         <property name="requestMap">
@@ -139,9 +136,6 @@
         <property name="checkEmailUnique" value="onlyExist"/>
         <property name="checkPhoneUnique" value="noCheck"/>
         <property name="syncCentralDb" value="true"/>
-    </bean>
-
-    <bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
     </bean>
 
     <bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>

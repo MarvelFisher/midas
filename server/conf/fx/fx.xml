@@ -137,9 +137,6 @@
 		<property name="syncCentralDb" value="true"/>
 	</bean>
 
-	<bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
-	</bean>
-
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
 	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
 		<property name="quotePriceWarningIsOpen" value="true"/>
