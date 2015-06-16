@@ -17,6 +17,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.server.livetrading.TradingUtil;
@@ -171,6 +172,7 @@ public class AccountKeeper {
 			account.setMarket(Default.getMarket());
 		account.addMargin(account.getCash() * leverageManager.getLeverage(null, null));
 		account.setActive(true);
+		account.setState(AccountState.ACTIVE);
 	}
 	
 	public boolean accountExists(String id) {
