@@ -820,7 +820,10 @@ public class AccountPositionManager implements IPlugin {
                     null, accountSetting);
             eventManager.sendEvent(pmEvent);
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/heads/2015-06-05_sprint
     }
 
     public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {

@@ -6,14 +6,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import webcurve.util.PriceUtils;
-
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.server.livetrading.TradingUtil;
 
 public class LiveTradingRuleHandler{
@@ -49,7 +48,6 @@ public class LiveTradingRuleHandler{
 		
 		return oldAccountSetting;	
 	}
-	
 	private AccountSetting checkLiveTradingStopLossValue(AccountSetting oldSetting,Account account)throws AccountException{
 		
 		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getFreezePercent()
