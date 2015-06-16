@@ -453,7 +453,7 @@ public class PersistenceManager {
 	public void processPmUserLoginEvent(PmUserLoginEvent event)
 	{
 		log.debug("Received PmUserLoginEvent: " + event.getOriginalEvent().getUserId());
-		String userId = event.getOriginalEvent().getUserId().toLowerCase();
+		String userId = event.getOriginalEvent().getUserId().toLowerCase().trim();
 		UserKeeper userKeeper = (UserKeeper)event.getUserKeeper();
 		AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
 		boolean ok = false;

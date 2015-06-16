@@ -103,6 +103,11 @@ public class CentralDbConnector {
             String userId, String userName, String password, String email, String phone, UserType userType,
             String country, String language, String thirdPartyId, String market) {
 
+        if (email != null)
+            email = email.trim().toLowerCase();
+        if (phone != null)
+            phone = phone.trim().toLowerCase();
+
         Connection conn = connect();
 
 		if (null == conn)
