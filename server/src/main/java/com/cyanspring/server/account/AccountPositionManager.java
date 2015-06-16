@@ -729,7 +729,6 @@ public class AccountPositionManager implements IPlugin {
         }
     }
     public void processAccountStateRequestEvent(AccountStateRequestEvent event){
-    	log.info("!!!!processAccountStateRequestEvent");
     	boolean isOk = true;
     	String message = "";
     	String id = event.getId();
@@ -820,10 +819,6 @@ public class AccountPositionManager implements IPlugin {
                     null, accountSetting);
             eventManager.sendEvent(pmEvent);
         }
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/heads/2015-06-05_sprint
     }
 
     public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
