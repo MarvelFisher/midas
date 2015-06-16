@@ -1,35 +1,25 @@
 package com.cyanspring.adaptor.future.ctp.trader.client;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.bridj.BridJ;
 import org.bridj.Pointer;
-import org.bridj.StructObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderField;
-import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcReqUserLoginField;
-import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcRspInfoField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcRspUserLoginField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcSettlementInfoConfirmField;
-import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTraderApi;
-import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTraderSpi;
 import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary;
 import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary.THOST_TE_RESUME_TYPE;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.downstream.DownStreamException;
-import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.type.ExchangeOrderType;
-import com.cyanspring.common.type.ExecType;
-import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 
 public class CtpTraderProxy implements ILtsLoginListener {
