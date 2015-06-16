@@ -11,16 +11,20 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
@@ -31,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -73,6 +78,15 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 10000;
 	private boolean show;
+	
+	private final RGB PURPLE = new RGB(171,130,255);
+	private final RGB WHITE = new RGB(255,255,255);
+	private final RGB GRAY = new RGB(181,181,181);
+	private final Color FROZEN_COLOR = new Color(Display.getCurrent(), PURPLE);
+	private final Color TERMINATE_COLOR = new Color(Display.getCurrent(), GRAY);
+	private final Color NORMAL_COLOR = new Color(Display.getCurrent(), WHITE);
+	private final String COLUMN_STATE="State";
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		log.info("Creating account view");
@@ -399,7 +413,43 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 
+	private void setBackgroundColorFromState(){
+
+		viewer.getControl().getDisplay().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				
+				TableColumn columns[] = viewer.getTable().getColumns();
+				int stateColumn = -1;
+				for(int i=0 ; i < columns.length ; i++){
+					if(COLUMN_STATE.equals(columns[i].getText())){
+						stateColumn = i;
+						break;
+					}
+				}
+				if(stateColumn == -1){
+					log.error("can't find state column");
+					return;
+				}
+				
+				for(TableItem item : viewer.getTable().getItems()){	
+					String state = item.getText(stateColumn);
+					if( AccountState.FROZEN.name() == state ){
+						item.setBackground(FROZEN_COLOR);
+					}else if( AccountState.TERMINATED.name() == state){
+						item.setBackground(TERMINATE_COLOR);
+					}else{
+						item.setBackground(NORMAL_COLOR);
+					}
+				}
+				viewer.refresh();
+			}
+		});
+	}
+	
 	private void showAccounts() {
+		log.info("into showAccounts");	
 		if (!show)
 			return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
@@ -410,11 +460,13 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						return;
 					if (accounts.toArray().size() > 0)
 						createOpenPositionColumns(accounts.toArray());
+
 					viewer.refresh();
 				}
 			}
 		});
 		show = false;
+		setBackgroundColorFromState();
 	}
 
 	@Override
@@ -446,7 +498,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			processAccountUpdate(((AccountDynamicUpdateEvent) event)
 					.getAccount());
 		} else if (event instanceof AsyncTimerEvent) {
-			//log.info("refresh start");
 			showAccounts();
 		}
 	}
