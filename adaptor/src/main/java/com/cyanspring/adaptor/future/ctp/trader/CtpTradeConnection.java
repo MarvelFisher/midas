@@ -14,6 +14,7 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderAc
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
 import com.cyanspring.common.business.ChildOrder;
+import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
@@ -21,6 +22,8 @@ import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.PriceUtils;
 
 public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener {
 	private static final Logger log = LoggerFactory
@@ -34,7 +37,9 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private IDownStreamListener listener;
 	private DownStreamSender downStreamSender = new DownStreamSender();
 	
-	private Map<Long, ChildOrder> serialToOrder = new ConcurrentHashMap<Long, ChildOrder>();
+	private Map<String, ChildOrder> serialToOrder = new ConcurrentHashMap<String, ChildOrder>();
+	private Map<String, Double> tradePendings = new ConcurrentHashMap<String, Double>();
+	private Map<String, Double> orderPendings = new ConcurrentHashMap<String, Double>();
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -78,12 +83,11 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
 			order = order.clone();
-			long sn = proxy.getORDER_REF();
-			serialToOrder.put(sn, order);			
-			String snStr = String.valueOf(sn);			
-			order.setClOrderId(snStr);
-			proxy.newOrder(snStr, order);
-			log.info("Send Order: " + snStr);
+			String ordRef = "" + proxy.getORDER_REF();
+			serialToOrder.put(ordRef, order);			
+			order.setClOrderId(ordRef);
+			proxy.newOrder(ordRef, order);
+			log.info("Send Order: " + ordRef);
 		}
 
 		@Override
@@ -138,25 +142,33 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	 * Notify Order Status except TradeStatus
 	 */
 	@Override
-	public void onOrder(CThostFtdcOrderField order) {
-		String orderId = order.OrderRef().getCString();
-		byte statusCode = order.OrderStatus();
-		int volumeTraded = order.VolumeTraded();
-		String msg = TraderHelper.toGBKString(order.StatusMsg().getBytes());
+	public void onOrder(CThostFtdcOrderField update) {
+		log.debug("onOrder: " + update);
+		String clOrderId = update.OrderRef().getCString();	
+		byte statusCode = update.OrderStatus();
+		int volumeTraded = update.VolumeTraded();
+		String msg = TraderHelper.toGBKString(update.StatusMsg().getBytes());
 		OrdStatus status = TraderHelper.convert2OrdStatus(statusCode);
 		ExecType execType = TraderHelper.OrdStatus2ExecType(status);		
-		log.info("onOrder: " + orderId + " Type: " + status + "Volume: " + volumeTraded + " Message: " + msg );
+		log.info("onOrder: " + clOrderId + " Type: " + status + "Volume: " + volumeTraded + " Message: " + msg );
 		
-		Long sn = Long.parseLong(orderId);
-		ChildOrder childOrder = serialToOrder.get(sn);
+		ChildOrder childOrder = serialToOrder.get(clOrderId);
 		if ( null == childOrder ) {
-			log.info("Order not found: " + sn);
+			log.info("Order not found: " + clOrderId);
 			return;
 		}
+
+		if(status == OrdStatus.NEW && childOrder.getOrdStatus() == OrdStatus.NEW ||
+		   status == OrdStatus.PENDING_NEW && childOrder.getOrdStatus() == OrdStatus.PENDING_NEW) {
+			log.debug("Skipping update since ordStatus doesn't change: " + status);
+			return;
+		}
+
 		if ( status != null ) {
 			childOrder.setOrdStatus(status);
-			double volTraded = childOrder.getCumQty();
-			if ( !TraderHelper.isTradedStatus(statusCode) ) {				
+			if (PriceUtils.GreaterThan(volumeTraded, childOrder.getCumQty())) {
+				tradePendings.put(clOrderId, new Double(volumeTraded)); // leave trade to do the update
+			} else {				
 				this.listener.onOrder(execType, childOrder, null, msg);
 			}
 			
@@ -168,8 +180,45 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	 */
 	@Override
 	public void onTrade(CThostFtdcTradeField trade) {
-		log.info("Traded:");
+		log.info("Traded: " + trade);
+		String clOrderId = trade.OrderRef().getCString();	
+		ChildOrder order = serialToOrder.get(clOrderId);
+		if ( null == order ) {
+			log.info("Order not found: " + clOrderId);
+			return;
+		}
+		Double volumeTraded = tradePendings.remove(clOrderId);
+		if(null == volumeTraded) {
+			log.error("Received trade without order update");
+		} else if(!PriceUtils.Equal(volumeTraded, order.getCumQty() + trade.Volume())) {
+			log.warn("Volume not match: " + volumeTraded + ", " + (order.getCumQty() + trade.Volume()));
+		}
 		
+		if(trade.Volume() == 0 || PriceUtils.isZero(trade.Price())) {
+			log.error("volume or price is 0");
+			return;
+		}
+		
+		double avgPx = (order.getAvgPx() * order.getCumQty() + trade.Volume() * trade.Price()) / (order.getCumQty() + trade.Volume());
+		double volume = order.getCumQty() + trade.Volume();
+		order.setCumQty(volume);
+		order.setAvgPx(avgPx);
+		ExecType execType = ExecType.PARTIALLY_FILLED;
+		if(PriceUtils.Equal(volumeTraded, order.getQuantity())) {
+			execType = ExecType.FILLED;
+			order.setOrdStatus(OrdStatus.FILLED);
+		} else {
+			order.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
+		}
+
+		Execution execution = new com.cyanspring.common.business.Execution(
+                order.getSymbol(), order.getSide(), trade.Volume(),
+                trade.Price(), order.getId(), order.getParentOrderId(),
+                order.getStrategyId(), IdGenerator.getInstance()
+                .getNextID() + "E", order.getUser(),
+                order.getAccount(), order.getRoute());
+		
+		this.listener.onOrder(execType, order, execution, null);
 	}
 
 	@Override

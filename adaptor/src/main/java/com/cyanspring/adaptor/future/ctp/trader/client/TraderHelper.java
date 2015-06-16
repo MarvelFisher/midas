@@ -30,7 +30,7 @@ public class TraderHelper {
 				ltsOrdStatus = OrdStatus.PARTIALLY_FILLED;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing:
-				ltsOrdStatus = null;
+				ltsOrdStatus = OrdStatus.PENDING_NEW;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
 				ltsOrdStatus = OrdStatus.NEW;
@@ -50,9 +50,9 @@ public class TraderHelper {
 			case TraderLibrary.THOST_FTDC_OST_Touched:
 				ltsOrdStatus = null;
 				break;
-			default:
-				ltsOrdStatus = null;
 		}
+		if(null == ltsOrdStatus)
+			log.warn("Status not map: " + code);
 		return ltsOrdStatus;
 	}
 	
