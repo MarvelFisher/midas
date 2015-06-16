@@ -138,7 +138,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			registrationGlobal.addSymbol(str);								
 			// 加到 Client 的 Registration
 			if(lst.addSymbol(str) == false) {								
-				log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
+				log.debug("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
 			}					
 		}    	
 		if(lst.MsgPackArrayCount() > 0) {

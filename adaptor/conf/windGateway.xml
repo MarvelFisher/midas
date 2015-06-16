@@ -46,7 +46,7 @@
     	<property name="upstreamPort" value="10049"/>
     
 		<!--  Msg Pack Lite Cascading Configure -->    	
-    	<property name="mpCascading" value="false"/>
+    	<property name="mpCascading" value="true"/>
     	<property name="mpUpstreamIp" value="10.0.0.32"/>
     	<property name="mpUpstreamPort" value="10048"/>    	
     	    	

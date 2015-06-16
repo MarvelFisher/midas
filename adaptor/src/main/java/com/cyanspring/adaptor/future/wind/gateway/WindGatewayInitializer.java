@@ -16,7 +16,7 @@ public class WindGatewayInitializer extends ChannelInitializer<SocketChannel> {
 		// TODO Auto-generated method stub
 		ChannelPipeline pipeline = arg0.pipeline();
 		
-		pipeline.addLast("framer",new DelimiterBasedFrameDecoder(8192,Delimiters.lineDelimiter()));
+		pipeline.addLast("framer",new DelimiterBasedFrameDecoder(32768,Delimiters.lineDelimiter()));
 		pipeline.addLast("decoder",new StringDecoder());
 		pipeline.addLast("encoder",new StringEncoder());
 
