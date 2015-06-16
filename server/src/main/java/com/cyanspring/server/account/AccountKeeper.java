@@ -19,6 +19,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.livetrading.rule.LiveTradingRuleHandler;
 
 public class AccountKeeper {
@@ -83,19 +84,48 @@ public class AccountKeeper {
 			return empty;
 		}
 	}
+	private void checkLiveTradingStopLossValue(AccountSetting oldSetting,AccountSetting newSetting,Account account)throws AccountException{
+		
+		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getFreezePercent()
+				, oldSetting.getFreezeValue());
+		
+		double comPositionStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getStopLossPercent()
+				, oldSetting.getCompanySLValue());
+		
+		if(!PriceUtils.isZero(comDailyStopLoss) 
+				&& PriceUtils.GreaterThan(newSetting.getDailyStopLoss(), comDailyStopLoss)){
+			
+			throw new AccountException("The value you set exceeds max. daily stop loss!",ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING);
+
+		}
+		
+		if(!PriceUtils.isZero(comPositionStopLoss) 
+				&& PriceUtils.GreaterThan(newSetting.getStopLossValue(), comPositionStopLoss)){
+
+			throw new AccountException("The value you set exceeds max. position stop loss!",ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING);
+		}
+
+	}
+	
 	public AccountSetting setAccountSetting(AccountSetting setting) throws AccountException {
 		if(!accounts.containsKey(setting.getId()))
 			throw new AccountException("Account id doesn't exist: " + setting.getId(),ErrorMessage.ACCOUNT_NOT_EXIST);
 		
 		AccountSetting existing = accountSettings.get(setting.getId());
+		Account account = accounts.get(setting.getId());
+		
 		if(null == existing) {
 			existing = AccountSetting.createEmptySettings(setting.getId());
 			accountSettings.put(setting.getId(), existing);
 		}
 		
+		if(existing.isUserLiveTrading() && null != account){					
+			checkLiveTradingStopLossValue(existing,setting,account);		 		
+		}
+		
 		if(null != liveTradingRuleHandler 
 					&& liveTradingRuleHandler.isNeedSetting(existing, setting)){
-			setting = liveTradingRuleHandler.setTradingRule(existing, setting);
+			setting = liveTradingRuleHandler.setTradingRule(existing, setting,account);
 			if(setting !=null){
 				log.info("account {} set to live trading mode",setting.getId());
 			}

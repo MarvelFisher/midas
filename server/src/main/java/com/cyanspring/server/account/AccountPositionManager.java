@@ -105,6 +105,7 @@ import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.server.livetrading.LiveTradingSetting;
 import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.persistence.PersistenceManager;
@@ -169,6 +170,9 @@ public class AccountPositionManager implements IPlugin {
 
     @Autowired(required = false)
     LiveTradingCheckHandler liveTradingCheckHandler;
+    
+    @Autowired(required = false)
+    LiveTradingSetting liveTradingSetting;
 
     private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -780,9 +784,8 @@ public class AccountPositionManager implements IPlugin {
             accountSetting = accountKeeper.setAccountSetting(event.getAccountSetting());
         } catch (AccountException e) {
             ok = false;
-            //message =  e.getMessage();
             message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-
+            accountSetting = event.getAccountSetting();
         }
 
         ChangeAccountSettingReplyEvent reply = new ChangeAccountSettingReplyEvent(event.getKey(),
@@ -792,10 +795,11 @@ public class AccountPositionManager implements IPlugin {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
-        PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID,
-                null, accountSetting);
-        eventManager.sendEvent(pmEvent);
+        if(ok){
+            PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID,
+                    null, accountSetting);
+            eventManager.sendEvent(pmEvent);
+        }
     }
 
     public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
@@ -983,7 +987,7 @@ public class AccountPositionManager implements IPlugin {
                         position.getSymbol() + ", " + position.getAcPnL() + ", " +
                         positionStopLoss + ", " + quote);
                 ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
-                        null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.StopLoss,
+                        null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.PositionStopLoss,
                         IdGenerator.getInstance().getNextID());
 
                 eventManager.sendEvent(event);

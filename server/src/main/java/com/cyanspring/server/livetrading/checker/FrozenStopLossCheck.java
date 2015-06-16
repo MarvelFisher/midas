@@ -9,6 +9,7 @@ import webcurve.util.PriceUtils;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.AccountStateReplyEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
@@ -45,7 +46,7 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 		}
 
 		if(AccountState.FROZEN == account.getState() ){
-			closeAllPositoinAndOrder(account);
+			closeAllPositoinAndOrder(account,OrderReason.CompanyDailyStopLoss);
 			return false;
 		}
 		
@@ -53,17 +54,23 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 				, accountSetting.getFreezeValue());
 		
 		dailyStopLoss = TradingUtil.getMinValue(dailyStopLoss,accountSetting.getDailyStopLoss());
+
 		
 		if(PriceUtils.isZero(dailyStopLoss)){
 				return true;
 		}
+		
+		OrderReason orderReason= OrderReason.CompanyDailyStopLoss;
+		
+		if(PriceUtils.Equal(dailyStopLoss, accountSetting.getDailyStopLoss()))
+			orderReason = OrderReason.DailyStopLoss;
 				
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 			
-			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
+			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss+" reason:"+orderReason);
 			account.setState(AccountState.FROZEN);
 			sendUpdateAccountEvent(account);
-			closeAllPositoinAndOrder(account);
+			closeAllPositoinAndOrder(account,orderReason);
 			return false;
 			
 		}
@@ -71,9 +78,9 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 		
 	}
 	
-	private void closeAllPositoinAndOrder(Account account){
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true);
+	private void closeAllPositoinAndOrder(Account account,OrderReason orderReason){
+		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager,orderReason);
+		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true,orderReason);
 	}
 
 	private void sendUpdateAccountEvent(Account account){
