@@ -101,13 +101,15 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		} else if ( ExchangeOrderType.LIMIT == order.getType() ) {
 			priceType = TraderLibrary.THOST_FTDC_OPT_LimitPrice;
 		} else {
-			throw new DownStreamException("OrderType not support");
+			throw new DownStreamException("ExchangeOrderType not support: " + order.getType());
 		}
 		byte direction = 0;
 		if ( OrderSide.Buy == order.getSide() ) {
 			direction = TraderLibrary.THOST_FTDC_D_Buy;
 		} else if ( OrderSide.Sell == order.getSide() ) {
 			direction = TraderLibrary.THOST_FTDC_D_Sell;
+		} else {
+			throw new DownStreamException("Order side not support: " + order.getSide());
 		}
 		
 		CThostFtdcInputOrderField req = new CThostFtdcInputOrderField();
@@ -121,8 +123,8 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		req.OrderRef().setCString(String.valueOf(sn));		
 		req.OrderPriceType(priceType);
 		req.Direction(direction);
-		req.CombOffsetFlag().set(0, TraderLibrary.THOST_FTDC_OF_Open);
-		req.CombHedgeFlag().set(0, TraderLibrary.THOST_FTDC_HF_Speculation);
+		req.CombOffsetFlag().set(0, TraderLibrary.THOST_FTDC_OF_Close);
+		req.CombHedgeFlag().set(0, TraderLibrary.THOST_FTDC_HF_Hedge);
 		req.LimitPrice(order.getPrice());
 		req.VolumeTotalOriginal((int) order.getQuantity());
 		req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
