@@ -37,6 +37,7 @@ public class StockItem implements AutoCloseable {
     private long volume = 0;
     private double highLimit = 0;
     private double lowLimit = 0;
+    private double preClose = 0;
 
     public static StockItem getItem(String symbolId, boolean enableCreateNew) {
 
@@ -237,6 +238,13 @@ public class StockItem implements AutoCloseable {
         if (PriceUtils.Compare(item.lowLimit, lowLimit) != 0) {
             item.lowLimit = lowLimit;
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+            quoteExtendIsChange = true;
+        }
+
+        double preClose = (double) stockData.getPreClose() / 10000;
+        if (PriceUtils.Compare(item.preClose, preClose) != 0) {
+            item.preClose = preClose;
+            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
             quoteExtendIsChange = true;
         }
 
