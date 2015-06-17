@@ -29,7 +29,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		ctx = arg0;
 		//ctx.channel().write(MsgPackLiteDataServerHandler.addHashTail("API=ReqHeartBeat",true));
 		//ctx.channel().write(MsgPackLiteDataServerHandler.addHashTail("API=GetMarkets",true));
-		WindGatewayHandler.resubscribe(ctx.channel(),MsgPackLiteDataServerHandler.registrationGlobal);
+		MsgPackLiteDataServerHandler.resubscribe(ctx.channel());
 		ctx.channel().flush();
 		log.info(ctx.channel().localAddress().toString() + " Connected with data server : " + ctx.channel().remoteAddress().toString());
 

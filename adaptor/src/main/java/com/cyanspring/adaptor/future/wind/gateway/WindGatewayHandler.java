@@ -37,29 +37,31 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 	
 	public static final Registration registrationGlobal = new Registration();  	
 	
-	static public void resubscribe(Channel channel,Registration reg) {
-		String strSubscribe = registrationGlobal.getSubscribeMarket(null);
+	static public void resubscribe(Channel channel) {
+		String strSubscribe = registrationGlobal.getSubscribeMarket();
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
 		}
-		strSubscribe = registrationGlobal.getSubscribeSymbol(null);
+		strSubscribe = registrationGlobal.getSubscribeSymbol();
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
 		}
-		strSubscribe = registrationGlobal.getSubscribeTransaction(null);
+		strSubscribe = registrationGlobal.getSubscribeTransaction();
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
 		}		
+		/*
 		if(reg != null) {
-			strSubscribe = registrationGlobal.getSubscribeMarket(reg);
+			strSubscribe = reg.getSubscribeMarket(reg);
 			if(strSubscribe != null) {
 				channel.write(addHashTail(strSubscribe,true));
 			}
-			strSubscribe = registrationGlobal.getSubscribeSymbol(reg);
+			strSubscribe = reg.getSubscribeSymbol(reg);
 			if(strSubscribe != null) {
 				channel.write(addHashTail(strSubscribe,true));
 			}			
 		}
+		*/
 	}
 	
 	static public boolean isRegisteredByClient(String symbol)

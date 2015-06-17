@@ -37,6 +37,21 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	public static final int maxMsgPackCount = 128;
 
 	private static final Logger log = LoggerFactory.getLogger(MsgPackLiteDataServerHandler.class);
+	
+	static public void resubscribe(Channel channel) {
+		String strSubscribe = registrationGlobal.getSubscribeMarket();
+		if(strSubscribe != null) {
+			channel.write(addHashTail(strSubscribe,true));
+		}
+		strSubscribe = registrationGlobal.getSubscribeSymbol();
+		if(strSubscribe != null) {
+			channel.write(addHashTail(strSubscribe,true));
+		}
+		strSubscribe = registrationGlobal.getSubscribeTransaction();
+		if(strSubscribe != null) {
+			channel.write(addHashTail(strSubscribe,true));
+		}	
+	}
 
 	public static String addHashTail(String str,boolean bAddHash)
 	{

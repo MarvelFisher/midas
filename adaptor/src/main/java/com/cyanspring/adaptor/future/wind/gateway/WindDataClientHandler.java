@@ -21,7 +21,7 @@ public class WindDataClientHandler extends ChannelInboundHandlerAdapter {
 		ctx = arg0;
 		ctx.channel().write(WindGatewayHandler.addHashTail("API=ReqHeartBeat",true));
 		ctx.channel().write(WindGatewayHandler.addHashTail("API=GetMarkets",true));
-		WindGatewayHandler.resubscribe(ctx.channel(),MsgPackLiteDataServerHandler.registrationGlobal);
+		WindGatewayHandler.resubscribe(ctx.channel());
 		ctx.channel().flush();
 		log.info(ctx.channel().localAddress().toString() + " Connected with data server : " + ctx.channel().remoteAddress().toString());
 

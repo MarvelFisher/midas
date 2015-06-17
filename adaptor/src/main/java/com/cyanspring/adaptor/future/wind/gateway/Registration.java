@@ -42,16 +42,16 @@ public class Registration {
 		return marketList.contains(market);
 	}
 	
-	public String getSubscribeMarket(Registration other) {
+	public String getSubscribeMarket() {
 		if(marketList.size() <= 0) {
 			return null;
 		}
 		StringBuilder strb = new StringBuilder("API=SUBSCRIBE|Market=");
 		int iCount = 0;
 		for(String market : marketList) {
-			if(other != null && other.hadMarket(market)) {
-				continue;
-			}
+			//if(other != null && other.hadMarket(market)) {
+			//	continue;
+			//}
 			if(iCount != 0) {
 				strb.append(";");
 			}
@@ -65,16 +65,16 @@ public class Registration {
 	}	
 	
 	
-	public String getSubscribeSymbol(Registration other) {
+	public String getSubscribeSymbol() {
 		if(symbolList.size() <= 0) {
 			return null;
 		}
 		StringBuilder strb = new StringBuilder("API=SUBSCRIBE|Symbol=");
 		int iCount = 0;
 		for(String symbol : symbolList) {
-			if(other != null && other.hadSymbolMarket(symbol)) {
-				continue;
-			}
+			//if(other != null && other.hadSymbolMarket(symbol)) {
+			//	continue;
+			//}
 			if(iCount != 0) {
 				strb.append(";");
 			}
@@ -87,7 +87,7 @@ public class Registration {
 		return strb.toString();		
 	}
 	
-	public String getSubscribeTransaction(Registration other) {
+	public String getSubscribeTransaction() {
 		if(transactionList.size() <= 0) {
 			return null;
 		}
