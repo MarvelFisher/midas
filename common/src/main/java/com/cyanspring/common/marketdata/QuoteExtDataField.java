@@ -10,6 +10,7 @@ public enum QuoteExtDataField {
 	SETTLEPRICE("SettlePrice"),
 	OPENINTEREST("OpenInterest"),
 	SESSIONSTATUS("SessionStatus"),
+	PRECLOSE("PreClose"),
 	STATUS("Status"),
 	TIMESTAMP("TimeStamp"),
 	TIMESENT("TimeSent"),

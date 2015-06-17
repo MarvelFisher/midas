@@ -46,12 +46,12 @@ public class QuoteChecker implements IQuoteChecker {
             if (PriceUtils.EqualLessThan(quote.getLow(), 0)) {
                 quote.setLow(prev.getLow());
             }
-            if (PriceUtils.EqualLessThan(quote.getBid(), 0)) {
-                quote.setBid(prev.getBid());
-            }
-            if (PriceUtils.EqualLessThan(quote.getAsk(), 0)) {
-                quote.setAsk(prev.getAsk());
-            }
+//            if (PriceUtils.EqualLessThan(quote.getBid(), 0)) {
+//                quote.setBid(prev.getBid());
+//            }
+//            if (PriceUtils.EqualLessThan(quote.getAsk(), 0)) {
+//                quote.setAsk(prev.getAsk());
+//            }
         }
         return quote;
     }
