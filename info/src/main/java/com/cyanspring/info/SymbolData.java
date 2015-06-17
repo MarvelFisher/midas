@@ -235,13 +235,23 @@ public class SymbolData implements Comparable<SymbolData>
     	}
     	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
+		SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+		try 
+		{
+			cal.setTime(sdf.parse(centralDB.getTradedate()));
+		} 
+		catch (ParseException e) 
+		{
+			log.error(centralDB.getTradedate() + " not fit with " + DateFormat);
+		}
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		Date currentDate = cal.getTime();
 		if (strType.equals("W"))
 		{
-			cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			cal.add(Calendar.DAY_OF_WEEK, (-1) * (cal.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY));
+//			cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		}
 		else if (strType.equals("M"))
 		{
@@ -278,7 +288,7 @@ public class SymbolData implements Comparable<SymbolData>
 				if (mapHistorical.get(strType).size() > 0)
 					lastPrice = mapHistorical.get(strType).get(0);
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+			sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
 			List<HistoricalPrice> listBase = null;
 			HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
@@ -337,7 +347,7 @@ public class SymbolData implements Comparable<SymbolData>
 			lastPrice.setTotalVolume(getdCurTotalVolume());
 			lastPrice.setTurnover(getdCurTurnover());
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat);
+		sdf = new SimpleDateFormat(DateTimeFormat);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sqlcmd = String.format(insertPrice, 
 				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
@@ -440,6 +450,8 @@ public class SymbolData implements Comparable<SymbolData>
 					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()));
 			if (historical != null)
 			{
+				log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] get %d", 
+						market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));
 				mapHistorical.put(strType,  historical);
 			}
 		}
