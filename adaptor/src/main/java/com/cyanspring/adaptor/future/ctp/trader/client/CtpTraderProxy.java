@@ -113,8 +113,8 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		req.OrderRef().setCString(String.valueOf(sn));		
 		req.OrderPriceType(priceType);
 		req.Direction(direction);
-		req.CombOffsetFlag().set(0, TraderLibrary.THOST_FTDC_OF_Close);
-		req.CombHedgeFlag().set(0, TraderLibrary.THOST_FTDC_HF_Hedge);
+		req.CombOffsetFlag().set(0, TraderLibrary.THOST_FTDC_OF_Open);
+		req.CombHedgeFlag().set(0, TraderLibrary.THOST_FTDC_HF_Speculation);
 		req.LimitPrice(order.getPrice());
 		req.VolumeTotalOriginal((int) order.getQuantity());
 		req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
