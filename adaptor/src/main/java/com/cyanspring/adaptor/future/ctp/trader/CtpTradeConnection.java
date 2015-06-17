@@ -229,13 +229,13 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	@Override
 	public void onError(String orderId, String msg) {
 		log.error("Response Error On Order:" + orderId + " " + msg);
-		Long sn = Long.parseLong(orderId);
-		ChildOrder order = serialToOrder.get(sn);	
+		ChildOrder order = serialToOrder.get(orderId);	
 		if ( null == order ) {
-			log.info("Order not found: " + sn);
+			log.info("Order not found: " + orderId);
 			return;
 		}
-		this.listener.onError(order.getId(), msg);	
+		order.setOrdStatus(OrdStatus.REJECTED);
+		this.listener.onOrder(ExecType.REJECTED, order, null, msg);
 	}
 
 	
