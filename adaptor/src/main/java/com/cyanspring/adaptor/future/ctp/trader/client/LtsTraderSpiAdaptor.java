@@ -270,15 +270,18 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(8) 
 	public  void OnRspOrderInsert(Pointer<CThostFtdcInputOrderField > pInputOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		log.info("Response OrderInsert:");
+		log.info("Response OrderInsert: " + pInputOrder);
 		CThostFtdcInputOrderField rsp = getStructObject(pInputOrder);
 		if ( rsp == null ) {
 			return;
 		}
 		String orderId = rsp.OrderRef().getCString();
-		String msg = TraderHelper.toGBKString( getStructObject(pRspInfo).ErrorMsg().getBytes() );
-		for ( ILtsTraderListener lis : tradelistens ) {
-			lis.onError(orderId, msg);
+		CThostFtdcRspInfoField info = getStructObject(pRspInfo);
+		if(null != info) {
+			String msg = TraderHelper.toGBKString( getStructObject(pRspInfo).ErrorMsg().getBytes() );
+			for ( ILtsTraderListener lis : tradelistens ) {
+				lis.onError(orderId, "" + info.ErrorID() + " : " + msg);
+			}
 		}
 	}
 
@@ -339,7 +342,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			} else {
 				String msg = TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onError(rsp.OrderRef().getCString(),msg);
+					lis.onError(rsp.OrderRef().getCString(),"" + rspInfo.ErrorID() + " : " +  msg);
 				}
 			}
 		}
