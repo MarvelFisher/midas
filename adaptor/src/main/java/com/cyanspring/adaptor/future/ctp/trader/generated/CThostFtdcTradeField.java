@@ -5,6 +5,8 @@ import org.bridj.StructObject;
 import org.bridj.ann.Array;
 import org.bridj.ann.Field;
 import org.bridj.ann.Library;
+
+import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
 /**
  * \u6210\u4ea4<br>
  * <i>native declaration : ThostFtdcUserApiStruct.h:1674</i><br>
@@ -257,6 +259,23 @@ public class CThostFtdcTradeField extends StructObject {
 		this.io.setByteField(this, 29, TradeSource);
 		return this;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CThostFtdcTradeField { \n");
+		sb.append("		BrokerID = " + BrokerID().getCString() + ";\n");
+		sb.append("		InvestorID = " + InvestorID().getCString() + ";\n");
+		sb.append("		InstrumentID = " + InstrumentID().getCString() + ";\n");
+		sb.append("		OrderRef = " + OrderRef().getCString() + ";\n");
+		sb.append("		Direction = " + Direction() + ";\n");
+		sb.append("		Price = " + Price() + ";\n");
+		sb.append("		Volume = " + Volume() + ";\n");
+		sb.append("		TradeType = " + TradeType() + ";\n");
+		
+		sb.append("}");
+		return sb.toString();
+	}
+	
 	public CThostFtdcTradeField() {
 		super();
 	}

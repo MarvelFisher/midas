@@ -150,7 +150,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		String msg = TraderHelper.toGBKString(update.StatusMsg().getBytes());
 		OrdStatus status = TraderHelper.convert2OrdStatus(statusCode);
 		ExecType execType = TraderHelper.OrdStatus2ExecType(status);		
-		log.info("onOrder: " + clOrderId + " Type: " + status + "Volume: " + volumeTraded + " Message: " + msg );
+		log.info("onOrder: " + clOrderId + " Type: " + status + " Volume: " + volumeTraded + " Message: " + msg );
 		
 		ChildOrder childOrder = serialToOrder.get(clOrderId);
 		if ( null == childOrder ) {

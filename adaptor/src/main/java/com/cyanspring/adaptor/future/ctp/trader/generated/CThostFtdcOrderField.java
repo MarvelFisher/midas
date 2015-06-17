@@ -5,6 +5,8 @@ import org.bridj.StructObject;
 import org.bridj.ann.Array;
 import org.bridj.ann.Field;
 import org.bridj.ann.Library;
+
+import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
 /**
  * \u62a5\u5355<br>
  * <i>native declaration : ThostFtdcUserApiStruct.h:1252</i><br>
@@ -499,6 +501,29 @@ public class CThostFtdcOrderField extends StructObject {
 		this.io.setIntField(this, 56, IsSwapOrder);
 		return this;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CThostFtdcOrderField { \n");
+		sb.append("		BrokerID = " + BrokerID().getCString() + ";\n");
+		sb.append("		InvestorID = " + InvestorID().getCString() + ";\n");
+		sb.append("		InstrumentID = " + InstrumentID().getCString() + ";\n");
+		sb.append("		OrderRef = " + OrderRef().getCString() + ";\n");
+		sb.append("		OrderPriceType = " + OrderPriceType() + ";\n");
+		sb.append("		Direction = " + Direction() + ";\n");
+		sb.append("		LimitPrice = " + LimitPrice() + ";\n");
+		sb.append("		VolumeTotalOriginal = " + VolumeTotalOriginal() + ";\n");
+		sb.append("		OrderSubmitStatus = " + OrderSubmitStatus() + ";\n");
+		sb.append("		OrderStatus = " + OrderStatus() + ";\n");
+		sb.append("		OrderType = " + OrderType() + ";\n");
+		sb.append("		VolumeTraded = " + VolumeTraded() + ";\n");
+		sb.append("		VolumeTotal = " + VolumeTotal() + ";\n");
+		sb.append("		StatusMsg = " + TraderHelper.toGBKString(StatusMsg().getBytes()) + ";\n");
+		
+		sb.append("}");
+		return sb.toString();
+	}
+	
 	public CThostFtdcOrderField() {
 		super();
 	}
