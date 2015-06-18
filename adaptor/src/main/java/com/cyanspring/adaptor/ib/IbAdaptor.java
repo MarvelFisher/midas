@@ -113,8 +113,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     while (true) {
                         if (clientSocket.isConnected() == false) {
                             ConnectToIBGateway();
-                        }else{
-                            log.info("IB connected");
                         }
                         gcChildOrders();
                         try {
@@ -149,7 +147,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     private void ConnectToIBGateway() {
         if(clientSocket.isConnected()) return;
-
         log.info("Attempting to establish connection to IB TWS/Gateway...");
         clear();
         clientSocket.eDisconnect();
@@ -159,6 +156,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         } catch (InterruptedException e) {
             log.warn(e.getMessage(), e);
         }
+        if(clientSocket.isConnected()) log.info("IB connected");
     }
 
     @Override
