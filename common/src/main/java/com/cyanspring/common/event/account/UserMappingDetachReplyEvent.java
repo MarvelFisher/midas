@@ -65,4 +65,19 @@ public class UserMappingDetachReplyEvent extends RemoteAsyncEvent {
     public UserType getUserType() {
         return userType;
     }
+
+    @Override
+    public String toString() {
+        return "UserMappingDetachReplyEvent{" +
+                "ok=" + ok +
+                ", message='" + message + '\'' +
+                ", txId='" + txId + '\'' +
+                ", user='" + user + '\'' +
+                ", userThirdParty='" + userThirdParty + '\'' +
+                ", market='" + market + '\'' +
+                ", language='" + language + '\'' +
+                ", isAttach=" + isAttach +
+                ", userType=" + userType +
+                '}';
+    }
 }

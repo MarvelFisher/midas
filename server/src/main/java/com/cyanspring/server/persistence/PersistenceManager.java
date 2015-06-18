@@ -1720,7 +1720,8 @@ public class PersistenceManager {
 					ok = true;
 					log.info("Attach third party id, {}", event.toString());
 				} else {
-					MessageLookup.buildEventMessage(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, String.format("Can't attach third party id"));
+					ok = false;
+					message = MessageLookup.buildEventMessage(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, String.format("Can't attach third party id"));
 				}
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
