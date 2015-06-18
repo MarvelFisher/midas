@@ -3,7 +3,7 @@ package com.cyanspring.common.account;
 public enum OrderReason {
 	ManualClose(1),
 	StopOrder(2),
-	PositionStopLoss(3),
+	StopLoss(3),
 	MarginCall(4),
 	TrailingStop(5),
 	DayEnd(6),
@@ -12,7 +12,8 @@ public enum OrderReason {
 	CompanyDailyStopLoss(9),
 	AccountStopLoss(10),
 	DailyStopLoss(11),
-	TradingMode(12)
+	TradingMode(12),
+	PositionStopLoss(13)
 	;
 	
 	private final int value;
