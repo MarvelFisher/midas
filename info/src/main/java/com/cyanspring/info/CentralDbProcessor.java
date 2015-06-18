@@ -183,6 +183,7 @@ public class CentralDbProcessor implements IPlugin
 //		}
 		else if (event == insertEvent)
 		{
+			log.info("Get insertEvent, start insertSQL");
 			insertSQL();
 //			System.out.println("insert");
 		}
@@ -563,6 +564,22 @@ public class CentralDbProcessor implements IPlugin
 	{
 		boolean insert = false;
 		boolean reset = false;
+		
+		if (this.sessionType == null)
+		{
+			reset = true;
+		}
+		else if(this.sessionType != sessionType) {
+			if (sessionType == MarketSessionType.CLOSE)
+			{
+				insert = true;
+			}			
+			if(this.sessionType == MarketSessionType.CLOSE) {
+				reset = true;
+			}
+		}
+		/*
+		
 		if (this.sessionType == MarketSessionType.OPEN)
 		{
 			if (sessionType == MarketSessionType.CLOSE)
@@ -585,8 +602,9 @@ public class CentralDbProcessor implements IPlugin
 		else if (this.sessionType == null)
 		{
 			reset = true;
-		}
-		
+		}		*/
+
+		this.sessionType = sessionType;
 		if (insert)
 		{
 			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
@@ -598,7 +616,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
 			isProcessQuote = true;
-		this.sessionType = sessionType;
+		//this.sessionType = sessionType;
 	}
 	public void sendCentralReady(String appserv)
 	{
