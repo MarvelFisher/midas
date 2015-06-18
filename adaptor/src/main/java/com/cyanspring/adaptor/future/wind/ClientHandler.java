@@ -84,6 +84,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
         if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
         if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
+        if (packType == FDTFields.WindTransaction) dataType = WindDef.MSG_DATA_TRANSACTION;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         return dataType;
     }
@@ -132,10 +133,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
                         dataType = WindDef.MSG_SYS_MARKET_CLOSE;
                         LogUtil.logDebug(log, in);
                     }
-
                     WindGateWayAdapter.instance.processGateWayMessage(
                             dataType, in_arr, null);
-
                 }
             }
         }
@@ -318,21 +317,28 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
 
         sbSymbol.append("API");
-        if (WindGateWayAdapter.instance.isSubTrans()) {
-            sbSymbol.append("SubsTrans");
-        } else {
-            sbSymbol.append("SUBSCRIBE");
-        }
+        sbSymbol.append("SUBSCRIBE");
         sbSymbol.append("Symbol");
         sbSymbol.append(symbol);
-
         String subscribeStr = sbSymbol.toString();
-
         subscribeStr = subscribeStr + "|Hash="
                 + String.valueOf(subscribeStr.hashCode());
         LogUtil.logInfo(log, "[Subscribe]%s", subscribeStr);
-
         sendData(subscribeStr);
+
+        if (WindGateWayAdapter.instance.isSubTrans()) {
+            sbSymbol = new FixStringBuilder('=', '|');
+            sbSymbol.append("API");
+            sbSymbol.append("SubsTrans");
+            sbSymbol.append("Symbol");
+            sbSymbol.append(symbol);
+            subscribeStr = sbSymbol.toString();
+            subscribeStr = subscribeStr + "|Hash="
+                    + String.valueOf(subscribeStr.hashCode());
+            LogUtil.logInfo(log, "[Subscribe]%s", subscribeStr);
+            sendData(subscribeStr);
+        }
+
     }
 
     /**

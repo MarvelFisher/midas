@@ -66,6 +66,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     static ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<String, FutureData>();
     static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<String, StockData>();
     static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<String, IndexData>();
+    static ConcurrentHashMap<String, TransationData> transationDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
     static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
     static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<String, MarketSessionData>(); //SaveIndexMarketSession
@@ -206,6 +207,20 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                         WindDef.MSG_DATA_FUTURE, futureData});
                 break;
             case WindDef.MSG_DATA_TRANSACTION:
+                TransationData transationData = null;
+                try {
+                    transationData = isMsgPack
+                            ? windDataParser.convertToTransationData(inputMessageHashMap, transationDataBySymbolMap)
+                            : windDataParser.convertToTransationData(in_arr, transationDataBySymbolMap);
+                } catch (Exception e) {
+                    LogUtil.logException(log, e);
+                    return;
+                }
+                if (!dataCheck("T", transationData.getWindCode(), transationData.getTime(), transationData.getActionDay(), -1))
+                    return;
+                QuoteMgr.instance.AddRequest(new Object[]{
+                        WindDef.MSG_DATA_TRANSACTION, transationData});
+                break;
             case WindDef.MSG_DATA_ORDERQUEUE:
             case WindDef.MSG_DATA_ORDER:
                 break;
@@ -220,6 +235,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
         if ("S".equals(type)) title = WindDef.TITLE_STOCK;
         if ("I".equals(type)) title = WindDef.TITLE_INDEX;
+        if ("T".equals(type)) title = WindDef.TITLE_TRANSATION;
         if ("S".equals(type)) {
             switch (status) {
                 case WindDef.STOCK_STATUS_STOP_SYMBOL:
@@ -592,6 +608,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         futureDataBySymbolMap.clear();
         stockDataBySymbolMap.clear();
         indexDataBySymbolMap.clear();
+        transationDataBySymbolMap.clear();
         FutureItem.futureItemBySymbolMap.clear();
         StockItem.stockItemBySymbolMap.clear();
         IndexItem.indexItemBySymbolMap.clear();

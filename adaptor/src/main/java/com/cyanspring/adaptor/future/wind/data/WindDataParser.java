@@ -517,4 +517,98 @@ public class WindDataParser extends AbstractWindDataParser {
         }
         return stockData;
     }
+
+    /**
+     * Parser inputMessage to wind Transation Object
+     * @param inputMessageArray
+     * @param transationDataBySymbolMap
+     * @return
+     */
+    public TransationData convertToTransationData(String[] inputMessageArray, ConcurrentHashMap<String, TransationData> transationDataBySymbolMap) {
+        TransationData transationData = null;
+        String key = null;
+        String value = null;
+        String[] kv_arr = null;
+
+        for (String anInputMessageArray : inputMessageArray) {
+            if (anInputMessageArray != null && !"".equals(anInputMessageArray)) {
+                kv_arr = anInputMessageArray.split("=");
+                if (kv_arr.length > 1) {
+                    key = kv_arr[0];
+                    value = kv_arr[1];
+                    if (key.equals("Symbol")) {
+                        if (transationDataBySymbolMap.containsKey(value)) {
+                            transationData = transationDataBySymbolMap.get(value);
+                        } else {
+                            transationData = new TransationData();
+                            transationData.setWindCode(value);
+                            transationDataBySymbolMap.put(value, transationData);
+                        }
+                    }
+                    switch (key) {
+                        case "ActionDay":
+                            transationData.setActionDay(Integer.parseInt(value));
+                            break;
+                        case "Last":
+                            transationData.setMatch(Long.parseLong(value));
+                            break;
+                        case "IndexNumber":
+                            transationData.setIndexNumber(Integer.parseInt(value));
+                            break;
+                        case "Time":
+                            transationData.setTime(Integer.parseInt(value));
+                            break;
+                        case "Turnover":
+                            transationData.setTurnover(Long.parseLong(value));
+                            break;
+                        case "Volume":
+                            transationData.setVolume(Long.parseLong(value));
+                            break;
+                        case "BuySellFlag":
+                            transationData.setBuySellFlag(Integer.parseInt(value));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        return transationData;
+    }
+
+    /**
+     * Parser input HashMap to Wind Transation Object
+     * @param inputHashMap
+     * @param transationDataBySymbolMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public TransationData convertToTransationData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, TransationData> transationDataBySymbolMap) throws UnsupportedEncodingException {
+        TransationData transationData = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
+            if (transationDataBySymbolMap.containsKey(symbol)) {
+                transationData = transationDataBySymbolMap.get(symbol);
+            } else {
+                transationData = new TransationData();
+                transationData.setWindCode(symbol);
+                transationDataBySymbolMap.put(symbol, transationData);
+            }
+            if (null != inputHashMap.get(FDTFields.ActionDay))
+                transationData.setActionDay(((Number) inputHashMap.get(FDTFields.ActionDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.IndexNumber))
+                transationData.setIndexNumber(((Number) inputHashMap.get(FDTFields.IndexNumber)).intValue());
+            if (null != inputHashMap.get(FDTFields.Last))
+                transationData.setMatch(((Number) inputHashMap.get(FDTFields.Last)).longValue());
+            if (null != inputHashMap.get(FDTFields.Time))
+                transationData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
+            if (null != inputHashMap.get(FDTFields.Volume))
+                transationData.setVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
+            if (null != inputHashMap.get(FDTFields.Turnover))
+                transationData.setTurnover(((Number) inputHashMap.get(FDTFields.Turnover)).longValue());
+            if (null != inputHashMap.get(FDTFields.BuySellFlag))
+                transationData.setBuySellFlag(((Number) inputHashMap.get(FDTFields.BuySellFlag)).intValue());
+        }
+        return transationData;
+    }
 }

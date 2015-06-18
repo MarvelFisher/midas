@@ -35,6 +35,11 @@ public final class WindDef {
     public static final int STOCK_STATUS_WAIT_DELETE = (int) 'Z';
     public static final long STOCK_WARNING_MILLISECONDS = 4000;
 
+    //Wind Transation BSFlag field
+    public static final int TRANS_BSFLAG_BUY = (int) 'B';
+    public static final int TRANS_BSFLAG_SELL = (int) 'S';
+    public static final int TRANS_BSFLAG_NONE = (int) ' ';
+
     public static final int AM10 = 100000000;
     public static final long timerInterval = 5000;
     public static final long SmallSessionTimeInterval = 30 * 60 * 1000;
@@ -42,6 +47,7 @@ public final class WindDef {
     public static final String TITLE_FUTURE = "FUTURE";
     public static final String TITLE_STOCK = "STOCK";
     public static final String TITLE_INDEX = "INDEX";
+    public static final String TITLE_TRANSATION = "TRANS";
     public static final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
     public static final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : TradeDate NOT match";
     public static final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format fault";
