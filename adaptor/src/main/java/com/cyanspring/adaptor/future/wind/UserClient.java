@@ -7,6 +7,7 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IMarketDataListener;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
+import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.id.Library.Util.FinalizeHelper;
 
 public class UserClient implements AutoCloseable {
@@ -61,6 +62,12 @@ public class UserClient implements AutoCloseable {
     public boolean isMySymbol(String symbol) {
         synchronized (list) {
             return list.contains(symbol);
+        }
+    }
+
+    public void sendTrade(Trade trade){
+        if(isMySymbol(trade.getSymbol())){
+            listener.onTrade(trade);
         }
     }
 

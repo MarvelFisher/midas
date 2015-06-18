@@ -20,8 +20,19 @@ public class Trade implements Cloneable{
 	String symbol;
 	double price;
 	double quantity;
-	boolean buyDriven;
-	
+	int buySellFlag;
+
+	@Override
+	public Trade clone() {
+		try {
+			return (Trade)super.clone();
+		} catch (CloneNotSupportedException e) {
+			log.error(e.getMessage(), e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public String getSymbol() {
 		return symbol;
 	}
@@ -40,27 +51,18 @@ public class Trade implements Cloneable{
 	public void setQuantity(double quantity) {
 		this.quantity = quantity;
 	}
-	public boolean isBuyDriven() {
-		return buyDriven;
-	}
-	public void setBuyDriven(boolean buyDriven) {
-		this.buyDriven = buyDriven;
-	}
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	
-	@Override
-	public Trade clone() {
-		try {
-			return (Trade)super.clone();
-		} catch (CloneNotSupportedException e) {
-			log.error(e.getMessage(), e);
-			e.printStackTrace();
-		}
-		return null;
+
+	public int getBuySellFlag() {
+		return buySellFlag;
+	}
+
+	public void setBuySellFlag(int buySellFlag) {
+		this.buySellFlag = buySellFlag;
 	}
 }

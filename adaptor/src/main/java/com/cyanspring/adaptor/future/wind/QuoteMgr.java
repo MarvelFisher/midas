@@ -3,6 +3,7 @@ package com.cyanspring.adaptor.future.wind;
 import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.adaptor.future.wind.data.IndexData;
 import com.cyanspring.adaptor.future.wind.data.StockData;
+import com.cyanspring.adaptor.future.wind.data.TransationData;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import org.slf4j.Logger;
@@ -98,6 +99,11 @@ public class QuoteMgr implements IReqThreadCallback {
             case WindDef.MSG_DATA_MARKET: {
                 StockData stockData = (StockData) objMsg;
                 StockItem.processMarketData(stockData);
+            }
+            break;
+            case WindDef.MSG_DATA_TRANSACTION:{
+                TransationData transationData = (TransationData) objMsg;
+                TransationItem.processTransationData(transationData);
             }
             break;
             default:

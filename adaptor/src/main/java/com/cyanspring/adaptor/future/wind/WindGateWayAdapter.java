@@ -491,6 +491,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         }
     }
 
+    public void sendTrade(Trade trade) {
+        List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+        for (UserClient client : clients) {
+            client.sendTrade(trade);
+        }
+    }
+
     public void sendInnerQuote(InnerQuote innerQuote) {
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients) {

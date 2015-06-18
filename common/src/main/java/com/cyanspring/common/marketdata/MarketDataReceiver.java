@@ -440,6 +440,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     @Override
     public void onTrade(Trade trade) {
+        if(quoteLogIsOpen) log.debug("Trade Receive:T="+trade.getSymbol()+",index="+trade.getId()+",BS="+trade.getBuySellFlag()+",l="+trade.getPrice()+",v=" + trade.getQuantity());
         TradeEvent event = new TradeEvent(trade.getSymbol(), null, trade);
         eventProcessor.onEvent(event);
     }
