@@ -191,6 +191,7 @@ public class SymbolChef implements Runnable{
 			symboldata = (SymbolData)pair.getValue();
 			if (symboldata.getMarket() == null)
 			{
+				log.warn(symboldata.getStrSymbol() + " get Market NULL");
 				continue;
 			}
 			symboldata.insertSQLDate("D");

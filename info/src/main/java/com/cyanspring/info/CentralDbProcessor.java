@@ -183,6 +183,7 @@ public class CentralDbProcessor implements IPlugin
 //		}
 		else if (event == insertEvent)
 		{
+			log.info("Get insertEvent, start insertSQL");
 			insertSQL();
 //			System.out.println("insert");
 		}
