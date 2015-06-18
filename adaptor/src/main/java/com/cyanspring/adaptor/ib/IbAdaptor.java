@@ -147,7 +147,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     private void ConnectToIBGateway() {
         if(clientSocket.isConnected()) return;
-
         log.info("Attempting to establish connection to IB TWS/Gateway...");
         clear();
         clientSocket.eDisconnect();
@@ -157,7 +156,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         } catch (InterruptedException e) {
             log.warn(e.getMessage(), e);
         }
-        log.info("IB connected");
+        if(clientSocket.isConnected()) log.info("IB connected");
     }
 
     @Override

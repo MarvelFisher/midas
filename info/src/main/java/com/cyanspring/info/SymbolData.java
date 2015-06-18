@@ -231,6 +231,7 @@ public class SymbolData implements Comparable<SymbolData>
 	{
     	if (market == null || PriceUtils.isZero(dOpen))
     	{
+			log.warn(strSymbol + " get Open price ZERO");
     		return;
     	}
     	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
