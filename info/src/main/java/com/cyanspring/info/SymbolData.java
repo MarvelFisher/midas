@@ -235,15 +235,6 @@ public class SymbolData implements Comparable<SymbolData>
     	}
     	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
-		SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
-		try 
-		{
-			cal.setTime(sdf.parse(centralDB.getTradedate()));
-		} 
-		catch (ParseException e) 
-		{
-			log.error(centralDB.getTradedate() + " not fit with " + DateFormat);
-		}
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
@@ -288,7 +279,7 @@ public class SymbolData implements Comparable<SymbolData>
 				if (mapHistorical.get(strType).size() > 0)
 					lastPrice = mapHistorical.get(strType).get(0);
 			}
-			sdf = new SimpleDateFormat(DateFormat);
+			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
 			List<HistoricalPrice> listBase = null;
 			HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
@@ -317,15 +308,20 @@ public class SymbolData implements Comparable<SymbolData>
 							&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)))
 						listBase = centralDB.getDbhnd().getPeriodValue(market, "M", getStrSymbol(), lastPrice.getKeytime());
 				}
-				HistoricalPrice newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
+				HistoricalPrice newPrice = null;
 				if (listBase != null)
 				{
+					newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
 					for (HistoricalPrice price : listBase)
 					{
 						newPrice.update(price);
 					}
+					newPrice.update(curPrice);
 				}
-				newPrice.update(curPrice);
+				else 
+				{
+					newPrice = (HistoricalPrice) curPrice.clone();
+				}
 				lastPrice = (HistoricalPrice) newPrice.clone();
 			}
 			else
@@ -347,7 +343,7 @@ public class SymbolData implements Comparable<SymbolData>
 			lastPrice.setTotalVolume(getdCurTotalVolume());
 			lastPrice.setTurnover(getdCurTurnover());
 		}
-		sdf = new SimpleDateFormat(DateTimeFormat);
+		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sqlcmd = String.format(insertPrice, 
 				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
