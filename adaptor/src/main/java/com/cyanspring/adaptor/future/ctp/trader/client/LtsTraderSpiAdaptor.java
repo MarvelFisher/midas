@@ -377,7 +377,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	public  void OnRspSettlementInfoConfirm(Pointer<CThostFtdcSettlementInfoConfirmField > pSettlementInfoConfirm, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {	
 		CThostFtdcRspInfoField rsp = getStructObject(pRspInfo);
 		log.info("Response SettlementInfoConfirm: " + rsp.toString());
-		proxy.doRryPosition();		
+		proxy.doQryPosition();		
 	}
 	
 	/**
@@ -547,7 +547,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(24) 
 	public  void OnRspQryInvestorPosition(Pointer<CThostFtdcInvestorPositionField > pInvestorPosition, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		log.info("Response QryPosition:");
+		log.info("Response QryPosition: " + pInvestorPosition);
 		CThostFtdcInvestorPositionField rsp = getStructObject(pInvestorPosition);
 		CThostFtdcRspInfoField rspInfo = getStructObject(pRspInfo);
 		//notify tradeListeners

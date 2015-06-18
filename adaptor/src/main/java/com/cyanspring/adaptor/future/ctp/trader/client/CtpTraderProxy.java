@@ -110,7 +110,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		req.InvestorID().setCString(user);
 		String symbol = order.getSymbol();
 		if(null != symbolConverter)
-			symbol = symbolConverter.convert(symbol);
+			symbol = symbolConverter.convertDown(symbol);
 		req.InstrumentID().setCString(symbol);
 		//
 		req.OrderRef().setCString(String.valueOf(sn));		
@@ -144,7 +144,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		String orderRef = order.getClOrderId();
 		String symbol = order.getSymbol();
 		if(null != symbolConverter)
-			symbol = symbolConverter.convert(symbol);
+			symbol = symbolConverter.convertDown(symbol);
 		
 		CThostFtdcInputOrderActionField req = new CThostFtdcInputOrderActionField();
 		req.BrokerID().setCString(brokerId);
@@ -237,7 +237,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		}		
 	}
 	
-	protected void doRryPosition() {
+	protected void doQryPosition() {
 		final CThostFtdcQryInvestorPositionField req = new CThostFtdcQryInvestorPositionField();
 		req.BrokerID().setCString(brokerId);
 		req.InvestorID().setCString(user);

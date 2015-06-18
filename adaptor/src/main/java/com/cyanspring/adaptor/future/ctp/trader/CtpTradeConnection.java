@@ -253,9 +253,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	@Override
 	public void onQryPosition(CThostFtdcInvestorPositionField field,
 			boolean isLast) {
-//		log.info(isLast + ": " + field.toString());
 		if ( field == null ) {
-			log.info("Invaild Investor Position Field");
+			log.info("CThostFtdcInvestorPositionField is null");
 			return;
 		}
 		String user = field.InvestorID().getCString();
