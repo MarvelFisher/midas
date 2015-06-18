@@ -2,6 +2,8 @@ package com.cyanspring.adaptor.future.ctp.trader.client;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bridj.Pointer;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcQryInvestorPositionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcReqUserLoginField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcRspUserLoginField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcSettlementInfoConfirmField;
@@ -41,7 +44,8 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	
 	protected AtomicInteger seqId = new AtomicInteger();
 	
-	protected ILtsTraderListener listener;
+	protected ILtsTraderListener tradeListener;
+	protected ILtsPositionListener posListener;
 	
 	private boolean ready = false;
 	private ISymbolConverter symbolConverter;
@@ -76,7 +80,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		disConnect();
 		traderSpi = null;
 		traderApi = null;
-		listener = null;
+		tradeListener = null;
 		seqId.set(0);
 	}
 	
@@ -192,8 +196,11 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		traderApi = pTraderApi.get();
 		traderSpi = new LtsTraderSpiAdaptor();
 		traderSpi.setCtpTraderProxy(this);
-		if( listener != null ) {
-			traderSpi.addTraderListener(listener);
+		if( tradeListener != null ) {
+			traderSpi.addTraderListener(tradeListener);
+		}
+		if( posListener != null ) {
+			traderSpi.addPositionListener(posListener);
 		}
 		traderSpi.addLoginListener(this);
 		traderApi.RegisterSpi(Pointer.getPointer(traderSpi));
@@ -205,7 +212,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	}
 	
 	protected void stopThreadProcess() {
-		traderSpi.removeTraderListerner(listener);
+		traderSpi.removeTraderListerner(tradeListener);
 		traderSpi.removeLoginListener(this);
 		traderApi.Release();
 	}
@@ -234,85 +241,39 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		}		
 	}
 	
-	/*
-	protected void responseOnOrder(StructObject event, CThostFtdcRspInfoField rspInfo) {
-		if ( (event instanceof CThostFtdcInputOrderField)) {
-			CThostFtdcInputOrderField rsp = (CThostFtdcInputOrderField)event;
-			String orderRef = rsp.OrderRef().getCString();
-			ExecType execType = ExecType.REJECTED;
-			OrdStatus ltsOrdStatus = OrdStatus.REJECTED;
-			String msg = null;
-			if(null != rspInfo)
-				msg = TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
-			listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
-		}
-		else if ( event instanceof CThostFtdcOrderField) {
-			CThostFtdcOrderField rsp = (CThostFtdcOrderField)event;
-			String orderRef = rsp.OrderRef().getCString();
-			byte status = rsp.OrderStatus();
-			log.info("CTP Order Status Code: " + status);
-			ExecType execType = CtpOrderStatus2ExecType(status);
-			OrdStatus ltsOrdStatus = CtpOrderStatus2Lts(status);
-			String msg = TraderHelper.toGBKString(rsp.StatusMsg().getBytes());
-			int volumeTraded = rsp.VolumeTraded();
-			
-			if ( listener == null ) {
-				log.error("listner null!!");
-				return;
-			}
-			
-			if ( status == TraderLibrary.THOST_FTDC_OST_PartTradedQueueing ) {
-				listener.onOrder(orderRef, execType, ltsOrdStatus,volumeTraded, msg);
-			} else {
-				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
-			}
-			
-		}
-		else if ( event instanceof CThostFtdcTradeField) {
-			CThostFtdcTradeField rsp = (CThostFtdcTradeField)event;
-			String orderRef = rsp.OrderRef().getCString();
-			ExecType execType = ExecType.FILLED;
-			OrdStatus ltsOrdStatus = OrdStatus.FILLED;
-			String msg = rsp.InstrumentID().getCString();
-			msg += " Filled";
-			if ( listener != null ) {
-				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
-			}
-		}
-		else if ( event instanceof CThostFtdcInputOrderActionField ) {
-			CThostFtdcInputOrderActionField rsp = (CThostFtdcInputOrderActionField)event;
-			String orderRef = rsp.OrderRef().getCString();
-			
-			if (rspInfo != null) {
-				ExecType execType = ExecType.REJECTED;
-				String msg = rsp.InstrumentID().getCString();
-				String errMsg =  TraderHelper.toGBKString(rspInfo.ErrorMsg().getBytes());
-				if ( (rspInfo.ErrorID() != 0) && (listener != null) ) {
-					listener.onOrder(orderRef, execType, null, errMsg);
-					//listener.onError(orderRef,errMsg);
-					return;
-				}
-			}
-			ExecType execType = ExecType.CANCELED;
-			OrdStatus ltsOrdStatus = OrdStatus.CANCELED;
-			String msg = rsp.InstrumentID().getCString();
-			msg += " Cancelled";
-			if ( listener != null ) {
-				listener.onOrder(orderRef, execType, ltsOrdStatus, msg);
-			}
-		}
-		
+	protected void doRryPosition() {
+		final CThostFtdcQryInvestorPositionField req = new CThostFtdcQryInvestorPositionField();
+		req.BrokerID().setCString(brokerId);
+		req.InvestorID().setCString(user);
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());
+				log.info("Send QueryPosition");
+			}			
+		};	
+		Timer timer = new Timer() ;
+		timer.schedule(task, 1000);
 	}
-	*/
 	
-	public void addListener(ILtsTraderListener listener) throws DownStreamException {
-		if(listener != null && this.listener != null) {
+	public void addTradeListener(ILtsTraderListener listener) throws DownStreamException {
+		if(listener != null && this.tradeListener != null) {
 			throw new DownStreamException("Support only one listener");	
 		}
 				
-		this.listener = listener;
+		this.tradeListener = listener;
 		if ( traderSpi != null ) {
 			traderSpi.addTraderListener(listener);
+		}
+	}
+	
+	public void addPositionListener(ILtsPositionListener listener) throws DownStreamException {
+		if (listener != null && this.posListener != null ) {
+			throw new DownStreamException("Support only one listener");
+		}
+		this.posListener = listener;
+		if ( traderSpi != null ) {
+			traderSpi.addPositionListener(listener);
 		}
 	}
 	

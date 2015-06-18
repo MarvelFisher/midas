@@ -16,7 +16,8 @@ public interface ILtsTraderListener {
 	 */
 	public void onConnectReady(boolean isReady) ;
 	
-
+	public void onQryPositionReady(boolean isReady);
+	
 	/**
 	 * 错误应答
 	 * @param pRspInfo

@@ -101,6 +101,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	
 	private List<ILtsTraderListener> tradelistens = new ArrayList<ILtsTraderListener>();
 	private List<ILtsLoginListener> loginListens = new ArrayList<ILtsLoginListener>();
+	private List<ILtsPositionListener> posListens = new ArrayList<ILtsPositionListener>();
 	
 	public void setCtpTraderProxy(CtpTraderProxy pro) {
 		this.proxy = pro;
@@ -139,6 +140,24 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		}
 		if ( loginListens.contains(listener) ) {
 			loginListens.remove(listener);
+		}
+	}
+	
+	public void addPositionListener( ILtsPositionListener listener ) {
+		if ( listener == null ) {
+			return;
+		}
+		if ( !posListens.contains(listener) ) {
+			posListens.add(listener);
+		}
+	}
+	
+	public void removePositionListener( ILtsPositionListener listener ) {
+		if ( listener == null ) {
+			return;
+		}
+		if ( posListens.contains(listener) ) {
+			posListens.remove(listener);
 		}
 	}
 
@@ -386,6 +405,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 				listen.onConnectReady(false);
 			}
 		}	
+		proxy.doRryPosition();		
 	}
 	
 	/**
@@ -555,16 +575,18 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(24) 
 	public  void OnRspQryInvestorPosition(Pointer<CThostFtdcInvestorPositionField > pInvestorPosition, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response QryInvestorPosition Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
+		log.info("Response QryPosition:");
+		CThostFtdcInvestorPositionField rsp = getStructObject(pInvestorPosition);
+		CThostFtdcRspInfoField rspInfo = getStructObject(pRspInfo);
+		//notify posListeners
+		for ( ILtsPositionListener lis : posListens ) {
+			lis.onQryPosition(rsp, bIsLast);
 		}
-		
-		if ( pInvestorPosition == null ) {
-			log.error("Response QryInvestorPosition Pointer<CThostFtdcInvestorPositionField > p = null");
-		} else {
-			log.info("Response QryInvestorPosition: ");
+		if ( bIsLast ) {
+			// notify trade ready listeners
+			for ( ILtsTraderListener lis: tradelistens ) {
+				lis.onQryPositionReady(true);
+			}
 		}
 	}
 	

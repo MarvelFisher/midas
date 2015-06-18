@@ -7,12 +7,16 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.adaptor.future.ctp.trader.client.CtpPosition;
 import com.cyanspring.adaptor.future.ctp.trader.client.CtpTraderProxy;
+import com.cyanspring.adaptor.future.ctp.trader.client.ILtsPositionListener;
 import com.cyanspring.adaptor.future.ctp.trader.client.ILtsTraderListener;
 import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInvestorPositionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
+import com.cyanspring.common.account.Position;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ISymbolConverter;
@@ -40,6 +44,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private Map<String, ChildOrder> serialToOrder = new ConcurrentHashMap<String, ChildOrder>();
 	private Map<String, Double> tradePendings = new ConcurrentHashMap<String, Double>();
 	private Map<String, Double> orderPendings = new ConcurrentHashMap<String, Double>();
+	private Map<String, CtpPosition> positionMaps = new ConcurrentHashMap<String, CtpPosition>();
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -53,11 +58,25 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	}
 	
 	@Override
-	public void init() throws Exception {
+	public void init() throws Exception {	
+		// register listeners
+		registerListeners();
 		// TODO does login and initialization		
-		proxy.init();
+		proxy.init();		
 	}
 	
+	private void registerListeners() throws DownStreamException {
+		proxy.addPositionListener(initPositionListener);
+	}
+
+	private ILtsPositionListener initPositionListener = new ILtsPositionListener() {
+
+		@Override
+		public void onQryPosition(CThostFtdcInvestorPositionField field, boolean isLast) {
+			log.info(isLast + ": " + field.toString());
+		}
+		
+	};
 
 	@Override
 	public void uninit() {
@@ -118,7 +137,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		}
 		// lintner chain
 		this.listener = listener;
-		proxy.addListener(this);
+		proxy.addTradeListener(this);
 		return this.downStreamSender;
 	}
 
@@ -134,8 +153,14 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 
 	@Override
 	public void onConnectReady(boolean isReady) {
-		proxy.setReady(isReady);
-		this.listener.onState(isReady);	
+		// set proxy ready to use
+		proxy.setReady(isReady);			
+	}
+	
+	@Override
+	public void onQryPositionReady(boolean isReady) {
+		// notify upStream
+		this.listener.onState(isReady);
 	}
 	
 	/**
@@ -176,6 +201,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	}
 	
 	/**
+	 * +
 	 * Notify Trade
 	 */
 	@Override
@@ -237,6 +263,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		order.setOrdStatus(OrdStatus.REJECTED);
 		this.listener.onOrder(ExecType.REJECTED, order, null, msg);
 	}
+
+	
 
 	
 }

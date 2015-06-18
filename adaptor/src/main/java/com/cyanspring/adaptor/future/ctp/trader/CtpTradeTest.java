@@ -96,8 +96,8 @@ public class CtpTradeTest implements IDownStreamListener {
 		};
 		//new Timer().schedule(task, 5000, 5000);
 		Timer timer = new Timer();
-		timer.schedule(task1, 5000);
-		timer.schedule(task2, 10000);
+//		timer.schedule(task1, 5000);
+//		timer.schedule(task2, 10000);
 //		timer.scheduleAtFixedRate(task1, 5000, 5000);
 //		timer.scheduleAtFixedRate(task2, 7000, 6000);
 		

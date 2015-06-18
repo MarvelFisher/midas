@@ -470,6 +470,46 @@ public class CThostFtdcInvestorPositionField extends StructObject {
 		this.io.setIntField(this, 42, AbandonFrozen);
 		return this;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CThostFtdcTradeField { \n {\n");
+		sb.append("		InstrumentID = " + InstrumentID().getCString() + ";\n");
+		sb.append("		BrokerID = " + BrokerID().getCString() + ";\n");
+		sb.append("		InvestorID = " + InvestorID().getCString() + ";\n");
+		sb.append("		PosiDirection = " + PosiDirection() + ";\n");
+		sb.append("		PositionDate = " + PositionDate() + ";\n");
+		sb.append("		TodayPosition = " + TodayPosition() + ";\n");
+		sb.append("		YdPosition = " + YdPosition() + ";\n");
+		sb.append("		Position = " + Position() + ";\n");
+		sb.append("		OpenVolume = " + OpenVolume() + ";\n");
+		sb.append("		CloseVolume = " + CloseVolume() + ";\n");
+		sb.append("		OpenAmount = " + OpenAmount() + ";\n");
+		sb.append("		CloseAmount = " + CloseAmount() + ";\n");
+		sb.append("		PositionCost = " + PositionCost() + ";\n");
+		sb.append("		LongFrozen = " + LongFrozen() + ";\n");
+		sb.append("		ShortFrozen = " + ShortFrozen() + ";\n");
+		sb.append("		LongFrozenAmount = " + LongFrozenAmount() + ";\n");
+		sb.append("		ShortFrozenAmount = " + ShortFrozenAmount() + ";\n");
+		sb.append("		PreMargin = " + PreMargin() + ";\n");
+		sb.append("		UseMargin = " + UseMargin() + ";\n");
+		sb.append("		ExchangeMargin = " + ExchangeMargin() + ";\n");
+		sb.append("		FrozenMargin = " + FrozenMargin() + ";\n");
+		sb.append("		FrozenCash = " + FrozenCash() + ";\n");		
+		sb.append("		FrozenCommission = " + FrozenCommission() + ";\n");
+		sb.append("		CashIn = " + CashIn() + ";\n");
+		sb.append("		Commission = " + Commission() + ";\n");
+		sb.append("		CloseProfit = " + CloseProfit() + ";\n");
+		sb.append("		PositionProfit = " + PositionProfit() + ";\n");
+		sb.append("		OpenCost = " + OpenCost() + ";\n");
+		sb.append("		PreSettlementPrice = " + PreSettlementPrice() + ";\n");
+		sb.append("		SettlementPrice = " + SettlementPrice() + ";\n");
+		
+		sb.append("		TradingDay = " + TradingDay().getCString() + ";\n");
+		sb.append("}");
+		return sb.toString();
+	}
+	
 	public CThostFtdcInvestorPositionField() {
 		super();
 	}
