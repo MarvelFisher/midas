@@ -58,9 +58,9 @@
 		<property name="historicalDataCount">
 			<map>
 				<entry key="1" value="360" />
-				<entry key="R" value="300" />
-				<entry key="A" value="150" />
-				<entry key="Q" value="300" />
+				<entry key="R" value="80" />
+				<entry key="A" value="210" />
+				<entry key="Q" value="150" />
 				<entry key="H" value="150" />
 				<entry key="6" value="80" />
 				<entry key="T" value="60" />

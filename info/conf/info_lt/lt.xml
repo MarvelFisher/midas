@@ -60,13 +60,13 @@
 		</property>
 		<property name="historicalDataCount">
 			<map>
-				<entry key="1" value="1440" />
+				<entry key="1" value="1500" />
 				<entry key="R" value="300" />
-				<entry key="A" value="150" />
+				<entry key="A" value="300" />
 				<entry key="Q" value="300" />
-				<entry key="H" value="150" />
-				<entry key="6" value="80" />
-				<entry key="T" value="60" />
+				<entry key="H" value="170" />
+				<entry key="6" value="170" />
+				<entry key="T" value="200" />
 				<entry key="D" value="100" />
 				<entry key="W" value="60" />
 				<entry key="M" value="80" />
