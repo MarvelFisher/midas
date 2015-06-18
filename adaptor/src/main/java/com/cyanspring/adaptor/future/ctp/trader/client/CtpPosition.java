@@ -15,8 +15,8 @@ public class CtpPosition implements Serializable{
 //	private double buyQty;
 //	private double sellQty;
 	
-	private double toQty;
-	private double yeQty;
+	private double tdQty;
+	private double ydQty;
 	private boolean isBuy;
 	
 	private boolean isToday;
@@ -27,36 +27,12 @@ public class CtpPosition implements Serializable{
 		
 	}
 	
-	public CtpPosition(String user, String symbol, double toQty, double yeQty) {
+	public CtpPosition(String user, String symbol, double tdQty, double ydQty) {
 		this.user = user;
 		this.symbol = symbol;
-		this.toQty = toQty;
-		this.yeQty = yeQty;
+		this.tdQty = tdQty;
+		this.ydQty = ydQty;
 	}
-	
-//	public boolean buyZeroPosition() {
-//		return PriceUtils.LessThan(buyQty, threshold);
-//	}
-//	
-//	public boolean sellZeroPosition() {
-//		return PriceUtils.LessThan(sellQty, threshold);
-//	}
-//	
-//	protected void openBuyPosition(double qty){
-//		buyQty += qty;
-//	}
-//	
-//	protected void closeBuyPosition(double qty) {
-//		buyQty -= qty;
-//	}
-//	
-//	protected void openSellPosition(double qty) {
-//		sellQty += qty;
-//	}
-//	
-//	protected void closeSellPosition(double qty) {
-//		sellQty -= qty;
-//	}
 	
 	
 	////getters and setters ////
@@ -76,20 +52,20 @@ public class CtpPosition implements Serializable{
 		this.symbol = symbol;
 	}
 
-	public double getToQty() {
-		return toQty;
+	public double getTdQty() {
+		return tdQty;
 	}
 
-	public void setToQty(double toQty) {
-		this.toQty = toQty;
+	public void setTdQty(double toQty) {
+		this.tdQty = toQty;
 	}
 
-	public double getYeQty() {
-		return yeQty;
+	public double getYdQty() {
+		return ydQty;
 	}
 
-	public void setYeQty(double yeQty) {
-		this.yeQty = yeQty;
+	public void setYdQty(double yeQty) {
+		this.ydQty = yeQty;
 	}
 
 	public boolean isBuy() {

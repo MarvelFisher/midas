@@ -2,6 +2,7 @@ package com.cyanspring.adaptor.future.ctp.trader.client;
 
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInvestorPositionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcRspInfoField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
@@ -16,7 +17,11 @@ public interface ILtsTraderListener {
 	 */
 	public void onConnectReady(boolean isReady) ;
 	
-	public void onQryPositionReady(boolean isReady);
+	/**
+	 * 4. 查询投资者position
+	 * @param isReady
+	 */
+	public void onQryPosition(CThostFtdcInvestorPositionField field, boolean isLast);
 	
 	/**
 	 * 错误应答
@@ -43,5 +48,7 @@ public interface ILtsTraderListener {
 	 * @param field
 	 */
 	public void onCancel(CThostFtdcInputOrderActionField field);
+	
+	
 	
 }

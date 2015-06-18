@@ -473,7 +473,7 @@ public class CThostFtdcInvestorPositionField extends StructObject {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("CThostFtdcTradeField { \n {\n");
+		sb.append("CThostFtdcInvestorPositionField { \n {\n");
 		sb.append("		InstrumentID = " + InstrumentID().getCString() + ";\n");
 		sb.append("		BrokerID = " + BrokerID().getCString() + ";\n");
 		sb.append("		InvestorID = " + InvestorID().getCString() + ";\n");

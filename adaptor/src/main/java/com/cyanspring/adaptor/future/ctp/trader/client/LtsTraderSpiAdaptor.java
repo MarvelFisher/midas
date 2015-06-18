@@ -101,7 +101,6 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	
 	private List<ILtsTraderListener> tradelistens = new ArrayList<ILtsTraderListener>();
 	private List<ILtsLoginListener> loginListens = new ArrayList<ILtsLoginListener>();
-	private List<ILtsPositionListener> posListens = new ArrayList<ILtsPositionListener>();
 	
 	public void setCtpTraderProxy(CtpTraderProxy pro) {
 		this.proxy = pro;
@@ -143,24 +142,6 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		}
 	}
 	
-	public void addPositionListener( ILtsPositionListener listener ) {
-		if ( listener == null ) {
-			return;
-		}
-		if ( !posListens.contains(listener) ) {
-			posListens.add(listener);
-		}
-	}
-	
-	public void removePositionListener( ILtsPositionListener listener ) {
-		if ( listener == null ) {
-			return;
-		}
-		if ( posListens.contains(listener) ) {
-			posListens.remove(listener);
-		}
-	}
-
 	/**
 	 * 当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 	 */	
@@ -393,18 +374,9 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 * 投资者结算结果确认响应
 	 */
 	@Virtual(13) 
-	public  void OnRspSettlementInfoConfirm(Pointer<CThostFtdcSettlementInfoConfirmField > pSettlementInfoConfirm, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		log.info("Response SettlementInfoConfirm:");
+	public  void OnRspSettlementInfoConfirm(Pointer<CThostFtdcSettlementInfoConfirmField > pSettlementInfoConfirm, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {	
 		CThostFtdcRspInfoField rsp = getStructObject(pRspInfo);
-		if ( rsp.ErrorID() == 0 ) {
-			for( ILtsTraderListener listen : tradelistens ) {
-				listen.onConnectReady(true);
-			}
-		} else {
-			for( ILtsTraderListener listen : tradelistens ) {
-				listen.onConnectReady(false);
-			}
-		}	
+		log.info("Response SettlementInfoConfirm: " + rsp.toString());
 		proxy.doRryPosition();		
 	}
 	
@@ -578,14 +550,11 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		log.info("Response QryPosition:");
 		CThostFtdcInvestorPositionField rsp = getStructObject(pInvestorPosition);
 		CThostFtdcRspInfoField rspInfo = getStructObject(pRspInfo);
-		//notify posListeners
-		for ( ILtsPositionListener lis : posListens ) {
+		//notify tradeListeners
+		for ( ILtsTraderListener lis : tradelistens ) {
 			lis.onQryPosition(rsp, bIsLast);
-		}
-		if ( bIsLast ) {
-			// notify trade ready listeners
-			for ( ILtsTraderListener lis: tradelistens ) {
-				lis.onQryPositionReady(true);
+			if ( bIsLast ) {
+				lis.onConnectReady(true);
 			}
 		}
 	}

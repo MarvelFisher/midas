@@ -45,7 +45,6 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	protected AtomicInteger seqId = new AtomicInteger();
 	
 	protected ILtsTraderListener tradeListener;
-	protected ILtsPositionListener posListener;
 	
 	private boolean ready = false;
 	private ISymbolConverter symbolConverter;
@@ -199,9 +198,6 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		if( tradeListener != null ) {
 			traderSpi.addTraderListener(tradeListener);
 		}
-		if( posListener != null ) {
-			traderSpi.addPositionListener(posListener);
-		}
 		traderSpi.addLoginListener(this);
 		traderApi.RegisterSpi(Pointer.getPointer(traderSpi));
 		traderApi.RegisterFront(BridjUtils.stringToBytePointer(frontUrl));
@@ -264,16 +260,6 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		this.tradeListener = listener;
 		if ( traderSpi != null ) {
 			traderSpi.addTraderListener(listener);
-		}
-	}
-	
-	public void addPositionListener(ILtsPositionListener listener) throws DownStreamException {
-		if (listener != null && this.posListener != null ) {
-			throw new DownStreamException("Support only one listener");
-		}
-		this.posListener = listener;
-		if ( traderSpi != null ) {
-			traderSpi.addPositionListener(listener);
 		}
 	}
 	
