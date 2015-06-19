@@ -361,7 +361,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			} else {
 				String msg = TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onError(rsp.OrderRef().getCString(),"" + rspInfo.ErrorID() + " : " +  msg);
+					lis.onError(rsp.OrderRef().getCString(), "" + rspInfo.ErrorID() + " : " +  msg);
 				}
 			}
 		}

@@ -65,6 +65,7 @@ public enum OrderField {
 		REASON("Reason"),
 		ROUTE("Route"),
 		UNSOLICITED("Unsolicited"),
+		FLAG("Flag"),
 		;
 		
 		static HashMap<String, OrderField> map = new HashMap<String, OrderField>();

@@ -19,6 +19,7 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ISymbolConverter;
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
@@ -97,9 +98,10 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
 			String symbol = symbolConverter.convertDown(order.getSymbol());
-			byte flag = positionRecord.getPositionFlag(symbol, order.getSide().isBuy(), order.getQuantity());
-			proxy.newOrder(ordRef, order, flag);
-			log.info("Send Order: " + ordRef);
+			byte flag = positionRecord.holdQuantity(symbol, order.getSide().isBuy(), order.getQuantity());
+			order.put(OrderField.FLAG.value(), flag);
+			proxy.newOrder(ordRef, order);
+			log.info("Send Order: " + ordRef + "," + flag);
 		}
 
 		@Override
@@ -192,7 +194,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		
 		if(status == OrdStatus.CANCELED || status == OrdStatus.REJECTED) {
 			double remaining = order.getQuantity() - order.getCumQty();
-			positionRecord.onTradeUpdate(update.InstrumentID().getCString(), 
+			if(!PriceUtils.isZero(remaining))
+				positionRecord.releaseQuantity(update.InstrumentID().getCString(), 
 					update.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
 					update.CombOffsetFlag().getByte(), remaining);
 		}
@@ -244,7 +247,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
                 .getNextID() + "E", order.getUser(),
                 order.getAccount(), order.getRoute());
 		
-		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
+		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 
+				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
 				trade.OffsetFlag(), trade.Volume());
 		
 		this.listener.onOrder(execType, order, execution, null);
@@ -252,7 +256,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 
 	@Override
 	public void onCancel(CThostFtdcInputOrderActionField field) {
-		log.info("Cancelled:");
+		log.info("Cancelled: " + field);
 	}
 
 	@Override
@@ -264,6 +268,14 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			return;
 		}
 		order.setOrdStatus(OrdStatus.REJECTED);
+		
+		double remaining = order.getQuantity() - order.getCumQty();
+		if(!PriceUtils.isZero(remaining))
+			positionRecord.releaseQuantity(symbolConverter.convertDown(order.getSymbol()), 
+				order.getSide().isBuy(), 
+				order.get(Byte.class, OrderField.FLAG.value()), 
+				remaining);
+
 		this.listener.onOrder(ExecType.REJECTED, order, null, msg);
 	}
 

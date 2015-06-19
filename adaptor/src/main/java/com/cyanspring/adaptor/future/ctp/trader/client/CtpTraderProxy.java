@@ -27,6 +27,7 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary;
 import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary.THOST_TE_RESUME_TYPE;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.ISymbolConverter;
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
@@ -93,14 +94,14 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		return ready;
 	}
 	
-	public void newOrder(String sn, ChildOrder order, byte flag) throws DownStreamException {
+	public void newOrder(String sn, ChildOrder order) throws DownStreamException {
 		byte priceType = 0;
 		if ( ExchangeOrderType.MARKET == order.getType() ) {
 			priceType = TraderLibrary.THOST_FTDC_OPT_AnyPrice;
 		} else if ( ExchangeOrderType.LIMIT == order.getType() ) {
 			priceType = TraderLibrary.THOST_FTDC_OPT_LimitPrice;
 		} else {
-			throw new DownStreamException("ExchangeOrderType not support: " + order.getType());
+			throw new DownStreamException("ExchangeOrderType not support: " + order);
 		}
 		byte direction = 0;
 		if ( OrderSide.Buy == order.getSide() ) {
@@ -108,8 +109,13 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		} else if ( OrderSide.Sell == order.getSide() ) {
 			direction = TraderLibrary.THOST_FTDC_D_Sell;
 		} else {
-			throw new DownStreamException("Order side not support: " + order.getSide());
+			throw new DownStreamException("Order side not support: " + order);
 		}
+		
+		Byte flag = order.get(Byte.class, OrderField.FLAG.value());
+		if(null == flag)
+			throw new DownStreamException("Flag is empty: " + order);
+			
 		
 		CThostFtdcInputOrderField req = new CThostFtdcInputOrderField();
 		req.BrokerID().setCString(brokerId);
