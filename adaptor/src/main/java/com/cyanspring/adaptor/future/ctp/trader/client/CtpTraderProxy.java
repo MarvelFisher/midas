@@ -93,7 +93,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		return ready;
 	}
 	
-	public void newOrder ( String sn, ChildOrder order ) throws DownStreamException {
+	public void newOrder(String sn, ChildOrder order, byte flag) throws DownStreamException {
 		byte priceType = 0;
 		if ( ExchangeOrderType.MARKET == order.getType() ) {
 			priceType = TraderLibrary.THOST_FTDC_OPT_AnyPrice;
@@ -122,7 +122,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		req.OrderRef().setCString(String.valueOf(sn));		
 		req.OrderPriceType(priceType);
 		req.Direction(direction);
-		req.CombOffsetFlag().set(0, TraderLibrary.THOST_FTDC_OF_Open);
+		req.CombOffsetFlag().set(0, flag);
 		req.CombHedgeFlag().set(0, TraderLibrary.THOST_FTDC_HF_Speculation);
 		req.LimitPrice(order.getPrice());
 		req.VolumeTotalOriginal((int) order.getQuantity());

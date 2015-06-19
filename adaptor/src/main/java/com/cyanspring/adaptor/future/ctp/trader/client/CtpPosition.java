@@ -9,41 +9,19 @@ import com.cyanspring.common.util.PriceUtils;
  * @author Marvel
  */
 public class CtpPosition implements Serializable{
-	private String user;
 	private String symbol;
-	
-//	private double buyQty;
-//	private double sellQty;
-	
 	private double tdQty;
 	private double ydQty;
 	private boolean isBuy;
 	
-	private boolean isToday;
-	
-	private final static double threshold = 10;
-	
-	public CtpPosition() {
-		
-	}
-	
-	public CtpPosition(String user, String symbol, double tdQty, double ydQty) {
-		this.user = user;
+	public CtpPosition(String symbol, boolean isBuy, double tdQty, double ydQty) {
 		this.symbol = symbol;
 		this.tdQty = tdQty;
 		this.ydQty = ydQty;
+		this.isBuy = isBuy;
 	}
-	
 	
 	////getters and setters ////
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
 	public String getSymbol() {
 		return symbol;
 	}
@@ -75,13 +53,9 @@ public class CtpPosition implements Serializable{
 	public void setBuy(boolean isBuy) {
 		this.isBuy = isBuy;
 	}
-
-	public boolean isToday() {
-		return isToday;
-	}
-
-	public void setToday(boolean isToday) {
-		this.isToday = isToday;
-	}
 	
+	@Override
+	public String toString() {
+		return symbol + "," + isBuy + "," + ydQty + "," + tdQty;
+	}
 }

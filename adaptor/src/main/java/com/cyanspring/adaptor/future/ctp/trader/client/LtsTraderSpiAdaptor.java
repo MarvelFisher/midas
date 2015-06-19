@@ -559,8 +559,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(24) 
 	public  void OnRspQryInvestorPosition(Pointer<CThostFtdcInvestorPositionField > pInvestorPosition, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		log.info("Response QryPosition: " + pInvestorPosition);
 		CThostFtdcInvestorPositionField rsp = getStructObject(pInvestorPosition);
+		log.info("Response QryPosition: " + rsp);
 		CThostFtdcRspInfoField rspInfo = getStructObject(pRspInfo);
 		//notify tradeListeners
 		for ( ILtsTraderListener lis : tradelistens ) {

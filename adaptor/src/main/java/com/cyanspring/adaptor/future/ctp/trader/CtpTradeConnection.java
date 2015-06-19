@@ -15,6 +15,7 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderAc
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInvestorPositionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ISymbolConverter;
@@ -38,11 +39,12 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private boolean state; 
 	private IDownStreamListener listener;
 	private DownStreamSender downStreamSender = new DownStreamSender();
+	private ISymbolConverter symbolConverter;
 	
 	private Map<String, ChildOrder> serialToOrder = new ConcurrentHashMap<String, ChildOrder>();
 	private Map<String, Double> tradePendings = new ConcurrentHashMap<String, Double>();
 	private Map<String, Double> orderPendings = new ConcurrentHashMap<String, Double>();
-	private Map<String, CtpPosition> positionMap = new ConcurrentHashMap<String, CtpPosition>();
+	private CtpPositionRecord positionRecord= new CtpPositionRecord();
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -52,6 +54,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		this.url = url;
 		this.broker = broker;
 		this.conLog = conLog;
+		this.symbolConverter = symbolConverter;
 		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password, symbolConverter);
 	}
 	
@@ -59,7 +62,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	public void init() throws Exception {	
 		// register listeners
 		registerListeners();
-		// TODO does login and initialization		
+		positionRecord.clear();	
 		proxy.init();		
 	}
 	
@@ -93,14 +96,16 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			String ordRef = "" + proxy.getORDER_REF();
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
-			proxy.newOrder(ordRef, order);
+			String symbol = symbolConverter.convertDown(order.getSymbol());
+			byte flag = positionRecord.getPositionFlag(symbol, order.getSide().isBuy(), order.getQuantity());
+			proxy.newOrder(ordRef, order, flag);
 			log.info("Send Order: " + ordRef);
 		}
 
 		@Override
 		public void amendOrder(ChildOrder order, Map<String, Object> fields)
 				throws DownStreamException {
-			
+			throw new DownStreamException("Amend order not support");
 		}
 
 		@Override
@@ -145,8 +150,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// notify upStream
 		proxy.setReady(isReady);	
 		this.listener.onState(isReady);
-		
-		log.info("positionMap: " + positionMap.toString());
+		//TODO: output details
+		log.info("Position Record: " + positionRecord);
 	}
 	
 	/**
@@ -163,26 +168,33 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		ExecType execType = TraderHelper.OrdStatus2ExecType(status);		
 		log.info("onOrder: " + clOrderId + " Type: " + status + " Volume: " + volumeTraded + " Message: " + msg );
 		
-		ChildOrder childOrder = serialToOrder.get(clOrderId);
-		if ( null == childOrder ) {
+		ChildOrder order = serialToOrder.get(clOrderId);
+		if ( null == order ) {
 			log.info("Order not found: " + clOrderId);
 			return;
 		}
 
-		if(status == OrdStatus.NEW && childOrder.getOrdStatus() == OrdStatus.NEW ||
-		   status == OrdStatus.PENDING_NEW && childOrder.getOrdStatus() == OrdStatus.PENDING_NEW) {
+		if(status != OrdStatus.PARTIALLY_FILLED &&
+			order.getOrdStatus() == status) {
 			log.debug("Skipping update since ordStatus doesn't change: " + status);
 			return;
 		}
 
 		if ( status != null ) {
-			childOrder.setOrdStatus(status);
-			if (PriceUtils.GreaterThan(volumeTraded, childOrder.getCumQty())) {
+			order.setOrdStatus(status);
+			if (PriceUtils.GreaterThan(volumeTraded, order.getCumQty())) {
 				tradePendings.put(clOrderId, new Double(volumeTraded)); // leave trade to do the update
 			} else {				
-				this.listener.onOrder(execType, childOrder, null, msg);
+				this.listener.onOrder(execType, order, null, msg);
 			}
 			
+		}
+		
+		if(status == OrdStatus.CANCELED || status == OrdStatus.REJECTED) {
+			double remaining = order.getQuantity() - order.getCumQty();
+			positionRecord.onTradeUpdate(update.InstrumentID().getCString(), 
+					update.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
+					update.CombOffsetFlag().getByte(), remaining);
 		}
 	}
 	
@@ -216,7 +228,9 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		order.setCumQty(volume);
 		order.setAvgPx(avgPx);
 		ExecType execType = ExecType.PARTIALLY_FILLED;
-		if(PriceUtils.Equal(volumeTraded, order.getQuantity())) {
+		if(order.getOrdStatus() == OrdStatus.CANCELED || order.getOrdStatus() == OrdStatus.REJECTED) {
+			execType = TraderHelper.OrdStatus2ExecType(order.getOrdStatus());
+		} else if(PriceUtils.EqualGreaterThan(order.getCumQty(), order.getQuantity())) {
 			execType = ExecType.FILLED;
 			order.setOrdStatus(OrdStatus.FILLED);
 		} else {
@@ -229,6 +243,9 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
                 order.getStrategyId(), IdGenerator.getInstance()
                 .getNextID() + "E", order.getUser(),
                 order.getAccount(), order.getRoute());
+		
+		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
+				trade.OffsetFlag(), trade.Volume());
 		
 		this.listener.onOrder(execType, order, execution, null);
 	}
@@ -257,12 +274,20 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			log.info("CThostFtdcInvestorPositionField is null");
 			return;
 		}
-		String user = field.InvestorID().getCString();
 		String symbol = field.InstrumentID().getCString();
 		double today = field.TodayPosition();
 		double yesterday = field.YdPosition();		
-		CtpPosition pos = new CtpPosition(user, symbol, today, yesterday);
-		positionMap.put(symbol, pos);
+		boolean isBuy = false;
+		if(field.PosiDirection() == TraderLibrary.THOST_FTDC_PD_Long)
+			isBuy = true;
+		else if(field.PosiDirection() == TraderLibrary.THOST_FTDC_PD_Short) {
+			isBuy = false;
+		} else {
+			log.error("This flag can't be handled: " + field.PosiDirection());
+			return;
+		}
+		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday);
+		positionRecord.inject(pos);
 	}
 
 	
