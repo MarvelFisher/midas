@@ -4,4 +4,5 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcRspUserLogin
 
 public interface ILtsLoginListener {
 	void onLogin(CThostFtdcRspUserLoginField field);
+	void onDisconnect();
 }

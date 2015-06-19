@@ -1,9 +1,13 @@
 package com.cyanspring.adaptor.future.ctp.trader.client;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bridj.Pointer;
@@ -12,7 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcQryInvestorPositionField;
+import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcQryOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcReqUserLoginField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcRspUserLoginField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcSettlementInfoConfirmField;
@@ -158,6 +164,25 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		traderApi.ReqOrderAction(Pointer.getPointer(req), getNextSeq());
 	}
 	
+	public void cancelOrder( CtpOrderToCancel order ) {
+		// get from order		
+		String orderRef = order.getOrderRef();
+		String symbol = order.getSymbol();
+		int front = order.getFront();
+		int session = order.getSession();
+		
+		CThostFtdcInputOrderActionField req = new CThostFtdcInputOrderActionField();
+		req.BrokerID().setCString(brokerId);
+		req.InvestorID().setCString(user);
+		req.OrderRef().setCString(orderRef);
+		req.FrontID(front);
+		req.SessionID(session);
+		req.ActionFlag(TraderLibrary.THOST_FTDC_AF_Delete);
+		req.InstrumentID().setCString(symbol);
+		
+		traderApi.ReqOrderAction(Pointer.getPointer(req), getNextSeq());
+	}
+	
 	private Thread workThread1;
 	protected void connect() {
 		if ( workThread1 == null ) {
@@ -214,27 +239,89 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	}
 	
 	private boolean loginSend = false;
-	protected void doLogin() {
-		if ( !loginSend ) {
-			CThostFtdcReqUserLoginField req = new CThostFtdcReqUserLoginField();
-			req.BrokerID().setCString(brokerId);
-			req.UserID().setCString(user);
-			req.Password().setCString(password);
-			Pointer<CThostFtdcReqUserLoginField> pReq = Pointer.getPointer(req);
-			traderApi.ReqUserLogin(pReq, getNextSeq());
-		}
-		loginSend = true;
+	protected void doLogin() {		
+		CThostFtdcReqUserLoginField req = new CThostFtdcReqUserLoginField();
+		req.BrokerID().setCString(brokerId);
+		req.UserID().setCString(user);
+		req.Password().setCString(password);
+		Pointer<CThostFtdcReqUserLoginField> pReq = Pointer.getPointer(req);
+		traderApi.ReqUserLogin(pReq, getNextSeq());
+		
 	}
 	
 	private boolean settlementInfoConfirmSend = false;
-	protected void doReqSettlementInfoConfirm() {
-		if ( !settlementInfoConfirmSend ) {
-			CThostFtdcSettlementInfoConfirmField req = new CThostFtdcSettlementInfoConfirmField();
-			req.BrokerID().setCString(brokerId);
-			req.InvestorID().setCString(user);
-			traderApi.ReqSettlementInfoConfirm(Pointer.getPointer(req), getNextSeq());
-			log.info("Send SettlementInfoConfirm");
-		}		
+	protected void doReqSettlementInfoConfirm() {	
+		CThostFtdcSettlementInfoConfirmField req = new CThostFtdcSettlementInfoConfirmField();
+		req.BrokerID().setCString(brokerId);
+		req.InvestorID().setCString(user);
+		traderApi.ReqSettlementInfoConfirm(Pointer.getPointer(req), getNextSeq());
+		log.info("Send SettlementInfoConfirm");
+			
+	}
+	
+	public void cancelHistoryOrder() {
+		Thread work = new Thread() {
+			public void run() {
+				List<CtpOrderToCancel> order2Cancel = null;
+				try {
+					order2Cancel = doQryHistoryOrders();
+					log.info("Get Orders to cancel " + order2Cancel);
+				} catch (InterruptedException e) {
+					log.info("Query History Order Exception: "  + e.getMessage());
+				}
+				for ( CtpOrderToCancel order : order2Cancel ) {
+					cancelOrder(order);
+				}
+			}
+		};
+		work.start();
+	}
+	
+	// get order can be cancelled
+	private List<CtpOrderToCancel> doQryHistoryOrders() throws InterruptedException {
+		final boolean qryEnd[] = new boolean[1];
+		qryEnd[0] = false;	
+		final List<CtpOrderToCancel> array = new Vector<CtpOrderToCancel>();
+		traderSpi.addQryOrdListener(new ILtsQryOrderListener() {
+			@Override
+			public void onQryOrder(CThostFtdcOrderField field, boolean isLast) {
+				if ( field != null ) {
+					String symbol = field.InstrumentID().getCString();
+					String ordRef = field.OrderRef().getCString();
+					int front = field.FrontID();
+					int session = field.SessionID();
+					byte status = field.OrderStatus();
+					if ( status == TraderLibrary.THOST_FTDC_OST_NoTradeQueueing ||
+							status == TraderLibrary.THOST_FTDC_OST_Unknown ) {
+						CtpOrderToCancel order = new CtpOrderToCancel(symbol, ordRef, front, session, status);
+						array.add(order);
+					}
+				}
+				if ( isLast ) {
+					qryEnd[0] = true;
+				}
+			}			
+		});
+		final CThostFtdcQryOrderField req = new CThostFtdcQryOrderField();
+		req.BrokerID().setCString(brokerId);
+		req.InvestorID().setCString(user);	
+		
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				int ret = traderApi.ReqQryOrder(Pointer.getPointer(req), getNextSeq());
+				log.info("Send QueryOrder: " + ret);
+			}			
+		};	
+		Timer timer = new Timer() ;
+		timer.schedule(task, 2000);
+		int timeout = 100;
+		while( (!qryEnd[0]) && (timeout != 0) ) {
+			Thread.sleep(50);
+			timeout--;
+		}
+		
+		return array;
 	}
 	
 	protected void doQryPosition() {
@@ -244,8 +331,8 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());
-				log.info("Send QueryPosition");
+				int ret = traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());
+				log.info("Send QueryPosition: " + ret);
 			}			
 		};	
 		Timer timer = new Timer() ;
@@ -294,6 +381,11 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		int nextOrderRef = field.MaxOrderRef().getInt();
 		ORDER_REF = new AtomicInteger(++nextOrderRef) ;
 		log.info("FRONT_ID = " + FRONT_ID + "; SESSION_ID = " + SESSION_ID + "; ORDER_REF = " + ORDER_REF);
+	}
+
+	@Override
+	public void onDisconnect() {
+		loginSend = false;
 	}
 	
 }

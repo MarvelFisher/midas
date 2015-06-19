@@ -78,6 +78,15 @@ public class TraderHelper {
 		return "";
 	}
 	
+	public static String toGBKString2(byte[] bytes) {
+		try {
+			return new String(bytes, "GBK");
+		} catch (UnsupportedEncodingException e) {
+			log.info(e.getMessage());
+		}
+		return "";
+	}
+	
 	/**
 	 * 获得Field
 	 * 

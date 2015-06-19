@@ -518,7 +518,7 @@ public class CThostFtdcOrderField extends StructObject {
 		sb.append("		OrderType = " + OrderType() + ";\n");
 		sb.append("		VolumeTraded = " + VolumeTraded() + ";\n");
 		sb.append("		VolumeTotal = " + VolumeTotal() + ";\n");
-		sb.append("		StatusMsg = " + TraderHelper.toGBKString(StatusMsg().getBytes()) + ";\n");
+		sb.append("		StatusMsg = " + StatusMsg().getCString() + ";\n");
 		
 		sb.append("}");
 		return sb.toString();

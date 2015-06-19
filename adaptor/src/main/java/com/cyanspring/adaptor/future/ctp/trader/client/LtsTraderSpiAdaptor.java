@@ -101,6 +101,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	
 	private List<ILtsTraderListener> tradelistens = new ArrayList<ILtsTraderListener>();
 	private List<ILtsLoginListener> loginListens = new ArrayList<ILtsLoginListener>();
+	private List<ILtsQryOrderListener> qryOrdListens = new ArrayList<ILtsQryOrderListener>();
 	
 	public void setCtpTraderProxy(CtpTraderProxy pro) {
 		this.proxy = pro;
@@ -142,6 +143,24 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		}
 	}
 	
+	public void addQryOrdListener( ILtsQryOrderListener listener ) {
+		if ( listener == null ) {
+			return;
+		}
+		if ( !qryOrdListens.contains(listener) ) {
+			qryOrdListens.add(listener);
+		}
+	}
+	
+	public void removeQryOrdListener( ILtsQryOrderListener listener ) {
+		if ( listener == null ) {
+			return;
+		}
+		if ( qryOrdListens.contains(listener) ) {
+			qryOrdListens.remove(listener);
+		}
+	}
+	
 	/**
 	 * 当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 	 */	
@@ -162,7 +181,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(1) 
 	public  void OnFrontDisconnected(int nReason) {
-		log.info("Network dissconnected");
+		log.info("Network dissconnected" + nReason);
 	}
 	
 	/**
@@ -377,7 +396,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	public  void OnRspSettlementInfoConfirm(Pointer<CThostFtdcSettlementInfoConfirmField > pSettlementInfoConfirm, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {	
 		CThostFtdcRspInfoField rsp = getStructObject(pRspInfo);
 		log.info("Response SettlementInfoConfirm: " + rsp.toString());
-		proxy.doQryPosition();		
+		proxy.doQryPosition();	
+		proxy.cancelHistoryOrder();
 	}
 	
 	/**
@@ -508,19 +528,11 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(22) 
 	public  void OnRspQryOrder(Pointer<CThostFtdcOrderField > pOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pOrder == null ) {
-			log.error("Response QryOrder Pointer<CThostFtdcOrderField > pOrder = null");			
-		} else {
-			log.info("Response QryOrder:");
-			// TODO
-		}
-		
-		if ( pRspInfo == null ) {
-			log.info("Response QryOrder Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			//TODO
-		}
-		
+		log.info("Response QryOrder:" + pOrder);
+		CThostFtdcOrderField order = getStructObject(pOrder);
+		for ( ILtsQryOrderListener lis : qryOrdListens ) {
+			lis.onQryOrder(order, bIsLast);
+		}		
 	}
 	
 	/**
