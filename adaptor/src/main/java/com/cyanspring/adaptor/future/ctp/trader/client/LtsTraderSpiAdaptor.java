@@ -353,17 +353,22 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		log.info("Response OrderAction:");
 		CThostFtdcInputOrderActionField rsp = getStructObject(pInputOrderAction);
 		CThostFtdcRspInfoField rspInfo = getStructObject(pRspInfo);
-		if ( rsp.ActionFlag() == TraderLibrary.THOST_FTDC_AF_Delete ) {
-			if ( rspInfo.ErrorID() == 0 ) {
+		if ( rsp != null && rsp.ActionFlag() == TraderLibrary.THOST_FTDC_AF_Delete ) {
+			String msg = null;
+			if(null != rspInfo) {
+				msg = "" + rspInfo.ErrorID() + " : " + TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
+			}
+			if ( rspInfo != null && rspInfo.ErrorID() == 0 ) {
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onCancel(rsp);
+					lis.onCancel(rsp.OrderRef().getCString(), msg);
 				}
 			} else {
-				String msg = TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onError(rsp.OrderRef().getCString(), "" + rspInfo.ErrorID() + " : " +  msg);
+					lis.onError(rsp.OrderRef().getCString(), msg);
 				}
 			}
+		} else {
+			log.error("OnRspOrderAction: pInputOrderAction is null");
 		}
 		
 	}

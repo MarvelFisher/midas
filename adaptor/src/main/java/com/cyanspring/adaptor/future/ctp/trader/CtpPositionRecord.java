@@ -1,7 +1,7 @@
 package com.cyanspring.adaptor.future.ctp.trader;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +13,13 @@ import com.cyanspring.common.util.PriceUtils;
 public class CtpPositionRecord {
 	private static final Logger log = LoggerFactory
 			.getLogger(CtpPositionRecord.class);
-	private Map<String, CtpPosition> positions = new ConcurrentHashMap<String, CtpPosition>();
+	private Map<String, CtpPosition> positions = new HashMap<String, CtpPosition>();
 
 	private String getKey(String symbol, boolean isBuy) {
 		return symbol + (isBuy?"-B":"-S");
 	}
 	
-	void addPosition(String symbol, boolean isBuy, boolean isYesterday, double qty) {
+	private void addPosition(String symbol, boolean isBuy, boolean isYesterday, double qty) {
 		CtpPosition position = positions.get(getKey(symbol, isBuy));
 		if(null == position) {
 			positions.put(getKey(symbol, isBuy), new CtpPosition(symbol, isBuy, qty, 0));
@@ -30,7 +30,7 @@ public class CtpPositionRecord {
 		}
 	}
 	
-	void deductPosition(String symbol, boolean isBuy, boolean isYesterday, double qty) {
+	private void deductPosition(String symbol, boolean isBuy, boolean isYesterday, double qty) {
 		CtpPosition position = positions.get(getKey(symbol, isBuy));
 		if(position == null) {
 			log.error("Trade indicates to close a non-existing position: " + symbol + ", " + isBuy + ", " + isYesterday + ", " + qty);
@@ -50,17 +50,14 @@ public class CtpPositionRecord {
 		}
 	}
 	
-	void onTradeUpdate(String symbol, boolean isBuy, byte flag, double qty) {
+	synchronized void onTradeUpdate(String symbol, boolean isBuy, byte flag, double qty) {
 		if(flag == TraderLibrary.THOST_FTDC_OF_Open) {
 			addPosition(symbol, isBuy, false, qty);
-		} else {
-			log.error("Unhandled flag: " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
-			addPosition(symbol, isBuy, false, qty);
-		}
-		log.debug("onTradeUpdate: " + positions);
+		} 
+		log.debug("onTradeUpdate: " + flag + ", " + positions);
 	}
 	
-	byte holdQuantity(String symbol, boolean isBuy, double qty) {
+	synchronized byte holdQuantity(String symbol, boolean isBuy, double qty) {
 		CtpPosition position = positions.get(getKey(symbol, !isBuy));
 		byte result = TraderLibrary.THOST_FTDC_OF_Open;
 		if(null == position) {
@@ -76,7 +73,7 @@ public class CtpPositionRecord {
 		return result;
 	}
 
-	void releaseQuantity(String symbol, boolean isBuy, byte flag, double qty) {
+	synchronized void releaseQuantity(String symbol, boolean isBuy, byte flag, double qty) {
 		CtpPosition position = positions.get(getKey(symbol, !isBuy));
 		if(null == position) {
 			log.error("releaseQuantity can't find record " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
@@ -88,11 +85,11 @@ public class CtpPositionRecord {
 		log.debug("releaseQuantity: " + positions);
 	}
 		
-	void inject(CtpPosition position) {
+	synchronized void inject(CtpPosition position) {
 		positions.put(getKey(position.getSymbol(), position.isBuy()), position);
 	}
 	
-	void clear() {
+	synchronized void clear() {
 		positions.clear();
 	}
 	

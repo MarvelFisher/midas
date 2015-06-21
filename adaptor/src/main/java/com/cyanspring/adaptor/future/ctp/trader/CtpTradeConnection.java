@@ -90,6 +90,20 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		return proxy.getState();
 	}
 
+	private String convertDownSymbol(String symbol) {
+		if(null != symbolConverter) {
+			return symbolConverter.convertDown(symbol);
+		}
+		return symbol;
+	}
+	
+	private String convertUpSymbol(String symbol) {
+		if(null != symbolConverter) {
+			return symbolConverter.convertUp(symbol);
+		}
+		return symbol;
+	}
+	
 	class DownStreamSender implements IDownStreamSender {
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
@@ -97,7 +111,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			String ordRef = "" + proxy.getORDER_REF();
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
-			String symbol = symbolConverter.convertDown(order.getSymbol());
+			String symbol = convertDownSymbol(order.getSymbol());
 			byte flag = positionRecord.holdQuantity(symbol, order.getSide().isBuy(), order.getQuantity());
 			order.put(OrderField.FLAG.value(), flag);
 			proxy.newOrder(ordRef, order);
@@ -177,7 +191,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		}
 
 		if(status != OrdStatus.PARTIALLY_FILLED &&
-			order.getOrdStatus() == status) {
+			order.getOrdStatus() == status &&
+			PriceUtils.Equal(order.getCumQty(), volumeTraded)) {
 			log.debug("Skipping update since ordStatus doesn't change: " + status);
 			return;
 		}
@@ -192,12 +207,18 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			
 		}
 		
-		if(status == OrdStatus.CANCELED || status == OrdStatus.REJECTED) {
+		// return remaining position holding
+		returnRemainingPosition(order, update.CombOffsetFlag().getByte());
+		
+	}
+	
+	private void returnRemainingPosition(ChildOrder order, byte flag) {
+		if(order.getOrdStatus() == OrdStatus.CANCELED || order.getOrdStatus() == OrdStatus.REJECTED) {
 			double remaining = order.getQuantity() - order.getCumQty();
 			if(!PriceUtils.isZero(remaining))
-				positionRecord.releaseQuantity(update.InstrumentID().getCString(), 
-					update.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
-					update.CombOffsetFlag().getByte(), remaining);
+				positionRecord.releaseQuantity(convertDownSymbol(order.getSymbol()), 
+					order.getSide().isBuy(), 
+					flag, remaining);
 		}
 	}
 	
@@ -247,21 +268,35 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
                 .getNextID() + "E", order.getUser(),
                 order.getAccount(), order.getRoute());
 		
+		// update position holding
 		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 
 				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
 				trade.OffsetFlag(), trade.Volume());
 		
+		returnRemainingPosition(order, trade.OffsetFlag());
+
 		this.listener.onOrder(execType, order, execution, null);
 	}
 
 	@Override
-	public void onCancel(CThostFtdcInputOrderActionField field) {
-		log.info("Cancelled: " + field);
+	public void onCancel(String orderId, String msg) {
+		log.info("Response cancel On Order:" + orderId + " " + msg);
+		ChildOrder order = serialToOrder.get(orderId);	
+		if ( null == order ) {
+			log.info("Order not found: " + orderId);
+			return;
+		}
+		order.setOrdStatus(OrdStatus.CANCELED);
+		
+		// return position holding
+		returnRemainingPosition(order, order.get(Byte.class, OrderField.FLAG.value()));
+
+		this.listener.onOrder(ExecType.CANCELED, order, null, msg);
 	}
 
 	@Override
 	public void onError(String orderId, String msg) {
-		log.error("Response Error On Order:" + orderId + " " + msg);
+		log.info("Response Error On Order:" + orderId + " " + msg);
 		ChildOrder order = serialToOrder.get(orderId);	
 		if ( null == order ) {
 			log.info("Order not found: " + orderId);
@@ -269,12 +304,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		}
 		order.setOrdStatus(OrdStatus.REJECTED);
 		
-		double remaining = order.getQuantity() - order.getCumQty();
-		if(!PriceUtils.isZero(remaining))
-			positionRecord.releaseQuantity(symbolConverter.convertDown(order.getSymbol()), 
-				order.getSide().isBuy(), 
-				order.get(Byte.class, OrderField.FLAG.value()), 
-				remaining);
+		// return position holding
+		returnRemainingPosition(order, order.get(Byte.class, OrderField.FLAG.value()));
 
 		this.listener.onOrder(ExecType.REJECTED, order, null, msg);
 	}

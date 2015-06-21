@@ -47,7 +47,7 @@ public interface ILtsTraderListener {
 	 * 撤单通知
 	 * @param field
 	 */
-	public void onCancel(CThostFtdcInputOrderActionField field);
+	public void onCancel(String orderId, String msg);
 	
 	
 	
