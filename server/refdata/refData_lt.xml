@@ -15,7 +15,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -84,7 +84,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -153,7 +153,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -222,7 +222,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -291,7 +291,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -360,7 +360,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -429,7 +429,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -498,7 +498,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -567,7 +567,7 @@
       		</entry>
 			<entry>
         		<string>Margin Rate</string>
-       		 	<double>0.025</double>
+       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
