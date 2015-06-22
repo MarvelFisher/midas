@@ -76,6 +76,42 @@
     <!-- Derby setting -->
     <bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
 
+
+	<!-- Live Trading -->
+    <bean id="stopLiveTradingStartTime" class="java.lang.String">
+        <constructor-arg value="2:00:00" />
+    </bean>
+    
+    <bean id="stopLiveTradingEndTime" class="java.lang.String">
+        <constructor-arg value="7:00:00" />
+    </bean>
+    
+    <bean id="positionStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.1" />
+    </bean>
+    
+    <bean id="frozenStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.2" />
+    </bean>
+    
+    <bean id="terminateStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.3" />
+    </bean>
+    
+    <bean id="companyStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+    
+    <bean id="frozenStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+    
+    <bean id="terminateStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+
+	<!--  -->
+
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
         <property name="arguments">
@@ -98,11 +134,11 @@
                 <value>0.1</value>
                 <value>0.2</value>
                 <value>0.3</value>
-                <value>false</value>
-                <value>false</value>
+                <value>true</value>
+                <value>true</value>
                 <value>0</value>
                 <value>0</value>
-                <value>DAY_TRADING</value>
+                <value>DEFAULT</value>
             </list>
         </property>
     </bean>
