@@ -185,7 +185,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 							}							
 						} else {							
 							WindGateway.instance.requestSymbol(str);
-							log.info("Symbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
+							log.debug("Symbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
 						}
 					}
 				}						
@@ -194,7 +194,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			registrationGlobal.addSymbol(str);								
 			// 加到 Client 的 Registration
 			if(lst.addSymbol(str) == false) {								
-				log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
+				log.debug("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
 			}					
 		}    	
     }

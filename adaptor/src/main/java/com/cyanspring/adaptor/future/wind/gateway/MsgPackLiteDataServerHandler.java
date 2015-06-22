@@ -137,7 +137,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 							}
 						} else {
 							WindGateway.instance.requestSymbol(str);
-							log.info("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
+							log.debug("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
 						}
 					}
 				}						
