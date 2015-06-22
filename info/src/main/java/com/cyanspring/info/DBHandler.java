@@ -493,21 +493,29 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
-    public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount, String retrieveDate)
+    public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount, String retrieveDate,boolean bLimit)
     {
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
-		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
+    	if(bLimit) 
+    	{
+    		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
 				strTable, symbol, retrieveDate, dataCount);
+    	} 
+    	else 
+    	{
+    		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
+    				strTable, symbol, dataCount);    		
+    	}
 		Connection connect = getConnect();
 		if (connect == null)
 		{
 			return null;
 		}
-		ResultSet rs = querySQL(connect, sqlcmd);
+		ResultSet rs = querySQL(connect, sqlcmd);		
     	try 
     	{
     		HistoricalPrice price;

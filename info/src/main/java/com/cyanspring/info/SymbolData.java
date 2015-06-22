@@ -444,12 +444,20 @@ public class SymbolData implements Comparable<SymbolData>
 			cal.add(Calendar.DATE, (-1) * centralDB.getHistoricalDataPeriod().get(strType));
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(
-					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()));
+					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
 			if (historical != null)
 			{
 				log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] get %d", 
 						market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));
 				mapHistorical.put(strType,  historical);
+				if(historical.size() < centralDB.getHistoricalDataCount().get(strType)) 
+				{
+					cal.add(Calendar.DATE, -30);
+					historical = centralDB.getDbhnd().getCountsValue(
+							market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
+					log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] lack of data, query again get %d", 
+							market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));					
+				}				
 			}
 		}
 	}
