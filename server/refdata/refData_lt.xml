@@ -14,10 +14,6 @@
         		<int>0</int>
       		</entry>
 			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
-      		</entry>
-			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
@@ -81,10 +77,6 @@
       		<entry>
         		<string>Maximum hold</string>
         		<int>0</int>
-      		</entry>
-			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -152,10 +144,6 @@
         		<int>0</int>
       		</entry>
 			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
-      		</entry>
-			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
@@ -219,10 +207,6 @@
       		<entry>
         		<string>Maximum hold</string>
         		<int>0</int>
-      		</entry>
-			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -290,10 +274,6 @@
         		<int>0</int>
       		</entry>
 			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
-      		</entry>
-			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
@@ -357,10 +337,6 @@
       		<entry>
         		<string>Maximum hold</string>
         		<int>0</int>
-      		</entry>
-			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
@@ -428,10 +404,6 @@
         		<int>0</int>
       		</entry>
 			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
-      		</entry>
-			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
@@ -497,10 +469,6 @@
         		<int>0</int>
       		</entry>
 			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
-      		</entry>
-			<entry>
        			<string>Price per unit</string>
         		<double>1.0</double>
       		</entry>
@@ -564,10 +532,6 @@
       		<entry>
         		<string>Maximum hold</string>
         		<int>0</int>
-      		</entry>
-			<entry>
-        		<string>Margin Rate</string>
-       		 	<double>1</double>
       		</entry>
 			<entry>
        			<string>Price per unit</string>
