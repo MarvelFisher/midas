@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -52,6 +51,8 @@ import com.cyanspring.common.event.account.AccountStateRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
@@ -203,6 +204,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
             subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
             subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
+            subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
             subscribeToEvent(OnUserCreatedEvent.class, null);
             subscribeToEvent(TradeDateEvent.class, null);
             subscribeToEvent(InternalResetAccountRequestEvent.class, null);
@@ -683,6 +685,14 @@ public class AccountPositionManager implements IPlugin {
         }
     }
 
+    public void processAllPositionSnapshotRequestEvent(AllPositionSnapshotRequestEvent event){
+        if (null == accountKeeper || null == positionKeeper)
+            return;
+        
+        List<Account> allAccounts = accountKeeper.getAllAccounts();
+        asyncSendPositionSnapshot(event, allAccounts);
+    }
+    
     public void processAllAccountSnapshotRequestEvent(AllAccountSnapshotRequestEvent event) {
         if (null == accountKeeper)
             return;
@@ -690,7 +700,64 @@ public class AccountPositionManager implements IPlugin {
         List<Account> allAccounts = accountKeeper.getAllAccounts();
         asyncSendAccountSnapshot(event, allAccounts);
     }
+    
+    private void asyncSendPositionSnapshot(final AllPositionSnapshotRequestEvent event, final List<Account> allAccounts) {
+        log.info("recevie asyncSendPositionSnapshot");
+        Thread thread = new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+            	int positionCount = 0;
+                List<OpenPosition> openPositionList = new ArrayList<>();
+                
+                for (int i = 0; i < allAccounts.size(); i++) {
+                	
+                	Account account = allAccounts.get(i);
+                	List <OpenPosition> tempOpList = positionKeeper.getOpenPositions(account.getId());
+                	if( null == tempOpList || tempOpList.isEmpty())
+                		continue;
+                	
+                	log.info("account:{},{}",account,tempOpList.size());
+
+                	
+                	for(OpenPosition op: tempOpList){
+                		openPositionList.add(op);
+                		positionCount++;
+                		if (positionCount % asyncSendBatch == 0 ){
+                            try {
+                            	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
+                                        event.getKey(), event.getSender(), openPositionList);
+                                eventManager.sendRemoteEvent(reply);
+                                log.info("AllPositionSnapshotReplyEvent sent: " + openPositionList.size());
+                                Thread.sleep(asyncSendInterval);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                			positionCount = 0 ;
+                			openPositionList.clear();
+                		}
+                	}                	
+                }//for account
+            	if(positionCount != 0){
+            		
+                    try {
+                    	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
+                                event.getKey(), event.getSender(), openPositionList);
+                        eventManager.sendRemoteEvent(reply);
+                        log.info("AllPositionSnapshotReplyEvent sent: " + openPositionList.size());
+                        Thread.sleep(asyncSendInterval);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
+                    
+           			positionCount = 0 ;
+           			openPositionList.clear();
+            	}
+            }
+
+        });
+        thread.start();
+    }
     private void asyncSendAccountSnapshot(final AllAccountSnapshotRequestEvent event, final List<Account> allAccounts) {
         Thread thread = new Thread(new Runnable() {
 
