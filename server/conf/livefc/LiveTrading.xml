@@ -16,8 +16,8 @@
 		<property name="needCheckFreeze" value="true"/>
 		<property name="needCheckTerminate" value="true"/>
 		<property name="changeSettingFrozenDays" value="0"/>
-		<property name="userStopLiveTradingStartTime" value="2:00:00"/>
-        <property name="userStopLiveTradingEndTime" value="7:00:00"/>
+		<property name="userStopLiveTradingStartTime" ref="stopLiveTradingStartTime"/>
+        <property name="userStopLiveTradingEndTime" ref="stopLiveTradingEndTime"/>
 	</bean>
 
 	<bean id="liveTradingRuleHandler" class="com.cyanspring.server.livetrading.rule.LiveTradingRuleHandler">		
@@ -33,12 +33,12 @@
 	 <bean id="defaultUserTrading" class="com.cyanspring.server.livetrading.rule.DefaultUserTrading">
 	 	<constructor-arg>
 	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
-	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
-	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
-	 			<entry key="TERMINATE_STOP_LOSS" value="0.3"/>
-	 			<entry key="COMPANY_STOP_LOSS_VALUE" value="0"/>
-	 			<entry key="FROZEN_STOP_LOSS_VALUE" value="0"/>
-	 			<entry key="TERMINATE_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="POSITION_STOP_LOSS" value-ref="positionStopLossPercent"/>
+	 			<entry key="FROZEN_STOP_LOSS" value-ref="frozenStopLossPercent"/>
+	 			<entry key="TERMINATE_STOP_LOSS" value-ref="terminateStopLossPercent"/>
+	 			<entry key="COMPANY_STOP_LOSS_VALUE" value-ref="companyStopLossValue"/>
+	 			<entry key="FROZEN_STOP_LOSS_VALUE" value-ref="frozenStopLossValue"/>
+	 			<entry key="TERMINATE_STOP_LOSS_VALUE" value-ref="terminateStopLossValue"/>
 	 		</map>
 		</constructor-arg>
 	 </bean>
@@ -48,8 +48,10 @@
 	 		<map key-type="com.cyanspring.server.livetrading.rule.LiveTradingFieldType" value-type="java.lang.Object">
 	 			<entry key="POSITION_STOP_LOSS" value="0.1"/>
 	 			<entry key="FROZEN_STOP_LOSS" value="0.2"/>
+	 			<entry key="TERMINATE_STOP_LOSS" value="0.3"/>
 	 			<entry key="COMPANY_STOP_LOSS_VALUE" value="0"/>
 	 			<entry key="FROZEN_STOP_LOSS_VALUE" value="0"/>
+	 			<entry key="TERMINATE_STOP_LOSS_VALUE" value="0"/> 			
 	 		</map>
 		</constructor-arg>
 	 </bean>

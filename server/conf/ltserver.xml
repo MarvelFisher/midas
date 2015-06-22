@@ -124,6 +124,46 @@
     <bean id="derbyPort" class="java.lang.String">
         <constructor-arg value="1527" />
     </bean>
+    
+    
+    
+    <!-- Live Trading -->
+    <bean id="stopLiveTradingStartTime" class="java.lang.String">
+        <constructor-arg value="2:00:00" />
+    </bean>
+    
+    <bean id="stopLiveTradingEndTime" class="java.lang.String">
+        <constructor-arg value="7:00:00" />
+    </bean>
+    
+    <bean id="positionStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="frozenStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="terminateStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.3" />
+    </bean>
+    
+    <bean id="companyStopLossValue" class="java.lang.String">
+        <constructor-arg value="20000" />
+    </bean>
+    
+    <bean id="frozenStopLossValue" class="java.lang.String">
+        <constructor-arg value="20000" />
+    </bean>
+    
+    <bean id="terminateStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+
+	<!--  -->
+
+
+
 
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
