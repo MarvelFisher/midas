@@ -26,6 +26,7 @@
 				</entry>
 			</map>
 		</property>
+        <property name="tradeDateManager"><ref bean="IFtradeDateManager"/></property>
 	</bean>
 	
 	<bean id="IFdefaultSession" class="com.cyanspring.common.marketsession.MarketSession">

@@ -23,6 +23,7 @@
 				</entry>				
 			</map>
 		</property>
+        <property name="tradeDateManager"><ref bean="szTradeDateManager"/></property>
 	</bean>
 	
 	<bean id="szDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
