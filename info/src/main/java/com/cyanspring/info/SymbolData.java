@@ -441,7 +441,7 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, (-1) * centralDB.getHistoricalDataPeriod().get(strType));
+			cal.add(Calendar.DATE, (-1) * (centralDB.getHistoricalDataPeriod().get(strType) + 2));
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(
 					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
