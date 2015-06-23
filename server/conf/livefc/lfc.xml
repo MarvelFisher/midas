@@ -246,7 +246,7 @@
     <bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
         <constructor-arg>
             <list>
-                <ref bean="hyperDownStreamAdaptor" />
+                <ref bean="ctpAdaptor" />
             </list>
         </constructor-arg>
         <constructor-arg>
@@ -261,6 +261,40 @@
 
     <bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
         <property name="checkSingleSide" value="true"/>
+    </bean>
+
+	<bean id="ctpAdaptor" class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeAdaptor">
+		<property name="url">
+			<value>tcp://180.168.146.181:10200</value>
+		</property>
+		<property name="conLog">
+			<value>./tradeCon/</value>
+		</property>
+		<property name="user">
+			<value>00090</value>
+		</property>
+		<property name="password">
+			<value>hkfdt1234</value>
+		</property>
+		<property name="broker">
+			<value>0253</value>
+		</property>
+		<property name="connectionCount">
+			<value>1</value>
+		</property>
+		<property name="libPath">
+			<value>../adaptor/ctplib/linux64/thosttraderapi.so</value>
+		</property>
+        <property name="symbolConverter">
+            <bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/>
+        </property>
+	</bean>
+
+    <bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
+        <constructor-arg>
+            <list>
+            </list>
+        </constructor-arg>
     </bean>
 
     <bean id="indexMarketSessionManager" class="com.cyanspring.server.marketsession.IndexMarketSessionManager">
