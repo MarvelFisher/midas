@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.bridj.StructObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,10 +81,6 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	public String getId() {
 		return id;
 	}
-
-//	private void onOrder() {
-//		listener.onOrder(execType, order, execution, message);
-//	}
 	
 	@Override
 	public boolean getState() {
@@ -108,7 +105,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
 			order = order.clone();
-			String ordRef = "" + proxy.getORDER_REF();
+			String ordRef = proxy.getClOrderId();
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
 			String symbol = convertDownSymbol(order.getSymbol());
@@ -176,7 +173,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	@Override
 	public void onOrder(CThostFtdcOrderField update) {
 		log.debug("onOrder: " + update);
-		String clOrderId = update.OrderRef().getCString();	
+		String clOrderId = getClOrderId(update);		
 		byte statusCode = update.OrderStatus();
 		int volumeTraded = update.VolumeTraded();
 		String msg = TraderHelper.toGBKString(update.StatusMsg().getBytes());
@@ -222,6 +219,26 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		}
 	}
 	
+	private String getClOrderId(StructObject update) {
+		if ( update instanceof CThostFtdcOrderField ) {
+			CThostFtdcOrderField data = (CThostFtdcOrderField)update;
+			int frontId = data.FrontID();
+			int sessionId = data.SessionID();
+			String orderRef = data.OrderRef().getCString();
+			return "" + frontId + ":" + sessionId + ":" + orderRef;	
+		} 
+		else if ( update instanceof CThostFtdcTradeField ) {
+			CThostFtdcTradeField data = (CThostFtdcTradeField) update;
+			int frontId = proxy.getFRONT_ID();
+			int sessionId = proxy.getSESSION_ID();
+			String orderRef = data.OrderRef().getCString();
+			return "" + frontId + ":" + sessionId + ":" + orderRef;	
+		} else {
+			log.info("not supported update type");
+			return "";
+		}		
+	}
+	
 	/**
 	 * +
 	 * Notify Trade
@@ -229,7 +246,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	@Override
 	public void onTrade(CThostFtdcTradeField trade) {
 		log.info("Traded: " + trade);
-		String clOrderId = trade.OrderRef().getCString();	
+		String clOrderId = getClOrderId(trade);	
 		ChildOrder order = serialToOrder.get(clOrderId);
 		if ( null == order ) {
 			log.info("Order not found: " + clOrderId);
@@ -333,7 +350,4 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		positionRecord.inject(pos);
 	}
 
-	
-
-	
 }
