@@ -51,8 +51,8 @@ import com.ib.client.UnderComp;
 public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         IStreamAdaptor<IDownStreamConnection> {
     private static final Logger log = LoggerFactory.getLogger(IbAdaptor.class);
-
-//    IRefDataManager refDataManager;
+    private static final Logger newsLog = LoggerFactory
+            .getLogger(IbAdaptor.class.getName() + ".NewsLog");
 
     // connection parameters
     private String host;
@@ -86,6 +86,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private volatile boolean isConnected = false;
     private String id = "IB";
     private boolean initialised;
+    private boolean newsIsSubCurrentDay = false;
 
     // caching
     DualMap<String, Integer> symbolToId = new DualMap<String, Integer>();
@@ -1004,6 +1005,10 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         isConnected = true;
         notifyMarketDataState(isConnected);
+
+        //request ib News
+        newsLog.info("IB Request News");
+        clientSocket.reqNewsBulletins(newsIsSubCurrentDay);
     }
 
     @Override
@@ -1043,7 +1048,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     @Override
     public void updateNewsBulletin(int msgId, int msgType, String message,
                                    String origExchange) {
-        log.debug(EWrapperMsgGenerator.updateNewsBulletin(msgId, msgType,
+        newsLog.info(EWrapperMsgGenerator.updateNewsBulletin(msgId, msgType,
                 message, origExchange));
     }
 
@@ -1114,6 +1119,43 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     // End: implementation of EWrapper
     // ////////////////////////////////////
 
+
+    @Override
+    public void subscirbeSymbolData(ISymbolDataListener listener) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void unsubscribeSymbolData(ISymbolDataListener listener) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void refreshSymbolInfo(String market) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void processEvent(Object object) {
+        //RefDataEvent
+        if (object instanceof RefDataEvent)
+        {
+            log.debug("Ib Adapter Receive RefDataEvent");
+            RefDataEvent refDataEvent = (RefDataEvent) object;
+            for(RefData refData : refDataEvent.getRefDataList()){
+                refDateBySymbolMap.put(refData.getSymbol(), refData);
+            }
+        }
+    }
+
+    @Override
+    public void clean() {
+
+    }
+
     // ////////////////////
     // getters and setters
     // ////////////////////
@@ -1174,14 +1216,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         this.logMarketData = logMarketData;
     }
 
-//    public IRefDataManager getRefDataManager() {
-//        return refDataManager;
-//    }
-//
-//    public void setRefDataManager(IRefDataManager refDataManager) {
-//        this.refDataManager = refDataManager;
-//    }
-
     public String getId() {
         return id;
     }
@@ -1198,40 +1232,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         this.cancelOpenOrders = cancelOpenOrders;
     }
 
-    @Override
-    public void subscirbeSymbolData(ISymbolDataListener listener) {
-        // TODO Auto-generated method stub
-
+    public void setNewsIsSubCurrentDay(boolean newsIsSubCurrentDay) {
+        this.newsIsSubCurrentDay = newsIsSubCurrentDay;
     }
-
-    @Override
-    public void unsubscribeSymbolData(ISymbolDataListener listener) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void refreshSymbolInfo(String market) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void processEvent(Object object) {
-        //RefDataEvent
-        if (object instanceof RefDataEvent)
-        {
-            log.debug("Ib Adapter Receive RefDataEvent");
-            RefDataEvent refDataEvent = (RefDataEvent) object;
-            for(RefData refData : refDataEvent.getRefDataList()){
-                refDateBySymbolMap.put(refData.getSymbol(), refData);
-            }
-        }
-    }
-
-    @Override
-    public void clean() {
-
-    }
-
 }
