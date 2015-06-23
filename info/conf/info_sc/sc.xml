@@ -10,10 +10,10 @@
 	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
 		<property name = "plugins">
 	        <list>
-<!-- 	        	<ref bean="InfoGateway" /> -->
+	        	<ref bean="InfoGateway" />
             	<ref bean="centralDbProcessor"/>
-<!--             	<ref bean="userManager"/> -->
-<!--             	<ref bean="ParseManager"/> -->
+            	<ref bean="userManager"/>
+            	<ref bean="ParseManager"/>
 	        </list>
 		</property>
 	</bean>
@@ -75,14 +75,14 @@
 		</property>
 		<property name="historicalDataPeriod">
 			<map>
-				<entry key="1" value="5" />
-				<entry key="R" value="5" />
-				<entry key="A" value="10" />
-				<entry key="Q" value="10" />
-				<entry key="H" value="20" />
-				<entry key="6" value="20" />
+				<entry key="1" value="10" />
+				<entry key="R" value="10" />
+				<entry key="A" value="21" />
+				<entry key="Q" value="21" />
+				<entry key="H" value="30" />
+				<entry key="6" value="30" />
 				<entry key="T" value="60" />
-				<entry key="D" value="100" />
+				<entry key="D" value="120" />
 				<entry key="W" value="400" />
 				<entry key="M" value="2400" />
 			</map>
