@@ -311,7 +311,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isInitRefDateReceived = false;
         isInitIndexSessionReceived = true;
         for (IMarketDataAdaptor adaptor : adaptors) {
-            if ("WindFutureDataAdaptor".equals(adaptor.getClass().getSimpleName())) {
+            if ("WindGateWayAdapter".equals(adaptor.getClass().getSimpleName())) {
                 isInitIndexSessionReceived = false;
                 break;
             }

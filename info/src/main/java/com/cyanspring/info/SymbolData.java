@@ -439,6 +439,20 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				return;
 			}
+			IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
+			SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), getStrSymbol())));
+			String strSymbol = null;
+			if (symbolinfo != null)
+			{
+				if (symbolinfo.getHint() != null)
+				{
+					strSymbol = String.format("%s.%s", symbolinfo.getHint(), symbolinfo.getExchange());
+				}
+			}
+			if (strSymbol == null)
+			{
+				strSymbol = getStrSymbol();
+			}
 			log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, (-1) * (centralDB.getHistoricalDataPeriod().get(strType) + 2));
@@ -449,7 +463,6 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] get %d", 
 						market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));
-				mapHistorical.put(strType,  historical);
 				if(historical.size() < centralDB.getHistoricalDataCount().get(strType)) 
 				{
 					cal.add(Calendar.DATE, -30);
@@ -457,7 +470,8 @@ public class SymbolData implements Comparable<SymbolData>
 							market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
 					log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] lack of data, query again get %d", 
 							market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));					
-				}				
+				}
+				mapHistorical.put(strType,  historical);
 			}
 		}
 	}

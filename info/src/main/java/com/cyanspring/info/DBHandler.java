@@ -332,7 +332,7 @@ public class DBHandler
 			closeConnect(connect);
 		}
     }
-    public List<SymbolInfo> getGroupSymbol(String user, String group, String market, IRefSymbolInfo refSymbolInfo)
+    public List<SymbolInfo> getGroupSymbol(String user, String group, String market, IRefSymbolInfo refSymbolInfo, boolean set)
     {
     	ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>(); 
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
@@ -349,10 +349,19 @@ public class DBHandler
 		try {
 			while(rs.next())
 			{
-				index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
-				if (index >= 0)
+				if (set)
 				{
-					symbolinfo = refSymbolInfo.get(index);
+					index = refSymbolInfo.at(new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE")));
+					if (index >= 0)
+					{
+						symbolinfo = refSymbolInfo.get(index);
+						retsymbollist.add(symbolinfo);
+					}
+				}
+				else
+				{
+					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+					symbolinfo.setHint(rs.getString("HINT"));
 					retsymbollist.add(symbolinfo);
 				}
 			}
