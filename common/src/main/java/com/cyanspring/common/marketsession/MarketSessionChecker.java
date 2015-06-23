@@ -49,10 +49,11 @@ public class MarketSessionChecker implements IMarketSession {
             sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
             sessionData.setDate(date);
             if (data.getSessionType().equals(MarketSessionType.PREOPEN) && tradeDateManager != null) {
-                if (currentType != null && !currentType.equals(data.getSessionType()))
+                if (currentType != null && !currentType.equals(data.getSessionType())){
                 	if( tradeDate == null)
                 		continue;
-                    tradeDate = tradeDateManager.nextTradeDate(tradeDate);
+                	tradeDate = tradeDateManager.nextTradeDate(tradeDate);                	
+                }
             }
             currentType = data.getSessionType();
         }
