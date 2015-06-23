@@ -33,6 +33,17 @@
 		</layout> 
 	</appender>
 
+	<appender name="NEWSFILE" class="org.apache.log4j.rolling.RollingFileAppender">
+		<param name="Append" value="true" />
+		<rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+			<param name="fileNamePattern" value="log/ibNews%d{yyyy-MM}.log" />
+		</rollingPolicy>
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %-5p %c{1} %x - %m%n" />
+		</layout>
+	</appender>
+
 	<category name="org.apache.activemq">
         <priority value="INFO"/>
     </category>
@@ -61,6 +72,11 @@
     	<priority value="DEBUG"/>
     	<appender-ref ref="QUOTEFILE" />
     </category>
+
+	<category name="com.cyanspring.adaptor.ib.IbAdaptor.NewsLog" additivity="false">
+		<priority value="DEBUG"/>
+		<appender-ref ref="NEWSFILE" />
+	</category>
 
   	<root>
 		<priority value="DEBUG" />
