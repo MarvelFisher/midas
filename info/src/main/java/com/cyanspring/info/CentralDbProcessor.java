@@ -320,7 +320,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
 		ArrayList<SymbolInfo> symbolinfoTmp = new ArrayList<SymbolInfo>();
-		symbolinfoTmp.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo));
+		symbolinfoTmp.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, false));
 		symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolInfos(symbolinfoTmp);
 		if (symbolinfos.isEmpty())
 		{
@@ -396,7 +396,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			getDbhnd().updateSQL(sqlcmd);
 			retsymbollist.clear();
-			retsymbollist.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo));
+			retsymbollist.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, true));
 			if (symbolinfos.isEmpty())
 			{
 				requestDefaultSymbol(retEvent, market);
