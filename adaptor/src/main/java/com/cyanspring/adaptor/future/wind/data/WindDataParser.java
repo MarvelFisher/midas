@@ -2,6 +2,11 @@ package com.cyanspring.adaptor.future.wind.data;
 
 
 import com.cyanspring.Network.Transport.FDTFields;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -610,5 +615,35 @@ public class WindDataParser extends AbstractWindDataParser {
                 transationData.setBuySellFlag(((Number) inputHashMap.get(FDTFields.BuySellFlag)).intValue());
         }
         return transationData;
+    }
+
+    /**
+     * convert Chinese Full Name to Spell Name
+     * @param fullName
+     * @param isSimple
+     * @return
+     */
+    public static String getSpellName(String fullName, boolean isSimple){
+        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+        format.setVCharType(HanyuPinyinVCharType.WITH_V);
+        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        String spellName = "";
+        try {
+            for (int i = 0; i < fullName.length(); i++) {
+                char word = fullName.charAt(i);
+                String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word, format);
+                if (pinyinArray == null) { //pinyin4j不能处理非中文
+                    continue;
+                }
+                if(isSimple){
+                    spellName = spellName + pinyinArray[0].substring(0,1);
+                }else{
+                    spellName = spellName + " " + pinyinArray[0];
+                }
+            }
+        }catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination){
+            badHanyuPinyinOutputFormatCombination.printStackTrace();
+        }
+        return spellName;
     }
 }
