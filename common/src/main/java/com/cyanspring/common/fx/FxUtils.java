@@ -98,4 +98,41 @@ public class FxUtils {
 		}
 		
 	}
+	
+	static public double calculateQtyFromValue(IRefDataManager refDataManager, IFxConverter fxConverter,
+			String baseCurrency, 
+			String symbol, double value, double price) {
+		if(PriceUtils.isZero(price)) {
+			log.warn("calculateQtyFromValue Price is null");
+			return value;
+		}
+		
+		if(null == refDataManager) {
+			log.warn("RefDataManager is null");
+			return value/price;
+		}
+			
+		RefData refData = refDataManager.getRefData(symbol);
+		if(null != refData &&
+				null != refData.getExchange() && 
+				refData.getExchange().equals("FX")) {
+			String fxCurrency = refData.getCurrency();
+			if(null != fxCurrency && 
+					!fxCurrency.equals(baseCurrency)) {
+				try {
+					return fxConverter.getFxQty(baseCurrency, fxCurrency, value);
+				} catch (FxException e) {
+					log.error(e.getMessage(), e);
+				}
+			} 
+			return value;
+		}
+
+		double pricePerUnit = refData.getPricePerUnit();
+		if(!PriceUtils.isZero(pricePerUnit)) {
+			return value/pricePerUnit/price;
+		}
+		
+		return value/price;		
+	}
 }
