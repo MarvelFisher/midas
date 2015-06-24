@@ -185,6 +185,7 @@
     </bean>
 
     <bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
+        <property name="sendDynamicPositionUpdate" value="true"/>
         <property name="quoteChecker">
             <bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
         </property>
