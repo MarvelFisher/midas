@@ -504,10 +504,11 @@ public class PersistenceManager {
 				else
 				{
 					user = centralDbConnector.userLoginEx(userId, event.getOriginalEvent().getPassword(), event.getOriginalEvent().getLoginType());
-					userId = user.getId(); // It may be email or phone, change back to user id.
 
 					if(null != user) // login successful from mysql
 					{
+						userId = user.getId(); // It may be email or phone, change back to user id.
+
 						if (user.getTerminationStatus().isTerminated()) {
 							ok = false;
 
