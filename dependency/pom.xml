@@ -95,8 +95,8 @@
 							<configuration>
 								<artifactId>bridj</artifactId>
 								<groupId>com.nativelibs4java</groupId>
-								<version>0.7.1-SNAPSHOT</version>
-								<file>bridj-0.7.1-SNAPSHOT.jar</file>
+								<version>0.7.1-FDT</version>
+								<file>bridj-0.7.1-FDT.jar</file>
 								<packaging>jar</packaging>
 							</configuration>
 						</execution>
