@@ -257,12 +257,12 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		if ( rsp == null ) {
 			return;
 		}
-		String orderId = rsp.OrderRef().getCString();
 		CThostFtdcRspInfoField info = getStructObject(pRspInfo);
 		if(null != info) {
 			String msg = TraderHelper.toGBKString( getStructObject(pRspInfo).ErrorMsg().getBytes() );
+			String clOrderId = "" + proxy.getFRONT_ID() + ":" + proxy.getSESSION_ID() + ":" + rsp.OrderRef().getCString();
 			for ( ILtsTraderListener lis : tradelistens ) {
-				lis.onError(orderId, "" + info.ErrorID() + " : " + msg);
+				lis.onError(clOrderId, "" + info.ErrorID() + " : " + msg);
 			}
 		}
 	}
@@ -298,13 +298,14 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			if(null != rspInfo) {
 				msg = "" + rspInfo.ErrorID() + " : " + TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
 			}
+			String clOrderId = "" + rsp.FrontID() + ":" + rsp.SessionID() + ":" + rsp.OrderRef().getCString();
 			if ( rspInfo != null && rspInfo.ErrorID() == 0 ) {
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onCancel(rsp.OrderRef().getCString(), msg);
+					lis.onCancel(clOrderId, msg);
 				}
 			} else {
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onError(rsp.OrderRef().getCString(), msg);
+					lis.onError(clOrderId, msg);
 				}
 			}
 		} else {
