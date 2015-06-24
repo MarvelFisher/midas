@@ -24,6 +24,9 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String jpSubName = null;
 	private String esName = null;
 	private String esSubName = null;
+	private String detailEN = null;
+	private String detailCN = null;
+	private String detailTW = null;
 	private int lotSize = -1;
 	private String tickTable = "";
 	private double PriceLimit = 0.0;
@@ -399,6 +402,24 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setCommodity(String commodity) {
 		Commodity = commodity;
+	}
+	public String getDetailEN() {
+		return detailEN;
+	}
+	public void setDetailEN(String detailEN) {
+		this.detailEN = detailEN;
+	}
+	public String getDetailCN() {
+		return detailCN;
+	}
+	public void setDetailCN(String detailCN) {
+		this.detailCN = detailCN;
+	}
+	public String getDetailTW() {
+		return detailTW;
+	}
+	public void setDetailTW(String detailTW) {
+		this.detailTW = detailTW;
 	}
 	
 }

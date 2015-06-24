@@ -61,6 +61,9 @@ public abstract class IRefSymbolInfo {
 			symbolinfo.setTradable(refdata.getTradable());
 			symbolinfo.setSpellName(refdata.getSpellName());
 			symbolinfo.setCommodity(refdata.getCommodity());
+			symbolinfo.setDetailCN(refdata.getDetailCN());
+			symbolinfo.setDetailEN(refdata.getDetailEN());
+			symbolinfo.setDetailTW(refdata.getDetailTW());
 			index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 			if (index < 0)
 			{
