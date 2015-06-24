@@ -75,7 +75,7 @@
     <bean id="windAdaptor"
           class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
         <property name="showGui" value="true"></property>
-        <property name="gatewayIp" value="114.80.153.142"></property>
+        <property name="gatewayIp" value="10.0.0.20"></property>
         <property name="gatewayPort" value="10048"></property>
         <property name="marketDataLog" value="true"></property>
         <property name="tradeDateCheckIsOpen" value="true"></property>
