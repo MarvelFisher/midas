@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.account.TerminationStatus;
 import com.cyanspring.common.account.ThirdPartyUser;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
@@ -509,8 +510,11 @@ public class PersistenceManager {
 					{
 						if (user.getTerminationStatus().isTerminated()) {
 							ok = false;
-							msg = ErrorMessage.USER_IS_TERMINATED;
-							throw new UserException("User is terminated");
+
+							msg = user.getTerminationStatus() == TerminationStatus.TRANSFERRING ?
+									ErrorMessage.FDT_ID_IS_UNDER_PROCESSING : ErrorMessage.USER_IS_TERMINATED;
+							throw new UserException(user.getTerminationStatus() == TerminationStatus.TRANSFERRING ?
+									"Your FDT ID is under processing. It will be created during weekend. Thank you!" : "User is terminated");
 						}
 
 						ok = userKeeper.userExists(userId);

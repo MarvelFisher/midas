@@ -226,7 +226,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, getBean(526, "Attach third party id failed"));
 			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
 			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
-			
+			addAndCheck(ErrorMessage.FDT_ID_IS_UNDER_PROCESSING, getBean(529, "Your FDT ID is under processing. It will be created during weekend. Thank you!"));
 			
 			
 			
