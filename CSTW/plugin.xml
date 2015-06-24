@@ -116,10 +116,18 @@
       </view>
       <view
             allowMultiple="false"
+            class="com.cyanspring.cstw.gui.PositionStatisticView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.PositionStatisticView"
+            name="Open Position Statistic"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
             class="com.cyanspring.cstw.gui.AccountStatisticView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.AccountStatisticViewer"
-            name="Account Statistic View"
+            name="Account Statistic"
             restorable="true">
       </view>
    </extension>
@@ -211,6 +219,11 @@
             <command
                   commandId="CSTW.SignalView"
                   label="Watch list"
+                  style="push">
+            </command>
+            <command
+                  commandId="CSTW.PositionStatisticView"
+                  label="Open Position Statistic"
                   style="push">
             </command>
             <command
@@ -330,6 +343,12 @@
             description="Account Settings"
             id="CSTW.AccountSettingView"
             name="Account Settings">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.PositionStatisticViewCommand"
+            description="Position Statistic"
+            id="CSTW.PositionStatisticView"
+            name="Open Position Statistic">
       </command>
       <command
             defaultHandler="com.cyanspring.cstw.gui.command.AccountStatisticViewCommand"

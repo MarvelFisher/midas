@@ -449,7 +449,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 	
 	private void showAccounts() {
-		log.info("into showAccounts");	
 		if (!show)
 			return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
