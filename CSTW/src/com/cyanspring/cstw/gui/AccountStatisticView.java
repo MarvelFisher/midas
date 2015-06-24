@@ -1,17 +1,13 @@
 package com.cyanspring.cstw.gui;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +17,6 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.statistic.AccountStatisticReplyEvent;
 import com.cyanspring.common.event.statistic.AccountStatisticRequestEvent;
 import com.cyanspring.cstw.business.Business;
@@ -51,7 +46,15 @@ public class AccountStatisticView extends ViewPart implements
 		if(event instanceof AsyncTimerEvent) {
 			sendAccountStatisticRequest();
 		}else if(event instanceof AccountStatisticReplyEvent){
-			displayObject(((AccountStatisticReplyEvent) event).getAccount());
+			AccountStatisticReplyEvent statisticEvent = (AccountStatisticReplyEvent) event;
+			log.info("statisticEvent:{}",statisticEvent.getAccount().size());
+			Map <String,Object> map =  statisticEvent.getAccount();
+			Iterator<String> i = map.keySet().iterator();
+			while(i.hasNext()){
+				String key =(String) i.next();
+				log.info("key:{} , value:{}",key,map.get(key));
+			}
+			displayObject(statisticEvent.getAccount());
 		}else{
 			log.error("Unhandle Event:{}",event.getClass().getSimpleName());
 		}

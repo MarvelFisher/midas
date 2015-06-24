@@ -13,9 +13,13 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.statistic.AccountNumberReplyEvent;
+import com.cyanspring.common.event.statistic.AccountNumberRequestEvent;
 import com.cyanspring.common.event.statistic.AccountStatistic;
 import com.cyanspring.common.event.statistic.AccountStatisticReplyEvent;
 import com.cyanspring.common.event.statistic.AccountStatisticRequestEvent;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.server.account.AccountKeeper;
 
@@ -38,6 +42,7 @@ public class StatisticManager implements IPlugin{
 		@Override
 		public void subscribeToEvents() {		
 			subscribeToEvent(AccountStatisticRequestEvent.class, null);
+			subscribeToEvent(AccountNumberRequestEvent.class, null);
 		}
 
 		@Override
@@ -68,7 +73,10 @@ public class StatisticManager implements IPlugin{
 		AccountStatisticCollector cal = new AccountStatisticCollector();
 		List <Account>accounts = accountKeeper.getAllAccounts();
 		try {
-			
+			if( null == accounts ){
+				return;
+			}
+			log.info("AccountStatistic Account Size:{}",accounts.size());
 			for(Account account:accounts){		
 				cal.calculate(account,accountKeeper.getAccountSetting(account.getId()));
 			}
@@ -79,4 +87,18 @@ public class StatisticManager implements IPlugin{
 		}
 	}
 	
+	public void processAccountNumberRequestEvent(AccountNumberRequestEvent event){		
+		try {
+			boolean isOk = true;
+			String errorMessage = null;
+			if( null == accountKeeper ){
+				isOk = false;
+				errorMessage = MessageLookup.buildEventMessage(ErrorMessage.EXCEPTION_MESSAGE, "AccountKeeper is null");
+			}
+			AccountNumberReplyEvent reply = new AccountNumberReplyEvent(event.getKey(),event.getSender(),accountKeeper.getAllAccounts().size(),isOk,errorMessage);
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
 }
