@@ -11,6 +11,7 @@
 package com.cyanspring.cstw.gui.filter;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -18,9 +19,15 @@ import org.eclipse.jface.viewers.ViewerFilter;
 public class ParentOrderFilter extends ViewerFilter {
 	String column;
 	String pattern;
+	List<String> lst;
 	public void setMatch(String column, String pattern) {
 		this.column = column;
 		this.pattern = pattern;
+	}
+	
+	public void setMatch(String column, List<String> lst){
+		this.column = column;
+		this.lst = lst;
 	}
 	
 	@Override
@@ -34,8 +41,12 @@ public class ParentOrderFilter extends ViewerFilter {
 		if (null == field)
 			return true;
 		
-		if(field.toString().toUpperCase().indexOf(pattern.toUpperCase()) > -1)
-			return true;
+		if(pattern != null){
+			if(pattern.toUpperCase().indexOf(field.toString().toUpperCase()) > -1)
+				return true;			
+		}
+		if(lst != null)
+			return lst.contains(field.toString());
 		return false;
 	}
 

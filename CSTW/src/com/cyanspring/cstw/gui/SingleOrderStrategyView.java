@@ -63,6 +63,7 @@ import com.cyanspring.common.event.order.ParentOrderReplyEvent;
 import com.cyanspring.common.event.strategy.PauseStrategyEvent;
 import com.cyanspring.common.event.strategy.StartStrategyEvent;
 import com.cyanspring.common.event.strategy.StopStrategyEvent;
+import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
@@ -78,8 +79,10 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
 
-public class SingleOrderStrategyView extends ViewPart implements IAsyncEventListener {
-	private static final Logger log = LoggerFactory.getLogger(SingleOrderStrategyView.class);
+public class SingleOrderStrategyView extends ViewPart implements
+		IAsyncEventListener {
+	private static final Logger log = LoggerFactory
+			.getLogger(SingleOrderStrategyView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.ParentOrderView";
 	private DynamicTableViewer viewer;
 	// filter controls
@@ -92,6 +95,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private Action orderPadAction;
 	private ParentOrderFilter viewFilter;
 	private ParentOrderFilter accountFilter;
+	private ParentOrderFilter completeFilter;
 	private ImageRegistry imageRegistry;
 	private Action enterOrderAction;
 	private Action cancelOrderAction;
@@ -109,7 +113,8 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	private Date lastRefreshTime = Clock.getInstance().now();
 	private final long maxRefreshInterval = 300;
 	private boolean pinned = true;
-	
+	private boolean orderFilter = false;
+
 	// QuickOrderPad
 	private String currentOrderPadId;
 	private Composite panelComposite;
@@ -126,13 +131,13 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	GridData gdStatus;
 	// end QuickOrderPad
 
-	
 	private String maTag;
 	private String maValue;
 
-	
-	private enum StrategyAction { Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save };
-	
+	private enum StrategyAction {
+		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
+	};
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -142,14 +147,14 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		log.info("Creating parent order view");
 		// create ImageRegistery
 		imageRegistry = Activator.getDefault().getImageRegistry();
-		
+
 		// create layout for parent
 		GridLayout layout = new GridLayout(1, false);
 		parent.setLayout(layout);
-		
+
 		// create pause order action
 		createPauseOrderAction(parent);
-		
+
 		// create stop order action
 		createStopOrderAction(parent);
 
@@ -158,22 +163,25 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 
 		// create enter order actions
 		createEnterOrderAction(parent);
-		
+
 		// create enter order actions
 		createCancelOrderAction(parent);
-		
+
 		// create filter controls
 		createFilterControls(parent);
-		
+
 		// create save order action
 		createSaveOrderAction(parent);
 		
 		// create table
-	    String strFile = Business.getInstance().getConfigPath() + "ParentOrderTable.xml";
-		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
-				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = Business.getInstance().getConfigPath()
+				+ "ParentOrderTable.xml";
+		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
+				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
+				.getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		viewer.init();
-		
+
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 1;
@@ -182,7 +190,6 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		gridData.horizontalAlignment = GridData.FILL;
 		viewer.getControl().setLayoutData(gridData);
 
-		
 		final Table table = viewer.getTable();
 		table.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -190,11 +197,18 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				Object obj = item.getData();
 				if (obj instanceof HashMap) {
 					@SuppressWarnings("unchecked")
-					HashMap<String, Object> map = (HashMap<String, Object>)obj;
-					String strategyName = (String)map.get(OrderField.STRATEGY.value());
+					HashMap<String, Object> map = (HashMap<String, Object>) obj;
+					String strategyName = (String) map.get(OrderField.STRATEGY
+							.value());
 					populateOrderPad(map);
-					Business.getInstance().getEventManager().
-						sendEvent(new SingleOrderStrategySelectionEvent(map, Business.getInstance().getSingleOrderAmendableFields(strategyName)));
+					Business.getInstance()
+							.getEventManager()
+							.sendEvent(
+									new SingleOrderStrategySelectionEvent(
+											map,
+											Business.getInstance()
+													.getSingleOrderAmendableFields(
+															strategyName)));
 				}
 			}
 		});
@@ -202,21 +216,29 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		// create pin order action
 		createPinAction(parent);
 		
+		createOrderFilter(parent);
+
 		createCountOrderAction(parent);
-		
+
 		createBodyMenu(parent);
 		createQuickOrderPad(parent);
 
 		// business logic goes here
-		Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(GuiSingleOrderStrategyUpdateEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(EnterParentOrderReplyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(AmendParentOrderReplyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(CancelParentOrderReplyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(OrderCacheReadyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(GuiSingleOrderStrategyUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(EnterParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(AmendParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(CancelParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(AccountSelectionEvent.class, this);
 		showOrders();
 	}
-	
+
 	private void createQuickOrderPad(final Composite parent) {
 
 		panelComposite = new Composite(parent, SWT.NONE);
@@ -252,24 +274,28 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		txtQuantity.setLayoutData(gridData);
 
 		cbOrderSide = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
-		cbOrderSide.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		String[] sidItems = {OrderSide.Buy.toString(), OrderSide.Sell.toString()};
+		cbOrderSide
+				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+		String[] sidItems = { OrderSide.Buy.toString(),
+				OrderSide.Sell.toString() };
 		cbOrderSide.setItems(sidItems);
 		cbOrderSide.select(0);
-		
+
 		cbOrderType = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
-		cbOrderType.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		String[] typeItems = {OrderType.Limit.toString(), OrderType.Market.toString()};
+		cbOrderType
+				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+		String[] typeItems = { OrderType.Limit.toString(),
+				OrderType.Market.toString() };
 		cbOrderType.setItems(typeItems);
 		cbOrderType.select(0);
-		
+
 		cbServer = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
 		cbServer.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 
 		btEnter = new Button(panelComposite, SWT.FLAT);
 		btEnter.setText(" Enter ");
 		btEnter.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
-		
+
 		btAmend = new Button(panelComposite, SWT.FLAT);
 		btAmend.setText("Amend");
 		btAmend.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
@@ -300,22 +326,21 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		});
 
 		lbStatus = new Label(panelComposite, SWT.NONE);
-		gdStatus = new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 12, 1);
+		gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 12, 1);
 		gdStatus.horizontalIndent = 1;
 		lbStatus.setLayoutData(gdStatus);
 		lbStatus.setText("");
 		Color red = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 		lbStatus.setForeground(red);
 		showQuickOrderStatus(false);
-		
+
 		GridData panelGridData = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
 		panelComposite.setLayoutData(panelGridData);
 		panelComposite.layout();
 
 		panelGridData.exclude = true;
 		panelComposite.setVisible(false);
-		
+
 		// create local toolbars
 		orderPadAction = new Action() {
 			public void run() {
@@ -332,46 +357,51 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		orderPadAction.setText("order pad");
 		orderPadAction.setToolTipText("show or hide orderpad");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.EDIT_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.EDIT_ICON.toString());
 		orderPadAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(orderPadAction);
 	}
-	
+
 	private void showQuickOrderStatus(boolean show) {
 		gdStatus.exclude = !show;
 		lbStatus.setVisible(show);
 		panelComposite.getParent().layout();
 	}
-	
+
 	private void populateOrderPad(HashMap<String, Object> map) {
-		currentOrderPadId = (String)map.get(OrderField.ID.value());
-		txtSymbol.setText((String)map.get(OrderField.SYMBOL.value()));
-		Double price = (Double)map.get(OrderField.PRICE.value());
-		if(null != price)
+		currentOrderPadId = (String) map.get(OrderField.ID.value());
+		txtSymbol.setText((String) map.get(OrderField.SYMBOL.value()));
+		Double price = (Double) map.get(OrderField.PRICE.value());
+		if (null != price)
 			txtPrice.setText(price.toString());
-		txtQuantity.setText(((Double)map.get(OrderField.QUANTITY.value())).toString());
-		cbOrderType.setText(((OrderType)map.get(OrderField.TYPE.value())).toString());
-		cbOrderSide.setText(((OrderSide)map.get(OrderField.SIDE.value())).toString());
-		cbServer.setText((String)map.get(OrderField.SERVER_ID.value()));
+		txtQuantity.setText(((Double) map.get(OrderField.QUANTITY.value()))
+				.toString());
+		cbOrderType.setText(((OrderType) map.get(OrderField.TYPE.value()))
+				.toString());
+		cbOrderSide.setText(((OrderSide) map.get(OrderField.SIDE.value()))
+				.toString());
+		cbServer.setText((String) map.get(OrderField.SERVER_ID.value()));
 	}
 
 	private void populateOrderPadServers() {
-		ArrayList<String> servers = Business.getInstance().getOrderManager().getServers();
+		ArrayList<String> servers = Business.getInstance().getOrderManager()
+				.getServers();
 		cbServer.removeAll();
-		for(String server: servers) {
+		for (String server : servers) {
 			cbServer.add(server);
 		}
 		cbServer.select(0);
 	}
-	
+
 	private void showOrderPad(boolean show) {
 		panelComposite.setVisible(show);
 		GridData data = (GridData) panelComposite.getLayoutData();
 		data.exclude = !show;
 	}
-	
+
 	private void quickEnterOrder() {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
 
@@ -382,50 +412,53 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		fields.put(OrderField.PRICE.value(), txtPrice.getText());
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
 		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
-		fields.put(OrderField.ACCOUNT.value(), Business.getInstance().getAccount());
-			
-		EnterParentOrderEvent event = 
-			new EnterParentOrderEvent(Business.getInstance().getInbox(), cbServer.getText(), fields, null, false);
+		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
+				.getAccount());
+
+		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
+				.getInstance().getInbox(), cbServer.getText(), fields, null,
+				false);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		
+
 	}
-	
+
 	private void quickAmendOrder() {
-		
+
 		Table table = this.viewer.getTable();
 		int index = table.getSelectionIndex();
 		String id = null, server = null;
-		if(index>= 0) {
+		if (index >= 0) {
 			TableItem item = table.getItem(table.getSelectionIndex());
 			Object obj = item.getData();
 			@SuppressWarnings("unchecked")
-			HashMap<String, Object> map = (HashMap<String, Object>)obj;
-			id = (String)map.get(OrderField.ID.value());
-			server = (String)map.get(OrderField.SERVER_ID.value());
-		} else if ( null !=  currentOrderPadId) {
+			HashMap<String, Object> map = (HashMap<String, Object>) obj;
+			id = (String) map.get(OrderField.ID.value());
+			server = (String) map.get(OrderField.SERVER_ID.value());
+		} else if (null != currentOrderPadId) {
 			id = currentOrderPadId;
 			server = cbServer.getText();
 		} else {
 			return;
 		}
-		
+
 		HashMap<String, Object> changes = new HashMap<String, Object>();
 		changes.put(OrderField.ID.value(), id);
 		changes.put(OrderField.PRICE.value(), txtPrice.getText());
 		changes.put(OrderField.QUANTITY.value(), txtQuantity.getText());
-		AmendParentOrderEvent	event = new AmendParentOrderEvent(id, server, id, changes, null);
+		AmendParentOrderEvent event = new AmendParentOrderEvent(id, server, id,
+				changes, null);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		
+
 	}
-	
+
 	private void quickCancelOrder() {
 		cancelOrders(false);
 	}
@@ -450,7 +483,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.Stop);
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Start");
 		item.addListener(SWT.Selection, new Listener() {
@@ -458,7 +491,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.Start);
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Clear alert");
 		item.addListener(SWT.Selection, new Listener() {
@@ -466,23 +499,23 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.ClearAlert);
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Multi Amend");
 		item.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				amendDialog = new AmendDialog(parent.getShell());
 				amendDialog.open();
-				if(amendDialog.getReturnCode() == org.eclipse.jface.window.Window.OK ) {
+				if (amendDialog.getReturnCode() == org.eclipse.jface.window.Window.OK) {
 					maTag = amendDialog.getField();
 					maValue = amendDialog.getValue();
-					if(null == maTag || maTag.equals(""))
+					if (null == maTag || maTag.equals(""))
 						return;
 					strategyAction(StrategyAction.MultiAmend);
 				}
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Create");
 		item.addListener(SWT.Selection, new Listener() {
@@ -490,7 +523,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.Create);
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Cancel");
 		item.addListener(SWT.Selection, new Listener() {
@@ -498,7 +531,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.Cancel);
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Force cancel");
 		item.addListener(SWT.Selection, new Listener() {
@@ -506,7 +539,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.ForceCancel);
 			}
 		});
-		
+
 		item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Save");
 		item.addListener(SWT.Selection, new Listener() {
@@ -514,29 +547,30 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				strategyAction(StrategyAction.Save);
 			}
 		});
-		
+
 		viewer.setBodyMenu(menu);
 	}
-	
+
 	private void createEnterOrderAction(final Composite parent) {
 		orderDialog = new OrderDialog(parent.getShell());
 		// create local toolbars
 		enterOrderAction = new Action() {
 			public void run() {
-				//orderDialog.open();
+				// orderDialog.open();
 				orderDialog.open();
 			}
 		};
 		enterOrderAction.setText("Enter Order");
 		enterOrderAction.setToolTipText("Create an order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PLUS_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PLUS_ICON.toString());
 		enterOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(enterOrderAction);
 	}
-	
+
 	private void createCancelOrderAction(Composite parent) {
 		// create local toolbars
 		cancelOrderAction = new Action() {
@@ -547,13 +581,14 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		cancelOrderAction.setText("Cancel Order");
 		cancelOrderAction.setToolTipText("Cancel the order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.FALSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.FALSE_ICON.toString());
 		cancelOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(cancelOrderAction);
 	}
-	
+
 	private void createSaveOrderAction(Composite parent) {
 		// create local toolbars
 		saveOrderAction = new Action() {
@@ -561,11 +596,12 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				saveOrders();
 			}
 		};
-		
+
 		saveOrderAction.setText("Save order as xml");
 		saveOrderAction.setToolTipText("Save order as xml");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.SAVE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.SAVE_ICON.toString());
 		saveOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -579,39 +615,41 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		TableItem items[] = table.getSelection();
 		try {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			for(TableItem item: items) {
+			for (TableItem item : items) {
 				Object obj = item.getData();
 				if (obj instanceof HashMap) {
 					@SuppressWarnings("unchecked")
-					HashMap<String, Object> map = (HashMap<String, Object>)obj;
+					HashMap<String, Object> map = (HashMap<String, Object>) obj;
 					list.add(map);
 				}
 			}
-			if(list.size() == 0) {
-				MessageDialog.openError(shell, "No strategy is selected", 
-				"Please select the strategies you want to save");
+			if (list.size() == 0) {
+				MessageDialog.openError(shell, "No strategy is selected",
+						"Please select the strategies you want to save");
 				return;
 			}
-			
+
 			FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-			dialog.setFilterExtensions(new String[] {"*.xml"});
+			dialog.setFilterExtensions(new String[] { "*.xml" });
 
 			String selectedFileName = dialog.open();
-			if (selectedFileName == null){
+			if (selectedFileName == null) {
 				return;
 			}
-			
-			File selectedFile = new File(selectedFileName); 
+
+			File selectedFile = new File(selectedFileName);
 			selectedFile.createNewFile();
 			FileOutputStream os = new FileOutputStream(selectedFile);
 
-			if(list.size() == 1) {
-				EnterParentOrderEvent event = new EnterParentOrderEvent(null, null, list.get(0), "", false);
+			if (list.size() == 1) {
+				EnterParentOrderEvent event = new EnterParentOrderEvent(null,
+						null, list.get(0), "", false);
 				Business.getInstance().getXstream().toXML(event, os);
-			} else {  // more than one
+			} else { // more than one
 				List<EnterParentOrderEvent> events = new ArrayList<EnterParentOrderEvent>();
-				for(Map<String, Object> map: list) {
-					events.add(new EnterParentOrderEvent(null, null, map, "", false) );
+				for (Map<String, Object> map : list) {
+					events.add(new EnterParentOrderEvent(null, null, map, "",
+							false));
 				}
 				Business.getInstance().getXstream().toXML(events, os);
 			}
@@ -620,21 +658,25 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected void cancelOrders(boolean force) {
 		Table table = SingleOrderStrategyView.this.viewer.getTable();
 
 		TableItem items[] = table.getSelection();
 		try {
-			for(TableItem item: items) {
+			for (TableItem item : items) {
 				Object obj = item.getData();
 				if (obj instanceof HashMap) {
 					@SuppressWarnings("unchecked")
-					HashMap<String, Object> map = (HashMap<String, Object>)obj;
-					String id = (String)map.get(OrderField.ID.value());
-					String server = (String)map.get(OrderField.SERVER_ID.value());
-						Business.getInstance().getEventManager().sendRemoteEvent(
-								new CancelParentOrderEvent(id, server, id, force, null));
+					HashMap<String, Object> map = (HashMap<String, Object>) obj;
+					String id = (String) map.get(OrderField.ID.value());
+					String server = (String) map.get(OrderField.SERVER_ID
+							.value());
+					Business.getInstance()
+							.getEventManager()
+							.sendRemoteEvent(
+									new CancelParentOrderEvent(id, server, id,
+											force, null));
 				}
 			}
 		} catch (Exception e) {
@@ -648,37 +690,47 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		Table table = SingleOrderStrategyView.this.viewer.getTable();
 
 		TableItem items[] = table.getSelection();
-		for(TableItem item: items) {
+		for (TableItem item : items) {
 			Object obj = item.getData();
 			if (obj instanceof HashMap) {
 				@SuppressWarnings("unchecked")
-				HashMap<String, Object> map = (HashMap<String, Object>)obj;
-				String id = (String)map.get(OrderField.ID.value());
-				String server = (String)map.get(OrderField.SERVER_ID.value());
+				HashMap<String, Object> map = (HashMap<String, Object>) obj;
+				String id = (String) map.get(OrderField.ID.value());
+				String server = (String) map.get(OrderField.SERVER_ID.value());
 				try {
-					switch(action) {
+					switch (action) {
 					case Pause:
-						Business.getInstance().getEventManager().
-						sendRemoteEvent(new PauseStrategyEvent(id, server));
+						Business.getInstance()
+								.getEventManager()
+								.sendRemoteEvent(
+										new PauseStrategyEvent(id, server));
 						break;
 					case Stop:
-						Business.getInstance().getEventManager().
-						sendRemoteEvent(new StopStrategyEvent(id, server));
+						Business.getInstance()
+								.getEventManager()
+								.sendRemoteEvent(
+										new StopStrategyEvent(id, server));
 						break;
 					case Start:
-						Business.getInstance().getEventManager().
-						sendRemoteEvent(new StartStrategyEvent(id, server));
+						Business.getInstance()
+								.getEventManager()
+								.sendRemoteEvent(
+										new StartStrategyEvent(id, server));
 						break;
 					case ClearAlert:
-						Business.getInstance().getEventManager().
-						sendRemoteEvent(new ClearSingleAlertEvent(id, server));
+						Business.getInstance()
+								.getEventManager()
+								.sendRemoteEvent(
+										new ClearSingleAlertEvent(id, server));
 						break;
 					case MultiAmend:
 						Map<String, Object> changes = new HashMap<String, Object>();
 						changes.put(maTag, maValue);
-						AmendParentOrderEvent event = new AmendParentOrderEvent(id, server, id, changes, IdGenerator.getInstance().getNextID());
-						Business.getInstance().getEventManager().
-							sendRemoteEvent(event);
+						AmendParentOrderEvent event = new AmendParentOrderEvent(
+								id, server, id, changes, IdGenerator
+										.getInstance().getNextID());
+						Business.getInstance().getEventManager()
+								.sendRemoteEvent(event);
 						break;
 					case Create:
 						orderDialog.open();
@@ -702,32 +754,35 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 			}
 		}
 	}
-	
+
 	private void createPinAction(final Composite parent) {
 		// create local toolbars
-		pinAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+		pinAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				pinned = pinned?false:true;
-				if(!pinned) {
+				pinned = pinned ? false : true;
+				if (!pinned) {
 					viewer.removeFilter(accountFilter);
-				} else { 
-					accountFilter.setMatch("Account", Business.getInstance().getAccount());
+				} else {
+					accountFilter.setMatch("Account", Business.getInstance()
+							.getAccount());
 					viewer.addFilter(accountFilter);
 				}
 				smartShowOrders();
 			}
 		};
-		
+
 		pinAction.setChecked(true);
 		pinned = true;
 		accountFilter = new ParentOrderFilter();
 		accountFilter.setMatch("Account", Business.getInstance().getAccount());
 		viewer.addFilter(accountFilter);
-		
+
 		pinAction.setText("Pin Account");
 		pinAction.setToolTipText("Pin account");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PIN_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PIN_ICON.toString());
 		pinAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -744,7 +799,8 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		pauseOrderAction.setText("Pause Order");
 		pauseOrderAction.setToolTipText("Pause order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PAUSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PAUSE_ICON.toString());
 		pauseOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -761,13 +817,14 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		stopOrderAction.setText("Stop Order");
 		stopOrderAction.setToolTipText("Stop order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.STOP_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.STOP_ICON.toString());
 		stopOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(stopOrderAction);
 	}
-	
+
 	private void createStartOrderAction(final Composite parent) {
 		// create local toolbars
 		startOrderAction = new Action() {
@@ -778,33 +835,79 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		startOrderAction.setText("Start Order");
 		startOrderAction.setToolTipText("Start order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.START_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.START_ICON.toString());
 		startOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(startOrderAction);
 	}
-	
+
 	private void createCountOrderAction(final Composite parent) {
 		// create local toolbars
 		countOrderAction = new Action() {
 			public void run() {
-				MessageBox messageBox = new MessageBox(parent.getShell(), SWT.ICON_INFORMATION);
+				MessageBox messageBox = new MessageBox(parent.getShell(),
+						SWT.ICON_INFORMATION);
 				messageBox.setText("Info");
-				messageBox.setMessage("Number of orders: " + Business.getInstance().getOrderManager().getParentOrders().size());
+				messageBox.setMessage("Number of orders: "
+						+ Business.getInstance().getOrderManager()
+								.getParentOrders().size());
 				messageBox.open();
 			}
 		};
 		countOrderAction.setText("Check number of orders");
 		countOrderAction.setToolTipText("Check number of orders");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.TRUE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.TRUE_ICON.toString());
 		countOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(countOrderAction);
 	}
-	
+
+	private void createOrderFilter(final Composite parent) {
+		StyledAction pinAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+			public void run() {
+				orderFilter = orderFilter ? false : true;
+				if (!orderFilter) {
+					viewer.removeFilter(completeFilter);
+				} else {
+					viewer.addFilter(completeFilter);
+				}
+				smartShowOrders();
+			}
+		};
+
+		pinAction.setChecked(orderFilter);
+//		orderFilter = false;
+		List<String> matchLst = new ArrayList<String>();
+		matchLst.add(OrdStatus.NEW.toString());
+		matchLst.add(OrdStatus.REPLACED.toString());
+		matchLst.add(OrdStatus.PARTIALLY_FILLED.toString());
+		matchLst.add(OrdStatus.SUSPENDED.toString());
+		matchLst.add(OrdStatus.ACCEPTED_FOR_BIDDING.toString());
+		matchLst.add(OrdStatus.STOPPED.toString());
+		matchLst.add(OrdStatus.PENDING_NEW.toString());
+		matchLst.add(OrdStatus.PENDING_CANCEL.toString());
+		matchLst.add(OrdStatus.PENDING_REPLACE.toString());
+		completeFilter = new ParentOrderFilter();
+		completeFilter.setMatch("Status", matchLst);
+//		viewer.addFilter(completeFilter);
+
+		pinAction.setText("Order Filter");
+		pinAction.setToolTipText("hide completed orders");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.LINE_ICON.toString());
+		pinAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(pinAction);
+	}
+
 	private void createFilterControls(final Composite parent) {
 		filterComposite = new Composite(parent, SWT.NONE);
 		GridData filterGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
@@ -815,24 +918,28 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 
 		filterLabel = new Label(filterComposite, SWT.NONE);
 		filterLabel.setText("Filter: ");
-		filterLabel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		
+		filterLabel
+				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+
 		filterField = new Combo(filterComposite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		filterField.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+		filterField
+				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 
 		filterText = new Text(filterComposite, SWT.BORDER | SWT.SEARCH);
 		filterText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		filterButton = new Button(filterComposite, SWT.FLAT);
 		filterButton.setText("Apply Filter");
-		filterButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+		filterButton.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false,
+				true));
 		filterButton.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
 				if (viewFilter == null) {
 					viewFilter = new ParentOrderFilter();
-					viewFilter.setMatch(filterField.getText(), filterText.getText());
+					viewFilter.setMatch(filterField.getText(),
+							filterText.getText());
 					filterButton.setText("Remove Filter");
 					viewer.addFilter(viewFilter);
 					filterButton.pack();
@@ -846,7 +953,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 				}
 				viewer.refresh();
 			}
-			
+
 		});
 
 		filterComposite.setLayoutData(filterGridData);
@@ -854,7 +961,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 
 		filterGridData.exclude = true;
 		filterComposite.setVisible(false);
-		
+
 		// create local toolbars
 		filterAction = new Action() {
 			public void run() {
@@ -869,28 +976,30 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		filterAction.setText("Filter");
 		filterAction.setToolTipText("show or hide filter");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.FILTER_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.FILTER_ICON.toString());
 		filterAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(filterAction);
-		
-//		IStatusLineManager manager = getViewSite().getActionBars().getStatusLineManager();
-//		manager.setMessage("Information for the status line");
+
+		// IStatusLineManager manager =
+		// getViewSite().getActionBars().getStatusLineManager();
+		// manager.setMessage("Information for the status line");
 
 	}
-	
+
 	private void showFilter(boolean show) {
 		if (viewFilter != null) {
 			filterField.setText(viewFilter.getColumn());
 			filterText.setText(viewFilter.getPattern());
 		}
-			
+
 		filterComposite.setVisible(show);
 		GridData data = (GridData) filterComposite.getLayoutData();
 		data.exclude = !show;
 	}
-	
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -900,24 +1009,26 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 
 	private void showOrders() {
 		lastRefreshTime = Clock.getInstance().now();
-		if(!setColumns) {
-			List<Map<String, Object>> orders = Business.getInstance().getOrderManager().getParentOrders();
-			
+		if (!setColumns) {
+			List<Map<String, Object>> orders = Business.getInstance()
+					.getOrderManager().getParentOrders();
+
 			if (orders.size() == 0)
 				return;
-			
+
 			ArrayList<ColumnProperty> columnProperties = new ArrayList<ColumnProperty>();
-			List<String> displayFields = Business.getInstance().getParentOrderDisplayFields();
-			
-			//add fields exists in both list
-			for(String field: displayFields) {
-//				if(titles.contains(field))
-					columnProperties.add(new ColumnProperty(field, 100));
+			List<String> displayFields = Business.getInstance()
+					.getParentOrderDisplayFields();
+
+			// add fields exists in both list
+			for (String field : displayFields) {
+				// if(titles.contains(field))
+				columnProperties.add(new ColumnProperty(field, 100));
 			}
-			
+
 			viewer.setSmartColumnProperties("Parent Order", columnProperties);
 			filterField.removeAll();
-			for(ColumnProperty prop: viewer.getDynamicColumnProperties()) {
+			for (ColumnProperty prop : viewer.getDynamicColumnProperties()) {
 				filterField.add(prop.getTitle());
 			}
 			viewer.setInput(orders);
@@ -925,7 +1036,7 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 		}
 		viewer.refresh();
 	}
-	
+
 	private void asyncShowOrders() {
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -936,14 +1047,15 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 	}
 
 	private void smartShowOrders() {
-		if(TimeUtil.getTimePass(lastRefreshTime) > maxRefreshInterval) {
+		if (TimeUtil.getTimePass(lastRefreshTime) > maxRefreshInterval) {
 			asyncShowOrders();
-		} else if(timerEvent == null) {
+		} else if (timerEvent == null) {
 			timerEvent = new AsyncTimerEvent();
-			Business.getInstance().getScheduleManager().scheduleTimerEvent(maxRefreshInterval, this, timerEvent);
+			Business.getInstance().getScheduleManager()
+					.scheduleTimerEvent(maxRefreshInterval, this, timerEvent);
 		}
 	}
-	
+
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof OrderCacheReadyEvent) {
@@ -956,28 +1068,29 @@ public class SingleOrderStrategyView extends ViewPart implements IAsyncEventList
 			timerEvent = null;
 			asyncShowOrders();
 		} else if (event instanceof AccountSelectionEvent) {
-			if(pinned) {
-				accountFilter.setMatch("Account", ((AccountSelectionEvent) event).getAccount());
+			if (pinned) {
+				accountFilter.setMatch("Account",
+						((AccountSelectionEvent) event).getAccount());
 				smartShowOrders();
 			}
 		} else if (event instanceof ParentOrderReplyEvent) {
-			final ParentOrderReplyEvent evt = (ParentOrderReplyEvent)event;
+			final ParentOrderReplyEvent evt = (ParentOrderReplyEvent) event;
 			viewer.getControl().getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					if(evt.isOk()) {
+					if (evt.isOk()) {
 						lbStatus.setText("");
 						showQuickOrderStatus(false);
 					} else {
 						lbStatus.setText(evt.getMessage());
 						showQuickOrderStatus(true);
 					}
-						
+
 				}
 			});
 		} else {
 			log.warn("Unhandled event: " + event);
 		}
-				
+
 	}
 }
