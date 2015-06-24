@@ -164,6 +164,18 @@ public class RefData extends DataObject {
 		return this.get(String.class, RefDataField.COMMODITY.value());
 	}
 	
+	public String getDetailEN(){
+		return this.get(String.class, RefDataField.DETAIL_EN.value());
+	}
+	
+	public String getDetailTW(){
+		return this.get(String.class, RefDataField.DETAIL_TW.value());
+	}
+	
+	public String getDetailCN(){
+		return this.get(String.class, RefDataField.DETAIL_CN.value());
+	}
+	
 	public void setSymbol(String symbol){
 		this.set(symbol, RefDataField.SYMBOL.value());
 	}
@@ -194,5 +206,17 @@ public class RefData extends DataObject {
 	
 	public void setCommodity(String commodity){
 		this.set(commodity, RefDataField.COMMODITY.value());
+	}
+	
+	public void setDetailEN(String detailEN){
+		this.set(detailEN, RefDataField.DETAIL_EN.value());
+	}
+	
+	public void setDetailTW(String detailTW){
+		this.set(detailTW, RefDataField.DETAIL_TW.value());
+	}
+	
+	public void setDetailCN(String detailCN){
+		this.set(detailCN, RefDataField.DETAIL_CN.value());
 	}
 }
