@@ -28,5 +28,5 @@ sleep 30
 
 sleep 60
 echo "Starting AppServer "`date` | tee -a ./log/console.log
-cd ../appServer
+cd ../appServer.fc
 ./run.sh start
