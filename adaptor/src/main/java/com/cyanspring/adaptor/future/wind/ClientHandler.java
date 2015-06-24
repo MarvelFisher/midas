@@ -85,6 +85,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
         if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
         if (packType == FDTFields.WindTransaction) dataType = WindDef.MSG_DATA_TRANSACTION;
+        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         return dataType;
     }
@@ -208,7 +209,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
         msLastTime = System.currentTimeMillis();
 
-        // sendRequestCodeTable("CF");
+        //sendRequestCodeTable("SH");
+        //sendRequestCodeTable("SZ");
 
         sendReqHeartbeat(); // send request heartbeat message
 

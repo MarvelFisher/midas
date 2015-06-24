@@ -22,6 +22,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parset InputMessage Array To Wind IndexData Object
+     *
      * @param inputMessageArray
      * @param indexDataBySymbolMap
      * @return
@@ -91,6 +92,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser inputHashMap to Wind IndexData Object
+     *
      * @param inputHashMap
      * @param indexDataBySymbolMap
      * @return
@@ -114,14 +116,16 @@ public class WindDataParser extends AbstractWindDataParser {
                 indexData.setHighIndex(((Number) inputHashMap.get(FDTFields.High)).longValue());
             if (null != inputHashMap.get(FDTFields.Last))
                 indexData.setLastIndex(((Number) inputHashMap.get(FDTFields.Last)).longValue());
-            if (null != inputHashMap.get(FDTFields.Low)) indexData.setLowIndex(((Number) inputHashMap.get(FDTFields.Low)).longValue());
+            if (null != inputHashMap.get(FDTFields.Low))
+                indexData.setLowIndex(((Number) inputHashMap.get(FDTFields.Low)).longValue());
             if (null != inputHashMap.get(FDTFields.Open))
                 indexData.setOpenIndex(((Number) inputHashMap.get(FDTFields.Open)).longValue());
             if (null != inputHashMap.get(FDTFields.PreClose))
                 indexData.setPrevIndex(((Number) inputHashMap.get(FDTFields.PreClose)).longValue());
             if (null != inputHashMap.get(FDTFields.Volume))
                 indexData.setTotalVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
-            if (null != inputHashMap.get(FDTFields.Time)) indexData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
+            if (null != inputHashMap.get(FDTFields.Time))
+                indexData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
             if (null != inputHashMap.get(FDTFields.TradingDay))
                 indexData.setTradingDay(((Number) inputHashMap.get(FDTFields.TradingDay)).intValue());
             if (null != inputHashMap.get(FDTFields.Turnover))
@@ -132,6 +136,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parset InputMessage Array To Wind FutureData Object
+     *
      * @param inputMessageArray
      * @param futureDataBySymbolMap
      * @return
@@ -235,6 +240,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser input HashMap to Wind FutureData Object
+     *
      * @param inputHashMap
      * @param futureDataBySymbolMap
      * @return
@@ -263,41 +269,42 @@ public class WindDataParser extends AbstractWindDataParser {
             if (null != inputHashMap.get(FDTFields.BidVolumeArray))
                 futureData.setBidVol(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.BidVolumeArray)));
             if (null != inputHashMap.get(FDTFields.Close))
-                futureData.setClose(((Number)inputHashMap.get(FDTFields.Close)).longValue());
+                futureData.setClose(((Number) inputHashMap.get(FDTFields.Close)).longValue());
             if (null != inputHashMap.get(FDTFields.High))
-                futureData.setHigh(((Number)inputHashMap.get(FDTFields.High)).longValue());
+                futureData.setHigh(((Number) inputHashMap.get(FDTFields.High)).longValue());
             if (null != inputHashMap.get(FDTFields.HighLimit))
-                futureData.setHighLimited(((Number)inputHashMap.get(FDTFields.HighLimit)).longValue());
+                futureData.setHighLimited(((Number) inputHashMap.get(FDTFields.HighLimit)).longValue());
             if (null != inputHashMap.get(FDTFields.Low))
-                futureData.setLow(((Number)inputHashMap.get(FDTFields.Low)).longValue());
+                futureData.setLow(((Number) inputHashMap.get(FDTFields.Low)).longValue());
             if (null != inputHashMap.get(FDTFields.LowLimit))
-                futureData.setLowLimited(((Number)inputHashMap.get(FDTFields.LowLimit)).longValue());
+                futureData.setLowLimited(((Number) inputHashMap.get(FDTFields.LowLimit)).longValue());
             if (null != inputHashMap.get(FDTFields.Last))
-                futureData.setMatch(((Number)inputHashMap.get(FDTFields.Last)).longValue());
+                futureData.setMatch(((Number) inputHashMap.get(FDTFields.Last)).longValue());
             if (null != inputHashMap.get(FDTFields.Open))
-                futureData.setOpen(((Number)inputHashMap.get(FDTFields.Open)).longValue());
+                futureData.setOpen(((Number) inputHashMap.get(FDTFields.Open)).longValue());
             if (null != inputHashMap.get(FDTFields.OpenInterest))
-                futureData.setOpenInterest(((Number)inputHashMap.get(FDTFields.OpenInterest)).longValue());
+                futureData.setOpenInterest(((Number) inputHashMap.get(FDTFields.OpenInterest)).longValue());
             if (null != inputHashMap.get(FDTFields.PreSettlePrice))
-                futureData.setPreClose(((Number)inputHashMap.get(FDTFields.PreSettlePrice)).longValue());
+                futureData.setPreClose(((Number) inputHashMap.get(FDTFields.PreSettlePrice)).longValue());
             if (null != inputHashMap.get(FDTFields.SettlePrice))
-                futureData.setSettlePrice(((Number)inputHashMap.get(FDTFields.SettlePrice)).longValue());
+                futureData.setSettlePrice(((Number) inputHashMap.get(FDTFields.SettlePrice)).longValue());
             if (null != inputHashMap.get(FDTFields.Status))
-                futureData.setStatus(((Number)inputHashMap.get(FDTFields.Status)).intValue());
+                futureData.setStatus(((Number) inputHashMap.get(FDTFields.Status)).intValue());
             if (null != inputHashMap.get(FDTFields.Time))
-                futureData.setTime(((Number)inputHashMap.get(FDTFields.Time)).intValue());
+                futureData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
             if (null != inputHashMap.get(FDTFields.TradingDay))
-                futureData.setTradingDay(((Number)inputHashMap.get(FDTFields.TradingDay)).intValue());
+                futureData.setTradingDay(((Number) inputHashMap.get(FDTFields.TradingDay)).intValue());
             if (null != inputHashMap.get(FDTFields.Volume))
-                futureData.setVolume(((Number)inputHashMap.get(FDTFields.Volume)).longValue());
+                futureData.setVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
             if (null != inputHashMap.get(FDTFields.Turnover))
-                futureData.setTurnover(((Number)inputHashMap.get(FDTFields.Turnover)).longValue());
+                futureData.setTurnover(((Number) inputHashMap.get(FDTFields.Turnover)).longValue());
         }
         return futureData;
     }
 
     /**
      * Parser inputMessage to wind StockData Object
+     *
      * @param inputMessageArray
      * @param stockDataBySymbolMap
      * @return
@@ -436,6 +443,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser input HashMap to Wind StockData Object
+     *
      * @param inputHashMap
      * @param stockDataBySymbolMap
      * @return
@@ -525,6 +533,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser inputMessage to wind Transation Object
+     *
      * @param inputMessageArray
      * @param transationDataBySymbolMap
      * @return
@@ -583,6 +592,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser input HashMap to Wind Transation Object
+     *
      * @param inputHashMap
      * @param transationDataBySymbolMap
      * @return
@@ -618,12 +628,47 @@ public class WindDataParser extends AbstractWindDataParser {
     }
 
     /**
+     * Parser input HashMap to Wind Transation Object
+     *
+     * @param inputHashMap
+     * @param codeTableDataBySymbolMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public CodeTableData convertToCodeTableData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap) throws UnsupportedEncodingException {
+        CodeTableData codeTableData = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
+            if (codeTableDataBySymbolMap.containsKey(symbol)) {
+                codeTableData = codeTableDataBySymbolMap.get(symbol);
+            } else {
+                codeTableData = new CodeTableData();
+                codeTableData.setWindCode(symbol);
+                codeTableDataBySymbolMap.put(symbol, codeTableData);
+            }
+            if (null != inputHashMap.get(FDTFields.CNName)) {
+                String cnName = new String((byte[]) inputHashMap.get(FDTFields.CNName), "UTF-8");
+                codeTableData.setCnName(cnName);
+                codeTableData.setSpellName(WindDataParser.getSpellName(cnName, true));
+            }
+            if (null != inputHashMap.get(FDTFields.ShortName))
+                codeTableData.setShortName(new String((byte[]) inputHashMap.get(FDTFields.ShortName), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.SecurityExchange))
+                codeTableData.setSecurityExchange(new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.SecurityType))
+                codeTableData.setSecurityType(((Number) inputHashMap.get(FDTFields.SecurityType)).intValue());
+        }
+        return codeTableData;
+    }
+
+    /**
      * convert Chinese Full Name to Spell Name
+     *
      * @param fullName
      * @param isSimple
      * @return
      */
-    public static String getSpellName(String fullName, boolean isSimple){
+    public static String getSpellName(String fullName, boolean isSimple) {
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
         format.setVCharType(HanyuPinyinVCharType.WITH_V);
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
@@ -633,15 +678,17 @@ public class WindDataParser extends AbstractWindDataParser {
                 char word = fullName.charAt(i);
                 String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word, format);
                 if (pinyinArray == null) { //pinyin4j不能处理非中文
+                    spellName = spellName + String.valueOf(word).trim();
+                    if (!isSimple) spellName = spellName + " ";
                     continue;
                 }
-                if(isSimple){
-                    spellName = spellName + pinyinArray[0].substring(0,1);
-                }else{
-                    spellName = spellName + " " + pinyinArray[0];
+                if (isSimple) {
+                    spellName = spellName + pinyinArray[0].substring(0, 1);
+                } else {
+                    spellName = spellName + pinyinArray[0] + " ";
                 }
             }
-        }catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination){
+        } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
             badHanyuPinyinOutputFormatCombination.printStackTrace();
         }
         return spellName;

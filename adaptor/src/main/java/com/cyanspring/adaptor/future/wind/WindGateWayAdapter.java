@@ -67,6 +67,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<String, StockData>();
     static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<String, IndexData>();
     static ConcurrentHashMap<String, TransationData> transationDataBySymbolMap = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
     static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
     static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<String, MarketSessionData>(); //SaveIndexMarketSession
@@ -157,7 +158,20 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             case WindDef.MSG_SYS_DISCONNECT_NETWORK:
             case WindDef.MSG_SYS_CONNECT_RESULT:
             case WindDef.MSG_SYS_LOGIN_RESULT:
+                break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
+                try {
+                    if(isMsgPack) {
+                        CodeTableData codeTableData = windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap);
+                        log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName() + ",E="
+                                + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
+                                + ",Sp=" + codeTableData.getSpellName());
+                    }
+                }catch (Exception e) {
+                    LogUtil.logException(log, e);
+                    return;
+                }
+                break;
             case WindDef.MSG_SYS_MARKET_CLOSE:
             case WindDef.MSG_SYS_QUOTATIONDATE_CHANGE:
                 break;
