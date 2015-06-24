@@ -87,6 +87,10 @@ public class TraderHelper {
 		return "";
 	}
 	
+	public static String genClOrderId(int front, int session, String orderRef) {		
+		return "" + front + ":" + session + ":" + orderRef;
+	}
+	
 	/**
 	 * 获得Field
 	 * 

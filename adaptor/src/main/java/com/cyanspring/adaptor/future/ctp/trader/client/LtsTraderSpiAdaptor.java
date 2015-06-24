@@ -260,7 +260,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		CThostFtdcRspInfoField info = getStructObject(pRspInfo);
 		if(null != info) {
 			String msg = TraderHelper.toGBKString( getStructObject(pRspInfo).ErrorMsg().getBytes() );
-			String clOrderId = "" + proxy.getFRONT_ID() + ":" + proxy.getSESSION_ID() + ":" + rsp.OrderRef().getCString();
+			String clOrderId = genClOrderId(proxy.getFRONT_ID(), proxy.getSESSION_ID(), rsp.OrderRef().getCString());
 			for ( ILtsTraderListener lis : tradelistens ) {
 				lis.onError(clOrderId, "" + info.ErrorID() + " : " + msg);
 			}
@@ -298,7 +298,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			if(null != rspInfo) {
 				msg = "" + rspInfo.ErrorID() + " : " + TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
 			}
-			String clOrderId = "" + rsp.FrontID() + ":" + rsp.SessionID() + ":" + rsp.OrderRef().getCString();
+			String clOrderId = genClOrderId(rsp.FrontID(), rsp.SessionID(), rsp.OrderRef().getCString());
 			if ( rspInfo != null && rspInfo.ErrorID() == 0 ) {
 				for ( ILtsTraderListener lis : tradelistens ) {
 					lis.onCancel(clOrderId, msg);
