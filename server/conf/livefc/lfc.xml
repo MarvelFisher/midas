@@ -283,7 +283,7 @@
 			<value>1</value>
 		</property>
 		<property name="libPath">
-			<value>../ctplib/linux64/thosttraderapi.so</value>
+			<value>./ctplib/linux64/thosttraderapi.so</value>
 		</property>
         <property name="symbolConverter">
             <bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/>
