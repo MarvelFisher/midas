@@ -49,7 +49,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	
 	private Map<String, ChildOrder> serialToOrder = new ConcurrentHashMap<String, ChildOrder>();
 	private Map<String, Double> tradePendings = new ConcurrentHashMap<String, Double>();
-	private CtpPositionRecord positionRecord= new CtpPositionRecord();
+	private CtpPositionRecord positionRecord;
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent queryPositionEvent = new AsyncTimerEvent();
 	private long queryPositionInterval = 60000;
@@ -63,6 +63,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		this.broker = broker;
 		this.conLog = conLog;
 		this.symbolConverter = symbolConverter;
+		this.positionRecord = new CtpPositionRecord(0);
 		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password, symbolConverter);
 	}
 	
@@ -273,6 +274,11 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
                 .getNextID() + "E", order.getUser(),
                 order.getAccount(), order.getRoute());
 		
+		// update position holding
+		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 
+				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
+				trade.OffsetFlag(), trade.Volume());
+
 		this.listener.onOrder(execType, order, execution, null);
 	}
 
@@ -330,7 +336,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			return;
 		}
 		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday);
-		positionRecord.inject(pos);
+		positionRecord.inject(pos, isLast);
 	}
 
 	@Override
