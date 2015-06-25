@@ -24,7 +24,7 @@ public class LeverageManager implements ILeverageManager{
 		}
 		
 		if(null == refData)
-			return Default.getMarginTimes();
+			return Default.getMarginTimes() * factor;
 		
 		Double marginRate = refData.getMarginRate();
 		if(!PriceUtils.isZero(marginRate)) {

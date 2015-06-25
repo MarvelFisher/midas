@@ -14,6 +14,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -89,6 +93,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -168,6 +176,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -243,6 +255,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -322,6 +338,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -397,6 +417,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -476,6 +500,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -551,6 +579,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -630,6 +662,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -705,6 +741,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -784,6 +824,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -859,6 +903,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -938,6 +986,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1013,6 +1065,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1092,6 +1148,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1167,6 +1227,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1246,6 +1310,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1321,6 +1389,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1400,6 +1472,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1475,6 +1551,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1554,6 +1634,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1629,6 +1713,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1708,6 +1796,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1783,6 +1875,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1862,6 +1958,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -1937,6 +2037,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2016,6 +2120,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -2091,6 +2199,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2170,6 +2282,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -2245,6 +2361,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2324,6 +2444,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -2399,6 +2523,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2478,6 +2606,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -2553,6 +2685,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2632,6 +2768,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -2707,6 +2847,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2786,6 +2930,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -2861,6 +3009,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2940,6 +3092,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3015,6 +3171,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3094,6 +3254,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3169,6 +3333,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3248,6 +3416,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3323,6 +3495,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3402,6 +3578,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3477,6 +3657,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3556,6 +3740,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3631,6 +3819,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3710,6 +3902,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3785,6 +3981,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3864,6 +4064,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -3939,6 +4143,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4018,6 +4226,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -4093,6 +4305,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4172,6 +4388,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -4247,6 +4467,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4326,6 +4550,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -4401,6 +4629,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4480,6 +4712,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -4555,6 +4791,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4634,6 +4874,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -4709,6 +4953,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4788,6 +5036,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -4863,6 +5115,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4942,6 +5198,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -5017,6 +5277,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -5096,6 +5360,10 @@
         <int>0</int>
       </entry>
       <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
+      </entry>
+      <entry>
         <string>Contract</string>
         <com.ib.client.Contract>
           <m__conId>0</m__conId>
@@ -5171,6 +5439,10 @@
       <entry>
         <string>Limit maximum lot</string>
         <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.25</double>
       </entry>
       <entry>
         <string>Contract</string>
