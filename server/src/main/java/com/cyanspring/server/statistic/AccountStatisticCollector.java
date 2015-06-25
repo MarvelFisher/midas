@@ -26,7 +26,8 @@ public class AccountStatisticCollector {
 			liveTradingAccount.setTotalDailyPnL(liveTradingAccount.getTotalDailyPnL()+account.getDailyPnL());
 			liveTradingAccount.setTotalAccountValue(liveTradingAccount.getTotalAccountValue()+account.getStartAccountValue());
 			liveTradingAccount.setTotalCashDeposited(liveTradingAccount.getTotalCashDeposited()+account.getCashDeposited());
-		}else if( null != account){
+		}
+		if( null != account){
 			defaultAccount.setTotalUrPnL( defaultAccount.getTotalUrPnL() + account.getUrPnL()) ;
 			defaultAccount.setTotalAllTimePnL(defaultAccount.getTotalAllTimePnL()+ account.getAllTimePnL());
 			defaultAccount.setTotalValue( defaultAccount.getTotalValue() + account.getValue());
