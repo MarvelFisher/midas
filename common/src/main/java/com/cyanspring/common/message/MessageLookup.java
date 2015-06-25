@@ -227,10 +227,10 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
 			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
 			addAndCheck(ErrorMessage.FDT_ID_IS_UNDER_PROCESSING, getBean(529, "Your FDT ID is under processing. It will be created during weekend. Thank you!"));
-			
-			
-			
-			
+			addAndCheck(ErrorMessage.ACCOUNT_ALREADY_ACTIVE, getBean(530, "Your state already in ACTIVE!"));				
+			addAndCheck(ErrorMessage.OVER_TERMINATE_LOSS, getBean(531, "over terminate loss!"));			
+			addAndCheck(ErrorMessage.OVER_FROZEN_LOSS, getBean(532, "over frozen loss!"));			
+
 			// client errors start with 600
 			addAndCheck(ErrorMessage.NEED_RESTART_APP,getBean(600, "Please restart your App"));			
 			addAndCheck(ErrorMessage.SERVER_IN_MAINTAINING,getBean(601, "Server in Maintaining , Please wait"));

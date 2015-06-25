@@ -50,6 +50,8 @@ import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountStateReplyEvent;
 import com.cyanspring.common.event.account.AccountStateRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
+import com.cyanspring.common.event.account.ActiveAccountReplyEvent;
+import com.cyanspring.common.event.account.ActiveAccountRequestEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
@@ -113,7 +115,9 @@ import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
 import com.cyanspring.server.livetrading.TradingUtil;
+import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
+import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
 
@@ -215,6 +219,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(InternalResetAccountRequestEvent.class, null);
             subscribeToEvent(SettlementEvent.class, null);
             subscribeToEvent(AccountStateRequestEvent.class,null);
+            subscribeToEvent(ActiveAccountRequestEvent.class,null);
         }
 
         @Override
@@ -800,6 +805,59 @@ public class AccountPositionManager implements IPlugin {
             eventManager.sendEvent(new QuoteSubEvent(AccountPositionManager.ID, null, symbol));
         }
     }
+    
+    public void processActiveAccountRequestEvent(ActiveAccountRequestEvent event){
+    	boolean isOk = true;
+    	String message = "";
+    	String id = event.getAccount();
+    	Account account = accountKeeper.getAccount(id);
+    	AccountSetting accountSetting;
+    	TerminateStopLossCheck terminateCheck = new TerminateStopLossCheck();
+    	FrozenStopLossCheck frozenCheck  = new FrozenStopLossCheck();
+		try {
+			accountSetting = accountKeeper.getAccountSetting(id);
+
+	    	ActiveAccountReplyEvent reply = null;
+	    	
+	    	if(null == account){
+	    		isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST,"Account not exist"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	        			,event.getSender(),id,isOk,message);
+	    	}else if(AccountState.ACTIVE.equals(account.getState())){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_ALREADY_ACTIVE,"Account already in ACTIVE state"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	            		,event.getSender(),id,isOk,message);
+	    	}else if(AccountState.TERMINATED.equals(account.getState()) && terminateCheck.isOverTerminateLoss(account, accountSetting)){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_TERMINATE_LOSS,"Still over terminate loss, you must set terminate loss percent/value under current loss"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	            		,event.getSender(),id,isOk,message);
+	    	}else if(AccountState.FROZEN.equals(account.getState()) && frozenCheck.isOverFrozenLoss(account, accountSetting)){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FROZEN_LOSS,"Still over frozen loss, you must set frozen loss percent/value under current loss"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	            		,event.getSender(),id,isOk,message);
+	    	}
+	    		
+	    	if(isOk){
+	    		log.info("Active Account:{}, old state:{}",account.getId(),account.getState());
+		    	account.setState(AccountState.ACTIVE);
+		        reply = new ActiveAccountReplyEvent(event.getKey()
+		        		,event.getSender(),id,isOk,message);
+				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
+	    	}
+
+            eventManager.sendRemoteEvent(reply);
+        
+		} catch (AccountException e) {
+            log.error(e.getMessage(), e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+    
     public void processAccountStateRequestEvent(AccountStateRequestEvent event){
     	boolean isOk = true;
     	String message = "";
