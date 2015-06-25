@@ -33,6 +33,7 @@ import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.common.util.TimeThrottler;
 
 public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener, IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -53,6 +54,9 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent queryPositionEvent = new AsyncTimerEvent();
 	private long queryPositionInterval = 60000;
+	private long timerInterval = 3000;
+	private TimeThrottler throttler;
+	private boolean positionQueried;
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -72,7 +76,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// register listeners
 		registerListeners();
 		positionRecord.clear();	
-		scheduleManager.scheduleRepeatTimerEvent(queryPositionInterval, this, queryPositionEvent);
+		throttler = new TimeThrottler(queryPositionInterval);
+		scheduleManager.scheduleRepeatTimerEvent(timerInterval, this, queryPositionEvent);
 		proxy.init();		
 	}
 	
@@ -342,8 +347,10 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if(event == queryPositionEvent) {
-			if(getState())
+			if(getState() && (!positionQueried || throttler.check())) {
+				positionQueried = true;
 				proxy.doQryPosition();
+			}
 		}
 	}
 

@@ -409,6 +409,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	}
 	
 	public void setReady(boolean ready) {
+		log.debug("setReady: " + ready);
 		this.ready = ready;
 	}
 	
