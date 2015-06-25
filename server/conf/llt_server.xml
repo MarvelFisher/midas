@@ -130,7 +130,7 @@
                 <value>2</value>                	  <!-- commissionMin -->
                 <null/>                         	  <!-- timeZone -->
                 <value>100000.0</value>               <!-- orderQuantity -->
-  				<ref bean="companyStopLossValue"/>	  <!-- position stop loss -->
+  				<value>0.0</value>	  				  <!-- position stop loss -->
                 <value>0.98</value>                   <!-- marginCall -->
                 <value>0</value>                	  <!-- settlementDays -->             
     			<ref bean="positionStopLossPercent"/> <!-- live trading : position stop loss -->
