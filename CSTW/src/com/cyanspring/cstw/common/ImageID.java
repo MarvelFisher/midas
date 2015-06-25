@@ -24,7 +24,8 @@ public enum ImageID {
 	PIN_ICON("icons/pin.png"),
 	CANCEL_ICON("icons/cancel.png"),
 	SAVE_ICON("icons/save.png"),
-	REFRESH_ICON("icons/amend2.png")
+	REFRESH_ICON("icons/amend2.png"),
+	ACTIVE_ICON("icons/active.png"),
 	;
 	private String value;
 	ImageID(String value) {
