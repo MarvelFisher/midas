@@ -26,6 +26,7 @@ public class Default {
 	private static double freezePercent = 0.2;
 	private static double terminatePecent = 0.2;
 
+	private static double companyStopLossValue = 0;
 	private static double freezeValue = 0;
 	private static double terminateValue = 0;
 	
@@ -54,6 +55,7 @@ public class Default {
 		double terminatePecent,
 		boolean liveTrading,
 		boolean userLiveTrading,
+		double companyStopLossValue,
 		double freezeValue,
 		double terminateValue,
 		LiveTradingType liveTradingType) {
@@ -77,6 +79,7 @@ public class Default {
 		Default.terminatePecent = terminatePecent;
 		Default.liveTrading = liveTrading;
 		Default.userLiveTrading = userLiveTrading;
+		Default.companyStopLossValue = companyStopLossValue;
 		Default.freezeValue = freezeValue;
 		Default.terminateValue = terminateValue;
 		Default.liveTradingType = liveTradingType;
@@ -172,6 +175,10 @@ public class Default {
 
 	public static boolean isUserLiveTrading() {
 		return userLiveTrading;
+	}
+	
+	public static double getCompanyStopLossValue() {
+		return companyStopLossValue;
 	}
 	
 	public static double getTerminateValue() {

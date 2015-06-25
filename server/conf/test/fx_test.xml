@@ -170,8 +170,8 @@
 		<property name="autoStartStrategy">
 			<value>true</value>
 		</property>
-        <property name="weekDay" value="TUESDAY"/>
-        <property name="cancelPendingOrderTime" value="15:42:00"/>
+        <property name="weekDay" value="WEDNESDAY"/>
+        <property name="cancelPendingOrderTime" value="09:42:00"/>
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
