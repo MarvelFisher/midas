@@ -221,12 +221,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				showMessageBox("createManualRefreshAction.isChecked():"+createManualRefreshAction.isChecked(), parent);
 				if(!createManualRefreshAction.isChecked()) {
-					log.info("into cancel");
-					//Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
+					Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
 				} else { 
-					log.info("into schedule");
 					Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
 							AccountView.this, timerEvent);
 				}
@@ -295,7 +292,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						showMessageBox("account id is empty",parent);
 						return;
 					}
-					log.info("ActiveAccountRequestEvent currentAccount:{}",currentAccount.getId());
+//					log.info("ActiveAccountRequestEvent currentAccount:{}",currentAccount.getId());
 					ActiveAccountRequestEvent event = new ActiveAccountRequestEvent(ID, Business.getInstance().getFirstServer(), currentAccount.getId()); 
 					try {
 						Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -497,8 +494,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				
 				for(TableItem item : viewer.getTable().getItems()){	
 					String state = item.getText(stateColumn);
-					String account = item.getText(0);
-					log.info("account:{}, state:{}",account,state);
 					if( AccountState.FROZEN.name() == state ){
 						item.setBackground(FROZEN_COLOR);
 					}else if( AccountState.TERMINATED.name() == state){
@@ -539,7 +534,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void processAccountUpdate(Account account) {
-		log.info("update account:{}",account.getId());
 		accounts.put(account.getId(), account);
 		show = true;
 	}
@@ -557,19 +551,14 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			show = true;
 			showAccounts();
 		} else if (event instanceof AccountUpdateEvent) {
-			log.info("get account update:{},{}",((AccountUpdateEvent) event).getAccount().getId(),((AccountUpdateEvent) event).getAccount().getState());
-
 			processAccountUpdate(((AccountUpdateEvent) event).getAccount());
 		} else if (event instanceof AccountDynamicUpdateEvent) {
-			log.info("get account dynamic update:{},{}",((AccountDynamicUpdateEvent) event).getAccount().getId(),((AccountDynamicUpdateEvent) event).getAccount().getState());
 			processAccountUpdate(((AccountDynamicUpdateEvent) event)
 					.getAccount());
 		} else if (event instanceof AsyncTimerEvent) {
-			log.info("refresh event");
 			show = true;
 			showAccounts();
 		}else if (event instanceof ActiveAccountReplyEvent){
-			log.info("receive ActiveAccountReplyEvent");
 			ActiveAccountReplyEvent replyEvent = (ActiveAccountReplyEvent) event;
 			if(replyEvent.isOk()){
 				showMessageBox(replyEvent.getAccount()+" set to ACTIVE success!", parentComposite);
