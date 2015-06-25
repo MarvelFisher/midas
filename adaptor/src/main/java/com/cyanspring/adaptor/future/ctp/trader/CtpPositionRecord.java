@@ -50,13 +50,6 @@ public class CtpPositionRecord {
 		}
 	}
 	
-	synchronized void onTradeUpdate(String symbol, boolean isBuy, byte flag, double qty) {
-		if(flag == TraderLibrary.THOST_FTDC_OF_Open) {
-			addPosition(symbol, isBuy, false, qty);
-		} 
-		log.debug("onTradeUpdate: " + flag + ", " + positions);
-	}
-	
 	synchronized byte holdQuantity(String symbol, boolean isBuy, double qty) {
 		CtpPosition position = positions.get(getKey(symbol, !isBuy));
 		byte result = TraderLibrary.THOST_FTDC_OF_Open;
@@ -75,18 +68,24 @@ public class CtpPositionRecord {
 
 	synchronized void releaseQuantity(String symbol, boolean isBuy, byte flag, double qty) {
 		CtpPosition position = positions.get(getKey(symbol, !isBuy));
-		if(null == position) {
-			log.error("releaseQuantity can't find record " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
-		} else if(flag == TraderLibrary.THOST_FTDC_OF_CloseYesterday) {
-			addPosition(symbol, !isBuy, true, qty);
+		if(flag == TraderLibrary.THOST_FTDC_OF_CloseYesterday) {
+			if(null == position)
+				log.error("releaseQuantity can't find record " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
+			else 
+				addPosition(symbol, !isBuy, true, qty);
 		} else if(flag == TraderLibrary.THOST_FTDC_OF_CloseToday) {
-			addPosition(symbol, !isBuy, false, qty);
+			if(null == position)
+				log.error("releaseQuantity can't find record " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
+			else 
+				addPosition(symbol, !isBuy, false, qty);
 		}
 		log.debug("releaseQuantity: " + positions);
 	}
 		
 	synchronized void inject(CtpPosition position) {
+		positions.clear();
 		positions.put(getKey(position.getSymbol(), position.isBuy()), position);
+		log.debug("After inject: " + toString());
 	}
 	
 	synchronized void clear() {

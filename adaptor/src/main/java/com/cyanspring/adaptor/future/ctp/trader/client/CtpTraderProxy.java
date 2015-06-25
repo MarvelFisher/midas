@@ -30,6 +30,10 @@ import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
 
@@ -273,7 +277,6 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	public void setDisconnectStatus() {
 		loginSend = false;
 		settlementInfoConfirmSend = false;
-		qryPositionSend = false;
 		cancelHisOrdSend = true;	
 	}
 	
@@ -289,30 +292,12 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		settlementInfoConfirmSend = true;			
 	}
 	
-	private boolean qryPositionSend = false;
 	public void doQryPosition() {
 		final CThostFtdcQryInvestorPositionField req = new CThostFtdcQryInvestorPositionField();
 		req.BrokerID().setCString(brokerId);
 		req.InvestorID().setCString(user);
-		TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				while ( true ) {
-					int ret = traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());					
-					if ( 0 == ret ) {
-						break;
-					} else {
-						sleepRandomTime();
-					}
-				}
-				log.info("Send QueryPosition ");				
-			}			
-		};	
-		Timer timer = new Timer() ;
-		if ( !qryPositionSend ) {
-			timer.schedule(task, 1000);
-		}
-		qryPositionSend = true;
+		int ret = traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());					
+		log.info("Send QueryPosition return: " + ret);				
 	}
 	
 	private boolean cancelHisOrdSend = false;
@@ -471,5 +456,5 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	public void onDisconnect() {
 		
 	}
-	
+
 }

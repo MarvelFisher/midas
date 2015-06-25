@@ -25,12 +25,16 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 
-public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener {
+public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener, IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(CtpTradeConnection.class);
 
@@ -45,8 +49,10 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	
 	private Map<String, ChildOrder> serialToOrder = new ConcurrentHashMap<String, ChildOrder>();
 	private Map<String, Double> tradePendings = new ConcurrentHashMap<String, Double>();
-	private Map<String, Double> orderPendings = new ConcurrentHashMap<String, Double>();
 	private CtpPositionRecord positionRecord= new CtpPositionRecord();
+	private ScheduleManager scheduleManager = new ScheduleManager();
+	private AsyncTimerEvent queryPositionEvent = new AsyncTimerEvent();
+	private long queryPositionInterval = 60000;
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -65,6 +71,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// register listeners
 		registerListeners();
 		positionRecord.clear();	
+		scheduleManager.scheduleRepeatTimerEvent(queryPositionInterval, this, queryPositionEvent);
 		proxy.init();		
 	}
 	
@@ -73,8 +80,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 
 	@Override
 	public void uninit() {
-		// TODO clean up
-
+		scheduleManager.cancelTimerEvent(queryPositionEvent);
 	}
 
 	@Override
@@ -103,7 +109,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	
 	class DownStreamSender implements IDownStreamSender {
 		@Override
-		public void newOrder(ChildOrder order) throws DownStreamException {
+		synchronized public void newOrder(ChildOrder order) throws DownStreamException {
 			order = order.clone();
 			String ordRef = proxy.getClOrderId();
 			serialToOrder.put(ordRef, order);			
@@ -216,6 +222,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 				positionRecord.releaseQuantity(convertDownSymbol(order.getSymbol()), 
 					order.getSide().isBuy(), 
 					flag, remaining);
+		} else {
+			log.debug("After response: " + positionRecord);
 		}
 	}
 	
@@ -265,13 +273,6 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
                 .getNextID() + "E", order.getUser(),
                 order.getAccount(), order.getRoute());
 		
-		// update position holding
-		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 
-				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
-				trade.OffsetFlag(), trade.Volume());
-		
-		returnRemainingPosition(order, trade.OffsetFlag());
-
 		this.listener.onOrder(execType, order, execution, null);
 	}
 
@@ -312,6 +313,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			boolean isLast) {
 		if ( field == null ) {
 			log.info("CThostFtdcInvestorPositionField is null");
+			positionRecord.clear();
 			return;
 		}
 		String symbol = field.InstrumentID().getCString();
@@ -329,6 +331,14 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		}
 		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday);
 		positionRecord.inject(pos);
+	}
+
+	@Override
+	public void onEvent(AsyncEvent event) {
+		if(event == queryPositionEvent) {
+			if(getState())
+				proxy.doQryPosition();
+		}
 	}
 
 }
