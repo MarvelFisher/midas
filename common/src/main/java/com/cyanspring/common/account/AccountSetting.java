@@ -20,7 +20,7 @@ public class AccountSetting extends DataObject {
 		AccountSetting settings = new AccountSetting(accountId);
 		settings.setDefaultQty(Default.getOrderQuantity());
 		settings.setStopLossValue(Default.getPositionStopLoss());	//user position stop loss value
-		settings.setCompanySLValue(0.0);							//company position stop loss value
+		settings.setCompanySLValue(Default.getCompanyStopLossValue());							//company position stop loss value
 		settings.setMargin(0.0);
 		settings.setRoute("");
 		settings.setCommission(0.0);

@@ -138,6 +138,7 @@
    				<ref bean="terminateStopLossPercent"/><!-- live trading : terminate stop loss -->
                 <value>true</value>             	  <!-- live trading : company live trading (trading Mode)-->
                 <value>true</value>             	  <!-- live trading : user live trading (stop loss)-->
+   				<ref bean="companyStopLossValue"/>    <!-- companyStopLossValue -->
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->              
                 <value>DEFAULT</value>        		  <!-- liveTradingType -->
