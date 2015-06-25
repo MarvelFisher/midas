@@ -15,7 +15,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -84,7 +84,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -153,7 +153,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -222,7 +222,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -291,7 +291,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -360,7 +360,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -429,7 +429,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -498,7 +498,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -567,7 +567,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -636,7 +636,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -705,7 +705,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -774,7 +774,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -843,7 +843,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -912,7 +912,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -981,7 +981,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1050,7 +1050,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1119,7 +1119,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1188,7 +1188,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1257,7 +1257,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1326,7 +1326,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1395,7 +1395,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1464,7 +1464,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1533,7 +1533,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1602,7 +1602,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1671,7 +1671,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1740,7 +1740,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1809,7 +1809,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1878,7 +1878,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -1947,7 +1947,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2016,7 +2016,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2085,7 +2085,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2154,7 +2154,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2223,7 +2223,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2292,7 +2292,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2361,7 +2361,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2430,7 +2430,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2499,7 +2499,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2568,7 +2568,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2637,7 +2637,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2706,7 +2706,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2775,7 +2775,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2844,7 +2844,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2913,7 +2913,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -2982,7 +2982,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3051,7 +3051,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3120,7 +3120,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3189,7 +3189,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3258,7 +3258,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3327,7 +3327,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3396,7 +3396,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3465,7 +3465,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3534,7 +3534,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3603,7 +3603,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3672,7 +3672,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3741,7 +3741,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3810,7 +3810,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3879,7 +3879,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -3948,7 +3948,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4017,7 +4017,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4086,7 +4086,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4155,7 +4155,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4224,7 +4224,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4293,7 +4293,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4362,7 +4362,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4431,7 +4431,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4500,7 +4500,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4569,7 +4569,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
@@ -4638,7 +4638,7 @@
       </entry>
       <entry>
         <string>Margin Rate</string>
-        <double>0.25</double>
+        <double>0.025</double>
       </entry>
       <entry>
         <string>Contract</string>
