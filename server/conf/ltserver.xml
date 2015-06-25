@@ -136,27 +136,27 @@
         <constructor-arg value="7:00:00" />
     </bean>
     
-    <bean id="positionStopLossPercent" class="java.lang.String">
+    <bean id="positionStopLossPercent" class="java.lang.Double">
         <constructor-arg value="0.0" />
     </bean>
     
-    <bean id="frozenStopLossPercent" class="java.lang.String">
+    <bean id="frozenStopLossPercent" class="java.lang.Double">
         <constructor-arg value="0.0" />
     </bean>
     
-    <bean id="terminateStopLossPercent" class="java.lang.String">
+    <bean id="terminateStopLossPercent" class="java.lang.Double">
         <constructor-arg value="0.3" />
     </bean>
     
-    <bean id="companyStopLossValue" class="java.lang.String">
+    <bean id="companyStopLossValue" class="java.lang.Double">
         <constructor-arg value="20000" />
     </bean>
     
-    <bean id="frozenStopLossValue" class="java.lang.String">
+    <bean id="frozenStopLossValue" class="java.lang.Double">
         <constructor-arg value="20000" />
     </bean>
     
-    <bean id="terminateStopLossValue" class="java.lang.String">
+    <bean id="terminateStopLossValue" class="java.lang.Double">
         <constructor-arg value="0" />
     </bean>
 
@@ -178,16 +178,16 @@
                 <value>2</value>                <!-- commissionMin -->
                 <null/>                         <!-- timeZone -->
                 <value>100000.0</value>         <!-- orderQuantity -->
-                <value>0.0</value>              <!-- position stop loss -->
+  				<ref bean="companyStopLossValue"/>	  <!-- position stop loss -->
                 <value>0.98</value>             <!-- marginCall -->
                 <value>0</value>                <!-- settlementDays -->
-                <value>0.1</value>              <!-- live trading : position stop loss -->
-                <value>0.2</value>              <!-- live trading : freeze stop loss -->
-                <value>0.3</value>              <!-- live trading : terminate stop loss -->
+    			<ref bean="positionStopLossPercent"/> <!-- live trading : position stop loss -->
+   				<ref bean="frozenStopLossPercent"/>   <!-- live trading : freeze stop loss -->
+   				<ref bean="terminateStopLossPercent"/><!-- live trading : terminate stop loss -->
                 <value>true</value>             <!-- live trading : company live trading (trading Mode)-->
                 <value>true</value>             <!-- live trading : user live trading (stop loss)-->
-                <value>0</value>                <!-- freezeValue -->
-                <value>0</value>                <!-- terminateValue -->
+   				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
+   				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->              
                 <value>DEFAULT</value>          <!-- liveTradingType -->
             </list>
         </property>
