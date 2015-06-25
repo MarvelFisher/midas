@@ -91,6 +91,10 @@ public class TraderHelper {
 		return "" + front + ":" + session + ":" + orderRef;
 	}
 	
+	public static String genExchangeOrderId(String exchangeId, String ordSysId) {
+		return exchangeId + ":" + ordSysId;
+	}
+	
 	/**
 	 * 获得Field
 	 * 

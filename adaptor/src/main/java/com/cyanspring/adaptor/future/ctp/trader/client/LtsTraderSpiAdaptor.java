@@ -331,11 +331,6 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		CThostFtdcRspInfoField rsp = getStructObject(pRspInfo);
 		log.info("Response SettlementInfoConfirm: " + rsp.toString());
 		proxy.cancelHistoryOrder();
-		for ( ILtsTraderListener lis : tradelistens ) {
-			if ( bIsLast ) {
-				lis.onConnectReady(true);
-			}
-		}
 	}
 	
 	/**
@@ -709,9 +704,13 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(58) 
 	public  void OnRtnOrder(Pointer<CThostFtdcOrderField > pOrder) {
+		CThostFtdcOrderField order = getStructObject(pOrder);
 		log.info("Message On Order: ");
+		if ( !isCurrSessionOrder(order) ) {
+			return;
+		}
 		for ( ILtsTraderListener lis : tradelistens ) {
-			lis.onOrder(getStructObject(pOrder));
+			lis.onOrder(order);
 		}
 	}
 	
@@ -1087,6 +1086,11 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	@Virtual(104) 
 	public  void OnRtnChangeAccountByBank(Pointer<CThostFtdcChangeAccountField > pChangeAccount) {
 		log.info("Message On ChangeAccountByBank: " + getStructObject(pChangeAccount));
+	}
+	
+	private boolean isCurrSessionOrder(CThostFtdcOrderField order) {
+		return (order.FrontID() == proxy.getFRONT_ID()) && 
+				(order.SessionID() == proxy.getSESSION_ID());
 	}
 	
 }

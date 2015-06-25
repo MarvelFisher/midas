@@ -131,7 +131,6 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		if(null != symbolConverter)
 			symbol = symbolConverter.convertDown(symbol);
 		req.InstrumentID().setCString(symbol);
-		//
 		req.OrderRef().setCString(String.valueOf(orderId[2]));		
 		req.OrderPriceType(priceType);
 		req.Direction(direction);
@@ -314,6 +313,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 				for ( CtpOrderToCancel order : order2Cancel ) {
 					cancelOrder(order);
 				}
+				tradeListener.onConnectReady(true);
 			}
 		};
 		if ( !cancelHisOrdSend ) {
@@ -366,7 +366,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 			}					
 		};	
 		Timer timer = new Timer() ;
-		timer.schedule(task, 2000);
+		timer.schedule(task, 1000);
 		int timeout = 100;
 		while( (!qryEnd[0]) && (timeout != 0) ) {
 			Thread.sleep(50);
