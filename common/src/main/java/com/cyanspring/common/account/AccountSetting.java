@@ -2,6 +2,7 @@ package com.cyanspring.common.account;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.util.PriceUtils;
 
 public class AccountSetting extends DataObject {
 
@@ -168,6 +169,13 @@ public class AccountSetting extends DataObject {
 	public void setTerminateValue(double terminateValue) {
 		put(AccountSettingType.TERMINATE_VALUE.value(), terminateValue);
 	}
+
+    public double getMarginRate() {
+        if (PriceUtils.isZero(getLeverageRate()))
+            return 1/Default.getMarginTimes();
+        else
+            return 1/(Default.getMarginTimes() * getLeverageRate());
+    }
 	
 	public boolean checkLiveTrading(){
 		return (isLiveTrading()||isUserLiveTrading());
