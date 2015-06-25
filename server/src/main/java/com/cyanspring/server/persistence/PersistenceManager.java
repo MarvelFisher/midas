@@ -583,7 +583,7 @@ public class PersistenceManager {
 						message = MessageLookup.buildEventMessage(ErrorMessage.INVALID_USER_ACCOUNT_PWD,ue.getMessage());					
 				}else{
                     log.error(ue.getMessage(), ue);
-					message = MessageLookup.buildEventMessage(ErrorMessage.INVALID_USER_ACCOUNT_PWD,ue.getMessage());
+					message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,ue.getMessage());
 				}		
 				
 			    if (tx!=null) 
