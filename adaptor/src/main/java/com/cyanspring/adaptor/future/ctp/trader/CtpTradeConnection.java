@@ -190,6 +190,10 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		int volumeTraded = update.VolumeTraded();
 		String msg = TraderHelper.toGBKString(update.StatusMsg().getBytes());
 		OrdStatus status = TraderHelper.convert2OrdStatus(statusCode);
+		if(null == status) {
+			log.debug("skipping update for status: " + statusCode);
+			return;
+		}
 		ExecType execType = TraderHelper.OrdStatus2ExecType(status);		
 		log.info("onOrder: " + clOrderId + " Type: " + status + " Volume: " + volumeTraded + " Message: " + msg );
 		
