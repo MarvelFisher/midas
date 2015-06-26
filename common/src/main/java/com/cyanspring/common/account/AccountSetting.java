@@ -82,6 +82,10 @@ public class AccountSetting extends DataObject {
 	}
 	public void setLeverageRate(double lRate){
 		put(AccountSettingType.LEVERAGE_RATE.value(), lRate);
+		if (PriceUtils.isZero(lRate))
+            setMarginRate(1/Default.getMarginTimes());
+        else
+        	setMarginRate(1/(Default.getMarginTimes() * lRate));
 	}
 	public double getCommission(){
 		return get(double.class, AccountSettingType.COMMISSION.value());
@@ -169,12 +173,13 @@ public class AccountSetting extends DataObject {
 	public void setTerminateValue(double terminateValue) {
 		put(AccountSettingType.TERMINATE_VALUE.value(), terminateValue);
 	}
-
+	
+	public void setMarginRate(double marginRate){
+		put(AccountSettingType.MARGIN_RATE.value(), marginRate);
+	}
+	
     public double getMarginRate() {
-        if (PriceUtils.isZero(getLeverageRate()))
-            return 1/Default.getMarginTimes();
-        else
-            return 1/(Default.getMarginTimes() * getLeverageRate());
+        return get(double.class, AccountSettingType.MARGIN_RATE.value());
     }
 	
 	public boolean checkLiveTrading(){
