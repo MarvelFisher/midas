@@ -508,6 +508,10 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     synchronized public void error(int id, int errorCode, String errorMsg) {
         log.info("IB-ERR: "
                 + EWrapperMsgGenerator.error(id, errorCode, errorMsg));
+        if (id == 202){
+            log.info("Return id:{} with no error action", id);
+            return;
+        }
         ChildOrder order = idToOrder.get(id);
         if (null != order) {
         	if (order.getOrdStatus().equals(OrdStatus.PENDING_NEW) && 
