@@ -42,7 +42,7 @@ public class TraderHelper {
 				ltsOrdStatus = OrdStatus.CANCELED;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_Unknown:
-				ltsOrdStatus = OrdStatus.PENDING_NEW;
+				ltsOrdStatus = null;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NotTouched:
 				ltsOrdStatus = null;
@@ -51,8 +51,6 @@ public class TraderHelper {
 				ltsOrdStatus = null;
 				break;
 		}
-		if(null == ltsOrdStatus)
-			log.warn("Status not map: " + code);
 		return ltsOrdStatus;
 	}
 	
@@ -99,6 +97,39 @@ public class TraderHelper {
 		case TraderLibrary.THOST_FTDC_OST_Touched:
 			result = null;
 			break;
+		}
+		return result;
+	}
+	
+	public static String readPositionDirection( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_PD_Net:
+			result = "THOST_FTDC_PD_Net";
+			break;
+		case TraderLibrary.THOST_FTDC_PD_Long:
+			result = "THOST_FTDC_PD_Long";
+			break;
+		case TraderLibrary.THOST_FTDC_PD_Short:
+			result = "THOST_FTDC_PD_Short";
+			break;
+		default:
+			result = "Not Defined";	
+		}
+		return result;
+	}
+	
+	public static String readPositionDateType( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_PSD_Today:
+			result = "THOST_FTDC_PSD_Today";
+			break;
+		case TraderLibrary.THOST_FTDC_PSD_History:
+			result = "THOST_FTDC_PSD_History";
+			break;
+		default:
+			result = "Not Defined";	
 		}
 		return result;
 	}

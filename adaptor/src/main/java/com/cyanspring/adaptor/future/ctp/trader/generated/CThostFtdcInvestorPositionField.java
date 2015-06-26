@@ -5,6 +5,8 @@ import org.bridj.StructObject;
 import org.bridj.ann.Array;
 import org.bridj.ann.Field;
 import org.bridj.ann.Library;
+
+import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
 /**
  * \u6295\u8d44\u8005\u6301\u4ed3<br>
  * <i>native declaration : ThostFtdcUserApiStruct.h:644</i><br>
@@ -477,8 +479,8 @@ public class CThostFtdcInvestorPositionField extends StructObject {
 		sb.append("		InstrumentID = " + InstrumentID().getCString() + ";\n");
 		sb.append("		BrokerID = " + BrokerID().getCString() + ";\n");
 		sb.append("		InvestorID = " + InvestorID().getCString() + ";\n");
-		sb.append("		PosiDirection = " + PosiDirection() + ";\n");
-		sb.append("		PositionDate = " + PositionDate() + ";\n");
+		sb.append("		PosiDirection = " + PosiDirection() + " -> " + TraderHelper.readPositionDirection(PosiDirection()) + ";\n");
+		sb.append("		PositionDate = " + PositionDate() + " -> " + TraderHelper.readPositionDateType(PositionDate()) + ";\n");
 		sb.append("		TodayPosition = " + TodayPosition() + ";\n");
 		sb.append("		YdPosition = " + YdPosition() + ";\n");
 		sb.append("		Position = " + Position() + ";\n");
