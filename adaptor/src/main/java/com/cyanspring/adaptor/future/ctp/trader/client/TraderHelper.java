@@ -69,6 +69,40 @@ public class TraderHelper {
 		return ExecType.getType(status.value());
 	}
 	
+	public static String readOrderStatusCode(byte code) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_OST_AllTraded:
+			result = "THOST_FTDC_OST_AllTraded";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_PartTradedQueueing:
+			result = "THOST_FTDC_OST_PartTradedQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing:
+			result = "THOST_FTDC_OST_PartTradedNotQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
+			result = "THOST_FTDC_OST_NoTradeQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
+			result = "THOST_FTDC_OST_NoTradeNotQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_Canceled:
+			result = "THOST_FTDC_OST_Canceled";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_Unknown:
+			result = "THOST_FTDC_OST_Unknown";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_NotTouched:
+			result = null;
+			break;
+		case TraderLibrary.THOST_FTDC_OST_Touched:
+			result = null;
+			break;
+		}
+		return result;
+	}
+	
 	public static String toGBKString(byte[] bytes) {
 		try {
 			return new String(bytes, "GB2312");
