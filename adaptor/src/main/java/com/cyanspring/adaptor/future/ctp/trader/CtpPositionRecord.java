@@ -44,6 +44,10 @@ public class CtpPositionRecord {
 		public void setTdQty(double tdQty) {
 			this.tdQty = tdQty;
 		}
+		@Override
+		public String toString() {
+			return "" + ydQty + "," + tdQty;
+		}
 	}
 
 	private String getKey(String symbol, boolean isBuy) {
@@ -76,8 +80,10 @@ public class CtpPositionRecord {
 			return result;
 		
 		HoldPosition hold = holds.get(getKey(symbol, !isBuy));
-		if(null == hold)
+		if(null == hold) {
 			hold = new HoldPosition(0, 0);
+			holds.put(getKey(symbol, !isBuy), hold);
+		}
 		
 		if(PriceUtils.EqualGreaterThan(position.getYdQty() - hold.getYdQty() - qty - margin, 0)) {
 			hold.setYdQty(hold.getYdQty() + qty);
