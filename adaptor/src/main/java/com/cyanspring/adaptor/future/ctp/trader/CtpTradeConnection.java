@@ -343,6 +343,9 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		String symbol = field.InstrumentID().getCString();
 		double today = field.TodayPosition();
 		double yesterday = field.YdPosition();		
+		if(field.YdPosition()>0)
+			yesterday -= field.CloseVolume();
+		
 		boolean isBuy = false;
 		if(field.PosiDirection() == TraderLibrary.THOST_FTDC_PD_Long) {
 			isBuy = true;
@@ -353,6 +356,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			log.error("This flag can't be handled: " + field.PosiDirection());
 			return;
 		}
+		
 		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday);
 		positionRecord.inject(pos, isLast);
 	}

@@ -74,11 +74,12 @@ public class CtpPositionRecord {
 	}
 	
 	synchronized byte holdQuantity(String symbol, boolean isBuy, double qty) {
+		log.debug("Before holdQuantity: " + this.toString());
 		byte result = TraderLibrary.THOST_FTDC_OF_Open;
 		CtpPosition position = positions.get(getKey(symbol, !isBuy));
 		if(null == position)
 			return result;
-		
+log.debug("hold position: " + position);		
 		HoldPosition hold = holds.get(getKey(symbol, !isBuy));
 		if(null == hold) {
 			hold = new HoldPosition(0, 0);
@@ -92,7 +93,7 @@ public class CtpPositionRecord {
 			hold.setTdQty(hold.getTdQty() + qty);
 			result = TraderLibrary.THOST_FTDC_OF_CloseToday;
 		}
-		log.debug("holdQuantity: " + this.toString());
+		log.debug("After holdQuantity: " + this.toString());
 		return result;
 	}
 
@@ -126,7 +127,12 @@ public class CtpPositionRecord {
 		if(last)
 			injecting = false;
 		
-		positions.put(getKey(position.getSymbol(), position.isBuy()), position);
+		CtpPosition existing = positions.get(getKey(position.getSymbol(), position.isBuy()));
+		if(null == existing) {
+			positions.put(getKey(position.getSymbol(), position.isBuy()), position);
+		} else {
+			existing.add(position);
+		}
 		log.debug("After inject: " + toString());
 	}
 	
