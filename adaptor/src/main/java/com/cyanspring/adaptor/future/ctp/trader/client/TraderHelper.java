@@ -42,7 +42,7 @@ public class TraderHelper {
 				ltsOrdStatus = OrdStatus.CANCELED;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_Unknown:
-				ltsOrdStatus = OrdStatus.PENDING_NEW;
+				ltsOrdStatus = null;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NotTouched:
 				ltsOrdStatus = null;
@@ -51,8 +51,6 @@ public class TraderHelper {
 				ltsOrdStatus = null;
 				break;
 		}
-		if(null == ltsOrdStatus)
-			log.warn("Status not map: " + code);
 		return ltsOrdStatus;
 	}
 	
