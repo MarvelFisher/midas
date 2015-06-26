@@ -116,7 +116,6 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	class DownStreamSender implements IDownStreamSender {
 		@Override
 		synchronized public void newOrder(ChildOrder order) throws DownStreamException {
-			order = order.clone();
 			String ordRef = proxy.getClOrderId();
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
@@ -211,7 +210,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			if (PriceUtils.GreaterThan(volumeTraded, order.getCumQty())) {
 				tradePendings.put(clOrderId, new Double(volumeTraded)); // leave trade to do the update
 			} else {				
-				this.listener.onOrder(execType, order, null, msg);
+				this.listener.onOrder(execType, order.clone(), null, msg);
 			}
 			
 		}
@@ -284,7 +283,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
 				trade.OffsetFlag(), trade.Volume());
 
-		this.listener.onOrder(execType, order, execution, null);
+		this.listener.onOrder(execType, order.clone(), execution, null);
 	}
 
 	@Override
@@ -300,7 +299,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// return position holding
 		returnRemainingPosition(order, order.get(Byte.class, OrderField.FLAG.value()));
 
-		this.listener.onOrder(ExecType.CANCELED, order, null, msg);
+		this.listener.onOrder(ExecType.CANCELED, order.clone(), null, msg);
 	}
 
 	@Override
@@ -316,7 +315,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// return position holding
 		returnRemainingPosition(order, order.get(Byte.class, OrderField.FLAG.value()));
 
-		this.listener.onOrder(ExecType.REJECTED, order, null, msg);
+		this.listener.onOrder(ExecType.REJECTED, order.clone(), null, msg);
 	}
 
 	@Override
