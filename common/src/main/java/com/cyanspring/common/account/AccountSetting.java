@@ -6,7 +6,7 @@ import com.cyanspring.common.util.PriceUtils;
 
 public class AccountSetting extends DataObject {
 
-
+	private double defaultMarginRate = Default.getMarginTimes();
 	protected AccountSetting() {
 		
 	}
@@ -82,10 +82,7 @@ public class AccountSetting extends DataObject {
 	}
 	public void setLeverageRate(double lRate){
 		put(AccountSettingType.LEVERAGE_RATE.value(), lRate);
-		if (PriceUtils.isZero(lRate))
-            setMarginRate(1/Default.getMarginTimes());
-        else
-        	setMarginRate(1/(Default.getMarginTimes() * lRate));
+		defaultMarginRate = Default.getMarginTimes();
 	}
 	public double getCommission(){
 		return get(double.class, AccountSettingType.COMMISSION.value());
@@ -174,12 +171,11 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.TERMINATE_VALUE.value(), terminateValue);
 	}
 	
-	public void setMarginRate(double marginRate){
-		put(AccountSettingType.MARGIN_RATE.value(), marginRate);
-	}
-	
     public double getMarginRate() {
-        return get(double.class, AccountSettingType.MARGIN_RATE.value());
+    	if (PriceUtils.isZero(getLeverageRate()))
+            return 1/defaultMarginRate;
+        else
+        	return 1/(defaultMarginRate * getLeverageRate());
     }
 	
 	public boolean checkLiveTrading(){
