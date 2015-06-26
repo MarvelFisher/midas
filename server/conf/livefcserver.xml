@@ -77,7 +77,7 @@
         <property name="showGui" value="true"></property>
         <property name="gatewayIp" value="10.0.0.20"></property>
         <property name="gatewayPort" value="10048"></property>
-        <property name="marketDataLog" value="true"></property>
+        <property name="marketDataLog" value="false"></property>
         <property name="tradeDateCheckIsOpen" value="true"></property>
         <property name="closeOverTimeControlIsOpen" value="true"></property>
         <property name="isMsgPack" value="true"></property>
