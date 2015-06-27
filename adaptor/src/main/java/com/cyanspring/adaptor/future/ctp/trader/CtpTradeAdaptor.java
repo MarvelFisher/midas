@@ -38,8 +38,8 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 		
 		for(IDownStreamConnection connection: connections) {
 			connection.init();
+			log.info("Ctp connection initialized: " + connection.getId());	
 		}
-		log.info("Ctp connection initialized: " + connectionPrefix + " " + connectionCount);	
 	}
 
 	private void initNativeLibrary() {
