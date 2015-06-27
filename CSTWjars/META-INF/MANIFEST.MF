@@ -40,6 +40,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
    com.cyanspring.common.event,
    com.cyanspring.common.business",
  com.cyanspring.common.event.signal;uses:="com.cyanspring.common.data,com.cyanspring.common.event",
+ com.cyanspring.common.event.statistic,
  com.cyanspring.common.event.strategy;
   uses:="com.cyanspring.common.type,
    com.cyanspring.common.event,
@@ -48,6 +49,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.event.system;uses:="com.cyanspring.common.event",
  com.cyanspring.common.marketdata,
  com.cyanspring.common.marketsession;uses:="com.cyanspring.common,com.cyanspring.common.event",
+ com.cyanspring.common.message,
  com.cyanspring.common.server.event;uses:="com.cyanspring.common.event",
  com.cyanspring.common.signal,
  com.cyanspring.common.transport,
