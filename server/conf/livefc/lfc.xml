@@ -243,15 +243,18 @@
     </bean>
 
 
+	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
+	</bean>
+
     <bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
         <constructor-arg>
             <list>
-                <ref bean="ctpAdaptor" />
+				<ref bean="hyperDownStreamAdaptor" />
             </list>
         </constructor-arg>
         <constructor-arg>
             <list>
-                <!-- <ref bean="ibAdaptor" /> -->
+               <ref bean="ctpAdaptor" />
             </list>
         </constructor-arg>
     </bean>
