@@ -691,6 +691,23 @@ public class WindDataParser extends AbstractWindDataParser {
         } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
             badHanyuPinyinOutputFormatCombination.printStackTrace();
         }
-        return spellName;
+        return changeFullToHalf(spellName);
+    }
+
+    /**
+     * change String FullWidth to HalfWidth
+     *
+     * @param originStr
+     * @return destStr
+     * @see <a href="http://www.utf8-chartable.de/unicode-utf8-table.pl?start=65280&number=128&unicodeinhtml=dec">UTF-8 encoding table</a>
+     */
+    public static String changeFullToHalf(String originStr) {
+        for (char c : originStr.toCharArray()) {
+            originStr = originStr.replaceAll("　", " ");
+            if ((int) c >= 65281 && (int) c <= 65374) {
+                originStr = originStr.replace(c, (char) (((int) c) - 65248));
+            }
+        }
+        return originStr;
     }
 }
