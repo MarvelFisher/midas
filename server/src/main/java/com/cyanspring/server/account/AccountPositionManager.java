@@ -1221,10 +1221,6 @@ public class AccountPositionManager implements IPlugin {
                         return true;
                     }
                     
-                    double marketablePrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
-                    if(!PriceUtils.validPrice(marketablePrice))
-                    	continue;
-                    
                     double lossQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
 							quote.getSymbol(), Math.abs(account.getCashAvailable()), marketablePrice);
 
