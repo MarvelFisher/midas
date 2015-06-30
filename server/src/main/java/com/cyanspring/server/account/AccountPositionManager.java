@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import webcurve.util.PriceUtils;
-
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
@@ -111,6 +109,7 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
@@ -1219,6 +1218,9 @@ public class AccountPositionManager implements IPlugin {
                     }
                     
                     double marketablePrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
+                    if(!PriceUtils.validPrice(marketablePrice))
+                    	continue;
+                    
                     double lossQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
 							quote.getSymbol(), Math.abs(account.getCashAvailable()), marketablePrice);
 
@@ -1342,6 +1344,10 @@ public class AccountPositionManager implements IPlugin {
             if (!PriceUtils.isZero(position.getQty())) {
 
                 double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : settlePrice;
+                if(!PriceUtils.validPrice(price)) {
+                	log.warn("Invalid settlement price, can not settle: " + settlePrice + ", " + quote);
+                	continue;
+                }
 
                 Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
                         Math.abs(position.getQty()),
