@@ -50,6 +50,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     private boolean tradeDateCheckIsOpen = true;
     private boolean isMsgPack = false;
     private boolean isSubTrans = false;
+    private boolean isAllMarket = false;
     private boolean modifyTickTime = true;
 
     boolean isClose = false;
@@ -721,6 +722,14 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
 
     public boolean isSubTrans() {
         return isSubTrans;
+    }
+
+    public boolean isAllMarket() {
+        return isAllMarket;
+    }
+
+    public void setIsAllMarket(boolean isAllMarket) {
+        this.isAllMarket = isAllMarket;
     }
 }
 

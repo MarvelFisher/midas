@@ -209,8 +209,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
         msLastTime = System.currentTimeMillis();
 
-        //sendRequestCodeTable("SH");
-        //sendRequestCodeTable("SZ");
+        if(adaptor.isAllMarket()) {
+            sendRequestCodeTable("SH");
+            sendRequestCodeTable("SZ");
+        }
 
         sendReqHeartbeat(); // send request heartbeat message
 
