@@ -24,13 +24,9 @@ import com.cyanspring.common.IPlugin;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class RefDataManager implements IPlugin, IRefDataManager {
-	private static final Logger log = LoggerFactory
-			.getLogger(RefDataManager.class);
-	String refDataFile;	
+public class RefDataManager extends RefDataService{
+
 	Map<String, RefData> map = new HashMap<String, RefData>();
-	
-	private String market = Default.getMarket();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -46,6 +42,7 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 		}
 		
 		for(RefData refData: list) {
+            updateMarginRate(refData);
 			map.put(refData.getSymbol(), refData);
 		}
 	}
@@ -66,23 +63,7 @@ public class RefDataManager implements IPlugin, IRefDataManager {
 	}
 
 	@Override
-	public String getRefDataFile() {
-		return refDataFile;
-	}
-
-	@Override
-	public void setRefDataFile(String refDataFile) {
-		this.refDataFile = refDataFile;
-	}
-
-	@Override
 	public List<RefData> getRefDataList() {
 		return new ArrayList<RefData>(map.values());
 	}
-	
-	@Override
-	public String getMarket() {
-		return market;
-	}
-
 }

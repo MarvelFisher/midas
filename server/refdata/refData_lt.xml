@@ -1,6 +1,10 @@
 <list>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -66,6 +70,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -131,6 +139,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -196,6 +208,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -261,6 +277,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -326,6 +346,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -391,6 +415,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		   <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -456,6 +484,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
@@ -521,6 +553,10 @@
 	</com.cyanspring.common.staticdata.RefData>
 		<com.cyanspring.common.staticdata.RefData>
 		<fields>
+            <entry>
+                <string>Margin Rate</string>
+                <double>1</double>
+            </entry>
 		    <entry>
         		<string>Limit maximum lot</string>
         		<int>0</int>
