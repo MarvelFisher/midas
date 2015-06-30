@@ -410,12 +410,17 @@ public class PositionKeeper {
 					Quote quote = quoteFeeder.getQuote(symbol);
 					if(null != quote && null != pos) {
 						double price = QuoteUtils.getMarketablePrice(quote, pos.getQty());
-						double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
-								(price-pos.getPrice()));
-						pos.setPnL(pnl);
-						double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
-								quote.getSymbol(), pos.getPnL());
-						pos.setAcPnL(urPnL);
+						if(!PriceUtils.validPrice(price))
+							price = QuoteUtils.getValidPrice(quote);
+						
+						if(PriceUtils.validPrice(price)) {
+							double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
+									(price-pos.getPrice()));
+							pos.setPnL(pnl);
+							double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+									quote.getSymbol(), pos.getPnL());
+							pos.setAcPnL(urPnL);
+						}
 					}
 				}
 			} catch (PositionException e) {
@@ -577,12 +582,22 @@ public class PositionKeeper {
 				if(null != symbolPositions) {
 					List<OpenPosition> list = symbolPositions.get(symbol);
 					if(null != list) {
+						boolean validMarketablePrice = true;
 						for(OpenPosition position: list) {
 							double price = QuoteUtils.getMarketablePrice(quote, position.getQty());
+							if(!PriceUtils.validPrice(price))
+								price = QuoteUtils.getValidPrice(quote);
+							
+							validMarketablePrice = PriceUtils.validPrice(price);
+							if(!validMarketablePrice)
+								break;
 							double pnl = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
 									(price-position.getPrice()));
 							position.setPnL(pnl);
 						}
+						
+						if(!validMarketablePrice)
+							continue;
 						
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
@@ -646,6 +661,8 @@ public class PositionKeeper {
 	private double getMarginValueByAccountAndSymbol(Account account, String symbol, Quote quote) {
 		double marginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
 		double price = QuoteUtils.getMarketablePrice(quote, marginQty);
+		if(!PriceUtils.validPrice(price))
+			price =	QuoteUtils.getValidPrice(quote);
 		return Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), quote.getSymbol(), 
 				marginQty, price));
 	}
@@ -662,6 +679,14 @@ public class PositionKeeper {
 		}
 
 		double price = QuoteUtils.getMarketablePrice(quote, deltaQty);
+		if(!PriceUtils.validPrice(price))
+			price =	QuoteUtils.getValidPrice(quote);
+		
+		if(!PriceUtils.validPrice(price)) {
+			log.error("Quote invalid: " + quote);
+			return false;
+		}
+		
 		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter,
 				account.getCurrency(), quote.getSymbol(), 
 				deltaQty, price));
