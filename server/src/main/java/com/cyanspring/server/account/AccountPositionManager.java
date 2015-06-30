@@ -1211,6 +1211,10 @@ public class AccountPositionManager implements IPlugin {
                     if (!quoteIsValid(quote))
                         continue;
 
+                    double marketablePrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
+                    if(!PriceUtils.validPrice(marketablePrice))
+                    	continue;
+                    	
                     if (positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
                         log.debug("Margin call but account is locked: " +
                                 account.getId() + ", " + position.getSymbol());
@@ -1254,7 +1258,7 @@ public class AccountPositionManager implements IPlugin {
         }
         return result;
     }
-
+    
     private void processDayEndTasks() {
         log.info("Account day end processing start");
         List<Account> list = accountKeeper.getAllAccounts();

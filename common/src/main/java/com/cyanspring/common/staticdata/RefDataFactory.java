@@ -22,10 +22,8 @@ import com.cyanspring.common.staticdata.fu.IRefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class RefDataFactory implements IPlugin, IRefDataManager{
-	private static final Logger log = LoggerFactory
-			.getLogger(RefDataFactory.class);
-	String refDataFile;	
+public class RefDataFactory extends RefDataService{
+    
     List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private String market = Default.getMarket();
@@ -87,6 +85,7 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
                     };
                 }
                 strategyMap.put(refData.getStrategy(), strategy);
+                updateMarginRate(refData);
             }else{
                 strategy = strategyMap.get(refData.getStrategy());
             }
@@ -99,6 +98,8 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
 
     @Override
 	public void uninit() {
+        log.info("uninitialising");
+        strategyMap.clear();
 	}
 	
 	@Override
@@ -111,25 +112,10 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
 	}
 
 	@Override
-	public String getRefDataFile() {
-		return refDataFile;
-	}
-
-	@Override
 	public List<RefData> getRefDataList() {
 		return refDataList;
 	}
 
-	@Override
-	public String getMarket() {
-		return market;
-	}
-
-	@Override
-	public void setRefDataFile(String refDataFile) {
-		this.refDataFile = refDataFile;
-	}
-	
 	private void saveRefDataToFile(String path, List<RefData> list){
 		File file = new File(path);
 		try {
