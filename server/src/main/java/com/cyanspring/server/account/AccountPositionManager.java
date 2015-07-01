@@ -24,6 +24,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
+import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.PositionException;
@@ -182,7 +183,10 @@ public class AccountPositionManager implements IPlugin {
     @Autowired(required = false)
     LiveTradingSetting liveTradingSetting;
 
-    private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
+	@Autowired
+	ILeverageManager leverageManager;
+
+	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
         @Override
         public Quote getQuote(String symbol) {
@@ -1025,7 +1029,7 @@ public class AccountPositionManager implements IPlugin {
 		                }
 	                }
 
-	                checkMarginCall(account);
+	                checkMarginCall(account, accountSetting);
 	            }
 	            perfDataRm.end();
 	        }
@@ -1128,7 +1132,7 @@ public class AccountPositionManager implements IPlugin {
                     continue;
                 }
                 log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
-                        position.getSymbol() + ", " + position.getAcPnL() + ", " +
+                        position.getSymbol() + ", " + position.getQty() + ", " + position.getAcPnL() + ", " +
                         positionStopLoss + ", " + quote);
                 ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                         null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.PositionStopLoss,
@@ -1141,7 +1145,7 @@ public class AccountPositionManager implements IPlugin {
         return result;
     }
 
-    private boolean checkMarginCall(Account account) {
+    private boolean checkMarginCall(Account account, AccountSetting accountSetting) {
         if (!checkMargincut)
             return false;
         boolean result = false;
@@ -1216,13 +1220,28 @@ public class AccountPositionManager implements IPlugin {
                                 account.getId() + ", " + position.getSymbol());
                         return true;
                     }
+                    
+                    double lossQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
+							quote.getSymbol(), Math.abs(account.getCashAvailable()), marketablePrice);
 
                     log.info("Margin cut close position: " + position.getAccount() + ", " +
                             position.getSymbol() + ", " + position.getAcPnL() + ", " +
-                            account.getMargin() + ", " +
+                            position.getQty() + ", " +
+                            lossQty + ", " +
                             account.getCashAvailable() + ", " + quote);
 
-                    double qty = Math.min(Math.abs(position.getQty()), Default.getMarginCut());
+                	RefData refData = refDataManager.getRefData(quote.getSymbol());
+    				double lev = leverageManager.getLeverage(refData, accountSetting);
+    				lossQty *= lev;
+    				
+    				double qty = Default.getMarginCut();
+                    if(lossQty > Default.getMarginCut()) {
+                    	long lot = Math.max(Math.max((long)Default.getMarginCut(), (long)refData.getLotSize()), 1);
+        				long n = ((long)lossQty)/lot;
+                    	qty = Default.getMarginCut() * (n+1);
+                    }
+                    qty = Math.min(Math.abs(position.getQty()), qty);
+
                     ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                             null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
                             IdGenerator.getInstance().getNextID());
