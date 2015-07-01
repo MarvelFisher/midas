@@ -164,6 +164,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
                 try {
                     if(isMsgPack) {
                         CodeTableData codeTableData = windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap);
+                        if(codeTableData.getCnName().contains("ST") || codeTableData.getSecurityType()>32) return;
                         log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName() + ",E="
                                 + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
                                 + ",Sp=" + codeTableData.getSpellName());
