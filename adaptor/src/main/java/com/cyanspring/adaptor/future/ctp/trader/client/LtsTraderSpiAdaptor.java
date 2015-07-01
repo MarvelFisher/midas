@@ -215,7 +215,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			}
 			proxy.doReqSettlementInfoConfirm();
 		} else {
-			log.info("Login Fail: " + getStructObject(pRspInfo).ErrorMsg().getCString());
+			log.error("Login Fail: " + getStructObject(pRspInfo));
 		}	
 		
 	}

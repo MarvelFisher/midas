@@ -5,6 +5,8 @@ import org.bridj.StructObject;
 import org.bridj.ann.Array;
 import org.bridj.ann.Field;
 import org.bridj.ann.Library;
+
+import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
 /**
  * \u54cd\u5e94\u4fe1\u606f<br>
  * <i>native declaration : ThostFtdcUserApiStruct.h:297</i><br>
@@ -34,6 +36,17 @@ public class CThostFtdcRspInfoField extends StructObject {
 	public Pointer<Byte > ErrorMsg() {
 		return this.io.getPointerField(this, 1);
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CThostFtdcRspInfoField { \n");
+		sb.append("		ErrorID = " + ErrorID() + ";\n");
+		sb.append("		ErrorMsg = " + TraderHelper.toGBKString(ErrorMsg().getBytes()) + ";\n");
+		
+		sb.append("}");
+		return sb.toString();
+	}
+	
 	public CThostFtdcRspInfoField() {
 		super();
 	}
