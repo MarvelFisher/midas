@@ -181,7 +181,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(1) 
 	public  void OnFrontDisconnected(int nReason) {
-		log.info("Network dissconnected" + nReason);
+		log.info("Network disconnected: " + nReason);
 		proxy.setDisconnectStatus();
 	}
 	
