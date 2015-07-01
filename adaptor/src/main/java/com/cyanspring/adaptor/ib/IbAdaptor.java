@@ -860,7 +860,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         order.setAvgPx(avgFillPrice);
         order.touch();
 
-        if (status.equals("Cancelled") || status.equals("ApiCancelled")) {
+        if ((status.equals("Cancelled") || status.equals("ApiCancelled")) && 
+        	((!order.getOrdStatus().equals(OrdStatus.CANCELED))|| oldFilled != filled)) {
             execType = ExecType.CANCELED;
             order.setOrdStatus(OrdStatus.CANCELED);
             downStreamListener.onOrder(execType, order, execution, "");
