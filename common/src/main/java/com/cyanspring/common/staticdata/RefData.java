@@ -107,7 +107,10 @@ public class RefData extends DataObject {
 	public double getMarginRate(){
 		return this.get(double.class, RefDataField.MARGIN_RATE.value());
 	}
-	
+
+    public void setMarginRate(double marginRate){
+        this.set(marginRate, RefDataField.MARGIN_RATE.value());
+    }
 	public double getCommissionFee(){
 		return this.get(double.class, RefDataField.COMMISSION_FEE.value());
 	}
