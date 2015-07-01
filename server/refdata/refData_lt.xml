@@ -51,7 +51,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>AUDUSD</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -120,7 +120,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>USDJPY</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -189,7 +189,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>USDCHF</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -258,7 +258,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>USDCAD</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -327,7 +327,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>EURUSD</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -396,7 +396,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>EURJPY</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -465,7 +465,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>GBPUSD</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -534,7 +534,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>NZDUSD</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
@@ -603,7 +603,7 @@
 			</entry>
 			<entry>
        			<string>Tick table</string>
-        		<string>FX</string>
+        		<string>GBPJPY</string>
       		</entry>
 			<entry>
 				<string>Contract</string>
