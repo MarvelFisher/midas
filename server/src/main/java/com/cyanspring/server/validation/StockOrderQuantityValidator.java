@@ -29,12 +29,6 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 	public void validate(String field, Object value, Map<String, Object> map,
 			ParentOrder order) throws OrderValidationException {
 		try {
-			Iterator <String>ii = map.keySet().iterator();
-			while(ii.hasNext()){
-				String key = ii.next();
-				log.info("key:{} value:{}",key,map.get(key));
-			}
-			
 			Double qty = (Double)value;
 			if(qty == null)
 				throw new OrderValidationException(field + " can not be null",ErrorMessage.ORDER_FIELD_EMPTY);
@@ -57,7 +51,9 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 				throw new OrderValidationException("Can't find symbol in refdata: " + symbol,ErrorMessage.ORDER_SYMBOL_NOT_FOUND);
 			
 			OrderSide side = (OrderSide) map.get(OrderField.SIDE.value());
-				
+			if(side == null )
+				side = order.getSide();
+			
 			if( side.isBuy() && qty.longValue() % refData.getLotSize() != 0)
 				throw new OrderValidationException("Invalid Quantity!",ErrorMessage.INVALID_QUANTITY);
 		
