@@ -33,6 +33,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.info.CentralDbReadyEvent;
 import com.cyanspring.common.event.info.CentralDbSubscribeEvent;
+import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
@@ -133,6 +134,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
+			subscribeToEvent(HistoricalPriceRequestDateEvent.class, null);
 		}
 
 		@Override
@@ -251,6 +253,12 @@ public class CentralDbProcessor implements IPlugin
 	}
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
+	{
+		mapCentralDbEventProc.get("Historical" + curHisThread).onEvent(event);
+		curHisThread = (curHisThread + 1) % numOfHisThreads;  
+	}
+	
+	public void processHistoricalPriceRequestDateEvent(HistoricalPriceRequestDateEvent event)
 	{
 		mapCentralDbEventProc.get("Historical" + curHisThread).onEvent(event);
 		curHisThread = (curHisThread + 1) % numOfHisThreads;  

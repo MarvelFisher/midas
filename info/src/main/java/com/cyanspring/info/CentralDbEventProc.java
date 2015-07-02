@@ -1,5 +1,7 @@
 package com.cyanspring.info;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
+import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
@@ -89,6 +92,48 @@ public class CentralDbEventProc implements Runnable
 			return ;
 		}
 	}
+    
+    public void processHistoricalPriceRequestDateEvent(HistoricalPriceRequestDateEvent event)
+    {
+		String symbol = event.getSymbol() ;
+		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
+		retEvent.setSymbol(symbol);
+		log.info("Process Historical Price Request");
+		String type   = event.getHistoryType() ;
+		String startDate = event.getStartDate();
+		String endDate = event.getEndDate();
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		List<HistoricalPrice> listPrice = null;
+		log.debug("Process Historical Price Request Symbol by Date: " + symbol + " Type: " + type + " Start: " + startDate + " End: " + endDate);
+		
+		try 
+		{
+			listPrice = centraldb.getDbhnd().getPeriodStartEndValue(centraldb.getServerMarket(), type, symbol, sdf.parse(startDate), sdf.parse(endDate));
+		} 
+		catch (ParseException e) 
+		{
+			log.warn("Input date format is wrong");
+		}
+		if (listPrice == null)
+		{
+			retEvent.setOk(false) ;
+//			retEvent.setMessage("Get price list fail");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.DATA_NOT_FOUND, "Get price list fail"));
+			centraldb.sendEvent(retEvent) ;
+			log.debug("Process Historical Price Request fail: Get price list fail");
+			return ;
+		}
+		else
+		{
+			retEvent.setOk(true) ;
+			retEvent.setHistoryType(event.getHistoryType());
+			retEvent.setDataCount(listPrice.size());
+			retEvent.setPriceList(listPrice);
+			centraldb.sendEvent(retEvent) ;
+			log.info("Process Historical Price Request success Symbol: " + listPrice.size());
+			return ;
+		}
+    }
     
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
@@ -190,6 +235,10 @@ public class CentralDbEventProc implements Runnable
 		else if (event instanceof SymbolListSubscribeRequestEvent)
 		{
 			processSymbolListSubscribeRequestEvent((SymbolListSubscribeRequestEvent)event);
+		}
+		else if (event instanceof HistoricalPriceRequestDateEvent)
+		{
+			processHistoricalPriceRequestDateEvent((HistoricalPriceRequestDateEvent)event);
 		}
 	}
 
