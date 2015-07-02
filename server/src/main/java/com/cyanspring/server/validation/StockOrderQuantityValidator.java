@@ -1,5 +1,6 @@
 package com.cyanspring.server.validation;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,7 +15,6 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class StockOrderQuantityValidator implements IFieldValidator{
@@ -62,13 +62,16 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 				throw new OrderValidationException("Can't find symbol in refdata: " + symbol,ErrorMessage.ORDER_SYMBOL_NOT_FOUND);
 			
 			OrderSide side = (OrderSide) map.get(OrderField.SIDE.value());
-				
+			if(side == null )
+				side = order.getSide();
+			
 			if( side.isBuy() && qty.longValue() % refData.getLotSize() != 0)
 				throw new OrderValidationException("Invalid Quantity!",ErrorMessage.INVALID_QUANTITY);
 		
 		} catch (OrderValidationException e){
 			throw e;
 		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
 			throw new OrderValidationException(field + " has caused exception: " + e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 	}
