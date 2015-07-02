@@ -64,7 +64,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		} catch (OrderValidationException e){
 			throw e;
 		} catch (Exception e) {
-			log.error(e.getMessage(),e);
+			log.warn(e.getMessage(),e);
 		}		
 	}
 	private Date getMinutesAgo(Date startDate) {
@@ -120,13 +120,18 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		
 		String cancelOpenOrderTime = businessManager.getCancelPendingOrderTime();	
 		if(StringUtils.hasText(cancelOpenOrderTime)){
-			
-			Date time = timeFormat.parse(cancelOpenOrderTime);
-			Calendar timeCal = Calendar.getInstance();
-			timeCal.setTime(time);
-			cal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
-			cal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
-			cal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
+			try{
+				Date time = timeFormat.parse(cancelOpenOrderTime);		
+				Calendar timeCal = Calendar.getInstance();
+				timeCal.setTime(time);
+				cal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
+				cal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
+				cal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
+			}catch (ParseException e){
+				log.info("cancelOpenOrderTime:{}",cancelOpenOrderTime);
+				log.info(e.getMessage());
+				throw e;
+			}
 		}
 		
 		return cal.getTime();
