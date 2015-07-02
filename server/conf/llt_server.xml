@@ -77,7 +77,16 @@
     <!-- Derby setting -->
     <bean id="derbyPort" class="java.lang.String"><constructor-arg value="1527" /></bean>
 
-
+	<!-- order parameter setting -->
+	
+    <bean id="maximumOrderQuantity" class="java.lang.Double">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="minimumOrderQuantity" class="java.lang.Double">
+        <constructor-arg value="0.0" />
+    </bean>
+    
     <!-- Live Trading -->
     <bean id="stopLiveTradingStartTime" class="java.lang.String">
         <constructor-arg value="2:00:00" />

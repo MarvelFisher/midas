@@ -24,6 +24,9 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 	
 	@Autowired
 	private IRefDataManager refDataManager;	
+	
+	private Double maxQty = 0.0 ;// the 0 means not to check this parameter
+	private Double minQty = 0.0 ;
 
 	@Override
 	public void validate(String field, Object value, Map<String, Object> map,
@@ -38,6 +41,15 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 			
 			if(!PriceUtils.Equal(qty, (double)qty.longValue()))
 				throw new OrderValidationException(field + " must be an integer",ErrorMessage.ORDER_FIELD_MUST_BE_INTEGER);
+			log.info("maxQty :{} , qty:{}",maxQty,qty);
+
+			if(!PriceUtils.isZero(maxQty) && PriceUtils.GreaterThan(qty, (double)maxQty.longValue())){
+				throw new OrderValidationException(field + " exceed maximum number:"+maxQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
+			}
+			log.info("minQty :{} , qty:{}",minQty,qty);
+			if(!PriceUtils.isZero(minQty) && PriceUtils.GreaterThan((double)minQty.longValue(), qty)){
+				throw new OrderValidationException(field + " not met minimum number:"+minQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING);
+			}
 			
 			String symbol = (String)map.get(OrderField.SYMBOL.value());
 			if(symbol == null)
@@ -62,4 +74,19 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 		}
 	}
 	
+	public Double getMaxQty() {
+		return maxQty;
+	}
+
+	public void setMaxQty(Double maxQty) {
+		this.maxQty = maxQty;
+	}
+
+	public Double getMinQty() {
+		return minQty;
+	}
+
+	public void setMinQty(Double minQty) {
+		this.minQty = minQty;
+	}
 }
