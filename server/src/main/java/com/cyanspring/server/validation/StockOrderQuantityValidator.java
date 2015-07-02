@@ -1,5 +1,6 @@
 package com.cyanspring.server.validation;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,7 +15,6 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.validation.OrderValidationException;
 
 public class StockOrderQuantityValidator implements IFieldValidator{
@@ -29,6 +29,12 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 	public void validate(String field, Object value, Map<String, Object> map,
 			ParentOrder order) throws OrderValidationException {
 		try {
+			Iterator <String>ii = map.keySet().iterator();
+			while(ii.hasNext()){
+				String key = ii.next();
+				log.info("key:{} value:{}",key,map.get(key));
+			}
+			
 			Double qty = (Double)value;
 			if(qty == null)
 				throw new OrderValidationException(field + " can not be null",ErrorMessage.ORDER_FIELD_EMPTY);
