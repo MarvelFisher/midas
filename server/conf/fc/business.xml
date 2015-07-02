@@ -68,14 +68,17 @@
 	  			<entry key="Symbol">
 					<bean class="com.cyanspring.server.validation.InstrumentValidator"/>
 				</entry>
-	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
-				</entry>
 	  			<entry key="Dis Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
+						<property name="maxQty" value="0"/>
+						<property name="minQty" value="0"/>
+					</bean>		  			
 				</entry>
 	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
+						<property name="maxQty" value="0"/>
+						<property name="minQty" value="0"/>
+					</bean>
 				</entry>
 	  			<entry key="Start Time">
 					<bean class="com.cyanspring.server.validation.StartTimeValidator"/>
