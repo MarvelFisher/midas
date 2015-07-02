@@ -511,10 +511,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         ChildOrder order = idToOrder.get(id);
         if (null != order) {
-        	if(errorCode == 202 && !order.getOrdStatus().equals(OrdStatus.CANCELED)) {
-        		order.setOrdStatus(OrdStatus.CANCELED);
-                downStreamListener.onOrder(ExecType.CANCELED, order, null,
-                        "IB error: " + errorCode + ", " + errorMsg);
+        	if(errorCode == 202) {
+        		if(!order.getOrdStatus().isCompleted()) {
+	        		order.setOrdStatus(OrdStatus.CANCELED);
+	                downStreamListener.onOrder(ExecType.CANCELED, order, null,
+	                        "IB error: " + errorCode + ", " + errorMsg);
+        		} else {
+        			log.debug("Ignore error code: " + order);
+        		}
         	} else if (order.getOrdStatus().equals(OrdStatus.PENDING_NEW) && 
                 (errorCode == 399 && errorMsg.contains("Warning"))) {
                 order.setOrdStatus(autoStatus(order));
@@ -860,22 +864,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         order.setAvgPx(avgFillPrice);
         order.touch();
 
-        if ((status.equals("Cancelled") || status.equals("ApiCancelled")) && 
-        	((!order.getOrdStatus().equals(OrdStatus.CANCELED))|| oldFilled != filled)) {
-            execType = ExecType.CANCELED;
-            order.setOrdStatus(OrdStatus.CANCELED);
-            downStreamListener.onOrder(execType, order, execution, "");
-            return;
-        } else if (status.equals("Submitted")) {
-            if (order.getOrdStatus().isPending() && oldFilled == filled) {
-                execType = ExecType.pendingChangeToReady(order.getOrdStatus());
-                order.setOrdStatus(OrdStatus.pendingToReady(order
-                        .getOrdStatus()));
-                downStreamListener.onOrder(execType, order, execution, "");
-                return;
-            }
-        }
-
         if (oldFilled != filled) {
             int orderQty = (int) order.getQuantity();
             if (order.getOrdStatus().isPending()) {
@@ -900,13 +888,27 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     .getNextID() + "E", order.getUser(),
                     order.getAccount(), order.getRoute());
             downStreamListener.onOrder(execType, order, execution, "");
-            return;
-        }
-
+        } 
+        
         if (priceHasChanged || qtyHasChanged) {
             order.setOrdStatus(autoStatus(order));
-            downStreamListener.onOrder(ExecType.RESTATED, order, execution, "");
+            downStreamListener.onOrder(ExecType.REPLACE, order, null, "");
+        }
+
+        if ((status.equals("Cancelled") || status.equals("ApiCancelled")) && 
+        	(!order.getOrdStatus().isCompleted() || oldFilled != filled)) {
+            execType = ExecType.CANCELED;
+            order.setOrdStatus(OrdStatus.CANCELED);
+            downStreamListener.onOrder(execType, order, null, "");
             return;
+        } else if (status.equals("Submitted")) {
+            if (order.getOrdStatus().isPending() && oldFilled == filled) {
+                execType = ExecType.pendingChangeToReady(order.getOrdStatus());
+                order.setOrdStatus(OrdStatus.pendingToReady(order
+                        .getOrdStatus()));
+                downStreamListener.onOrder(execType, order, null, "");
+                return;
+            }
         }
 
         log.debug("Not sending update");
