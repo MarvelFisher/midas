@@ -50,11 +50,11 @@ public class OrderQuantityValidator implements IFieldValidator {
 			
 			if(!PriceUtils.Equal(qty, (double)qty.longValue()))
 				throw new OrderValidationException(field + " must be an integer",ErrorMessage.ORDER_FIELD_MUST_BE_INTEGER);
-			log.info("maxQty :{} , qty:{}",maxQty,qty);
+
 			if(!PriceUtils.isZero(maxQty) && PriceUtils.GreaterThan(qty, (double)maxQty.longValue())){
 				throw new OrderValidationException(field + " exceed maximum number:"+maxQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
 			}
-			log.info("minQty :{} , qty:{}",minQty,qty);
+
 			if(!PriceUtils.isZero(minQty) && PriceUtils.GreaterThan((double)minQty.longValue(), qty)){
 				throw new OrderValidationException(field + " not met minimum number:"+minQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING);
 			}
