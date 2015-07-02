@@ -58,6 +58,7 @@ public class StockOrderQuantityValidator implements IFieldValidator{
 		} catch (OrderValidationException e){
 			throw e;
 		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
 			throw new OrderValidationException(field + " has caused exception: " + e.getMessage(),ErrorMessage.VALIDATION_ERROR);
 		}
 	}
