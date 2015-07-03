@@ -54,4 +54,5 @@ public final class WindDef {
     public static final String WARN_TURNOVER_LESS_THAN_ZERO = "QUOTE WARNING : Turnover less than Zero";
     public static final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
+    public static final String ERROR_NO_REFDATA = "QUOTE ERROR : No RefData";
 }

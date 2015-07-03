@@ -10,6 +10,8 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.IRefDataAdaptor;
+import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
@@ -32,8 +34,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class WindGateWayAdapter implements IMarketDataAdaptor,
-        IReqThreadCallback {
+public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, IReqThreadCallback {
 
     private static final Logger log = LoggerFactory
             .getLogger(WindGateWayAdapter.class);
@@ -64,17 +65,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
     protected WindDataParser windDataParser = new WindDataParser();
     public static WindGateWayAdapter instance = null;
 
-    static ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<String, FutureData>();
-    static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<String, StockData>();
-    static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<String, IndexData>();
+    static ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, TransationData> transationDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<String, Quote>(); // LastQuoteData
-    static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<String, DataObject>(); // LastQuoteExt
-    static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<String, MarketSessionData>(); //SaveIndexMarketSession
-    static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<String, String>(); // SaveSymbolRule
-    static ConcurrentHashMap<String, String> commodityBySymbolMap = new ConcurrentHashMap<String, String>(); //Save Commodity
-    HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<String, DataTimeStat>();
+    static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteData
+    static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteExt
+    static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<>(); //SaveIndexMarketSession
+    static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<>(); // SaveSymbolRule
+    static ConcurrentHashMap<String, String> commodityBySymbolMap = new ConcurrentHashMap<>(); //Save Commodity
+    HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<>(); //calculate dataTimeStat
 
     RequestThread thread = null;
     private static final int doConnect = 0;
@@ -161,18 +162,22 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
             case WindDef.MSG_SYS_LOGIN_RESULT:
                 break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
+                CodeTableData codeTableData = null;
                 try {
-                    if(isMsgPack) {
-                        CodeTableData codeTableData = windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap);
-                        if(codeTableData.getCnName().contains("ST") || codeTableData.getSecurityType()>32) return;
-                        log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName() + ",E="
-                                + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
-                                + ",Sp=" + codeTableData.getSpellName());
-                    }
+                    codeTableData = isMsgPack
+                            ? windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap)
+                            : windDataParser.convertToCodeTableData(in_arr, codeTableDataBySymbolMap);
                 }catch (Exception e) {
                     LogUtil.logException(log, e);
                     return;
                 }
+                if (codeTableData == null || codeTableData.getCnName().contains("ST") || codeTableData.getSecurityType() > 32) {
+                    return;
+                }
+                codeTableDataBySymbolMap.put(codeTableData.getWindCode(),codeTableData);
+                log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName() + ",E="
+                        + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
+                        + ",Sp=" + codeTableData.getSpellName());
                 break;
             case WindDef.MSG_SYS_MARKET_CLOSE:
             case WindDef.MSG_SYS_QUOTATIONDATE_CHANGE:
@@ -636,6 +641,16 @@ public class WindGateWayAdapter implements IMarketDataAdaptor,
         StockItem.stockItemBySymbolMap.clear();
         IndexItem.indexItemBySymbolMap.clear();
         ClientHandler.sendClearSubscribe();
+    }
+
+    @Override
+    public void subscribeRefData(IRefDataListener listener) {
+
+    }
+
+    @Override
+    public void unsubscribeRefData(IRefDataListener listener) {
+
     }
 
     @Override

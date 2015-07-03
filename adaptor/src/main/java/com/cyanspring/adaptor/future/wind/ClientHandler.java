@@ -250,12 +250,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
     public static void sendData(String data) {
         if (!WindGateWayAdapter.instance.isMsgPack()) data = data + "\r\n";
         ChannelFuture future = context.channel().writeAndFlush(data);
-        future.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture arg0) throws Exception {
-                LogUtil.logDebug(log, "ChannelFuture operationComplete!");
-            }
-        });
     }
 
     /**
@@ -291,7 +285,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         fsb.append(String.valueOf(fsbhashCode));
 
         LogUtil.logInfo(log, "[RequestCodeTable]%s", fsb.toString());
-//		Util.addLog("[RequestCodeTable]%s", fsb.toString());
         sendData(fsb.toString());
     }
 

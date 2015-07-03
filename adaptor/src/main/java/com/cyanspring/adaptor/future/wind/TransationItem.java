@@ -25,8 +25,6 @@ public class TransationItem implements AutoCloseable {
 
     protected static ConcurrentHashMap<String, TransationItem> transationItemBySymbolMap = new ConcurrentHashMap<>();
     private String symbolId;
-    private long totalVolume = 0;
-    private long volume = 0;
 
     public static TransationItem getItem(String symbolId, boolean enableCreateNew) {
 

@@ -628,6 +628,56 @@ public class WindDataParser extends AbstractWindDataParser {
     }
 
     /**
+     * Parser inputMessage to wind CodeTable Object
+     *
+     * @param inputMessageArray
+     * @param codeTableDataBySymbolMap
+     * @return
+     */
+    public CodeTableData convertToCodeTableData(String[] inputMessageArray, ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap) {
+        CodeTableData codeTableData = null;
+        String key = null;
+        String value = null;
+        String[] kv_arr = null;
+
+        for (String anInputMessageArray : inputMessageArray) {
+            if (anInputMessageArray != null && !"".equals(anInputMessageArray)) {
+                kv_arr = anInputMessageArray.split("=");
+                if (kv_arr.length > 1) {
+                    key = kv_arr[0];
+                    value = kv_arr[1];
+                    if (key.equals("Symbol")) {
+                        if (codeTableDataBySymbolMap.containsKey(value)) {
+                            codeTableData = codeTableDataBySymbolMap.get(value);
+                        } else {
+                            codeTableData = new CodeTableData();
+                            codeTableData.setWindCode(value);
+                        }
+                    }
+                    switch (key) {
+                        case "CNName":
+                            codeTableData.setCnName(value);
+                            codeTableData.setSpellName(WindDataParser.getSpellName(value, true));
+                            break;
+                        case "ShortName":
+                            codeTableData.setShortName(value);
+                            break;
+                        case "SecurityExchange":
+                            codeTableData.setSecurityExchange(value);
+                            break;
+                        case "SecurityType":
+                            codeTableData.setSecurityType(Integer.parseInt(value));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        return codeTableData;
+    }
+
+    /**
      * Parser input HashMap to Wind Transation Object
      *
      * @param inputHashMap
@@ -644,7 +694,6 @@ public class WindDataParser extends AbstractWindDataParser {
             } else {
                 codeTableData = new CodeTableData();
                 codeTableData.setWindCode(symbol);
-                codeTableDataBySymbolMap.put(symbol, codeTableData);
             }
             if (null != inputHashMap.get(FDTFields.CNName)) {
                 String cnName = new String((byte[]) inputHashMap.get(FDTFields.CNName), "UTF-8");
