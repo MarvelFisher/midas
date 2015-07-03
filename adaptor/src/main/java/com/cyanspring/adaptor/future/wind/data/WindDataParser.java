@@ -2,6 +2,7 @@ package com.cyanspring.adaptor.future.wind.data;
 
 
 import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.adaptor.future.wind.WindDef;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
@@ -737,6 +738,9 @@ public class WindDataParser extends AbstractWindDataParser {
                     spellName = spellName + pinyinArray[0] + " ";
                 }
             }
+            if(spellName.contains(WindDef.STOCK_EX_DIVIDENT)) spellName = spellName.replace(WindDef.STOCK_EX_DIVIDENT, "");
+            if(spellName.contains(WindDef.STOCK_EX_RIGHT)) spellName = spellName.replace(WindDef.STOCK_EX_RIGHT, "");
+            if(spellName.contains(WindDef.STOCK_EX_RIGHT_DIVIDENT)) spellName = spellName.replace(WindDef.STOCK_EX_RIGHT_DIVIDENT,"");
         } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
             badHanyuPinyinOutputFormatCombination.printStackTrace();
         }

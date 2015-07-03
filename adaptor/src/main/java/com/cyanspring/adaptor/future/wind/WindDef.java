@@ -34,6 +34,9 @@ public final class WindDef {
     public static final int STOCK_STATUS_STOP_TRAN = (int) 'V';
     public static final int STOCK_STATUS_WAIT_DELETE = (int) 'Z';
     public static final long STOCK_WARNING_MILLISECONDS = 4000;
+    public static final String STOCK_EX_RIGHT = "XR";
+    public static final String STOCK_EX_DIVIDENT = "XD";
+    public static final String STOCK_EX_RIGHT_DIVIDENT = "DR";
 
     //Wind Transation BSFlag field
     public static final int TRANS_BSFLAG_BUY = (int) 'B';
