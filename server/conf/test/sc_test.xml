@@ -234,8 +234,9 @@
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
 
-	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
-	</bean>
+    <bean id="commissionManager" class="com.cyanspring.server.account.StockCommissionManager">
+        <property name="brokerage" value="0.0000487"/>
+    </bean>
 
     <bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler"/>
 
