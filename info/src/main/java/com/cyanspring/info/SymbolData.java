@@ -206,8 +206,8 @@ public class SymbolData implements Comparable<SymbolData>
         try
         {
         	FileWriter fwrite = new FileWriter(strFile + ".Ch");
-        	log.debug(String.format("Cache: D:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));;
-        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));
+        	log.debug(String.format("Cache: D:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));;
+        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));
         	fwrite.flush();
         	fwrite.close();
         	synchronized(priceData)
@@ -291,7 +291,7 @@ public class SymbolData implements Comparable<SymbolData>
 					getdCurHigh(), 
 					getdCurLow(), 
 					getdClose(), 
-					(int)dCurVolume) ;
+					(long)dCurVolume) ;
 			curPrice.setTotalVolume(getdCurTotalVolume());
 			curPrice.setTurnover(getdCurTurnover());
 			
@@ -312,12 +312,19 @@ public class SymbolData implements Comparable<SymbolData>
 				HistoricalPrice newPrice = null;
 				if (listBase != null)
 				{
+					double amountVolume = 0, amountTurnover = 0;
 					newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
 					for (HistoricalPrice price : listBase)
 					{
 						newPrice.update(price);
+						amountVolume += price.getTotalVolume();
+						amountTurnover += price.getTurnover();
 					}
 					newPrice.update(curPrice);
+					amountVolume += curPrice.getTotalVolume();
+					amountTurnover += curPrice.getTurnover();
+					newPrice.setTotalVolume(amountVolume);
+					newPrice.setTurnover(amountTurnover);
 				}
 				else 
 				{
@@ -340,7 +347,7 @@ public class SymbolData implements Comparable<SymbolData>
 											getdCurHigh(),
 											getdCurLow(),
 											getdClose(),
-											(int)dCurVolume);
+											(long)dCurVolume);
 			lastPrice.setTotalVolume(getdCurTotalVolume());
 			lastPrice.setTurnover(getdCurTurnover());
 		}
@@ -651,7 +658,7 @@ public class SymbolData implements Comparable<SymbolData>
 													   getdCurHigh(), 
 													   getdCurLow(), 
 													   getdClose(), 
-													   (int)dCurVolume) ;
+													   (long)dCurVolume) ;
 		curPrice.setTotalVolume(getdCurTotalVolume());
 		curPrice.setTurnover(getdCurTurnover());
 		HistoricalPrice lastPrice = null ;

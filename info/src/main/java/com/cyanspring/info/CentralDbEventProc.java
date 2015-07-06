@@ -104,6 +104,7 @@ public class CentralDbEventProc implements Runnable
 		String endDate = event.getEndDate();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		List<HistoricalPrice> listPrice = null;
+		SymbolData symboldata = centraldb.getChefBySymbol(symbol).getSymbolData(symbol);
 		log.debug("Process Historical Price Request Symbol by Date: " + symbol + " Type: " + type + " Start: " + startDate + " End: " + endDate);
 		
 		try 
@@ -114,7 +115,7 @@ public class CentralDbEventProc implements Runnable
 		{
 			log.warn("Input date format is wrong");
 		}
-		if (listPrice == null)
+		if (listPrice == null || symboldata == null)
 		{
 			retEvent.setOk(false) ;
 //			retEvent.setMessage("Get price list fail");
@@ -129,6 +130,8 @@ public class CentralDbEventProc implements Runnable
 			retEvent.setHistoryType(event.getHistoryType());
 			retEvent.setDataCount(listPrice.size());
 			retEvent.setPriceList(listPrice);
+			retEvent.setCurrentTotalVolume((long) symboldata.getdCurTotalVolume());
+			retEvent.setCurrentTurnover((long) symboldata.getdCurTurnover());
 			centraldb.sendEvent(retEvent) ;
 			log.info("Process Historical Price Request success Symbol: " + listPrice.size());
 			return ;

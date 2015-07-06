@@ -12,6 +12,8 @@ public class HistoricalPriceEvent extends RemoteAsyncEvent  {
 	int dataCount ;
 	private boolean ok ;
 	private String message ;
+	private long currentTotalVolume;
+	private long currentTurnover;
 
 	public HistoricalPriceEvent(String key, String receiver)
 	{
@@ -67,6 +69,18 @@ public class HistoricalPriceEvent extends RemoteAsyncEvent  {
 	}
 	public void setOk(boolean ok) {
 		this.ok = ok;
+	}
+	public long getCurrentTotalVolume() {
+		return currentTotalVolume;
+	}
+	public void setCurrentTotalVolume(long currentTotalVolume) {
+		this.currentTotalVolume = currentTotalVolume;
+	}
+	public long getCurrentTurnover() {
+		return currentTurnover;
+	}
+	public void setCurrentTurnover(long currentTurnover) {
+		this.currentTurnover = currentTurnover;
 	}
 
 }
