@@ -66,6 +66,7 @@
 		<property name="cleanStart" value="false"></property>
 		<property name="todayOnly" value="true"></property>
 		<property name="syncCentralDb" value="false"></property>
+		<property name="useLtsGateway" value="true" />
 	</bean>
 
 	<bean id="preSubscriptionList" class="java.util.ArrayList">

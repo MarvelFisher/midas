@@ -15,14 +15,23 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 	private String market;
 	private boolean existUser;
 
+	private boolean isTransfer = false;
+	private boolean updatedEmail = false;
+
 	@Deprecated
 	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
 								   String org_id, String txId, String thirdPartyId, String market) {
-		this(key, receiver, user, country, language, org_id, txId, thirdPartyId, market, false);
+		this(key, receiver, user, country, language, org_id, txId, thirdPartyId, market, false, false, false);
 	}
 
 	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
 								   String org_id, String txId, String thirdPartyId, String market, boolean existUser) {
+		this(key, receiver, user, country, language, org_id, txId, thirdPartyId, market, existUser, false, false);
+	}
+
+	public UserCreateAndLoginEvent(String key, String receiver, User user, String country, String language,
+								   String org_id, String txId, String thirdPartyId, String market, boolean existUser,
+								   boolean isTransfer, boolean updatedEmail) {
 		super(key, receiver);
 		this.user = user;
 		this.country = country;
@@ -32,6 +41,8 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 		this.thirdPartyId = thirdPartyId;
 		this.market = market;
 		this.existUser = existUser;
+		this.isTransfer = isTransfer;
+		this.updatedEmail = updatedEmail;
 		setPriority(EventPriority.HIGH);
 	}
 	
@@ -66,5 +77,13 @@ public class UserCreateAndLoginEvent extends RemoteAsyncEvent {
 
 	public boolean isExistUser() {
 		return existUser;
+	}
+
+	public boolean isTransfer() {
+		return isTransfer;
+	}
+
+	public boolean isUpdatedEmail() {
+		return updatedEmail;
 	}
 }
