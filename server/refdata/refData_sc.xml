@@ -60875,240 +60875,6244 @@
 	      </entry>
 	    </fields>
 	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300355.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>蒙草抗旱</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>蒙草抗旱</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Inner Mongolia Hotision and Monsod Drought Resistance Greening Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>mckh</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300347.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>泰格醫藥</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>泰格医药</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hangzhou Tigermed Consulting Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>tgyy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300336.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>新文化</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>新文化</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shanghai New Culture Media Group Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>xwh</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300332.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>天壕節能</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>天壕节能</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Top Resource Conservation Engineering Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>thjn</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300315.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>掌趣科技</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>掌趣科技</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Ourpalm Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>zqkj</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300307.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>慈星股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>慈星股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Ningbo Cixing Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>cxgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300303.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>聚飛光電</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>聚飞光电</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shenzhen Jufei Optoelectronics Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>jfgd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300298.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>三諾生物</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>三诺生物</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Sinocare Inc.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>snsw</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300297.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>藍盾股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>蓝盾股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Bluedon Information Security Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ldgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300295.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>三六五網</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>三六五网</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Everyday Network Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>slww</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300291.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>華錄百納</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>华录百纳</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Hualubaina Film and TV Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hlbn</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300274.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>陽光電源</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>阳光电源</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Sungrow Power Supply Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ygdy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300267.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>爾康制藥</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>尔康制药</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hunan Er-kang Pharmaceutical Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ekzy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300262.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>巴安水務</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>巴安水务</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shanghai Safbon Water Service Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>basw</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300257.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>開山股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>开山股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Zhejiang Kaishan Compressor Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ksgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300244.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>迪安診斷</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>迪安诊断</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Zhejiang Dian Diagnostics Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>dazd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300238.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>冠昊生物</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>冠昊生物</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Guanhao Biotech Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ghsw</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300228.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>富瑞特裝</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>富瑞特装</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Zhangjiagang Furui Special Equipment Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>frtz</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300226.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>上海鋼聯</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>上海钢联</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shanghai Ganglian E-commerce Holdings Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>shgl</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300223.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>北京君正</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>北京君正</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Ingenic Semiconductor Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>bjjz</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300215.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>電科院</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>电科院</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Suzhou Electrical Apparatus Science Academy Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>dky</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300212.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>易華錄</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>易华录</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing E-hualu Info Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>yhl</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300207.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>欣旺達</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>欣旺达</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Sunwoda Electronic Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>xwd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300205.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>天喻信息</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>天喻信息</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Wuhan Tianyu Information Industry Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>tyxx</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300204.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>舒泰神</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>舒泰神</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Staidson (Beijing) Biopharmaceuticals Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>sts</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300203.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>聚光科技</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>聚光科技</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Focused Photonics (Hangzhou) , Inc.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>jgkj</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300199.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>翰宇藥業</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>翰宇药业</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hybio Pharmaceutical Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hyyy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300197.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>鐵漢生態</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>铁汉生态</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shenzhen Techand Ecology and Environment Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>thst</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300187.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>永清環保</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>永清环保</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Yonker Environmental Protection Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>yqhb</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300185.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>通裕重工</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>通裕重工</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Tongyu Heavy Industry Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>tyzg</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300183.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>東軟載波</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>东软载波</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Qingdao Eastsoft Communication Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>drzb</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300182.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>捷成股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>捷成股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Jetsen Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>jcgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300181.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>佐力藥業</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>佐力药业</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Zhejiang Jolly Pharmaceutical Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>zlyy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300177.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>中海達</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>中海达</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Guangzhou Hi-target Navigation Tech Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>zhd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300171.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>東富龍</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>东富龙</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shanghai Tofflon Science and Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>dfl</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300170.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>漢得信息</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>汉得信息</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hand Enterprise Solutions Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hdxx</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300157.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>恒泰艾普</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>恒泰艾普</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Landocean Energy Services Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>htap</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300152.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>燃控科技</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>燃控科技</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Xuzhou Combustion Control Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>rkkj</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300148.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>天舟文化</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>天舟文化</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Tangel Culture Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>tzwh</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300142.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>沃森生物</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>沃森生物</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Walvax Biotechnology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>wssw</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300137.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>先河環保</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>先河环保</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hebei Sailhero Environmental Protection High-tech Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>xhhb</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300128.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>錦富新材</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>锦富新材</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Suzhou Jinfu New Material Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>jfxc</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300122.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>智飛生物</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>智飞生物</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Chongqing Zhifei Biological Products Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>zfsw</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300118.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>東方日升</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>东方日升</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Risen Energy Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>dfrs</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300113.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>順網科技</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>顺网科技</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hangzhou Shunwang Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>swkj</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300105.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>龍源技術</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>龙源技术</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Yantai Longyuan Power Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>lyjs</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300101.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>振芯科技</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>振芯科技</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Chengdu CORPRO Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>zxkj</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300096.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>易聯眾</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>易联众</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>YLZ Information Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ylz</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300090.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>盛運股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>盛运股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Anhui Shengyun Environment-Protection Group Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>sygf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300083.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>勁勝精密</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>劲胜精密</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Janus (Dongguan) Precision Components Company Limited</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>jsjm</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300079.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>數碼視訊</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>数码视讯</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Sumavision Technologies Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>smsx</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300077.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>國民技術</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>国民技术</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Nationz Technologies Inc.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>gmjs</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300075.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>數字政通</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>数字政通</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Egova Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>szzt</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300074.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>華平股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>华平股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Avcon Information Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hpgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300072.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>三聚環保</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>三聚环保</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Sanju Environmental Protection and New Materials Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>sjhb</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300071.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>華誼嘉信</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>华谊嘉信</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Spearhead Integrated Marketing Communication Group</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hyjx</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300068.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>南都電源</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>南都电源</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Zhejiang Narada Power Source Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>nddy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300057.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>萬順股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>万顺股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shantou Wanshun Package Material Stock Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>wsgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300056.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>三維絲</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>三维丝</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Xiamen Savings Environmental Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>sws</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300055.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>萬邦達</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>万邦达</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Water Business Doctor Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>wbd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300054.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>鼎龍股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>鼎龙股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hubei Dinglong Chemical Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>dlgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300052.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>中青寶</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>中青宝</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shenzhen Zhongqingbao Interaction Network Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>zqb</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300045.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>華力創通</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>华力创通</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Hwa Create Corporation</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hlct</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300044.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>賽為智能</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>赛为智能</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shenzhen Sunwin Intelligent Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>swzn</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300043.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>互動娛樂</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>互动娱乐</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Rastar Group</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hdyl</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300037.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>新宙邦</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>新宙邦</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Shenzhen Capchem Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>xzb</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300034.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>鋼研高納</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>钢研高纳</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Cisri-gaona Materials and Technology Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>gygn</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300032.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>金龍機電</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>金龙机电</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Jinlong Machinery and Electronic Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>jljd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300026.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>紅日藥業</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>红日药业</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Tianjin Chasesun Pharmaceutical Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hryy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300020.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>銀江股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>银江股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Enjoyor Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>yjgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300014.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>億緯鋰能</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>亿纬锂能</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>EVE Energy Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>ywln</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300012.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>華測檢測</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>华测检测</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Centre Testing International Group Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>hcjc</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300009.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>安科生物</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>安科生物</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Anhui Anke Biotechnology (Group) Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>aksw</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300006.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>萊美藥業</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>莱美药业</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Chongqing Lummy Pharmaceutical Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>lmyy</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300005.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>探路者</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>探路者</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Toread Outdoor Products Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>tlz</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300004.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>南風股份</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>南风股份</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Nanfang Ventilator Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>nfgf</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300003.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>樂普醫療</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>乐普医疗</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Lepu Medical Technology (Beijing) Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>lpyl</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300002.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>神州泰岳</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>神州泰岳</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Beijing Ultrapower Software Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>szty</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+	    <fields>
+	     <entry>
+	        <string>Decimal point</string>
+	        <int>2</int>
+	     </entry>
+	     <entry>
+	        <string>Lot size</string>
+	        <int>100</int>
+	     </entry>
+	     <entry>
+	        <string>Limit maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Market maximum lot</string>
+	        <int>1000000</int>
+	     </entry>
+	     <entry>
+	        <string>Maximum hold</string>
+	        <int>0</int>
+	     </entry>
+		 <entry>
+	        <string>Margin Rate</string>
+	       	<double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Symbol</string>
+	        <string>300001.SZ</string>
+	      </entry>
+	      <entry>
+	        <string>TWName</string>
+	        <string>特銳德</string>
+	      </entry>
+	      <entry>
+	        <string>CNName</string>
+	        <string>特锐德</string>
+	      </entry>
+	      <entry>
+	        <string>ENName</string>
+	        <string>Qingdao Tgood Electric Co., Ltd.</string>
+	      </entry>
+	      <entry>
+	        <string>Exchange</string>
+	        <string>SZ</string>
+	      </entry>
+		  	<entry>
+	        <string>Category</string>
+	        <string>A</string>
+	      </entry>
+		  	<entry>
+	        <string>Spell name</string>
+	        <string>trd</string>
+	      </entry>
+	      <entry>
+	        <string>Tradable</string>
+	        <string>1</string>
+	      </entry>
+	      <entry>
+	        <string>Commodity</string>
+	        <string>S</string>
+	      </entry>
+	      <entry>
+	        <string>Price per unit</string>
+	        <double>1.0</double>
+	      </entry>
+	      <entry>
+	        <string>Strategy</string>
+	        <string>STOCK</string>
+	      </entry>
+	      <entry>
+	        <string>Tick table</string>
+	        <string>SC</string>
+	      </entry>
+	    </fields>
+	</com.cyanspring.common.staticdata.RefData>
 			<com.cyanspring.common.staticdata.RefData>
-		     <fields>
-		      <entry>
-		         <string>Decimal point</string>
-		         <int>2</int>
-		      </entry>
-		      <entry>
-		         <string>Lot size</string>
-		         <int>0</int>
-		      </entry>
-		      <entry>
-		         <string>Limit maximum lot</string>
-		         <int>1000000</int>
-		      </entry>
-		      <entry>
-		         <string>Market maximum lot</string>
-		         <int>1000000</int>
-		      </entry>
-		      <entry>
-		         <string>Maximum hold</string>
-		         <int>0</int>
-		      </entry>
-		  		<entry>
-		         <string>Margin Rate</string>
-		         <double>0</double>
-		       </entry>
-		       <entry>
-		         <string>Symbol</string>
-		         <string>399001.SZ</string>
-		       </entry>
-		       <entry>
-		         <string>TWName</string>
-		         <string>深證成指</string>
-		       </entry>
-		       <entry>
-		         <string>CNName</string>
-		         <string>深证成指</string>
-		       </entry>
-		       <entry>
-		         <string>ENName</string>
-		         <string></string>
-		       </entry>
-		       <entry>
-		         <string>Exchange</string>
-		         <string>SZ</string>
-		       </entry>
-		     	 <entry>
-		         <string>Category</string>
-		         <string>INDEX</string>
-		       </entry>
-		     	 <entry>
-		         <string>Spell name</string>
-		         <string></string>
-		       </entry>
-		       <entry>
-		        <string>Tradable</string>
-		        <string>0</string>
-		      </entry>
-		      <entry>
-	        	<string>Commodity</string>
-	        	<string>I</string>
-	     	  </entry>
-	     	  <entry>
-       			<string>Price per unit</string>
-        		<double>1.0</double>
-      		</entry>
-      		<entry>
-        			<string>Strategy</string>
-        			<string>INDEX</string>
-      		</entry>
-      		<entry>
-        			<string>Tick table</string>
-        			<string>SC</string>
-     			</entry>
-		     </fields>
-		 </com.cyanspring.common.staticdata.RefData>
-		 <com.cyanspring.common.staticdata.RefData>
-		     <fields>
-		      <entry>
-		         <string>Decimal point</string>
-		         <int>2</int>
-		      </entry>
-		      <entry>
-		         <string>Lot size</string>
-		         <int>0</int>
-		      </entry>
-		      <entry>
-		         <string>Limit maximum lot</string>
-		         <int>1000000</int>
-		      </entry>
-		      <entry>
-		         <string>Market maximum lot</string>
-		         <int>1000000</int>
-		      </entry>
-		      <entry>
-		         <string>Maximum hold</string>
-		         <int>0</int>
-		      </entry>
-		      <entry>
-		        <string>Tradable</string>
-		        <string>0</string>
-		      </entry>
-		      <entry>
-	        	<string>Commodity</string>
-	        	<string>S</string>
-	     	  </entry>
-		   <entry>
-		         <string>Margin Rate</string>
-		         <double>0</double>
-		       </entry>
-		       <entry>
-		         <string>Symbol</string>
-		         <string>399006.SZ</string>
-		       </entry>
-		       <entry>
-		         <string>TWName</string>
-		         <string>創業板指</string>
-		       </entry>
-		       <entry>
-		         <string>CNName</string>
-		         <string>创业板指</string>
-		       </entry>
-		       <entry>
-		         <string>ENName</string>
-		         <string></string>
-		       </entry>
-		       <entry>
-		         <string>Exchange</string>
-		         <string>SZ</string>
-		       </entry>
-		       <entry>
-		         <string>Category</string>
-		         <string>INDEX</string>
-		       </entry>
-		       <entry>
-		         <string>Spell name</string>
-		         <string></string>
-		       </entry>
-		      <entry>
-		        <string>Tradable</string>
-		        <string>0</string>
-		      </entry>
-		      <entry>
-	        	<string>Commodity</string>
-	        	<string>I</string>
-	     	  </entry>
-	     	  <entry>
-       			<string>Price per unit</string>
-        		<double>1.0</double>
-      		</entry>
-      		<entry>
-        			<string>Strategy</string>
-        			<string>INDEX</string>
-      		</entry>
-      		<entry>
-        			<string>Tick table</string>
-        			<string>SC</string>
-     			</entry>
-		     </fields>
-		 </com.cyanspring.common.staticdata.RefData>
-		 <com.cyanspring.common.staticdata.RefData>
-		     <fields>
-		      <entry>
-		         <string>Decimal point</string>
-		         <int>2</int>
-		      </entry>
-		      <entry>
-		         <string>Lot size</string>
-		         <int>0</int>
-		      </entry>
-		      <entry>
-		         <string>Limit maximum lot</string>
-		         <int>1000000</int>
-		      </entry>
-		      <entry>
-		         <string>Market maximum lot</string>
-		         <int>1000000</int>
-		      </entry>
-		      <entry>
-		         <string>Maximum hold</string>
-		         <int>0</int>
-		      </entry>
-		   		<entry>
-		         <string>Margin Rate</string>
-		         <double>0</double>
-		       </entry>
-		       <entry>
-		         <string>Symbol</string>
-		         <string>399300.SZ</string>
-		       </entry>
-		       <entry>
-		         <string>TWName</string>
-		         <string>滬深300</string>
-		       </entry>
-		       <entry>
-		         <string>CNName</string>
-		         <string>沪深300</string>
-		       </entry>
-		       <entry>
-		         <string>ENName</string>
-		         <string></string>
-		       </entry>
-		       <entry>
-		         <string>Exchange</string>
-		         <string>SZ</string>
-		       </entry>
-		     	 <entry>
-		         <string>Category</string>
-		         <string>INDEX</string>
-		       </entry>
-		     	 <entry>
-		         <string>Spell name</string>
-		         <string></string>
-		       </entry>
-		      <entry>
-		        <string>Tradable</string>
-		        <string>0</string>
-		      </entry>
-		      <entry>
-	        	<string>Commodity</string>
-	        	<string>I</string>
-	     	  </entry>
-	     	  <entry>
-       			<string>Price per unit</string>
-        		<double>1.0</double>
-      		</entry>
-      		<entry>
-        			<string>Strategy</string>
-        			<string>INDEX</string>
-      		</entry>
-      		<entry>
-        			<string>Tick table</string>
-        			<string>SC</string>
-     			</entry>
-		     </fields>
-		 </com.cyanspring.common.staticdata.RefData>
+			     <fields>
+			      <entry>
+			         <string>Decimal point</string>
+			         <int>2</int>
+			      </entry>
+			      <entry>
+			         <string>Lot size</string>
+			         <int>0</int>
+			      </entry>
+			      <entry>
+			         <string>Limit maximum lot</string>
+			         <int>1000000</int>
+			      </entry>
+			      <entry>
+			         <string>Market maximum lot</string>
+			         <int>1000000</int>
+			      </entry>
+			      <entry>
+			         <string>Maximum hold</string>
+			         <int>0</int>
+			      </entry>
+			  		<entry>
+			         <string>Margin Rate</string>
+			         <double>0</double>
+			       </entry>
+			       <entry>
+			         <string>Symbol</string>
+			         <string>399001.SZ</string>
+			       </entry>
+			       <entry>
+			         <string>TWName</string>
+			         <string>深證成指</string>
+			       </entry>
+			       <entry>
+			         <string>CNName</string>
+			         <string>深證成指</string>
+			       </entry>
+			       <entry>
+			         <string>ENName</string>
+			         <string></string>
+			       </entry>
+			       <entry>
+			         <string>Exchange</string>
+			         <string>SZ</string>
+			       </entry>
+			     	 <entry>
+			         <string>Category</string>
+			         <string>INDEX</string>
+			       </entry>
+			     	 <entry>
+			         <string>Spell name</string>
+			         <string></string>
+			       </entry>
+			       <entry>
+			        <string>Tradable</string>
+			        <string>0</string>
+			      </entry>
+			      <entry>
+		        	<string>Commodity</string>
+		        	<string>I</string>
+		     	  </entry>
+		     	  <entry>
+	       			<string>Price per unit</string>
+	        		<double>1.0</double>
+	      		</entry>
+	      		<entry>
+	        			<string>Strategy</string>
+	        			<string>INDEX</string>
+	      		</entry>
+	      		<entry>
+	        			<string>Tick table</string>
+	        			<string>SC</string>
+	     			</entry>
+			     </fields>
+			 </com.cyanspring.common.staticdata.RefData>
+			 <com.cyanspring.common.staticdata.RefData>
+			     <fields>
+			      <entry>
+			         <string>Decimal point</string>
+			         <int>2</int>
+			      </entry>
+			      <entry>
+			         <string>Lot size</string>
+			         <int>0</int>
+			      </entry>
+			      <entry>
+			         <string>Limit maximum lot</string>
+			         <int>1000000</int>
+			      </entry>
+			      <entry>
+			         <string>Market maximum lot</string>
+			         <int>1000000</int>
+			      </entry>
+			      <entry>
+			         <string>Maximum hold</string>
+			         <int>0</int>
+			      </entry>
+			      <entry>
+			        <string>Tradable</string>
+			        <string>0</string>
+			      </entry>
+			      <entry>
+		        	<string>Commodity</string>
+		        	<string>S</string>
+		     	  </entry>
+			   <entry>
+			         <string>Margin Rate</string>
+			         <double>0</double>
+			       </entry>
+			       <entry>
+			         <string>Symbol</string>
+			         <string>399006.SZ</string>
+			       </entry>
+			       <entry>
+			         <string>TWName</string>
+			         <string>創業板指</string>
+			       </entry>
+			       <entry>
+			         <string>CNName</string>
+			         <string>創業板指</string>
+			       </entry>
+			       <entry>
+			         <string>ENName</string>
+			         <string></string>
+			       </entry>
+			       <entry>
+			         <string>Exchange</string>
+			         <string>SZ</string>
+			       </entry>
+			       <entry>
+			         <string>Category</string>
+			         <string>INDEX</string>
+			       </entry>
+			       <entry>
+			         <string>Spell name</string>
+			         <string></string>
+			       </entry>
+			      <entry>
+			        <string>Tradable</string>
+			        <string>0</string>
+			      </entry>
+			      <entry>
+		        	<string>Commodity</string>
+		        	<string>I</string>
+		     	  </entry>
+		     	  <entry>
+	       			<string>Price per unit</string>
+	        		<double>1.0</double>
+	      		</entry>
+	      		<entry>
+	        			<string>Strategy</string>
+	        			<string>INDEX</string>
+	      		</entry>
+	      		<entry>
+	        			<string>Tick table</string>
+	        			<string>SC</string>
+	     			</entry>
+			     </fields>
+			 </com.cyanspring.common.staticdata.RefData>
+			 <com.cyanspring.common.staticdata.RefData>
+			     <fields>
+			      <entry>
+			         <string>Decimal point</string>
+			         <int>2</int>
+			      </entry>
+			      <entry>
+			         <string>Lot size</string>
+			         <int>0</int>
+			      </entry>
+			      <entry>
+			         <string>Limit maximum lot</string>
+			         <int>1000000</int>
+			      </entry>
+			      <entry>
+			         <string>Market maximum lot</string>
+			         <int>1000000</int>
+			      </entry>
+			      <entry>
+			         <string>Maximum hold</string>
+			         <int>0</int>
+			      </entry>
+			   		<entry>
+			         <string>Margin Rate</string>
+			         <double>0</double>
+			       </entry>
+			       <entry>
+			         <string>Symbol</string>
+			         <string>399300.SZ</string>
+			       </entry>
+			       <entry>
+			         <string>TWName</string>
+			         <string>滬深300</string>
+			       </entry>
+			       <entry>
+			         <string>CNName</string>
+			         <string>滬深300</string>
+			       </entry>
+			       <entry>
+			         <string>ENName</string>
+			         <string></string>
+			       </entry>
+			       <entry>
+			         <string>Exchange</string>
+			         <string>SZ</string>
+			       </entry>
+			     	 <entry>
+			         <string>Category</string>
+			         <string>INDEX</string>
+			       </entry>
+			     	 <entry>
+			         <string>Spell name</string>
+			         <string></string>
+			       </entry>
+			      <entry>
+			        <string>Tradable</string>
+			        <string>0</string>
+			      </entry>
+			      <entry>
+		        	<string>Commodity</string>
+		        	<string>I</string>
+		     	  </entry>
+		     	  <entry>
+	       			<string>Price per unit</string>
+	        		<double>1.0</double>
+	      		</entry>
+	      		<entry>
+	        			<string>Strategy</string>
+	        			<string>INDEX</string>
+	      		</entry>
+	      		<entry>
+	        			<string>Tick table</string>
+	        			<string>SC</string>
+	     			</entry>
+			     </fields>
+			 </com.cyanspring.common.staticdata.RefData>
 </list>
