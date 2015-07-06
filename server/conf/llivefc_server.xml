@@ -78,7 +78,11 @@
 
 	<!-- order parameter setting -->
 	
-    <bean id="maximumOrderQuantity" class="java.lang.Double">
+    <bean id="marketMaximumOrderQuantity" class="java.lang.Double">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="limitMaximumOrderQuantity" class="java.lang.Double">
         <constructor-arg value="0.0" />
     </bean>
     

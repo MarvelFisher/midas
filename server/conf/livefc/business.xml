@@ -65,18 +65,20 @@
                 <entry key="Symbol">
                     <bean class="com.cyanspring.server.validation.InstrumentValidator"/>
                 </entry>
-                <entry key="Dis Qty">
- 					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
-						<property name="maxQty" ref="maximumOrderQuantity"/>
+	  			<entry key="Dis Qty">
+					<bean class="com.cyanspring.server.validation.FutureOrderQuantityValidator">
+						<property name="marketMaxQty" ref="marketMaximumOrderQuantity"/>
+						<property name="limitMaxQty" ref="limitMaximumOrderQuantity"/>
+						<property name="minQty" ref="minimumOrderQuantity"/>
+					</bean>		  			
+				</entry>
+	  			<entry key="Qty">
+					<bean class="com.cyanspring.server.validation.FutureOrderQuantityValidator">
+						<property name="marketMaxQty" ref="marketMaximumOrderQuantity"/>
+						<property name="limitMaxQty" ref="limitMaximumOrderQuantity"/>
 						<property name="minQty" ref="minimumOrderQuantity"/>
 					</bean>
-                </entry>
-                <entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
-						<property name="maxQty" ref="maximumOrderQuantity"/>
-						<property name="minQty" ref="minimumOrderQuantity"/>
-					</bean>
-                </entry>
+				</entry>
                 <entry key="Start Time">
                     <bean class="com.cyanspring.server.validation.StartTimeValidator"/>
                 </entry>

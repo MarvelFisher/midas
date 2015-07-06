@@ -69,14 +69,16 @@
 					<bean class="com.cyanspring.server.validation.InstrumentValidator"/>
 				</entry>
 	  			<entry key="Dis Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
-						<property name="maxQty" value="0"/>
+					<bean class="com.cyanspring.server.validation.FutureOrderQuantityValidator">
+						<property name="marketMaxQty" value="50"/>
+						<property name="limitMaxQty" value="100"/>
 						<property name="minQty" value="0"/>
 					</bean>		  			
 				</entry>
 	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
-						<property name="maxQty" value="0"/>
+					<bean class="com.cyanspring.server.validation.FutureOrderQuantityValidator">
+						<property name="marketMaxQty" value="50"/>
+						<property name="limitMaxQty" value="100"/>
 						<property name="minQty" value="0"/>
 					</bean>
 				</entry>
