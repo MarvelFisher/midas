@@ -9,6 +9,6 @@ import com.cyanspring.common.staticdata.RefData;
 public interface IRefDataStrategy {
 	public void init(Calendar cal);
     public boolean update(Calendar tradeDate);
-    public void setExchangeRefData(RefData refData);
+    public void updateRefData(RefData refData);
     public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil);
 }
