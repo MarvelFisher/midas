@@ -11,10 +11,12 @@
 package com.cyanspring.common;
 
 import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.business.util.GenericDataConverter;
+import com.cyanspring.common.cstw.auth.IAuthChecker;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.transport.IObjectTransportService;
@@ -29,6 +31,9 @@ public class BeanHolder {
 
 	@Autowired
 	IRemoteEventManager eventManager;
+	
+	@Autowired
+	IAuthChecker	authManager;
 	
 	@Autowired
 	@Qualifier("alertColorConfig")
@@ -75,5 +80,8 @@ public class BeanHolder {
 		this.loginRequired = loginRequired;
 	}
 	
+	public IAuthChecker getAuthManager() {
+		return authManager;
+	}
 
 }

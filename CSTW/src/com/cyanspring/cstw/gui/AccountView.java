@@ -41,7 +41,6 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
-import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.ActiveAccountReplyEvent;
 import com.cyanspring.common.event.account.ActiveAccountRequestEvent;
@@ -77,6 +76,14 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createManualRefreshAction;
 	private Action createSearchIdAction;
 	private Action createActiveAccountAction;
+	private Action createGroupManagementAction;
+	private GroupManagementDialog createGroupDialog;
+	private final String ID_CREATE_USER_ACTION = "CREATE_USER"; 
+	private final String ID_COUNT_ACCOUNT_ACTION = "COUNT_ACCOUNT";
+	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
+	private final String ID_SEARCH_ID_ACTION = "SEARCH_ID";
+	private final String ID_ACTIVE_ACCOUNT_ACTION = "ACTIVE_ACCOUNT";
+	private final String ID_GROUP_MANAGEMENT_ACTION = "GROUP_MANAGEMENT";
 	private Composite searchBarComposite;
 	private GridData gd_searchBar;
 	private Text searchText;
@@ -97,6 +104,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void createPartControl(Composite parent) {
 		log.info("Creating account view");
+		
 		// create ImageRegistery
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		parentComposite = parent;
@@ -160,6 +168,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createResetAccountAction(parent);
 		createActiveAccountAction(parent);
 		createSearchIdAction(parent);
+		//createGroupManagementAction(parent);
 		if (Business.getInstance().isFirstServerReady())
 			sendSubscriptionRequest(Business.getInstance().getFirstServer());
 		else
@@ -172,6 +181,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	}
 	
+
+
 	private void initSearchBar(Composite parent) {
 		searchBarComposite = new Composite(parent, SWT.NONE);
 		gd_searchBar = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -216,7 +227,26 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		}
 
 	}
+	private void createGroupManagementAction(Composite parent) {
 
+		createGroupDialog = new GroupManagementDialog(parent.getShell());
+		// create local toolbars
+		createGroupManagementAction = new Action() {
+			public void run() {
+				createGroupDialog.open();
+			}
+		};
+		createGroupManagementAction.setId(ID_GROUP_MANAGEMENT_ACTION);
+		createGroupManagementAction.setText("Group Management");
+		createGroupManagementAction.setToolTipText("Group Management");
+		
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PEOPLE_ICON.toString());
+		createGroupManagementAction.setImageDescriptor(imageDesc);
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createGroupManagementAction);
+		
+	}
 	private void createManualRefreshToggleAction(final Composite parent) {
 
 		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
@@ -230,7 +260,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 			}
 		};
-		
+		createManualRefreshAction.setId(ID_MANUAL_REFRESH_ACTION);
 		createManualRefreshAction.setChecked(false);		
 		createManualRefreshAction.setText("AutoRefresh");
 		createManualRefreshAction.setToolTipText("AutoRefresh");
@@ -251,6 +281,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				createUserDialog.open();
 			}
 		};
+		createUserAction.setId(ID_CREATE_USER_ACTION);
 		createUserAction.setText("Creat a user & account");
 		createUserAction.setToolTipText("Create a user & account");
 
@@ -260,6 +291,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createUserAction);
+		
 	}
 	
 	private void showMessageBox(final String msg, Composite parent){
@@ -302,6 +334,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 		};
+		createActiveAccountAction.setId(ID_ACTIVE_ACCOUNT_ACTION);
 		createActiveAccountAction.setText("Active Account");
 		createActiveAccountAction.setToolTipText("Active Account");
 
@@ -323,6 +356,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				messageBox.open();
 			}
 		};
+		createCountAccountAction.setId(ID_COUNT_ACCOUNT_ACTION);
 		createCountAccountAction.setText("Check number of accounts");
 		createCountAccountAction.setToolTipText("Check number of accounts");
 
@@ -400,6 +434,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				parent.layout();
 			}
 		};
+		createSearchIdAction.setId(ID_SEARCH_ID_ACTION);
 		createSearchIdAction.setToolTipText("Search Id from table");
 		ImageDescriptor imageDesc = imageRegistry
 				.getDescriptor(ImageID.FILTER_ICON.toString());
@@ -439,8 +474,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void sendSubscriptionRequest(String server) {
-		if (Business.getInstance().isLoginRequired())
-			return;
+		
 		Business.getInstance().getEventManager()
 				.subscribe(AccountUpdateEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -534,7 +568,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void processAccountUpdate(Account account) {
-		accounts.put(account.getId(), account);
+		if(Business.getInstance().isManagee(account.getId())){
+			accounts.put(account.getId(), account);
+		}
 		show = true;
 	}
 
@@ -545,7 +581,10 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
 			for (Account account : evt.getAccounts()) {
-				accounts.put(account.getId(), account);
+				log.info("account id:{}",account.getId());
+				if(Business.getInstance().isManagee(account.getId())){
+					accounts.put(account.getId(), account);
+				}
 			}
 			log.info("Loaded accounts: " + evt.getAccounts().size());
 			show = true;

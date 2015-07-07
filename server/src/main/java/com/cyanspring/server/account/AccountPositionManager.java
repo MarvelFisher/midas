@@ -9,12 +9,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+
+import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
@@ -30,8 +34,10 @@ import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
+import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEventMultiProcessor;
@@ -54,25 +60,33 @@ import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateAccountEvent;
 import com.cyanspring.common.event.account.CreateAccountReplyEvent;
+import com.cyanspring.common.event.account.CreateGroupManagementEvent;
+import com.cyanspring.common.event.account.CreateGroupManagementReplyEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
+import com.cyanspring.common.event.account.GroupManageeReplyEvent;
+import com.cyanspring.common.event.account.GroupManageeRequestEvent;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
+import com.cyanspring.common.event.account.PmCreateGroupManagementEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
+import com.cyanspring.common.event.account.PmUpdateUserEvent;
 import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
@@ -109,7 +123,6 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
-import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
@@ -219,6 +232,9 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(SettlementEvent.class, null);
             subscribeToEvent(AccountStateRequestEvent.class,null);
             subscribeToEvent(ActiveAccountRequestEvent.class,null);
+            subscribeToEvent(CreateGroupManagementEvent.class,null);
+            subscribeToEvent(GroupManageeRequestEvent.class,null);
+            subscribeToEvent(CSTWUserLoginEvent.class,null);
         }
 
         @Override
@@ -582,7 +598,127 @@ public class AccountPositionManager implements IPlugin {
         }
         log.info("User created in cache: " + event.getUser().getId());
     }
-
+    
+    public void processCSTWUserLoginEvent(CSTWUserLoginEvent event){
+    	log.info("processCSTWUserLoginEvent");
+    	String id = event.getId();
+    	String pwd = event.getPassword();
+    	boolean isOk = false;
+    	String message = "";
+    	UserGroup userGroup = null;
+    	try{
+	    	if(!StringUtils.hasText(id) || !StringUtils.hasText(pwd)){
+        		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}else{
+	    		id = id.toLowerCase().trim();
+	    	}
+	    	
+	    	if( null == userKeeper.getUser(id) ){
+        		throw new UserException("id not exist",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
+	    	
+	    	User user = userKeeper.getUser(id);
+	    	if(!pwd.equals(user.getPassword())){
+        		throw new UserException("wrong password!",ErrorMessage.CSTW_LOGIN_FAILED); 
+	    	}
+	    	
+	    	if(!StringUtils.hasText(message))
+	    		isOk =true;
+		    	
+	    	userGroup = userKeeper.getUserGroup(id);
+	    		
+	    	if( null == userGroup ){
+	    		userGroup = new UserGroup(id,user.getRole());
+	    	}
+	    		
+	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());			
+			user.setLastLogin(Clock.getInstance().now());
+			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));			    	 	
+    	
+    	}catch(UserException e){
+    		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage()); 
+    		log.info("CSTW Login fail:{} - {}",id,message);
+    	}
+    		
+		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup);
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
+		}
+    }
+    
+    public void processGroupManageeRequestEvent(GroupManageeRequestEvent event){
+    	String manager = event.getManager();
+    	boolean isOk = true;
+    	String message = "";
+    	try{
+        	if(!StringUtils.hasText(manager)){
+        		throw new UserException("Manager is empty",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+        	}
+    		if( null == userKeeper.getUser(manager) ){
+    			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+    		}
+    		if( null == userKeeper.getUserGroup(manager) ){
+    			throw new UserException("this user doesn't have any group",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+    		}
+    	}catch(UserException e){
+    		isOk = false;
+			message = MessageLookup.buildEventMessage(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, e.getLocalizedMessage());
+			log.info(message);
+    	} 
+    	
+		Set <UserGroup>manageeSet = null;
+		if(isOk)
+			manageeSet = userKeeper.getUserGroup(manager).getManageeSet();
+				
+		GroupManageeReplyEvent reply = new GroupManageeReplyEvent(event.getKey(),event.getSender(),isOk,message,manageeSet);
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
+		}
+    }
+    public void processCreateGroupManagementEvent(CreateGroupManagementEvent event){
+    	List<GroupManagement> groupList = event.getGroupManagementList();
+    	List<GroupManagement> successList = new ArrayList<GroupManagement>();
+    	Map <GroupManagement,String> resultMap = new HashMap<GroupManagement,String>();
+    	boolean isOk = true;
+    	String message = "";
+    	if( null != userKeeper){
+    		for(GroupManagement group : groupList){
+    			try {
+					userKeeper.createGroup(group);
+					successList.add(group);
+					resultMap.put(group, "SUCESS");
+				} catch (UserException e) {
+					isOk = false;
+					resultMap.put(group, e.getLocalizedMessage());
+        			continue;
+				}        		
+    		}
+    		if(!successList.isEmpty()){
+    			PmCreateGroupManagementEvent pmEvent = new PmCreateGroupManagementEvent(null, null, successList);
+        		try {
+    				eventManager.sendEvent(pmEvent);
+    			} catch (Exception e) {
+    				log.error(e.getMessage(),e);
+    				isOk = false;
+        			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, "Exception error:"+e.getMessage());
+    			}
+    		}
+    	}else{
+    		isOk = false;
+			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, "userkeeper not initialized!");
+    	}
+    	
+		CreateGroupManagementReplyEvent replyEvent = new CreateGroupManagementReplyEvent(event.getKey(), event.getSender(), isOk, message,resultMap);
+		try {
+			eventManager.sendRemoteEvent(replyEvent);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+    }
     public void processCreateAccountEvent(CreateAccountEvent event) {
         boolean ok = true;
         String message = "";
@@ -1211,16 +1347,13 @@ public class AccountPositionManager implements IPlugin {
                     if (!quoteIsValid(quote))
                         continue;
 
-                    double marketablePrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
-                    if(!PriceUtils.validPrice(marketablePrice))
-                    	continue;
-                    	
                     if (positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
                         log.debug("Margin call but account is locked: " +
                                 account.getId() + ", " + position.getSymbol());
                         return true;
                     }
                     
+                    double marketablePrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
                     double lossQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
 							quote.getSymbol(), Math.abs(account.getCashAvailable()), marketablePrice);
 
@@ -1254,7 +1387,7 @@ public class AccountPositionManager implements IPlugin {
         }
         return result;
     }
-    
+
     private void processDayEndTasks() {
         log.info("Account day end processing start");
         List<Account> list = accountKeeper.getAllAccounts();
@@ -1294,6 +1427,14 @@ public class AccountPositionManager implements IPlugin {
             eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, defaultUser,
                     new CreateUserEvent(PersistenceManager.ID, null, defaultUser, "TW", "TW", "")));
     }
+    
+    public void injectGroups(List<GroupManagement> groups) {
+    	userKeeper.injectGroup(groups);
+        User adminUser = userKeeper.tryCreateAdminUser();
+        if (null != adminUser)
+            eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, adminUser,
+                    new CreateUserEvent(PersistenceManager.ID, null, adminUser, "TW", "TW", "")));    
+    }
 
     public void injectAccounts(List<Account> accounts) {
         accountKeeper.injectAccounts(accounts);
@@ -1301,7 +1442,7 @@ public class AccountPositionManager implements IPlugin {
         if (null != defaultAccount)
             eventManager.sendEvent(new PmCreateAccountEvent(PersistenceManager.ID, null, defaultAccount));
     }
-
+    
     public void injectAccountSettings(List<AccountSetting> accountSettings) {
         accountKeeper.injectAccountSettings(accountSettings);
     }
@@ -1344,10 +1485,6 @@ public class AccountPositionManager implements IPlugin {
             if (!PriceUtils.isZero(position.getQty())) {
 
                 double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : settlePrice;
-                if(!PriceUtils.validPrice(price)) {
-                	log.warn("Invalid settlement price, can not settle: " + settlePrice + ", " + quote);
-                	continue;
-                }
 
                 Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
                         Math.abs(position.getQty()),

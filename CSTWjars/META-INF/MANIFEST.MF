@@ -29,6 +29,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.account,
  com.cyanspring.common.business;uses:="com.cyanspring.common.data,com.cyanspring.common.type,com.cyanspring.common.strategy",
  com.cyanspring.common.business.util,
+ com.cyanspring.common.cstw.auth,
  com.cyanspring.common.data,
  com.cyanspring.common.event,
  com.cyanspring.common.event.account,

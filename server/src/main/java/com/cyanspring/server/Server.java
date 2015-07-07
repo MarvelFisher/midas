@@ -43,8 +43,10 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -61,7 +63,6 @@ import com.cyanspring.common.server.event.ServerShutdownEvent;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.server.account.AccountPositionManager;
 import com.cyanspring.server.account.TrailingStopManager;
 import com.cyanspring.server.persistence.PersistenceManager;
@@ -103,7 +104,12 @@ public class Server implements ApplicationContextAware{
 	IRecoveryProcessor<DataObject> strategyRecoveryProcessor;
 	
 	@Autowired(required=false)
+	@Qualifier("userRecoveryProcessor")
 	IRecoveryProcessor<User> userRecoveryProcessor;
+	
+	@Autowired(required=false)
+	@Qualifier("userGroupRecoveryProcessor")
+	IRecoveryProcessor<GroupManagement> userGroupRecoveryProcessor;
 	
 	@Autowired(required=false)
 	IRecoveryProcessor<Account> accountRecoveryProcessor;
@@ -264,6 +270,12 @@ public class Server implements ApplicationContextAware{
 			List<User> list = userRecoveryProcessor.recover();
 			log.info("Users loaded: " + list.size());
 			accountPositionManager.injectUsers(list);
+		}
+		
+		if(null != userGroupRecoveryProcessor){
+			List<GroupManagement> list = userGroupRecoveryProcessor.recover();
+			log.info("User Groups loaded:" + list.size());
+			accountPositionManager.injectGroups(list);
 		}
 
 		if(null != accountRecoveryProcessor) {
@@ -566,7 +578,7 @@ public class Server implements ApplicationContextAware{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		String configFile = "conf/lfx_server.xml";
+		String configFile = "conf/fxserver.xml";
 		String logConfigFile = "conf/common/log4j.xml";
 		if(args.length == 1) {
 			configFile = args[0];

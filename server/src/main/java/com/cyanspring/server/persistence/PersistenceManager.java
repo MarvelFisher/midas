@@ -127,6 +127,7 @@ public class PersistenceManager {
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 			subscribeToEvent(PmPositionPeakPriceUpdateEvent.class, null);
 			subscribeToEvent(PmPositionPeakPriceDeleteEvent.class, null);
+			subscribeToEvent(PmCreateGroupManagementEvent.class, null);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -1101,6 +1102,32 @@ public class PersistenceManager {
 		finally {
 			session.close();
 		}
+	}	
+	
+	public void processPmCreateGroupManagementEvent(PmCreateGroupManagementEvent event){
+		
+		List<GroupManagement> groups = event.getGroupManagementList();
+		
+		if( null == groups || groups.isEmpty() ){
+			log.error("GroupManagement List is null");
+			return;
+		}
+		
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try{
+			tx = session.beginTransaction();
+			for(GroupManagement group : groups){
+				session.save(group);
+			}
+			tx.commit();
+		}catch(Exception e){
+		    if (tx!=null) 
+		    	tx.rollback();
+			log.error(e.getMessage(),e);
+		}finally{
+			session.close();
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1351,6 +1378,7 @@ public class PersistenceManager {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<GroupManagement> recoverGroupManagement() {
 		List<GroupManagement> result = new ArrayList<GroupManagement>();
 		Session session = null;

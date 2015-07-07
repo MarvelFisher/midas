@@ -234,6 +234,9 @@
 		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 	</bean>
 
+	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
+	</bean>
+
 	<bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">
 	</bean>
 
