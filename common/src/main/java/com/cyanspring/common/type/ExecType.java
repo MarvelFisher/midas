@@ -102,6 +102,8 @@ public enum ExecType {
     		return NEW;
     	else if(status.equals(OrdStatus.PENDING_REPLACE))
     		return REPLACE;
+    	else if(status.equals(OrdStatus.PENDING_CANCEL))
+    		return CANCELED;
     	else
     		return RESTATED;
     }
