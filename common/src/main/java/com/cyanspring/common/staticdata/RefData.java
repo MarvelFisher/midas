@@ -222,4 +222,28 @@ public class RefData extends DataObject {
 	public void setDetailCN(String detailCN){
 		this.set(detailCN, RefDataField.DETAIL_CN.value());
 	}
+	
+	public String getSpotENName(){
+		return this.get(String.class, RefDataField.SPOT_ENNAME.value());
+	}
+	
+	public void setSpotENName(String spotENName){
+		this.set(spotENName, RefDataField.SPOT_ENNAME.value());
+	}
+	
+	public String getSpotCNName(){
+		return this.get(String.class, RefDataField.SPOT_CNNAME.value());
+	}
+	
+	public void setSpotCNName(String spotCNName){
+		this.set(spotCNName, RefDataField.SPOT_CNNAME.value());
+	}
+	
+	public String getSpotTWName(){
+		return this.get(String.class, RefDataField.SPOT_TWNAME.value());
+	}
+	
+	public void setSpotTWName(String spotTWName){
+		this.set(spotTWName, RefDataField.SPOT_TWNAME.value());
+	}
 }

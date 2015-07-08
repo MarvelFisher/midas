@@ -23,7 +23,8 @@ public class IFStrategy implements IRefDataStrategy {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Calendar cal;
     private String symbol = "IF";
-    private String detailDisplay = "%s指数%d年%d月合约";
+    private String detailCNDisplay = "%s%d年%d月合约";
+    private String detailTWDisplay = "%s%d年%d月合約";
 
     @Override
     public void init(Calendar cal) {
@@ -57,18 +58,18 @@ public class IFStrategy implements IRefDataStrategy {
             refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0.ID);
             refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0.ID);
             refData.setSymbol(refData.getSymbol().substring(0, 2) + n0.ID + "." + refData.getExchange());
-            refData.setDetailCN(String.format(detailDisplay, refData.getCNDisplayName(), n0.year, n0.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
-            refData.setDetailTW(String.format(detailDisplay, refData.getCNDisplayName(), n0.year, n0.month + 1));
-            refData.setDetailEN(String.format(detailDisplay, refData.getCNDisplayName(), n0.year, n0.month + 1));
+            refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), n0.year, n0.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
+            refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), n0.year, n0.month + 1));
+            refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), n0.year, n0.month + 1));
         } else if (refData.getRefSymbol().equals("IFC2") || refData.getRefSymbol().equals("IHC2") || refData.getRefSymbol().equals("ICC2")) {
             refData.setSettlementDate(n1.settlementDay);
             refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1.ID);
             refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1.ID);
             refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1.ID);
             refData.setSymbol(refData.getSymbol().substring(0, 2) + n1.ID + "." + refData.getExchange());
-            refData.setDetailCN(String.format(detailDisplay, refData.getCNDisplayName(), n1.year, n1.month + 1));
-            refData.setDetailTW(String.format(detailDisplay, refData.getCNDisplayName(), n1.year, n1.month + 1));
-            refData.setDetailEN(String.format(detailDisplay, refData.getCNDisplayName(), n1.year, n1.month + 1));
+            refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), n1.year, n1.month + 1));
+            refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), n1.year, n1.month + 1));
+            refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), n1.year, n1.month + 1));
         }
     }
 

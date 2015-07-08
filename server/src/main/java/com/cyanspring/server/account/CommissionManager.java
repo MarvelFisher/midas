@@ -25,17 +25,17 @@ public class CommissionManager implements ICommissionManager{
 			return Default.getCommission() * accountCom;
 		
 		Double com = refData.getCommissionFee();
-		if(!PriceUtils.isZero(settings.getCommission()))
+		if(null != com && !PriceUtils.isZero(com))
 			return com * accountCom;
 		
 		String market = refData.getMarket();
 		com = commissionByMarket.get(market);
-		if(com != null)
+		if(null != com && !PriceUtils.isZero(com))
 			return com * accountCom;
 		
 		String exchange = refData.getExchange();
 		com = commissionByExchange.get(exchange);
-		if(com != null)
+		if(null != com && !PriceUtils.isZero(com))
 			return com * accountCom;
 		
 		return Default.getCommission() * accountCom;		
