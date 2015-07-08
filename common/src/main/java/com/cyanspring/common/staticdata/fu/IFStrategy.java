@@ -23,8 +23,8 @@ public class IFStrategy implements IRefDataStrategy {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Calendar cal;
     private String symbol = "IF";
-    private String detailCNDisplay = "%s指数%d年%d月合约";
-    private String detailTWDisplay = "%s指數%d年%d月合約";
+    private String detailCNDisplay = "%s%d年%d月合约";
+    private String detailTWDisplay = "%s%d年%d月合約";
 
     @Override
     public void init(Calendar cal) {
