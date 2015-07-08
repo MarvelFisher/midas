@@ -49,6 +49,9 @@ public enum RefDataField {
 	DETAIL_EN("Detail EN"),
 	DETAIL_TW("Detail TW"),
 	DETAIL_CN("Detail CN"),
+	SPOT_ENNAME("Spot ENName"),
+	SPOT_CNNAME("Spot CNName"),
+	SPOT_TWNAME("Spot TWName")
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();
