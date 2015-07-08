@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.data.JdbcSQLHandler;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.SymbolInfo;
@@ -27,257 +28,58 @@ public class DBHandler
 	private static final Logger log = LoggerFactory
 			.getLogger(DBHandler.class);
 	private final String createTable = "CREATE TABLE `%s` (`TRADEDATE`  date NULL DEFAULT NULL ,`KEYTIME`  datetime NOT NULL ,`DATATIME`  datetime NULL DEFAULT NULL ,`SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ,`OPEN_PRICE`  double NULL DEFAULT NULL ,`CLOSE_PRICE`  double NULL DEFAULT NULL ,`HIGH_PRICE`  double NULL DEFAULT NULL ,`LOW_PRICE`  double NULL DEFAULT NULL ,`VOLUME`  int(11) NULL DEFAULT NULL ,`TOTALVOLUME`  bigint(20) NULL DEFAULT NULL ,UNIQUE INDEX `TradeDate_Symbol` USING BTREE (`KEYTIME`, `SYMBOL`)) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0 ;";
-	private String     jdbcUrl;
+	private JdbcSQLHandler handler;
 	
-	/*-- for batch --*/
-	private Connection connect = null ;
-	private Statement  stat = null ;
-	
-	private ComboPooledDataSource cpds;	
-	public DBHandler(String jdbcUrl, String driverClass) throws Exception
-	{
-		this.jdbcUrl = jdbcUrl ;
-		Class.forName(driverClass);
-		try 
-		{
-			connect = DriverManager.getConnection(jdbcUrl);
-		} 
-		catch (SQLException e) 
-		{
-			log.error(e.getMessage(), e);
-		}
-	}
 	public DBHandler(ComboPooledDataSource cpds) throws Exception
 	{
-		setCpds(cpds);
+		handler = new JdbcSQLHandler(cpds);
 	}
 	public Connection getConnect()
 	{
-		try {
-			return cpds.getConnection();
-		} catch (SQLException e) {
-            log.error(e.getMessage(), e);
-		}
-		return null;
+		return handler.getConnect();
 	}
 	private void closeConnect(Connection conn) {
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            log.warn("Cannot close connection", e);
-        }
+		handler.closeConnect(conn);
     }
 	public boolean isConnected()
     {
-        try
-        {        	
-            if (connect != null)
-            {
-            	if(connect.isValid(0)) 
-            	{
-            		return true;
-            	}	
-            	else 
-            	{
-            		log.warn("SQL connection is invalid, try to reconnect later");
-            		return false;
-            	}
-            }
-            else
-            {
-            	return false;
-            }
-        }
-        catch (SQLException se)
-        {
-            log.error(se.getMessage(), se);
-        }
-        return false;
+        return handler.isConnected();
     }
     public void reconnectSQL()
     {
-        try
-        {
-        	if (connect != null)
-        	{
-        		connect.close();
-        	}
-        	log.info("Reconnect to SQL, discard old connection");
-        	connect = cpds.getConnection();
-        }
-        catch (SQLException e)
-        {
-            log.error(e.getMessage(), e);
-        }
+    	handler.reconnectSQL();
     }
     public void disconnectSQL()
     {
-        try
-        {
-        	if (connect != null)
-        	{
-        		connect.close();
-        		connect = null;
-        	}
-        }
-        catch (SQLException e)
-        {
-            log.error(e.getMessage(), e);
-        }
+    	handler.disconnectSQL();
     }
-    public void updateSQL(String sqlcmd)
+    public boolean updateSQL(String sqlcmd)
     {
-        Connection connect = getConnect();
-        if (connect == null)
-        {
-        	return;
-        }
-        Statement stat = null ;
-        try {
-        	connect.setAutoCommit(false);
-			stat = connect.createStatement();
-
-			stat.executeUpdate(sqlcmd);
-
-			connect.commit();
-		} catch (SQLException e) {
-			log.error(e.getMessage(), e);
-			log.warn("Exception while: " + sqlcmd);
-            this.reconnectSQL();
-        }
-        finally 
-		{
-			if (stat != null)
-	    	{
-	    		try 
-	    		{
-					stat.close();
-					stat = null;
-				} 
-	    		catch (SQLException e) 
-				{
-					log.error(e.getMessage(), e);
-				}
-	    	}
-			closeConnect(connect);
-		}
+    	return handler.updateSQL(sqlcmd);
     }
     public ResultSet querySQL(Connection connect, String sqlcmd)
     {
-        ResultSet rs = null;
-        Statement stat = null ;
-        try
-        {
-            stat = connect.createStatement();
-        	connect.setAutoCommit(false);
-            rs = stat.executeQuery(sqlcmd);
-			connect.commit();
-        }
-        catch (SQLException se)
-        {
-            log.error(se.getMessage(), se);
-			log.warn("Exception while: " + sqlcmd);
-        }
-        return rs;
+        return handler.querySQL(connect, sqlcmd);
     }
-    public void checkSQLConnect()
+    public boolean checkSQLConnect()
     {
-    	if (!isConnected())
-    	{
-    		if (this.stat != null)
-    		{
-    			closeStatement();
-    		}
-            reconnectSQL();
-    	}
-        Statement stat = null ;
-        try
-        {
-            stat = connect.createStatement();
-			stat.executeQuery("SELECT 1;");
-		} 
-    	catch (SQLException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-            this.reconnectSQL();
-        }
-    	finally
-    	{
-			if (stat != null)
-	    	{
-	    		try 
-	    		{
-					stat.close();
-					stat = null;
-				} 
-	    		catch (SQLException e) 
-				{
-					log.error(e.getMessage(), e);
-				}
-	    	}
-    	}
+    	return handler.checkSQLConnect();
     }
     public void createStatement()
     {
-		if (stat != null)
-		{
-			return;
-		}
-    	try 
-    	{
-			stat = connect.createStatement() ;
-		} 
-    	catch (SQLException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-		}
+    	handler.createStatement();
     }
     public void closeStatement()
     {
-    	if (stat != null)
-    	{
-    		try 
-    		{
-				stat.close();
-				stat = null;
-			} 
-    		catch (SQLException e) 
-			{
-				log.error(e.getMessage(), e);
-			}
-    	}
+    	handler.closeStatement();
     }
     public void addBatch(String sqlcmd)
     {
-        if (connect == null)
-        {
-            connect = getConnect();
-        }
-    	createStatement();
-        try
-        {
-            stat.addBatch(sqlcmd);
-        }
-        catch(SQLException se)
-        {
-        	log.error(se.getMessage(), se) ;
-        }
+    	handler.addBatch(sqlcmd);
     }
-    public void executeBatch()
+    public boolean executeBatch()
     {
-        try 
-        {
-			stat.executeBatch();
-		} 
-        catch (SQLException e) 
-        {
-			log.error(e.getMessage(), e) ;
-		}
-        finally 
-        {
-        	closeStatement();
-        	disconnectSQL();
-        }
+    	return handler.executeBatch();
     }
     public void get52WHighLow(SymbolData symboldata, String market, String symbol)
     {
@@ -688,10 +490,4 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
-	public ComboPooledDataSource getCpds() {
-		return cpds;
-	}
-	public void setCpds(ComboPooledDataSource cpds) {
-		this.cpds = cpds;
-	}
 }
