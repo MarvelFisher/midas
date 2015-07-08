@@ -12,26 +12,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cyanspring.common.Default;
-import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.fu.IRefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class RefDataFactory implements IPlugin, IRefDataManager{
-	private static final Logger log = LoggerFactory
-			.getLogger(RefDataFactory.class);
-	String refDataFile;	
+public class RefDataFactory extends RefDataService{
+    
     List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private String market = Default.getMarket();
 	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String,IRefDataStrategy> strategyMap = new HashMap<>();
 	private MarketSessionUtil marketSessionUtil;
+    private String strategyPack = "com.cyanspring.common.staticdata.fu";
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -58,7 +53,7 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
         for(RefData refData: refDataList) {
             if(!strategyMap.containsKey(refData.getStrategy())){
                 try {
-                    Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>)Class.forName("com.cyanspring.common.staticdata.fu." + refData.getStrategy() + "Strategy");
+                    Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>)Class.forName( strategyPack + "." + refData.getStrategy() + "Strategy");
                     Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
                     strategy = ctor.newInstance();
                     strategy.setMarketSessionUtil(marketSessionUtil);
@@ -76,7 +71,7 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
                         }
 
                         @Override
-                        public void setExchangeRefData(RefData refData) {
+                        public void updateRefData(RefData refData) {
 
                         }
 
@@ -87,11 +82,12 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
                     };
                 }
                 strategyMap.put(refData.getStrategy(), strategy);
+                updateMarginRate(refData);
             }else{
                 strategy = strategyMap.get(refData.getStrategy());
             }
             strategy.init(cal);
-            strategy.setExchangeRefData(refData);
+            strategy.updateRefData(refData);
         }
         saveRefDataToFile(refDataFile, refDataList);
         return true;
@@ -99,6 +95,8 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
 
     @Override
 	public void uninit() {
+        log.info("uninitialising");
+        strategyMap.clear();
 	}
 	
 	@Override
@@ -111,25 +109,10 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
 	}
 
 	@Override
-	public String getRefDataFile() {
-		return refDataFile;
-	}
-
-	@Override
 	public List<RefData> getRefDataList() {
 		return refDataList;
 	}
 
-	@Override
-	public String getMarket() {
-		return market;
-	}
-
-	@Override
-	public void setRefDataFile(String refDataFile) {
-		this.refDataFile = refDataFile;
-	}
-	
 	private void saveRefDataToFile(String path, List<RefData> list){
 		File file = new File(path);
 		try {
@@ -146,4 +129,8 @@ public class RefDataFactory implements IPlugin, IRefDataManager{
 	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
 		this.marketSessionUtil = marketSessionUtil;
 	}
+
+    public void setStrategyPack(String strategyPack) {
+        this.strategyPack = strategyPack;
+    }
 }

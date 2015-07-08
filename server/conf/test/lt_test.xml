@@ -115,6 +115,7 @@
         <property name="cleanStart" value="false"/>
         <property name="todayOnly" value="true"/>
         <property name="syncCentralDb" value="false"/>
+        <property name="useLtsGateway" value="true" />
     </bean>
 
     <bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
@@ -163,12 +164,93 @@
     </bean>
     <bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
     </bean>
+	<bean id="audusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>
+
+	<bean id="usdjpyForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.005</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="usdchfForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>	
+
+	<bean id="usdcadForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="eurusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>	
+	
+	<bean id="eurjpyForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.005</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="gbpusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="nzdusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="gbpjpyForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+		<property name="tickTable">
+			<array>
+				<array><value>0</value><value>1000000</value><value>0.005</value></array>
+			</array>
+		</property>
+	</bean>			
 
     <bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
         <property name="tickTables">
             <map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
                 <entry key="DEFAULT" value-ref="hkexTickTable" />
                 <entry key="FX" value-ref="forexTickTable" />
+                <entry key="AUDUSD" value-ref="audusdForexTickTable" />
+				<entry key="USDJPY" value-ref="usdjpyForexTickTable" />
+				<entry key="USDCHF" value-ref="usdchfForexTickTable" />
+				<entry key="USDCAD" value-ref="usdcadForexTickTable" />
+				<entry key="EURUSD" value-ref="eurusdForexTickTable" />				
+				<entry key="EURJPY" value-ref="eurjpyForexTickTable"/>
+				<entry key="GBPUSD" value-ref="gbpusdForexTickTable"/>
+				<entry key="NZDUSD" value-ref="nzdusdForexTickTable"/>
+				<entry key="GBPJPY" value-ref="gbpjpyForexTickTable" />
+                
             </map>
         </property>
     </bean>
@@ -185,6 +267,7 @@
     </bean>
 
     <bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
+        <property name="sendDynamicPositionUpdate" value="true"/>
         <property name="quoteChecker">
             <bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
         </property>
@@ -250,6 +333,9 @@
             <value>refdata/refData_lt.xml</value>
         </property>
     </bean>
+
+	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
+	</bean>
 
     <bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">
     </bean>

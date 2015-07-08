@@ -1,9 +1,7 @@
 package com.cyanspring.server.account;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,20 +13,21 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
+import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.server.persistence.PersistenceManager;
 
 public class UserKeeper {
 	private static final Logger log = LoggerFactory
 			.getLogger(UserKeeper.class);
 	
-	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();
-	private Map<String, String> pairs = new ConcurrentHashMap<String, String>();
-	private Map<String, Set<String>> groups = new ConcurrentHashMap<String, Set<String>>();
-	private static final int maxGroupLevel = 20;
-
+	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();	
+	private Map<String,UserGroup> userGroups = new ConcurrentHashMap<String,UserGroup>();
+	public final static String ADMIN = "admin";
+	public final static String ADMIN_PW= "FDTADMIN";
+	
 	public void createUser(User user) throws UserException {
 		String lowCases = user.getId().toLowerCase();
 		if(users.containsKey(lowCases))
@@ -44,6 +43,10 @@ public class UserKeeper {
 	
 	public boolean userExists(String userId) {
 		return users.containsKey(userId);
+	}
+	
+	public UserGroup getUserGroup(String id){
+		return userGroups.get(id);
 	}
 	
 	public boolean login(String userId, String password) throws UserException {
@@ -71,61 +74,90 @@ public class UserKeeper {
 		return null;
 	}
 	
+	public User tryCreateAdminUser() {
+		if(!userExists(ADMIN)) {
+			User user = new User(ADMIN, ADMIN_PW);
+			user.setDefaultAccount(ADMIN);
+			user.setUserType(UserType.ADMIN);
+			user.setRole(UserRole.Admin);
+			this.users.putIfAbsent(user.getId(), user);
+			return user;
+		}
+		return null;
+	}
+	
 	public void injectUsers(List<User> users) {
 		for(User user: users) {
 			this.users.put(user.getId(), user);
 		}
 	}
 
-	private void buildNextLevel(Map<String, GroupManagement> current, int level){
-		if(current.size() <= 0)
-			return;
+	public void createGroup(GroupManagement gm) throws UserException{
+		String manager = gm.getManager();
+		String managee = gm.getManaged();
+		User managerInfo = users.get(manager);
+		User manageeInfo = users.get(managee);
+		UserGroup managerGroup = null;
+		UserGroup manageeGroup = null;
 		
-		if(level > maxGroupLevel) {
-			log.error("User group exceeding max level of " + maxGroupLevel);
-			return;
+		if(manager.equals(managee)){
+			throw new UserException("Manager and Managee are same person!",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
-		Map<String, GroupManagement> remaining = new HashMap<String, GroupManagement>();
-		for(GroupManagement gm: current.values()) {
-			Set<String> list = groups.get(gm.getManaged());
-			if(null != list) {
-				Set<String> existing = groups.get(gm.getManager());
-				if(null == existing) {
-					existing = new HashSet<String>(list);
-					groups.put(gm.getManager(), existing);
-				} else {
-					existing.addAll(list);
-				}
-				
-			} else {
-				GroupManagement next = current.get(gm.getManaged());
-				if(null != next)
-					remaining.put(gm.getManager(), gm);
-			}
+		if( null == managerInfo ){
+			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
-		buildNextLevel(remaining, level++);
+		if( null == manageeInfo ){
+			throw new UserException("Managee:"+managee+" doen't exist in User",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+		}
+		
+		log.info("create group:{}-{},{}-{}",new Object[]{manager,managerInfo.getRole(),managee,manageeInfo.getRole()});
+		
+		if(UserRole.Trader.equals(managerInfo.getRole())){
+			throw new UserException("Manager:"+manager+" is a Trader who can't manage someone else",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+		}
+		
+		if(!UserRole.RiskManager.equals(managerInfo.getRole())){
+			throw new UserException("Manager:"+manager+" role:"+managerInfo.getRole()+" who can't manage someone else",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+		}
+		
+		if(!userGroups.containsKey(manager)){
+			managerGroup = new UserGroup(manager,managerInfo.getRole());
+			userGroups.put(manager, managerGroup);
+		}else{
+			managerGroup = userGroups.get(manager);
+		}
+		
+		if(!userGroups.containsKey(managee)){
+			manageeGroup = new UserGroup(managee,manageeInfo.getRole());
+			userGroups.put(managee, manageeGroup);
+		}else{
+			manageeGroup = userGroups.get(managee);
+		}
+		
+		if(managerGroup.isManageeExist(managee)){
+			throw new UserException("Managee:"+managee+" already exist!",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+		}
+		
+		/**
+		 * if A manage B,check B managees not manage to A 
+		 */
+		if(!manageeGroup.isManageRecursive(manager)){
+			managerGroup.putManagee(manageeGroup);
+		}else{
+			throw new UserException("Manager:"+manager+", Managee:"+managee+" cause recursive management",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+		}
 	}
 	
 	public void injectGroup(List<GroupManagement> list) {
-		Map<String, GroupManagement> remaining = new HashMap<String, GroupManagement>();
-		for(GroupManagement gm: list) {
-			pairs.put(gm.getManager(), gm.getManaged());
-			User user = users.get(gm.getManaged());
-			if(user.getRole().equals(UserType.TRADER)) {
-				Set<String> subList = groups.get(gm.getManager());
-				if(null == subList) {
-					subList = new HashSet<String>();
-					groups.put(gm.getManager(), subList);
-				}
-				subList.add(gm.getManaged());
-			} else {
-				remaining.put(gm.getManager(), gm);
-			}
+		for(GroupManagement gm: list) {			
+			try{
+				createGroup(gm);
+			}catch(Exception e){
+				log.warn(e.getLocalizedMessage());
+			}		
 		}
-		
-		buildNextLevel(remaining, 0);
 	}
 
 }

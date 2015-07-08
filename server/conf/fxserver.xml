@@ -98,11 +98,12 @@
 
     <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
         <property name="id" value="IB01" />
-        <property name="host" value="10.0.0.20" />
+        <property name="host" value="10.0.0.30" />
         <property name="port" value="4001" />
         <property name="clientId" value="200" />
         <property name="reqMarketDepth" value="false" />
         <property name="logMarketData" value="false" />
+        <property name="newsIsSubCurrentDay" value="false" />
         <!--<property name="cancelOpenOrders" value="true" /> -->
     </bean>
 
@@ -144,5 +145,40 @@
     <bean id="derbyPort" class="java.lang.String">
         <constructor-arg value="1527" />
     </bean>
+    
+    <!-- Live Trading -->
+    <bean id="stopLiveTradingStartTime" class="java.lang.String">
+        <constructor-arg value="2:00:00" />
+    </bean>
+    
+    <bean id="stopLiveTradingEndTime" class="java.lang.String">
+        <constructor-arg value="7:00:00" />
+    </bean>
+    
+    <bean id="positionStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="frozenStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="terminateStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.3" />
+    </bean>
+    
+    <bean id="companyStopLossValue" class="java.lang.String">
+        <constructor-arg value="20000" />
+    </bean>
+    
+    <bean id="frozenStopLossValue" class="java.lang.String">
+        <constructor-arg value="20000" />
+    </bean>
+    
+    <bean id="terminateStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+
+	<!--  -->
 
 </beans>

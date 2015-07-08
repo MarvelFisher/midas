@@ -26,6 +26,7 @@ public class IndexItem implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(IndexItem.class);
 
     protected static ConcurrentHashMap<String, IndexItem> indexItemBySymbolMap = new ConcurrentHashMap<String, IndexItem>();
+    private boolean isLogNoRefDataMessage = false;
     private String symbolId;
     private long totalVolume = 0;
     private long volume = 0;
@@ -63,6 +64,13 @@ public class IndexItem implements AutoCloseable {
 
         //Get MarketSession
         String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        if(index == null) {
+            if(!item.isLogNoRefDataMessage) {
+                log.debug(WindDef.TITLE_INDEX + " " + WindDef.ERROR_NO_REFDATA + "," + indexData.getWindCode());
+                item.isLogNoRefDataMessage = true;
+            }
+            return;
+        }
         MarketSessionData marketSessionData = null;
         Date endDate;
         Date startDate;

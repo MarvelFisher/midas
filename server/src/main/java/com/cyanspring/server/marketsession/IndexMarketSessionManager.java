@@ -42,6 +42,7 @@ public class IndexMarketSessionManager implements IPlugin {
     private MarketSessionUtil marketSessionUtil;
 
     private boolean searchBySymbol = true;
+    private boolean noCheckSettlement = false;
     private ScheduleManager scheduleManager = new ScheduleManager();
     private Map<String, MarketSessionData> sessionDataMap;
     private Map<String, RefData> refDataMap;
@@ -190,6 +191,8 @@ public class IndexMarketSessionManager implements IPlugin {
     }
 
     private void checkSettlement() throws ParseException {
+        if (noCheckSettlement)
+            return;
         if (checkRefData())
             return;
         if (TimeUtil.sameDate(chkDate, tradeDate) || !currentSessionType.equals(MarketSessionType.CLOSE))
@@ -237,6 +240,10 @@ public class IndexMarketSessionManager implements IPlugin {
 
     public void setSearchBySymbol(boolean searchBySymbol) {
         this.searchBySymbol = searchBySymbol;
+    }
+
+    public void setNoCheckSettlement(boolean noCheckSettlement) {
+        this.noCheckSettlement = noCheckSettlement;
     }
 
     public void setSettlementDelay(int settlementDelay) {

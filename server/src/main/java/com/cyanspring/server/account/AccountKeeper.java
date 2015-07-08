@@ -173,6 +173,11 @@ public class AccountKeeper {
 		account.addMargin(account.getCash() * leverageManager.getLeverage(null, null));
 		account.setActive(true);
 		account.setState(AccountState.ACTIVE);
+		
+		if(PriceUtils.isZero(account.getValue()))
+			account.setStartAccountValue(Default.getAccountCash());
+		else
+			account.setStartAccountValue(account.getValue());
 	}
 	
 	public boolean accountExists(String id) {

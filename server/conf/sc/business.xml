@@ -66,10 +66,16 @@
 					<bean class="com.cyanspring.server.validation.InstrumentValidator"/>
 				</entry>
 	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.StockOrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.StockOrderQuantityValidator">
+						<property name="maxQty" value="1000000"/>
+						<property name="minQty" value="0"/>
+					</bean>
 				</entry>
 	  			<entry key="Dis Qty">
-					<bean class="com.cyanspring.server.validation.StockOrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.StockOrderQuantityValidator">
+						<property name="maxQty" value="1000000"/>
+						<property name="minQty" value="0"/>
+					</bean>
 				</entry>
 	  			<entry key="Start Time">
 					<bean class="com.cyanspring.server.validation.StartTimeValidator"/>
@@ -196,6 +202,7 @@
 				<value>0.3</value>
 				<value>false</value>
 				<value>false</value>
+				<value>0</value>
 				<value>0</value>
 				<value>0</value>
 				<value>DAY_TRADING</value>

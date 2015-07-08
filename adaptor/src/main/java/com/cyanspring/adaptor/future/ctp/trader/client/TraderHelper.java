@@ -42,7 +42,7 @@ public class TraderHelper {
 				ltsOrdStatus = OrdStatus.CANCELED;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_Unknown:
-				ltsOrdStatus = OrdStatus.PENDING_NEW;
+				ltsOrdStatus = null;
 				break;
 			case TraderLibrary.THOST_FTDC_OST_NotTouched:
 				ltsOrdStatus = null;
@@ -51,8 +51,6 @@ public class TraderHelper {
 				ltsOrdStatus = null;
 				break;
 		}
-		if(null == ltsOrdStatus)
-			log.warn("Status not map: " + code);
 		return ltsOrdStatus;
 	}
 	
@@ -67,6 +65,73 @@ public class TraderHelper {
 	
 	public static ExecType OrdStatus2ExecType( OrdStatus status ) {
 		return ExecType.getType(status.value());
+	}
+	
+	public static String readOrderStatusCode(byte code) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_OST_AllTraded:
+			result = "THOST_FTDC_OST_AllTraded";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_PartTradedQueueing:
+			result = "THOST_FTDC_OST_PartTradedQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_PartTradedNotQueueing:
+			result = "THOST_FTDC_OST_PartTradedNotQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_NoTradeQueueing:
+			result = "THOST_FTDC_OST_NoTradeQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_NoTradeNotQueueing:
+			result = "THOST_FTDC_OST_NoTradeNotQueueing";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_Canceled:
+			result = "THOST_FTDC_OST_Canceled";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_Unknown:
+			result = "THOST_FTDC_OST_Unknown";
+			break;
+		case TraderLibrary.THOST_FTDC_OST_NotTouched:
+			result = null;
+			break;
+		case TraderLibrary.THOST_FTDC_OST_Touched:
+			result = null;
+			break;
+		}
+		return result;
+	}
+	
+	public static String readPositionDirection( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_PD_Net:
+			result = "THOST_FTDC_PD_Net";
+			break;
+		case TraderLibrary.THOST_FTDC_PD_Long:
+			result = "THOST_FTDC_PD_Long";
+			break;
+		case TraderLibrary.THOST_FTDC_PD_Short:
+			result = "THOST_FTDC_PD_Short";
+			break;
+		default:
+			result = "Not Defined";	
+		}
+		return result;
+	}
+	
+	public static String readPositionDateType( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_PSD_Today:
+			result = "THOST_FTDC_PSD_Today";
+			break;
+		case TraderLibrary.THOST_FTDC_PSD_History:
+			result = "THOST_FTDC_PSD_History";
+			break;
+		default:
+			result = "Not Defined";	
+		}
+		return result;
 	}
 	
 	public static String toGBKString(byte[] bytes) {
@@ -85,6 +150,14 @@ public class TraderHelper {
 			log.info(e.getMessage());
 		}
 		return "";
+	}
+	
+	public static String genClOrderId(int front, int session, String orderRef) {		
+		return "" + front + ":" + session + ":" + orderRef;
+	}
+	
+	public static String genExchangeOrderId(String exchangeId, String ordSysId) {
+		return exchangeId + ":" + ordSysId;
 	}
 	
 	/**

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.bridj.StructObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +25,17 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.common.util.TimeThrottler;
 
-public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener {
+public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener, IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(CtpTradeConnection.class);
 
@@ -42,10 +48,16 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private DownStreamSender downStreamSender = new DownStreamSender();
 	private ISymbolConverter symbolConverter;
 	
+	private Map<String, String> exchangeSerial2Serial = new ConcurrentHashMap<String, String>();
 	private Map<String, ChildOrder> serialToOrder = new ConcurrentHashMap<String, ChildOrder>();
 	private Map<String, Double> tradePendings = new ConcurrentHashMap<String, Double>();
-	private Map<String, Double> orderPendings = new ConcurrentHashMap<String, Double>();
-	private CtpPositionRecord positionRecord= new CtpPositionRecord();
+	private CtpPositionRecord positionRecord;
+	private ScheduleManager scheduleManager = new ScheduleManager();
+	private AsyncTimerEvent queryPositionEvent = new AsyncTimerEvent();
+	private long queryPositionInterval = 60000;
+	private long timerInterval = 3000;
+	private TimeThrottler throttler;
+	private boolean positionQueried;
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -56,6 +68,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		this.broker = broker;
 		this.conLog = conLog;
 		this.symbolConverter = symbolConverter;
+		this.positionRecord = new CtpPositionRecord(0);
 		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password, symbolConverter);
 	}
 	
@@ -64,6 +77,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// register listeners
 		registerListeners();
 		positionRecord.clear();	
+		throttler = new TimeThrottler(queryPositionInterval);
+		scheduleManager.scheduleRepeatTimerEvent(timerInterval, this, queryPositionEvent);
 		proxy.init();		
 	}
 	
@@ -72,18 +87,13 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 
 	@Override
 	public void uninit() {
-		// TODO clean up
-
+		scheduleManager.cancelTimerEvent(queryPositionEvent);
 	}
 
 	@Override
 	public String getId() {
 		return id;
 	}
-
-//	private void onOrder() {
-//		listener.onOrder(execType, order, execution, message);
-//	}
 	
 	@Override
 	public boolean getState() {
@@ -106,9 +116,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	
 	class DownStreamSender implements IDownStreamSender {
 		@Override
-		public void newOrder(ChildOrder order) throws DownStreamException {
-			order = order.clone();
-			String ordRef = "" + proxy.getORDER_REF();
+		synchronized public void newOrder(ChildOrder order) throws DownStreamException {
+			String ordRef = proxy.getClOrderId();
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
 			String symbol = convertDownSymbol(order.getSymbol());
@@ -176,11 +185,15 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	@Override
 	public void onOrder(CThostFtdcOrderField update) {
 		log.debug("onOrder: " + update);
-		String clOrderId = update.OrderRef().getCString();	
+		String clOrderId = TraderHelper.genClOrderId(update.FrontID(), update.SessionID(), update.OrderRef().getCString());		
 		byte statusCode = update.OrderStatus();
 		int volumeTraded = update.VolumeTraded();
 		String msg = TraderHelper.toGBKString(update.StatusMsg().getBytes());
 		OrdStatus status = TraderHelper.convert2OrdStatus(statusCode);
+		if(null == status) {
+			log.debug("skipping update for status: " + statusCode);
+			return;
+		}
 		ExecType execType = TraderHelper.OrdStatus2ExecType(status);		
 		log.info("onOrder: " + clOrderId + " Type: " + status + " Volume: " + volumeTraded + " Message: " + msg );
 		
@@ -196,13 +209,21 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			log.debug("Skipping update since ordStatus doesn't change: " + status);
 			return;
 		}
+		// store exchange serial ID
+		if ( TraderHelper.isTradedStatus(statusCode) ) {
+			String exchangeId = update.ExchangeID().getCString();
+			String orderSysId =  update.OrderSysID().getCString();
+			String exchangeOrderId = TraderHelper.genExchangeOrderId(exchangeId, orderSysId);
+			exchangeSerial2Serial.put(exchangeOrderId, clOrderId);
+		}
+		
 
 		if ( status != null ) {
 			order.setOrdStatus(status);
 			if (PriceUtils.GreaterThan(volumeTraded, order.getCumQty())) {
 				tradePendings.put(clOrderId, new Double(volumeTraded)); // leave trade to do the update
 			} else {				
-				this.listener.onOrder(execType, order, null, msg);
+				this.listener.onOrder(execType, order.clone(), null, msg);
 			}
 			
 		}
@@ -219,6 +240,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 				positionRecord.releaseQuantity(convertDownSymbol(order.getSymbol()), 
 					order.getSide().isBuy(), 
 					flag, remaining);
+		} else {
+			log.debug("After response: " + positionRecord);
 		}
 	}
 	
@@ -227,14 +250,19 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	 * Notify Trade
 	 */
 	@Override
-	public void onTrade(CThostFtdcTradeField trade) {
-		log.info("Traded: " + trade);
-		String clOrderId = trade.OrderRef().getCString();	
+	public void onTrade(CThostFtdcTradeField trade) {		
+		String exchangeOrderId = TraderHelper.genExchangeOrderId(trade.ExchangeID().getCString(), trade.OrderSysID().getCString());
+		String clOrderId = exchangeSerial2Serial.get(exchangeOrderId);
+		if ( null == clOrderId ) {
+			log.info("Order not found： " + exchangeOrderId);
+			return;
+		}
 		ChildOrder order = serialToOrder.get(clOrderId);
 		if ( null == order ) {
 			log.info("Order not found: " + clOrderId);
 			return;
 		}
+		log.info("Traded: " + trade);
 		Double volumeTraded = tradePendings.remove(clOrderId);
 		if(null == volumeTraded) {
 			log.error("Received trade without order update");
@@ -272,10 +300,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 
 				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
 				trade.OffsetFlag(), trade.Volume());
-		
-		returnRemainingPosition(order, trade.OffsetFlag());
 
-		this.listener.onOrder(execType, order, execution, null);
+		this.listener.onOrder(execType, order.clone(), execution, null);
 	}
 
 	@Override
@@ -291,7 +317,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// return position holding
 		returnRemainingPosition(order, order.get(Byte.class, OrderField.FLAG.value()));
 
-		this.listener.onOrder(ExecType.CANCELED, order, null, msg);
+		this.listener.onOrder(ExecType.CANCELED, order.clone(), null, msg);
 	}
 
 	@Override
@@ -307,7 +333,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// return position holding
 		returnRemainingPosition(order, order.get(Byte.class, OrderField.FLAG.value()));
 
-		this.listener.onOrder(ExecType.REJECTED, order, null, msg);
+		this.listener.onOrder(ExecType.REJECTED, order.clone(), null, msg);
 	}
 
 	@Override
@@ -315,25 +341,38 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			boolean isLast) {
 		if ( field == null ) {
 			log.info("CThostFtdcInvestorPositionField is null");
+			positionRecord.clear();
 			return;
 		}
 		String symbol = field.InstrumentID().getCString();
 		double today = field.TodayPosition();
 		double yesterday = field.YdPosition();		
+		if(field.YdPosition()>0)
+			yesterday -= field.CloseVolume();
+		
 		boolean isBuy = false;
-		if(field.PosiDirection() == TraderLibrary.THOST_FTDC_PD_Long)
+		if(field.PosiDirection() == TraderLibrary.THOST_FTDC_PD_Long) {
 			isBuy = true;
+		}			
 		else if(field.PosiDirection() == TraderLibrary.THOST_FTDC_PD_Short) {
 			isBuy = false;
 		} else {
 			log.error("This flag can't be handled: " + field.PosiDirection());
 			return;
 		}
+		
 		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday);
-		positionRecord.inject(pos);
+		positionRecord.inject(pos, isLast);
 	}
 
-	
+	@Override
+	public void onEvent(AsyncEvent event) {
+		if(event == queryPositionEvent) {
+			if(getState() && (!positionQueried || throttler.check())) {
+				positionQueried = true;
+				proxy.doQryPosition();
+			}
+		}
+	}
 
-	
 }

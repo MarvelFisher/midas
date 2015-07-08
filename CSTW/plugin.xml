@@ -116,10 +116,18 @@
       </view>
       <view
             allowMultiple="false"
+            class="com.cyanspring.cstw.gui.PositionStatisticView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.PositionStatisticView"
+            name="Open Position Statistic"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
             class="com.cyanspring.cstw.gui.AccountStatisticView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.AccountStatisticViewer"
-            name="Account Statistic View"
+            name="Account Statistic"
             restorable="true">
       </view>
    </extension>
@@ -145,10 +153,20 @@
                   commandId="CSTW.LoadStrategyCommand"
                   label="Load strategy"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>                  
             </command>
             <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>                
             </command>
          </menu>
          <menu
@@ -157,66 +175,168 @@
                   commandId="CSTW.SingleInstrumentStrategyView"
                   label="Single Instrument Strategy"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.MultiOrderStrategyView"
                   label="Multi Instrument Strategy"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.ParentOrderView"
                   label="Single Order Strategy"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.OrderPropertyView"
                   label="Strategy Properties"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.ChildOrderView"
                   label="Child Orders"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.StrategyLogView"
                   label="Strategy Logs"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.ExecutionView"
                   label="Executions"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+          
             </command>
             <command
                   commandId="CSTW.AccountView"
                   label="Accounts"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            	  <visibleWhen checkEnabled="false">
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.AccountSettingView"
                   label="Account Settings"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            	  <visibleWhen checkEnabled="false">
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.PositionView"
                   label="Account Position"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            	  <visibleWhen checkEnabled="false">
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            	  
             </command>
             <command
                   commandId="CSTW.MarketDataView"
                   label="Market Data"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            	  <visibleWhen checkEnabled="false">
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.SignalView"
                   label="Watch list"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            </command>
+            <command
+                  commandId="CSTW.PositionStatisticView"
+                  label="Open Position Statistic"
+                  style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
+            	  <visibleWhen checkEnabled="false">
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.AccountStatisticView"
                   label="Account Statistic"
                   style="push">
+                  <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>       
             </command>
             <menu
                   label="New">
@@ -224,6 +344,11 @@
                      commandId="CSTW.new.ParentOrderView"
                      label="Single Order Strategy"
                      style="push">
+                     <visibleWhen checkEnabled="false">
+		               <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+            	  </visibleWhen>
                </command>
             </menu>
          </menu>
@@ -332,11 +457,35 @@
             name="Account Settings">
       </command>
       <command
+            defaultHandler="com.cyanspring.cstw.gui.command.PositionStatisticViewCommand"
+            description="Position Statistic"
+            id="CSTW.PositionStatisticView"
+            name="Open Position Statistic">
+      </command>
+      <command
             defaultHandler="com.cyanspring.cstw.gui.command.AccountStatisticViewCommand"
             description="Account Statistic"
             id="CSTW.AccountStatisticView"
             name="Account Statistic">
       </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.services">
+      <sourceProvider
+            provider="com.cyanspring.cstw.gui.command.auth.AuthProvider">
+         <variable
+               name="Admin"
+               priorityLevel="workbench">
+         </variable>
+         <variable
+               name="RiskManager"
+               priorityLevel="workbench">
+         </variable>
+         <variable
+               name="Trader"
+               priorityLevel="workbench">
+         </variable>
+      </sourceProvider>
    </extension>
 
 </plugin>

@@ -21,6 +21,11 @@ public class CtpPosition implements Serializable{
 		this.isBuy = isBuy;
 	}
 	
+	public void add(CtpPosition position) {
+		this.tdQty += position.getTdQty();
+		this.ydQty += position.getYdQty();
+	}
+	
 	////getters and setters ////
 	public String getSymbol() {
 		return symbol;

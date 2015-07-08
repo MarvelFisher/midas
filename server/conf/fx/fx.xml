@@ -135,6 +135,7 @@
 		<property name="checkEmailUnique" value="onlyExist"/>
 		<property name="checkPhoneUnique" value="noCheck"/>
 		<property name="syncCentralDb" value="true"/>
+		<property name="useLtsGateway" value="true" />
 	</bean>
 
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
@@ -407,6 +408,9 @@
 		<property name="refDataFile">
 			<value>refdata/refData_fdt.xml</value>
 		</property>
+	</bean>
+
+	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
 	</bean>
 
 	<bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">

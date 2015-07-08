@@ -127,6 +127,11 @@ public class SymbolChef implements Runnable{
 			entry.getValue().getAllChartPrice();
 		}
 	}
+	
+	public SymbolData getSymbolData(String symbol)
+	{
+		return mapSymboldata.get(symbol);
+	}
 
 	@Override
 	public void run() 

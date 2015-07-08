@@ -65,15 +65,20 @@
                 <entry key="Symbol">
                     <bean class="com.cyanspring.server.validation.InstrumentValidator"/>
                 </entry>
-                <entry key="Qty">
-                    <bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
-                </entry>
-                <entry key="Dis Qty">
-                    <bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
-                </entry>
-                <entry key="Qty">
-                    <bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
-                </entry>
+	  			<entry key="Dis Qty">
+					<bean class="com.cyanspring.server.validation.FutureOrderQuantityValidator">
+						<property name="marketMaxQty" ref="marketMaximumOrderQuantity"/>
+						<property name="limitMaxQty" ref="limitMaximumOrderQuantity"/>
+						<property name="minQty" ref="minimumOrderQuantity"/>
+					</bean>		  			
+				</entry>
+	  			<entry key="Qty">
+					<bean class="com.cyanspring.server.validation.FutureOrderQuantityValidator">
+						<property name="marketMaxQty" ref="marketMaximumOrderQuantity"/>
+						<property name="limitMaxQty" ref="limitMaximumOrderQuantity"/>
+						<property name="minQty" ref="minimumOrderQuantity"/>
+					</bean>
+				</entry>
                 <entry key="Start Time">
                     <bean class="com.cyanspring.server.validation.StartTimeValidator"/>
                 </entry>
@@ -171,37 +176,6 @@
     <bean id="defaultStartEndTime" class="com.cyanspring.common.marketsession.DefaultStartEndTime">
         <constructor-arg><value>01:00:00</value></constructor-arg>
         <constructor-arg><value>23:00:00</value></constructor-arg>
-    </bean>
-
-    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
-        <property name="arguments">
-            <list>
-                <value>default</value>
-                <value>default</value>
-                <value>FC</value>
-                <value>CNY</value>
-                <value>A</value>
-                <value>1000000.0</value>
-                <value>8.333333</value>
-                <value>1.0</value>
-                <value>0.00004</value>
-                <value>2</value>
-                <null/>
-                <value>1.0</value>
-                <value>0.0</value>
-                <value>0.98</value>
-                <value>0</value>
-                <value>0.1</value>
-                <value>0.2</value>
-                <value>0.3</value>
-                <value>false</value>
-                <value>false</value>
-                <value>0</value>
-                <value>0</value>
-                <value>DAY_TRADING</value>
-            </list>
-        </property>
     </bean>
 
 </beans>

@@ -41,7 +41,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 					double high, 
 					double low, 
 					double close, 
-					int    volume)
+					long   volume)
 	{
 
 		this.setTradedate(tradedate);

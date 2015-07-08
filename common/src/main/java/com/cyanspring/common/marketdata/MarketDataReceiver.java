@@ -311,7 +311,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isInitRefDateReceived = false;
         isInitIndexSessionReceived = true;
         for (IMarketDataAdaptor adaptor : adaptors) {
-            if ("WindFutureDataAdaptor".equals(adaptor.getClass().getSimpleName())) {
+            if ("WindGateWayAdapter".equals(adaptor.getClass().getSimpleName())) {
                 isInitIndexSessionReceived = false;
                 break;
             }
@@ -440,7 +440,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     @Override
     public void onTrade(Trade trade) {
-        if(quoteLogIsOpen) log.debug("Trade Receive:T="+trade.getSymbol()+",index="+trade.getId()+",BS="+trade.getBuySellFlag()+",l="+trade.getPrice()+",v=" + trade.getQuantity());
+        if(quoteLogIsOpen) log.debug("Trade Receive:S="+trade.getSymbol()+",I="+trade.getId()+",BS="+trade.getBuySellFlag()+",P="+trade.getPrice()+",V=" + trade.getQuantity());
         TradeEvent event = new TradeEvent(trade.getSymbol(), null, trade);
         eventProcessor.onEvent(event);
     }

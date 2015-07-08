@@ -28,14 +28,18 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.SystemInfo;
+import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
+import com.cyanspring.common.cstw.auth.IAuthChecker;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
@@ -64,6 +68,7 @@ public class Business {
 	private SystemInfo systemInfo;
 	private IRemoteEventManager eventManager;
 	private OrderCachingManager orderManager;
+	private IAuthChecker authManager;
 	private String inbox;
 	private String channel;
 	private String nodeInfoChannel;
@@ -83,7 +88,7 @@ public class Business {
 	private Map<AlertType, Integer> alertColorConfig;
 	private String user = Default.getUser();
 	private String account = Default.getAccount();
-	
+	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
 	// singleton implementation
 	private Business() {
 	}
@@ -124,6 +129,12 @@ public class Business {
 				multiInstrumentFieldDefs = initClientEvent.getMultiInstrumentStrategyFieldDefs();
 				if(!isLoginRequired()) {
 					requestStrategyInfo(initClientEvent.getSender());
+				}
+			}else if (event instanceof CSTWUserLoginReplyEvent) {
+				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent)event;
+				processCSTWUserLoginReplyEvent(evt);
+				if(isLoginRequired() && evt.isOk()) {
+					requestStrategyInfo(evt.getSender());
 				}
 			} else if (event instanceof UserLoginReplyEvent) {
 				UserLoginReplyEvent evt = (UserLoginReplyEvent)event;
@@ -259,6 +270,7 @@ public class Business {
 		//eventManager = new RemoteEventManager(beanHolder.getTransportService());
 		eventManager = beanHolder.getEventManager();
 		alertColorConfig = beanHolder.getAlertColorConfig();
+		authManager = beanHolder.getAuthManager();
 		
 		boolean ok = false;
 		while(!ok) {
@@ -289,7 +301,8 @@ public class Business {
 		eventManager.subscribe(ServerReadyEvent.class, listener);		
 		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
 		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
-		
+		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
+
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
 
@@ -429,6 +442,21 @@ public class Business {
 		return BeanHolder.getInstance().isLoginRequired();
 	}
 	
+	public boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
+		log.info("processCSTWUserLoginReplyEvent");
+		if(!event.isOk())
+			return false;
+		
+		UserGroup userGroup = event.getUserGroup();
+		this.user = userGroup.getUser();
+		this.userGroup = userGroup;
+		log.info("login user:{},{}",user,userGroup.getRole());
+		
+
+		
+		return true;
+	}
+	
 	public boolean processUserLoginReplyEvent(UserLoginReplyEvent event) {
 		if(!event.isOk())
 			return false;
@@ -452,4 +480,22 @@ public class Business {
 		return account;
 	}
 	
+	public UserGroup getUserGroup() {
+		return userGroup;
+	}
+	
+	public boolean isManagee(String account){
+		
+		if(userGroup.isAdmin())
+			return true;
+		
+		if(userGroup.isManageeExist(account))
+			return true;
+		
+		return false;
+	}
+	
+	public boolean hasAuth(String view,String action){
+		return this.authManager.hasAuth(userGroup.getRole(), view, action);
+	}
 }

@@ -2,6 +2,12 @@ package com.cyanspring.adaptor.future.wind.data;
 
 
 import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.adaptor.future.wind.WindDef;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +23,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parset InputMessage Array To Wind IndexData Object
+     *
      * @param inputMessageArray
      * @param indexDataBySymbolMap
      * @return
@@ -86,6 +93,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser inputHashMap to Wind IndexData Object
+     *
      * @param inputHashMap
      * @param indexDataBySymbolMap
      * @return
@@ -109,14 +117,16 @@ public class WindDataParser extends AbstractWindDataParser {
                 indexData.setHighIndex(((Number) inputHashMap.get(FDTFields.High)).longValue());
             if (null != inputHashMap.get(FDTFields.Last))
                 indexData.setLastIndex(((Number) inputHashMap.get(FDTFields.Last)).longValue());
-            if (null != inputHashMap.get(FDTFields.Low)) indexData.setLowIndex(((Number) inputHashMap.get(FDTFields.Low)).longValue());
+            if (null != inputHashMap.get(FDTFields.Low))
+                indexData.setLowIndex(((Number) inputHashMap.get(FDTFields.Low)).longValue());
             if (null != inputHashMap.get(FDTFields.Open))
                 indexData.setOpenIndex(((Number) inputHashMap.get(FDTFields.Open)).longValue());
             if (null != inputHashMap.get(FDTFields.PreClose))
                 indexData.setPrevIndex(((Number) inputHashMap.get(FDTFields.PreClose)).longValue());
             if (null != inputHashMap.get(FDTFields.Volume))
                 indexData.setTotalVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
-            if (null != inputHashMap.get(FDTFields.Time)) indexData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
+            if (null != inputHashMap.get(FDTFields.Time))
+                indexData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
             if (null != inputHashMap.get(FDTFields.TradingDay))
                 indexData.setTradingDay(((Number) inputHashMap.get(FDTFields.TradingDay)).intValue());
             if (null != inputHashMap.get(FDTFields.Turnover))
@@ -127,6 +137,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parset InputMessage Array To Wind FutureData Object
+     *
      * @param inputMessageArray
      * @param futureDataBySymbolMap
      * @return
@@ -230,6 +241,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser input HashMap to Wind FutureData Object
+     *
      * @param inputHashMap
      * @param futureDataBySymbolMap
      * @return
@@ -258,41 +270,42 @@ public class WindDataParser extends AbstractWindDataParser {
             if (null != inputHashMap.get(FDTFields.BidVolumeArray))
                 futureData.setBidVol(parseArrayListTolongArray((ArrayList<Number>) inputHashMap.get(FDTFields.BidVolumeArray)));
             if (null != inputHashMap.get(FDTFields.Close))
-                futureData.setClose(((Number)inputHashMap.get(FDTFields.Close)).longValue());
+                futureData.setClose(((Number) inputHashMap.get(FDTFields.Close)).longValue());
             if (null != inputHashMap.get(FDTFields.High))
-                futureData.setHigh(((Number)inputHashMap.get(FDTFields.High)).longValue());
+                futureData.setHigh(((Number) inputHashMap.get(FDTFields.High)).longValue());
             if (null != inputHashMap.get(FDTFields.HighLimit))
-                futureData.setHighLimited(((Number)inputHashMap.get(FDTFields.HighLimit)).longValue());
+                futureData.setHighLimited(((Number) inputHashMap.get(FDTFields.HighLimit)).longValue());
             if (null != inputHashMap.get(FDTFields.Low))
-                futureData.setLow(((Number)inputHashMap.get(FDTFields.Low)).longValue());
+                futureData.setLow(((Number) inputHashMap.get(FDTFields.Low)).longValue());
             if (null != inputHashMap.get(FDTFields.LowLimit))
-                futureData.setLowLimited(((Number)inputHashMap.get(FDTFields.LowLimit)).longValue());
+                futureData.setLowLimited(((Number) inputHashMap.get(FDTFields.LowLimit)).longValue());
             if (null != inputHashMap.get(FDTFields.Last))
-                futureData.setMatch(((Number)inputHashMap.get(FDTFields.Last)).longValue());
+                futureData.setMatch(((Number) inputHashMap.get(FDTFields.Last)).longValue());
             if (null != inputHashMap.get(FDTFields.Open))
-                futureData.setOpen(((Number)inputHashMap.get(FDTFields.Open)).longValue());
+                futureData.setOpen(((Number) inputHashMap.get(FDTFields.Open)).longValue());
             if (null != inputHashMap.get(FDTFields.OpenInterest))
-                futureData.setOpenInterest(((Number)inputHashMap.get(FDTFields.OpenInterest)).longValue());
+                futureData.setOpenInterest(((Number) inputHashMap.get(FDTFields.OpenInterest)).longValue());
             if (null != inputHashMap.get(FDTFields.PreSettlePrice))
-                futureData.setPreClose(((Number)inputHashMap.get(FDTFields.PreSettlePrice)).longValue());
+                futureData.setPreClose(((Number) inputHashMap.get(FDTFields.PreSettlePrice)).longValue());
             if (null != inputHashMap.get(FDTFields.SettlePrice))
-                futureData.setSettlePrice(((Number)inputHashMap.get(FDTFields.SettlePrice)).longValue());
+                futureData.setSettlePrice(((Number) inputHashMap.get(FDTFields.SettlePrice)).longValue());
             if (null != inputHashMap.get(FDTFields.Status))
-                futureData.setStatus(((Number)inputHashMap.get(FDTFields.Status)).intValue());
+                futureData.setStatus(((Number) inputHashMap.get(FDTFields.Status)).intValue());
             if (null != inputHashMap.get(FDTFields.Time))
-                futureData.setTime(((Number)inputHashMap.get(FDTFields.Time)).intValue());
+                futureData.setTime(((Number) inputHashMap.get(FDTFields.Time)).intValue());
             if (null != inputHashMap.get(FDTFields.TradingDay))
-                futureData.setTradingDay(((Number)inputHashMap.get(FDTFields.TradingDay)).intValue());
+                futureData.setTradingDay(((Number) inputHashMap.get(FDTFields.TradingDay)).intValue());
             if (null != inputHashMap.get(FDTFields.Volume))
-                futureData.setVolume(((Number)inputHashMap.get(FDTFields.Volume)).longValue());
+                futureData.setVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
             if (null != inputHashMap.get(FDTFields.Turnover))
-                futureData.setTurnover(((Number)inputHashMap.get(FDTFields.Turnover)).longValue());
+                futureData.setTurnover(((Number) inputHashMap.get(FDTFields.Turnover)).longValue());
         }
         return futureData;
     }
 
     /**
      * Parser inputMessage to wind StockData Object
+     *
      * @param inputMessageArray
      * @param stockDataBySymbolMap
      * @return
@@ -431,6 +444,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser input HashMap to Wind StockData Object
+     *
      * @param inputHashMap
      * @param stockDataBySymbolMap
      * @return
@@ -520,6 +534,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser inputMessage to wind Transation Object
+     *
      * @param inputMessageArray
      * @param transationDataBySymbolMap
      * @return
@@ -578,6 +593,7 @@ public class WindDataParser extends AbstractWindDataParser {
 
     /**
      * Parser input HashMap to Wind Transation Object
+     *
      * @param inputHashMap
      * @param transationDataBySymbolMap
      * @return
@@ -610,5 +626,141 @@ public class WindDataParser extends AbstractWindDataParser {
                 transationData.setBuySellFlag(((Number) inputHashMap.get(FDTFields.BuySellFlag)).intValue());
         }
         return transationData;
+    }
+
+    /**
+     * Parser inputMessage to wind CodeTable Object
+     *
+     * @param inputMessageArray
+     * @param codeTableDataBySymbolMap
+     * @return
+     */
+    public CodeTableData convertToCodeTableData(String[] inputMessageArray, ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap) {
+        CodeTableData codeTableData = null;
+        String key = null;
+        String value = null;
+        String[] kv_arr = null;
+
+        for (String anInputMessageArray : inputMessageArray) {
+            if (anInputMessageArray != null && !"".equals(anInputMessageArray)) {
+                kv_arr = anInputMessageArray.split("=");
+                if (kv_arr.length > 1) {
+                    key = kv_arr[0];
+                    value = kv_arr[1];
+                    if (key.equals("Symbol")) {
+                        if (codeTableDataBySymbolMap.containsKey(value)) {
+                            codeTableData = codeTableDataBySymbolMap.get(value);
+                        } else {
+                            codeTableData = new CodeTableData();
+                            codeTableData.setWindCode(value);
+                        }
+                    }
+                    switch (key) {
+                        case "CNName":
+                            codeTableData.setCnName(value);
+                            codeTableData.setSpellName(WindDataParser.getSpellName(value, true));
+                            break;
+                        case "ShortName":
+                            codeTableData.setShortName(value);
+                            break;
+                        case "SecurityExchange":
+                            codeTableData.setSecurityExchange(value);
+                            break;
+                        case "SecurityType":
+                            codeTableData.setSecurityType(Integer.parseInt(value));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        return codeTableData;
+    }
+
+    /**
+     * Parser input HashMap to Wind Transation Object
+     *
+     * @param inputHashMap
+     * @param codeTableDataBySymbolMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public CodeTableData convertToCodeTableData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap) throws UnsupportedEncodingException {
+        CodeTableData codeTableData = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
+            if (codeTableDataBySymbolMap.containsKey(symbol)) {
+                codeTableData = codeTableDataBySymbolMap.get(symbol);
+            } else {
+                codeTableData = new CodeTableData();
+                codeTableData.setWindCode(symbol);
+            }
+            if (null != inputHashMap.get(FDTFields.CNName)) {
+                String cnName = new String((byte[]) inputHashMap.get(FDTFields.CNName), "UTF-8");
+                codeTableData.setCnName(cnName);
+                codeTableData.setSpellName(WindDataParser.getSpellName(cnName, true));
+            }
+            if (null != inputHashMap.get(FDTFields.ShortName))
+                codeTableData.setShortName(new String((byte[]) inputHashMap.get(FDTFields.ShortName), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.SecurityExchange))
+                codeTableData.setSecurityExchange(new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.SecurityType))
+                codeTableData.setSecurityType(((Number) inputHashMap.get(FDTFields.SecurityType)).intValue());
+        }
+        return codeTableData;
+    }
+
+    /**
+     * convert Chinese Full Name to Spell Name
+     *
+     * @param fullName
+     * @param isSimple
+     * @return
+     */
+    public static String getSpellName(String fullName, boolean isSimple) {
+        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+        format.setVCharType(HanyuPinyinVCharType.WITH_V);
+        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        String spellName = "";
+        try {
+            for (int i = 0; i < fullName.length(); i++) {
+                char word = fullName.charAt(i);
+                String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(word, format);
+                if (pinyinArray == null) { //pinyin4j不能处理非中文
+                    spellName = spellName + String.valueOf(word).trim();
+                    if (!isSimple) spellName = spellName + " ";
+                    continue;
+                }
+                if (isSimple) {
+                    spellName = spellName + pinyinArray[0].substring(0, 1);
+                } else {
+                    spellName = spellName + pinyinArray[0] + " ";
+                }
+            }
+            if(spellName.contains(WindDef.STOCK_EX_DIVIDENT)) spellName = spellName.replace(WindDef.STOCK_EX_DIVIDENT, "");
+            if(spellName.contains(WindDef.STOCK_EX_RIGHT)) spellName = spellName.replace(WindDef.STOCK_EX_RIGHT, "");
+            if(spellName.contains(WindDef.STOCK_EX_RIGHT_DIVIDENT)) spellName = spellName.replace(WindDef.STOCK_EX_RIGHT_DIVIDENT,"");
+        } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
+            badHanyuPinyinOutputFormatCombination.printStackTrace();
+        }
+        return changeFullToHalf(spellName);
+    }
+
+    /**
+     * change String FullWidth to HalfWidth
+     *
+     * @param originStr
+     * @return destStr
+     * @see <a href="http://www.utf8-chartable.de/unicode-utf8-table.pl?start=65280&number=128&unicodeinhtml=dec">UTF-8 encoding table</a>
+     */
+    public static String changeFullToHalf(String originStr) {
+        for (char c : originStr.toCharArray()) {
+            originStr = originStr.replaceAll("　", " ");
+            if ((int) c >= 65281 && (int) c <= 65374) {
+                originStr = originStr.replace(c, (char) (((int) c) - 65248));
+            }
+        }
+        return originStr;
     }
 }

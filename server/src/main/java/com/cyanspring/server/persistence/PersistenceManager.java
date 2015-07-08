@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.cyanspring.common.account.TerminationStatus;
 import com.cyanspring.common.account.ThirdPartyUser;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.account.*;
@@ -93,6 +94,7 @@ public class PersistenceManager {
 	private CheckEmailType checkEmailUnique = CheckEmailType.allCheck;
     private CheckPhoneType checkPhoneUnique = CheckPhoneType.allCheck;
 	private boolean syncCentralDb = true;
+	private boolean useLtsGateway = true;
 	private boolean embeddedSQLServer;
 	private int textSize = 4000;
 	private boolean cleanStart;
@@ -125,6 +127,7 @@ public class PersistenceManager {
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 			subscribeToEvent(PmPositionPeakPriceUpdateEvent.class, null);
 			subscribeToEvent(PmPositionPeakPriceDeleteEvent.class, null);
+			subscribeToEvent(PmCreateGroupManagementEvent.class, null);
 
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -474,7 +477,7 @@ public class PersistenceManager {
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 					*/
 
-				if(!syncCentralDb)
+				if(!syncCentralDb && !useLtsGateway)
 				{
 					ok = userKeeper.login(userId, event.getOriginalEvent().getPassword());
 					if(ok)
@@ -500,17 +503,65 @@ public class PersistenceManager {
 
 					}
 				}
+				else if (!syncCentralDb && useLtsGateway)
+				{
+					ok = userKeeper.userExists(userId);
+
+					if(!ok) // user created by another LTS, must be created here again
+					{
+						//generating default Account
+						String defaultAccountId = user.getDefaultAccount();
+						if(null == user.getDefaultAccount() || user.getDefaultAccount().equals("")) {
+							if(!accountKeeper.accountExists(user.getId() + "-" + Default.getMarket())) {
+								defaultAccountId = user.getId() + "-" + Default.getMarket();
+							} else {
+								defaultAccountId = Default.getAccountPrefix() + IdGenerator.getInstance().getNextSimpleId();
+								if(accountKeeper.accountExists(defaultAccountId)) {
+									msg = ErrorMessage.CREATE_USER_FAILED;
+									throw new UserException("[PmUserLoginEvent]Cannot create default account for user: " +
+											user.getId() + ", last try: " + defaultAccountId);
+								}
+							}
+						}
+
+						//account creating process
+						defaultAccount = new Account(defaultAccountId, userId);
+						user.setDefaultAccount(defaultAccountId);
+						accountKeeper.setupAccount(defaultAccount);
+						createAccount(defaultAccount);
+						list = new ArrayList<Account>();
+						list.add(defaultAccount);
+						eventManager.sendEvent(new OnUserCreatedEvent(user, list));
+						eventManager.sendRemoteEvent(new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, defaultAccount));
+
+						tx = session.beginTransaction();
+						session.save(user);
+						tx.commit();
+						log.info("[PmUserLoginEvent] Created user: " + userId);
+						ok = true;
+
+					}
+					else //user exists in derby
+					{
+						user = userKeeper.getUser(userId);
+						list = accountKeeper.getAccounts(userId);
+					}
+				}
 				else
 				{
 					user = centralDbConnector.userLoginEx(userId, event.getOriginalEvent().getPassword(), event.getOriginalEvent().getLoginType());
-					userId = user.getId(); // It may be email or phone, change back to user id.
 
 					if(null != user) // login successful from mysql
 					{
+						userId = user.getId(); // It may be email or phone, change back to user id.
+
 						if (user.getTerminationStatus().isTerminated()) {
 							ok = false;
-							msg = ErrorMessage.USER_IS_TERMINATED;
-							throw new UserException("User is terminated");
+
+							msg = user.getTerminationStatus() == TerminationStatus.TRANSFERRING ?
+									ErrorMessage.FDT_ID_IS_UNDER_PROCESSING : ErrorMessage.USER_IS_TERMINATED;
+							throw new UserException(user.getTerminationStatus() == TerminationStatus.TRANSFERRING ?
+									"Your FDT ID is under processing. It will be created during weekend. Thank you!" : "User is terminated");
 						}
 
 						ok = userKeeper.userExists(userId);
@@ -648,17 +699,21 @@ public class PersistenceManager {
         boolean isTransfer = false;
 
         try {
-			if (Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
-					centralDbConnector.isThirdPartyUserAnyMappingExist(user.getId())) {
+			if (syncCentralDb) {
+				if (Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
+						centralDbConnector.isThirdPartyUserAnyMappingExist(user.getId())) {
 
-				throw new CentralDbException("This third party id is already used in the new version app",
-						ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP);
+					throw new CentralDbException("This third party id is already used in the new version app",
+							ErrorMessage.THIRD_PARTY_ID_USED_IN_NEW_APP);
+				}
+
+				isTransfer = !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
+						centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase());
+
+				createCentralDbUser(event, user, isTransfer);
+			} else {
+				isTransfer = event.getOriginalEvent().isTransfer();
 			}
-
-            isTransfer = !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId()) &&
-					centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase());
-
-            createCentralDbUser(event, user, isTransfer);
 
             // the 3rd user type is recorded in THIRD_PARTY_USER table.
             if (user.getUserType().isThirdParty() && !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
@@ -719,7 +774,13 @@ public class PersistenceManager {
                     AccountKeeper accountKeeper = (AccountKeeper)event.getAccountKeeper();
 
 					String newEmail = user.getEmail();
-					boolean updatedEmail = newEmail != centralDbConnector.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase()).getEmail();
+					boolean updatedEmail;
+
+					if (syncCentralDb) {
+						updatedEmail = newEmail != centralDbConnector.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase()).getEmail();
+					} else {
+						updatedEmail = event.getOriginalEvent().isUpdatedEmail();
+					}
 
                     // getAccount
                     user = userKeeper.getUser(event.getOriginalEvent().getThirdPartyId().toLowerCase());
@@ -776,7 +837,7 @@ public class PersistenceManager {
         ErrorMessage msg = null;
 
         try {
-			if (!Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
+			if (syncCentralDb && !Strings.isNullOrEmpty(event.getOriginalEvent().getThirdPartyId())) {
 
                 // Old 3rd party id can't be bound with exist FDT id.
                 if (centralDbConnector.isUserExistAndNotTerminated(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
@@ -875,31 +936,33 @@ public class PersistenceManager {
 
         try {
 
-            String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
-                    event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
+			if (syncCentralDb) {
+				String userId = centralDbConnector.getUserIdFromThirdPartyId(event.getOriginalEvent().getThirdPartyId(),
+						event.getOriginalEvent().getMarket(), event.getOriginalEvent().getLanguage());
 
-            if (Strings.isNullOrEmpty(userId) && /* phase 1 */ !centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
+				if (Strings.isNullOrEmpty(userId) && /* phase 1 */ !centralDbConnector.isUserExist(event.getOriginalEvent().getThirdPartyId().toLowerCase())) {
 
-                ok = false;
-                msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
-                throw new UserException("userid or password invalid");
-            }
+					ok = false;
+					msg = ErrorMessage.INVALID_USER_ACCOUNT_PWD;
+					throw new UserException("userid or password invalid");
+				}
 
-            /* phase 1 */
-            if (Strings.isNullOrEmpty(userId)) {
-                userId = event.getOriginalEvent().getThirdPartyId();
-            }
+           		 /* phase 1 */
+				if (Strings.isNullOrEmpty(userId)) {
+					userId = event.getOriginalEvent().getThirdPartyId();
+				}
 
-            event.getOriginalEvent().getUser().setId(userId);
+				event.getOriginalEvent().getUser().setId(userId);
 
-            // Get user from MySQL and check termination
-            user = centralDbConnector.getUser(userId);
+				// Get user from MySQL and check termination
+				user = centralDbConnector.getUser(userId);
 
-            if (null == user || user.getTerminationStatus().isTerminated()) {
-                ok = false;
-                msg = ErrorMessage.USER_IS_TERMINATED;
-                throw new UserException("User is terminated");
-            }
+				if (null == user || user.getTerminationStatus().isTerminated()) {
+					ok = false;
+					msg = ErrorMessage.USER_IS_TERMINATED;
+					throw new UserException("User is terminated");
+				}
+			}
 
             // Get account
             user = userKeeper.getUser(event.getOriginalEvent().getUser().getId());
@@ -1037,6 +1100,32 @@ public class PersistenceManager {
 		    	tx.rollback();
 		}
 		finally {
+			session.close();
+		}
+	}	
+	
+	public void processPmCreateGroupManagementEvent(PmCreateGroupManagementEvent event){
+		
+		List<GroupManagement> groups = event.getGroupManagementList();
+		
+		if( null == groups || groups.isEmpty() ){
+			log.error("GroupManagement List is null");
+			return;
+		}
+		
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try{
+			tx = session.beginTransaction();
+			for(GroupManagement group : groups){
+				session.save(group);
+			}
+			tx.commit();
+		}catch(Exception e){
+		    if (tx!=null) 
+		    	tx.rollback();
+			log.error(e.getMessage(),e);
+		}finally{
 			session.close();
 		}
 	}
@@ -1289,6 +1378,7 @@ public class PersistenceManager {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<GroupManagement> recoverGroupManagement() {
 		List<GroupManagement> result = new ArrayList<GroupManagement>();
 		Session session = null;
@@ -1794,6 +1884,14 @@ public class PersistenceManager {
 	
 	public void setSyncCentralDb(boolean syncCentralDb){
 		this.syncCentralDb = syncCentralDb;
+	}
+
+	public boolean isUseLtsGateway() {
+		return useLtsGateway;
+	}
+
+	public void setUseLtsGateway(boolean useLtsGateway) {
+		this.useLtsGateway = useLtsGateway;
 	}
 
 	public String getEmbeddedHost() {

@@ -191,11 +191,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.MARKET_WILL_TAKE_ORDER_BEFORE_OPEN_ONE_HOUR, getBean(462, "Your order can’t be placed. We start taking orders at 1 hour before market open."));
 			addAndCheck(ErrorMessage.SYMBOL_NOT_TRADABLE, getBean(463, "Trade-related functions are not available for this contract."));
 			addAndCheck(ErrorMessage.TRADING_SUSPENSION, getBean(464, "Trading Suspenstion!"));
-
-			
-			
-			
-			
+			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_SETTING, getBean(465, "The order quantity is over maximum setting"));
+			addAndCheck(ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING, getBean(466, "The order quantity is not met minimum setting"));
+		
 			// user errors start with 500
 			addAndCheck(ErrorMessage.CREATE_USER_FAILED,getBean(500, "Create user failed"));			
 			addAndCheck(ErrorMessage.USER_LOGIN_FAILED,getBean(501, "User login failed"));
@@ -226,11 +224,16 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ATTACH_THIRD_PARTY_ID_FAILED, getBean(526, "Attach third party id failed"));
 			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
 			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
+			addAndCheck(ErrorMessage.FDT_ID_IS_UNDER_PROCESSING, getBean(529, "Your FDT ID is under processing. It will be created during weekend. Thank you!"));
+			addAndCheck(ErrorMessage.ACCOUNT_ALREADY_ACTIVE, getBean(530, "Your state already in ACTIVE!"));				
+			addAndCheck(ErrorMessage.OVER_TERMINATE_LOSS, getBean(531, "over terminate loss!"));			
+			addAndCheck(ErrorMessage.OVER_FROZEN_LOSS, getBean(532, "over frozen loss!"));	
+			addAndCheck(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, getBean(533, "Create group management failed!"));			
+			addAndCheck(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, getBean(534, "Get group management info failed!"));			
+			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(534, "CSTW Login failed!"));			
+
 			
-			
-			
-			
-			
+
 			// client errors start with 600
 			addAndCheck(ErrorMessage.NEED_RESTART_APP,getBean(600, "Please restart your App"));			
 			addAndCheck(ErrorMessage.SERVER_IN_MAINTAINING,getBean(601, "Server in Maintaining , Please wait"));

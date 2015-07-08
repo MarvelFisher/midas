@@ -33,13 +33,13 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 		initNativeLibrary();
 		
 		for (int i = 0 ; i < connectionCount ; i ++) {
-			connections.add(new CtpTradeConnection(connectionPrefix + i, url, broker, conLog, user, password, symbolConverter));
+			connections.add(new CtpTradeConnection(connectionPrefix + String.format("%02d", i+1), url, broker, conLog, user, password, symbolConverter));
 		}
 		
 		for(IDownStreamConnection connection: connections) {
 			connection.init();
+			log.info("Ctp connection initialized: " + connection.getId());	
 		}
-		log.info("Ctp connection initialized: " + connectionPrefix + " " + connectionCount);	
 	}
 
 	private void initNativeLibrary() {

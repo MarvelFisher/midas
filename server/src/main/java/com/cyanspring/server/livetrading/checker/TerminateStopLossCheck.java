@@ -57,7 +57,13 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 		
 		double totalLossLimit = TradingUtil.getMinValue(account.getCashDeposited() * accountSetting.getTerminatePercent()
 				, accountSetting.getTerminateValue());
+		
+		if( PriceUtils.isZero(totalLossLimit) ){
+			return true;
+		}
+		
 		double currentLoss = account.getValue() - account.getCashDeposited();
+		
 		if(PriceUtils.EqualLessThan(currentLoss, -totalLossLimit)){
 			log.info("Account:"+account.getId()+"Terminate loss: " + currentLoss + " over " + -totalLossLimit);
 			account.setState(AccountState.TERMINATED);
@@ -91,6 +97,21 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}
+	}
+	
+	public boolean isOverTerminateLoss(Account account, AccountSetting accountSetting){
+		double totalLossLimit = TradingUtil.getMinValue(account.getCashDeposited() * accountSetting.getTerminatePercent()
+				, accountSetting.getTerminateValue());
+		double currentLoss = account.getValue() - account.getCashDeposited();
+		
+		if( PriceUtils.isZero(totalLossLimit) ){
+			return false;
+		}
+		
+		if(PriceUtils.EqualLessThan(currentLoss, -totalLossLimit)){
+			return true;
+		}
+		return false;
 	}
 	
 }

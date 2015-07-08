@@ -44,14 +44,17 @@
 	  			<entry key="Symbol">
 					<bean class="com.cyanspring.server.validation.InstrumentValidator"/>
 				</entry>
-	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
-				</entry>
 	  			<entry key="Dis Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
+						<property name="maxQty" ref="maximumOrderQuantity"/>
+						<property name="minQty" ref="minimumOrderQuantity"/>
+					</bean>
 				</entry>
 	  			<entry key="Qty">
-					<bean class="com.cyanspring.server.validation.OrderQuantityValidator"/>
+					<bean class="com.cyanspring.server.validation.OrderQuantityValidator">
+						<property name="maxQty" ref="maximumOrderQuantity"/>
+						<property name="minQty" ref="minimumOrderQuantity"/>					
+					</bean>
 				</entry>
 	  			<entry key="Start Time">
 					<bean class="com.cyanspring.server.validation.StartTimeValidator"/>
@@ -150,36 +153,5 @@
 		<constructor-arg><value>01:00:00</value></constructor-arg>
      	<constructor-arg><value>23:00:00</value></constructor-arg>
 	</bean>
-
-    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
-        <property name="arguments">
-		    <list>
-	           	<value>default</value>
-	           	<value>default</value>
-	           	<value>FX</value>
-	           	<value>USD</value>
-	           	<value>A</value>
-	           	<value>100000.0</value>
-	           	<value>1.0</value>
-	           	<value>100000.0</value>
-	           	<value>0.00004</value>
-	           	<value>2</value>
-	           	<null/>
-	           	<value>100000.0</value>
-	           	<value>0.0</value><!-- position stop loss -->
-	           	<value>0.98</value>
-				<value>0</value>
-				<value>0.1</value><!-- live trading : position stop loss -->
-				<value>0.2</value><!-- live trading : freeze stop loss -->
-				<value>0.3</value><!-- live trading : terminate stop loss -->
-				<value>true</value><!-- live trading : company live trading (trading Mode)-->
-				<value>true</value><!-- live trading : user live trading (stop loss)-->
-				<value>0</value>
-				<value>0</value>
-				<value>DEFAULT</value>
-            </list>
-       </property>
-    </bean>
 
 </beans>

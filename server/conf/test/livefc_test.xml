@@ -114,6 +114,7 @@
         <property name="cleanStart" value="false"/>
         <property name="todayOnly" value="true"/>
         <property name="syncCentralDb" value="false"/>
+        <property name="useLtsGateway" value="true" />
     </bean>
 
     <bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
@@ -240,6 +241,9 @@
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>
 
+	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
+	</bean>
+
     <bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">
     </bean>
 
@@ -277,32 +281,7 @@
         <property name="checkSingleSide" value="true"/>
     </bean>
 
-	<bean id="ctpAdaptor" class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeAdaptor">
-		<property name="url">
-			<value>tcp://180.168.146.181:10200</value>
-		</property>
-		<property name="conLog">
-			<value>./tradeCon/</value>
-		</property>
-		<property name="user">
-			<value>00090</value>
-		</property>
-		<property name="password">
-			<value>hkfdt1234</value>
-		</property>
-		<property name="broker">
-			<value>0253</value>
-		</property>
-		<property name="connectionCount">
-			<value>1</value>
-		</property>
-		<property name="libPath">
-			<value>../adaptor/ctplib/win32/thosttraderapi.dll</value>
-		</property>
-        <property name="symbolConverter">
-            <bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/>
-        </property>
-	</bean>
+
 
     <bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
         <constructor-arg>
@@ -313,6 +292,7 @@
 
     <bean id="indexMarketSessionManager" class="com.cyanspring.server.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
+        <property name="noCheckSettlement" value="true"/>
     </bean>
 
     <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">

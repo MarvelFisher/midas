@@ -85,6 +85,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
         if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
         if (packType == FDTFields.WindTransaction) dataType = WindDef.MSG_DATA_TRANSACTION;
+        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         return dataType;
     }
@@ -208,7 +209,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
 
         msLastTime = System.currentTimeMillis();
 
-        // sendRequestCodeTable("CF");
+        if(adaptor.isAllMarket()) {
+            sendRequestCodeTable("SH");
+            sendRequestCodeTable("SZ");
+        }
 
         sendReqHeartbeat(); // send request heartbeat message
 
@@ -246,12 +250,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
     public static void sendData(String data) {
         if (!WindGateWayAdapter.instance.isMsgPack()) data = data + "\r\n";
         ChannelFuture future = context.channel().writeAndFlush(data);
-        future.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture arg0) throws Exception {
-                LogUtil.logDebug(log, "ChannelFuture operationComplete!");
-            }
-        });
     }
 
     /**
@@ -287,7 +285,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         fsb.append(String.valueOf(fsbhashCode));
 
         LogUtil.logInfo(log, "[RequestCodeTable]%s", fsb.toString());
-//		Util.addLog("[RequestCodeTable]%s", fsb.toString());
         sendData(fsb.toString());
     }
 

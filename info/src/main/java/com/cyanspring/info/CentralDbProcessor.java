@@ -33,6 +33,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.info.CentralDbReadyEvent;
 import com.cyanspring.common.event.info.CentralDbSubscribeEvent;
+import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
@@ -133,6 +134,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(AsyncTimerEvent.class, null);
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
+			subscribeToEvent(HistoricalPriceRequestDateEvent.class, null);
 		}
 
 		@Override
@@ -256,6 +258,12 @@ public class CentralDbProcessor implements IPlugin
 		curHisThread = (curHisThread + 1) % numOfHisThreads;  
 	}
 	
+	public void processHistoricalPriceRequestDateEvent(HistoricalPriceRequestDateEvent event)
+	{
+		mapCentralDbEventProc.get("Historical" + curHisThread).onEvent(event);
+		curHisThread = (curHisThread + 1) % numOfHisThreads;  
+	}
+	
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
 		mapCentralDbEventProc.get("Request").onEvent(event);
@@ -320,7 +328,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
 		ArrayList<SymbolInfo> symbolinfoTmp = new ArrayList<SymbolInfo>();
-		symbolinfoTmp.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo));
+		symbolinfoTmp.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, false));
 		symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolInfos(symbolinfoTmp);
 		if (symbolinfos.isEmpty())
 		{
@@ -396,7 +404,7 @@ public class CentralDbProcessor implements IPlugin
 		{
 			getDbhnd().updateSQL(sqlcmd);
 			retsymbollist.clear();
-			retsymbollist.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo));
+			retsymbollist.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, true));
 			if (symbolinfos.isEmpty())
 			{
 				requestDefaultSymbol(retEvent, market);

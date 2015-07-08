@@ -45,7 +45,10 @@ public enum RefDataField {
 	TRADABLE("Tradable"),
 	STRATEGY("Strategy"),
 	SPELL_NAME("Spell name"),
-	COMMODITY("Commodity")
+	COMMODITY("Commodity"),
+	DETAIL_EN("Detail EN"),
+	DETAIL_TW("Detail TW"),
+	DETAIL_CN("Detail CN"),
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

@@ -114,6 +114,7 @@
 		<property name="cleanStart" value="false"/>
 		<property name="todayOnly" value="true"/>
 		<property name="syncCentralDb" value="false"/>
+		<property name="useLtsGateway" value="true" />
 	</bean>
 
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
@@ -238,6 +239,9 @@
 			<value>refdata/refData_fc.xml</value>
 		</property>
 		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
+	</bean>
+
+	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
 	</bean>
 
 	<bean id="userRecoveryProcessor" class="com.cyanspring.server.UserRecoveryProcessor">

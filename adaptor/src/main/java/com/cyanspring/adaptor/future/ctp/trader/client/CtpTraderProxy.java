@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -29,6 +30,10 @@ import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.ISymbolConverter;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
 
@@ -95,6 +100,8 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	}
 	
 	public void newOrder(String sn, ChildOrder order) throws DownStreamException {
+		int orderId[] = parseClOrderId(sn);
+		
 		byte priceType = 0;
 		if ( ExchangeOrderType.MARKET == order.getType() ) {
 			priceType = TraderLibrary.THOST_FTDC_OPT_AnyPrice;
@@ -124,13 +131,16 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		if(null != symbolConverter)
 			symbol = symbolConverter.convertDown(symbol);
 		req.InstrumentID().setCString(symbol);
-		//
-		req.OrderRef().setCString(String.valueOf(sn));		
+		req.OrderRef().setCString(String.valueOf(orderId[2]));		
 		req.OrderPriceType(priceType);
 		req.Direction(direction);
 		req.CombOffsetFlag().set(0, flag);
 		req.CombHedgeFlag().set(0, TraderLibrary.THOST_FTDC_HF_Speculation);
-		req.LimitPrice(order.getPrice());
+		if ( ExchangeOrderType.MARKET == order.getType() ) {
+			req.LimitPrice(0);
+		} else {
+			req.LimitPrice(order.getPrice());
+		} 
 		req.VolumeTotalOriginal((int) order.getQuantity());
 		req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
 		req.TimeCondition(TraderLibrary.THOST_FTDC_TC_GFD);
@@ -153,7 +163,11 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	
 	public void cancelOrder( ChildOrder order ) throws DownStreamException {
 		// get from order		
-		String orderRef = order.getClOrderId();
+		int[] orderId = parseClOrderId(order.getClOrderId());
+		int frontId = orderId[0];
+		int sessionId = orderId[1];
+		int orderRef = orderId[2];
+		
 		String symbol = order.getSymbol();
 		if(null != symbolConverter)
 			symbol = symbolConverter.convertDown(symbol);
@@ -161,9 +175,9 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		CThostFtdcInputOrderActionField req = new CThostFtdcInputOrderActionField();
 		req.BrokerID().setCString(brokerId);
 		req.InvestorID().setCString(user);
-		req.OrderRef().setCString(orderRef);
-		req.FrontID(FRONT_ID);
-		req.SessionID(SESSION_ID);
+		req.OrderRef().setCString(String.valueOf(orderRef));
+		req.FrontID(frontId);
+		req.SessionID(sessionId);
 		req.ActionFlag(TraderLibrary.THOST_FTDC_AF_Delete);
 		req.InstrumentID().setCString(symbol);
 		
@@ -251,8 +265,18 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		req.UserID().setCString(user);
 		req.Password().setCString(password);
 		Pointer<CThostFtdcReqUserLoginField> pReq = Pointer.getPointer(req);
-		traderApi.ReqUserLogin(pReq, getNextSeq());
-		
+		if ( !loginSend ) {
+			traderApi.ReqUserLogin(pReq, getNextSeq());
+			log.info("Send Login: " + user + " , " + password);
+		}
+		loginSend = true;
+	}
+	
+	// disconnect cause status change
+	public void setDisconnectStatus() {
+		loginSend = false;
+		settlementInfoConfirmSend = false;
+		cancelHisOrdSend = true;	
 	}
 	
 	private boolean settlementInfoConfirmSend = false;
@@ -260,11 +284,22 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		CThostFtdcSettlementInfoConfirmField req = new CThostFtdcSettlementInfoConfirmField();
 		req.BrokerID().setCString(brokerId);
 		req.InvestorID().setCString(user);
-		traderApi.ReqSettlementInfoConfirm(Pointer.getPointer(req), getNextSeq());
-		log.info("Send SettlementInfoConfirm");
-			
+		if ( !settlementInfoConfirmSend ) {
+			traderApi.ReqSettlementInfoConfirm(Pointer.getPointer(req), getNextSeq());
+			log.info("Send SettlementInfoConfirm");
+		}
+		settlementInfoConfirmSend = true;			
 	}
 	
+	public void doQryPosition() {
+		final CThostFtdcQryInvestorPositionField req = new CThostFtdcQryInvestorPositionField();
+		req.BrokerID().setCString(brokerId);
+		req.InvestorID().setCString(user);
+		int ret = traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());					
+		log.info("Send QueryPosition return: " + ret);				
+	}
+	
+	private boolean cancelHisOrdSend = false;
 	public void cancelHistoryOrder() {
 		Thread work = new Thread() {
 			public void run() {
@@ -278,9 +313,13 @@ public class CtpTraderProxy implements ILtsLoginListener {
 				for ( CtpOrderToCancel order : order2Cancel ) {
 					cancelOrder(order);
 				}
+				tradeListener.onConnectReady(true);
 			}
 		};
-		work.start();
+		if ( !cancelHisOrdSend ) {
+			work.start();
+		}
+		cancelHisOrdSend = true;
 	}
 	
 	// get order can be cancelled
@@ -308,19 +347,26 @@ public class CtpTraderProxy implements ILtsLoginListener {
 				}
 			}			
 		});
+		
 		final CThostFtdcQryOrderField req = new CThostFtdcQryOrderField();
 		req.BrokerID().setCString(brokerId);
-		req.InvestorID().setCString(user);	
-		
+		req.InvestorID().setCString(user);			
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				int ret = traderApi.ReqQryOrder(Pointer.getPointer(req), getNextSeq());
-				log.info("Send QueryOrder: " + ret);
-			}			
+				while(true) {
+					int ret = traderApi.ReqQryOrder(Pointer.getPointer(req), getNextSeq());
+					if (0 == ret) {
+						break;
+					} else {
+						sleepRandomTime();
+					}
+				}				
+				log.info("Send QueryOrder ");
+			}					
 		};	
 		Timer timer = new Timer() ;
-		timer.schedule(task, 2000);
+		timer.schedule(task, 1000);
 		int timeout = 100;
 		while( (!qryEnd[0]) && (timeout != 0) ) {
 			Thread.sleep(50);
@@ -330,19 +376,17 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		return array;
 	}
 	
-	protected void doQryPosition() {
-		final CThostFtdcQryInvestorPositionField req = new CThostFtdcQryInvestorPositionField();
-		req.BrokerID().setCString(brokerId);
-		req.InvestorID().setCString(user);
-		TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				int ret = traderApi.ReqQryInvestorPosition(Pointer.getPointer(req), getNextSeq());
-				log.info("Send QueryPosition: " + ret);
-			}			
-		};	
-		Timer timer = new Timer() ;
-		timer.schedule(task, 1000);
+	
+	
+	private void sleepRandomTime() {
+		try {
+			Random r = new Random();
+			long interval = 1000 + r.nextLong() % 3000;
+			log.info("Resend in " + interval + " millis");
+			Thread.sleep(interval);
+		} catch (InterruptedException e) {
+			log.info("Thread Exception: " + e.getMessage());
+		}
 	}
 	
 	public void addTradeListener(ILtsTraderListener listener) throws DownStreamException {
@@ -365,6 +409,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 	}
 	
 	public void setReady(boolean ready) {
+		log.debug("setReady: " + ready);
 		this.ready = ready;
 	}
 	
@@ -376,8 +421,27 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		return SESSION_ID;
 	}
 
-	public int getORDER_REF() {
-		return ORDER_REF.getAndIncrement();
+	public String getClOrderId() {
+		return FRONT_ID + ":" + SESSION_ID + ":" + ORDER_REF.getAndIncrement();
+	}
+	
+	// FrontId = int[0]
+	// SessionId = int[1]
+	// OrderRef = int[2]
+	public int[] parseClOrderId(String clOrderId) throws DownStreamException {
+		log.info("Parse Child Order Id: " + clOrderId);
+		if ( clOrderId == null ) {
+			throw new DownStreamException("null clOrderId");
+		}
+		int[] result = new int[3];
+		String[] strs = clOrderId.split(":");
+		if ( strs.length != 3 ) {
+			throw new DownStreamException("Incomplete Child Order Identifier");
+		}
+		result[0] = Integer.parseInt(strs[0]);
+		result[1] = Integer.parseInt(strs[1]);
+		result[2] = Integer.parseInt(strs[2]);
+		return result;
 	}
 	
 	@Override
@@ -391,7 +455,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 
 	@Override
 	public void onDisconnect() {
-		loginSend = false;
+		
 	}
-	
+
 }

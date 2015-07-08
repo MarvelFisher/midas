@@ -206,8 +206,8 @@ public class SymbolData implements Comparable<SymbolData>
         try
         {
         	FileWriter fwrite = new FileWriter(strFile + ".Ch");
-        	log.debug(String.format("Cache: D:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));;
-        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (int)dCurVolume));
+        	log.debug(String.format("Cache: D:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));;
+        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));
         	fwrite.flush();
         	fwrite.close();
         	synchronized(priceData)
@@ -291,7 +291,7 @@ public class SymbolData implements Comparable<SymbolData>
 					getdCurHigh(), 
 					getdCurLow(), 
 					getdClose(), 
-					(int)dCurVolume) ;
+					(long)dCurVolume) ;
 			curPrice.setTotalVolume(getdCurTotalVolume());
 			curPrice.setTurnover(getdCurTurnover());
 			
@@ -312,12 +312,19 @@ public class SymbolData implements Comparable<SymbolData>
 				HistoricalPrice newPrice = null;
 				if (listBase != null)
 				{
+					double amountVolume = 0, amountTurnover = 0;
 					newPrice = new HistoricalPrice(lastPrice.getSymbol(), lastPrice.getTradedate(), lastPrice.getKeytime());
 					for (HistoricalPrice price : listBase)
 					{
 						newPrice.update(price);
+						amountVolume += price.getTotalVolume();
+						amountTurnover += price.getTurnover();
 					}
 					newPrice.update(curPrice);
+					amountVolume += curPrice.getTotalVolume();
+					amountTurnover += curPrice.getTurnover();
+					newPrice.setTotalVolume(amountVolume);
+					newPrice.setTurnover(amountTurnover);
 				}
 				else 
 				{
@@ -340,7 +347,7 @@ public class SymbolData implements Comparable<SymbolData>
 											getdCurHigh(),
 											getdCurLow(),
 											getdClose(),
-											(int)dCurVolume);
+											(long)dCurVolume);
 			lastPrice.setTotalVolume(getdCurTotalVolume());
 			lastPrice.setTurnover(getdCurTurnover());
 		}
@@ -439,16 +446,38 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				return;
 			}
+			IRefSymbolInfo refsymbol = centralDB.getRefSymbolInfo();
+			SymbolInfo symbolinfo = refsymbol.get(refsymbol.at(new SymbolInfo(centralDB.getServerMarket(), getStrSymbol())));
+			String strSymbol = null;
+			if (symbolinfo != null)
+			{
+				if (symbolinfo.getHint() != null)
+				{
+					strSymbol = String.format("%s.%s", symbolinfo.getHint(), symbolinfo.getExchange());
+				}
+			}
+			if (strSymbol == null)
+			{
+				strSymbol = getStrSymbol();
+			}
 			log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, (-1) * centralDB.getHistoricalDataPeriod().get(strType));
+			cal.add(Calendar.DATE, (-1) * (centralDB.getHistoricalDataPeriod().get(strType) + 2));
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(
-					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()));
+					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
 			if (historical != null)
 			{
 				log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] get %d", 
 						market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));
+				if(historical.size() < centralDB.getHistoricalDataCount().get(strType)) 
+				{
+					cal.add(Calendar.DATE, -30);
+					historical = centralDB.getDbhnd().getCountsValue(
+							market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
+					log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] lack of data, query again get %d", 
+							market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));					
+				}
 				mapHistorical.put(strType,  historical);
 			}
 		}
@@ -629,7 +658,7 @@ public class SymbolData implements Comparable<SymbolData>
 													   getdCurHigh(), 
 													   getdCurLow(), 
 													   getdClose(), 
-													   (int)dCurVolume) ;
+													   (long)dCurVolume) ;
 		curPrice.setTotalVolume(getdCurTotalVolume());
 		curPrice.setTurnover(getdCurTurnover());
 		HistoricalPrice lastPrice = null ;

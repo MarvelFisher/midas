@@ -148,6 +148,12 @@
        		<param name="type">12</param>
    		</type>
 	</property>
+	<property column="USER_ROLE" 		name="role" 	length="20">
+   		<type name="org.hibernate.type.EnumType">
+   			<param name="enumClass">com.cyanspring.common.account.UserRole</param>   
+       		<param name="type">12</param>
+   		</type>
+	</property>
   	<property column="DEFAULT_ACCOUNT"	name="defaultAccount" type="java.lang.String"/>
   </class>
 

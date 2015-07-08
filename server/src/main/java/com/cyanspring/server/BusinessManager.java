@@ -144,7 +144,6 @@ public class BusinessManager implements ApplicationContextAware {
 	private boolean closeAllPositionsAtClose = false;
 
     private AsyncTimerEvent cancelPendingOrderEvent = new AsyncTimerEvent();
-    private ScheduleManager cancelOrderManager = new ScheduleManager();
     private WeekDay weekDay;
     private String cancelPendingOrderTime;
 	
@@ -898,7 +897,7 @@ public class BusinessManager implements ApplicationContextAware {
         cal.set(Calendar.MINUTE, min);
         cal.set(Calendar.SECOND, sec);
 
-        cancelOrderManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
+        scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
         log.info("Schedule cancel pending order event at {}", cal.getTime());
     }
 	
@@ -966,7 +965,7 @@ public class BusinessManager implements ApplicationContextAware {
             if (TimeUtil.getTimePass(Clock.getInstance().now(), cal.getTime()) >= 0)
                 cal.add(Calendar.DAY_OF_YEAR, 7);
 
-            cancelOrderManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
+            scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, cancelPendingOrderEvent);
             log.info("Schedule cancel pending order event at {}", cal.getTime());
         }
 	}

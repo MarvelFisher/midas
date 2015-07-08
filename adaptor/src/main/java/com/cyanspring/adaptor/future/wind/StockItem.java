@@ -31,6 +31,7 @@ public class StockItem implements AutoCloseable {
 
     protected static ConcurrentHashMap<String, StockItem> stockItemBySymbolMap = new ConcurrentHashMap<String, StockItem>();
     private String symbolId;
+    private boolean isLogNoRefDataMessage = false;
     private int status = -1;
     private int sessionStatus = -1;
     private long totalVolume = 0;
@@ -95,6 +96,13 @@ public class StockItem implements AutoCloseable {
 
         //Get MarketSession
         String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        if(index == null) {
+            if(!item.isLogNoRefDataMessage) {
+                log.debug(WindDef.TITLE_STOCK + " " + WindDef.ERROR_NO_REFDATA + "," + stockData.getWindCode());
+                item.isLogNoRefDataMessage = true;
+            }
+            return;
+        }
         MarketSessionData marketSessionData = null;
         Date endDate;
         Date startDate;

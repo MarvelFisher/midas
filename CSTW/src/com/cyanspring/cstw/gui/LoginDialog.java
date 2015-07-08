@@ -21,8 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
-import com.cyanspring.common.event.account.UserLoginEvent;
-import com.cyanspring.common.event.account.UserLoginReplyEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
+import com.cyanspring.common.message.MessageBean;
+import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 
@@ -52,7 +54,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		lblUser.setText("User Id:");
 
 		txtUser = new Text(container, SWT.BORDER);
-		txtUser.setText("DEFAULT");
+		txtUser.setText("");
 		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1));
 
@@ -109,9 +111,8 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		Business business = Business.getInstance();
 		// need to review which server to get login
 		String server = business.getFirstServer();
-		UserLoginEvent event = new UserLoginEvent(id, server, 
-				txtUser.getText(), txtPassword.getText(),
-				IdGenerator.getInstance().getNextID());
+		CSTWUserLoginEvent event = new CSTWUserLoginEvent(id, server, 
+				txtUser.getText(), txtPassword.getText());
 		try {
 			business.getEventManager().sendRemoteEvent(event);
 		} catch (Exception ex) {
@@ -157,13 +158,13 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 
 	@Override
 	public int open() {
-		Business.getInstance().getEventManager().subscribe(UserLoginReplyEvent.class, id, LoginDialog.this);
+		Business.getInstance().getEventManager().subscribe(CSTWUserLoginReplyEvent.class, id, LoginDialog.this);
 		return super.open();
 	}
 	
 	@Override
 	public boolean close() {
-		Business.getInstance().getEventManager().unsubscribe(UserLoginReplyEvent.class, id, LoginDialog.this);
+		Business.getInstance().getEventManager().unsubscribe(CSTWUserLoginReplyEvent.class, id, LoginDialog.this);
 		if(loginOk) {
 			return super.close();
 		} else {
@@ -179,8 +180,11 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if(event instanceof UserLoginReplyEvent) {
-			loginOk = ((UserLoginReplyEvent) event).isOk();
+		if(event instanceof CSTWUserLoginReplyEvent) {
+			final CSTWUserLoginReplyEvent reply = (CSTWUserLoginReplyEvent) event;
+			log.info("loginOk:"+reply.isOk());
+
+			loginOk = reply.isOk();
 			if(loginOk) {
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override
@@ -190,11 +194,11 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 					}
 				});
 			} else {
-				final UserLoginReplyEvent reply = (UserLoginReplyEvent) event;
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						lblMessage.setText(reply.getMessage());							
+						MessageBean bean = MessageLookup.getMsgBeanFromEventMessage(reply.getMessage());
+						lblMessage.setText(bean.getLocalMsg());							
 					}
 				});
 			}

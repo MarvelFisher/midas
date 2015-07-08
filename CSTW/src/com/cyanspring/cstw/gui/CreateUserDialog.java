@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -37,6 +38,7 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 	private Text txtEmail;
 	private Text txtPhone;
 	private Combo cbUserType;
+	private Combo cbUserRole;
 	private Label lblMessage;
 	private Button btnOk, btnCancel;
 	private String id = IdGenerator.getInstance().getNextID();
@@ -121,6 +123,16 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		cbUserType.setText(UserType.NORMAL.toString());
 		cbUserType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
+		
+//		Label lblUserRole = new Label(container, SWT.NONE);
+//		lblUserRole.setText("User Role:");
+//		cbUserRole = new Combo(container, SWT.BORDER);
+//		for(UserRole userRole: UserRole.values()) {
+//			cbUserRole.add(userRole.toString());
+//		}
+//		cbUserRole.setText(UserRole.Trader.toString());
+//		cbUserRole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+//				false, 1, 1));
 
 		Label lblBlank = new Label(container, SWT.NONE);
 		GridData gdLblBlank = new GridData(SWT.FILL, SWT.CENTER, true,
@@ -184,6 +196,7 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		user.setEmail(txtEmail.getText());
 		user.setPhone(txtPhone.getText());
 		user.setUserType(UserType.valueOf(cbUserType.getText()));
+//		user.setRole(UserRole.valueOf(cbUserRole.getText()));
 		CreateUserEvent event = new CreateUserEvent(id, server, 
 				user, "", "", IdGenerator.getInstance().getNextID());
 		try {

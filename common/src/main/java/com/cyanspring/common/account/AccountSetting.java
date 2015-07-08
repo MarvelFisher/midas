@@ -2,9 +2,9 @@ package com.cyanspring.common.account;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.util.PriceUtils;
 
 public class AccountSetting extends DataObject {
-
 
 	protected AccountSetting() {
 		
@@ -19,7 +19,7 @@ public class AccountSetting extends DataObject {
 		AccountSetting settings = new AccountSetting(accountId);
 		settings.setDefaultQty(Default.getOrderQuantity());
 		settings.setStopLossValue(Default.getPositionStopLoss());	//user position stop loss value
-		settings.setCompanySLValue(0.0);							//company position stop loss value
+		settings.setCompanySLValue(Default.getCompanyStopLossValue());							//company position stop loss value
 		settings.setMargin(0.0);
 		settings.setRoute("");
 		settings.setCommission(0.0);

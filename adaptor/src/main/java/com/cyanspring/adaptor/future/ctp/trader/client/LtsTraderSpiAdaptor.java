@@ -181,7 +181,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(1) 
 	public  void OnFrontDisconnected(int nReason) {
-		log.info("Network dissconnected" + nReason);
+		log.info("Network disconnected: " + nReason);
+		proxy.setDisconnectStatus();
 	}
 	
 	/**
@@ -198,9 +199,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(3) 
 	public  void OnRspAuthenticate(Pointer<CThostFtdcRspAuthenticateField > pRspAuthenticateField, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		log.info("Response Authenticate: " );
-		
-		
+		log.info("Response Authenticate: " + getStructObject(pRspAuthenticateField));
 	}
 
 	/**
@@ -216,7 +215,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			}
 			proxy.doReqSettlementInfoConfirm();
 		} else {
-			log.info("Login Fail: " + getStructObject(pRspInfo).ErrorMsg().getCString());
+			log.error("Login Fail: " + getStructObject(pRspInfo));
 		}	
 		
 	}
@@ -226,18 +225,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(5) 
 	public  void OnRspUserLogout(Pointer<CThostFtdcUserLogoutField > pUserLogout, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response UserLogout Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {			
-			//TODO
-		}
-		
-		if ( pUserLogout == null ) {
-			log.error("Response UserLogout Pointer<CThostFtdcUserLogoutField > pUserLogout = null");
-		} else {
-			log.info("Response UserLogout:");
-			//TODO
-		}		
+		log.info("Response UserLogout: " + getStructObject(pUserLogout));	
 		
 	}
 
@@ -246,20 +234,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(6) 
 	public  void OnRspUserPasswordUpdate(Pointer<CThostFtdcUserPasswordUpdateField > pUserPasswordUpdate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response UserPasswordUpdate Pointer<CThostFtdcRspInfoField > pRspInfo == null");
-		} else {
+		log.info("Response UserPasswordUpdate:" + getStructObject(pUserPasswordUpdate));
 			
-			// TODO
-		}
-		
-		if ( pUserPasswordUpdate == null ) {
-			log.error("Response UserPasswordUpdate Pointer<CThostFtdcUserPasswordUpdateField > p = null");
-			
-		} else {
-			log.info("Response UserPasswordUpdate:");
-			//TODO
-		}	
 	}
 		
 	 /**
@@ -267,21 +243,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	  */
 	@Virtual(7) 
 	public  void OnRspTradingAccountPasswordUpdate(Pointer<CThostFtdcTradingAccountPasswordUpdateField > pTradingAccountPasswordUpdate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response TradingAccountPasswordUpdate Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-			// TODO
-		}
-		
-		if ( pTradingAccountPasswordUpdate == null ) {
-			log.error("Response TradingAccountPasswordUpdate Pointer<CThostFtdcTradingAccountPasswordUpdateField > p = null");
-			return ;
-		} else {
-			log.info("Response TradingAccountPasswordUpdate:");
-			// TODO
-		}	
-		
+		log.info("Response TradingAccountPasswordUpdate:" + getStructObject(pTradingAccountPasswordUpdate));
+
 	}
 
 	/**
@@ -294,12 +257,12 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		if ( rsp == null ) {
 			return;
 		}
-		String orderId = rsp.OrderRef().getCString();
 		CThostFtdcRspInfoField info = getStructObject(pRspInfo);
 		if(null != info) {
 			String msg = TraderHelper.toGBKString( getStructObject(pRspInfo).ErrorMsg().getBytes() );
+			String clOrderId = genClOrderId(proxy.getFRONT_ID(), proxy.getSESSION_ID(), rsp.OrderRef().getCString());
 			for ( ILtsTraderListener lis : tradelistens ) {
-				lis.onError(orderId, "" + info.ErrorID() + " : " + msg);
+				lis.onError(clOrderId, "" + info.ErrorID() + " : " + msg);
 			}
 		}
 	}
@@ -309,19 +272,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(9) 
 	public  void OnRspParkedOrderInsert(Pointer<CThostFtdcParkedOrderField > pParkedOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response ParkedOrderInsert Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			//TODO
-		}
-		
-		if ( pParkedOrder == null ) {
-			log.error("Response ParkedOrderInsert Pointer<CThostFtdcParkedOrderField > pParkedOrder = null");
+		log.info("Response ParkedOrderInsert: " + getStructObject(pParkedOrder));
 			
-		} else {
-			log.info("Response ParkedOrderInsert");
-			//TODO
-		}
 	}
 	
 	/**
@@ -329,19 +281,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(10) 
 	public  void OnRspParkedOrderAction(Pointer<CThostFtdcParkedOrderActionField > pParkedOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response ParkedOrderAction Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			// TODO
-		}
-		
-		if ( pParkedOrderAction == null ) {
-			log.error("Response ParkedOrderAction Pointer<CThostFtdcParkedOrderActionField > p = null");
-			
-		} else {
-			log.info("Response ParkedOrderAction");
-			//TODO
-		}
+		log.info("Response ParkedOrderAction: " + getStructObject(pParkedOrderAction));
 			
 	}
 	
@@ -358,13 +298,14 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 			if(null != rspInfo) {
 				msg = "" + rspInfo.ErrorID() + " : " + TraderHelper.toGBKString( rspInfo.ErrorMsg().getBytes());
 			}
+			String clOrderId = genClOrderId(rsp.FrontID(), rsp.SessionID(), rsp.OrderRef().getCString());
 			if ( rspInfo != null && rspInfo.ErrorID() == 0 ) {
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onCancel(rsp.OrderRef().getCString(), msg);
+					lis.onCancel(clOrderId, msg);
 				}
 			} else {
 				for ( ILtsTraderListener lis : tradelistens ) {
-					lis.onError(rsp.OrderRef().getCString(), msg);
+					lis.onError(clOrderId, msg);
 				}
 			}
 		} else {
@@ -378,19 +319,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(12) 
 	public  void OnRspQueryMaxOrderVolume(Pointer<CThostFtdcQueryMaxOrderVolumeField > pQueryMaxOrderVolume, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pQueryMaxOrderVolume == null ) {
-			log.error("Response Query MaxOrderVolume Pointer<CThostFtdcQueryMaxOrderVolumeField > p = null");
-			
-		} else {
-			log.info("Response  Query MaxOrderVolume");
-			// TODO
-		}
-		
-		if ( pRspInfo == null ) {
-			log.warn("Response Query MaxOrderVolume Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			// TODO
-		}
+		log.info("Response  Query MaxOrderVolume: " + getStructObject(pQueryMaxOrderVolume));
 		
 	}
 	
@@ -401,7 +330,6 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	public  void OnRspSettlementInfoConfirm(Pointer<CThostFtdcSettlementInfoConfirmField > pSettlementInfoConfirm, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {	
 		CThostFtdcRspInfoField rsp = getStructObject(pRspInfo);
 		log.info("Response SettlementInfoConfirm: " + rsp.toString());
-		proxy.doQryPosition();	
 		proxy.cancelHistoryOrder();
 	}
 	
@@ -410,18 +338,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(14) 
 	public  void OnRspRemoveParkedOrder(Pointer<CThostFtdcRemoveParkedOrderField > pRemoveParkedOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response RemoveParkedOrder Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
+		log.info("Response RemoveParkedOrder: " + getStructObject(pRemoveParkedOrder));
 			
-		}
-		
-		if ( pRemoveParkedOrder == null ) {
-			log.error("Response RemoveParkedOrder Pointer<CThostFtdcRemoveParkedOrderField > p = null");
-		} else {
-			log.info("Response RemoveParkedOrder: ");
-			// TODO
-		}		
 	}
 	
 	/**
@@ -429,17 +347,8 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(15) 
 	public  void OnRspRemoveParkedOrderAction(Pointer<CThostFtdcRemoveParkedOrderActionField > pRemoveParkedOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response RemoveParkedOrderAction Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pRemoveParkedOrderAction == null ) {
-			log.error("Response RemoveParkedOrderAction Pointer<CThostFtdcRemoveParkedOrderActionField > p");
-		} else {
-			log.info("Response RemoveParkedOrderAction: ");
-		}		
+		log.info("Response RemoveParkedOrderAction: " + getStructObject(pRemoveParkedOrderAction));
+				
 	}
 	
 	/**
@@ -447,35 +356,16 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(16) 
 	public  void OnRspExecOrderInsert(Pointer<CThostFtdcInputExecOrderField > pInputExecOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response ExecOrderInsert Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pInputExecOrder == null ) {
-			log.error("Response ExecOrderInsert Pointer<CThostFtdcInputExecOrderField > p = null");
-		} else {
-			log.info("Response ExecOrderInsert: ");
-		}
+		log.info("Response ExecOrderInsert: " + getStructObject(pInputExecOrder));
 	}
 	
 	/**
 	 * 执行宣告操作请求响应
 	 */
 	@Virtual(17) 
-	public  void OnRspExecOrderAction(Pointer<CThostFtdcInputExecOrderActionField > pInputExecOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response ExecOrderAction Pointer<CThostFtdcRspInfoField > pRspInfo");
-		} else {
-			
-		}
+	public  void OnRspExecOrderAction(Pointer<CThostFtdcInputExecOrderActionField > pInputExecOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {			
+		log.info("Response ExecOrderAction: " + getStructObject(pInputExecOrderAction));
 		
-		if ( pInputExecOrderAction == null ) {
-			log.error("Response ExecOrderAction Pointer<CThostFtdcInputExecOrderActionField > p = null");
-		} else {			
-			log.info("Response ExecOrderAction: ");
-		}
 	}
 	
 	/**
@@ -483,17 +373,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(18) 
 	public  void OnRspForQuoteInsert(Pointer<CThostFtdcInputForQuoteField > pInputForQuote, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pInputForQuote == null ) {
-			log.error("Response ForQuoteInsert Pointer<CThostFtdcInputForQuoteField > p = null");
-		} else {
-			log.info("Response ForQuoteInsert: ");
-		}
+		log.info("Response ForQuoteInsert: " + getStructObject(pInputForQuote));		
 	}
 	
 	/**
@@ -501,17 +381,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(19) 
 	public  void OnRspQuoteInsert(Pointer<CThostFtdcInputQuoteField > pInputQuote, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pInputQuote == null ) {
-			log.error("Response QuoteInsert Pointer<CThostFtdcInputQuoteField > p = null");
-		} else {
-			log.info("Response QuoteInsert:");
-		}
+		log.info("Response QuoteInsert: " + getStructObject(pInputQuote));		
 	}
 	
 	/**
@@ -519,6 +389,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(20) 
 	public  void OnRspQuoteAction(Pointer<CThostFtdcInputQuoteActionField > pInputQuoteAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QuoteAction: " + getStructObject(pInputQuoteAction));
 	}
 	
 	/**
@@ -526,6 +397,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(21) 
 	public  void OnRspCombActionInsert(Pointer<CThostFtdcInputCombActionField > pInputCombAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response CombActionInsert: " + getStructObject(pInputCombAction));
 	}
 	
 	/**
@@ -545,18 +417,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(23) 
 	public  void OnRspQryTrade(Pointer<CThostFtdcTradeField > pTrade, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if (pRspInfo == null ) {
-			log.warn("Response QryTrade Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pTrade == null ) {
-			log.error("Response QryTrade Pointer<CThostFtdcTradeField > pTrade = null");
-		} else {
-			log.info("Response QryTrade");
-		}
-		
+		log.info("Response QryTrade: " + getStructObject(pTrade));
 	}
 	
 	/**
@@ -570,9 +431,6 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 		//notify tradeListeners
 		for ( ILtsTraderListener lis : tradelistens ) {
 			lis.onQryPosition(rsp, bIsLast);
-			if ( bIsLast ) {
-				lis.onConnectReady(true);
-			}
 		}
 	}
 	
@@ -581,35 +439,15 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(25) 
 	public  void OnRspQryTradingAccount(Pointer<CThostFtdcTradingAccountField > pTradingAccount, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response QryTradingAccount Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pTradingAccount == null ) {
-			log.error("Response QryTradingAccount Pointer<CThostFtdcTradingAccountField > p = null");
-		} else {
-			log.info("Response QryTradingAccount: ");
-		}	
+		log.info("Response QryTradingAccount: " + getStructObject(pTradingAccount));
 	}
 	
 	/**
 	 * 请求查询投资者响应
 	 */
 	@Virtual(26) 
-	public  void OnRspQryInvestor(Pointer<CThostFtdcInvestorField > pInvestor, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {		
-		if ( pRspInfo == null ) {
-			log.warn("Response QryInvestor Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pInvestor == null ) {
-			log.error("Response QryInvestor Pointer<CThostFtdcInvestorField > p = null");
-		} else {
-			log.info("Response QryInvestor: ");
-		}		
+	public  void OnRspQryInvestor(Pointer<CThostFtdcInvestorField > pInvestor, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryInvestor: " + getStructObject(pInvestor));		
 	}
 	
 	/**
@@ -617,17 +455,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(27) 
 	public  void OnRspQryTradingCode(Pointer<CThostFtdcTradingCodeField > pTradingCode, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response QryTradingCode Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pTradingCode == null ) {
-			log.error("Response QryTradingCode Pointer<CThostFtdcTradingCodeField > p = null");
-		} else {
-			log.info("Response QryTradingCode: ");
-		}		
+		log.info("Response QryTradingCode: " + getStructObject(pTradingCode));		
 	}
 	
 	/**
@@ -635,6 +463,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(28) 
 	public  void OnRspQryInstrumentMarginRate(Pointer<CThostFtdcInstrumentMarginRateField > pInstrumentMarginRate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryInstrumentMarginRate: " + getStructObject(pInstrumentMarginRate));
 	}
 	
 	/**
@@ -642,6 +471,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(29) 
 	public  void OnRspQryInstrumentCommissionRate(Pointer<CThostFtdcInstrumentCommissionRateField > pInstrumentCommissionRate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryInstrumentCommissionRate: " + getStructObject(pInstrumentCommissionRate));
 	}
 	
 	/**
@@ -649,18 +479,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(30) 
 	public  void OnRspQryExchange(Pointer<CThostFtdcExchangeField > pExchange, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.warn("Response QryExchange Pointer<CThostFtdcRspInfoField > pRspInfo = null ");
-		} else {
-			
-		}
-		
-		if ( pExchange == null ) {
-			log.error("Response QryExchange Pointer<CThostFtdcExchangeField > p = null");
-		} else {
-			log.info("Response QryExchange: ");
-		}
-			
+		log.info("Response QryExchange: " + getStructObject(pExchange));	
 	}
 	
 	/**
@@ -668,18 +487,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(31) 
 	public  void OnRspQryProduct(Pointer<CThostFtdcProductField > pProduct, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null) {
-			log.warn("Response QryProduct Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pProduct == null ) {
-			log.error("Response QryProduct Pointer<CThostFtdcProductField > p = null");
-		} else {
-			log.info("Response QryProduct: ");
-		}
-		
+		log.info("Response QryProduct: " + getStructObject(pProduct));
 	}
 	
 	/**
@@ -687,18 +495,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(32) 
 	public  void OnRspQryInstrument(Pointer<CThostFtdcInstrumentField > pInstrument, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.error("Response QryInstrument Pointer<CThostFtdcInstrumentField > p = null");
-		} else {
-			log.info("Response QryInstrument: ");
-		}
-
-		if ( pInstrument == null ) {
-			log.warn("Response QryInstrument Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-
+		log.info("Response QryInstrument: " + getStructObject(pInstrument));
 	} 
 	
 	/**
@@ -706,6 +503,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(33) 
 	public  void OnRspQryDepthMarketData(Pointer<CThostFtdcDepthMarketDataField > pDepthMarketData, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryDepthMarketData: " + getStructObject(pDepthMarketData));
 	}
 	
 	/**
@@ -713,6 +511,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(34) 
 	public  void OnRspQrySettlementInfo(Pointer<CThostFtdcSettlementInfoField > pSettlementInfo, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QrySettlementInfo: " + getStructObject(pSettlementInfo));
 	}
 	
 	/**
@@ -720,6 +519,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(35) 
 	public  void OnRspQryTransferBank(Pointer<CThostFtdcTransferBankField > pTransferBank, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryTransferBank" + getStructObject(pTransferBank));
 	}
 	
 	/**
@@ -727,6 +527,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(36) 
 	public  void OnRspQryInvestorPositionDetail(Pointer<CThostFtdcInvestorPositionDetailField > pInvestorPositionDetail, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryInvestorPositionDetail: " + getStructObject(pInvestorPositionDetail));
 	}
 	
 	/**
@@ -734,6 +535,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(37) 
 	public  void OnRspQryNotice(Pointer<CThostFtdcNoticeField > pNotice, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryNotice: " + getStructObject(pNotice));
 	}
 	
 	/**
@@ -741,17 +543,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(38) 
 	public  void OnRspQrySettlementInfoConfirm(Pointer<CThostFtdcSettlementInfoConfirmField > pSettlementInfoConfirm, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pSettlementInfoConfirm == null ) {
-			log.error("Response QrySettlementInfoConfirm Pointer<CThostFtdcSettlementInfoConfirmField > p = null");
-			
-		}
-		if ( pRspInfo == null ) {
-			log.info("Response QrySettlementInfoConfirm Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			//TODO
-		}
-		log.info("Response QrySettlementInfoConfirm:");
-		//TODO
+		log.info("Response QrySettlementInfoConfirm: " + getStructObject(pSettlementInfoConfirm));
 	}
 	
 	/**
@@ -759,6 +551,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(39) 
 	public  void OnRspQryInvestorPositionCombineDetail(Pointer<CThostFtdcInvestorPositionCombineDetailField > pInvestorPositionCombineDetail, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryInvestorPositionCombineDetail: " + getStructObject(pInvestorPositionCombineDetail));
 	}
 	
 	/**
@@ -766,6 +559,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(40) 
 	public  void OnRspQryCFMMCTradingAccountKey(Pointer<CThostFtdcCFMMCTradingAccountKeyField > pCFMMCTradingAccountKey, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryCFMMCTradingAccountKey: " + getStructObject(pCFMMCTradingAccountKey));
 	}
 	
 	/**
@@ -773,6 +567,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(41) 
 	public  void OnRspQryEWarrantOffset(Pointer<CThostFtdcEWarrantOffsetField > pEWarrantOffset, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryEWarrantOffset: " + getStructObject(pEWarrantOffset));
 	}
 	
 	/**
@@ -780,6 +575,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(42) 
 	public  void OnRspQryInvestorProductGroupMargin(Pointer<CThostFtdcInvestorProductGroupMarginField > pInvestorProductGroupMargin, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryInvestorProductGroupMargin: " + getStructObject(pInvestorProductGroupMargin));
 	}
 	
 	/**
@@ -787,6 +583,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(43) 
 	public  void OnRspQryExchangeMarginRate(Pointer<CThostFtdcExchangeMarginRateField > pExchangeMarginRate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryExchangeMarginRate: " + getStructObject(pExchangeMarginRate));
 	}
 	
 	/**
@@ -794,6 +591,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(44) 
 	public  void OnRspQryExchangeMarginRateAdjust(Pointer<CThostFtdcExchangeMarginRateAdjustField > pExchangeMarginRateAdjust, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryExchangeMarginRateAdjust: " + getStructObject(pExchangeMarginRateAdjust));
 	}
 	
 	/**
@@ -801,6 +599,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(45) 
 	public  void OnRspQryExchangeRate(Pointer<CThostFtdcExchangeRateField > pExchangeRate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryExchangeRate: " + getStructObject(pExchangeRate));
 	}
 	
 	/**
@@ -808,6 +607,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(46) 
 	public  void OnRspQrySecAgentACIDMap(Pointer<CThostFtdcSecAgentACIDMapField > pSecAgentACIDMap, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QrySecAgentACIDMap: " + getStructObject(pSecAgentACIDMap));
 	}
 	
 	/**
@@ -815,6 +615,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(47) 
 	public  void OnRspQryProductExchRate(Pointer<CThostFtdcProductExchRateField > pProductExchRate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryProductExchRate: " + getStructObject(pProductExchRate));
 	}
 	
 	/**
@@ -822,6 +623,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(48) 
 	public  void OnRspQryOptionInstrTradeCost(Pointer<CThostFtdcOptionInstrTradeCostField > pOptionInstrTradeCost, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryOptionInstrTradeCost: " + getStructObject(pOptionInstrTradeCost));
 	}
 	
 	/**
@@ -829,6 +631,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(49) 
 	public  void OnRspQryOptionInstrCommRate(Pointer<CThostFtdcOptionInstrCommRateField > pOptionInstrCommRate, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryOptionInstrCommRate: " + getStructObject(pOptionInstrCommRate));
 	}
 	
 	/**
@@ -836,6 +639,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(50) 
 	public  void OnRspQryExecOrder(Pointer<CThostFtdcExecOrderField > pExecOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryExecOrder: " + getStructObject(pExecOrder));
 	}
 	
 	/**
@@ -843,6 +647,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(51) 
 	public  void OnRspQryForQuote(Pointer<CThostFtdcForQuoteField > pForQuote, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryForQuote: " + getStructObject(pForQuote));
 	}
 	
 	/**
@@ -850,6 +655,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(52) 
 	public  void OnRspQryQuote(Pointer<CThostFtdcQuoteField > pQuote, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryQuote: " + getStructObject(pQuote));
 	}
 	
 	/**
@@ -857,6 +663,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(53) 
 	public  void OnRspQryCombInstrumentGuard(Pointer<CThostFtdcCombInstrumentGuardField > pCombInstrumentGuard, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryCombInstrumentGuard: " + getStructObject(pCombInstrumentGuard));
 	}
 	
 	/**
@@ -864,6 +671,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(54) 
 	public  void OnRspQryCombAction(Pointer<CThostFtdcCombActionField > pCombAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryCombAction: " + getStructObject(pCombAction));
 	}
 	
 	/**
@@ -871,6 +679,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(55) 
 	public  void OnRspQryTransferSerial(Pointer<CThostFtdcTransferSerialField > pTransferSerial, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryTransferSerial: " + getStructObject(pTransferSerial));
 	}
 	
 	/**
@@ -878,6 +687,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(56) 
 	public  void OnRspQryAccountregister(Pointer<CThostFtdcAccountregisterField > pAccountregister, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryAccountregister: " + getStructObject(pAccountregister));
 	}
 	
 	/**
@@ -885,12 +695,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(57) 
 	public  void OnRspError(Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
-		if ( pRspInfo == null ) {
-			log.error("Response Error Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-			
-		} else {
-			log.info("Response Error:" + pRspInfo.get());
-		}
+		log.info("Response Error:" + getStructObject(pRspInfo));
 		
 	}
 	
@@ -899,9 +704,13 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(58) 
 	public  void OnRtnOrder(Pointer<CThostFtdcOrderField > pOrder) {
+		CThostFtdcOrderField order = getStructObject(pOrder);
 		log.info("Message On Order: ");
+		if ( !isCurrSessionOrder(order) ) {
+			return;
+		}
 		for ( ILtsTraderListener lis : tradelistens ) {
-			lis.onOrder(getStructObject(pOrder));
+			lis.onOrder(order);
 		}
 	}
 	
@@ -921,19 +730,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(60) 
 	public  void OnErrRtnOrderInsert(Pointer<CThostFtdcInputOrderField > pInputOrder, Pointer<CThostFtdcRspInfoField > pRspInfo) {
-		if ( pRspInfo == null ) {
-			log.warn("Message On Error OrderInsert  Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pInputOrder == null ) {
-			log.error("Message On Error OrderInsert Pointer<CThostFtdcInputOrderField > p = null");
-		} else {
-			log.info("Message On Error OrderInsert:");
-		}
-		
-		
+		log.info("Message On Error OrderInsert: " + getStructObject(pInputOrder));
 	}
 	
 	/**
@@ -941,19 +738,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(61) 
 	public  void OnErrRtnOrderAction(Pointer<CThostFtdcOrderActionField > pOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo) {
-		if ( pRspInfo == null ) {
-			log.warn("Message On Error OrderAction Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pOrderAction == null ) {
-			log.error("Message On Error OrderAction Pointer<CThostFtdcOrderActionField > p = null");
-		} else {
-			log.info("Message On Error OrderAction:");
-		}
-		
-		
+		log.info("Message On Error OrderAction: " + getStructObject(pOrderAction));
 	}
 	
 	/**
@@ -961,11 +746,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(62) 
 	public  void OnRtnInstrumentStatus(Pointer<CThostFtdcInstrumentStatusField > pInstrumentStatus) {
-		if ( pInstrumentStatus == null ) {
-			log.error("Message On InstrumentStatus Pointer<CThostFtdcInstrumentStatusField > p = null");
-		} else {
-			log.info("Message On InstrumentStatus");
-		}
+		log.info("Message On InstrumentStatus: " + getStructObject(pInstrumentStatus));
 		
 	}
 	
@@ -974,11 +755,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(63) 
 	public  void OnRtnTradingNotice(Pointer<CThostFtdcTradingNoticeInfoField > pTradingNoticeInfo) {
-		if ( pTradingNoticeInfo == null ) {
-			log.error("Message On TradingNotice Pointer<CThostFtdcTradingNoticeInfoField > p = null");
-		} else {
-			log.info("Message On TradingNotice: ");
-		}
+		log.info("Message On TradingNotice: " + getStructObject(pTradingNoticeInfo));
 		
 	}
 	
@@ -987,11 +764,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(64) 
 	public  void OnRtnErrorConditionalOrder(Pointer<CThostFtdcErrorConditionalOrderField > pErrorConditionalOrder) {
-		if ( pErrorConditionalOrder == null ) {
-			log.error("Message On ErrorConditionalOrder Pointer<CThostFtdcErrorConditionalOrderField > p = null");
-		} else {
-			log.info("Message On ErrorConditionalOrder: ");
-		}
+		log.info("Message On ErrorConditionalOrder: " + getStructObject(pErrorConditionalOrder));
 		
 	}
 	
@@ -1000,11 +773,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(65) 
 	public  void OnRtnExecOrder(Pointer<CThostFtdcExecOrderField > pExecOrder) {
-		if ( pExecOrder == null ) {
-			log.error("Message On ExecOrder Pointer<CThostFtdcExecOrderField > p = null");
-		} else {
-			log.info("Message On ExecOrder: ");
-		}
+		log.info("Message On ExecOrder: " + getStructObject(pExecOrder));
 	}
 	
 	/**
@@ -1012,17 +781,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(66) 
 	public  void OnErrRtnExecOrderInsert(Pointer<CThostFtdcInputExecOrderField > pInputExecOrder, Pointer<CThostFtdcRspInfoField > pRspInfo) {
-		if( pRspInfo == null ) {
-			log.warn("Message On ExecOrderInsert Error Pointer<CThostFtdcRspInfoField > pRspInfo = null");
-		} else {
-			
-		}
-		
-		if ( pInputExecOrder == null ) {
-			log.error("Message On ExecOrderInsert Error Pointer<CThostFtdcInputExecOrderField > p = null");
-		} else {
-			log.info("Message On ExecOrderInsert Error： ");
-		}
+		log.info("Message On ExecOrderInsert Error： " + getStructObject(pInputExecOrder));
 	}
 	
 	/**
@@ -1030,7 +789,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(67) 
 	public  void OnErrRtnExecOrderAction(Pointer<CThostFtdcExecOrderActionField > pExecOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo) {
-		
+		log.info("Message On ExecOrderAction: " + getStructObject(pExecOrderAction));
 	}
 	
 	/**
@@ -1038,6 +797,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(68) 
 	public  void OnErrRtnForQuoteInsert(Pointer<CThostFtdcInputForQuoteField > pInputForQuote, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On ForQuoteInsert: " + getStructObject(pInputForQuote));
 	}
 	
 	/**
@@ -1045,6 +805,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(69) 
 	public  void OnRtnQuote(Pointer<CThostFtdcQuoteField > pQuote) {
+		log.info("Message On Quote: " + getStructObject(pQuote));
 	}
 	
 	/**
@@ -1052,6 +813,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(70) 
 	public  void OnErrRtnQuoteInsert(Pointer<CThostFtdcInputQuoteField > pInputQuote, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On QuoteInsert: " + getStructObject(pInputQuote));
 	}
 	
 	/**
@@ -1059,6 +821,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(71) 
 	public  void OnErrRtnQuoteAction(Pointer<CThostFtdcQuoteActionField > pQuoteAction, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On QuoteAction: " + getStructObject(pQuoteAction));
 	}
 	
 	/**
@@ -1066,6 +829,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(72) 
 	public  void OnRtnForQuoteRsp(Pointer<CThostFtdcForQuoteRspField > pForQuoteRsp) {
+		log.info("Message On ForQuoteRsp: " + getStructObject(pForQuoteRsp));
 	}
 	
 	/**
@@ -1073,6 +837,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(73) 
 	public  void OnRtnCFMMCTradingAccountToken(Pointer<CThostFtdcCFMMCTradingAccountTokenField > pCFMMCTradingAccountToken) {
+		log.info("Message On CFMMCTradingAccountToken: " + getStructObject(pCFMMCTradingAccountToken));
 	}
 	
 	/**
@@ -1080,6 +845,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(74) 
 	public  void OnRtnCombAction(Pointer<CThostFtdcCombActionField > pCombAction) {
+		log.info("Message On CombAction: " + getStructObject(pCombAction));
 	}
 	
 	/**
@@ -1087,6 +853,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(75) 
 	public  void OnErrRtnCombActionInsert(Pointer<CThostFtdcInputCombActionField > pInputCombAction, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On CombActionInsert: " + getStructObject(pInputCombAction));
 	}
 	
 	/**
@@ -1094,6 +861,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(76) 
 	public  void OnRspQryContractBank(Pointer<CThostFtdcContractBankField > pContractBank, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response  QryContractBank: " + getStructObject(pContractBank));
 	}
 	
 	/**
@@ -1101,6 +869,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(77) 
 	public  void OnRspQryParkedOrder(Pointer<CThostFtdcParkedOrderField > pParkedOrder, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryParkedOrder: " + getStructObject(pParkedOrder));
 	}
 	
 	/**
@@ -1108,6 +877,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(78) 
 	public  void OnRspQryParkedOrderAction(Pointer<CThostFtdcParkedOrderActionField > pParkedOrderAction, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryParkedOrderAction: " + getStructObject(pParkedOrderAction));
 	}
 	
 	/**
@@ -1115,6 +885,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(79) 
 	public  void OnRspQryTradingNotice(Pointer<CThostFtdcTradingNoticeField > pTradingNotice, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryTradingNotice: " + getStructObject(pTradingNotice));
 	}
 	
 	/**
@@ -1122,6 +893,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(80) 
 	public  void OnRspQryBrokerTradingParams(Pointer<CThostFtdcBrokerTradingParamsField > pBrokerTradingParams, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryBrokerTradingParams: " + getStructObject(pBrokerTradingParams));
 	}
 	
 	/**
@@ -1129,6 +901,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(81) 
 	public  void OnRspQryBrokerTradingAlgos(Pointer<CThostFtdcBrokerTradingAlgosField > pBrokerTradingAlgos, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QryBrokerTradingAlgos: " + getStructObject(pBrokerTradingAlgos));
 	}
 	
 	/**
@@ -1136,6 +909,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(82) 
 	public  void OnRspQueryCFMMCTradingAccountToken(Pointer<CThostFtdcQueryCFMMCTradingAccountTokenField > pQueryCFMMCTradingAccountToken, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QueryCFMMCTradingAccountToken: " + getStructObject(pQueryCFMMCTradingAccountToken));
 	}
 	
 	/**
@@ -1143,6 +917,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(83) 
 	public  void OnRtnFromBankToFutureByBank(Pointer<CThostFtdcRspTransferField > pRspTransfer) {
+		log.info("Message On FromBankToFutureByBank: " + getStructObject(pRspTransfer));
 	}
 	
 	/**
@@ -1150,6 +925,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(84) 
 	public  void OnRtnFromFutureToBankByBank(Pointer<CThostFtdcRspTransferField > pRspTransfer) {
+		log.info("Message On FromFutureToBankByBank: " + getStructObject(pRspTransfer));
 	}
 	
 	/**
@@ -1157,6 +933,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(85) 
 	public  void OnRtnRepealFromBankToFutureByBank(Pointer<CThostFtdcRspRepealField > pRspRepeal) {
+		log.info("Message On RepealFromBankToFutureByBank: " + getStructObject(pRspRepeal));
 	}
 	
 	/**
@@ -1164,6 +941,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(86) 
 	public  void OnRtnRepealFromFutureToBankByBank(Pointer<CThostFtdcRspRepealField > pRspRepeal) {
+		log.info("Message On RepealFromFutureToBankByBank: " + getStructObject(pRspRepeal));
 	}
 	
 	/**
@@ -1171,6 +949,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(87) 
 	public  void OnRtnFromBankToFutureByFuture(Pointer<CThostFtdcRspTransferField > pRspTransfer) {
+		log.info("Message On FromBankToFutureByFuture: " + getStructObject(pRspTransfer));
 	}
 	
 	/**
@@ -1178,6 +957,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(88) 
 	public  void OnRtnFromFutureToBankByFuture(Pointer<CThostFtdcRspTransferField > pRspTransfer) {
+		log.info("Message On FromFutureToBankByFuture: " + getStructObject(pRspTransfer));
 	}
 	
 	/**
@@ -1185,6 +965,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(89) 
 	public  void OnRtnRepealFromBankToFutureByFutureManual(Pointer<CThostFtdcRspRepealField > pRspRepeal) {
+		log.info("Message On RepealFromBankToFutureByFutureManual: " + getStructObject(pRspRepeal));
 	}
 	
 	/**
@@ -1192,6 +973,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(90) 
 	public  void OnRtnRepealFromFutureToBankByFutureManual(Pointer<CThostFtdcRspRepealField > pRspRepeal) {
+		log.info("Message On RepealFromFutureToBankByFutureManual: " + getStructObject(pRspRepeal));
 	}
 	
 	/**
@@ -1199,6 +981,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(91) 
 	public  void OnRtnQueryBankBalanceByFuture(Pointer<CThostFtdcNotifyQueryAccountField > pNotifyQueryAccount) {
+		log.info("Message On QueryBankBalanceByFuture: " + getStructObject(pNotifyQueryAccount));
 	}
 	
 	/**
@@ -1206,6 +989,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(92) 
 	public  void OnErrRtnBankToFutureByFuture(Pointer<CThostFtdcReqTransferField > pReqTransfer, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On BankToFutureByFuture: " + pReqTransfer);
 	}
 	
 	/**
@@ -1213,6 +997,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(93) 
 	public  void OnErrRtnFutureToBankByFuture(Pointer<CThostFtdcReqTransferField > pReqTransfer, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On FutureToBankByFuture: " + pReqTransfer);
 	}
 	
 	/**
@@ -1220,6 +1005,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(94) 
 	public  void OnErrRtnRepealBankToFutureByFutureManual(Pointer<CThostFtdcReqRepealField > pReqRepeal, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On RepealBankToFutureByFutureManual: " + getStructObject(pReqRepeal));
 	}
 	
 	/**
@@ -1227,6 +1013,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(95) 
 	public  void OnErrRtnRepealFutureToBankByFutureManual(Pointer<CThostFtdcReqRepealField > pReqRepeal, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On RepealFutureToBankByFutureManual: " + getStructObject(pReqRepeal));
 	}
 	
 	/**
@@ -1234,6 +1021,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(96) 
 	public  void OnErrRtnQueryBankBalanceByFuture(Pointer<CThostFtdcReqQueryAccountField > pReqQueryAccount, Pointer<CThostFtdcRspInfoField > pRspInfo) {
+		log.info("Message On QueryBankBalanceByFuture: " + getStructObject(pReqQueryAccount));
 	}
 	
 	/**
@@ -1241,6 +1029,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(97) 
 	public  void OnRtnRepealFromBankToFutureByFuture(Pointer<CThostFtdcRspRepealField > pRspRepeal) {
+		log.info("Message On RepealFromBankToFutureByFuture: " + getStructObject(pRspRepeal));
 	}
 	
 	/**
@@ -1248,6 +1037,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(98) 
 	public  void OnRtnRepealFromFutureToBankByFuture(Pointer<CThostFtdcRspRepealField > pRspRepeal) {
+		log.info("Message On RepealFromFutureToBankByFuture: " + getStructObject(pRspRepeal));
 	}
 	
 	/**
@@ -1255,6 +1045,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(99) 
 	public  void OnRspFromBankToFutureByFuture(Pointer<CThostFtdcReqTransferField > pReqTransfer, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response FromBankToFutureByFuture: " + getStructObject(pReqTransfer));
 	}
 	
 	/**
@@ -1262,6 +1053,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(100) 
 	public  void OnRspFromFutureToBankByFuture(Pointer<CThostFtdcReqTransferField > pReqTransfer, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response FromFutureToBankByFuture: " + getStructObject(pReqTransfer));
 	}
 	
 	/**
@@ -1269,6 +1061,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(101) 
 	public  void OnRspQueryBankAccountMoneyByFuture(Pointer<CThostFtdcReqQueryAccountField > pReqQueryAccount, Pointer<CThostFtdcRspInfoField > pRspInfo, int nRequestID, boolean bIsLast) {
+		log.info("Response QueryBankAccountMoneyByFuture: " + getStructObject(pReqQueryAccount));
 	}
 	
 	/**
@@ -1276,6 +1069,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(102) 
 	public  void OnRtnOpenAccountByBank(Pointer<CThostFtdcOpenAccountField > pOpenAccount) {
+		log.info("Message On OpenAccountByBank: " + getStructObject(pOpenAccount));
 	}
 	
 	/**
@@ -1283,6 +1077,7 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(103) 
 	public  void OnRtnCancelAccountByBank(Pointer<CThostFtdcCancelAccountField > pCancelAccount) {
+		log.info("Message On CancelAccountByBank: " + getStructObject(pCancelAccount));
 	}
 	
 	/**
@@ -1290,6 +1085,12 @@ public class LtsTraderSpiAdaptor extends CThostFtdcTraderSpi {
 	 */
 	@Virtual(104) 
 	public  void OnRtnChangeAccountByBank(Pointer<CThostFtdcChangeAccountField > pChangeAccount) {
+		log.info("Message On ChangeAccountByBank: " + getStructObject(pChangeAccount));
+	}
+	
+	private boolean isCurrSessionOrder(CThostFtdcOrderField order) {
+		return (order.FrontID() == proxy.getFRONT_ID()) && 
+				(order.SessionID() == proxy.getSESSION_ID());
 	}
 	
 }

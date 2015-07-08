@@ -34,6 +34,9 @@ public final class WindDef {
     public static final int STOCK_STATUS_STOP_TRAN = (int) 'V';
     public static final int STOCK_STATUS_WAIT_DELETE = (int) 'Z';
     public static final long STOCK_WARNING_MILLISECONDS = 4000;
+    public static final String STOCK_EX_RIGHT = "XR";
+    public static final String STOCK_EX_DIVIDENT = "XD";
+    public static final String STOCK_EX_RIGHT_DIVIDENT = "DR";
 
     //Wind Transation BSFlag field
     public static final int TRANS_BSFLAG_BUY = (int) 'B';
@@ -54,4 +57,5 @@ public final class WindDef {
     public static final String WARN_TURNOVER_LESS_THAN_ZERO = "QUOTE WARNING : Turnover less than Zero";
     public static final String WARN_CLOSE_OVER_TIME = "QUOTE WARNING : Close Over "
             + ReceiveQuoteTimeInterval / 60 / 1000 + " Time";
+    public static final String ERROR_NO_REFDATA = "QUOTE ERROR : No RefData";
 }

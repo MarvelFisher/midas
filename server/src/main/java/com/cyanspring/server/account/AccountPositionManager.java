@@ -7,15 +7,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import webcurve.util.PriceUtils;
 
@@ -27,13 +28,16 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
+import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
+import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEventMultiProcessor;
@@ -50,27 +54,39 @@ import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountStateReplyEvent;
 import com.cyanspring.common.event.account.AccountStateRequestEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
+import com.cyanspring.common.event.account.ActiveAccountReplyEvent;
+import com.cyanspring.common.event.account.ActiveAccountRequestEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateAccountEvent;
 import com.cyanspring.common.event.account.CreateAccountReplyEvent;
+import com.cyanspring.common.event.account.CreateGroupManagementEvent;
+import com.cyanspring.common.event.account.CreateGroupManagementReplyEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
+import com.cyanspring.common.event.account.GroupManageeReplyEvent;
+import com.cyanspring.common.event.account.GroupManageeRequestEvent;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
+import com.cyanspring.common.event.account.PmCreateGroupManagementEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
+import com.cyanspring.common.event.account.PmUpdateUserEvent;
 import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.PmUserLoginEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyEvent;
@@ -89,6 +105,7 @@ import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
@@ -110,7 +127,9 @@ import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
 import com.cyanspring.server.livetrading.TradingUtil;
+import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
+import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
 
@@ -177,7 +196,10 @@ public class AccountPositionManager implements IPlugin {
     @Autowired(required = false)
     LiveTradingSetting liveTradingSetting;
 
-    private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
+	@Autowired
+	ILeverageManager leverageManager;
+
+	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
         @Override
         public Quote getQuote(String symbol) {
@@ -203,11 +225,16 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
             subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
             subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
+            subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
             subscribeToEvent(OnUserCreatedEvent.class, null);
             subscribeToEvent(TradeDateEvent.class, null);
             subscribeToEvent(InternalResetAccountRequestEvent.class, null);
             subscribeToEvent(SettlementEvent.class, null);
             subscribeToEvent(AccountStateRequestEvent.class,null);
+            subscribeToEvent(ActiveAccountRequestEvent.class,null);
+            subscribeToEvent(CreateGroupManagementEvent.class,null);
+            subscribeToEvent(GroupManageeRequestEvent.class,null);
+            subscribeToEvent(CSTWUserLoginEvent.class,null);
         }
 
         @Override
@@ -571,7 +598,127 @@ public class AccountPositionManager implements IPlugin {
         }
         log.info("User created in cache: " + event.getUser().getId());
     }
-
+    
+    public void processCSTWUserLoginEvent(CSTWUserLoginEvent event){
+    	log.info("processCSTWUserLoginEvent");
+    	String id = event.getId();
+    	String pwd = event.getPassword();
+    	boolean isOk = false;
+    	String message = "";
+    	UserGroup userGroup = null;
+    	try{
+	    	if(!StringUtils.hasText(id) || !StringUtils.hasText(pwd)){
+        		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}else{
+	    		id = id.toLowerCase().trim();
+	    	}
+	    	
+	    	if( null == userKeeper.getUser(id) ){
+        		throw new UserException("id not exist",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
+	    	
+	    	User user = userKeeper.getUser(id);
+	    	if(!pwd.equals(user.getPassword())){
+        		throw new UserException("wrong password!",ErrorMessage.CSTW_LOGIN_FAILED); 
+	    	}
+	    	
+	    	if(!StringUtils.hasText(message))
+	    		isOk =true;
+		    	
+	    	userGroup = userKeeper.getUserGroup(id);
+	    		
+	    	if( null == userGroup ){
+	    		userGroup = new UserGroup(id,user.getRole());
+	    	}
+	    		
+	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());			
+			user.setLastLogin(Clock.getInstance().now());
+			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));			    	 	
+    	
+    	}catch(UserException e){
+    		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage()); 
+    		log.info("CSTW Login fail:{} - {}",id,message);
+    	}
+    		
+		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup);
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
+		}
+    }
+    
+    public void processGroupManageeRequestEvent(GroupManageeRequestEvent event){
+    	String manager = event.getManager();
+    	boolean isOk = true;
+    	String message = "";
+    	try{
+        	if(!StringUtils.hasText(manager)){
+        		throw new UserException("Manager is empty",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+        	}
+    		if( null == userKeeper.getUser(manager) ){
+    			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+    		}
+    		if( null == userKeeper.getUserGroup(manager) ){
+    			throw new UserException("this user doesn't have any group",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+    		}
+    	}catch(UserException e){
+    		isOk = false;
+			message = MessageLookup.buildEventMessage(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, e.getLocalizedMessage());
+			log.info(message);
+    	} 
+    	
+		Set <UserGroup>manageeSet = null;
+		if(isOk)
+			manageeSet = userKeeper.getUserGroup(manager).getManageeSet();
+				
+		GroupManageeReplyEvent reply = new GroupManageeReplyEvent(event.getKey(),event.getSender(),isOk,message,manageeSet);
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
+		}
+    }
+    public void processCreateGroupManagementEvent(CreateGroupManagementEvent event){
+    	List<GroupManagement> groupList = event.getGroupManagementList();
+    	List<GroupManagement> successList = new ArrayList<GroupManagement>();
+    	Map <GroupManagement,String> resultMap = new HashMap<GroupManagement,String>();
+    	boolean isOk = true;
+    	String message = "";
+    	if( null != userKeeper){
+    		for(GroupManagement group : groupList){
+    			try {
+					userKeeper.createGroup(group);
+					successList.add(group);
+					resultMap.put(group, "SUCESS");
+				} catch (UserException e) {
+					isOk = false;
+					resultMap.put(group, e.getLocalizedMessage());
+        			continue;
+				}        		
+    		}
+    		if(!successList.isEmpty()){
+    			PmCreateGroupManagementEvent pmEvent = new PmCreateGroupManagementEvent(null, null, successList);
+        		try {
+    				eventManager.sendEvent(pmEvent);
+    			} catch (Exception e) {
+    				log.error(e.getMessage(),e);
+    				isOk = false;
+        			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, "Exception error:"+e.getMessage());
+    			}
+    		}
+    	}else{
+    		isOk = false;
+			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, "userkeeper not initialized!");
+    	}
+    	
+		CreateGroupManagementReplyEvent replyEvent = new CreateGroupManagementReplyEvent(event.getKey(), event.getSender(), isOk, message,resultMap);
+		try {
+			eventManager.sendRemoteEvent(replyEvent);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+    }
     public void processCreateAccountEvent(CreateAccountEvent event) {
         boolean ok = true;
         String message = "";
@@ -683,6 +830,14 @@ public class AccountPositionManager implements IPlugin {
         }
     }
 
+    public void processAllPositionSnapshotRequestEvent(AllPositionSnapshotRequestEvent event){
+        if (null == accountKeeper || null == positionKeeper)
+            return;
+        
+        List<Account> allAccounts = accountKeeper.getAllAccounts();
+        asyncSendPositionSnapshot(event, allAccounts);
+    }
+    
     public void processAllAccountSnapshotRequestEvent(AllAccountSnapshotRequestEvent event) {
         if (null == accountKeeper)
             return;
@@ -690,7 +845,60 @@ public class AccountPositionManager implements IPlugin {
         List<Account> allAccounts = accountKeeper.getAllAccounts();
         asyncSendAccountSnapshot(event, allAccounts);
     }
+    
+    private void asyncSendPositionSnapshot(final AllPositionSnapshotRequestEvent event, final List<Account> allAccounts) {
+        Thread thread = new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+            	int positionCount = 0;
+                List<OpenPosition> openPositionList = new ArrayList<>();
+                
+                for (int i = 0; i < allAccounts.size(); i++) {
+                	
+                	Account account = allAccounts.get(i);
+                    List<OpenPosition> tempOpList = positionKeeper.getOverallPosition(account);
+                	if( null == tempOpList || tempOpList.isEmpty())
+                		continue;
+                	          	
+                	for(OpenPosition op: tempOpList){
+                		openPositionList.add(op);
+                		positionCount++;
+                		if (positionCount % asyncSendBatch == 0 ){
+                            try {
+                            	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
+                                        event.getKey(), event.getSender(), openPositionList);
+                                eventManager.sendRemoteEvent(reply);
+                                log.info("AllPositionSnapshotReplyEvent sent: " + openPositionList.size());
+                                Thread.sleep(asyncSendInterval);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                			positionCount = 0 ;
+                			openPositionList.clear();
+                		}
+                	}                	
+                }//for account
+            	if(positionCount != 0){
+            		
+                    try {
+                    	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
+                                event.getKey(), event.getSender(), openPositionList);
+                        eventManager.sendRemoteEvent(reply);
+                        log.info("AllPositionSnapshotReplyEvent sent: " + openPositionList.size());
+                        Thread.sleep(asyncSendInterval);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
+                    
+           			positionCount = 0 ;
+           			openPositionList.clear();
+            	}
+            }
+
+        });
+        thread.start();
+    }
     private void asyncSendAccountSnapshot(final AllAccountSnapshotRequestEvent event, final List<Account> allAccounts) {
         Thread thread = new Thread(new Runnable() {
 
@@ -728,6 +936,59 @@ public class AccountPositionManager implements IPlugin {
             eventManager.sendEvent(new QuoteSubEvent(AccountPositionManager.ID, null, symbol));
         }
     }
+    
+    public void processActiveAccountRequestEvent(ActiveAccountRequestEvent event){
+    	boolean isOk = true;
+    	String message = "";
+    	String id = event.getAccount();
+    	Account account = accountKeeper.getAccount(id);
+    	AccountSetting accountSetting;
+    	TerminateStopLossCheck terminateCheck = new TerminateStopLossCheck();
+    	FrozenStopLossCheck frozenCheck  = new FrozenStopLossCheck();
+		try {
+			accountSetting = accountKeeper.getAccountSetting(id);
+
+	    	ActiveAccountReplyEvent reply = null;
+	    	
+	    	if(null == account){
+	    		isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST,"Account not exist"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	        			,event.getSender(),id,isOk,message);
+	    	}else if(AccountState.ACTIVE.equals(account.getState())){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_ALREADY_ACTIVE,"Account already in ACTIVE state"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	            		,event.getSender(),id,isOk,message);
+	    	}else if(AccountState.TERMINATED.equals(account.getState()) && terminateCheck.isOverTerminateLoss(account, accountSetting)){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_TERMINATE_LOSS,"Still over terminate loss, you must set terminate loss percent/value under current loss"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	            		,event.getSender(),id,isOk,message);
+	    	}else if(AccountState.FROZEN.equals(account.getState()) && frozenCheck.isOverFrozenLoss(account, accountSetting)){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FROZEN_LOSS,"Still over frozen loss, you must set frozen loss percent/value under current loss"); 
+	            reply = new ActiveAccountReplyEvent(event.getKey()
+	            		,event.getSender(),id,isOk,message);
+	    	}
+	    		
+	    	if(isOk){
+	    		log.info("Active Account:{}, old state:{}",account.getId(),account.getState());
+		    	account.setState(AccountState.ACTIVE);
+		        reply = new ActiveAccountReplyEvent(event.getKey()
+		        		,event.getSender(),id,isOk,message);
+				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
+	    	}
+
+            eventManager.sendRemoteEvent(reply);
+        
+		} catch (AccountException e) {
+            log.error(e.getMessage(), e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+    
     public void processAccountStateRequestEvent(AccountStateRequestEvent event){
     	boolean isOk = true;
     	String message = "";
@@ -900,7 +1161,7 @@ public class AccountPositionManager implements IPlugin {
 		                }
 	                }
 
-	                checkMarginCall(account);
+	                checkMarginCall(account, accountSetting);
 	            }
 	            perfDataRm.end();
 	        }
@@ -1003,7 +1264,7 @@ public class AccountPositionManager implements IPlugin {
                     continue;
                 }
                 log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
-                        position.getSymbol() + ", " + position.getAcPnL() + ", " +
+                        position.getSymbol() + ", " + position.getQty() + ", " + position.getAcPnL() + ", " +
                         positionStopLoss + ", " + quote);
                 ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                         null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.PositionStopLoss,
@@ -1016,7 +1277,7 @@ public class AccountPositionManager implements IPlugin {
         return result;
     }
 
-    private boolean checkMarginCall(Account account) {
+    private boolean checkMarginCall(Account account, AccountSetting accountSetting) {
         if (!checkMargincut)
             return false;
         boolean result = false;
@@ -1087,13 +1348,29 @@ public class AccountPositionManager implements IPlugin {
                                 account.getId() + ", " + position.getSymbol());
                         return true;
                     }
+                    
+                    double marketablePrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
+                    double lossQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
+							quote.getSymbol(), Math.abs(account.getCashAvailable()), marketablePrice);
 
                     log.info("Margin cut close position: " + position.getAccount() + ", " +
                             position.getSymbol() + ", " + position.getAcPnL() + ", " +
-                            account.getMargin() + ", " +
+                            position.getQty() + ", " +
+                            lossQty + ", " +
                             account.getCashAvailable() + ", " + quote);
 
-                    double qty = Math.min(Math.abs(position.getQty()), Default.getMarginCut());
+                	RefData refData = refDataManager.getRefData(quote.getSymbol());
+    				double lev = leverageManager.getLeverage(refData, accountSetting);
+    				lossQty *= lev;
+    				
+    				double qty = Default.getMarginCut();
+                    if(lossQty > Default.getMarginCut()) {
+                    	long lot = Math.max(Math.max((long)Default.getMarginCut(), (long)refData.getLotSize()), 1);
+        				long n = ((long)lossQty)/lot;
+                    	qty = Default.getMarginCut() * (n+1);
+                    }
+                    qty = Math.min(Math.abs(position.getQty()), qty);
+
                     ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                             null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
                             IdGenerator.getInstance().getNextID());
@@ -1146,6 +1423,14 @@ public class AccountPositionManager implements IPlugin {
             eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, defaultUser,
                     new CreateUserEvent(PersistenceManager.ID, null, defaultUser, "TW", "TW", "")));
     }
+    
+    public void injectGroups(List<GroupManagement> groups) {
+    	userKeeper.injectGroup(groups);
+        User adminUser = userKeeper.tryCreateAdminUser();
+        if (null != adminUser)
+            eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, adminUser,
+                    new CreateUserEvent(PersistenceManager.ID, null, adminUser, "TW", "TW", "")));    
+    }
 
     public void injectAccounts(List<Account> accounts) {
         accountKeeper.injectAccounts(accounts);
@@ -1153,7 +1438,7 @@ public class AccountPositionManager implements IPlugin {
         if (null != defaultAccount)
             eventManager.sendEvent(new PmCreateAccountEvent(PersistenceManager.ID, null, defaultAccount));
     }
-
+    
     public void injectAccountSettings(List<AccountSetting> accountSettings) {
         accountKeeper.injectAccountSettings(accountSettings);
     }

@@ -16,27 +16,20 @@ public class IFStrategy implements IRefDataStrategy {
             .getLogger(IFStrategy.class);
 
     private MarketSessionUtil marketSessionUtil;
-
-    public RefData n0;
-    public RefData n1;
-//	private RefData s0;
-//	private RefData s1;
-
-    private String n0ID;
-    private String n1ID;
-//	private String s0ID;
-//	private String s1ID;
+    private StrategyData n0;
+    private StrategyData n1;
 
     //	private int[] season = {Calendar.MARCH, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.DECEMBER};
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Calendar cal;
     private String symbol = "IF";
+    private String detailDisplay = "%s指数%d年%d月合约";
 
     @Override
     public void init(Calendar cal) {
         if (this.cal == null) {
-            n0 = new RefData();
-            n1 = new RefData();
+            n0 = new StrategyData();
+            n1 = new StrategyData();
             setStrategyData((Calendar) cal.clone());
         }
 
@@ -57,19 +50,25 @@ public class IFStrategy implements IRefDataStrategy {
     }
 
     @Override
-    public void setExchangeRefData(RefData refData) {
+    public void updateRefData(RefData refData) {
         if (refData.getRefSymbol().equals("IFC1") || refData.getRefSymbol().equals("IHC1") || refData.getRefSymbol().equals("ICC1")) {
-            refData.setSettlementDate(n0.getSettlementDate());
-            refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0ID);
-            refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0ID);
-            refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0ID);
-            refData.setSymbol(refData.getSymbol().substring(0, 2) + n0ID + "." + refData.getExchange());
+            refData.setSettlementDate(n0.settlementDay);
+            refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0.ID);
+            refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0.ID);
+            refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0.ID);
+            refData.setSymbol(refData.getSymbol().substring(0, 2) + n0.ID + "." + refData.getExchange());
+            refData.setDetailCN(String.format(detailDisplay, refData.getCNDisplayName(), n0.year, n0.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
+            refData.setDetailTW(String.format(detailDisplay, refData.getCNDisplayName(), n0.year, n0.month + 1));
+            refData.setDetailEN(String.format(detailDisplay, refData.getCNDisplayName(), n0.year, n0.month + 1));
         } else if (refData.getRefSymbol().equals("IFC2") || refData.getRefSymbol().equals("IHC2") || refData.getRefSymbol().equals("ICC2")) {
-            refData.setSettlementDate(n1.getSettlementDate());
-            refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1ID);
-            refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1ID);
-            refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1ID);
-            refData.setSymbol(refData.getSymbol().substring(0, 2) + n1ID + "." + refData.getExchange());
+            refData.setSettlementDate(n1.settlementDay);
+            refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1.ID);
+            refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1.ID);
+            refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1.ID);
+            refData.setSymbol(refData.getSymbol().substring(0, 2) + n1.ID + "." + refData.getExchange());
+            refData.setDetailCN(String.format(detailDisplay, refData.getCNDisplayName(), n1.year, n1.month + 1));
+            refData.setDetailTW(String.format(detailDisplay, refData.getCNDisplayName(), n1.year, n1.month + 1));
+            refData.setDetailEN(String.format(detailDisplay, refData.getCNDisplayName(), n1.year, n1.month + 1));
         }
     }
 
@@ -79,20 +78,24 @@ public class IFStrategy implements IRefDataStrategy {
     }
 
     private void setStrategyData(Calendar cal) {
-        String day = getSettlementDay(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
-        n0.setSettlementDate(day);
-        n0ID = day.substring(2, 7);
-        n0ID = n0ID.replace("-", "");
+        n0.year = cal.get(Calendar.YEAR);
+        n0.month = cal.get(Calendar.MONTH);
+        String day = getSettlementDay(n0.year, n0.month);
+        n0.settlementDay = day;
+        n0.ID = day.substring(2, 7);
+        n0.ID = n0.ID.replace("-", "");
 
         cal.add(Calendar.MONTH, 1);
-        day = getSettlementDay(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH));
-        n1.setSettlementDate(day);
-        n1ID = day.substring(2, 7);
-        n1ID = n1ID.replace("-", "");
+        n1.year = cal.get(Calendar.YEAR);
+        n1.month = cal.get(Calendar.MONTH);
+        day = getSettlementDay(n1.year, n1.month);
+        n1.settlementDay = day;
+        n1.ID = day.substring(2, 7);
+        n1.ID = n1.ID.replace("-", "");
 
         this.cal = Calendar.getInstance();
         try {
-            this.cal.setTime(sdf.parse(n0.getSettlementDate()));
+            this.cal.setTime(sdf.parse(n0.settlementDay));
             this.cal.set(Calendar.HOUR_OF_DAY, 23);
             this.cal.set(Calendar.MINUTE, 59);
             this.cal.set(Calendar.SECOND, 59);
@@ -116,5 +119,12 @@ public class IFStrategy implements IRefDataStrategy {
         }
 
         return sdf.format(cal.getTime());
+    }
+
+    private class StrategyData{
+        private String settlementDay;
+        private String ID;
+        private int year;
+        private int month;
     }
 }

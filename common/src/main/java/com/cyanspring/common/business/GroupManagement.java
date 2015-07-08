@@ -7,6 +7,8 @@ public class GroupManagement implements Serializable {
 	private String manager;
 	private String managed;
 	
+	public GroupManagement() {
+	}
 	
 	public GroupManagement(String manager, String managed) {
 		super();

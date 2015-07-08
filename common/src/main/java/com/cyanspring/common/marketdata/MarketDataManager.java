@@ -10,6 +10,8 @@ import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
+import com.cyanspring.common.staticdata.IRefDataListener;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ import java.util.*;
  * @version 1.0
  * @since 1.0
  */
-public class MarketDataManager extends MarketDataReceiver {
+public class MarketDataManager extends MarketDataReceiver implements IRefDataListener {
     private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
     private IQuoteSaver quoteSaver;
     private String tickDir = "ticks";
@@ -110,7 +112,6 @@ public class MarketDataManager extends MarketDataReceiver {
             eventProcessor.subscribeToEvent(clz, null);
         super.init();
     }
-
 
     public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
         log.debug("QuoteSubEvent: " + event.getSymbol() + ", " + event.getReceiver());
@@ -283,5 +284,10 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void setBroadcastQuote(boolean broadcastQuote) {
         this.broadcastQuote = broadcastQuote;
+    }
+
+    @Override
+    public void onRefData(List<RefData> refDataList) {
+
     }
 }

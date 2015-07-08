@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.cstw.gui.AccountView;
+import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
 
 public class AccountViewCommand extends AbstractHandler{
 	private static final Logger log = LoggerFactory
@@ -21,6 +22,8 @@ public class AccountViewCommand extends AbstractHandler{
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();
 		try {
+			page.addPartListener(new ViewAuthListener());
+
 			page.showView(AccountView.ID);
 		} catch (PartInitException e) {
 			log.error(e.getMessage(), e);
