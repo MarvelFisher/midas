@@ -114,7 +114,7 @@
         <property name="cleanStart" value="false"/>
         <property name="todayOnly" value="true"/>
         <property name="syncCentralDb" value="false"/>
-        <property name="useLtsGateway" value="true" />
+        <property name="useLtsGateway" value="false" />
     </bean>
 
     <bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>

@@ -134,7 +134,7 @@
 		<property name="todayOnly" value="false"/>
 		<property name="checkEmailUnique" value="onlyExist"/>
 		<property name="checkPhoneUnique" value="noCheck"/>
-		<property name="syncCentralDb" value="true"/>
+		<property name="syncCentralDb" value="false"/>
 		<property name="useLtsGateway" value="true" />
 	</bean>
 
