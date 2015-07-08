@@ -49,6 +49,46 @@
 	</bean>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
+		<property name="requestMap">
+			<map>
+				<entry key="UserLoginEvent" value="com.cyanspring.event.api.obj.request.ApiUserLoginEvent"/>
+				<entry key="StrategySnapshotRequestEvent" value="com.cyanspring.event.api.obj.request.ApiStrategySnapshotRequestEvent"/>
+				<entry key="QuoteSubEvent" value="com.cyanspring.event.api.obj.request.ApiQuoteSubEvent" />
+				<entry key="NewSingleInstrumnetStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiNewSingleInstrumentStrategyEvent"/>
+				<entry key="NewMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiNewMultiInstrumentStrategyEvent"/>
+				<entry key="EnterParentOrderEvent" value="com.cyanspring.event.api.obj.request.ApiEnterParentOrderEvent"/>
+				<entry key="CancelSingleInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiCancelSingleInstrumentStrategyEvent"/>
+				<entry key="CancelParentOrderEvent" value="com.cyanspring.event.api.obj.request.ApiCancelParentOrderEvent"/>
+				<entry key="CancelMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiCancelMultiInstrumentStrategyEvent"/>
+				<entry key="AmendSingleInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiAmendSingleInstrumentStrategyEvent"/>
+				<entry key="AmendParentOrderEvent" value="com.cyanspring.event.api.obj.request.ApiAmendParentOrderEvent"/>
+				<entry key="AmendMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiAmendMultiInstrumentStrategyEvent"/>
+				<entry key="AccountSnapshotRequestEvent" value="com.cyanspring.event.api.obj.request.ApiAccountSnapshotRequestEvent"/>
+			</map>
+		</property>
+		<property name="replyMap">
+			<map>
+				<entry key="UserLoginReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiUserLoginReplyEvent"/>
+				<entry key="AccountSnapshotReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiAccountSnapshotReplyEvent"/>
+				<entry key="AccountUpdateEvent" value="com.cyanspring.event.api.obj.reply.ApiAccountUpdateEvent"/>
+				<entry key="AmendMultiInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiAmendMultiInstrumentStrategyReplyEvent"/>
+				<entry key="AmendParentOrderReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiAmendParentOrderReplyEvent"/>
+				<entry key="AmendSingleInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.reply.ApiAmendSingleInstrumentStrategyReplyEvent"/>
+				<entry key="CancelMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.reply.ApiCancelMultiInstrumentStrategyReplyEvent"/>
+				<entry key="CancelParentOrderReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiCancelParentOrderReplyEvent"/>
+				<entry key="CancelSingleInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiCancelSingleInstrumentStrategyReplyEvent"/>
+				<entry key="EnterParentOrderReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiEnterParentOrderReplyEvent"/>
+				<entry key="NewMultuInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiNewMultiInstrumentStrategyReplyEvent"/>
+				<entry key="NewSingleInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiNewSingleInstrumentStrategyReplyEvent"/>
+				<entry key="OpenPositionUpdateEvent" value="com.cyanspring.event.api.obj.reply.ApiOpenPositionUpdateEvent"/>
+				<entry key="ParentOrderUpdateEvent" value="com.cyanspring.event.api.obj.reply.ApiParentOrderUpdateEvent"/>
+				<entry key="QuoteEvent" value="com.cyanspring.event.api.obj.reply.ApiQuoteEvent"/>
+				<entry key="StrategySnapshotEvent" value="com.cyanspring.event.api.obj.reply.ApiStrategySnapshotEvent"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="resourceManager" class="com.cyanspring.event.api.ApiResourceManager">
 		<property name="socketService">
 			<ref bean="socketService" />
 		</property>

@@ -79,7 +79,8 @@ public class CtpPositionRecord {
 		CtpPosition position = positions.get(getKey(symbol, !isBuy));
 		if(null == position)
 			return result;
-log.debug("hold position: " + position);		
+
+		log.debug("hold position: " + position);		
 		HoldPosition hold = holds.get(getKey(symbol, !isBuy));
 		if(null == hold) {
 			hold = new HoldPosition(0, 0);
@@ -109,7 +110,8 @@ log.debug("hold position: " + position);
 				log.error("release position: " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
 			else
 				hold.setYdQty(hold.getYdQty() - qty);
-		} else if(flag == TraderLibrary.THOST_FTDC_OF_CloseToday) {
+		} else if(flag == TraderLibrary.THOST_FTDC_OF_CloseToday ||
+				flag == TraderLibrary.THOST_FTDC_OF_Close ) {
 			if(PriceUtils.LessThan(hold.getTdQty(), qty))
 				log.error("release position: " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
 			else
