@@ -1,3 +1,4 @@
+
 package com.cyanspring.cstw.gui;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.event.statistic.AccountNumberReplyEvent;
 import com.cyanspring.common.event.statistic.AccountNumberRequestEvent;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.bean.PositionStatisticBean;
@@ -66,7 +68,7 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 			displayOpenPosition();		
 			
 		}else if( event instanceof AllPositionSnapshotReplyEvent){
-			
+
 			AllPositionSnapshotReplyEvent allPosition = (AllPositionSnapshotReplyEvent) event;
 			List <OpenPosition>ops = allPosition.getOpenPositionList();
 			collectAllPosition(ops);
@@ -78,26 +80,22 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 			updatePosition(position);
 			
 		}else if(event instanceof OpenPositionDynamicUpdateEvent){
-			
+
 			OpenPosition position = ((OpenPositionDynamicUpdateEvent) event).getPosition();
 			updatePosition(position);
 			
 		}else if(event instanceof ClosedPositionUpdateEvent){
-			
+
 			ClosedPosition position = ((ClosedPositionUpdateEvent) event).getPosition();
 			closePosition(position);	
 		
-		}else if(event instanceof ClosePositionReplyEvent){
-			
-			ClosedPosition position = ((ClosedPositionUpdateEvent) event).getPosition();
-			closePosition(position);
-
 		}else if(event instanceof AccountNumberReplyEvent){
-			
+
 			AccountNumberReplyEvent accountNum = (AccountNumberReplyEvent) event;
 			if(accountNum.isOk()){
 				log.info("Account Number:{}",accountNum.getAccountNumber());
 				if( limitAccount > accountNum.getAccountNumber()){
+					
 					sendAllPositionRequestEvent();
 				}else{
 					log.error("Total account :"+accountNum.getAccountNumber()+" exceed account limit:"+limitAccount);
@@ -113,7 +111,6 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 	}
 
 	private void closePosition(ClosedPosition position) {
-		
 		String account = position.getAccount();
 		List<OpenPosition> tempList = new ArrayList<OpenPosition>();
 		if(accountOpMap.containsKey(account)){
@@ -125,20 +122,26 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 			}
 			accountOpMap.put(account, tempList);
 		}		
+		
 	}
 
 	private void updatePosition(OpenPosition position) {
 		
 		String account = position.getAccount();
 		List<OpenPosition> tempList = new ArrayList<OpenPosition>();
+		boolean isNewSymbol = true;
 		if(accountOpMap.containsKey(account)){
 			List <OpenPosition>oldList = accountOpMap.get(account);
 			for(OpenPosition op:oldList){
 				if(position.getSymbol().equals(op.getSymbol())){
+					isNewSymbol = false;
 					tempList.add(position);
 				}else{
 					tempList.add(op);
 				}
+			}
+			if(isNewSymbol){
+				tempList.add(position);
 			}
 			accountOpMap.put(account, tempList);
 		}else{
@@ -154,10 +157,21 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		for(OpenPosition op:ops){			
 			List <OpenPosition>opList = null;
 			String account = op.getAccount();
-			//log.info("account:{},position:{}",account,op.getSymbol());
 			if(accountOpMap.containsKey(account)){
 				opList = accountOpMap.get(account);
-				opList.add(op);
+				boolean isSymbolExist = false;
+				for(OpenPosition oldOp : opList){
+					if(oldOp.getSymbol().equals(op.getSymbol())){
+						isSymbolExist = true;
+						oldOp.addQty(op.getQty());
+						oldOp.setPnL(op.getPnL()+oldOp.getPnL());
+						oldOp.setAcPnL(op.getAcPnL()+oldOp.getAcPnL());
+						oldOp.setMargin(op.getMargin()+oldOp.getMargin());
+						oldOp.setPrice((op.getPrice()+oldOp.getPrice())/2);
+					}
+				}
+				if(!isSymbolExist)
+					opList.add(op);
 			}else{
 				opList = new ArrayList<OpenPosition>();
 				opList.add(op);
@@ -172,14 +186,18 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 //		log.info("Account:{}, symbol:{} ,Qty:{},Avaliable Qty:{}",new Object[]{op.getAccount(),symbol,op.getQty(),op.getAvailableQty()});
 		if(symbolOpMap.containsKey(symbol)){
 			bean = symbolOpMap.get(op.getSymbol());
-			bean.setQty(op.getQty()+bean.getQty());
-			bean.setPnL(op.getPnL()+bean.getPnL());
 		}else{
 			bean = new PositionStatisticBean();
 			bean.setSymbol(op.getSymbol());
-			bean.setQty(op.getQty()+bean.getQty());
-			bean.setPnL(op.getPnL()+bean.getPnL());
 		}
+		
+		bean.setQty(op.getQty()+bean.getQty());
+		bean.setPnL(op.getPnL()+bean.getPnL());
+		bean.setAcPnL(op.getAcPnL()+bean.getAcPnL());
+		bean.setMargin(op.getMargin()+bean.getMargin());
+
+		if(PriceUtils.isZero(bean.getQty()))
+			return;
 		
 		if(null != bean)
 			symbolOpMap.put(symbol, bean);
@@ -196,6 +214,7 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		subEvent(ExecutionUpdateEvent.class,null);
 		subEvent(ClosePositionReplyEvent.class,null);
 		
+		
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		final Composite  mainComposite = new Composite(parent,SWT.BORDER);
 		mainComposite.setLayout (new FillLayout());
@@ -206,11 +225,17 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		
 		AccountNumberRequestEvent accountNumberEvent = new AccountNumberRequestEvent(ID, Business.getInstance().getFirstServer());
 		sendRemoteEvent(accountNumberEvent);
+		try{
+			scheduleJob(refreshEvent, maxRefreshInterval);
+		}catch(Exception e){
+			log.error(e.getMessage(),e);
+		}
 	}
+	
 	private void sendAllPositionRequestEvent() {
-		
 		accountOpMap.clear();
 		symbolOpMap.clear();	
+		log.info("send AllPositionSnapshotRequestEvent");
 		AllPositionSnapshotRequestEvent request = new AllPositionSnapshotRequestEvent(ID, Business.getInstance().getFirstServer());
 		sendRemoteEvent(request);		
 	}
@@ -229,8 +254,6 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		}
 	}
 	
-	
-	
 	private void showAggregateOpenPosition() {
 		
 		symbolOpMap = new HashMap<String, PositionStatisticBean>();
@@ -242,11 +265,7 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		
 		final List <PositionStatisticBean>psbList = new ArrayList<PositionStatisticBean>();
 		psbList.addAll(symbolOpMap.values());	
-		
-		if( null == psbList || psbList.isEmpty()){
-			return;
-		}
-		
+
 		openPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -255,6 +274,11 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 					if(openPositionViewer.isViewClosing())
 						return;
 					
+					if(null == psbList || psbList.isEmpty()){
+						openPositionViewer.setInput(psbList);			
+						openPositionViewer.refresh();
+						return;
+					}
 					List<ColumnProperty> properties = openPositionViewer
 							.setObjectColumnProperties(psbList.get(0));				
 					properties = filterColumn(properties);
@@ -266,13 +290,9 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		});
 		
 	}
-
 	private void showAllOpenPosition() {
 		
 		final List <OpenPosition>psbList = getAllOpenPositionList();
-		if( null == psbList || psbList.isEmpty()){
-			return;
-		}
 		openPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -280,6 +300,12 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 					
 					if(openPositionViewer.isViewClosing())
 						return;
+					
+					if(null == psbList || psbList.isEmpty()){
+						openPositionViewer.setInput(psbList);			
+						openPositionViewer.refresh();
+						return;
+					}
 					
 					List<ColumnProperty> properties = openPositionViewer
 							.setObjectColumnProperties(psbList.get(0));
@@ -305,8 +331,12 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		
 		final List <OpenPosition>psbList = new ArrayList<OpenPosition>();
 		Iterator<List<OpenPosition>> opIterator = accountOpMap.values().iterator();
-		while(opIterator.hasNext()){			
-			psbList.addAll(opIterator.next());
+		while(opIterator.hasNext()){	
+			List <OpenPosition> ops = opIterator.next();
+			for(OpenPosition op : ops){
+				if(!PriceUtils.isZero(op.getQty()))
+					psbList.add(op);
+			}
 		}
 		return psbList;
 	}
@@ -363,7 +393,18 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+	@Override
+	public void dispose() {
+		Business.getInstance().getScheduleManager().cancelTimerEvent(refreshEvent);		
+		unSubEvent(AllPositionSnapshotReplyEvent.class);
+		unSubEvent(AccountNumberReplyEvent.class);
+		unSubEvent(OpenPositionUpdateEvent.class,null);
+		unSubEvent(OpenPositionDynamicUpdateEvent.class,null);		
+		unSubEvent(ClosedPositionUpdateEvent.class,null);
+		unSubEvent(ExecutionUpdateEvent.class,null);
+		unSubEvent(ClosePositionReplyEvent.class,null);
+		super.dispose();
+	}
 	@Override
 	public void setFocus() {
 		
@@ -373,12 +414,21 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		Business.getInstance().getEventManager().subscribe(clazz,ID, this);		
 	}
 	
+	private void unSubEvent(Class<? extends AsyncEvent> clazz){
+		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
+	}
+	
+	private void unSubEvent(Class<? extends AsyncEvent> clazz,String ID){
+		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
+	}
+	
 	private void subEvent(Class<? extends AsyncEvent> clazz,String ID){
 		Business.getInstance().getEventManager().subscribe(clazz,ID, this);		
 	}
 
 	private void scheduleJob(AsyncTimerEvent timerEvent,
 			long maxRefreshInterval) {
+		
 		Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
 				PositionStatisticView.this, timerEvent);
 	}

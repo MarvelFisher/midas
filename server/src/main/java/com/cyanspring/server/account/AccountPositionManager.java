@@ -847,7 +847,6 @@ public class AccountPositionManager implements IPlugin {
     }
     
     private void asyncSendPositionSnapshot(final AllPositionSnapshotRequestEvent event, final List<Account> allAccounts) {
-        log.info("recevie asyncSendPositionSnapshot");
         Thread thread = new Thread(new Runnable() {
 
             @Override
@@ -858,13 +857,10 @@ public class AccountPositionManager implements IPlugin {
                 for (int i = 0; i < allAccounts.size(); i++) {
                 	
                 	Account account = allAccounts.get(i);
-                	List <OpenPosition> tempOpList = positionKeeper.getOpenPositions(account.getId());
+                    List<OpenPosition> tempOpList = positionKeeper.getOverallPosition(account);
                 	if( null == tempOpList || tempOpList.isEmpty())
                 		continue;
-                	
-                	log.info("account:{},{}",account,tempOpList.size());
-
-                	
+                	          	
                 	for(OpenPosition op: tempOpList){
                 		openPositionList.add(op);
                 		positionCount++;
