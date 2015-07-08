@@ -20,4 +20,8 @@ public class AllQuantityAnalyzer extends AbstractQuantityAnalyzer {
 		return instruction;
 	}
 
+	@Override
+	public QuantityInstruction analyze(SingleOrderStrategy strategy) {
+		return calculate(strategy);
+	}
 }
