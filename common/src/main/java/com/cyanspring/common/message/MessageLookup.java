@@ -230,7 +230,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.OVER_FROZEN_LOSS, getBean(532, "over frozen loss!"));	
 			addAndCheck(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, getBean(533, "Create group management failed!"));			
 			addAndCheck(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, getBean(534, "Get group management info failed!"));			
-			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(534, "CSTW Login failed!"));			
+			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(535, "CSTW Login failed!"));			
+			addAndCheck(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, getBean(536, "Delete group management failed!"));			
 
 			
 
