@@ -903,7 +903,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             downStreamListener.onOrder(execType, order, null, "");
             return;
         } else if (status.equals("Submitted")) {
-            if (order.getOrdStatus().isPending() && oldFilled == filled) {
+            if (order.getOrdStatus().isPending() && order.getOrdStatus() != OrdStatus.PENDING_CANCEL) {
                 execType = ExecType.pendingChangeToReady(order.getOrdStatus());
                 order.setOrdStatus(OrdStatus.pendingToReady(order
                         .getOrdStatus()));
