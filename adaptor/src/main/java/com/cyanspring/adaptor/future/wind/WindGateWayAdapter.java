@@ -10,8 +10,6 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.common.staticdata.IRefDataAdaptor;
-import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
@@ -26,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, IReqThreadCallback {
+public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback {
 
     private static final Logger log = LoggerFactory
             .getLogger(WindGateWayAdapter.class);
@@ -51,7 +48,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, 
     private boolean tradeDateCheckIsOpen = true;
     private boolean isMsgPack = false;
     private boolean isSubTrans = false;
-    private boolean isAllMarket = false;
     private boolean modifyTickTime = true;
 
     boolean isClose = false;
@@ -63,13 +59,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected ScheduleManager scheduleManager = new ScheduleManager();
     protected WindDataParser windDataParser = new WindDataParser();
-    public static WindGateWayAdapter instance = null;
+    protected static WindGateWayAdapter instance = null;
 
     static ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, TransationData> transationDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteData
     static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteExt
     static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<>(); //SaveIndexMarketSession
@@ -160,24 +155,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, 
             case WindDef.MSG_SYS_DISCONNECT_NETWORK:
             case WindDef.MSG_SYS_CONNECT_RESULT:
             case WindDef.MSG_SYS_LOGIN_RESULT:
-                break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
-                CodeTableData codeTableData = null;
-                try {
-                    codeTableData = isMsgPack
-                            ? windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap)
-                            : windDataParser.convertToCodeTableData(in_arr, codeTableDataBySymbolMap);
-                }catch (Exception e) {
-                    LogUtil.logException(log, e);
-                    return;
-                }
-                if (codeTableData == null || codeTableData.getCnName().contains("ST") || codeTableData.getSecurityType() > 32) {
-                    return;
-                }
-                codeTableDataBySymbolMap.put(codeTableData.getWindCode(),codeTableData);
-                log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName() + ",E="
-                        + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
-                        + ",Sp=" + codeTableData.getSpellName());
                 break;
             case WindDef.MSG_SYS_MARKET_CLOSE:
             case WindDef.MSG_SYS_QUOTATIONDATE_CHANGE:
@@ -644,16 +622,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, 
     }
 
     @Override
-    public void subscribeRefData(IRefDataListener listener) {
-
-    }
-
-    @Override
-    public void unsubscribeRefData(IRefDataListener listener) {
-
-    }
-
-    @Override
     public void onStartEvent(RequestThread sender) {
 
     }
@@ -738,14 +706,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IRefDataAdaptor, 
 
     public boolean isSubTrans() {
         return isSubTrans;
-    }
-
-    public boolean isAllMarket() {
-        return isAllMarket;
-    }
-
-    public void setIsAllMarket(boolean isAllMarket) {
-        this.isAllMarket = isAllMarket;
     }
 }
 

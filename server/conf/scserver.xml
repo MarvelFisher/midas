@@ -100,7 +100,6 @@
 		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 		<property name="isMsgPack" value="true"></property>
-		<property name="isAllMarket" value="false"></property>
 		<property name="isSubTrans" value="false"></property>
 	</bean>
 

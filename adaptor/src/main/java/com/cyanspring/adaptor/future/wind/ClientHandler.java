@@ -6,7 +6,6 @@ import com.cyanspring.id.Library.Threading.TimerThread;
 import com.cyanspring.id.Library.Threading.TimerThread.TimerEventHandler;
 import com.cyanspring.id.Library.Util.*;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
@@ -66,16 +65,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         for (Object key : hashMap.keySet()) {
             sb.append(key + "=" + hashMap.get(key) + ",");
         }
-        if(WindGateWayAdapter.instance.isMarketDataLog()) log.debug(sb.toString());
+        if (WindGateWayAdapter.instance.isMarketDataLog()) log.debug(sb.toString());
 //        Check packType
         int packType = (int) hashMap.get(FDTFields.PacketType);
         if (packType == FDTFields.PacketArray) {
             ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
             for (HashMap innerHashMap : arrayList) {
-                WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType),innerHashMap), null, innerHashMap);
+                WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
             }
         } else {
-            WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType(packType,hashMap), null, hashMap);
+            WindGateWayAdapter.instance.processGateWayMessage(parsePackTypeToDataType(packType, hashMap), null, hashMap);
         }
     }
 
@@ -85,7 +84,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
         if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
         if (packType == FDTFields.WindTransaction) dataType = WindDef.MSG_DATA_TRANSACTION;
-        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         return dataType;
     }
@@ -208,11 +206,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         adaptor.updateState(WindGateWayAdapter.isConnected);
 
         msLastTime = System.currentTimeMillis();
-
-        if(adaptor.isAllMarket()) {
-            sendRequestCodeTable("SH");
-            sendRequestCodeTable("SZ");
-        }
 
         sendReqHeartbeat(); // send request heartbeat message
 

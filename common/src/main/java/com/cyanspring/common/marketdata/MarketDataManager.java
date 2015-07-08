@@ -28,7 +28,7 @@ import java.util.*;
  * @version 1.0
  * @since 1.0
  */
-public class MarketDataManager extends MarketDataReceiver implements IRefDataListener {
+public class MarketDataManager extends MarketDataReceiver {
     private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
     private IQuoteSaver quoteSaver;
     private String tickDir = "ticks";
@@ -286,8 +286,4 @@ public class MarketDataManager extends MarketDataReceiver implements IRefDataLis
         this.broadcastQuote = broadcastQuote;
     }
 
-    @Override
-    public void onRefData(List<RefData> refDataList) {
-
-    }
 }

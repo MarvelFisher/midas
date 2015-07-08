@@ -14,14 +14,11 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 	@Override
 	protected void initChannel(SocketChannel arg0) throws Exception {
 		ChannelPipeline  pipeline = arg0.pipeline();
-		
-
 		pipeline.addLast("fromer", new DelimiterBasedFrameDecoder(8192,Delimiters.lineDelimiter()));
 		pipeline.addLast("decoder", new StringDecoder());
 		pipeline.addLast("encoder", new StringEncoder());
 		pipeline.addLast("IdleStateHandler", new IdleStateHandler(25, 10, 0));
-		pipeline.addLast("ClientIdleHandler", new ClientIdleHandler());
+		pipeline.addLast("ClientIdleHandler", new ClientIdleHandler(false));
 		pipeline.addLast("ClientHandler", new ClientHandler());
-		
 	}
 }

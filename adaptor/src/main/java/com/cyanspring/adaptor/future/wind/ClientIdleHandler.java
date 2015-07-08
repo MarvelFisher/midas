@@ -14,6 +14,12 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
     private static final Logger log = LoggerFactory
             .getLogger(WindGateWayAdapter.class);
 
+    private boolean isMsgPack = false;
+
+    public ClientIdleHandler(boolean isMsgPack){
+        this.isMsgPack = isMsgPack;
+    }
+
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
             throws Exception {
@@ -31,7 +37,7 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
     /**
      * Make Client HeartBeat Message
      */
-    public static String makeHeartBeatMsg() {
+    public String makeHeartBeatMsg() {
         FixStringBuilder fsb = new FixStringBuilder('=', '|');
 
         fsb.append("API");
@@ -39,7 +45,7 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
         int fsbhashCode = fsb.toString().hashCode();
         fsb.append("Hash");
         fsb.append(String.valueOf(fsbhashCode));
-        if(!WindGateWayAdapter.instance.isMsgPack()) fsb.append("\r\n");
+        if(!isMsgPack) fsb.append("\r\n");
         return fsb.toString();
     }
 }

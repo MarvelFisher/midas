@@ -6,6 +6,7 @@ public class CodeTableData {
     private String spellName;
     private String shortName;
     private String securityExchange;
+    private String EnglishName;
     private int securityType;
 
     public String getWindCode() {
@@ -54,5 +55,13 @@ public class CodeTableData {
 
     public void setSecurityType(int securityType) {
         this.securityType = securityType;
+    }
+
+    public String getEnglishName() {
+        return EnglishName;
+    }
+
+    public void setEnglishName(String englishName) {
+        EnglishName = englishName;
     }
 }
