@@ -4,7 +4,8 @@ public class PositionStatisticBean{
 	private String symbol;
 	private double qty;
 	private double PnL;
-	
+	private double AcPnL;
+	private double Margin;
 	public String getSymbol() {
 		return symbol;
 	}
@@ -22,6 +23,18 @@ public class PositionStatisticBean{
 	}
 	public void setPnL(double pnL) {
 		PnL = pnL;
+	}
+	public double getAcPnL() {
+		return AcPnL;
+	}
+	public void setAcPnL(double acPnL) {
+		AcPnL = acPnL;
+	}
+	public double getMargin() {
+		return Margin;
+	}
+	public void setMargin(double margin) {
+		Margin = margin;
 	}
 
 	
