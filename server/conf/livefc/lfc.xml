@@ -220,7 +220,7 @@
 
     <bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
         <property name="refDataFile">
-            <value>refdata/refData_fc.xml</value>
+            <value>refdata/refData_livefc.xml</value>
         </property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>
