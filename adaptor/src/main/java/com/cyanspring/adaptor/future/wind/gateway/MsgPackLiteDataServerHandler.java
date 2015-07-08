@@ -415,10 +415,12 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     		int i = 0;
     		TDF_CODE code;		
     		HashMap<Integer,Object> map;
-    	    Iterator it = lst.entrySet().iterator();
+    	    @SuppressWarnings("rawtypes")
+			Iterator it = lst.entrySet().iterator();
     	    while (it.hasNext()) {
     			i += 1;
-    	        Map.Entry pair = (Map.Entry)it.next();
+    	        @SuppressWarnings("rawtypes")
+				Map.Entry pair = (Map.Entry)it.next();
     	        code = (TDF_CODE) pair.getValue();
     	        map = codeToMap(code);
     	        map.put(FDTFields.SerialNumber, it.hasNext() ? i : -i);
