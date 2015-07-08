@@ -20,7 +20,6 @@
 			<entry>
 				<string>Commodity</string>
 				<string>F</string>
-			</entry>
 			<entry>
 				<string>TWTrading unit</string>
 				<string>人民幣/點</string>
@@ -39,7 +38,7 @@
 			</entry>
 			<entry>
 				<string>Commission fee</string>
-				<double>0.000025</double>
+				<double>0.00004</double>
 			</entry>
 			<entry>
 				<string>Lot size</string>
@@ -179,7 +178,7 @@
 			</entry>
 			<entry>
 				<string>Commission fee</string>
-				<double>0.000025</double>
+				<double>0.00004</double>
 			</entry>
 			<entry>
 				<string>Lot size</string>
@@ -319,7 +318,7 @@
 			</entry>
 			<entry>
 				<string>Commission fee</string>
-				<double>0.00005</double>
+				<double>0.00004</double>
 			</entry>
 			<entry>
 				<string>Lot size</string>
@@ -459,7 +458,7 @@
 			</entry>
 			<entry>
 				<string>Commission fee</string>
-				<double>0.00005</double>
+				<double>0.00004</double>
 			</entry>
 			<entry>
 				<string>Lot size</string>
@@ -599,7 +598,7 @@
 			</entry>
 			<entry>
 				<string>Commission fee</string>
-				<double>0.00005</double>
+				<double>0.00004</double>
 			</entry>
 			<entry>
 				<string>Lot size</string>
@@ -739,7 +738,7 @@
 			</entry>
 			<entry>
 				<string>Commission fee</string>
-				<double>0.00005</double>
+				<double>0.00004</double>
 			</entry>
 			<entry>
 				<string>Lot size</string>
