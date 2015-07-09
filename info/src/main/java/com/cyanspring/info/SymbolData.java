@@ -858,7 +858,7 @@ public class SymbolData implements Comparable<SymbolData>
 		listPrice.addAll(mapHistorical.get(type).subList(0, limit));
 		Collections.sort(listPrice);
 		
-//		if (centralDB.getSessionType() == MarketSessionType.OPEN)
+		if (centralDB.getSessionType() == MarketSessionType.OPEN)
 		{
 			try {
 				switch(type)
