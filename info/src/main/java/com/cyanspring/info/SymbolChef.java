@@ -124,6 +124,7 @@ public class SymbolChef implements Runnable{
 	{
 		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
 		{
+			entry.getValue().resetMapHistorical();
 			entry.getValue().getAllChartPrice();
 		}
 	}

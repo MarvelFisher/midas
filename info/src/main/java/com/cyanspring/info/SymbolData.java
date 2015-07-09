@@ -86,6 +86,13 @@ public class SymbolData implements Comparable<SymbolData>
 			priceData.clear();
 		}
 	}
+	public void resetMapHistorical() 
+	{
+		synchronized(mapHistorical)
+		{
+			mapHistorical.clear();
+		}
+	}
 	public void parseQuote(Quote quote)
 	{
 		try 
