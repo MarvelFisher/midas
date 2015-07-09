@@ -58,6 +58,9 @@ public class LumpSumManager implements IPlugin {
     private List<String> sentOrder = new ArrayList<String>();
     private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     private String dailyCloseTime;
+    private String user = "fdt-lumpsum";
+    private String account;
+    private String suffix = "-FX";
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
         @Override
@@ -79,7 +82,7 @@ public class LumpSumManager implements IPlugin {
 
     public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
         ParentOrder order = event.getParent();
-        if (!sentOrder.contains(order.getId()))
+        if (!sentOrder.contains(event.getTxId()))
             return;
         if (order.getOrdStatus().equals(OrdStatus.FILLED)) {
             String symbol = order.getSymbol();
@@ -104,8 +107,8 @@ public class LumpSumManager implements IPlugin {
         Map<String, Double> totalPositions = calculateTotalSymbolPosition();
         for (Map.Entry<String, Double> entry : totalPositions.entrySet()) {
             EnterParentOrderEvent epoEvent = createLumpSumOrderEvent(entry.getKey(), entry.getValue());
-            Map<String, Object> field = epoEvent.getFields();
-            sentOrder.add((String) field.get(OrderField.ID));
+//            Map<String, Object> field = epoEvent.getFields();
+            sentOrder.add(epoEvent.getTxId());
             eventManager.sendEvent(epoEvent);
         }
 
@@ -125,7 +128,8 @@ public class LumpSumManager implements IPlugin {
         } else {
             log.warn("dailyCloseTime is not set, No schedule event");
         }
-
+        
+        this.account = this.user + this.suffix;
         createLumpSumAccount();
     }
 
@@ -144,17 +148,21 @@ public class LumpSumManager implements IPlugin {
         Map<String, Double> totalPositions = new HashMap<String, Double>();
         List<Account> list = accountKeeper.getAllAccounts();
         for (Account account : list) {
+        	if(account.getId().equals(this.account))
+        		continue;
             List<OpenPosition> oPositions = positionKeeper.getOverallPosition(account);
             for (OpenPosition position : oPositions) {
                 Double num = totalPositions.get(position.getSymbol());
-                if (num != null)
-                    num += position.getQty();
+                if (num == null)
+                	num = 0.0;
+                num += position.getQty();
                 totalPositions.put(position.getSymbol(), num);
 
                 List<OpenPosition> positions = symbolPositionMap.get(position.getSymbol());
                 if (positions == null) {
                     positions = new ArrayList<OpenPosition>();
                     positions.add(position);
+                    symbolPositionMap.put(position.getSymbol(), positions);
                     continue;
                 }
                 if (!positions.contains(position))
@@ -171,8 +179,11 @@ public class LumpSumManager implements IPlugin {
         fields.put(OrderField.SIDE.value(), PriceUtils.GreaterThan(qty, 0) ? OrderSide.Sell : OrderSide.Buy);
         fields.put(OrderField.TYPE.value(), OrderType.Market);
         fields.put(OrderField.QUANTITY.value(), qty);
+        fields.put(OrderField.STRATEGY.value(), "SDMA");
+        fields.put(OrderField.USER.value(), user);
+        fields.put(OrderField.ACCOUNT.value(), account);
 
-        return new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false);
+        return new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID() + "LumpSum", false);
     }
 
     private Execution createClosePositionExec(String symbol, double price, double qty,
@@ -195,7 +206,7 @@ public class LumpSumManager implements IPlugin {
 
     private void createLumpSumAccount() {
         User user = new User("FDT-lumpSum", "xxx");
-        user.setName("FDT-lumpSum");
+        user.setName(this.user);
         user.setEmail("fdt@fdt.com.tw");
         user.setPhone("0987654321");
         user.setUserType(UserType.ADMIN);
@@ -216,10 +227,27 @@ public class LumpSumManager implements IPlugin {
         int sec = Integer.parseInt(times[2]);
 
         Date date = TimeUtil.getScheduledDate(Calendar.getInstance(), Clock.getInstance().now(), hour, min, sec);
+        if(TimeUtil.getTimePass(Clock.getInstance().now(), date) > 0)
+        	date = TimeUtil.getNextDay(date);
+        
         scheduleManager.scheduleTimerEvent(date, eventProcessor, timerEvent);
     }
 
     public void setDailyCloseTime(String dailyCloseTime) {
         this.dailyCloseTime = dailyCloseTime;
     }
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+    
+    
 }
