@@ -2,8 +2,9 @@ package com.cyanspring.common.staticdata.fu;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +17,15 @@ public class IFStrategy implements IRefDataStrategy {
             .getLogger(IFStrategy.class);
 
     private MarketSessionUtil marketSessionUtil;
+    private List<String> near1List = new ArrayList<>();
+    private List<String> near2List = new ArrayList<>();
     private StrategyData n0;
     private StrategyData n1;
 
     //	private int[] season = {Calendar.MARCH, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.DECEMBER};
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Calendar cal;
-    private String symbol = "IF";
+    private String symbol;
     private String detailCNDisplay = "%s%d年%d月合约";
     private String detailTWDisplay = "%s%d年%d月合約";
 
@@ -36,23 +39,14 @@ public class IFStrategy implements IRefDataStrategy {
 
         if (cal.compareTo(this.cal) < 0)
             return;
-        cal.add(Calendar.DAY_OF_YEAR, 1);
         this.cal.add(Calendar.MONTH, 1);
         setStrategyData(this.cal);
-    }
-
-    @Override
-    public boolean update(Calendar tradeDate) {
-        if (tradeDate.compareTo(this.cal) < 0)
-            return false;
-        this.cal.add(Calendar.MONTH, 1);
-        setStrategyData(this.cal);
-        return true;
     }
 
     @Override
     public void updateRefData(RefData refData) {
-        if (refData.getRefSymbol().equals("IFC1") || refData.getRefSymbol().equals("IHC1") || refData.getRefSymbol().equals("ICC1")) {
+        if (near1List.contains(refData.getRefSymbol())) {
+//        if (refData.getRefSymbol().equals("IFC1") || refData.getRefSymbol().equals("IHC1") || refData.getRefSymbol().equals("ICC1")) {
             refData.setSettlementDate(n0.settlementDay);
             refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0.ID);
             refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0.ID);
@@ -61,7 +55,8 @@ public class IFStrategy implements IRefDataStrategy {
             refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), n0.year, n0.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
             refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), n0.year, n0.month + 1));
             refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), n0.year, n0.month + 1));
-        } else if (refData.getRefSymbol().equals("IFC2") || refData.getRefSymbol().equals("IHC2") || refData.getRefSymbol().equals("ICC2")) {
+        } else if (near2List.contains(refData.getRefSymbol())){
+//        } else if (refData.getRefSymbol().equals("IFC2") || refData.getRefSymbol().equals("IHC2") || refData.getRefSymbol().equals("ICC2")) {
             refData.setSettlementDate(n1.settlementDay);
             refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1.ID);
             refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1.ID);
@@ -74,8 +69,14 @@ public class IFStrategy implements IRefDataStrategy {
     }
 
     @Override
-    public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
-        this.marketSessionUtil = marketSessionUtil;
+    public void setRequireData(Object... objects) {
+        this.marketSessionUtil = (MarketSessionUtil) objects[0];
+        for (MappingData data : (List<MappingData>) objects[1]){
+            if (symbol == null)
+                symbol = data.getSymbol();
+            near1List.add(data.getNear1());
+            near2List.add(data.getNear2());
+        }
     }
 
     private void setStrategyData(Calendar cal) {

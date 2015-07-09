@@ -231,7 +231,8 @@
 		<property name="refDataFile">
 			<value>refdata/refData_fc.xml</value>
 		</property>
-		<property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
+        <property name="strategyMapping"><ref bean="strategyMapping"/></property>
+        <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
 	</bean>
 
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">

@@ -15,6 +15,7 @@ import java.util.Map;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.fu.IRefDataStrategy;
+import com.cyanspring.common.staticdata.fu.MappingData;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -25,6 +26,7 @@ public class RefDataFactory extends RefDataService{
 	private String market = Default.getMarket();
 	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String,IRefDataStrategy> strategyMap = new HashMap<>();
+    private Map<String, List<MappingData>> strategyMapping;
 	private MarketSessionUtil marketSessionUtil;
     private String strategyPack = "com.cyanspring.common.staticdata.fu";
 
@@ -56,7 +58,11 @@ public class RefDataFactory extends RefDataService{
                     Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>)Class.forName( strategyPack + "." + refData.getStrategy() + "Strategy");
                     Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
                     strategy = ctor.newInstance();
-                    strategy.setMarketSessionUtil(marketSessionUtil);
+                    List<MappingData> list = null;
+                    if (strategyMapping != null)
+                        list = strategyMapping.get(refData.getStrategy());
+
+                    strategy.setRequireData(marketSessionUtil, list);
                 } catch (Exception e) {
                     log.error("Can't find strategy: {}", refData.getStrategy());
                     strategy = new IRefDataStrategy() {
@@ -66,17 +72,12 @@ public class RefDataFactory extends RefDataService{
                         }
 
                         @Override
-                        public boolean update(Calendar tradeDate) {
-                            return false;
-                        }
-
-                        @Override
                         public void updateRefData(RefData refData) {
 
                         }
 
                         @Override
-                        public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
+                        public void setRequireData(Object... objects) {
 
                         }
                     };
@@ -132,5 +133,9 @@ public class RefDataFactory extends RefDataService{
 
     public void setStrategyPack(String strategyPack) {
         this.strategyPack = strategyPack;
+    }
+
+    public void setStrategyMapping(Map<String, List<MappingData>> strategyMapping) {
+        this.strategyMapping = strategyMapping;
     }
 }
