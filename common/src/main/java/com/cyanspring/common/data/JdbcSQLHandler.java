@@ -5,10 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class JdbcSQLHandler {
 	private static final Logger log = LoggerFactory.getLogger(JdbcSQLHandler.class);
@@ -17,8 +17,8 @@ public class JdbcSQLHandler {
 	private Connection connect = null ;
 	private Statement  stat = null ;
 	
-	private ComboPooledDataSource cpds;
-	public JdbcSQLHandler(ComboPooledDataSource cpds) throws Exception
+	private DataSource cpds;
+	public JdbcSQLHandler(DataSource cpds) throws Exception
 	{
 		setCpds(cpds);
 	}
@@ -268,11 +268,11 @@ public class JdbcSQLHandler {
         return retVal;
     }
 
-	public ComboPooledDataSource getCpds() {
+	public DataSource getCpds() {
 		return cpds;
 	}
 
-	public void setCpds(ComboPooledDataSource cpds) {
+	public void setCpds(DataSource cpds) {
 		this.cpds = cpds;
 	}	
 }
