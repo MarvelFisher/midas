@@ -23,12 +23,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -115,6 +118,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private boolean pinned = true;
 	private boolean orderFilter = false;
 
+	private Composite parent;
+	private String accountId = "";
+	private Label lblAccountName;
 	// QuickOrderPad
 	private String currentOrderPadId;
 	private Composite panelComposite;
@@ -172,7 +178,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		// create save order action
 		createSaveOrderAction(parent);
-		
+
 		// create table
 		String strFile = Business.getInstance().getConfigPath()
 				+ "ParentOrderTable.xml";
@@ -215,7 +221,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		// create pin order action
 		createPinAction(parent);
-		
+
 		createOrderFilter(parent);
 
 		createCountOrderAction(parent);
@@ -237,15 +243,66 @@ public class SingleOrderStrategyView extends ViewPart implements
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSelectionEvent.class, this);
 		showOrders();
+		this.parent = parent;
+		initKeyListener();
+	}
+
+	private void initKeyListener() {
+		KeyAdapter keyAdapter = new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.F1) {
+					showOrderPadByType(true);
+				} else if (e.keyCode == SWT.F2) {
+					showOrderPadByType(false);
+				}
+			}
+		};
+
+		addKeyAdapter(parent, keyAdapter);
+	}
+
+	private void addKeyAdapter(Control control, KeyAdapter keyAdapter) {
+		control.addKeyListener(keyAdapter);
+		if (control instanceof Composite) {
+			Composite parentComposite = (Composite) control;
+			for (Control subControl : parentComposite.getChildren()) {
+				addKeyAdapter(subControl, keyAdapter);
+			}
+		}
+
+	}
+
+	private void showOrderPadByType(boolean isBuying) {
+		if (panelComposite.isVisible()
+				&& ((isBuying && cbOrderSide.getSelectionIndex() == 0) || (!isBuying && cbOrderSide
+						.getSelectionIndex() == 1))) {
+			showOrderPad(false);
+		} else {
+			showOrderPad(true);
+			populateOrderPadServers();
+		}
+		if (isBuying) {
+			cbOrderSide.select(0);
+		} else {
+			cbOrderSide.select(1);
+		}
+		txtSymbol.setFocus();
+		parent.layout();
 	}
 
 	private void createQuickOrderPad(final Composite parent) {
 
 		panelComposite = new Composite(parent, SWT.NONE);
-		GridLayout panelLayout = new GridLayout(12, false);
+		GridLayout panelLayout = new GridLayout(13, false);
 		panelComposite.setLayout(panelLayout);
 		panelLayout.marginHeight = 1;
 		panelLayout.marginWidth = 5;
+
+		lblAccountName = new Label(panelComposite, SWT.BORDER);
+		lblAccountName.setText(accountId);
+		lblAccountName.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false,
+				true));
 
 		Label lb1 = new Label(panelComposite, SWT.NONE);
 		lb1.setText("Symbol: ");
@@ -882,7 +939,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		};
 
 		pinAction.setChecked(orderFilter);
-//		orderFilter = false;
+		// orderFilter = false;
 		List<String> matchLst = new ArrayList<String>();
 		matchLst.add(OrdStatus.NEW.toString());
 		matchLst.add(OrdStatus.REPLACED.toString());
@@ -895,7 +952,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		matchLst.add(OrdStatus.PENDING_REPLACE.toString());
 		completeFilter = new ParentOrderFilter();
 		completeFilter.setMatch("Status", matchLst);
-//		viewer.addFilter(completeFilter);
+		// viewer.addFilter(completeFilter);
 
 		pinAction.setText("Order Filter");
 		pinAction.setToolTipText("hide completed orders");
@@ -1068,11 +1125,13 @@ public class SingleOrderStrategyView extends ViewPart implements
 			timerEvent = null;
 			asyncShowOrders();
 		} else if (event instanceof AccountSelectionEvent) {
+			accountId = ((AccountSelectionEvent) event).getAccount();
 			if (pinned) {
-				accountFilter.setMatch("Account",
-						((AccountSelectionEvent) event).getAccount());
+				accountFilter.setMatch("Account", accountId);
 				smartShowOrders();
 			}
+			lblAccountName.setText(accountId);
+			lblAccountName.getParent().layout();
 		} else if (event instanceof ParentOrderReplyEvent) {
 			final ParentOrderReplyEvent evt = (ParentOrderReplyEvent) event;
 			viewer.getControl().getDisplay().asyncExec(new Runnable() {
