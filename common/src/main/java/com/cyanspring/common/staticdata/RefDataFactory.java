@@ -59,6 +59,8 @@ public class RefDataFactory extends RefDataService {
                     Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
                     strategy = ctor.newInstance();
                     List<MappingData> list = strategyMapping.get(refData.getStrategy());
+                    if (list == null)
+                        throw new Exception("No MappingData find!");
                     strategy.setRequireData(marketSessionUtil, list);
                 } catch (Exception e) {
                     log.error("Can't find strategy: {}", refData.getStrategy());

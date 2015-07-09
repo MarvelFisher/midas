@@ -75,7 +75,6 @@ public class LumpSumManager implements IPlugin {
     public void processQuoteEvent(QuoteEvent event) {
         Quote quote = event.getQuote();
         marketData.put(quote.getSymbol(), quote);
-        // Update fx rate ?
     }
 
     public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
@@ -89,6 +88,8 @@ public class LumpSumManager implements IPlugin {
                 Execution exec = createClosePositionExec(symbol, position.getPrice(), position.getQty(),
                         position.getUser(), position.getAccount(), "");
                 try {
+                    if (exec == null)
+                        continue;
                     positionKeeper.processExecution(exec, accountKeeper.getAccount(position.getAccount()));
                 } catch (PositionException e) {
                     log.error("Cannot process execution account: {}, symbol: {}", position.getAccount(),
@@ -179,7 +180,7 @@ public class LumpSumManager implements IPlugin {
 //        Quote quote = marketData.get(symbol);
 //        double price = QuoteUtils.getMarketablePrice(quote, qty);
         if (!PriceUtils.validPrice(price)) {
-            log.warn("");
+            log.warn("Account:{}, Price:{} is not available, return without action.", account, price);
             return null;
         }
         Execution exec = new Execution(symbol, qty > 0 ? OrderSide.Sell : OrderSide.Buy,
