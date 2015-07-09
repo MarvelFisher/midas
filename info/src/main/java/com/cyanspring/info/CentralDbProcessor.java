@@ -543,6 +543,17 @@ public class CentralDbProcessor implements IPlugin
 			@Override
 			public void run() 
 			{
+				while (isStartup)
+				{
+					try 
+					{
+						Thread.sleep(100);
+					} 
+					catch (InterruptedException e) 
+					{
+						e.printStackTrace();
+					}
+				}
 				for (SymbolChef chef : SymbolChefList)
 				{
 					chef.getAllChartPrice();
@@ -576,6 +587,7 @@ public class CentralDbProcessor implements IPlugin
 		if (this.sessionType == null)
 		{
 			reset = true;
+			retrieveChart();
 		}
 		else if(this.sessionType != sessionType) {
 			if (sessionType == MarketSessionType.CLOSE)
@@ -595,10 +607,6 @@ public class CentralDbProcessor implements IPlugin
 		{
 			resetStatement() ;
 			sendRefDataRequest();
-		}
-		if (this.sessionType == null)
-		{
-			retrieveChart();
 		}
 		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
 			isProcessQuote = true;
