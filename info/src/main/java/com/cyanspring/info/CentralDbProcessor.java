@@ -271,7 +271,8 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processRefDataEvent(RefDataEvent event) 
 	{
-		onCallRefData(event);
+		if (this.getSessionType() != null)
+			onCallRefData(event);
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -516,7 +517,6 @@ public class CentralDbProcessor implements IPlugin
 					}
 				}
 				outSymbol.close();
-				retrieveChart();
 				calledRefdata = true;
 			} 
 			catch (IOException e) 
@@ -586,32 +586,6 @@ public class CentralDbProcessor implements IPlugin
 				reset = true;
 			}
 		}
-		/*
-		
-		if (this.sessionType == MarketSessionType.OPEN)
-		{
-			if (sessionType == MarketSessionType.CLOSE)
-			{
-				insert = true;
-			}
-			else if (sessionType == MarketSessionType.PREOPEN)
-			{
-				reset = true;
-			}
-		}
-		else if (this.sessionType == MarketSessionType.CLOSE)
-		{
-			if (sessionType == MarketSessionType.OPEN 
-					|| sessionType == MarketSessionType.PREOPEN)
-			{
-				reset = true;
-			}
-		}
-		else if (this.sessionType == null)
-		{
-			reset = true;
-		}		*/
-
 		this.sessionType = sessionType;
 		if (insert)
 		{
@@ -621,6 +595,10 @@ public class CentralDbProcessor implements IPlugin
 		{
 			resetStatement() ;
 			sendRefDataRequest();
+		}
+		if (this.sessionType == null)
+		{
+			retrieveChart();
 		}
 		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
 			isProcessQuote = true;
@@ -636,6 +614,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void sendRefDataRequest()
 	{
+		log.info("Send RefDataRequest");
 		RefDataRequestEvent event = new RefDataRequestEvent(null, null);
 		event.setReceiver(systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + systemInfoMD.getId());
 		log.info("Sending RefDataRequest event ...");
@@ -666,6 +645,7 @@ public class CentralDbProcessor implements IPlugin
 	}	
 	public void requestMarketSession()
 	{
+		log.info("Send MarketSessionRequest");
 		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
 		sendMDEvent(new MarketSessionRequestEvent(null, receiver)) ;
 	}	
@@ -816,6 +796,7 @@ public class CentralDbProcessor implements IPlugin
 				{
 					chef.insertSQL();
 				}
+				retrieveChart();
 			}
 		});
 		insertThread.setName("CDP_Insert_SQL");
