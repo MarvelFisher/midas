@@ -189,7 +189,7 @@ public class SymbolData implements Comparable<SymbolData>
 				str = data.next();
 				d52WLow = Double.parseDouble(str);
 				str = data.next();
-				dCurVolume = (double)Integer.parseInt(str);
+				dCurVolume = Double.parseDouble(str);
 				data.close();
 			}
         }
