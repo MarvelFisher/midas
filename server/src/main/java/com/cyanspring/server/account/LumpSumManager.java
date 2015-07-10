@@ -12,6 +12,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.strategy.IStrategyFactory;
 import com.cyanspring.common.type.OrdStatus;
@@ -110,7 +111,7 @@ public class LumpSumManager implements IPlugin {
             		totalQty -= position.getQty();
             	}
             	
-                Execution exec = createClosePositionExec(symbol, position.getPrice(), position.getQty(),
+                Execution exec = createClosePositionExec(symbol, order.getPrice(), position.getQty(),
                         position.getUser(), position.getAccount(), "");
                 try {
                     if (exec == null)
@@ -155,10 +156,30 @@ public class LumpSumManager implements IPlugin {
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         Map<String, Double> totalPositions = calculateTotalSymbolPosition();
         for (Map.Entry<String, Double> entry : totalPositions.entrySet()) {
-            EnterParentOrderEvent epoEvent = createLumpSumOrderEvent(entry.getKey(), entry.getValue());
-//            Map<String, Object> field = epoEvent.getFields();
-            sentOrder.add(epoEvent.getTxId());
-            eventManager.sendEvent(epoEvent);
+        	String symbol = entry.getKey();
+        	double qty = entry.getValue();
+        	if(!PriceUtils.isZero(qty)){
+        		EnterParentOrderEvent epoEvent = createLumpSumOrderEvent(symbol, qty);
+        		sentOrder.add(epoEvent.getTxId());
+        		eventManager.sendEvent(epoEvent);
+        	} else {
+        		List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
+        		Quote quote = marketData.get(symbol);
+        		for(OpenPosition oPosition : oPositions){
+        			double price = QuoteUtils.getMarketablePrice(quote, oPosition.getQty());
+        			Execution exec = createClosePositionExec(symbol, price, 
+        					oPosition.getQty(), oPosition.getUser(), oPosition.getAccount(), "");
+        			if(exec == null)
+        				continue;
+        			try{
+        				positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
+        				removeAccountPositionBySymbol(symbol, oPosition.getAccount());
+        			} catch(PositionException e){
+        				log.error("Cannot process execution account: {}, symbol: {}", oPosition.getAccount(),
+                                oPosition.getSymbol());
+        			}
+        		}
+        	}
         }
         sortPostionsWithQty();
         setScheduleLumpSumEvent();
