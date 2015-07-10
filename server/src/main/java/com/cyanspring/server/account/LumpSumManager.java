@@ -12,6 +12,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.strategy.IStrategyFactory;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
@@ -19,11 +20,13 @@ import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * The Manager is used to summarize all account's positions in one
@@ -55,18 +58,21 @@ public class LumpSumManager implements IPlugin {
 
     private Map<String, Quote> marketData = new HashMap<String, Quote>();
     private Map<String, List<OpenPosition>> symbolPositionMap = new HashMap<String, List<OpenPosition>>();  // symbol/OpenPosition
+    private Map<String, Double> symbolQtyMap = new HashMap<>(); // symbol/Qty
     private List<String> sentOrder = new ArrayList<String>();
     private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     private String dailyCloseTime;
     private String user = "fdt-lumpsum";
     private String account;
     private String suffix = "-FX";
+    private String router;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
         @Override
         public void subscribeToEvents() {
             subscribeToEvent(QuoteEvent.class, null);
             subscribeToEvent(UpdateParentOrderEvent.class, null);
+            subscribeToEvent(ServerReadyEvent.class, null);
         }
 
         @Override
@@ -84,23 +90,66 @@ public class LumpSumManager implements IPlugin {
         ParentOrder order = event.getParent();
         if (!sentOrder.contains(event.getTxId()))
             return;
-        if (order.getOrdStatus().equals(OrdStatus.FILLED)) {
+        if (order.getOrdStatus().equals(OrdStatus.FILLED) || order.getOrdStatus().equals(OrdStatus.PARTIALLY_FILLED)) {
             String symbol = order.getSymbol();
+            double newQty = order.getQuantity();
+            Double remainQty = symbolQtyMap.get(symbol);
+            if(remainQty == null)
+            	remainQty = 0.0;
+            double totalQty = newQty + remainQty;
+            
             List<OpenPosition> positions = getAccountsPositionBySymbol(symbol);
+            if(PriceUtils.LessThan(totalQty, 0))
+            	Collections.reverse(positions);
             for (OpenPosition position : positions) {
+            	if(PriceUtils.Equal(Math.signum(totalQty), Math.signum(position.getQty()))){
+            		if(Math.abs(totalQty) - Math.abs(position.getQty()) < 0){
+                		symbolQtyMap.put(symbol, totalQty);
+                		break;
+                	}
+            		totalQty -= position.getQty();
+            	}
+            	
                 Execution exec = createClosePositionExec(symbol, position.getPrice(), position.getQty(),
                         position.getUser(), position.getAccount(), "");
                 try {
                     if (exec == null)
                         continue;
                     positionKeeper.processExecution(exec, accountKeeper.getAccount(position.getAccount()));
+                    removeAccountPositionBySymbol(symbol, position.getAccount());
+                
                 } catch (PositionException e) {
                     log.error("Cannot process execution account: {}, symbol: {}", position.getAccount(),
                             position.getSymbol());
                 }
             }
+            if(getAccountsPositionBySymbol(symbol) == null)
+                sentOrder.remove(order.getId());
         }
-        sentOrder.remove(order.getId());
+    }
+    
+    public void processServerReadyEvent(ServerReadyEvent event){
+    	if (dailyCloseTime != null) {
+            setScheduleLumpSumEvent();
+        } else {
+            log.warn("dailyCloseTime is not set, No schedule event");
+        }
+    	
+    	this.account = this.user + this.suffix;
+    	Account account = accountKeeper.getAccount(this.account);
+    	if(account == null){
+    		createLumpSumAccount();
+    		return;
+    	}
+    	
+		try {
+			AccountSetting setting = accountKeeper.getAccountSetting(this.account);
+			if(setting == null)
+	    		setting = AccountSetting.createEmptySettings(this.account);
+			this.router = setting.getRoute();
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+		}
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
@@ -111,7 +160,7 @@ public class LumpSumManager implements IPlugin {
             sentOrder.add(epoEvent.getTxId());
             eventManager.sendEvent(epoEvent);
         }
-
+        sortPostionsWithQty();
         setScheduleLumpSumEvent();
     }
 
@@ -122,15 +171,6 @@ public class LumpSumManager implements IPlugin {
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("LumpSumManager");
-
-        if (dailyCloseTime != null) {
-            setScheduleLumpSumEvent();
-        } else {
-            log.warn("dailyCloseTime is not set, No schedule event");
-        }
-        
-        this.account = this.user + this.suffix;
-        createLumpSumAccount();
     }
 
     @Override
@@ -139,11 +179,22 @@ public class LumpSumManager implements IPlugin {
             scheduleManager.uninit();
         eventProcessor.uninit();
     }
-
+    
     private List<OpenPosition> getAccountsPositionBySymbol(String symbol) {
         return symbolPositionMap.get(symbol);
     }
 
+    private void removeAccountPositionBySymbol(String symbol, String account){
+    	List<OpenPosition> oPositions = symbolPositionMap.get(symbol);
+    	for(int i=0; i < oPositions.size(); i++){
+    		OpenPosition oPosition = oPositions.get(i);
+    		if(oPosition.getAccount().equals(account))
+    			oPositions.remove(i);
+    	}
+    	if(oPositions.size() == 0)
+    		symbolPositionMap.remove(symbol);
+    }
+    
     private Map<String, Double> calculateTotalSymbolPosition() {
         Map<String, Double> totalPositions = new HashMap<String, Double>();
         List<Account> list = accountKeeper.getAllAccounts();
@@ -172,6 +223,19 @@ public class LumpSumManager implements IPlugin {
 
         return totalPositions;
     }
+    
+    private void sortPostionsWithQty(){
+    	for(Entry<String, List<OpenPosition>> entry : symbolPositionMap.entrySet()){
+    		Collections.sort(entry.getValue(), new Comparator<OpenPosition>() {
+    			@Override
+    			public int compare(OpenPosition o1, OpenPosition o2) {
+    				if(PriceUtils.GreaterThan(o1.getQty(), o2.getQty()))
+    					return 1;
+    				return 0;
+    			}
+    		});
+    	}
+    }
 
     private EnterParentOrderEvent createLumpSumOrderEvent(String symbol, double qty) {
         HashMap<String, Object> fields = new HashMap<String, Object>();
@@ -182,6 +246,7 @@ public class LumpSumManager implements IPlugin {
         fields.put(OrderField.STRATEGY.value(), "SDMA");
         fields.put(OrderField.USER.value(), user);
         fields.put(OrderField.ACCOUNT.value(), account);
+        fields.put(OrderField.ROUTE.value(), router);
 
         return new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID() + "LumpSum", false);
     }
@@ -249,5 +314,8 @@ public class LumpSumManager implements IPlugin {
 		this.suffix = suffix;
 	}
     
+	public void setRouter(String router) {
+		this.router = router;
+	}
     
 }
