@@ -476,7 +476,10 @@ public class DynamicTableViewer extends TableViewer {
 			String title = getMappedTitle(prop.getTitle());
 			column.setText(title);
 			column.setWidth(prop.getWidth());
-			//column.setResizable(true);
+			//fix problem
+			if (prop.getWidth() == 0) {
+				column.setResizable(false);
+			}
 			column.setMoveable(true);
 			createMenuItem(headerMenu, column);
 			column.addSelectionListener(getSelectionAdapter(column, i));
