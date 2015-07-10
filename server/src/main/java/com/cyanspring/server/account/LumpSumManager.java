@@ -95,93 +95,75 @@ public class LumpSumManager implements IPlugin {
             String symbol = order.getSymbol();
             double newQty = order.getQuantity();
             Double remainQty = symbolQtyMap.get(symbol);
-            if(remainQty == null)
-            	remainQty = 0.0;
+            if (remainQty == null)
+                remainQty = 0.0;
             double totalQty = newQty + remainQty;
-            
-            List<OpenPosition> positions = getAccountsPositionBySymbol(symbol);
-            if(PriceUtils.LessThan(totalQty, 0))
-            	Collections.reverse(positions);
-            for (OpenPosition position : positions) {
-            	if(PriceUtils.Equal(Math.signum(totalQty), Math.signum(position.getQty()))){
-            		if(Math.abs(totalQty) - Math.abs(position.getQty()) < 0){
-                		symbolQtyMap.put(symbol, totalQty);
-                		break;
-                	}
-            		totalQty -= position.getQty();
-            	}
-            	
-                Execution exec = createClosePositionExec(symbol, order.getPrice(), position.getQty(),
-                        position.getUser(), position.getAccount(), "");
-                try {
-                    if (exec == null)
-                        continue;
-                    positionKeeper.processExecution(exec, accountKeeper.getAccount(position.getAccount()));
-                    removeAccountPositionBySymbol(symbol, position.getAccount());
-                
-                } catch (PositionException e) {
-                    log.error("Cannot process execution account: {}, symbol: {}", position.getAccount(),
-                            position.getSymbol());
+
+            List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
+            if (PriceUtils.LessThan(totalQty, 0))
+                Collections.reverse(oPositions);
+            for (OpenPosition oPosition : oPositions) {
+                if (PriceUtils.Equal(Math.signum(totalQty), Math.signum(oPosition.getQty()))) {
+                    if (Math.abs(totalQty) - Math.abs(oPosition.getQty()) < 0) {
+                        symbolQtyMap.put(symbol, totalQty);
+                        break;
+                    }
+                    totalQty -= oPosition.getQty();
                 }
+
+                processClosePositionExecution(symbol, oPosition, order.getPrice());
+
             }
-            if(getAccountsPositionBySymbol(symbol) == null)
+            if (getAccountsPositionBySymbol(symbol) == null)
                 sentOrder.remove(order.getId());
         }
     }
-    
-    public void processServerReadyEvent(ServerReadyEvent event){
-    	if (dailyCloseTime != null) {
+
+    public void processServerReadyEvent(ServerReadyEvent event) {
+        if (dailyCloseTime != null) {
             setScheduleLumpSumEvent();
         } else {
             log.warn("dailyCloseTime is not set, No schedule event");
         }
-    	
-    	this.account = this.user + this.suffix;
-    	Account account = accountKeeper.getAccount(this.account);
-    	if(account == null){
-    		createLumpSumAccount();
-    		return;
-    	}
-    	
-		try {
-			AccountSetting setting = accountKeeper.getAccountSetting(this.account);
-			if(setting == null)
-	    		setting = AccountSetting.createEmptySettings(this.account);
-			this.router = setting.getRoute();
-		} catch (AccountException e) {
-			log.error(e.getMessage(), e);
-		}
+
+        this.account = this.user + this.suffix;
+        Account account = accountKeeper.getAccount(this.account);
+        if (account == null) {
+            createLumpSumAccount();
+            return;
+        }
+
+        try {
+            AccountSetting setting = accountKeeper.getAccountSetting(this.account);
+            if (setting == null)
+                setting = AccountSetting.createEmptySettings(this.account);
+            this.router = setting.getRoute();
+        } catch (AccountException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         Map<String, Double> totalPositions = calculateTotalSymbolPosition();
         for (Map.Entry<String, Double> entry : totalPositions.entrySet()) {
-        	String symbol = entry.getKey();
-        	double qty = entry.getValue();
-        	if(!PriceUtils.isZero(qty)){
-        		EnterParentOrderEvent epoEvent = createLumpSumOrderEvent(symbol, qty);
-        		sentOrder.add(epoEvent.getTxId());
-        		eventManager.sendEvent(epoEvent);
-        	} else {
-        		List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
-        		Quote quote = marketData.get(symbol);
-        		for(OpenPosition oPosition : oPositions){
-        			double price = QuoteUtils.getMarketablePrice(quote, oPosition.getQty());
-        			Execution exec = createClosePositionExec(symbol, price, 
-        					oPosition.getQty(), oPosition.getUser(), oPosition.getAccount(), "");
-        			if(exec == null)
-        				continue;
-        			try{
-        				positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
-        				removeAccountPositionBySymbol(symbol, oPosition.getAccount());
-        			} catch(PositionException e){
-        				log.error("Cannot process execution account: {}, symbol: {}", oPosition.getAccount(),
-                                oPosition.getSymbol());
-        			}
-        		}
-        	}
+            String symbol = entry.getKey();
+            double qty = entry.getValue();
+            if (!PriceUtils.isZero(qty)) {
+                EnterParentOrderEvent epoEvent = createLumpSumOrderEvent(symbol, qty);
+                sentOrder.add(epoEvent.getTxId());
+                eventManager.sendEvent(epoEvent);
+            } else {
+                List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
+                Quote quote = marketData.get(symbol);
+                for (OpenPosition oPosition : oPositions) {
+                    double price = QuoteUtils.getMarketablePrice(quote, oPosition.getQty());
+                    if (PriceUtils.isZero(price))
+                        price = quote.getLast();
+                    processClosePositionExecution(symbol, oPosition, price);
+                }
+            }
         }
-        sortPostionsWithQty();
+        sortPositionsWithQty();
         setScheduleLumpSumEvent();
     }
 
@@ -200,33 +182,46 @@ public class LumpSumManager implements IPlugin {
             scheduleManager.uninit();
         eventProcessor.uninit();
     }
-    
+
+    private void processClosePositionExecution(String symbol, OpenPosition oPosition, double price) {
+        Execution exec = createClosePositionExec(symbol, price,
+                oPosition.getQty(), oPosition.getUser(), oPosition.getAccount(), "");
+        if (exec == null) {
+            log.warn("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount(), price);
+            return;
+        }
+        try {
+            positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
+            removeAccountPositionBySymbol(symbol, oPosition);
+        } catch (PositionException e) {
+            log.error("Cannot process execution account: {}, symbol: {}", oPosition.getAccount(),
+                    oPosition.getSymbol());
+        }
+    }
+
     private List<OpenPosition> getAccountsPositionBySymbol(String symbol) {
         return symbolPositionMap.get(symbol);
     }
 
-    private void removeAccountPositionBySymbol(String symbol, String account){
-    	List<OpenPosition> oPositions = symbolPositionMap.get(symbol);
-    	for(int i=0; i < oPositions.size(); i++){
-    		OpenPosition oPosition = oPositions.get(i);
-    		if(oPosition.getAccount().equals(account))
-    			oPositions.remove(i);
-    	}
-    	if(oPositions.size() == 0)
-    		symbolPositionMap.remove(symbol);
+    private void removeAccountPositionBySymbol(String symbol, OpenPosition position) {
+        List<OpenPosition> oPositions = symbolPositionMap.get(symbol);
+        oPositions.remove(position);
+
+        if (oPositions.size() == 0)
+            symbolPositionMap.remove(symbol);
     }
-    
+
     private Map<String, Double> calculateTotalSymbolPosition() {
         Map<String, Double> totalPositions = new HashMap<String, Double>();
         List<Account> list = accountKeeper.getAllAccounts();
         for (Account account : list) {
-        	if(account.getId().equals(this.account))
-        		continue;
+            if (account.getId().equals(this.account))
+                continue;
             List<OpenPosition> oPositions = positionKeeper.getOverallPosition(account);
             for (OpenPosition position : oPositions) {
                 Double num = totalPositions.get(position.getSymbol());
                 if (num == null)
-                	num = 0.0;
+                    num = 0.0;
                 num += position.getQty();
                 totalPositions.put(position.getSymbol(), num);
 
@@ -244,18 +239,18 @@ public class LumpSumManager implements IPlugin {
 
         return totalPositions;
     }
-    
-    private void sortPostionsWithQty(){
-    	for(Entry<String, List<OpenPosition>> entry : symbolPositionMap.entrySet()){
-    		Collections.sort(entry.getValue(), new Comparator<OpenPosition>() {
-    			@Override
-    			public int compare(OpenPosition o1, OpenPosition o2) {
-    				if(PriceUtils.GreaterThan(o1.getQty(), o2.getQty()))
-    					return 1;
-    				return 0;
-    			}
-    		});
-    	}
+
+    private void sortPositionsWithQty() {
+        for (Entry<String, List<OpenPosition>> entry : symbolPositionMap.entrySet()) {
+            Collections.sort(entry.getValue(), new Comparator<OpenPosition>() {
+                @Override
+                public int compare(OpenPosition o1, OpenPosition o2) {
+                    if (PriceUtils.GreaterThan(o1.getQty(), o2.getQty()))
+                        return 1;
+                    return 0;
+                }
+            });
+        }
     }
 
     private EnterParentOrderEvent createLumpSumOrderEvent(String symbol, double qty) {
@@ -276,10 +271,9 @@ public class LumpSumManager implements IPlugin {
                                               String user, String account, String route) {
 //        Quote quote = marketData.get(symbol);
 //        double price = QuoteUtils.getMarketablePrice(quote, qty);
-        if (!PriceUtils.validPrice(price)) {
-            log.warn("Account:{}, Price:{} is not available, return without action.", account, price);
+        if (!PriceUtils.validPrice(price))
             return null;
-        }
+
         Execution exec = new Execution(symbol, qty > 0 ? OrderSide.Sell : OrderSide.Buy,
                 Math.abs(qty),
                 price,
@@ -313,9 +307,9 @@ public class LumpSumManager implements IPlugin {
         int sec = Integer.parseInt(times[2]);
 
         Date date = TimeUtil.getScheduledDate(Calendar.getInstance(), Clock.getInstance().now(), hour, min, sec);
-        if(TimeUtil.getTimePass(Clock.getInstance().now(), date) > 0)
-        	date = TimeUtil.getNextDay(date);
-        
+        if (TimeUtil.getTimePass(Clock.getInstance().now(), date) > 0)
+            date = TimeUtil.getNextDay(date);
+
         scheduleManager.scheduleTimerEvent(date, eventProcessor, timerEvent);
     }
 
@@ -323,20 +317,20 @@ public class LumpSumManager implements IPlugin {
         this.dailyCloseTime = dailyCloseTime;
     }
 
-	public void setUser(String user) {
-		this.user = user;
-	}
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-	public void setAccount(String account) {
-		this.account = account;
-	}
+    public void setAccount(String account) {
+        this.account = account;
+    }
 
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
-    
-	public void setRouter(String router) {
-		this.router = router;
-	}
-    
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
+
+    public void setRouter(String router) {
+        this.router = router;
+    }
+
 }
