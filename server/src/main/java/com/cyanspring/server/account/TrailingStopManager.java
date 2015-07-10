@@ -179,7 +179,8 @@ public class TrailingStopManager implements IPlugin {
 					}
 					log.info("Trailing stoping: " + refPrice + ", " +
 							ppp.getPrice() + ", " + 
-							position);
+							position + ", " +
+							trailingStop);
 					ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
 							null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.TrailingStop,
 							IdGenerator.getInstance().getNextID());
