@@ -283,11 +283,13 @@
         <constructor-arg>
             <map>
                 <entry key="IF"><ref bean="IFsessionChecker"/></entry>
+                <entry key="DEFAULT"><ref bean="IFsessionChecker"/></entry>
             </map>
         </constructor-arg>
         <constructor-arg>
             <map>
                 <entry key="IF"><ref bean="IFtradeDateManager"/></entry>
+                <entry key="DEFAULT"><ref bean="IFtradeDateManager"/></entry>
             </map>
         </constructor-arg>
     </bean>
