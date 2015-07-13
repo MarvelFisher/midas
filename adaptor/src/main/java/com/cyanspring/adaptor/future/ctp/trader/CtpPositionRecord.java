@@ -66,7 +66,8 @@ public class CtpPositionRecord {
 		if(TraderLibrary.THOST_FTDC_OF_CloseYesterday == flag) {
 			position.setYdQty(position.getYdQty() - qty);
 			hold.setYdQty(hold.getYdQty() - qty);
-		} else if (TraderLibrary.THOST_FTDC_OF_CloseToday == flag) {
+		} else if (TraderLibrary.THOST_FTDC_OF_CloseToday == flag ||
+				TraderLibrary.THOST_FTDC_OF_Close == flag) {
 			position.setTdQty(position.getTdQty() - qty);
 			hold.setTdQty(hold.getTdQty() - qty);
 		}
