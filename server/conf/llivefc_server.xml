@@ -135,7 +135,7 @@
                 <value>CNY</value>              <!-- currency -->
                 <value>A</value>                <!-- accountPrefix -->
                 <value>1000000.0</value>        <!-- accountCash -->
-                <value>8.333333</value>         <!-- marginTimes -->
+                <value>10</value>         <!-- marginTimes -->
                 <value>1.0</value>              <!-- marginCut -->
                 <value>0.00004</value>          <!-- commission -->
                 <value>2</value>                <!-- commissionMin -->
