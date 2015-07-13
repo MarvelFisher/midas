@@ -101,6 +101,36 @@ public class TraderHelper {
 		return result;
 	}
 	
+	public static String readCombOffsetFlag( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_OF_Open:
+			result = "THOST_FTDC_OF_Open";
+			break;
+		case TraderLibrary.THOST_FTDC_OF_Close:
+			result = "THOST_FTDC_OF_Close";
+			break;
+		case TraderLibrary.THOST_FTDC_OF_ForceClose:
+			result = "THOST_FTDC_OF_ForceClose";
+			break;
+		case TraderLibrary.THOST_FTDC_OF_CloseToday:
+			result = "THOST_FTDC_OF_CloseToday";
+			break;
+		case TraderLibrary.THOST_FTDC_OF_CloseYesterday:
+			result = "THOST_FTDC_OF_CloseYesterday";
+			break;
+		case TraderLibrary.THOST_FTDC_OF_ForceOff:
+			result = "THOST_FTDC_OF_ForceOff";
+			break;
+		case TraderLibrary.THOST_FTDC_OF_LocalForceClose:
+			result = "THOST_FTDC_OF_LocalForceClose";
+			break;
+		default:
+			result = "Not Defined";	
+		}
+		return result;
+	}
+	
 	public static String readPositionDirection( byte code ) {
 		String result = null;
 		switch (code) {

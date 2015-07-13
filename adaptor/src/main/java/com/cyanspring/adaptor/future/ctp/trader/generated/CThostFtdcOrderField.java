@@ -516,7 +516,7 @@ public class CThostFtdcOrderField extends StructObject {
 		sb.append("		OrderPriceType = " + OrderPriceType() + ";\n");
 		sb.append("		Direction = " + Direction() + ";\n");
 		sb.append("		LimitPrice = " + LimitPrice() + ";\n");
-		sb.append("		CombOffsetFlag = " + CombOffsetFlag() + ";\n");
+		sb.append("		CombOffsetFlag = " + CombOffsetFlag().getByte() + " -> " + TraderHelper.readCombOffsetFlag(CombOffsetFlag().getByte()) + ";\n");
 		sb.append("		VolumeTotalOriginal = " + VolumeTotalOriginal() + ";\n");
 		sb.append("		OrderSubmitStatus = " + OrderSubmitStatus() + ";\n");
 		sb.append("		OrderStatus = " + OrderStatus() + " -> " + TraderHelper.readOrderStatusCode(OrderStatus()) + ";\n");
