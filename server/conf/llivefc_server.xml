@@ -12,6 +12,7 @@
     <import resource="livefc/IFSessionState.xml" />
     <import resource="livefc/business.xml" />
     <import resource="livefc/LiveTrading.xml" />
+    <import resource="livefc/refData.xml" />
     <import resource="common/strategy.xml" />
     <import resource="common/centralDb.xml" />
     <import resource="common/persistence.xml" />
