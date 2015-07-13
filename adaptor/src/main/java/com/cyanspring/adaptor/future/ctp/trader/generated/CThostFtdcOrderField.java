@@ -513,6 +513,8 @@ public class CThostFtdcOrderField extends StructObject {
 		sb.append("		OrderRef = " + OrderRef().getCString() + ";\n");
 		sb.append("		ExchangeID = " + ExchangeID().getCString() + ";\n");
 		sb.append("		OrderSysID = " + OrderSysID().getCString() + ";\n");
+		sb.append("		TraderID = " + TraderID().getCString() + ";\n");
+		sb.append("		OrderLocalID = " + OrderLocalID().getCString() + ";\n");
 		sb.append("		OrderPriceType = " + OrderPriceType() + ";\n");
 		sb.append("		Direction = " + Direction() + ";\n");
 		sb.append("		LimitPrice = " + LimitPrice() + ";\n");
@@ -523,6 +525,22 @@ public class CThostFtdcOrderField extends StructObject {
 		sb.append("		OrderType = " + OrderType() + ";\n");
 		sb.append("		VolumeTraded = " + VolumeTraded() + ";\n");
 		sb.append("		VolumeTotal = " + VolumeTotal() + ";\n");
+		
+		sb.append("		MinVolume = " + MinVolume() + ";\n");		
+		sb.append("		UserID = " + UserID().getCString() + ";\n");
+		sb.append("		TimeCondition = " + TimeCondition() + ";\n");
+		sb.append("		GTDDate = " + GTDDate().getCString() + ";\n");
+		sb.append("		ContingentCondition = " + ContingentCondition() + ";\n");
+		sb.append("		StopPrice = " + StopPrice() + ";\n");
+		sb.append("		ForceCloseReason = " + ForceCloseReason() + ";\n");
+		sb.append("		IsAutoSuspend = " + IsAutoSuspend() + ";\n");
+		sb.append("		BusinessUnit = " + BusinessUnit().getCString() + ";\n");
+		sb.append("		RequestID = " + RequestID() + ";\n");
+		sb.append("		ParticipantID = " + ParticipantID().getCString() + ";\n");
+		sb.append("		ClientID = " + ClientID().getCString() + ";\n");
+		sb.append("		ExchangeInstID = " + ExchangeInstID().getCString() + ";\n");
+		sb.append("		InstallID = " + InstallID() + ";\n");
+		
 		sb.append("		StatusMsg = " + StatusMsg().getCString() + ";\n");
 		
 		sb.append("}");
