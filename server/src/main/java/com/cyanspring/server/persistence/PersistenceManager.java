@@ -1077,7 +1077,7 @@ public class PersistenceManager {
 
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
 		Session session = sessionFactory.openSession();
-		ChildOrder order = event.getOrder();
+		ChildOrder order = event.getOrder().clone();
 		ChildOrderAudit audit = new ChildOrderAudit(event.getExecType(), order);
 		Transaction tx = null;
 		try {
