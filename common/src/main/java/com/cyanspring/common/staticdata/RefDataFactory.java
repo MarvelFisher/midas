@@ -113,6 +113,11 @@ public class RefDataFactory extends RefDataService {
         return refDataList;
     }
 
+    @Override
+    public void saveRefDataList(List<RefData> refDataList) {
+        saveRefDataToFile(refDataFile, refDataList);
+    }
+
     private void saveRefDataToFile(String path, List<RefData> list) {
         File file = new File(path);
         try {

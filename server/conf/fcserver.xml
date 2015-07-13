@@ -95,7 +95,7 @@
 		<property name="marketDataLog" value="true"></property>
 		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="isMsgPack" value="true"></property>
+		<property name="msgPack" value="true"></property>
 		<property name="isSubTrans" value="false"></property>
 	</bean>
 

@@ -46,7 +46,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     static volatile Date bigSessionCloseDate = Clock.getInstance().now();
     private boolean closeOverTimeControlIsOpen = true;
     private boolean tradeDateCheckIsOpen = true;
-    private boolean isMsgPack = false;
+    private boolean msgPack = false;
     private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
 
@@ -145,7 +145,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     }
 
     public void processGateWayMessage(int datatype, String[] in_arr, HashMap<Integer, Object> inputMessageHashMap) {
-        if (isMsgPack) {
+        if (msgPack) {
             if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) return;
         } else {
             if (in_arr == null) return;
@@ -163,7 +163,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             case WindDef.MSG_DATA_MARKET:
                 StockData stockData = null;
                 try {
-                    stockData = isMsgPack
+                    stockData = msgPack
                             ? windDataParser.convertToStockData(inputMessageHashMap, stockDataBySymbolMap)
                             : windDataParser.convertToStockData(in_arr, stockDataBySymbolMap);
                 } catch (Exception e) {
@@ -178,7 +178,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             case WindDef.MSG_DATA_INDEX:
                 IndexData indexData = null;
                 try {
-                    indexData = isMsgPack
+                    indexData = msgPack
                             ? windDataParser.convertToIndexData(inputMessageHashMap, indexDataBySymbolMap)
                             : windDataParser.convertToIndexData(in_arr, indexDataBySymbolMap);
                 } catch (Exception e) {
@@ -193,7 +193,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             case WindDef.MSG_DATA_FUTURE:
                 FutureData futureData = null;
                 try {
-                    futureData = isMsgPack
+                    futureData = msgPack
                             ? windDataParser.convertToFutureData(inputMessageHashMap, futureDataBySymbolMap)
                             : windDataParser.convertToFutureData(in_arr, futureDataBySymbolMap);
                 } catch (Exception e) {
@@ -208,7 +208,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             case WindDef.MSG_DATA_TRANSACTION:
                 TransationData transationData = null;
                 try {
-                    transationData = isMsgPack
+                    transationData = msgPack
                             ? windDataParser.convertToTransationData(inputMessageHashMap, transationDataBySymbolMap)
                             : windDataParser.convertToTransationData(in_arr, transationDataBySymbolMap);
                 } catch (Exception e) {
@@ -283,7 +283,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         try {
             Bootstrap bootstrap = new Bootstrap().group(nioEventLoopGroup)
                     .channel(NioSocketChannel.class)
-                    .handler(isMsgPack ? new MsgPackClientInitializer() : new ClientInitializer());
+                    .handler(msgPack ? new MsgPackClientInitializer() : new ClientInitializer());
 
             ChannelFuture fClient = bootstrap.connect(ip, port).sync();
 
@@ -693,11 +693,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     }
 
     public boolean isMsgPack() {
-        return isMsgPack;
+        return msgPack;
     }
 
-    public void setIsMsgPack(boolean isMsgPack) {
-        this.isMsgPack = isMsgPack;
+    public void setMsgPack(boolean msgPack) {
+        this.msgPack = msgPack;
     }
 
     public void setIsSubTrans(boolean isSubTrans) {
