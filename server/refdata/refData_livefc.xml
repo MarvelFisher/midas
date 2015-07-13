@@ -303,7 +303,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-09-21</string>
+        <string>2015-09-18</string>
       </entry>
       <entry>
         <string>Spot ENName</string>
@@ -406,6 +406,10 @@
         <string>滬深1509</string>
       </entry>
       <entry>
+        <string>Ref symbol</string>
+        <string>IFC3</string>
+      </entry>
+      <entry>
         <string>Detail CN</string>
         <string>沪深300指数2015年9月合约</string>
       </entry>
@@ -439,7 +443,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-08-21</string>
+        <string>2015-12-18</string>
       </entry>
       <entry>
         <string>Spot ENName</string>
@@ -540,6 +544,10 @@
       <entry>
         <string>TWName</string>
         <string>滬深1512</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IFC4</string>
       </entry>
       <entry>
         <string>Detail CN</string>
@@ -855,7 +863,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-09-21</string>
+        <string>2015-09-18</string>
       </entry>
       <entry>
         <string>Spot ENName</string>
@@ -958,6 +966,10 @@
         <string>上證1509</string>
       </entry>
       <entry>
+        <string>Ref symbol</string>
+        <string>IHC3</string>
+      </entry>
+      <entry>
         <string>Detail CN</string>
         <string>上证50指数2015年9月合约</string>
       </entry>
@@ -991,7 +1003,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-12-21</string>
+        <string>2015-12-18</string>
       </entry>
       <entry>
         <string>Spot ENName</string>
@@ -1092,6 +1104,10 @@
       <entry>
         <string>TWName</string>
         <string>上證1512</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IHC4</string>
       </entry>
       <entry>
         <string>Detail CN</string>
@@ -1407,7 +1423,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-09-21</string>
+        <string>2015-09-18</string>
       </entry>
       <entry>
         <string>Spot ENName</string>
@@ -1510,6 +1526,10 @@
         <string>中證1509</string>
       </entry>
       <entry>
+        <string>Ref symbol</string>
+        <string>ICC3</string>
+      </entry>
+      <entry>
         <string>Detail CN</string>
         <string>中证500指数2015年9月合约</string>
       </entry>
@@ -1543,7 +1563,7 @@
       </entry>
       <entry>
         <string>Settlement date</string>
-        <string>2015-12-21</string>
+        <string>2015-12-18</string>
       </entry>
       <entry>
         <string>Spot ENName</string>
@@ -1644,6 +1664,10 @@
       <entry>
         <string>TWName</string>
         <string>中證1512</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>ICC4</string>
       </entry>
       <entry>
         <string>Detail CN</string>
