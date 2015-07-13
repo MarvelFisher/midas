@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
 public class ClientIdleHandler extends ChannelDuplexHandler {
 
     private static final Logger log = LoggerFactory
-            .getLogger(WindGateWayAdapter.class);
+            .getLogger(ClientIdleHandler.class);
 
-    private boolean isMsgPack = false;
+    private boolean msgPack = false;
 
-    public ClientIdleHandler(boolean isMsgPack){
-        this.isMsgPack = isMsgPack;
+    public ClientIdleHandler(boolean msgPack){
+        this.msgPack = msgPack;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ClientIdleHandler extends ChannelDuplexHandler {
         int fsbhashCode = fsb.toString().hashCode();
         fsb.append("Hash");
         fsb.append(String.valueOf(fsbhashCode));
-        if(!isMsgPack) fsb.append("\r\n");
+        if(!msgPack) fsb.append("\r\n");
         return fsb.toString();
     }
 }

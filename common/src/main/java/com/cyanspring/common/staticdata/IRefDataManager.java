@@ -10,4 +10,5 @@ public interface IRefDataManager {
 	public List<RefData> getRefDataList();
 	public String getMarket();
 	public void setRefDataFile(String refDataFile);
+	public void saveRefDataList(List<RefData> refDataList);
 }

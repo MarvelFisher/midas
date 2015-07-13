@@ -322,5 +322,10 @@ public class TestPositionKeeper {
 		@Override
 		public void setRefDataFile(String refDataFile) {			
 		}
+
+		@Override
+		public void saveRefDataList(List<RefData> refDataList) {
+
+		}
 	}
 }

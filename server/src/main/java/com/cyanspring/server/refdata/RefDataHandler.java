@@ -8,11 +8,15 @@ import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.IRefDataAdaptor;
+import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.event.AsyncEventProcessor;
+import com.cyanspring.common.staticdata.RefData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
 /**
  * This Manager is used to send detail refData to the subscriber
@@ -26,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 1.0
  */
 
-public class RefDataHandler implements IPlugin {
+public class RefDataHandler implements IPlugin, IRefDataListener {
     private static final Logger log = LoggerFactory
             .getLogger(RefDataHandler.class);
 
@@ -38,6 +42,7 @@ public class RefDataHandler implements IPlugin {
 
     private MarketSessionType currentType;
     private String tradeDate;
+    private IRefDataAdaptor refDataAdaptor;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -97,15 +102,42 @@ public class RefDataHandler implements IPlugin {
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("RefDataHandler");
 
+        if(refDataAdaptor!=null){
+            refDataAdaptor.subscribeRefData(this);
+        }
         requestRequireData();
     }
 
     @Override
     public void uninit() {
+        if(refDataAdaptor!=null){
+            refDataAdaptor.uninit();
+        }
         eventProcessor.uninit();
     }
 
     private void requestRequireData() {
         eventManager.sendEvent(new MarketSessionRequestEvent(null, null));
+    }
+
+    @Override
+    public void onRefData(List<RefData> refDataList) {
+        if(refDataList == null || refDataList.size()==0){
+            refDataAdaptor.uninit();
+            refDataAdaptor.subscribeRefData(this);
+            return;
+        }
+        //close connect RefDataAdapter
+        refDataAdaptor.uninit();
+        //process refdata
+        log.debug("Receive RefData");
+        for(RefData refData : refDataList){
+            log.debug("refdata:" + refData.getSymbol());
+        }
+        refDataManager.saveRefDataList(refDataList);
+    }
+
+    public void setRefDataAdaptor(IRefDataAdaptor refDataAdaptor) {
+        this.refDataAdaptor = refDataAdaptor;
     }
 }
