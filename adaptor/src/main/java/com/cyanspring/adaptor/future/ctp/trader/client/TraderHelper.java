@@ -136,7 +136,8 @@ public class TraderHelper {
 	
 	public static String toGBKString(byte[] bytes) {
 		try {
-			return new String(bytes, "GB2312");
+			String msg = new String(bytes, "GB2312");
+			return msg.trim();
 		} catch (UnsupportedEncodingException e) {
 			log.info(e.getMessage());
 		}
