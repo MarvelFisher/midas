@@ -22,14 +22,15 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		AccountSetting setting = oldAccountSetting;	
 		if(null == setting){
 			setting = AccountSetting.createEmptySettings(oldAccountSetting.getId());
-		}	
-		double positionStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.POSITION_STOP_LOSS));
-		double frozenStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS));
-		double terminateStopLoss = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS));
-		double positionStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.COMPANY_STOP_LOSS_VALUE));
-		double frozenStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS_VALUE));
-		double terminateStopLossValue = Double.parseDouble((String)paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS_VALUE));
-	
+		}
+		
+		double positionStopLoss = parseDouble(paramsMap.get(LiveTradingFieldType.POSITION_STOP_LOSS));
+		double frozenStopLoss = parseDouble(paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS));
+		double terminateStopLoss = parseDouble(paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS));
+		double positionStopLossValue = parseDouble(paramsMap.get(LiveTradingFieldType.COMPANY_STOP_LOSS_VALUE));
+		double frozenStopLossValue = parseDouble(paramsMap.get(LiveTradingFieldType.FROZEN_STOP_LOSS_VALUE));
+		double terminateStopLossValue = parseDouble(paramsMap.get(LiveTradingFieldType.TERMINATE_STOP_LOSS_VALUE));
+		
 		setting.setStopLossPercent(positionStopLoss);
 		setting.setFreezePercent(frozenStopLoss);
 		setting.setTerminatePercent(terminateStopLoss);
@@ -49,4 +50,12 @@ public class DefaultUserTrading implements IUserLiveTradingRule{
 		
 	}
 
+	private double parseDouble(Object obj){
+		if( obj instanceof String){
+			 Double.parseDouble((String)obj);
+		}else if(obj instanceof Double){
+			 return (Double)obj;
+		}
+		return 0;
+	}
 }
