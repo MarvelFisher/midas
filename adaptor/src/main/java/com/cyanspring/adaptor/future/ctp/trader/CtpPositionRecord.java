@@ -102,7 +102,7 @@ public class CtpPositionRecord {
 	synchronized void releaseQuantity(String symbol, boolean isBuy, byte flag, double qty) {
 		HoldPosition hold = holds.get(getKey(symbol, !isBuy));
 		if(null == hold) {
-			log.error("hold position is null: " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
+			log.warn("hold position is null: " + symbol + ", " + isBuy + ", " + flag + ", " + qty);
 			return;
 		}
 		
