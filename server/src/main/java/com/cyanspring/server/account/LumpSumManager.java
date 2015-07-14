@@ -67,6 +67,7 @@ public class LumpSumManager implements IPlugin {
     private String account;
     private String suffix = "-FX";
     private String router;
+    private double accountValue = 1000000.0;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
         @Override
@@ -127,12 +128,33 @@ public class LumpSumManager implements IPlugin {
         }
 
         this.account = this.user + this.suffix;
-        Account account = accountKeeper.getAccount(this.account);
-        if (account == null) {
-            createLumpSumAccount();
-            return;
-        }
+        
+        Thread thread = new Thread(new Runnable(){
 
+			@Override
+			public void run() {
+				Account lumpSumAccount = accountKeeper.getAccount(account);
+				if (lumpSumAccount == null) {
+		            createLumpSumAccount();
+		        }
+				
+				while(true){
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						log.error(e.getMessage(), e);
+					}
+					lumpSumAccount = accountKeeper.getAccount(account);
+					if (lumpSumAccount == null)
+						continue;
+					if (PriceUtils.LessThan(lumpSumAccount.getCashAvailable(), accountValue))
+			        	lumpSumAccount.setCashAvailable(accountValue + lumpSumAccount.getCashAvailable());
+				}
+			}}
+        );
+        
+        thread.start();
+        
         try {
             AccountSetting setting = accountKeeper.getAccountSetting(this.account);
             if (setting == null)
@@ -331,6 +353,10 @@ public class LumpSumManager implements IPlugin {
 
     public void setRouter(String router) {
         this.router = router;
+    }
+    
+    public void setAccountValue(double accountValue){
+    	this.accountValue = accountValue;
     }
 
 }

@@ -12,59 +12,65 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 
-public class IFStrategy implements IRefDataStrategy {
-    private static final Logger log = LoggerFactory
-            .getLogger(IFStrategy.class);
-
-    private MarketSessionUtil marketSessionUtil;
+public class IFStrategy implements IRefDataStrategy  {
+	protected static final Logger log = LoggerFactory.getLogger(IFStrategy.class);
+	
+	private MarketSessionUtil marketSessionUtil;
     private List<String> near1List = new ArrayList<>();
     private List<String> near2List = new ArrayList<>();
-    private StrategyData n0;
-    private StrategyData n1;
-
-    //	private int[] season = {Calendar.MARCH, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.DECEMBER};
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    private Calendar cal;
+    private List<String> season1List = new ArrayList<>();
+    private List<String> season2List = new ArrayList<>();
+    
     private String symbol;
     private String detailCNDisplay = "%s%d年%d月合约";
     private String detailTWDisplay = "%s%d年%d月合約";
-
+    
+    private int[] seasons = {Calendar.MARCH, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.DECEMBER};
+	
+    private StrategyData n0;
+    private StrategyData n1;
+    private StrategyData f0;
+    private StrategyData f1;
+    private SeasonState seasonState;
+    private Calendar cal;
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	
     @Override
     public void init(Calendar cal) {
         if (this.cal == null) {
+        	for(int season : seasons){
+        		if(seasonState == null){
+        			seasonState = new SeasonState(season);
+        			continue;
+        		}
+        		SeasonState state = new SeasonState(season);
+        		seasonState.addState(state);
+        	}
+        	seasonState.addState(seasonState);
             n0 = new StrategyData();
             n1 = new StrategyData();
-            setStrategyData((Calendar) cal.clone());
+            f0 = new StrategyData();
+            f1 = new StrategyData();
+            updateDynamicData((Calendar) cal.clone());
         }
 
         if (cal.compareTo(this.cal) < 0)
             return;
         this.cal.add(Calendar.MONTH, 1);
-        setStrategyData(this.cal);
+        updateDynamicData(this.cal);
     }
 
     @Override
     public void updateRefData(RefData refData) {
-        if (near1List.contains(refData.getRefSymbol())) {
-//        if (refData.getRefSymbol().equals("IFC1") || refData.getRefSymbol().equals("IHC1") || refData.getRefSymbol().equals("ICC1")) {
-            refData.setSettlementDate(n0.settlementDay);
-            refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n0.ID);
-            refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n0.ID);
-            refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n0.ID);
-            refData.setSymbol(refData.getSymbol().substring(0, 2) + n0.ID + "." + refData.getExchange());
-            refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), n0.year, n0.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
-            refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), n0.year, n0.month + 1));
-            refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), n0.year, n0.month + 1));
-        } else if (near2List.contains(refData.getRefSymbol())){
-//        } else if (refData.getRefSymbol().equals("IFC2") || refData.getRefSymbol().equals("IHC2") || refData.getRefSymbol().equals("ICC2")) {
-            refData.setSettlementDate(n1.settlementDay);
-            refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + n1.ID);
-            refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + n1.ID);
-            refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + n1.ID);
-            refData.setSymbol(refData.getSymbol().substring(0, 2) + n1.ID + "." + refData.getExchange());
-            refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), n1.year, n1.month + 1));
-            refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), n1.year, n1.month + 1));
-            refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), n1.year, n1.month + 1));
+    	String refSymbol = refData.getRefSymbol();
+        if (near1List.contains(refSymbol)) {
+        	writeToRefData(refData, n0);
+        } else if (near2List.contains(refSymbol)){
+        	writeToRefData(refData, n1);
+        } else if (season1List.contains(refSymbol)){
+        	writeToRefData(refData, f0);
+        } else if (season2List.contains(refSymbol)){
+        	writeToRefData(refData, f1);
         }
     }
 
@@ -76,37 +82,23 @@ public class IFStrategy implements IRefDataStrategy {
                 symbol = data.getSymbol();
             near1List.add(data.getNear1());
             near2List.add(data.getNear2());
+            season1List.add(data.getSeason1());
+            season2List.add(data.getSeason2());
         }
     }
-
-    private void setStrategyData(Calendar cal) {
-        n0.year = cal.get(Calendar.YEAR);
-        n0.month = cal.get(Calendar.MONTH);
-        String day = getSettlementDay(n0.year, n0.month);
-        n0.settlementDay = day;
-        n0.ID = day.substring(2, 7);
-        n0.ID = n0.ID.replace("-", "");
-
-        cal.add(Calendar.MONTH, 1);
-        n1.year = cal.get(Calendar.YEAR);
-        n1.month = cal.get(Calendar.MONTH);
-        day = getSettlementDay(n1.year, n1.month);
-        n1.settlementDay = day;
-        n1.ID = day.substring(2, 7);
-        n1.ID = n1.ID.replace("-", "");
-
-        this.cal = Calendar.getInstance();
-        try {
-            this.cal.setTime(sdf.parse(n0.settlementDay));
-            this.cal.set(Calendar.HOUR_OF_DAY, 23);
-            this.cal.set(Calendar.MINUTE, 59);
-            this.cal.set(Calendar.SECOND, 59);
-        } catch (ParseException e) {
-            log.error(e.getMessage(), e);
-        }
+    
+    private void writeToRefData(RefData refData, StrategyData data){
+    	refData.setSettlementDate(data.settlementDay);
+        refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + data.ID);
+        refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + data.ID);
+        refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + data.ID);
+        refData.setSymbol(refData.getSymbol().substring(0, 2) + data.ID + "." + refData.getExchange());
+        refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), data.year, data.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
+        refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), data.year, data.month + 1));
+        refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), data.year, data.month + 1));
     }
-
-    private String getSettlementDay(int year, int month) {
+    
+    private String calSettlementDay(int year, int month) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, 0);
         int dayCount = 0;
@@ -122,11 +114,33 @@ public class IFStrategy implements IRefDataStrategy {
 
         return sdf.format(cal.getTime());
     }
-
-    private class StrategyData{
-        private String settlementDay;
-        private String ID;
-        private int year;
-        private int month;
+    
+    private void saveStrategyData(Calendar cal, StrategyData data){
+    	data.year = cal.get(Calendar.YEAR);
+    	data.month = cal.get(Calendar.MONTH);
+        String day = calSettlementDay(data.year, data.month);
+        data.settlementDay = day;
+        data.ID = day.substring(2, 7);
+        data.ID = data.ID.replace("-", "");
     }
+    
+    private void updateDynamicData(Calendar cal) {
+		saveStrategyData(cal, n0);
+	    cal.add(Calendar.MONTH, 1);
+	    saveStrategyData(cal, n1);
+	    cal.set(Calendar.MONTH, seasonState.searchNearestSeason(n1.month, seasons.length));
+	    saveStrategyData(cal, f0);
+	    cal.set(Calendar.MONTH, seasonState.searchNearestSeason(f0.month, seasons.length));
+	    saveStrategyData(cal, f1);
+	            
+	    this.cal = Calendar.getInstance();
+	    try {
+	        this.cal.setTime(sdf.parse(n0.settlementDay));
+	        this.cal.set(Calendar.HOUR_OF_DAY, 23);
+	        this.cal.set(Calendar.MINUTE, 59);
+	        this.cal.set(Calendar.SECOND, 59);
+	    } catch (ParseException e) {
+	        log.error(e.getMessage(), e);
+	    }
+	}
 }

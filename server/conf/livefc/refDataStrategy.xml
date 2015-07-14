@@ -28,18 +28,24 @@
     <bean id="ifData" class="com.cyanspring.common.staticdata.fu.MappingData">
         <property name="near1" value="IFC1"/>
         <property name="near2" value="IFC2"/>
+        <property name="season1" value="IFC3"/>
+        <property name="season2" value="IFC4"/>
         <property name="symbol" value="IF"/>
     </bean>
 
     <bean id="icData" class="com.cyanspring.common.staticdata.fu.MappingData">
         <property name="near1" value="ICC1"/>
         <property name="near2" value="ICC2"/>
+        <property name="season1" value="ICC3"/>
+        <property name="season2" value="ICC4"/>
         <property name="symbol" value="IC"/>
     </bean>
 
     <bean id="ihData" class="com.cyanspring.common.staticdata.fu.MappingData">
         <property name="near1" value="IHC1"/>
         <property name="near2" value="IHC2"/>
+        <property name="season1" value="IHC3"/>
+        <property name="season2" value="IHC4"/>
         <property name="symbol" value="IH"/>
     </bean>
 
