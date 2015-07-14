@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -71,6 +70,8 @@ import com.cyanspring.common.event.account.CreateGroupManagementEvent;
 import com.cyanspring.common.event.account.CreateGroupManagementReplyEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
+import com.cyanspring.common.event.account.DeleteGroupManagementEvent;
+import com.cyanspring.common.event.account.DeleteGroupManagementReplyEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.GroupManageeReplyEvent;
 import com.cyanspring.common.event.account.GroupManageeRequestEvent;
@@ -82,6 +83,7 @@ import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
 import com.cyanspring.common.event.account.PmCreateGroupManagementEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
+import com.cyanspring.common.event.account.PmDeleteGroupManagementEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
@@ -233,6 +235,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(AccountStateRequestEvent.class,null);
             subscribeToEvent(ActiveAccountRequestEvent.class,null);
             subscribeToEvent(CreateGroupManagementEvent.class,null);
+            subscribeToEvent(DeleteGroupManagementEvent.class,null);
             subscribeToEvent(GroupManageeRequestEvent.class,null);
             subscribeToEvent(CSTWUserLoginEvent.class,null);
         }
@@ -659,26 +662,73 @@ public class AccountPositionManager implements IPlugin {
     		if( null == userKeeper.getUser(manager) ){
     			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
     		}
-    		if( null == userKeeper.getUserGroup(manager) ){
-    			throw new UserException("this user doesn't have any group",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
-    		}
+//    		if( null == userKeeper.getUserGroup(manager) ){
+//    			throw new UserException("this user doesn't have any group",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
+//    		}
     	}catch(UserException e){
     		isOk = false;
 			message = MessageLookup.buildEventMessage(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, e.getLocalizedMessage());
 			log.info(message);
     	} 
     	
-		Set <UserGroup>manageeSet = null;
+		UserGroup userGroup = null;
 		if(isOk)
-			manageeSet = userKeeper.getUserGroup(manager).getManageeSet();
+			userGroup = userKeeper.getUserGroup(manager);
+			
+		if( null == userGroup ){
+			User user = userKeeper.getUser(manager);
+			userGroup = new UserGroup(manager,user.getRole());
+		}
 				
-		GroupManageeReplyEvent reply = new GroupManageeReplyEvent(event.getKey(),event.getSender(),isOk,message,manageeSet);
+		GroupManageeReplyEvent reply = new GroupManageeReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
 			log.warn(e.getMessage(),e);
 		}
     }
+    
+    public void processDeleteGroupManagementEvent(DeleteGroupManagementEvent event){
+    	List<GroupManagement> groupList = event.getGroupManagementList();
+    	List<GroupManagement> successList = new ArrayList<GroupManagement>();
+    	Map <GroupManagement,String> resultMap = new HashMap<GroupManagement,String>();
+    	boolean isOk = true;
+    	String message = "";
+    	if( null != userKeeper){
+    		for(GroupManagement group : groupList){
+    			try {
+					userKeeper.deleteGroup(group);;
+					successList.add(group);
+					resultMap.put(group, "SUCESS");
+				} catch (UserException e) {
+					isOk = false;
+					resultMap.put(group, e.getLocalizedMessage());
+        			continue;
+				}        		
+    		}
+    		if(!successList.isEmpty()){
+    			PmDeleteGroupManagementEvent pmEvent = new PmDeleteGroupManagementEvent(null, null, successList);
+        		try {
+    				eventManager.sendEvent(pmEvent);
+    			} catch (Exception e) {
+    				log.error(e.getMessage(),e);
+    				isOk = false;
+        			message = MessageLookup.buildEventMessage(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, "Exception error:"+e.getMessage());
+    			}
+    		}
+    	}else{
+    		isOk = false;
+			message = MessageLookup.buildEventMessage(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, "userkeeper not initialized!");
+    	}
+    	
+		DeleteGroupManagementReplyEvent replyEvent = new DeleteGroupManagementReplyEvent(event.getKey(), event.getSender(), isOk, message,resultMap);
+		try {
+			eventManager.sendRemoteEvent(replyEvent);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+    }
+    
     public void processCreateGroupManagementEvent(CreateGroupManagementEvent event){
     	List<GroupManagement> groupList = event.getGroupManagementList();
     	List<GroupManagement> successList = new ArrayList<GroupManagement>();

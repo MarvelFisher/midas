@@ -489,7 +489,7 @@ public class Business {
 		if(userGroup.isAdmin())
 			return true;
 		
-		if(userGroup.isManageeExist(account))
+		if(userGroup.isGroupPairExist(account))
 			return true;
 		
 		return false;

@@ -24,7 +24,7 @@ public class UserKeeper {
 			.getLogger(UserKeeper.class);
 	
 	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();	
-	private Map<String,UserGroup> userGroups = new ConcurrentHashMap<String,UserGroup>();
+	private ConcurrentHashMap<String,UserGroup> userGroups = new ConcurrentHashMap<String,UserGroup>();
 	public final static String ADMIN = "admin";
 	public final static String ADMIN_PW= "FDTADMIN";
 	
@@ -91,7 +91,32 @@ public class UserKeeper {
 			this.users.put(user.getId(), user);
 		}
 	}
-
+	
+	public void deleteGroup(GroupManagement gm) throws UserException{
+		String manager = gm.getManager();
+		String managee = gm.getManaged();
+		User managerInfo = users.get(manager);
+		UserGroup managerGroup = userGroups.get(manager);
+		
+		if( null == managerInfo ){
+			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED);
+		}
+		
+		if( null == managerGroup){
+			throw new UserException("Manager:"+manager+" doen't exist in UserGroup",ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED);
+		}
+				
+		if(managerGroup.isGroupPairExist(managee)){
+			try {
+				managerGroup.deleteManagee(managee);
+			} catch (Exception e) {
+				throw new UserException("Exception : "+e.getMessage(),ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED);
+			}
+		}else{
+			throw new UserException("Managee:"+managee+" doen't exist in Manager UserGroup",ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED);
+		}		
+	}
+	
 	public void createGroup(GroupManagement gm) throws UserException{
 		String manager = gm.getManager();
 		String managee = gm.getManaged();
@@ -136,8 +161,13 @@ public class UserKeeper {
 			manageeGroup = userGroups.get(managee);
 		}
 		
-		if(managerGroup.isManageeExist(managee)){
+		if(managerGroup.isGroupPairExist(managee)){
 			throw new UserException("Managee:"+managee+" already exist!",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+		}
+		
+		int level = manageeGroup.countLevel(manageeGroup);
+		if(UserGroup.MAX_LEVEL < (level+1) ){
+			throw new UserException("Manager:"+manager+", Managee:"+managee+" excceds Max level : "+UserGroup.MAX_LEVEL,ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
 		/**
