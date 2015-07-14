@@ -95,16 +95,19 @@ public class LumpSumManager implements IPlugin {
         if (order.getOrdStatus().equals(OrdStatus.FILLED) || order.getOrdStatus().equals(OrdStatus.PARTIALLY_FILLED)) {
             String symbol = order.getSymbol();
             double newQty = order.getQuantity();
+            log.info("Order filled, " + order);
             Double remainQty = symbolQtyMap.get(symbol);
             if (remainQty == null)
                 remainQty = 0.0;
             double totalQty = newQty + remainQty;
 
             List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
+            List<OpenPosition> finList = new ArrayList<>();
             if (PriceUtils.LessThan(totalQty, 0))
                 Collections.reverse(oPositions);
-            for (OpenPosition oPosition : oPositions) {
-                if (PriceUtils.Equal(Math.signum(totalQty), Math.signum(oPosition.getQty()))) {
+            
+            for(OpenPosition oPosition : oPositions){
+            	if (PriceUtils.Equal(Math.signum(totalQty), Math.signum(oPosition.getQty()))) {
                     if (Math.abs(totalQty) - Math.abs(oPosition.getQty()) < 0) {
                         symbolQtyMap.put(symbol, totalQty);
                         break;
@@ -112,11 +115,20 @@ public class LumpSumManager implements IPlugin {
                     totalQty -= oPosition.getQty();
                 }
 
-                processClosePositionExecution(symbol, oPosition, order.getPrice());
-
+            	try {
+            		processClosePositionExecution(symbol, oPosition, order.getAvgPx());
+                	finList.add(oPosition);
+                } catch (PositionException e) {
+                	log.error("Cannot process execution account: {}, symbol: {}", oPosition.getAccount(), 
+                			oPosition.getSymbol());
+                }
             }
-            if (getAccountsPositionBySymbol(symbol) == null)
-                sentOrder.remove(order.getId());
+            
+            if(oPositions.size() == finList.size())
+            	sentOrder.remove(order.getId());
+            
+            for(OpenPosition finPosition : finList)
+            	removeAccountPositionBySymbol(symbol, finPosition);
         }
     }
 
@@ -176,13 +188,23 @@ public class LumpSumManager implements IPlugin {
                 eventManager.sendEvent(epoEvent);
             } else {
                 List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
+                List<OpenPosition> finList = new ArrayList<>();
                 Quote quote = marketData.get(symbol);
                 for (OpenPosition oPosition : oPositions) {
-                    double price = QuoteUtils.getMarketablePrice(quote, oPosition.getQty());
+                	double price = QuoteUtils.getMarketablePrice(quote, oPosition.getQty());
                     if (PriceUtils.isZero(price))
                         price = quote.getLast();
-                    processClosePositionExecution(symbol, oPosition, price);
+                    try {
+                    	processClosePositionExecution(symbol, oPosition, price);
+                    	finList.add(oPosition);
+                    } catch (PositionException e) {
+                    	log.error("Cannot process execution account: {}, symbol: {}", oPosition.getAccount(), 
+                    			oPosition.getSymbol());
+                    }
                 }
+
+                for(OpenPosition finPosition : finList)
+                	removeAccountPositionBySymbol(symbol, finPosition);
             }
         }
         sortPositionsWithQty();
@@ -205,24 +227,23 @@ public class LumpSumManager implements IPlugin {
         eventProcessor.uninit();
     }
 
-    private void processClosePositionExecution(String symbol, OpenPosition oPosition, double price) {
+    private void processClosePositionExecution(String symbol, OpenPosition oPosition, double price) throws PositionException {
         Execution exec = createClosePositionExec(symbol, price,
                 oPosition.getQty(), oPosition.getUser(), oPosition.getAccount(), "");
         if (exec == null) {
             log.warn("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount(), price);
             return;
         }
-        try {
-            positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
-            removeAccountPositionBySymbol(symbol, oPosition);
-        } catch (PositionException e) {
-            log.error("Cannot process execution account: {}, symbol: {}", oPosition.getAccount(),
-                    oPosition.getSymbol());
-        }
+        positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
     private List<OpenPosition> getAccountsPositionBySymbol(String symbol) {
-        return symbolPositionMap.get(symbol);
+    	List<OpenPosition> list = symbolPositionMap.get(symbol);
+    	if (list == null) {
+    		log.info("{} not find in the map", symbol);
+    		list = new ArrayList<>();
+    	}
+        return list;
     }
 
     private void removeAccountPositionBySymbol(String symbol, OpenPosition position) {
