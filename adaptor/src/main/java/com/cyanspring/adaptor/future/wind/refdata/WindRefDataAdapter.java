@@ -119,10 +119,12 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     return;
                 }
                 codeTableDataBySymbolMap.put(codeTableData.getWindCode(), codeTableData);
-                log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName()
-                        + ",CT=" + ChineseConvert.StoT(codeTableData.getCnName()) + ",E="
-                        + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
-                        + ",Sp=" + codeTableData.getSpellName());
+                if(marketDataLog) {
+                    log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName()
+                            + ",CT=" + ChineseConvert.StoT(codeTableData.getCnName()) + ",E="
+                            + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
+                            + ",Sp=" + codeTableData.getSpellName());
+                }
                 RequestMgr.instance().addReqData(new Object[]{datatype, codeTableData});
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
@@ -172,7 +174,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         instance = this;
         initReqThread();
         RequestMgr.instance().init();
-        addReqData(0);
+        addReqData(new Integer(0));
     }
 
     public void closeNetty() {
@@ -227,7 +229,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     @Override
     public void onRequestEvent(RequestThread sender, Object reqObj) {
-        if (reqObj == 0 && !isConnected) connect();
+        if(reqObj instanceof Integer){
+            int signal = (int)reqObj;
+            if(signal == 0 && !isConnected) connect();
+        }
     }
 
     @Override
