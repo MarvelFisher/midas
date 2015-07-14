@@ -26,7 +26,7 @@ import java.util.List;
  * Subscribed Event: 1) MarketSessionEvent
  *
  * @author elviswu
- * @version 1.0, modify by elviswu
+ * @version 1.1, modify by shuwei.kuo
  * @since 1.0
  */
 
@@ -84,6 +84,9 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             currentType = event.getSession();
 
             if (refDataManager.update(event.getTradeDate())) {
+                if(refDataAdaptor!=null){
+                    refDataAdaptor.subscribeRefData(this);
+                }
                 eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
                 log.info("Update refData size: {}", refDataManager.getRefDataList().size());
             }
@@ -122,6 +125,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 
     @Override
     public void onRefData(List<RefData> refDataList) {
+        log.debug("Receive RefData from Adapter - " + refDataList.size());
         if(refDataList == null || refDataList.size()==0){
             refDataAdaptor.uninit();
             refDataAdaptor.subscribeRefData(this);
@@ -130,10 +134,6 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
         //close connect RefDataAdapter
         refDataAdaptor.uninit();
         //process refdata
-        log.debug("Receive RefData");
-        for(RefData refData : refDataList){
-            log.debug("refdata:" + refData.getSymbol());
-        }
         refDataManager.saveRefDataList(refDataList);
     }
 

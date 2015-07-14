@@ -32,6 +32,7 @@ public class RefDataManager extends RefDataService {
 
     Map<String, RefData> map = new HashMap<String, RefData>();
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
+    private boolean changeMode = false;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -54,7 +55,7 @@ public class RefDataManager extends RefDataService {
 
     @Override
     public boolean update(String tradeDate) throws Exception {
-        return false;
+        return changeMode;
     }
 
     @Override
@@ -75,6 +76,7 @@ public class RefDataManager extends RefDataService {
 
     @Override
     public void saveRefDataList(List<RefData> refDataList) {
+        changeMode = true;
         saveRefDataToFile(refDataFile, refDataList);
     }
 
