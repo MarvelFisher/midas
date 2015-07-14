@@ -28,6 +28,9 @@ public enum ImageID {
 	REFRESH_ICON("icons/refresh.png"),
 	LINE_ICON("icons/lineIcon.png"),
 	PEOPLE_ICON("icons/people.png"),
+	FORWARD_ICON("icons/forward_nav.png"),
+	BACKWARD_ICON("icons/backward_nav.png"),
+	ROLE_ICON("icons/role.png"),
 	;
 	private String value;
 	ImageID(String value) {
