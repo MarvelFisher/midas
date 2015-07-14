@@ -40,6 +40,10 @@ public class DynamicTableComparator extends ViewerComparator {
 	public int getDirection() {
 		return descending ? SWT.DOWN : SWT.UP;
 	}
+	
+	public int getColumn(){
+		return propertyIndex;
+	}
 
 	public void setColumn(int column) {
 		if (column == this.propertyIndex) {

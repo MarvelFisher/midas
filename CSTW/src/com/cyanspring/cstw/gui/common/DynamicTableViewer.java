@@ -506,4 +506,7 @@ public class DynamicTableViewer extends TableViewer {
 		this.getTable().select(indices);
 	}
 	
+	public DynamicTableComparator getComparator(){
+		return comparator;
+	}
 }

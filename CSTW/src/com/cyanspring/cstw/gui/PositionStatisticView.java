@@ -258,14 +258,14 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		
 		symbolOpMap = new HashMap<String, PositionStatisticBean>();
 		final List <OpenPosition>opList = getAllOpenPositionList();
-		
+
 		for(OpenPosition op : opList){
 			caculate(op);
 		}		
 		
 		final List <PositionStatisticBean>psbList = new ArrayList<PositionStatisticBean>();
-		psbList.addAll(symbolOpMap.values());	
-
+		psbList.addAll(symbolOpMap.values());
+		
 		openPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -282,6 +282,10 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 					List<ColumnProperty> properties = openPositionViewer
 							.setObjectColumnProperties(psbList.get(0));				
 					properties = filterColumn(properties);
+
+					if(properties.size() < openPositionViewer.getComparator().getColumn())
+						openPositionViewer.getComparator().setColumn(0);
+					
 					openPositionViewer.setSmartColumnProperties(psbList.get(0).getClass().getName(),properties);
 					openPositionViewer.setInput(psbList);			
 					openPositionViewer.refresh();
