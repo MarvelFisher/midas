@@ -1,8 +1,7 @@
 package com.cyanspring.server.refdata;
 
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
@@ -11,7 +10,6 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.IRefDataManager;
-import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.staticdata.RefData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +38,15 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
     @Autowired
     private IRemoteEventManager eventManager;
 
+    @Autowired
+    private ScheduleManager scheduleManager;
+
     private MarketSessionType currentType;
     private String tradeDate;
     private IRefDataAdaptor refDataAdaptor;
+    private boolean isInit = false;
+    private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+    private long timeInterval = 1*1000;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -74,9 +78,11 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
         try {
             if (currentType == null) {
                 currentType = event.getSession();
-                refDataManager.init();
-                refDataManager.update(event.getTradeDate());
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+                if(refDataAdaptor == null) {
+                    refDataManager.init();
+                    refDataManager.update(event.getTradeDate());
+                    eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
+                }
                 return;
             }
             if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
@@ -87,11 +93,30 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
                 if(refDataAdaptor!=null){
                     refDataAdaptor.subscribeRefData(this);
                 }
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
                 log.info("Update refData size: {}", refDataManager.getRefDataList().size());
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+        }
+    }
+
+    public void processAsyncTimerEvent(AsyncTimerEvent event) {
+        if(isInit)
+            return;
+        List<RefData> list = refDataManager.getRefDataList();
+        if(list == null)
+            return;
+        if(list.size() <= 0){
+            log.info("RefData size is {}, initial not finish", list.size());
+            return;
+        } else {
+            try {
+                eventManager.sendGlobalEvent(new RefDataEvent(null, null, list, true));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+            isInit = true;
         }
     }
 
@@ -104,6 +129,9 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("RefDataHandler");
+
+        if(!eventProcessor.isSync())
+            scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
 
         if(refDataAdaptor!=null){
             refDataAdaptor.subscribeRefData(this);
