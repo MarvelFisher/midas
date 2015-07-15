@@ -31,7 +31,7 @@ public class IFStrategy implements IRefDataStrategy  {
     private StrategyData n1;
     private StrategyData f0;
     private StrategyData f1;
-    private SeasonState seasonState;
+    private StateChain stateChain;
     private Calendar cal;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -39,14 +39,14 @@ public class IFStrategy implements IRefDataStrategy  {
     public void init(Calendar cal) {
         if (this.cal == null) {
         	for(int season : seasons){
-        		if(seasonState == null){
-        			seasonState = new SeasonState(season);
+        		if(stateChain == null){
+        			stateChain = new StateChain(season);
         			continue;
         		}
-        		SeasonState state = new SeasonState(season);
-        		seasonState.addState(state);
+        		StateChain state = new StateChain(season);
+        		stateChain.addState(state);
         	}
-        	seasonState.addState(seasonState);
+        	stateChain.addState(stateChain);
             n0 = new StrategyData();
             n1 = new StrategyData();
             f0 = new StrategyData();
@@ -128,10 +128,8 @@ public class IFStrategy implements IRefDataStrategy  {
 		saveStrategyData(cal, n0);
 	    cal.add(Calendar.MONTH, 1);
 	    saveStrategyData(cal, n1);
-	    cal.set(Calendar.MONTH, seasonState.searchNearestSeason(n1.month, seasons.length));
-	    saveStrategyData(cal, f0);
-	    cal.set(Calendar.MONTH, seasonState.searchNearestSeason(f0.month, seasons.length));
-	    saveStrategyData(cal, f1);
+	    saveStrategyData(searchNearestSeason(stateChain, cal, seasons.length), f0);
+        saveStrategyData(searchNearestSeason(stateChain, cal, seasons.length), f1);
 	            
 	    this.cal = Calendar.getInstance();
 	    try {
@@ -143,4 +141,25 @@ public class IFStrategy implements IRefDataStrategy  {
 	        log.error(e.getMessage(), e);
 	    }
 	}
+
+    public Calendar searchNearestSeason(StateChain chain, Calendar cal, int depth){
+        int i = 0;
+        int month = cal.get(Calendar.MONTH);
+        int nowState = chain.nowState();
+        if (nowState > month){
+            cal.set(Calendar.MONTH, nowState);
+            return cal;
+        }
+
+        do {
+            chain = chain.getNextState();
+            if (nowState > chain.nowState())
+                cal.add(Calendar.YEAR, 1);
+            nowState = chain.nowState();
+            i++;
+        }while (month >= nowState && i < depth);
+
+        cal.set(Calendar.MONTH, chain.nowState());
+        return cal;
+    }
 }
