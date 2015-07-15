@@ -67,12 +67,17 @@ public class MarketDataManager extends MarketDataReceiver {
                 log.info("Existing tick directory: " + tickDir);
             }
 
+            StringBuffer sb = new StringBuffer("");
             quotes = quoteSaver.loadQuotes(tickDir + "/" + lastQuoteFile);
             log.info("Quotes Loaded Counts [" + quotes.size() + "] ");
             for (Map.Entry<String, Quote> entry : quotes.entrySet()) {
-                log.info("Quotes Loaded Results [" + entry.getKey() + "] "
-                        + entry.getValue().toString());
+                if("".equals(sb.toString())){
+                    sb.append(entry.getKey());
+                }else{
+                    sb.append("," + entry.getKey());
+                }
             }
+            log.info("Quotes Loaded Results " + sb.toString());
 
             lastTradeDateQuotes = quoteSaver.loadQuotes(tickDir + "/" + lastTradeDateQuoteFile);
             if (lastTradeDateQuotes == null || lastTradeDateQuotes.size() <= 0) {
@@ -80,19 +85,29 @@ public class MarketDataManager extends MarketDataReceiver {
                 lastTradeDateQuotes = (Map<String, Quote>) quotes.clone();
             }
 
+            sb = new StringBuffer("");
             log.info("LastTradeDateQuotes Loaded Counts ["
                     + lastTradeDateQuotes.size() + "] ");
             for (Map.Entry<String, Quote> entry : lastTradeDateQuotes.entrySet()) {
-                log.info("LastTradeDateQuotes Loaded Results [" + entry.getKey()
-                        + "] " + entry.getValue().toString());
+                if("".equals(sb.toString())){
+                    sb.append(entry.getKey());
+                }else{
+                    sb.append("," + entry.getKey());
+                }
             }
+            log.info("LastTradeDateQuotes Loaded Results " + sb.toString());
 
+            sb = new StringBuffer("");
             quoteExtends = quoteSaver.loadExtendQuotes(tickDir + "/" + lastQuoteExtendFile);
             log.info("QuoteExtends Loaded Counts [" + quoteExtends.size() + "] ");
             for (Map.Entry<String, DataObject> entry : quoteExtends.entrySet()) {
-                log.info("QuoteExtends Loaded Results [" + entry.getKey() + "] "
-                        + entry.getValue().toString());
+                if("".equals(sb.toString())){
+                    sb.append(entry.getKey());
+                }else{
+                    sb.append("," + entry.getKey());
+                }
             }
+            log.info("QuoteExtends Loaded Results " + sb.toString());
 
             lastTradeDateQuoteExtends = quoteSaver.loadExtendQuotes(tickDir + "/" + lastTradeDateQuoteExtendFile);
             if (lastTradeDateQuoteExtends == null || lastTradeDateQuoteExtends.size() <= 0) {
@@ -100,12 +115,17 @@ public class MarketDataManager extends MarketDataReceiver {
                 lastTradeDateQuoteExtends = (Map<String, DataObject>) quoteExtends.clone();
             }
 
+            sb = new StringBuffer("");
             log.info("LastTradeDateQuoteExtends Loaded Counts ["
                     + lastTradeDateQuoteExtends.size() + "] ");
             for (Map.Entry<String, DataObject> entry : lastTradeDateQuoteExtends.entrySet()) {
-                log.info("LastTradeDateQuoteExtends Loaded Results [" + entry.getKey()
-                        + "] " + entry.getValue().toString());
+                if("".equals(sb.toString())){
+                    sb.append(entry.getKey());
+                }else{
+                    sb.append("," + entry.getKey());
+                }
             }
+            log.info("LastTradeDateQuoteExtends Loaded Results " + sb.toString());
         }
 
         for (Class<? extends AsyncEvent> clz : subscribeEvent())
