@@ -6,8 +6,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.cyanspring.common.business.GroupManagement;
 
 public class UserGroup implements Serializable{
 	
@@ -152,5 +155,18 @@ public class UserGroup implements Serializable{
 	 */
 	public List<UserGroup> getNoneRecursiveManageeList() {
 		return manageeList;
+	}
+	
+	public List<GroupManagement> exportGroupManagementList(){
+		List<GroupManagement> gmList = new ArrayList<GroupManagement>();
+		for(UserGroup userGroup : manageeList){
+			GroupManagement gm = new GroupManagement(user,userGroup.getUser());
+			gmList.add(gm);
+		}
+		return gmList;
+	}
+	
+	public void clearManageeList(){
+		manageeList.clear();
 	}
 }

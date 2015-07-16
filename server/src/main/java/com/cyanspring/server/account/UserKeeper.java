@@ -1,5 +1,6 @@
 package com.cyanspring.server.account;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.Default;
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserGroup;
@@ -25,6 +27,7 @@ public class UserKeeper {
 	
 	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();	
 	private ConcurrentHashMap<String,UserGroup> userGroups = new ConcurrentHashMap<String,UserGroup>();
+
 	public final static String ADMIN = "admin";
 	public final static String ADMIN_PW= "FDTADMIN";
 	
@@ -188,6 +191,12 @@ public class UserKeeper {
 				log.warn(e.getLocalizedMessage());
 			}		
 		}
+	}
+	
+	public List<User> getAllUsers(){
+		List<User> userList = new ArrayList<User>();
+		userList.addAll(users.values());
+		return userList;
 	}
 
 }

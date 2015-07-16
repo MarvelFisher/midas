@@ -34,6 +34,7 @@ import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.GroupManagement;
@@ -59,10 +60,14 @@ import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllUserSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
+import com.cyanspring.common.event.account.ChangeUserRoleEvent;
+import com.cyanspring.common.event.account.ChangeUserRoleReplyEvent;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.CreateAccountEvent;
 import com.cyanspring.common.event.account.CreateAccountReplyEvent;
@@ -238,6 +243,9 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(DeleteGroupManagementEvent.class,null);
             subscribeToEvent(GroupManageeRequestEvent.class,null);
             subscribeToEvent(CSTWUserLoginEvent.class,null);
+            subscribeToEvent(AllUserSnapshotRequestEvent.class,null);
+            subscribeToEvent(ChangeUserRoleEvent.class,null);
+            
         }
 
         @Override
@@ -888,7 +896,98 @@ public class AccountPositionManager implements IPlugin {
         asyncSendPositionSnapshot(event, allAccounts);
     }
     
-    public void processAllAccountSnapshotRequestEvent(AllAccountSnapshotRequestEvent event) {
+    public void processChangeUserRoleEvent(ChangeUserRoleEvent event){
+    	String id = event.getId();
+    	UserRole role= event.getRole();
+    	User user = userKeeper.getUser(id);
+    	UserGroup userGroup = userKeeper.getUserGroup(id);
+    	boolean isOk = false;
+    	boolean needClearAllManagee = false;
+    	String message = "";
+
+    	try{
+        	if( null == user){
+        		throw new UserException("user not exist!");
+        	}
+        	
+        	if( null != userGroup){
+        		
+        		UserRole originRole = user.getRole();  		
+        		if(originRole.equals(role)){
+        			throw new UserException("this user role already is "+role);
+        		}
+        		
+        		if(UserRole.Trader.equals(role)){
+        			needClearAllManagee = true;
+        		}
+        	}
+        	
+    	}catch(UserException e){
+    		isOk = false;
+            message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_ROLE_FAILED, e.getMessage());
+
+    	}
+    	 try {
+    		 
+	    	if(isOk){
+	    		user.setRole(role);
+	    		PmUpdateUserEvent updateUserEvent = new PmUpdateUserEvent(AccountPositionManager.ID,null,user); 
+	            eventManager.sendRemoteEvent(updateUserEvent);
+	    		if(needClearAllManagee && !userGroup.getNoneRecursiveManageeList().isEmpty()){
+	    			PmDeleteGroupManagementEvent deleteGroupManagementEvent = new PmDeleteGroupManagementEvent(AccountPositionManager.ID, null, userGroup.exportGroupManagementList());
+		            eventManager.sendRemoteEvent(deleteGroupManagementEvent);
+		            userGroup.clearManageeList();
+	    		}
+	    	}
+	    	
+	    	ChangeUserRoleReplyEvent reply = new ChangeUserRoleReplyEvent(event.getKey(), event.getSender(), isOk, message, user);       
+            eventManager.sendRemoteEvent(reply);
+            
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+    
+    public void processAllUserSnapshotRequestEvent(AllUserSnapshotRequestEvent event) {
+        if (null == userKeeper)
+            return;
+
+        
+        List<User> allUsers = userKeeper.getAllUsers();
+        asyncSendUserSnapshot(event, allUsers);
+    }
+    
+    private void asyncSendUserSnapshot(final AllUserSnapshotRequestEvent event,
+			final List<User> allUsers) {
+        Thread thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                int i = 0;
+                List<User> batch = new ArrayList<User>();
+                for (i = 1; i <= allUsers.size(); i++) {
+                    batch.add(allUsers.get(i - 1));
+                    if (i % asyncSendBatch == 0 || i == allUsers.size()) {
+                        AllUserSnapshotReplyEvent reply = new AllUserSnapshotReplyEvent(
+                                event.getKey(), event.getSender(), batch);
+                        try {
+                            eventManager.sendRemoteEvent(reply);
+                            log.info("AllUserSnapshotReplyEvent sent: " + batch.size());
+                            Thread.sleep(asyncSendInterval);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                        }
+                        batch.clear();
+                    }
+                }
+
+            }
+
+        });
+        thread.start();		
+	}
+
+	public void processAllAccountSnapshotRequestEvent(AllAccountSnapshotRequestEvent event) {
         if (null == accountKeeper)
             return;
 
@@ -1010,12 +1109,12 @@ public class AccountPositionManager implements IPlugin {
 	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_ALREADY_ACTIVE,"Account already in ACTIVE state"); 
 	            reply = new ActiveAccountReplyEvent(event.getKey()
 	            		,event.getSender(),id,isOk,message);
-	    	}else if(AccountState.TERMINATED.equals(account.getState()) && terminateCheck.isOverTerminateLoss(account, accountSetting)){
+	    	}else if(terminateCheck.isOverTerminateLoss(account, accountSetting)){
 	        	isOk = false;
 	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_TERMINATE_LOSS,"Still over terminate loss, you must set terminate loss percent/value under current loss"); 
 	            reply = new ActiveAccountReplyEvent(event.getKey()
 	            		,event.getSender(),id,isOk,message);
-	    	}else if(AccountState.FROZEN.equals(account.getState()) && frozenCheck.isOverFrozenLoss(account, accountSetting)){
+	    	}else if(frozenCheck.isOverFrozenLoss(account, accountSetting)){
 	        	isOk = false;
 	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FROZEN_LOSS,"Still over frozen loss, you must set frozen loss percent/value under current loss"); 
 	            reply = new ActiveAccountReplyEvent(event.getKey()
