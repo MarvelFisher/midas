@@ -25,6 +25,7 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 	private String broker = "";
 	private int connectionCount = 1;
 	private String libPath;
+	private int maxOrderCount = 300;
 	private List<IDownStreamConnection> connections = new ArrayList<IDownStreamConnection>();
 	private ISymbolConverter symbolConverter;
 
@@ -33,7 +34,8 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 		initNativeLibrary();
 		
 		for (int i = 0 ; i < connectionCount ; i ++) {
-			connections.add(new CtpTradeConnection(connectionPrefix + String.format("%02d", i+1), url, broker, conLog, user, password, symbolConverter));
+			connections.add(new CtpTradeConnection(connectionPrefix + String.format("%02d", i+1), 
+					url, broker, conLog, user, password, symbolConverter, maxOrderCount));
 		}
 		
 		for(IDownStreamConnection connection: connections) {
@@ -141,5 +143,12 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 		this.symbolConverter = symbolConverter;
 	}
 
+	public int getMaxOrderCount() {
+		return maxOrderCount;
+	}
+
+	public void setMaxOrderCount(int maxOrderCount) {
+		this.maxOrderCount = maxOrderCount;
+	}
 	
 }

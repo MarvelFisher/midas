@@ -31,6 +31,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.util.DailyKeyCounter;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeThrottler;
@@ -43,6 +44,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private String conLog;
 	private String id;
 	private String broker;
+	private int maxOrderCount;
 	private boolean state; 
 	private IDownStreamListener listener;
 	private DownStreamSender downStreamSender = new DownStreamSender();
@@ -58,23 +60,26 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private long timerInterval = 3000;
 	private TimeThrottler throttler;
 	private boolean positionQueried;
+	private DailyKeyCounter dailyKeyCounter;
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
 	
-	public CtpTradeConnection(String id, String url, String broker, String conLog, String user, String password, ISymbolConverter symbolConverter) {
+	public CtpTradeConnection(String id, String url, String broker, String conLog, 
+			String user, String password, ISymbolConverter symbolConverter, int maxOrderCount) {
 		this.id = id;
 		this.url = url;
 		this.broker = broker;
 		this.conLog = conLog;
 		this.symbolConverter = symbolConverter;
+		this.maxOrderCount = maxOrderCount;
 		this.positionRecord = new CtpPositionRecord(0);
 		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password, symbolConverter);
 	}
 	
 	@Override
 	public void init() throws Exception {	
-		// register listeners
+		dailyKeyCounter = new DailyKeyCounter(maxOrderCount);
 		registerListeners();
 		positionRecord.clear();	
 		throttler = new TimeThrottler(queryPositionInterval);
@@ -117,6 +122,15 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	class DownStreamSender implements IDownStreamSender {
 		@Override
 		synchronized public void newOrder(ChildOrder order) throws DownStreamException {
+			if(!dailyKeyCounter.check(order.getSymbol())) {
+				order = order.clone();
+				order.setOrdStatus(OrdStatus.REJECTED);
+				String msg = "Max order count reach: " + CtpTradeConnection.this.maxOrderCount;
+				log.error(msg);
+				CtpTradeConnection.this.listener.onOrder(ExecType.REJECTED, order, null, msg);
+				return;
+			}
+			
 			String ordRef = proxy.getClOrderId();
 			serialToOrder.put(ordRef, order);			
 			order.setClOrderId(ordRef);
