@@ -312,8 +312,16 @@ public class DBHandler
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
-		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' AND `KEYTIME`<='%s' ORDER BY `KEYTIME`;", 
-				strTable, symbol, sdf.format(startDate), sdf.format(endDate));
+    	if (startDate == null)
+    	{
+    		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`<='%s' ORDER BY `KEYTIME`;", 
+					strTable, symbol, sdf.format(endDate));
+    	}
+    	else
+    	{
+			sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' AND `KEYTIME`>='%s' AND `KEYTIME`<='%s' ORDER BY `KEYTIME`;", 
+					strTable, symbol, sdf.format(startDate), sdf.format(endDate));
+    	}
 
 		Connection connect = getConnect();
 		if (connect == null)
@@ -321,6 +329,10 @@ public class DBHandler
 			return null;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		if (rs == null)
+		{
+			return null;
+		}
     	try 
     	{
     		HistoricalPrice price;
@@ -363,8 +375,6 @@ public class DBHandler
     
     public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount, String retrieveDate,boolean bLimit)
     {
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
@@ -378,6 +388,22 @@ public class DBHandler
     		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
     				strTable, symbol, dataCount);    		
     	}
+    	return getHistoricalPrice(sqlcmd); 
+    }
+    
+    public List<HistoricalPrice> getTotalValue(String market, String type, String retrieveDate)
+    {
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+    	String strTable = String.format("%s_%s", prefix, type) ;
+    	String sqlcmd = "" ;
+    	sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC;", strTable, retrieveDate);
+    	return getHistoricalPrice(sqlcmd);
+    }
+    
+    public List<HistoricalPrice> getHistoricalPrice(String sqlcmd)
+    {
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		Connection connect = getConnect();
 		if (connect == null)
 		{
@@ -423,6 +449,7 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
+    
     public void deletePrice(String market, String type, String symbol, HistoricalPrice price)
     {
     	if (price == null)

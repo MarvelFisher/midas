@@ -1,5 +1,6 @@
 package com.cyanspring.info;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -52,18 +53,32 @@ public class SymbolChef implements Runnable{
     	setSuspended(true);
     }
     
-    public void createSymbol(RefData refdata, CentralDbProcessor centraldb)
+    public boolean createSymbol(RefData refdata, CentralDbProcessor centraldb)
     {
+    	boolean isAdded = false;
     	SymbolData symbolData = mapSymboldata.get(refdata.getSymbol());
     	if (symbolData == null)
     	{
+    		isAdded = true;
     		mapSymboldata.put(refdata.getSymbol(),
     				new SymbolData(refdata.getSymbol(), refdata.getExchange(), centraldb)) ;
     	}
+    	return isAdded; 
     }
     public void clearSymbol()
     {
-    	mapSymboldata.clear();
+//    	mapSymboldata.clear();
+    	for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+    	{
+    		if (entry.getValue().getMarket().equals("CF"))
+    		{
+    			mapSymboldata.remove(entry.getKey(), entry.getValue());
+    		}
+    		else
+    		{
+    			entry.getValue().resetStatement();
+    		}
+    	}
     }
     
     public List<HistoricalPrice> retrieveHistoricalPrice(
@@ -126,6 +141,25 @@ public class SymbolChef implements Runnable{
 		{
 			entry.getValue().resetMapHistorical();
 			entry.getValue().getAllChartPrice();
+		}
+	}
+	public List<String> getAllMarket()
+	{
+		ArrayList<String> marketList = new ArrayList<String>();
+		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		{
+			if (marketList.contains(entry.getValue().getMarket()) == false)
+			{
+				marketList.add(entry.getValue().getMarket());
+			}
+		}
+		return marketList;
+	}
+	public void resetAllChartPrice()
+	{
+		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		{
+			entry.getValue().resetMapHistorical();
 		}
 	}
 	

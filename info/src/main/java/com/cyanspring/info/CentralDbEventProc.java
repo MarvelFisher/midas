@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -103,13 +104,17 @@ public class CentralDbEventProc implements Runnable
 		String startDate = event.getStartDate();
 		String endDate = event.getEndDate();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		List<HistoricalPrice> listPrice = null;
 		SymbolData symboldata = centraldb.getChefBySymbol(symbol).getSymbolData(symbol);
 		log.debug("Process Historical Price Request Symbol by Date: " + symbol + " Type: " + type + " Start: " + startDate + " End: " + endDate);
 		
 		try 
 		{
-			listPrice = centraldb.getDbhnd().getPeriodStartEndValue(centraldb.getServerMarket(), type, symbol, sdf.parse(startDate), sdf.parse(endDate));
+			if (startDate == null || startDate.isEmpty())
+				listPrice = centraldb.getDbhnd().getPeriodStartEndValue(centraldb.getServerMarket(), type, symbol, null, sdf.parse(endDate));
+			else
+				listPrice = centraldb.getDbhnd().getPeriodStartEndValue(centraldb.getServerMarket(), type, symbol, sdf.parse(startDate), sdf.parse(endDate));
 		} 
 		catch (ParseException e) 
 		{

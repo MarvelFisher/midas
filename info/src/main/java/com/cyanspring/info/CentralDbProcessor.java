@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 
 import org.slf4j.Logger;
@@ -50,6 +52,7 @@ import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.info.RefSubName;
+import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -108,6 +111,8 @@ public class CentralDbProcessor implements IPlugin
 	private IRefSymbolInfo refSymbolInfo;
 	private ArrayList<String> appServIDList = new ArrayList<String>();
 	private DBHandler dbhnd ;
+	
+	private HashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap = null;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -497,6 +502,7 @@ public class CentralDbProcessor implements IPlugin
 				getRefSymbolInfo().reset();
 				getRefSymbolInfo().setByRefData(refList);
 				defaultSymbolInfo = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(preSubscriptionList);
+				boolean isAdded = false;
 				for(RefData refdata : refList)
 				{
 					if (refdata.getExchange() == null) continue;
@@ -508,15 +514,19 @@ public class CentralDbProcessor implements IPlugin
 					}
 					int chefNum = getChefNumber(refdata.getSymbol());
 					SymbolChef chef = SymbolChefList.get(chefNum);
-					chef.createSymbol(refdata, this);
+					isAdded |= chef.createSymbol(refdata, this);
 //					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
 					
-					if (refdata.getExchange() != null && refdata.getExchange().equals("FX"))
+//					if (refdata.getExchange() != null && refdata.getExchange().equals("FX"))
 					{
 						outSymbol.println(refdata.getSymbol());
 					}
 				}
 				outSymbol.close();
+				if (isAdded)
+				{
+					retrieveChart();
+				}
 				calledRefdata = true;
 			} 
 			catch (IOException e) 
@@ -543,6 +553,7 @@ public class CentralDbProcessor implements IPlugin
 			@Override
 			public void run() 
 			{
+				log.debug("Retrieve Chart thread start");
 				while (isStartup)
 				{
 					try 
@@ -554,15 +565,84 @@ public class CentralDbProcessor implements IPlugin
 						e.printStackTrace();
 					}
 				}
-				for (SymbolChef chef : SymbolChefList)
-				{
-					chef.getAllChartPrice();
-				}
+//				for (SymbolChef chef : SymbolChefList)
+//				{
+//					chef.getAllChartPrice();
+//				}
+				getAllChartPrice();
 				log.debug("Retrieve Chart thread finish");
 			}
 		});
 		retrieveThread.setName("CDP_Retrieve_Chart");
 		retrieveThread.start();
+	}
+	
+	public void getAllChartPrice()
+	{
+		ArrayList<String> marketList = new ArrayList<String>();
+		for (SymbolChef chef : SymbolChefList)
+		{
+			int index;
+			for (String market : chef.getAllMarket())
+			{
+				index = Collections.binarySearch(marketList, market);
+				if (index < 0)
+				{
+					marketList.add(~index, market);
+				}
+			}
+		}
+		if (retrieveMap == null)
+		{
+			retrieveMap = new HashMap<String, HashMap<String, List<HistoricalPrice>>>();
+		}
+		retrieveMap.clear();
+		for (String market : marketList)
+		{
+			getChartPrice(market, "1");
+			getChartPrice(market, "R");
+			getChartPrice(market, "A");
+			getChartPrice(market, "Q");
+			getChartPrice(market, "H");
+			getChartPrice(market, "6");
+			getChartPrice(market, "T");
+			getChartPrice(market, "D");
+			getChartPrice(market, "W");
+			getChartPrice(market, "M");
+		}
+		String symbol;
+		SymbolData symboldata;
+		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : retrieveMap.entrySet())
+		{
+			symbol = entry.getKey();
+			symboldata = getChefBySymbol(symbol).getSymbolData(symbol);
+			if (symboldata != null)
+			{
+				symboldata.setMapHistorical(entry.getValue());
+			}
+		}
+	}
+	public void getChartPrice(String market, String strType)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, (-1) * (getHistoricalDataPeriod().get(strType) + 2));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<HistoricalPrice> historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
+		HashMap<String, List<HistoricalPrice>> subMap;
+		for (HistoricalPrice price : historical)
+		{
+			if (retrieveMap.get(price.getSymbol()) == null)
+			{
+				retrieveMap.put(price.getSymbol(), new HashMap<String, List<HistoricalPrice>>());
+			}
+			subMap = retrieveMap.get(price.getSymbol());
+			if (subMap.get(strType) == null)
+			{
+				subMap.put(strType, new ArrayList<HistoricalPrice>());
+			}
+			subMap.get(strType).add(price);
+		}
+		return;
 	}
 	
 	public void resetStatement()

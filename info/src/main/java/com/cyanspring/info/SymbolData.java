@@ -71,6 +71,21 @@ public class SymbolData implements Comparable<SymbolData>
 		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
 		this.market = market;
+		resetStatement();
+	}
+	public void resetStatement()
+	{
+		isUpdating = true ;
+		writeMin = false;
+		d52WHigh = 0;
+		d52WLow = 0; 
+		dCurHigh = 0;
+		dCurLow = 0;
+		dOpen = 0;
+		dClose = 0;
+		dCurVolume = 0;
+		dCurTotalVolume = 0;
+		dCurTurnover = 0;
 		readFromTick() ;
 		get52WHighLow() ;
 		isUpdating = false ;
@@ -88,9 +103,9 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void resetMapHistorical() 
 	{
-		synchronized(mapHistorical)
+		synchronized(getMapHistorical())
 		{
-			mapHistorical.clear();
+			getMapHistorical().clear();
 		}
 	}
 	public void parseQuote(Quote quote)
@@ -236,12 +251,12 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void insertSQLDate(String strType)
 	{
+    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
     	if (market == null || PriceUtils.isZero(dOpen))
     	{
 			log.warn(strSymbol + " get Open price ZERO");
     		return;
     	}
-    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -278,14 +293,14 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			if (mapHistorical.get(strType) == null)
+			if (getMapHistorical().get(strType) == null)
 			{
-				lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+//				lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			}
 			else
 			{
-				if (mapHistorical.get(strType).size() > 0)
-					lastPrice = mapHistorical.get(strType).get(0);
+				if (getMapHistorical().get(strType).size() > 0)
+					lastPrice = getMapHistorical().get(strType).get(0);
 			}
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
@@ -447,9 +462,9 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void getChartPrice(String strType)
 	{
-		synchronized(mapHistorical)
+		synchronized(getMapHistorical())
 		{
-			if (mapHistorical.get(strType) != null)
+			if (getMapHistorical().get(strType) != null)
 			{
 				return;
 			}
@@ -485,7 +500,7 @@ public class SymbolData implements Comparable<SymbolData>
 					log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] lack of data, query again get %d", 
 							market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));					
 				}
-				mapHistorical.put(strType,  historical);
+				getMapHistorical().put(strType,  historical);
 			}
 		}
 	}
@@ -496,14 +511,14 @@ public class SymbolData implements Comparable<SymbolData>
 		HistoricalPrice priceEmpty = null ;
 		if (prices.isEmpty())
 		{
-			if (mapHistorical.get(strType) == null)
+			if (getMapHistorical().get(strType) == null)
 			{
-				priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+//				priceEmpty = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
 			}
 			else
 			{
-				if (mapHistorical.get(strType).size() > 0)
-					priceEmpty = mapHistorical.get(strType).get(0);
+				if (getMapHistorical().get(strType).size() > 0)
+					priceEmpty = getMapHistorical().get(strType).get(0);
 			}
 			if (priceEmpty != null)
 			{
@@ -749,11 +764,11 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void insertSQLTick(String strType)
 	{
+    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
     	if (market == null)
     	{
     		return;
     	}
-    	log.debug(strSymbol + "Processing type \"" + strType + "\" chart");
 		ArrayList<HistoricalPrice> prices = new ArrayList<HistoricalPrice>() ;
 		try {
 			prices = getPriceList(strType, prices);
@@ -844,7 +859,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		
 		ArrayList<HistoricalPrice> listPrice;
-		if (mapHistorical.get(type) == null)
+		if (getMapHistorical().get(type) == null)
 		{
 //			listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
 //			if (listPrice == null)
@@ -853,9 +868,9 @@ public class SymbolData implements Comparable<SymbolData>
 //			}
 			getChartPrice(type);
 		}
-		int limit = (dataCount > mapHistorical.get(type).size()) ? mapHistorical.get(type).size() : dataCount;
+		int limit = (dataCount > getMapHistorical().get(type).size()) ? getMapHistorical().get(type).size() : dataCount;
 		listPrice = new ArrayList<HistoricalPrice>();
-		listPrice.addAll(mapHistorical.get(type).subList(0, limit));
+		listPrice.addAll(getMapHistorical().get(type).subList(0, limit));
 		Collections.sort(listPrice);
 		
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
@@ -1002,6 +1017,35 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setdCurTurnover(double dCurTurnover) {
 		this.dCurTurnover = dCurTurnover;
+	}
+	public HashMap<String, List<HistoricalPrice>> getMapHistorical() {
+		return mapHistorical;
+	}
+	public void setMapHistorical(HashMap<String, List<HistoricalPrice>> mapHistorical) 
+	{
+		String msg = strSymbol + " set cache map ";
+		if (mapHistorical.get("1") != null)
+			msg += "1:" + mapHistorical.get("1").size() + "\t";
+		if (mapHistorical.get("R") != null)
+			msg += "R:" + mapHistorical.get("R").size() + "\t";
+		if (mapHistorical.get("A") != null)
+			msg += "A:" + mapHistorical.get("A").size() + "\t";
+		if (mapHistorical.get("Q") != null)
+			msg += "Q:" + mapHistorical.get("Q").size() + "\t";
+		if (mapHistorical.get("H") != null)
+			msg += "H:" + mapHistorical.get("H").size() + "\t";
+		if (mapHistorical.get("6") != null)
+			msg += "6:" + mapHistorical.get("6").size() + "\t";
+		if (mapHistorical.get("T") != null)
+			msg += "T:" + mapHistorical.get("T").size() + "\t";
+		if (mapHistorical.get("D") != null)
+			msg += "D:" + mapHistorical.get("D").size() + "\t";
+		if (mapHistorical.get("W") != null)
+			msg += "W:" + mapHistorical.get("W").size() + "\t";
+		if (mapHistorical.get("M") != null)
+			msg += "M:" + mapHistorical.get("M").size();
+		log.debug(msg);
+		this.mapHistorical = mapHistorical;
 	}
 	
 }
