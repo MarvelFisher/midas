@@ -19,6 +19,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.server.account.PositionKeeper;
+import com.cyanspring.server.order.RiskOrderController;
 
 public class TradingUtil {
     private static final Logger log = LoggerFactory
@@ -45,11 +46,6 @@ public class TradingUtil {
                 eventManager.sendEvent(cancel);
             }
         }
-    }
-    
-    public static void cancelAllOrders(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager) {
-    	
-    	cancelAllOrders( account,  positionKeeper,  eventManager,OrderReason.CompanyStopLoss);
     }
     
     public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason) {
@@ -80,11 +76,6 @@ public class TradingUtil {
         }
     }
 
-    public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote) {
-    	
-    	closeOpenPositions( account, positionKeeper, eventManager, checkValidQuote,OrderReason.CompanyStopLoss); 
-    }
-    
 	public static double getMinValue(double x,double y){
 
 		if (PriceUtils.isZero(x)) {
@@ -96,4 +87,23 @@ public class TradingUtil {
 		}
 		
 	}
+	
+	public static boolean checkRiskOrderCount(RiskOrderController riskOrderController, String account) {
+    	if(null == riskOrderController || riskOrderController.chek(account))
+    		return true;
+    	
+    	return false;
+    }
+	
+	public static void closeAllPositoinAndOrder(Account account, PositionKeeper positionKeeper, 
+			IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason, 
+			RiskOrderController riskOrderController){
+		
+		if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
+			return;
+		
+		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason);
+		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason);
+	}
+
 }

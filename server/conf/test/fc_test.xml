@@ -207,6 +207,10 @@
 	<bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
 	</bean>
 
+	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
+		<property name="maxRiskOrderCount" value="3"/>
+	</bean>
+
 	<bean id="tickDataManager" class="com.cyanspring.server.marketdata.TickDataManager">
 		<property name="directory">
 			<value>ticks</value>
@@ -280,6 +284,8 @@
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
         <property name="checkSingleSide" value="true"/>
+        <property name="reject" value="true"/>
+        <property name="cancel" value="false"/>
     </bean>
 
 	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">

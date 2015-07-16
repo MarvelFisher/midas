@@ -20,6 +20,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
 import com.cyanspring.server.livetrading.TradingUtil;
+import com.cyanspring.server.order.RiskOrderController;
 import com.cyanspring.server.persistence.PersistenceManager;
 
 public class TerminateStopLossCheck implements ILiveTradingChecker {
@@ -36,6 +37,9 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
     @Autowired
     private IRemoteEventManager eventManager;
     
+	@Autowired(required=false)
+	RiskOrderController riskOrderController;
+
     /**
      * need next check return true otherwise return false
      */
@@ -50,11 +54,6 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 			return true;
 		}
 		
-		if(AccountState.TERMINATED == account.getState() ){
-			closeAllPositoinAndOrder(account,OrderReason.AccountStopLoss);
-			return false;
-		}
-		
 		double totalLossLimit = TradingUtil.getMinValue(account.getCashDeposited() * accountSetting.getTerminatePercent()
 				, accountSetting.getTerminateValue());
 		
@@ -66,18 +65,16 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 		
 		if(PriceUtils.EqualLessThan(currentLoss, -totalLossLimit)){
 			log.info("Account:"+account.getId()+"Terminate loss: " + currentLoss + " over " + -totalLossLimit);
-			account.setState(AccountState.TERMINATED);
-			sendUpdateAccountEvent(account);
-			closeAllPositoinAndOrder(account,OrderReason.AccountStopLoss);
+			if(!account.getState().equals(AccountState.TERMINATED)) {
+				account.setState(AccountState.TERMINATED);
+				sendUpdateAccountEvent(account);
+			}
+			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, 
+					OrderReason.AccountStopLoss, riskOrderController);
 			return false;
 		}
 			
 		return true;
-	}
-
-	private void closeAllPositoinAndOrder(Account account,OrderReason orderReason){
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true, orderReason);
 	}
 
 	private void sendUpdateAccountEvent(Account account){

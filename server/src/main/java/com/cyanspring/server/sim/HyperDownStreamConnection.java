@@ -61,6 +61,8 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	private Map<String, Map<String, ChildOrder>> orders = new ConcurrentHashMap<String, Map<String, ChildOrder>>();
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
 	private IDownStreamListener listener;
+	private boolean cancel;
+	private boolean reject;
 	
 	private class HyperEnterOrderEvent extends AsyncEvent {
 		private ChildOrder order;
@@ -142,6 +144,11 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	private void deleteOrder(ChildOrder order) {
 		order.setOrdStatus(OrdStatus.CANCELED);
 		listener.onOrder(ExecType.CANCELED, order, null, null);
+	}
+	
+	private void rejectOrder(ChildOrder order) {
+		order.setOrdStatus(OrdStatus.REJECTED);
+		listener.onOrder(ExecType.REJECTED, order, null, null);
 	}
 	
 	private boolean quoteIsValid(Quote quote) {
@@ -258,6 +265,16 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	
 	public void processHyperEnterOrderEvent(HyperEnterOrderEvent event) {
 		ChildOrder order = event.getOrder();
+		if(this.isReject()) {
+			rejectOrder(order);
+			return;
+		}
+		
+		if(this.isCancel()) {
+			deleteOrder(order);
+			return;
+		}
+			
 		Quote quote = quotes.get(order.getSymbol());
 		if(null == quote) {
 			acceptOrder(order);
@@ -368,4 +385,21 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
     public void setCheckSingleSide(boolean checkSingleSide) {
         this.checkSingleSide = checkSingleSide;
     }
+
+	public boolean isCancel() {
+		return cancel;
+	}
+
+	public void setCancel(boolean cancel) {
+		this.cancel = cancel;
+	}
+
+	public boolean isReject() {
+		return reject;
+	}
+
+	public void setReject(boolean reject) {
+		this.reject = reject;
+	}
+    
 }
