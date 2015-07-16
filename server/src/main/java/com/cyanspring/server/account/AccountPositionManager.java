@@ -137,6 +137,7 @@ import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
+import com.cyanspring.server.order.RiskOrderController;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
 
@@ -205,6 +206,9 @@ public class AccountPositionManager implements IPlugin {
 
 	@Autowired
 	ILeverageManager leverageManager;
+
+	@Autowired(required=false)
+	RiskOrderController riskOrderController;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -1338,36 +1342,33 @@ public class AccountPositionManager implements IPlugin {
 
         return !quote.isStale();
     }
-	private void closeAllPositoinAndOrder(Account account){
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true);
-	}
-    private boolean checkDailyStopLoss(Account account, AccountSetting accountSetting){
+    
+	private boolean checkDailyStopLoss(Account account, AccountSetting accountSetting){
     	
     	double dailyStopLoss = accountSetting.getDailyStopLoss();
 		if(PriceUtils.isZero(dailyStopLoss)){
-			return false;
-		}
-		if(AccountState.FROZEN == account.getState() ){
-			closeAllPositoinAndOrder(account);
 			return false;
 		}
     	
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 			
 			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
-			account.setState(AccountState.FROZEN);
-			try {
-				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
-			} catch (Exception e) {
-				log.error(e.getMessage(),e);
+			if(account.getState().equals(AccountState.ACTIVE)) {
+				account.setState(AccountState.FROZEN);
+				try {
+					eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
+				} catch (Exception e) {
+					log.error(e.getMessage(),e);
+				}
 			}
-			closeAllPositoinAndOrder(account);
+			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, 
+					OrderReason.CompanyStopLoss, riskOrderController);
 			return true;		
 		}
 		
 		return false;
     }
+	
     private boolean checkStopLoss(Account account, AccountSetting accountSetting) {
         if (!checkStoploss)
             return false;
@@ -1415,6 +1416,10 @@ public class AccountPositionManager implements IPlugin {
                 log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
                         position.getSymbol() + ", " + position.getQty() + ", " + position.getAcPnL() + ", " +
                         positionStopLoss + ", " + quote);
+
+        		if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
+        			return true;
+        		
                 ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                         null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.PositionStopLoss,
                         IdGenerator.getInstance().getNextID());
@@ -1520,6 +1525,9 @@ public class AccountPositionManager implements IPlugin {
                     }
                     qty = Math.min(Math.abs(position.getQty()), qty);
 
+            		if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
+            			return true;
+            		
                     ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                             null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
                             IdGenerator.getInstance().getNextID());

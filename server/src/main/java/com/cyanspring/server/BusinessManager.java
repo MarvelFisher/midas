@@ -10,13 +10,14 @@
  ******************************************************************************/
 package com.cyanspring.server;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
-import com.cyanspring.common.Clock;
-import com.cyanspring.common.event.order.*;
-import com.cyanspring.common.marketsession.WeekDay;
-import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -26,6 +27,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import webcurve.util.PriceUtils;
 
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
@@ -52,14 +54,28 @@ import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.order.AmendParentOrderEvent;
+import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
+import com.cyanspring.common.event.order.AmendStrategyOrderEvent;
+import com.cyanspring.common.event.order.CancelParentOrderEvent;
+import com.cyanspring.common.event.order.CancelParentOrderReplyEvent;
+import com.cyanspring.common.event.order.CancelPendingOrderEvent;
+import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
+import com.cyanspring.common.event.order.ClosePositionReplyEvent;
+import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.event.order.EnterParentOrderEvent;
+import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
+import com.cyanspring.common.event.order.InitClientEvent;
+import com.cyanspring.common.event.order.InitClientRequestEvent;
+import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.marketsession.WeekDay;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -77,6 +93,7 @@ import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
@@ -883,7 +900,7 @@ public class BusinessManager implements ApplicationContextAware {
     public void processCancelPendingOrderEvent(CancelPendingOrderEvent event){
         List<Account> accounts = accountKeeper.getAllAccounts();
         for (Account account : accounts){
-            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager);
+            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.CompanyStopLoss);
         }
 
         Calendar cal = Calendar.getInstance();

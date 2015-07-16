@@ -21,6 +21,8 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
+import com.cyanspring.server.livetrading.TradingUtil;
+import com.cyanspring.server.order.RiskOrderController;
 
 public class PositionStopLossCheck implements ILiveTradingChecker {
 	
@@ -36,6 +38,9 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
     @Autowired
     private IRemoteEventManager eventManager;
     
+	@Autowired(required=false)
+	RiskOrderController riskOrderController;
+
     private IQuoteChecker quoteChecker = new PriceQuoteChecker();
     
     /**
@@ -44,10 +49,6 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 	@Override
 	public boolean check(Account account, AccountSetting accountSetting) {
 
-		if(!accountSetting.isUserLiveTrading()){
-			return false;
-		}
-		
 		Double positionStopLoss = Default.getPositionStopLoss();
 		OrderReason orderReason = OrderReason.PositionStopLoss;
 		
@@ -79,6 +80,7 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 		}
 		List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
 		
+		boolean result = true;
 		for (OpenPosition position : positions) {
 			Quote quote = positionKeeper.getQuote(position.getSymbol());
 			if (PriceUtils
@@ -94,16 +96,21 @@ public class PositionStopLossCheck implements ILiveTradingChecker {
 						+ position.getAccount() + ", " + position.getSymbol()
 						+ ", " + position.getAcPnL() + ", " + positionStopLoss
 						+ ", " + quote);
+				
+				if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
+					return false;
+				
 				ClosePositionRequestEvent event = new ClosePositionRequestEvent(
 						position.getAccount(), null, position.getAccount(),
 						position.getSymbol(), 0.0, orderReason,
 						IdGenerator.getInstance().getNextID());
 
 				eventManager.sendEvent(event);
+				result = false;
 			}
 		}
 
-		return true;
+		return result;
 	}
 
 	private double getPositionStopLoss(Account account,

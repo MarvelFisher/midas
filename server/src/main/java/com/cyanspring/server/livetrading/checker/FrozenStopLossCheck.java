@@ -11,11 +11,12 @@ import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.account.AccountStateReplyEvent;
+import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
 import com.cyanspring.server.livetrading.TradingUtil;
+import com.cyanspring.server.order.RiskOrderController;
 import com.cyanspring.server.persistence.PersistenceManager;
 
 public class FrozenStopLossCheck implements ILiveTradingChecker {
@@ -32,24 +33,19 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
     @Autowired
     private IRemoteEventManager eventManager;
 	
+	@Autowired(required=false)
+	RiskOrderController riskOrderController;
+
     /**
      * need next check return true otherwise return false
      */
 	@Override
 	public boolean check(Account account, AccountSetting accountSetting) {
 
-		if(!accountSetting.isUserLiveTrading()){
-			return false;
-		}
 		if( !liveTradingSetting.isNeedCheckFreeze()){
 			return true;
 		}
-
-		if(AccountState.FROZEN == account.getState() ){
-			closeAllPositoinAndOrder(account,OrderReason.CompanyDailyStopLoss);
-			return false;
-		}
-		
+	
 		Double dailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue() * accountSetting.getFreezePercent()
 				, accountSetting.getFreezeValue());
 		
@@ -68,9 +64,11 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 			
 			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss+" reason:"+orderReason);
-			account.setState(AccountState.FROZEN);
-			sendUpdateAccountEvent(account);
-			closeAllPositoinAndOrder(account,orderReason);
+			if(account.getState().equals(AccountState.ACTIVE)) {
+				account.setState(AccountState.FROZEN);
+				sendUpdateAccountEvent(account);
+			}
+			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, orderReason, riskOrderController);
 			return false;
 			
 		}
@@ -78,21 +76,17 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 		
 	}
 	
-	private void closeAllPositoinAndOrder(Account account,OrderReason orderReason){
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager,orderReason);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, true,orderReason);
-	}
-
 	private void sendUpdateAccountEvent(Account account){
 		try {
 			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
-	    	AccountStateReplyEvent accountStateEvent = new AccountStateReplyEvent(null
-	    			,null,true,"",account.getId(),account.getUserId(),account.getState());
-	    	eventManager.sendRemoteEvent(accountStateEvent);
+			
+			AccountUpdateEvent event = new AccountUpdateEvent(account.getId(), null, account);
+	    	eventManager.sendRemoteEvent(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}
 	}
+	
 	public boolean isOverFrozenLoss(Account account, AccountSetting accountSetting){
 		
 		Double dailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue() * accountSetting.getFreezePercent()
