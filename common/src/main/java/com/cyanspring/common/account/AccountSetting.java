@@ -141,17 +141,17 @@ public class AccountSetting extends DataObject {
 	}
 	
 	public LiveTradingType getLiveTradingType() {
-		return get(LiveTradingType.class, AccountSettingType.LIVE_TRADING_TYPE.value());
+		return Default.getLiveTradingType();
 	}
+	
 	public void setLiveTradingType(LiveTradingType liveTradingType) {
-		put(AccountSettingType.LIVE_TRADING_TYPE.value(), liveTradingType);
 	}
 	
 	public String getLiveTradingSettedDate() {
-		return get(String.class, AccountSettingType.LIVE_TRADING_SETTED_DATE.value());
+		return "";
 	}
 	public void setLiveTradingSettedDate(String liveTradingSettedDate) {
-		put(AccountSettingType.LIVE_TRADING_SETTED_DATE.value(), liveTradingSettedDate);
+
 	}
 	
 	public double getFreezeValue() {

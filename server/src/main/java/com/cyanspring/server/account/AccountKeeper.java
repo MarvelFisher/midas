@@ -17,6 +17,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ILeverageManager;
 import com.cyanspring.common.message.ErrorMessage;
@@ -85,6 +86,7 @@ public class AccountKeeper {
 			return empty;
 		}
 	}
+	
 	private void checkLiveTradingStopLossValue(AccountSetting oldSetting,AccountSetting newSetting,Account account)throws AccountException{
 			
 		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getFreezePercent()
@@ -108,6 +110,40 @@ public class AccountKeeper {
 
 	}
 	
+	private void setLiveTradingStopLossValue(AccountSetting oldSetting,AccountSetting newSetting,Account account)throws AccountException{
+		
+		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getFreezePercent()
+				, oldSetting.getFreezeValue());
+		
+		double comPositionStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getStopLossPercent()
+				, oldSetting.getCompanySLValue());
+		log.info("comDailyStopLoss:{} , comPositionStopLoss:{}",comDailyStopLoss,comPositionStopLoss);
+		log.info("oldSetting.getDailyStopLoss():{} , oldSetting.getStopLossValue():{}",oldSetting.getDailyStopLoss(),oldSetting.getStopLossValue());
+
+		if(!PriceUtils.isZero(comDailyStopLoss) 
+				&& PriceUtils.GreaterThan(oldSetting.getDailyStopLoss(), comDailyStopLoss)){
+			
+			oldSetting.setDailyStopLoss(comDailyStopLoss);		
+		}
+		
+		if(!PriceUtils.isZero(comPositionStopLoss) 
+				&& PriceUtils.GreaterThan(oldSetting.getStopLossValue(), comPositionStopLoss)){
+
+			oldSetting.setStopLossValue(comPositionStopLoss);		
+		}
+
+	}
+	
+	private boolean enterLiveTrading(AccountSetting setting){
+		
+		if(setting.fieldExists(AccountSettingType.USER_LIVE_TRADING.value())
+				&& setting.isUserLiveTrading()){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public AccountSetting setAccountSetting(AccountSetting setting) throws AccountException {
 		if(!accounts.containsKey(setting.getId()))
 			throw new AccountException("Account id doesn't exist: " + setting.getId(),ErrorMessage.ACCOUNT_NOT_EXIST);
@@ -121,15 +157,11 @@ public class AccountKeeper {
 		}
 		
 		if(existing.isUserLiveTrading() && null != account){					
-			checkLiveTradingStopLossValue(existing,setting,account);		 		
+		   checkLiveTradingStopLossValue(existing,setting,account);		 		
 		}
 		
-		if(null != liveTradingRuleHandler 
-					&& liveTradingRuleHandler.isNeedSetting(existing, setting)){
-			setting = liveTradingRuleHandler.setTradingRule(existing, setting,account);
-			if(setting !=null){
-				log.info("account {} set to live trading mode",setting.getId());
-			}
+		if(enterLiveTrading(setting) && null != account){
+			setLiveTradingStopLossValue(existing,setting,account);
 		}
 		
 		synchronized(existing) {

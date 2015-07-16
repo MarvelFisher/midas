@@ -232,6 +232,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, getBean(534, "Get group management info failed!"));			
 			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(535, "CSTW Login failed!"));			
 			addAndCheck(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, getBean(536, "Delete group management failed!"));			
+			addAndCheck(ErrorMessage.CHANGE_USER_ROLE_FAILED, getBean(537, "Change user role failed!"));			
 
 			
 
