@@ -1,5 +1,6 @@
 package com.cyanspring.server.validation;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -41,14 +42,13 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 	BusinessManager businessManager;
 	
 	private int howManyMinutes;
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
 		
 		try {
-			
+			log.info("into AllowPlaceOrderTimeValidator");
 			Date today = new Date();
 			Date saturday = getSaturdayOfWeek(today);		
 			Date firstTradeDate = tradeDateManager.nextTradeDate(saturday);
@@ -121,6 +121,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		String cancelOpenOrderTime = businessManager.getCancelPendingOrderTime();	
 		if(StringUtils.hasText(cancelOpenOrderTime)){
 			try{
+				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 				Date time = timeFormat.parse(cancelOpenOrderTime);		
 				Calendar timeCal = Calendar.getInstance();
 				timeCal.setTime(time);
