@@ -77,7 +77,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean state = false;
     boolean isUninit = false;
     private String serverInfo = null;
-    private boolean isTest = false;
+    private boolean nonWait = false;
 
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -336,7 +336,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             public void run() {
                 for (final IMarketDataAdaptor adaptor : adaptors) {
                     try {
-                        while (!processInitReqData() && !isTest)
+                        while (!processInitReqData() && !nonWait)
                             TimeUnit.SECONDS.sleep(1);
                         log.debug("Adapter:" + adaptor.getClass().getSimpleName() + " init.");
                         adaptor.init();
@@ -588,8 +588,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         this.quoteChecker = quoteChecker;
     }
 
-    public void setIsTest(boolean isTest) {
-        this.isTest = isTest;
+    public void setNonWait(boolean nonWait) {
+        this.nonWait = nonWait;
     }
 
     public void setEventManager(IRemoteEventManager eventManager) {

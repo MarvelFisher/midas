@@ -21,7 +21,7 @@
         <property name="sync">
             <value>true</value>
         </property>
-        <property name="isTest" value="true"/>
+        <property name="nonWait" value="true"/>
         <property name="quoteChecker" ref="quoteChecker"/>
         <property name="quoteSaver" ref="quoteSaver"/>
     </bean>
