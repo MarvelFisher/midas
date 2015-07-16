@@ -185,6 +185,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
+                if(indexData.getActionDay() > indexData.getTradingDay() && indexData.getActionDay()==tradeDateForWindFormat)
+                    indexData.setTradingDay(indexData.getActionDay());
                 if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
                     return;
                 QuoteMgr.instance.AddRequest(new Object[]{
