@@ -327,5 +327,10 @@ public class TestPositionKeeper {
 		public void saveRefDataList(List<RefData> refDataList) {
 
 		}
+
+		@Override
+		public void clearRefData() {
+
+		}
 	}
 }

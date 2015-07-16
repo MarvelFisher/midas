@@ -118,6 +118,11 @@ public class RefDataFactory extends RefDataService {
         saveRefDataToFile(refDataFile, refDataList);
     }
 
+    @Override
+    public void clearRefData() {
+        refDataList.clear();
+    }
+
     private void saveRefDataToFile(String path, List<RefData> list) {
         File file = new File(path);
         try {
@@ -142,4 +147,5 @@ public class RefDataFactory extends RefDataService {
     public void setStrategyMapping(Map<String, List<MappingData>> strategyMapping) {
         this.strategyMapping = strategyMapping;
     }
+
 }

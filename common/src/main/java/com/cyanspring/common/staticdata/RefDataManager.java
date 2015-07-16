@@ -14,6 +14,10 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +26,7 @@ import java.util.Map;
 public class RefDataManager extends RefDataService {
 
     Map<String, RefData> map = new HashMap<String, RefData>();
+    private XStream xstream = new XStream(new DomDriver("UTF-8"));
     private boolean changeMode = false;
 
     @SuppressWarnings("unchecked")
@@ -73,5 +78,24 @@ public class RefDataManager extends RefDataService {
     public void saveRefDataList(List<RefData> refDataList) {
         changeMode = true;
         injectionMap(refDataList);
+        saveRefDataToFile(refDataFile, refDataList);
+    }
+
+    @Override
+    public void clearRefData() {
+        map.clear();
+    }
+
+    private void saveRefDataToFile(String path, List<RefData> list) {
+        File file = new File(path);
+        try {
+            file.createNewFile();
+            FileOutputStream os = new FileOutputStream(file);
+            OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+            xstream.toXML(list, writer);
+            os.close();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

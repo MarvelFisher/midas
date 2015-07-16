@@ -4,6 +4,7 @@ import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.data.JdbcSQLHandler;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
@@ -11,12 +12,15 @@ import com.cyanspring.common.util.ChineseConvert;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.LogUtil;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +28,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +44,16 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     private static final Logger log = LoggerFactory
             .getLogger(WindRefDataAdapter.class);
 
+    public static final int REFDATA_RETRY_COUNT = 2;
     private String gatewayIp = "10.0.0.20";
     private int gatewayPort = 10048;
     private boolean msgPack = true;
+    private String refDataFile;
     private boolean isAlive = true;
     static volatile boolean isConnected = false;
     static volatile boolean codeTableIsProcessEnd = false;
     static volatile int serverHeartBeatCountAfterCodeTableCome = -1;
+    static volatile int serverRetryCount = 0;
     private boolean marketDataLog = false; // log control
     private List<String> marketsList = new ArrayList();
     protected
@@ -59,6 +71,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     protected static WindRefDataAdapter instance = null;
     EventLoopGroup eventLoopGroup = null;
     RequestThread thread = null;
+    private BasicDataSource basicDataSource;
 
     private void connect() {
         log.debug("Run Netty RefData Adapter");
@@ -139,6 +152,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     serverHeartBeatCountAfterCodeTableCome--;
                     if(serverHeartBeatCountAfterCodeTableCome < -3){
                         MsgPackRefDataClientHandler.context.close();
+                        serverRetryCount++;
                     }
                 }
                 break;
@@ -171,7 +185,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     @Override
     public void init() {
         isAlive = true;
+        serverRetryCount = 0;
         instance = this;
+        //connect WindSyn DB
+
+        //connect WindGW
         initReqThread();
         RequestMgr.instance().init();
         addReqData(new Integer(0));
@@ -198,21 +216,81 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         RequestMgr.instance().uninit();
         closeReqThread();
         codeTableIsProcessEnd = false;
+        refDataHashMap.clear();
+        codeTableDataBySymbolMap.clear();
     }
 
     @Override
-    public void subscribeRefData(IRefDataListener listener) {
+    public void subscribeRefData(IRefDataListener listener) throws Exception {
         init();
         //Wait CodeTable Process
         log.debug("wait codetable process");
         try {
-            while (!codeTableIsProcessEnd) {
-                TimeUnit.SECONDS.sleep(1);
+            if(serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
+                while (!codeTableIsProcessEnd) {
+                    TimeUnit.SECONDS.sleep(1);
+                }
             }
         } catch (InterruptedException e) {
         }
         //send RefData Listener
-        listener.onRefData(new ArrayList<RefData>(refDataHashMap.values()));
+        if(serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
+            log.debug("get RefData from WindGW");
+            listener.onRefData(new ArrayList<RefData>(refDataHashMap.values()));
+        }else{
+            log.debug("get RefData from RefDataFile = " + refDataFile);
+            List<RefData> refDataList = getRefDataListFromFile();
+            listener.onRefData(refDataList);
+        }
+    }
+
+    public List<RefData> getRefDataListFromFile() throws Exception {
+        XStream xstream = new XStream(new DomDriver());
+        File file = new File(refDataFile);
+        List<RefData> list;
+        if (file.exists()) {
+            list = (List<RefData>) xstream.fromXML(file);
+        } else {
+            throw new Exception("Missing refdata file: " + refDataFile);
+        }
+        return list;
+    }
+
+    public void processDBTask(){
+        log.debug("db process start");
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+//            BasicDataSource basicDataSource = (BasicDataSource) context.getBean("dataSource");
+            JdbcSQLHandler jdbcSQLHandler = new JdbcSQLHandler(basicDataSource);
+            conn = jdbcSQLHandler.getConnect();
+            stmt = conn.createStatement();
+            String sql = "select S_INFO_WINDCODE,S_INFO_NAME\n" +
+                    "from WindFileSync.ASHAREDESCRIPTION\n" +
+                    "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE')";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                String code = rs.getString("S_INFO_NAME");
+                log.debug("CODE:" + code);
+            }
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch (SQLException se){
+            se.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if(stmt!=null) stmt.close();
+            }catch (SQLException se2){}
+            try{
+                if(conn!=null) conn.close();
+            }catch (SQLException se){
+                se.printStackTrace();
+            }
+        }
+        log.debug("db process end");
     }
 
     @Override
@@ -240,7 +318,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         String logConfigFile = "conf/windlog4j.xml";
         String configFile = "conf/windRefData.xml";
         DOMConfigurator.configure(logConfigFile);
@@ -318,5 +396,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     public void setIsConnected(boolean isConnected) {
         this.isConnected = isConnected;
+    }
+
+    public void setRefDataFile(String refDataFile) {
+        this.refDataFile = refDataFile;
+    }
+
+    public void setBasicDataSource(BasicDataSource basicDataSource) {
+        this.basicDataSource = basicDataSource;
     }
 }

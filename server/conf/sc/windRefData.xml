@@ -68,6 +68,8 @@
         <property name="gatewayPort" value="#{windAdaptor.gatewayPort}"/>
         <property name="marketDataLog" value="#{windAdaptor.marketDataLog}"/>
         <property name="msgPack" value="#{windAdaptor.msgPack}"/>
+        <property name="refDataFile" value="#{refDataManager.refDataFile}" />
+        <property name="basicDataSource" ref="refDataSource"/>
         <property name="marketsList">
             <list>
                 <value>SH</value>

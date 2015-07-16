@@ -91,6 +91,8 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 
             if (refDataManager.update(event.getTradeDate())) {
                 if(refDataAdaptor!=null){
+                    isInit = false;
+                    refDataManager.clearRefData();
                     refDataAdaptor.subscribeRefData(this);
                 }
                 eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
@@ -152,7 +154,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
     }
 
     @Override
-    public void onRefData(List<RefData> refDataList) {
+    public void onRefData(List<RefData> refDataList) throws Exception {
         log.debug("Receive RefData from Adapter - " + refDataList.size());
         if(refDataList == null || refDataList.size()==0){
             refDataAdaptor.uninit();
