@@ -28,6 +28,7 @@
                 <ref bean="autoRunner" />
 				<ref bean="validationDataProvider"/>
 				<ref bean="statisticManager"/>
+				<ref bean="liveTradingSession" />		
             </list>
         </property>
         <property name="readyMap">
