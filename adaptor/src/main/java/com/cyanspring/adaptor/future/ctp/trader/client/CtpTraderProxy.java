@@ -152,6 +152,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		
 		int ret = traderApi.ReqOrderInsert(Pointer.getPointer(req), getNextSeq());
 		if ( ret != 0 ) {
+			this.tradeListener.onError(order.getClOrderId(), "Order Send Fail!");
 			throw new DownStreamException("Order Send Fail");
 		}
 		
