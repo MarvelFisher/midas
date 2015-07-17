@@ -265,8 +265,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processHistoricalPriceRequestDateEvent(HistoricalPriceRequestDateEvent event)
 	{
-		mapCentralDbEventProc.get("Historical" + curHisThread).onEvent(event);
-		curHisThread = (curHisThread + 1) % numOfHisThreads;  
+		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
 	
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
@@ -276,8 +275,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processRefDataEvent(RefDataEvent event) 
 	{
-		if (this.getSessionType() != null)
-			onCallRefData(event);
+		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
