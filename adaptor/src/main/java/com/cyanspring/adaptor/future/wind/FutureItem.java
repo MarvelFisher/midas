@@ -206,6 +206,7 @@ public class FutureItem implements AutoCloseable {
         }
 
         boolean quoteExtendIsChange = false;
+        boolean specialQuoteExtendIsChange = false;
         DataObject quoteExtend = new DataObject();
 
         double settlePrice = (double) futureData.getSettlePrice() / 10000;
@@ -227,6 +228,7 @@ public class FutureItem implements AutoCloseable {
             item.highLimit = highLimit;
             quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
             quoteExtendIsChange = true;
+            specialQuoteExtendIsChange = true;
         }
 
         double lowLimit = (double) futureData.getLowLimited() / 10000;
@@ -234,6 +236,7 @@ public class FutureItem implements AutoCloseable {
             item.lowLimit = lowLimit;
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
             quoteExtendIsChange = true;
+            specialQuoteExtendIsChange = true;
         }
 
         double preClose = (double) futureData.getPreClose() / 10000;
@@ -241,6 +244,7 @@ public class FutureItem implements AutoCloseable {
             item.preClose = preClose;
             quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
             quoteExtendIsChange = true;
+            specialQuoteExtendIsChange = true;
         }
 
         int sessionStatus = AbstractWindDataParser.getItemSessionStatus(marketSessionData);
@@ -248,6 +252,13 @@ public class FutureItem implements AutoCloseable {
             item.sessionStatus = sessionStatus;
             quoteExtend.put(QuoteExtDataField.SESSIONSTATUS.value(), sessionStatus);
             quoteExtendIsChange = true;
+        }
+
+        //Ceil,Floor,preClose must together send
+        if(specialQuoteExtendIsChange){
+            quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
+            quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
         }
 
         // process send quote Extend

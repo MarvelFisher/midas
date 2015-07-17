@@ -235,6 +235,7 @@ public class StockItem implements AutoCloseable {
         }
 
         boolean quoteExtendIsChange = false;
+        boolean specialQuoteExtendIsChange = false;
         DataObject quoteExtend = new DataObject();
 
         double highLimit = (double) stockData.getHighLimited() / 10000;
@@ -242,6 +243,7 @@ public class StockItem implements AutoCloseable {
             item.highLimit = highLimit;
             quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
             quoteExtendIsChange = true;
+            specialQuoteExtendIsChange = true;
         }
 
         double lowLimit = (double) stockData.getLowLimited() / 10000;
@@ -249,6 +251,7 @@ public class StockItem implements AutoCloseable {
             item.lowLimit = lowLimit;
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
             quoteExtendIsChange = true;
+            specialQuoteExtendIsChange = true;
         }
 
         long buyVol = stockData.getBuyVol();
@@ -270,6 +273,7 @@ public class StockItem implements AutoCloseable {
             item.preClose = preClose;
             quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
             quoteExtendIsChange = true;
+            specialQuoteExtendIsChange = true;
         }
 
         int sessionStatus = AbstractWindDataParser.getItemSessionStatus(marketSessionData);
@@ -284,6 +288,13 @@ public class StockItem implements AutoCloseable {
             item.status = status;
             quoteExtend.put(QuoteExtDataField.STATUS.value(), status);
             quoteExtendIsChange = true;
+        }
+
+        //Ceil,Floor,preClose must together send
+        if(specialQuoteExtendIsChange){
+            quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
+            quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
+            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
         }
 
         // process send quote Extend
