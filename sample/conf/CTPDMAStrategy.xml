@@ -13,6 +13,7 @@
 		<property name="quoteRequired" value="true"/>
 		<property name="cancelOnCancel" value="true"/>
 		<property name="rejectOnReject" value="true"/>
+		<property name="maxCancelRetry" value="3"/>
 		<property name="quantityAnalyzer">
 			<bean class="com.cyanspring.strategy.singleorder.AllQuantityAnalyzer"></bean>	
 		</property>

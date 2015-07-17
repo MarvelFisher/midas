@@ -98,7 +98,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 	protected ITickTable tickTable;
 	protected boolean rejectOnReject;
 	protected boolean cancelOnCancel;
-	private int maxCancelRetry = 3;
+	private int maxCancelRetry = 0;
 	private int cancelRetry = 0;
 	
 	private static List<FieldDef> commonFieldDefs;
