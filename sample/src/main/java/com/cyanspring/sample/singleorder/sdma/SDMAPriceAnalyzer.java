@@ -52,6 +52,8 @@ public class SDMAPriceAnalyzer extends AbstractPriceAnalyzer {
 		} else {
 			if(orderType.equals(OrderType.Market)) {
 				Quote quote = strategy.getAdjQuote();
+				if(null == quote)
+					return pi;
 				if(order.getSide().equals(OrderSide.Buy)) {
 					price = quote.getAsk();
 					if(!PriceUtils.validPrice(price)) { //if no ask get on top of depth

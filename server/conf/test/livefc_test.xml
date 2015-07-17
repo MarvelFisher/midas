@@ -44,6 +44,14 @@
     <bean id="validationDataProvider" class="com.cyanspring.server.validation.data.ValidationDataProvider">
 	</bean>
     
+	<bean id="strategyFactory" class="com.cyanspring.strategy.StrategyFactory">
+		<property name="mapping">
+	 		<map key-type="java.lang.String" value-type="java.lang.String">
+	 			<entry key="SDMA" value="CTPDMA"/>
+	 		</map>
+		</property>
+	</bean>
+
     <bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
         <constructor-arg>
             <ref bean="transportService" />

@@ -7,12 +7,12 @@
 
     <context:annotation-config />
 
-    <import resource="livefc/*" />
     <!-- 	<import resource="common/business.xml" /> -->
     <import resource="common/strategy.xml" />
     <import resource="common/centralDb.xml" />
     <import resource="common/persistence.xml" />
     <import resource="classpath*:conf/common.xml" />
+    <import resource="livefc/*" />
 
     <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
         <property name="env">

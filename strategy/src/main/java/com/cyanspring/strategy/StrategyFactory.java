@@ -77,6 +77,7 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 	protected Map<String, Long> jarFiles = new HashMap<String, Long>();
 	private String strategyDirectory = "strategies";
 	private boolean initialised = false;
+	private Map<String, String> mapping = new HashMap<String, String>();
 	
 	class StrategyRecord {
 		String beanName;
@@ -106,6 +107,12 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 	public IStrategy createStrategy(String name, Object... objects) throws Exception {
 		if(!initialised)
 			this.init();
+		
+		if(null != mapping && mapping.containsKey(name)) {
+			String convert = mapping.get(name);
+			log.debug("Strategy mapping: " + name + " -> " + convert);
+			name = convert;
+		}
 		
 		StrategyRecord strategyRecord = registry.get(name);
 		if (strategyRecord == null){
@@ -328,6 +335,13 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 	public void setStrategyDirectory(String strategyDirectory) {
 		this.strategyDirectory = strategyDirectory;
 	}
-	
-	
+
+	public Map<String, String> getMapping() {
+		return mapping;
+	}
+
+	public void setMapping(Map<String, String> mapping) {
+		this.mapping = mapping;
+	}
+
 }
