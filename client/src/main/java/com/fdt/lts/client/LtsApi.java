@@ -235,7 +235,7 @@ public final class LtsApi implements ITrade {
 		newOrder.setStopLossPrice(order.getStopLossPrice());
 		newOrder.setSymbol(order.getSymbol());
 		newOrder.setType(order.getType());
-		newOrder.setState(order.getState());
+		newOrder.setCreated(order.getCreated());
 		newOrder.setStatus(order.getStatus());
 		return newOrder;
 	}

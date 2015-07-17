@@ -1,29 +1,13 @@
 package com.cyanspring.apievent.obj;
 
 import java.util.Date;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
- *
  * @author elviswu
  * @version %I%, %G%
  * @since 1.0
  */
 public class Position {
-    // for thread safe
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
-
     private String id;
     private String account;
     private String user;
@@ -34,153 +18,66 @@ public class Position {
     private double acPnL;
 
     public String getId() {
-        try {
-            lock.readLock().lock();
-            return id;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return id;
     }
 
     public void setId(String id) {
-        try {
-            lock.writeLock().lock();
-            this.id = id;
-        } finally {
-            lock.writeLock().unlock();
-        }
+        this.id = id;
     }
 
     public String getAccount() {
-        try {
-            lock.readLock().lock();
-            return account;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return account;
     }
 
     public void setAccount(String account) {
-        try {
-            lock.writeLock().lock();
-            this.account = account;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.account = account;
     }
 
     public String getUser() {
-        try {
-            lock.readLock().lock();
-            return user;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return user;
     }
 
     public void setUser(String user) {
-        try {
-            lock.writeLock().lock();
-            this.user = user;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.user = user;
     }
 
     public String getSymbol() {
-        try {
-            lock.readLock().lock();
-            return symbol;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return symbol;
     }
 
     public void setSymbol(String symbol) {
-        try {
-            lock.writeLock().lock();
-            this.symbol = symbol;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.symbol = symbol;
     }
 
     public double getQty() {
-        try {
-            lock.readLock().lock();
-            return qty;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return qty;
     }
 
     public void setQty(double qty) {
-        try {
-            lock.writeLock().lock();
-            this.qty = qty;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.qty = qty;
     }
 
     public double getPnL() {
-        try {
-            lock.readLock().lock();
-            return PnL;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return PnL;
     }
 
     public void setPnL(double pnL) {
-        try {
-            lock.writeLock().lock();
-            PnL = pnL;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        PnL = pnL;
     }
 
     public Date getCreated() {
-        try {
-            lock.readLock().lock();
-            return created;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return created;
     }
 
     public void setCreated(Date created) {
-        try {
-            lock.writeLock().lock();
-            this.created = created;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.created = created;
     }
 
     public double getAcPnL() {
-        try {
-            lock.readLock().lock();
-            return acPnL;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return acPnL;
     }
 
     public void setAcPnL(double acPnL) {
-        try {
-            lock.writeLock().lock();
-            this.acPnL = acPnL;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.acPnL = acPnL;
     }
 }

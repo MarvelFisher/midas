@@ -28,10 +28,11 @@ public class DailyCounter {
 			return true;
 		}
 		
-		
-		if(count.incrementAndGet() > limit)
+		int current = count.get();
+		if(current > limit)
 			return false;
 		
+		count.incrementAndGet();
 		return true;
 		
 	}
