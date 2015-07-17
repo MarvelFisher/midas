@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  * ****************************************************************************
  */
-package com.cyanspring.server.marketsession;
+package com.cyanspring.common.marketsession;
 
 import java.util.*;
 
@@ -64,12 +64,13 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     };
 
     public void processMarketSessionRequestEvent(MarketSessionRequestEvent event) {
+    	log.info("Recieve MarketSessionRequest");
         Date date = Clock.getInstance().now();
         try {
             MarketSessionData sessionData = sessionChecker.getState(date, null);
             MarketSessionEvent msEvent = new MarketSessionEvent(event.getKey(), event.getSender(), sessionData.getSessionType(),
                     sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
-            eventManager.sendLocalOrRemoteEvent(msEvent);
+            getEventManager().sendLocalOrRemoteEvent(msEvent);
             currentSessionType = sessionData.getSessionType();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -80,7 +81,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
         try {
             String tradeDate = sessionChecker.getTradeDate();
             TradeDateEvent tdEvent = new TradeDateEvent(null, null, tradeDate);
-            eventManager.sendEvent(tdEvent);
+            getEventManager().sendEvent(tdEvent);
             this.currentTradeDate = tradeDate;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -103,7 +104,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             String tradeDate = sessionChecker.getTradeDate();
             TradeDateEvent tdEvent = new TradeDateEvent(null, null, tradeDate);
             log.info("Send TradeDateEvent: " + tradeDate);
-            eventManager.sendEvent(tdEvent);
+            getEventManager().sendEvent(tdEvent);
             currentTradeDate = tradeDate;
         }
     }
@@ -115,7 +116,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
             msEvent.setKey(null);
             msEvent.setReceiver(null);
             log.info("Send MarketSessionEvent: " + msEvent);
-            eventManager.sendGlobalEvent(msEvent);
+            getEventManager().sendGlobalEvent(msEvent);
             currentSessionType = sessionData.getSessionType();
         }
     }
@@ -147,7 +148,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     public void onEvent(AsyncEvent event) {
         if (event instanceof MarketSessionEvent) {
             currentSessionType = ((MarketSessionEvent) event).getSession();
-            eventManager.sendEvent(event);
+            getEventManager().sendEvent(event);
         } else {
             log.error("unhandled event: " + event);
         }
@@ -160,4 +161,12 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     public void setSessionChecker(MarketSessionChecker sessionChecker) {
         this.sessionChecker = sessionChecker;
     }
+
+	public IRemoteEventManager getEventManager() {
+		return eventManager;
+	}
+
+	public void setEventManager(IRemoteEventManager eventManager) {
+		this.eventManager = eventManager;
+	}
 }

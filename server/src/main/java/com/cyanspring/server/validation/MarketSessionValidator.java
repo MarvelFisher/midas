@@ -18,7 +18,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.server.marketsession.MarketSessionManager;
+import com.cyanspring.common.marketsession.MarketSessionManager;
 import com.cyanspring.server.validation.bean.AvailableTimeBean;
 
 public class MarketSessionValidator implements IOrderValidator{

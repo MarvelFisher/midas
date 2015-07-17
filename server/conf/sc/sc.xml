@@ -229,7 +229,7 @@
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.server.refdata.RefDataHandler">
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler">
 		<property name="refDataAdaptor" ref="refDataAdapter"/>
 	</bean>
 
@@ -280,7 +280,7 @@
         <property name="checkSingleSide" value="true"/>
 	</bean>
 
-    <bean id="indexMarketSessionManager" class="com.cyanspring.server.marketsession.IndexMarketSessionManager">
+    <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
 		<property name="searchBySymbol" value="false"></property>
     </bean>

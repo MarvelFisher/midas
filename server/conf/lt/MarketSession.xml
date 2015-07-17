@@ -8,7 +8,7 @@
         >
 
     <context:annotation-config />
-    <bean id="marketSessionManager" class="com.cyanspring.server.marketsession.MarketSessionManager">
+    <bean id="marketSessionManager" class="com.cyanspring.common.marketsession.MarketSessionManager">
         <property name="sessionChecker">
             <ref bean="sessionChecker"/>
         </property>
