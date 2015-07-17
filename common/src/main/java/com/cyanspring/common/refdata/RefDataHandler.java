@@ -67,7 +67,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             boolean ok = true;
             if (refDataManager.getRefDataList() == null || refDataManager.getRefDataList().size() <= 0)
                 ok = false;
-            eventManager.sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
+            getEventManager().sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
             log.info("Response RefDataRequestEvent, ok: {}", ok);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -81,7 +81,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
                 if(refDataAdaptor == null) {
                     refDataManager.init();
                     refDataManager.update(event.getTradeDate());
-                    eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
+                    getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
                 }
                 return;
             }
@@ -95,7 +95,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
                     refDataManager.clearRefData();
                     refDataAdaptor.subscribeRefData(this);
                 }
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
+                getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
                 log.info("Update refData size: {}", refDataManager.getRefDataList().size());
             }
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             return;
         } else {
             try {
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, list, true));
+                getEventManager().sendGlobalEvent(new RefDataEvent(null, null, list, true));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
@@ -150,7 +150,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
     }
 
     private void requestRequireData() {
-        eventManager.sendEvent(new MarketSessionRequestEvent(null, null));
+        getEventManager().sendEvent(new MarketSessionRequestEvent(null, null));
     }
 
     @Override
@@ -170,4 +170,12 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
     public void setRefDataAdaptor(IRefDataAdaptor refDataAdaptor) {
         this.refDataAdaptor = refDataAdaptor;
     }
+
+	public IRemoteEventManager getEventManager() {
+		return eventManager;
+	}
+
+	public void setEventManager(IRemoteEventManager eventManager) {
+		this.eventManager = eventManager;
+	}
 }
