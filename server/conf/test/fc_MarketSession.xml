@@ -11,7 +11,7 @@
 	<!-- 
 		when modify any session time of market, that need checking modified data whether effecting on business.xml  (bean : availableTimeList)
 	 -->
-	<bean id="marketSessionManager" class="com.cyanspring.server.marketsession.MarketSessionManager">
+	<bean id="marketSessionManager" class="com.cyanspring.common.marketsession.MarketSessionManager">
 	    <property name="sessionChecker"> 
         	<ref bean="sessionChecker"/>
         </property>

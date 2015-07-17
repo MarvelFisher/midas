@@ -1,20 +1,18 @@
-package com.cyanspring.server.refdata;
+package com.cyanspring.common.refdata;
 
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.event.*;
+import com.cyanspring.common.event.IAsyncEventManager;
+import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.common.staticdata.IRefDataAdaptor;
-import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.IRefDataManager;
-import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
 
 /**
  * This Manager is used to send detail refData to the subscriber
@@ -24,11 +22,11 @@ import java.util.List;
  * Subscribed Event: 1) MarketSessionEvent
  *
  * @author elviswu
- * @version 1.1, modify by shuwei.kuo
+ * @version 1.0, modify by elviswu
  * @since 1.0
  */
 
-public class RefDataHandler implements IPlugin, IRefDataListener {
+public class RefDataHandler implements IPlugin {
     private static final Logger log = LoggerFactory
             .getLogger(RefDataHandler.class);
 
@@ -38,15 +36,8 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
     @Autowired
     private IRemoteEventManager eventManager;
 
-    @Autowired
-    private ScheduleManager scheduleManager;
-
     private MarketSessionType currentType;
     private String tradeDate;
-    private IRefDataAdaptor refDataAdaptor;
-    private boolean isInit = false;
-    private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-    private long timeInterval = 1*1000;
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -67,7 +58,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             boolean ok = true;
             if (refDataManager.getRefDataList() == null || refDataManager.getRefDataList().size() <= 0)
                 ok = false;
-            eventManager.sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
+            getEventManager().sendLocalOrRemoteEvent(new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
             log.info("Response RefDataRequestEvent, ok: {}", ok);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -78,11 +69,9 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
         try {
             if (currentType == null) {
                 currentType = event.getSession();
-                if(refDataAdaptor == null) {
-                    refDataManager.init();
-                    refDataManager.update(event.getTradeDate());
-                    eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
-                }
+                refDataManager.init();
+                refDataManager.update(event.getTradeDate());
+                getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
                 return;
             }
             if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
@@ -90,35 +79,11 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             currentType = event.getSession();
 
             if (refDataManager.update(event.getTradeDate())) {
-                if(refDataAdaptor!=null){
-                    isInit = false;
-                    refDataManager.clearRefData();
-                    refDataAdaptor.subscribeRefData(this);
-                }
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
+                getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
                 log.info("Update refData size: {}", refDataManager.getRefDataList().size());
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-        }
-    }
-
-    public void processAsyncTimerEvent(AsyncTimerEvent event) {
-        if(isInit)
-            return;
-        List<RefData> list = refDataManager.getRefDataList();
-        if(list == null)
-            return;
-        if(list.size() <= 0){
-            log.info("RefData size is {}, initial not finish", list.size());
-            return;
-        } else {
-            try {
-                eventManager.sendGlobalEvent(new RefDataEvent(null, null, list, true));
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-            isInit = true;
         }
     }
 
@@ -132,42 +97,23 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("RefDataHandler");
 
-        if(!eventProcessor.isSync())
-            scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
-
-        if(refDataAdaptor!=null){
-            refDataAdaptor.subscribeRefData(this);
-        }
         requestRequireData();
     }
 
     @Override
     public void uninit() {
-        if(refDataAdaptor!=null){
-            refDataAdaptor.uninit();
-        }
         eventProcessor.uninit();
     }
 
     private void requestRequireData() {
-        eventManager.sendEvent(new MarketSessionRequestEvent(null, null));
+        getEventManager().sendEvent(new MarketSessionRequestEvent(null, null));
     }
 
-    @Override
-    public void onRefData(List<RefData> refDataList) throws Exception {
-        log.debug("Receive RefData from Adapter - " + refDataList.size());
-        if(refDataList == null || refDataList.size()==0){
-            refDataAdaptor.uninit();
-            refDataAdaptor.subscribeRefData(this);
-            return;
-        }
-        //close connect RefDataAdapter
-        refDataAdaptor.uninit();
-        //process refdata
-        refDataManager.saveRefDataList(refDataList);
-    }
+	public IRemoteEventManager getEventManager() {
+		return eventManager;
+	}
 
-    public void setRefDataAdaptor(IRefDataAdaptor refDataAdaptor) {
-        this.refDataAdaptor = refDataAdaptor;
-    }
+	public void setEventManager(IRemoteEventManager eventManager) {
+		this.eventManager = eventManager;
+	}
 }

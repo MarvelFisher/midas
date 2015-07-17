@@ -1,4 +1,4 @@
-package com.cyanspring.server.marketsession;
+package com.cyanspring.common.marketsession;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
@@ -11,6 +11,7 @@ import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class IndexMarketSessionManager implements IPlugin {
     public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
         try {
             if (checkSessionAndRefData()) {
-                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
+                getEventManager().sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
                 return;
             }
 
@@ -90,11 +91,11 @@ public class IndexMarketSessionManager implements IPlugin {
 
                 if (event.getIndexList() != null && refDataList.size() != event.getIndexList().size())
                     log.warn("Not find all refData for IndexSessionRequestEvent, request list: " + event.getIndexList());
-                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
+                getEventManager().sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
                         marketSessionUtil.getSessionDataBySymbol(refDataList, event.getDate()), true));
 
             } else {
-                eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
+                getEventManager().sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(),
                         marketSessionUtil.getSessionDataByStrategy(event.getIndexList(), event.getDate()), true));
             }
         } catch (Exception e) {
@@ -104,7 +105,7 @@ public class IndexMarketSessionManager implements IPlugin {
 
     public void processAllIndexSessionRequestEvent(AllIndexSessionRequestEvent event){
         try {
-            eventManager.sendLocalOrRemoteEvent(new AllIndexSessionEvent(event.getKey(), event.getSender(),
+            getEventManager().sendLocalOrRemoteEvent(new AllIndexSessionEvent(event.getKey(), event.getSender(),
                     marketSessionUtil.getAll()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -137,7 +138,7 @@ public class IndexMarketSessionManager implements IPlugin {
 
     public void processPmSettlementEvent(PmSettlementEvent event) {
         log.info("Receive PmSettlementEvent, symbol: " + event.getEvent().getSymbol());
-        eventManager.sendEvent(event.getEvent());
+        getEventManager().sendEvent(event.getEvent());
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
@@ -162,7 +163,7 @@ public class IndexMarketSessionManager implements IPlugin {
                 else
                     sessionDataMap = marketSessionUtil.getSessionDataByStrategy(null, date);
 
-                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap, true));
+                getEventManager().sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap, true));
                 return;
             }
 
@@ -183,7 +184,7 @@ public class IndexMarketSessionManager implements IPlugin {
 
             if (sendMap.size() > 0) {
                 log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
-                eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
+                getEventManager().sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -257,4 +258,12 @@ public class IndexMarketSessionManager implements IPlugin {
     private boolean checkRefData() {
         return refDataMap == null || refDataMap.size() <= 0;
     }
+
+	public IRemoteEventManager getEventManager() {
+		return eventManager;
+	}
+
+	public void setEventManager(IRemoteEventManager eventManager) {
+		this.eventManager = eventManager;
+	}
 }
