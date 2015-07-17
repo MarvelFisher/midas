@@ -458,8 +458,12 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	}
 
 	protected void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
-		preProcessUpdateChildOrderEvent(event);
-		postProcessUpdateChildOrderEvent(event);
+		// need to clone order here since executionManager.processUpdateChildOrderEvent(orderEvent) will modify order which
+		// can cause concurrentModification error
+		UpdateChildOrderEvent orderEvent = new UpdateChildOrderEvent(event.getKey(), event.getExecType(), event.getOrder().clone(), 
+				event.getExecution(), event.getMessage());
+		preProcessUpdateChildOrderEvent(orderEvent);
+		postProcessUpdateChildOrderEvent(orderEvent);
 	}
 	
 	protected void preProcessUpdateChildOrderEvent(UpdateChildOrderEvent event) {

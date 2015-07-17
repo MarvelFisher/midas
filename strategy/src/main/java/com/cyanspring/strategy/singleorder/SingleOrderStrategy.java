@@ -72,6 +72,7 @@ import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderAction;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.OrderUtils;
@@ -97,6 +98,8 @@ public abstract class SingleOrderStrategy extends Strategy {
 	protected ITickTable tickTable;
 	protected boolean rejectOnReject;
 	protected boolean cancelOnCancel;
+	private int maxCancelRetry = 3;
+	private int cancelRetry = 0;
 	
 	private static List<FieldDef> commonFieldDefs;
 	
@@ -509,14 +512,21 @@ public abstract class SingleOrderStrategy extends Strategy {
 		}
 	}
 	
+	@Override
 	protected void postProcessUpdateChildOrderEvent(UpdateChildOrderEvent event) {
 		super.postProcessUpdateChildOrderEvent(event);
 		ChildOrder order = event.getOrder();
 		if(order.getOrdStatus().equals(OrdStatus.CANCELED) && order.isUnsolicited() && cancelOnCancel) {
-			log.debug("Received unsolicited cancel on child order, cancelling parent order: " + parentOrder);
-			parentOrder.setOrdStatus(OrdStatus.CANCELED);
-			parentOrder.touch();
-			terminate();
+			log.debug("postProcessUpdateChildOrderEvent: " + parentOrder.getOrderType() + "," + cancelRetry + "," + maxCancelRetry);
+			if(!parentOrder.getOrderType().equals(OrderType.Market) || cancelRetry >= maxCancelRetry) {
+				log.debug("Received unsolicited cancel on child order, cancelling parent order: " + parentOrder);
+				parentOrder.setOrdStatus(OrdStatus.CANCELED);
+				parentOrder.touch();
+				terminate();
+				return;
+			} else {
+				cancelRetry++;
+			}
 			return;
 		} else if(order.getOrdStatus().equals(OrdStatus.REJECTED) && rejectOnReject) {
 			parentOrder.setOrdStatus(OrdStatus.REJECTED);
@@ -527,7 +537,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		
 		executeWithTiming(ExecuteTiming.ASAP, event.getClass());
 	}
-	
+
 	private boolean startEndTimeChanged(AmendStrategyOrderEvent event) {
 		if(event.getFields().containsKey(OrderField.START_TIME.value()) ||
 				event.getFields().containsKey(OrderField.START_TIME.value()))
@@ -907,4 +917,12 @@ public abstract class SingleOrderStrategy extends Strategy {
 		this.cancelOnCancel = cancelOnCancel;
 	}
 
+	public int getMaxCancelRetry() {
+		return maxCancelRetry;
+	}
+
+	public void setMaxCancelRetry(int maxCancelRetry) {
+		this.maxCancelRetry = maxCancelRetry;
+	}	
+	
 }

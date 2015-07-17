@@ -292,17 +292,17 @@ public class DefaultExecutionManager implements IExecutionManager, IAsyncExecute
 	
 	public void processUpdateChildOrderEvent(UpdateChildOrderEvent event) {
 		log.debug("Received child order update: " + event.getExecType() + " - " + event.getOrder());
+		ChildOrder order = event.getOrder();
 		if(tranTracker == null) {
 			if(event.getExecType().equals(ExecType.CANCELED) || 
 				event.getExecType().equals(ExecType.REJECTED) ||
 				event.getExecType().equals(ExecType.REPLACE)
 				)
-				event.getOrder().setUnsolicited(true);
+				order.setUnsolicited(true);
 			return;
 		}
 		
 		ExecType execType = event.getExecType();
-		ChildOrder order = event.getOrder();
 		if (execType.equals(ExecType.NEW) || 
 				execType.equals(ExecType.PARTIALLY_FILLED) ||
 				execType.equals(ExecType.FILLED)) {

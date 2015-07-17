@@ -20,8 +20,6 @@ public class CTPDMAStrategy extends SingleOrderStrategy {
 	private static final Logger log = LoggerFactory
 			.getLogger(CTPDMAStrategy.class);
 
-	private int maxCancelRetry = 3;
-	private int cancelRetry = 0;
 	@Override
 	protected Logger getLog() {
 		return log;
@@ -36,31 +34,6 @@ public class CTPDMAStrategy extends SingleOrderStrategy {
 		super.init();
 	}
 
-	protected void postProcessUpdateChildOrderEvent(UpdateChildOrderEvent event) {
-		executionManager.processUpdateChildOrderEvent(event);
-		ChildOrder order = event.getOrder();
-		if(order.getOrdStatus().equals(OrdStatus.CANCELED) && order.isUnsolicited() && cancelOnCancel) {
-			log.debug("postProcessUpdateChildOrderEvent: " + parentOrder.getOrderType() + "," + cancelRetry + "," + maxCancelRetry);
-			if(!parentOrder.getOrderType().equals(OrderType.Market) || cancelRetry >= maxCancelRetry) {
-				log.debug("Received unsolicited cancel on child order, cancelling parent order: " + parentOrder);
-				parentOrder.setOrdStatus(OrdStatus.CANCELED);
-				parentOrder.touch();
-				terminate();
-				return;
-			} else {
-				cancelRetry++;
-			}
-			return;
-		} else if(order.getOrdStatus().equals(OrdStatus.REJECTED) && rejectOnReject) {
-			parentOrder.setOrdStatus(OrdStatus.REJECTED);
-			parentOrder.touch();
-			terminate();
-			return;
-		}
-		
-		executeWithTiming(ExecuteTiming.ASAP, event.getClass());
-	}
-
 	@Override
 	public ChildOrder createChildOrder(String parentId, String symbol, OrderSide side, double quantity, double price, ExchangeOrderType type) {
 		ChildOrder order = super.createChildOrder(parentId, symbol, side, quantity, price, type);
@@ -69,13 +42,5 @@ public class CTPDMAStrategy extends SingleOrderStrategy {
 		
 		return order;
 	}
-	
-	public int getMaxCancelRetry() {
-		return maxCancelRetry;
-	}
-
-	public void setMaxCancelRetry(int maxCancelRetry) {
-		this.maxCancelRetry = maxCancelRetry;
-	}	
 	
 }

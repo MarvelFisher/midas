@@ -8,7 +8,7 @@
 	<context:annotation-config />
 
 	<import resource="livefc/refDataStrategy.xml" />
-	<import resource="fc/MarketSession.xml" />
+	<import resource="test/fc_MarketSession.xml" />
 	<import resource="fc/IFSessionState.xml" />
 	<import resource="fc/business.xml" />
 	<import resource="common/strategy.xml" />
