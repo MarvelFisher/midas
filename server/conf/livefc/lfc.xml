@@ -48,6 +48,14 @@
         </property>
     </bean>
     
+	<bean id="strategyFactory" class="com.cyanspring.strategy.StrategyFactory">
+		<property name="mapping">
+	 		<map key-type="java.lang.String" value-type="java.lang.String">
+	 			<entry key="SDMA" value="CTPDMA"/>
+	 		</map>
+		</property>
+	</bean>
+
     <bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
     

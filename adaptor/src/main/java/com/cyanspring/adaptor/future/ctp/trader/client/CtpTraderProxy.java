@@ -36,6 +36,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.TimeInForce;
 
 public class CtpTraderProxy implements ILtsLoginListener {
 	
@@ -143,7 +144,13 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		} 
 		req.VolumeTotalOriginal((int) order.getQuantity());
 		req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
-		req.TimeCondition(TraderLibrary.THOST_FTDC_TC_GFD);
+		TimeInForce tif = order.get(TimeInForce.class, OrderField.TIF.value());
+		if(null != tif && tif.equals(TimeInForce.FILL_OR_KILL)) {
+			req.TimeCondition(TraderLibrary.THOST_FTDC_TC_IOC);
+			req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
+		} else {	
+			req.TimeCondition(TraderLibrary.THOST_FTDC_TC_GFD);
+		}
 		req.MinVolume(1);
 		req.ContingentCondition(TraderLibrary.THOST_FTDC_CC_Immediately);
 		req.ForceCloseReason(TraderLibrary.THOST_FTDC_FCC_NotForceClose);
