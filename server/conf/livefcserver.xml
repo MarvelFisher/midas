@@ -89,6 +89,15 @@
         <constructor-arg value="1528" />
     </bean>
 
+	<!-- risk control -->
+	<bean id="maxRiskOrderCount" class="java.lang.Integer">
+        <constructor-arg value="50" />
+    </bean>
+    
+    <bean id="maxTotalOrderCount" class="java.lang.Integer">
+        <constructor-arg value="450" />
+    </bean>
+
     <!-- order parameter setting -->
 	
     <bean id="marketMaximumOrderQuantity" class="java.lang.Double">

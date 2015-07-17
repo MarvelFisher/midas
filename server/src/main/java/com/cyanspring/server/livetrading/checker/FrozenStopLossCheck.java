@@ -63,8 +63,8 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 				
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 			
-			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss+" reason:"+orderReason);
 			if(account.getState().equals(AccountState.ACTIVE)) {
+				log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss+" reason:"+orderReason);
 				account.setState(AccountState.FROZEN);
 				sendUpdateAccountEvent(account);
 			}

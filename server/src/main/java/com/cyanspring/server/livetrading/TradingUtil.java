@@ -32,15 +32,22 @@ public class TradingUtil {
             return false;
         return !quote.isStale();
     }
-    public static void cancelAllOrders(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager,OrderReason orderReason) {
+    
+  
+    public static void cancelAllOrders(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager,OrderReason orderReason,RiskOrderController riskOrderController) {
     
         List<ParentOrder> orderList = positionKeeper.getParentOrders(account.getId());
         if (orderList.size() > 0)
-            log.info("Cancelling of orders: ", orderList.size());
+            log.info("{} Cancelling of orders:{} ",account.getId(), orderList.size());
         for (ParentOrder order : orderList) {
             if (order.getOrdStatus().isReady()) {
+
+            	if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
+    				return;
+            	
                 String source = order.get(String.class, OrderField.SOURCE.value());
                 String txId = order.get(String.class, OrderField.CLORDERID.value());
+
                 CancelStrategyOrderEvent cancel =
                         new CancelStrategyOrderEvent(order.getId(), order.getSender(), txId, source, orderReason, false);
                 eventManager.sendEvent(cancel);
@@ -48,16 +55,18 @@ public class TradingUtil {
         }
     }
     
-    public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason) {
+    public static void closeOpenPositions(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason,RiskOrderController riskOrderController) {
     
         List<OpenPosition> positionList = positionKeeper.getOverallPosition(account);
         if (positionList.size() <= 0)
             return;
-        log.info("Closing of positions: ", positionList.size());
+        log.info("{} Closing of positions:{} ",account.getId(), positionList.size());
         for (OpenPosition position : positionList) {
             Quote quote = positionKeeper.getQuote(position.getSymbol());
-            if (checkValidQuote && !isValidQuote(quote))
+            if (checkValidQuote && !isValidQuote(quote)){
+            	log.info(" invalid quote:{}",quote.getSymbol());
                 continue;
+            }
 
             if (positionKeeper.checkAccountPositionLock(account.getId(), position.getSymbol())) {
                 log.debug("Position stop loss over threshold but account is locked: " +
@@ -65,6 +74,9 @@ public class TradingUtil {
                 continue;
             }
 
+			if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
+				return;
+            
             log.info("Position loss over threshold, cutting loss: " + position.getAccount() + ", " +
                     position.getSymbol() + ", " + position.getAcPnL() + ", " +
                     quote);
@@ -89,21 +101,19 @@ public class TradingUtil {
 	}
 	
 	public static boolean checkRiskOrderCount(RiskOrderController riskOrderController, String account) {
-    	if(null == riskOrderController || riskOrderController.chek(account))
+    	if(null == riskOrderController || riskOrderController.check(account))
     		return true;
-    	
+   
     	return false;
     }
 	
 	public static void closeAllPositoinAndOrder(Account account, PositionKeeper positionKeeper, 
 			IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason, 
 			RiskOrderController riskOrderController){
+						
+		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason,riskOrderController);
+		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason,riskOrderController);
 		
-		if(!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId()))
-			return;
-		
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason);
 	}
 
 }

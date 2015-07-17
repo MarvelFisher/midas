@@ -1303,7 +1303,6 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingPnL() + ", " +
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
-
 	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
 	                	if(liveTradingCheckHandler.startCheckChain(account, accountSetting)){
 	                		continue;
@@ -1548,11 +1547,10 @@ public class AccountPositionManager implements IPlugin {
         	
         	if(AccountState.FROZEN.equals(account.getState())){
         		
-    			AccountStateReplyEvent accountStateEvent = new AccountStateReplyEvent(null
-    	    			,null,true,"",account.getId(),account.getUserId(),AccountState.ACTIVE);
+    			AccountUpdateEvent event = new AccountUpdateEvent(account.getId(), null, account);
     	    	
     			try {
-					eventManager.sendRemoteEvent(accountStateEvent);
+					eventManager.sendRemoteEvent(event);
 				} catch (Exception e) {
 					log.info(e.getMessage(),e);
 				}

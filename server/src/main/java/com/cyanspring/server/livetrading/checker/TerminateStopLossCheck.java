@@ -65,8 +65,8 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 		double currentLoss = account.getValue() - account.getCashDeposited();
 		
 		if(PriceUtils.EqualLessThan(currentLoss, -totalLossLimit)){
-			log.info("Account:"+account.getId()+"Terminate loss: " + currentLoss + " over " + -totalLossLimit);
 			if(!account.getState().equals(AccountState.TERMINATED)) {
+				log.info("Account:"+account.getId()+"Terminate loss: " + currentLoss + " over " + -totalLossLimit);
 				account.setState(AccountState.TERMINATED);
 				sendUpdateAccountEvent(account);
 			}
@@ -83,9 +83,13 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 			
 			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));
 			
-			AccountUpdateEvent event = new AccountUpdateEvent(account.getId(), null, account);
-			eventManager.sendRemoteEvent(event);
+			String message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_TERMINATED, "Live Trading - Account:"+account.getId()+" is terminated due to exceeding loss limit");
 			
+			eventManager.sendRemoteEvent(new UserTerminateReplyEvent(null, null ,true, message, account.getId(), TerminationStatus.TERMINATED));
+	    	
+			AccountUpdateEvent event = new AccountUpdateEvent(account.getId(), null, account);
+	    	eventManager.sendRemoteEvent(event);
+	    				
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}

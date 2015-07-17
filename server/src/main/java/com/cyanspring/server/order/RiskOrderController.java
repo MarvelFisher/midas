@@ -11,24 +11,29 @@ public class RiskOrderController {
     private static final Logger log = LoggerFactory
             .getLogger(RiskOrderController.class);
 
-	private int maxRiskOrderCount = 20;
+	private int maxRiskOrderCount = 50;
+	private int maxTotalOrderCount = 450;
 	Map<String, AtomicInteger> userRiskOrderCounts = new ConcurrentHashMap<String, AtomicInteger>();
-	private AtomicInteger maxTotalOrderCount = new AtomicInteger(200);
+	private AtomicInteger maxTotalOrderCounts = new AtomicInteger(0);
 	
-	public boolean chek(String account){
+	public boolean check(String account){
 		AtomicInteger atomicCount = userRiskOrderCounts.get(account);
 		if(null == atomicCount) {
-			userRiskOrderCounts.put(account, new AtomicInteger(1));
-			return true;
-		}
-		int count = atomicCount.incrementAndGet();
-		int totalCount = maxTotalOrderCount.incrementAndGet();
-		if(count > maxRiskOrderCount || totalCount > maxTotalOrderCount.get()) {
-			log.error("Risk order count reach max, please contact support immediately!!! account: "
-					+ account + "," + maxRiskOrderCount + ", " + count);
-			return false;
+			atomicCount = new AtomicInteger(0);
+			userRiskOrderCounts.put(account, atomicCount);
 		}
 		
+		int count = atomicCount.get();
+		int totalCount = maxTotalOrderCounts.get();
+		if(count >= maxRiskOrderCount || totalCount >= maxTotalOrderCount){
+			log.error("Risk order count reach max, please contact support immediately!!! account: "
+					+ account + "," + count + " --> " + maxRiskOrderCount+" , total count:"+totalCount+" --> "+maxTotalOrderCount);
+			return false;
+		}else{
+			atomicCount.incrementAndGet();
+			maxTotalOrderCounts.incrementAndGet();
+		}
+
 		return true;
 	}
 
@@ -41,11 +46,11 @@ public class RiskOrderController {
 	}
 
 	public int getMaxTotalOrderCount() {
-		return maxTotalOrderCount.get();
+		return maxTotalOrderCount;
 	}
 
 	public void setMaxTotalOrderCount(int maxTotalOrderCount) {
-		this.maxTotalOrderCount = new AtomicInteger(maxTotalOrderCount) ;
+		this.maxTotalOrderCount = maxTotalOrderCount ;
 	}
 	
 }
