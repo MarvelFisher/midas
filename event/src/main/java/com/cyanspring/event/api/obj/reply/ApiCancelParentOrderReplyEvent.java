@@ -41,7 +41,7 @@ public class ApiCancelParentOrderReplyEvent implements IApiReply {
             ParentOrder parentOrder = replyEvent.getOrder();
             Order order = new Order();
             order.setId(parentOrder.getId());
-            order.setState(parentOrder.getState().toString());
+            order.setCreated(parentOrder.getCreated());
             order.setStatus(parentOrder.getOrdStatus().toString());
             order.setPrice(parentOrder.getPrice());
             order.setQuantity(new Double(parentOrder.getQuantity()).longValue());

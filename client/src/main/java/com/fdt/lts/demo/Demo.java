@@ -101,8 +101,8 @@ public class Demo{
 					//amend order
 					}else if(isCreatedOrder && !isAmendOrder){
 						for(Order order:orders){
-							if(order.getState().equals("Running")){
-								System.out.println(" >>amend order:"+order.getId()+" order price:"+order.getPrice()+" state:"+order.getState());
+							if(order.getStatus().equals("Running")){
+								System.out.println(" >>amend order:"+order.getId()+" order price:"+order.getPrice()+" state:"+order.getStatus());
 								order.setPrice(order.getPrice()+1);
 								amendOrder(order);
 							}
@@ -112,8 +112,8 @@ public class Demo{
 					else if(isAmendOrder && !isCancelOrder){
 						
 						for(Order order:orders){
-							if(order.getState().equals("Running")){
-								System.out.println(" >>cancel order:"+order.getId()+" order price:"+order.getPrice()+" state:"+order.getState());
+							if(order.getStatus().equals("Running")){
+								System.out.println(" >>cancel order:"+order.getId()+" order price:"+order.getPrice()+" state:"+order.getStatus());
 								cancelOrder(order);
 							}
 						}

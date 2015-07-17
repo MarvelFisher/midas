@@ -1,5 +1,7 @@
 package com.cyanspring.apievent.obj;
 
+import java.util.Date;
+
 public class Order {
 
 	private String id;
@@ -10,7 +12,7 @@ public class Order {
 	private long quantity;
 	private double stopLossPrice;
 	private String status;
-	private String state;
+    private Date created;
 
 	public String getStatus() {
 		return status;
@@ -18,14 +20,6 @@ public class Order {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
 	}
 
 	public String getId() {
@@ -88,9 +82,17 @@ public class Order {
 		this.stopLossPrice = stopLossPrice;
 	}
 
-	public String toString(){
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public String toString(){
 		double price = this.price != 0 ? this.price : this.stopLossPrice;
 		return id + ", " + symbol + ", " + side.toString() + ", " + type.toString() + ", " + price
-		+ ", " + quantity + ", " + status + ", " + state;
+		+ ", " + quantity + ", " + status + ", " + created.toString();
 	}
 }
