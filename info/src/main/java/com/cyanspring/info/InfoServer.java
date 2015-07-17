@@ -24,9 +24,12 @@ import com.cyanspring.common.event.system.DuplicateSystemIdEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.marketdata.MarketDataReceiver;
+import com.cyanspring.common.refdata.RefDataHandler;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.event.AsyncEventProcessor;
+import com.cyanspring.common.marketsession.IndexMarketSessionManager;
+import com.cyanspring.common.marketsession.MarketSessionManager;
 
 public class InfoServer 
 {
@@ -57,6 +60,8 @@ public class InfoServer
 	@Autowired
 	private IRemoteEventManager eventManagerMD;
 	
+	private IRemoteEventManager eventManagerSA;
+	
 	@Autowired
 	private ScheduleManager scheduleManager;
 	
@@ -66,8 +71,13 @@ public class InfoServer
 	@Autowired
 	private Boolean useLocalMdReceiver;
 	
+	private IndexMarketSessionManager indexMarketSessionManager = null;
+	private MarketSessionManager marketSessionManager = null;
+    private RefDataHandler refDataHandler = null;
+	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<IPlugin> plugins;
+	private boolean standAlone = false;
 	
 //	@Autowired
 //	private CentralDbProcessor centralDbProcessor;
@@ -110,7 +120,7 @@ public class InfoServer
 			}
 			if(!event.getServer() && readyList.allUp()) {
 				try {
-					waitForCDbPReady();
+//					waitForCDbPReady();
 					log.info("publishRemoteEvent caused by " + event.getInbox());
 					eventManager.publishRemoteEvent(channel, new ServerReadyEvent(true));
 				} catch (Exception e) {
@@ -147,6 +157,18 @@ public class InfoServer
 		eventManager.init(channel, inbox);
 		eventManager.addEventChannel(nodeInfoChannel);
 		
+		if (standAlone)
+		{
+			// create SA eventManager as server
+			log.info("SystemInfo: " + systemInfoMD);
+			String channel = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "channel"; 
+			String nodeInfoChannel = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "node";
+			String inbox = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + systemInfoMD.getId();
+			IdGenerator.getInstance().setSystemId(inbox);
+			eventManagerSA.init(channel, inbox);
+			eventManagerSA.addEventChannel(nodeInfoChannel);
+		}
+		
 		// create MD eventManager as client
 		log.info("SystemInfo: " + systemInfoMD);		
 		String channelMD = systemInfoMD.getEnv() + "." + systemInfoMD.getCategory() + "." + "channel"; 
@@ -155,7 +177,6 @@ public class InfoServer
 		eventManagerMD.init(channelMD, inbox);
 		eventManagerMD.addEventChannel(channelMD); //receiver channel
 		eventManagerMD.addEventChannel(nodeInfoChannelMD);
-
 		
 		// publish my node info
 		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, true, true, inbox, uid);
@@ -178,6 +199,24 @@ public class InfoServer
 		scheduleManager.init();
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, eventProcessor, timerEvent);
 		
+		if (standAlone)
+		{
+			if (indexMarketSessionManager != null)
+			{
+				indexMarketSessionManager.setEventManager(eventManagerSA);
+				indexMarketSessionManager.init();
+			}
+			if (marketSessionManager != null)
+			{
+				marketSessionManager.setEventManager(eventManagerSA);
+				marketSessionManager.init();
+			}
+		    if (refDataHandler != null)
+		    {
+		    	refDataHandler.setEventManager(eventManagerSA);
+		    	refDataHandler.init();
+		    }
+		}
 		if(null != plugins) {
 			for(IPlugin plugin: plugins) {
 				plugin.init();
@@ -287,6 +326,36 @@ public class InfoServer
 		// start server
 		InfoServer server = (InfoServer)context.getBean("infoServer");
 		server.init();
+	}
+	public boolean isStandAlone() {
+		return standAlone;
+	}
+	public void setStandAlone(boolean standAlone) {
+		this.standAlone = standAlone;
+	}
+	public IndexMarketSessionManager getIndexMarketSessionManager() {
+		return indexMarketSessionManager;
+	}
+	public void setIndexMarketSessionManager(IndexMarketSessionManager indexMarketSessionManager) {
+		this.indexMarketSessionManager = indexMarketSessionManager;
+	}
+	public MarketSessionManager getMarketSessionManager() {
+		return marketSessionManager;
+	}
+	public void setMarketSessionManager(MarketSessionManager marketSessionManager) {
+		this.marketSessionManager = marketSessionManager;
+	}
+	public RefDataHandler getRefDataHandler() {
+		return refDataHandler;
+	}
+	public void setRefDataHandler(RefDataHandler refDataHandler) {
+		this.refDataHandler = refDataHandler;
+	}
+	public IRemoteEventManager getEventManagerSA() {
+		return eventManagerSA;
+	}
+	public void setEventManagerSA(IRemoteEventManager eventManagerSA) {
+		this.eventManagerSA = eventManagerSA;
 	}
 
 }
