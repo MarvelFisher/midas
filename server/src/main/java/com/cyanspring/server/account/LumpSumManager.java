@@ -160,7 +160,7 @@ public class LumpSumManager implements IPlugin {
 					if (lumpSumAccount == null)
 						continue;
 					if (PriceUtils.LessThan(lumpSumAccount.getCashAvailable(), accountValue))
-			        	lumpSumAccount.setCashAvailable(accountValue + lumpSumAccount.getCashAvailable());
+			        	lumpSumAccount.addCash(accountValue + lumpSumAccount.getCashAvailable());
 				}
 			}}
         );
