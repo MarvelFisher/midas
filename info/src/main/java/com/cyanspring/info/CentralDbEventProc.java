@@ -22,6 +22,7 @@ import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeType;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
@@ -226,6 +227,12 @@ public class CentralDbEventProc implements Runnable
 		centraldb.setSessionType(event.getSession(), event.getMarket()) ;
 		centraldb.setSessionEnd(event.getEnd());
 	}
+	
+	public void processRefDataEvent(RefDataEvent event) 
+	{
+		centraldb.onCallRefData(event);
+	}
+	
 	public void parseEvent(RemoteAsyncEvent event) throws Exception
 	{
 		if (event instanceof HistoricalPriceRequestEvent)
@@ -247,6 +254,10 @@ public class CentralDbEventProc implements Runnable
 		else if (event instanceof HistoricalPriceRequestDateEvent)
 		{
 			processHistoricalPriceRequestDateEvent((HistoricalPriceRequestDateEvent)event);
+		}
+		else if (event instanceof RefDataEvent)
+		{
+			processRefDataEvent((RefDataEvent)event);
 		}
 	}
 
