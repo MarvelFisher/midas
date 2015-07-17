@@ -26,15 +26,22 @@
 			</includes>
 			<outputDirectory></outputDirectory>
 		</fileSet>
+        <fileSet>
+            <directory>${basedir}/../apievent/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../event/target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <outputDirectory></outputDirectory>
+        </fileSet>
 		<fileSet>
 			<directory>${basedir}/../transport/target</directory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<outputDirectory></outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>${basedir}/../event/target</directory>
 			<includes>
 				<include>*.jar</include>
 			</includes>
