@@ -130,10 +130,10 @@ public class StockItem implements AutoCloseable {
             tickTime = DateUtil.now();
         }
 
-        if (PriceUtils.GreaterThan(stockData.getMatch(), 0)
-                || stockData.getStatus() == WindDef.STOCK_STATUS_STOP_SYMBOL
-                || stockData.getStatus() == WindDef.STOCK_STATUS_STOP_SYMBOL_2
-                ) {
+//        if (stockData.getMatch() > 0
+//                || stockData.getStatus() == WindDef.STOCK_STATUS_STOP_SYMBOL
+//                || stockData.getStatus() == WindDef.STOCK_STATUS_STOP_SYMBOL_2
+//                ) {
 
             //modify tick Time
             if (QuoteMgr.isModifyTickTime()) {
@@ -230,9 +230,9 @@ public class StockItem implements AutoCloseable {
             //process send quote
             WindGateWayAdapter.instance.saveLastQuote(quote);
             WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
-        } else {
-            log.debug(WindDef.TITLE_STOCK + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + stockData.getWindCode());
-        }
+//        } else {
+//            log.debug(WindDef.TITLE_STOCK + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + stockData.getWindCode());
+//        }
 
         boolean quoteExtendIsChange = false;
         boolean specialQuoteExtendIsChange = false;
