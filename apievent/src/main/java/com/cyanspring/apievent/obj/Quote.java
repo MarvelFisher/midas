@@ -4,23 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
- *
  * @author elviswu
  * @version %I%, %G%
  * @since 1.0

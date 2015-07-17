@@ -1,29 +1,13 @@
 package com.cyanspring.apievent.obj;
 
 import java.util.Date;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
- *
  * @author elviswu
  * @version %I%, %G%
  * @since 1.0
  */
 public class Execution { // need to check the fields
-    // for thread safe
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
-
     private Date created;
     private Date modified;
     private String id;
@@ -40,266 +24,114 @@ public class Execution { // need to check the fields
     private String account;
 
     public Date getCreated() {
-        try {
-            lock.readLock().lock();
-            return created;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return created;
     }
 
     public void setCreated(Date created) {
-        try {
-            lock.writeLock().lock();
-            this.created = created;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.created = created;
     }
 
     public Date getModified() {
-        try {
-            lock.readLock().lock();
-            return modified;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return modified;
     }
 
     public void setModified(Date modified) {
-        try {
-            lock.writeLock().lock();
-            this.modified = modified;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.modified = modified;
     }
 
     public String getId() {
-        try {
-            lock.readLock().lock();
-            return id;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return id;
     }
 
     public void setId(String id) {
-        try {
-            lock.writeLock().lock();
-            this.id = id;
-        } finally {
-            lock.writeLock().unlock();
-        }
+        this.id = id;
     }
 
     public String getServerID() {
-        try {
-            lock.readLock().lock();
-            return serverID;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return serverID;
     }
 
     public void setServerID(String serverID) {
-        try {
-            lock.writeLock().lock();
-            this.serverID = serverID;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.serverID = serverID;
     }
 
     public String getSymbol() {
-        try {
-            lock.readLock().lock();
-            return symbol;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return symbol;
     }
 
     public void setSymbol(String symbol) {
-        try {
-            lock.writeLock().lock();
-            this.symbol = symbol;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.symbol = symbol;
     }
 
     public String getSide() {
-        try {
-            lock.readLock().lock();
-            return side;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return side;
     }
 
     public void setSide(String side) {
-        try {
-            lock.writeLock().lock();
-            this.side = side;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.side = side;
     }
 
     public long getQuantity() {
-        try {
-            lock.readLock().lock();
-            return quantity;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return quantity;
     }
 
     public void setQuantity(long quantity) {
-        try {
-            lock.writeLock().lock();
-            this.quantity = quantity;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.quantity = quantity;
     }
 
     public double getPrice() {
-        try {
-            lock.readLock().lock();
-            return price;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return price;
     }
 
     public void setPrice(double price) {
-        try {
-            lock.writeLock().lock();
-            this.price = price;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.price = price;
     }
 
     public String getOrderID() {
-        try {
-            lock.readLock().lock();
-            return orderID;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return orderID;
     }
 
     public void setOrderID(String orderID) {
-        try {
-            lock.writeLock().lock();
-            this.orderID = orderID;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.orderID = orderID;
     }
 
     public String getParentOrderID() {
-        try {
-            lock.readLock().lock();
-            return parentOrderID;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return parentOrderID;
     }
 
     public void setParentOrderID(String parentOrderID) {
-        try {
-            lock.writeLock().lock();
-            this.parentOrderID = parentOrderID;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.parentOrderID = parentOrderID;
     }
 
     public String getStrategyID() {
-        try {
-            lock.readLock().lock();
-            return strategyID;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return strategyID;
     }
 
     public void setStrategyID(String strategyID) {
-        try {
-            lock.writeLock().lock();
-            this.strategyID = strategyID;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.strategyID = strategyID;
     }
 
     public String getExecID() {
-        try {
-            lock.readLock().lock();
-            return execID;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return execID;
     }
 
     public void setExecID(String execID) {
-        try {
-            lock.writeLock().lock();
-            this.execID = execID;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.execID = execID;
     }
 
     public String getUser() {
-        try {
-            lock.readLock().lock();
-            return user;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return user;
     }
 
     public void setUser(String user) {
-        try {
-            lock.writeLock().lock();
-            this.user = user;
-        } finally {
-            lock.writeLock().unlock();
-        }
-
+        this.user = user;
     }
 
     public String getAccount() {
-        try {
-            lock.readLock().lock();
-            return account;
-        } finally {
-            lock.readLock().unlock();
-        }
+        return account;
     }
 
     public void setAccount(String account) {
-        try {
-            lock.writeLock().lock();
-            this.account = account;
-        } finally {
-            lock.writeLock().unlock();
-        }
+        this.account = account;
     }
 }
