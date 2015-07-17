@@ -13,7 +13,7 @@ public class FXPriceSetter implements IPriceSetter
 	@Override
 	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume) 
 	{
-		if (quote.getBid() < 0 || quote.getAsk() < 0)
+		if (PriceUtils.EqualLessThan(quote.getBid(), 0) || PriceUtils.EqualLessThan(quote.getAsk(), 0))
 		{
 			return false;
 		}
