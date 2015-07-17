@@ -396,7 +396,11 @@ public class AlertManager extends Compute {
 			quotes.put(quote.getSymbol(), quote);
 			return;
 		}
-		log.debug("Quote: " + quote);
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+		log.debug(String.format("Quote: %s - %s [%.1f@%.2f,%.1f@%.2f,%.1f@%.2f,%s,%s]", 
+				quote.getId(), quote.getSymbol(), quote.getBidVol(), quote.getBid(),
+				quote.getAskVol(), quote.getAsk(), quote.getLastVol(), quote.getLast(), 
+				sdf.format(quote.getTimeStamp()), sdf.format(quote.getTimeSent())));
 		ArrayList<BasePriceAlert> list = symbolPriceAlerts.get(quote
 				.getSymbol());
 		ArrayList<BasePriceAlert> UserPriceList;
