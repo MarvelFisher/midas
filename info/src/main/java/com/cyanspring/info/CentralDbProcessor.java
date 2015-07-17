@@ -525,15 +525,18 @@ public class CentralDbProcessor implements IPlugin
 				{
 					retrieveChart();
 				}
+				else
+				{
+					for (String appserv : appServIDList)
+					{
+						sendCentralReady(appserv);
+					}
+				}
 				calledRefdata = true;
 			} 
 			catch (IOException e) 
 			{
 				log.error(e.getMessage(), e);;
-			}
-			for (String appserv : appServIDList)
-			{
-				sendCentralReady(appserv);
 			}
 		}
 		isStartup = false;
@@ -619,6 +622,14 @@ public class CentralDbProcessor implements IPlugin
 				symboldata.setMapHistorical(entry.getValue());
 			}
 		}
+		if (isStartup)
+		{
+			for (String appserv : appServIDList)
+			{
+				sendCentralReady(appserv);
+			}
+		}
+			
 	}
 	public void getChartPrice(String market, String strType)
 	{
