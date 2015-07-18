@@ -316,7 +316,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
 
         @Override
-        public void newOrder(ChildOrder order) throws DownStreamException {
+        synchronized public void newOrder(ChildOrder order) throws DownStreamException {
             log.debug("Sending new order: " + order);
             RefData refData = refDateBySymbolMap.get(order.getSymbol());
             Contract contract = refData.get(Contract.class,
@@ -331,7 +331,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             ibOrder.m_orderType = getType(order.getType());
             ibOrder.m_lmtPrice = order.getPrice();
             int orderId = nextOrderId.getAndIncrement();
-            synchronized (idToChildId) {
+			synchronized (idToChildId) {
                 idToChildId.put(orderId, order.getId());
                 idToOrder.put(orderId, order);
             }
