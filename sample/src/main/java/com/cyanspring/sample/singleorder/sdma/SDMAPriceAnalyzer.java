@@ -22,17 +22,16 @@ import com.cyanspring.strategy.singleorder.AbstractPriceAnalyzer;
 import com.cyanspring.strategy.singleorder.QuantityInstruction;
 import com.cyanspring.strategy.singleorder.SingleOrderStrategy;
 
+/**
+ * @author dennis
+ *
+ */
 public class SDMAPriceAnalyzer extends AbstractPriceAnalyzer {
-	boolean supportMarketOrderType;
+	private boolean supportMarketOrderType;
+	private boolean aggressiveWithTime;
+	private int aggressiveTicks = 5;
+	private int retryCount = 0;
 	
-	public boolean isSupportMarketOrderType() {
-		return supportMarketOrderType;
-	}
-
-	public void setSupportMarketOrderType(boolean supportMarketOrderType) {
-		this.supportMarketOrderType = supportMarketOrderType;
-	}
-
 	@Override
 	public PriceInstruction calculate( QuantityInstruction qtyInstruction, 
 			SingleOrderStrategy strategy) {
@@ -59,14 +58,19 @@ public class SDMAPriceAnalyzer extends AbstractPriceAnalyzer {
 					if(!PriceUtils.validPrice(price)) { //if no ask get on top of depth
 						price = quote.getBid();
 						price = strategy.getTickTable().tickUp(price, false);
+					} else if(aggressiveWithTime && retryCount > 0) {
+						price = strategy.getTickTable().tickUp(price, retryCount * aggressiveTicks, false);
 					}
 				} else {
 					price = quote.getBid();
 					if(!PriceUtils.validPrice(price)) { //if no bid get on top of depth
 						price = quote.getAsk();
 						price = strategy.getTickTable().tickDown(price, false);
+					} else if(aggressiveWithTime && retryCount > 0) {
+						price = strategy.getTickTable().tickDown(price, retryCount * aggressiveTicks, false);
 					}
 				}
+				retryCount++;
 			} else {
 				price = order.getPrice();
 			}
@@ -77,4 +81,30 @@ public class SDMAPriceAnalyzer extends AbstractPriceAnalyzer {
 			
 		return pi;
 	}
+
+	public boolean isSupportMarketOrderType() {
+		return supportMarketOrderType;
+	}
+
+	public void setSupportMarketOrderType(boolean supportMarketOrderType) {
+		this.supportMarketOrderType = supportMarketOrderType;
+	}
+
+	public boolean isAggressiveWithTime() {
+		return aggressiveWithTime;
+	}
+
+	public void setAggressiveWithTime(boolean aggressiveWithTime) {
+		this.aggressiveWithTime = aggressiveWithTime;
+	}
+
+	public int getAggressiveTicks() {
+		return aggressiveTicks;
+	}
+
+	public void setAggressiveTicks(int aggressiveTicks) {
+		this.aggressiveTicks = aggressiveTicks;
+	}
+	
+	
 }

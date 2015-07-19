@@ -13,7 +13,7 @@
 		<property name="quoteRequired" value="true"/>
 		<property name="cancelOnCancel" value="true"/>
 		<property name="rejectOnReject" value="true"/>
-		<property name="maxCancelRetry" value="3"/>
+		<property name="maxCancelRetry" value="2"/>
 		<property name="quantityAnalyzer">
 			<bean class="com.cyanspring.strategy.singleorder.AllQuantityAnalyzer"></bean>	
 		</property>
@@ -36,6 +36,8 @@
 
 	<bean id="sdmaPriceAnalyzer" class="com.cyanspring.sample.singleorder.sdma.SDMAPriceAnalyzer" scope="prototype">
 		<property name="supportMarketOrderType" value="false"/>
+		<property name="aggressiveWithTime" value="true"/>
+		<property name="aggressiveTicks" value="5"/>
 	</bean>
 	
 </beans>
