@@ -504,6 +504,7 @@ public class PersistenceManager {
 				}
 				else if (!syncCentralDb && useLtsGateway)
 				{
+					user = event.getOriginalEvent().getUser();
 					ok = userKeeper.userExists(userId);
 
 					if(!ok) // user created by another LTS, must be created here again
