@@ -17,15 +17,13 @@ import java.util.List;
 import com.cyanspring.common.account.TerminationStatus;
 import com.cyanspring.common.account.ThirdPartyUser;
 import com.cyanspring.common.account.UserType;
+import com.cyanspring.common.business.*;
 import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +38,6 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
-import com.cyanspring.common.business.ChildOrder;
-import com.cyanspring.common.business.Execution;
-import com.cyanspring.common.business.GroupManagement;
-import com.cyanspring.common.business.Instrument;
-import com.cyanspring.common.business.MultiInstrumentStrategyData;
-import com.cyanspring.common.business.OrderField;
-import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
@@ -129,6 +120,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmPositionPeakPriceDeleteEvent.class, null);
 			subscribeToEvent(PmCreateGroupManagementEvent.class, null);
 			subscribeToEvent(PmDeleteGroupManagementEvent.class, null);
+            subscribeToEvent(PmAddCashEvent.class, null);
 			
 			if(persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -1532,7 +1524,38 @@ public class PersistenceManager {
 			}
 		}
 	}
-	
+
+    public void processPmAddCashEvent(PmAddCashEvent event) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        double cashDeposited = 0.0;
+        try {
+            tx = session.beginTransaction();
+            Criteria criteria = session.createCriteria(CashAudit.class).setProjection(Projections.max("ADD_TIME"));
+            criteria.add(Restrictions.eq("ACCOUNT_ID", event.getAccount()));
+            List<CashAudit> list = (List<CashAudit>) criteria.list();
+            if (list != null || list.size() > 0)
+                cashDeposited = list.get(0).getCashDeposited();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        CashAudit cashAudit = new CashAudit(event.getAccount(), event.getType(),
+                Clock.getInstance().now(), cashDeposited, event.getCash());
+
+        try {
+            tx = session.beginTransaction();
+            session.save(cashAudit);
+            tx.commit();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            if (tx!=null)
+                tx.rollback();
+        } finally {
+            session.close();
+        }
+    }
+
 	public void processPmCreateAccountEvent(PmCreateAccountEvent event) {
 		Account account = event.getAccount();
 		createAccount(account);

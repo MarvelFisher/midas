@@ -264,12 +264,20 @@
 	<property column="PRICE"	name="price" type="java.lang.Double"/>
   </class>
 
-  <class name="com.cyanspring.common.business.GroupManagement" table="ANYONE.GROUP_MANAGEMENT">
+  <class name="com.cyanspring.cosmmon.business.GroupManagement" table="ANYONE.GROUP_MANAGEMENT">
   	<composite-id>
 	  	<key-property 	column="MANAGER" 	name="manager"	type="java.lang.String"/>
   		<key-property 	column="MANAGED"	name="managed"	type="java.lang.String"/>
   	</composite-id> 	
   </class>
+
+  <!--<class name="com.cyanspring.common.business.CashAudit" table="ANYONE.CASH_AUDIT">-->
+      <!--<id column="ACCOUNT_ID" name="id"	type="java.lang.String"/>-->
+      <!--<property name="type" column="TYPE" type="java.lang.String"/>-->
+      <!--<property name="addCash" column="ADD_CASH" type="java.lang.Double"/>-->
+      <!--<property name="cashDeposited" column="CASH_DEPOSITED" type="java.lang.Double"/>-->
+      <!--<property name="time" column="ADD_TIME" type="java.util.Date"/>-->
+  <!--</class>-->
 
   <sql-query name="rollEndOfDay1">
     <![CDATA[
