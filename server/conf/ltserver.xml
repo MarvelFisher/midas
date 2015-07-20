@@ -44,6 +44,10 @@
     <bean id="dailyExec" class="java.lang.String">
         <constructor-arg value="04:45:00" />
     </bean>
+    
+    <bean id="lumpSumClose" class="java.lang.String">
+        <constructor-arg value="01:55:00" />
+    </bean>
 
     <!-- MarketDataManager setting -->
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
