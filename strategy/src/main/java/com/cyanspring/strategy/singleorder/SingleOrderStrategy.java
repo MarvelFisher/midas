@@ -518,7 +518,7 @@ public abstract class SingleOrderStrategy extends Strategy {
 		ChildOrder order = event.getOrder();
 		if(order.getOrdStatus().equals(OrdStatus.CANCELED) && order.isUnsolicited() && cancelOnCancel) {
 			log.debug("postProcessUpdateChildOrderEvent: " + parentOrder.getOrderType() + "," + cancelRetry + "," + maxCancelRetry);
-			if(!parentOrder.getOrderType().equals(OrderType.Market) || cancelRetry >= maxCancelRetry) {
+			if(!parentOrder.getOrderType().equals(OrderType.Market) || !this.isSimMarketOrder() || cancelRetry >= maxCancelRetry) {
 				log.debug("Received unsolicited cancel on child order, cancelling parent order: " + parentOrder);
 				parentOrder.setOrdStatus(OrdStatus.CANCELED);
 				parentOrder.touch();
