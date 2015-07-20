@@ -43,7 +43,7 @@
                 <bean id="rejectOrderTimeOnOpenState" class="com.cyanspring.server.validation.bean.AvailableTimeBean">
                     <property name="marketSession" value="OPEN"/>
                     <property name="startTime" value="09:00:00"/>
-                    <property name="endTime" value="09:10:00"/>
+                    <property name="endTime" value="09:05:00"/>
                 </bean>
             </list>
         </constructor-arg>
