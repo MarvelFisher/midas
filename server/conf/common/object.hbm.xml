@@ -264,7 +264,7 @@
 	<property column="PRICE"	name="price" type="java.lang.Double"/>
   </class>
 
-  <class name="com.cyanspring.cosmmon.business.GroupManagement" table="ANYONE.GROUP_MANAGEMENT">
+  <class name="com.cyanspring.common.business.GroupManagement" table="ANYONE.GROUP_MANAGEMENT">
   	<composite-id>
 	  	<key-property 	column="MANAGER" 	name="manager"	type="java.lang.String"/>
   		<key-property 	column="MANAGED"	name="managed"	type="java.lang.String"/>
