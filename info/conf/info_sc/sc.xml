@@ -75,13 +75,13 @@
 		</property>
 		<property name="historicalDataPeriod">
 			<map>
-				<entry key="1" value="10" />
-				<entry key="R" value="10" />
-				<entry key="A" value="21" />
-				<entry key="Q" value="21" />
-				<entry key="H" value="30" />
-				<entry key="6" value="30" />
-				<entry key="T" value="60" />
+				<entry key="1" value="30" />
+				<entry key="R" value="30" />
+				<entry key="A" value="30" />
+				<entry key="Q" value="30" />
+				<entry key="H" value="45" />
+				<entry key="6" value="45" />
+				<entry key="T" value="75" />
 				<entry key="D" value="120" />
 				<entry key="W" value="400" />
 				<entry key="M" value="2400" />
