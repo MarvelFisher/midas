@@ -905,7 +905,7 @@ public class AccountPositionManager implements IPlugin {
     	UserRole role= event.getRole();
     	User user = userKeeper.getUser(id);
     	UserGroup userGroup = userKeeper.getUserGroup(id);
-    	boolean isOk = false;
+    	boolean isOk = true;
     	boolean needClearAllManagee = false;
     	String message = "";
 
@@ -914,13 +914,12 @@ public class AccountPositionManager implements IPlugin {
         		throw new UserException("user not exist!");
         	}
         	
-        	if( null != userGroup){
-        		
-        		UserRole originRole = user.getRole();  		
-        		if(originRole.equals(role)){
-        			throw new UserException("this user role already is "+role);
-        		}
-        		
+       		UserRole originRole = user.getRole();  		
+    		if(originRole.equals(role)){
+    			throw new UserException("this user role already is "+role);
+    		}
+    		
+        	if( null != userGroup){	
         		if(UserRole.Trader.equals(role)){
         			needClearAllManagee = true;
         		}
@@ -929,17 +928,19 @@ public class AccountPositionManager implements IPlugin {
     	}catch(UserException e){
     		isOk = false;
             message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_ROLE_FAILED, e.getMessage());
-
+            log.info("message:{}",message);
     	}
+    	    	
     	 try {
     		 
 	    	if(isOk){
+	    		log.info("{} change User role:{} to {} needClearAllManagee:{}",new Object[]{user.getId(),user.getRole(),role,needClearAllManagee});
 	    		user.setRole(role);
-	    		PmUpdateUserEvent updateUserEvent = new PmUpdateUserEvent(AccountPositionManager.ID,null,user); 
-	            eventManager.sendRemoteEvent(updateUserEvent);
+	    		PmUpdateUserEvent updateUserEvent = new PmUpdateUserEvent(PersistenceManager.ID,null,user); 
+	            eventManager.sendEvent(updateUserEvent);
 	    		if(needClearAllManagee && !userGroup.getNoneRecursiveManageeList().isEmpty()){
-	    			PmDeleteGroupManagementEvent deleteGroupManagementEvent = new PmDeleteGroupManagementEvent(AccountPositionManager.ID, null, userGroup.exportGroupManagementList());
-		            eventManager.sendRemoteEvent(deleteGroupManagementEvent);
+	    			PmDeleteGroupManagementEvent deleteGroupManagementEvent = new PmDeleteGroupManagementEvent(PersistenceManager.ID, null, userGroup.exportGroupManagementList());
+		            eventManager.sendEvent(deleteGroupManagementEvent);
 		            userGroup.clearManageeList();
 	    		}
 	    	}
