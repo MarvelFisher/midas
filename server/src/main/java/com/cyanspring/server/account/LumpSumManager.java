@@ -83,12 +83,14 @@ public class LumpSumManager implements IPlugin {
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
+    	log.info("Start lumpSum process.");
         Map<String, Double> totalPositions = calculateTotalSymbolPosition();
         for (Map.Entry<String, Double> entry : totalPositions.entrySet()) {
             String symbol = entry.getKey();
             double qty = entry.getValue();
             if (!PriceUtils.isZero(qty)) {
                 try {
+                	log.info("Send close position event, symbol: {}, qty: {}", symbol, qty);
                     businessManager.processClosePosition(null, null, null, OrderReason.ManualClose,
                             accountKeeper.getAccount(Default.getAccount()), symbol,
                             qty > 0 ? OrderSide.Sell : OrderSide.Buy, qty);
@@ -101,6 +103,7 @@ public class LumpSumManager implements IPlugin {
                     removeAccountPositionBySymbol(symbol, finPosition);
             }
         }
+        log.info("End lumpSum process");
         setScheduleLumpSumEvent();
     }
 
@@ -126,7 +129,8 @@ public class LumpSumManager implements IPlugin {
         if (exec == null) {
             log.warn("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount());
             return;
-        }
+        } else 
+        	log.info(exec.toString());
         positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
