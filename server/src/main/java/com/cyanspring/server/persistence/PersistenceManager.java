@@ -1507,18 +1507,29 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		User user = event.getUser();
 		Transaction tx = null;
+		boolean isOk = true;
+
 		try {
 		    tx = session.beginTransaction();
 	    	session.update(user);
 		    tx.commit();
 		}
 		catch (Exception e) {
+			isOk =false;
 			log.error(e.getMessage(), e);
 		    if (tx!=null) 
 		    	tx.rollback();
 		}
 		finally {
 			session.close();
+		}
+		
+		if(isOk){
+			try {
+				eventManager.sendRemoteEvent(new UserUpdateEvent(null,null,user));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
 	}
 	
