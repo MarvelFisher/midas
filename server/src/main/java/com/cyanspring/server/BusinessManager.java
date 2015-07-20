@@ -584,40 +584,8 @@ public class BusinessManager implements ApplicationContextAware {
 			if (!PriceUtils.isZero(event.getQty()))
 				qty = Math.min(qty, event.getQty());
 
-			OrderSide side = position.getQty() > 0 ? OrderSide.Sell
-					: OrderSide.Buy;
-			ParentOrder order = new ParentOrder(position.getSymbol(), side,
-					qty, 0.0, OrderType.Market);
-			order.put(OrderField.STRATEGY.value(), "SDMA");
-			order.setUser(account.getUserId());
-			order.setAccount(account.getId());
-			order.setSender(event.getSender());
-			// stick in the txId for future updates
-			order.put(OrderField.CLORDERID.value(), event.getTxId());
-			// stick in source for FIX orders
-			order.put(OrderField.SOURCE.value(), event.getKey());
-			order.setReason(event.getReason());
-
-			// add order to local map
-			positionKeeper.lockAccountPosition(order);
-			orders.put(order.getId(), order.getAccount(), order);
-
-			// send to order manager
-			UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(
-					order.getId(), ExecType.NEW, event.getTxId(), order, null);
-			eventManager.sendEvent(updateEvent);
-
-			// create the strategy
-			IStrategy strategy = strategyFactory.createStrategy(
-					order.getStrategy(), new Object[] { refDataManager,
-							tickTableManager, order });
-			IStrategyContainer container = getLeastLoadContainer();
-
-			log.debug("Close position order " + strategy.getId()
-					+ " assigned to container " + container.getId());
-			AddStrategyEvent addStrategyEvent = new AddStrategyEvent(
-					container.getId(), strategy, true);
-			eventManager.sendEvent(addStrategyEvent);
+            processClosePosition(event.getSender(), event.getTxId(), event.getKey(), event.getReason(),
+                    account, position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell: OrderSide.Buy, qty);
 
 		} catch (AccountException ae) {
 			ok = false;
@@ -640,7 +608,43 @@ public class BusinessManager implements ApplicationContextAware {
 		}
 	}
 
-	public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
+    public void processClosePosition(String sender, String txID, String key, OrderReason reason,
+                                     Account account, String symbol, OrderSide side, double qty) throws Exception {
+        ParentOrder order = new ParentOrder(symbol, side,
+                qty, 0.0, OrderType.Market);
+        order.put(OrderField.STRATEGY.value(), "SDMA");
+        order.setUser(account.getUserId());
+        order.setAccount(account.getId());
+        order.setSender(sender);
+        // stick in the txId for future updates
+        order.put(OrderField.CLORDERID.value(), txID);
+        // stick in source for FIX orders
+        order.put(OrderField.SOURCE.value(), key);
+        order.setReason(reason);
+
+        // add order to local map
+        positionKeeper.lockAccountPosition(order);
+        orders.put(order.getId(), order.getAccount(), order);
+
+        // send to order manager
+        UpdateParentOrderEvent updateEvent = new UpdateParentOrderEvent(
+                order.getId(), ExecType.NEW, txID, order, null);
+        eventManager.sendEvent(updateEvent);
+
+        // create the strategy
+        IStrategy strategy = strategyFactory.createStrategy(
+                order.getStrategy(), new Object[] { refDataManager,
+                        tickTableManager, order });
+        IStrategyContainer container = getLeastLoadContainer();
+
+        log.debug("Close position order " + strategy.getId()
+                + " assigned to container " + container.getId());
+        AddStrategyEvent addStrategyEvent = new AddStrategyEvent(
+                container.getId(), strategy, true);
+        eventManager.sendEvent(addStrategyEvent);
+    }
+
+    public void processUpdateParentOrderEvent(UpdateParentOrderEvent event) {
 		ParentOrder order = event.getParent();
 		log.info("Received UpdateParentOrderEvent: " + order);
 		String account = order.getAccount();
