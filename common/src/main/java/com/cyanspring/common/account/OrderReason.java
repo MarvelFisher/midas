@@ -14,7 +14,8 @@ public enum OrderReason {
 	DailyStopLoss(11),
 	DayTradingMode(12),
 	PositionStopLoss(13),
-	TradingMode(14)
+	TradingMode(14),
+	CompanyManualClose(15),
 	;
 	
 	private final int value;

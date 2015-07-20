@@ -124,15 +124,15 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		cbUserType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
 		
-//		Label lblUserRole = new Label(container, SWT.NONE);
-//		lblUserRole.setText("User Role:");
-//		cbUserRole = new Combo(container, SWT.BORDER);
-//		for(UserRole userRole: UserRole.values()) {
-//			cbUserRole.add(userRole.toString());
-//		}
-//		cbUserRole.setText(UserRole.Trader.toString());
-//		cbUserRole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-//				false, 1, 1));
+		Label lblUserRole = new Label(container, SWT.NONE);
+		lblUserRole.setText("User Role:");
+		cbUserRole = new Combo(container, SWT.BORDER);
+		for(UserRole userRole: UserRole.values()) {
+			cbUserRole.add(userRole.toString());
+		}
+		cbUserRole.setText(UserRole.Trader.toString());
+		cbUserRole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 1, 1));
 
 		Label lblBlank = new Label(container, SWT.NONE);
 		GridData gdLblBlank = new GridData(SWT.FILL, SWT.CENTER, true,
@@ -196,7 +196,7 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		user.setEmail(txtEmail.getText());
 		user.setPhone(txtPhone.getText());
 		user.setUserType(UserType.valueOf(cbUserType.getText()));
-//		user.setRole(UserRole.valueOf(cbUserRole.getText()));
+		user.setRole(UserRole.valueOf(cbUserRole.getText()));
 		CreateUserEvent event = new CreateUserEvent(id, server, 
 				user, "", "", IdGenerator.getInstance().getNextID());
 		try {

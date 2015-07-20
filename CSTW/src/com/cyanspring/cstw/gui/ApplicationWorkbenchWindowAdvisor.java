@@ -80,37 +80,21 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			setUserAccount(Business.getInstance().getUser(), Business.getInstance().getAccount());
 			
 			
-			log.info("fire account login menu change");
+			log.info("fire account login menu change :{}",Business.getInstance().getUserGroup().getRole().name());
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window.getService(ISourceProviderService.class);
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
-			        .getSourceProvider(AuthProvider.ADMIN);
+			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
 			commandStateService.fireAccountChanged();
 			
-//			Menu menu = window.getShell().getMenuBar();
-//			MenuItem mi[] = menu.getItems();
-//			log.info("get menu");
-//			for(MenuItem m : mi){
-//				log.info("menu:{}",m.getText());
-//				Menu menu2 = m.getMenu();
-//				if(menu2 != null){
-//					MenuItem m2[] = menu2.getItems();
-//					log.info("item size:{}",menu2.getItemCount());
-//					for(MenuItem mi2 :m2){
-//						log.info("menu2:{}",mi2.getText());
-//					}
-//				}else{
-//					log.info("menu2 is null");
-//				}
-//			}
 				
-			IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
-			
-
-			IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
-			
-			ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-
-			
+//			IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
+//			
+//
+//			IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
+//			
+//			ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+//
+//			
 //			MenuItem mi[] = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getMenuBar().getItems();
 //			log.info("get menu");
 //			for(MenuItem m : mi){

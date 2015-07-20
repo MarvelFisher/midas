@@ -33,7 +33,7 @@ public class AuthProvider extends AbstractSourceProvider{
 	@Override
 	public Map getCurrentState() {
 		UserRole role = Business.getInstance().getUserGroup().getRole();
-	    stateMap.put(role.name(), ENABLED);
+	    stateMap.put(role.name(), DISENABLED);
 	    return stateMap;
 	}
 
@@ -45,7 +45,7 @@ public class AuthProvider extends AbstractSourceProvider{
 	public void fireAccountChanged(){
 		stateMap.clear();
 		UserRole role = Business.getInstance().getUserGroup().getRole();
-		log.info("get role again:{}",role);
+		log.info("get role again:{}",role.name());
 	    stateMap.put(role.name(), ENABLED);
 		fireSourceChanged(0, stateMap);
 	}

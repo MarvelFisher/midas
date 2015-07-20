@@ -76,14 +76,16 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createManualRefreshAction;
 	private Action createSearchIdAction;
 	private Action createActiveAccountAction;
-	private Action createGroupManagementAction;
-	private GroupManagementDialog createGroupDialog;
+	private Action createFrezzeAccountAction;
+	
 	private final String ID_CREATE_USER_ACTION = "CREATE_USER"; 
 	private final String ID_COUNT_ACCOUNT_ACTION = "COUNT_ACCOUNT";
 	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
 	private final String ID_SEARCH_ID_ACTION = "SEARCH_ID";
 	private final String ID_ACTIVE_ACCOUNT_ACTION = "ACTIVE_ACCOUNT";
-	private final String ID_GROUP_MANAGEMENT_ACTION = "GROUP_MANAGEMENT";
+	private final String ID_FREZZE_ACCOUNT_ACTION = "FREZZE_ACCOUNT";
+
+
 	private Composite searchBarComposite;
 	private GridData gd_searchBar;
 	private Text searchText;
@@ -168,7 +170,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createResetAccountAction(parent);
 		createActiveAccountAction(parent);
 		createSearchIdAction(parent);
-		//createGroupManagementAction(parent);
+//		createFrezzeAccountAction(parent);
+
 		if (Business.getInstance().isFirstServerReady())
 			sendSubscriptionRequest(Business.getInstance().getFirstServer());
 		else
@@ -181,7 +184,23 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	}
 	
+	private void createFrezzeAccountAction(Composite parent) {
+		createFrezzeAccountAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
 
+
+			}
+		};
+		createFrezzeAccountAction.setId(ID_FREZZE_ACCOUNT_ACTION);
+		createFrezzeAccountAction.setText("Frezze Account");
+		createFrezzeAccountAction.setToolTipText("Frezze Account");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.FREZZE_ICON.toString());
+		createFrezzeAccountAction.setImageDescriptor(imageDesc);
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createFrezzeAccountAction);		
+	}
 
 	private void initSearchBar(Composite parent) {
 		searchBarComposite = new Composite(parent, SWT.NONE);
@@ -227,26 +246,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		}
 
 	}
-	private void createGroupManagementAction(Composite parent) {
-
-		createGroupDialog = new GroupManagementDialog(parent.getShell());
-		// create local toolbars
-		createGroupManagementAction = new Action() {
-			public void run() {
-				createGroupDialog.open();
-			}
-		};
-		createGroupManagementAction.setId(ID_GROUP_MANAGEMENT_ACTION);
-		createGroupManagementAction.setText("Group Management");
-		createGroupManagementAction.setToolTipText("Group Management");
-		
-		ImageDescriptor imageDesc = imageRegistry
-				.getDescriptor(ImageID.PEOPLE_ICON.toString());
-		createGroupManagementAction.setImageDescriptor(imageDesc);
-		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(createGroupManagementAction);
-		
-	}
+	
 	private void createManualRefreshToggleAction(final Composite parent) {
 
 		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
@@ -581,7 +581,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
 			for (Account account : evt.getAccounts()) {
-				log.info("account id:{}",account.getId());
 				if(Business.getInstance().isManagee(account.getId())){
 					accounts.put(account.getId(), account);
 				}
