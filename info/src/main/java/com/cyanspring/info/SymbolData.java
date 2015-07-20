@@ -87,7 +87,7 @@ public class SymbolData implements Comparable<SymbolData>
 		dCurTotalVolume = 0;
 		dCurTurnover = 0;
 		readFromTick() ;
-		get52WHighLow() ;
+//		get52WHighLow() ;
 		isUpdating = false ;
 	}
 	public SymbolData(String symbol) {
@@ -425,6 +425,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public void get52WHighLow()
 	{
+		log.debug(strSymbol + " get52WHighLow()");
     	if (market == null)
     	{
     		return;
@@ -446,6 +447,7 @@ public class SymbolData implements Comparable<SymbolData>
     		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
     	}
 		centralDB.getDbhnd().get52WHighLow(this, market, symbol);
+		log.debug(strSymbol + " get52WHighLow() end");
 		return ;
 	}
 	
@@ -1050,6 +1052,32 @@ public class SymbolData implements Comparable<SymbolData>
 			msg += "M:" + mapHistorical.get("M").size();
 		log.debug(msg);
 		this.mapHistorical = mapHistorical;
+	}
+	public void set52WHLByMapHistorical()
+	{
+		List<HistoricalPrice> listPrice = getMapHistorical().get("W");
+		if (listPrice == null)
+		{
+			return;
+		}
+		Collections.sort(listPrice);
+		int head = (listPrice.size() > 52) ? (listPrice.size() - 52) : 0;
+		List<HistoricalPrice> listPrice52 = listPrice.subList(head, listPrice.size()-1);
+		double dHigh = 0 ; 
+		double dLow = 0 ;
+		for (HistoricalPrice price : listPrice52)
+		{
+			dHigh = price.getHigh();
+			dLow = price.getLow();
+			if (getD52WHigh() < dHigh)
+			{
+				setD52WHigh(dHigh) ;
+			}
+			if (PriceUtils.isZero(getD52WLow()) || getD52WLow() > dLow)
+			{
+				setD52WLow(dLow) ;
+			}
+		}
 	}
 	
 }
