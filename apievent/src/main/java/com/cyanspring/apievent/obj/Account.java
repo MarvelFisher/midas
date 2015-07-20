@@ -13,7 +13,7 @@ public class Account {
     private double allTimePnL;
     private String currency;
     private double cash;
-    private double margin;
+    private double cashAvailable;
     private double value;
 
     public double getDailyPnL() {
@@ -64,12 +64,12 @@ public class Account {
         this.cash = cash;
     }
 
-    public double getMargin() {
-        return margin;
+    public double getCashAvailable() {
+        return cashAvailable;
     }
 
-    public void setMargin(double margin) {
-        this.margin = margin;
+    public void setCashAvailable(double cashAvailable) {
+        this.cashAvailable = cashAvailable;
     }
 
     public double getValue() {
