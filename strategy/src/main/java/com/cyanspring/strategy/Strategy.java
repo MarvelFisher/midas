@@ -96,6 +96,7 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 	private Boolean roundPrice;
 	private Boolean roundQty;
 	protected boolean timerEventRequired = true;
+	protected Boolean simMarketOrder;
 
 	private List<FieldDef> strategyFieldDefs;
 	private Map<String, FieldDef> combineFieldDefs;
@@ -724,6 +725,16 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 
 	public Map<Class<? extends AsyncEvent>, ExecuteTiming> getEventExecuteTiming() {
 		return eventExecuteTiming;
+	}
+
+	@Override
+	public Boolean isSimMarketOrder() {
+		return simMarketOrder;
+	}
+
+	@Override
+	public void setSimMarketOrder(Boolean simMarketOrder) {
+		this.simMarketOrder = simMarketOrder;
 	}
 
 	public void setEventExecuteTiming(

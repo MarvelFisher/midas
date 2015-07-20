@@ -27,10 +27,6 @@ import com.cyanspring.strategy.singleorder.SingleOrderStrategy;
  *
  */
 public class SDMAPriceAnalyzer extends AbstractPriceAnalyzer {
-	private boolean supportMarketOrderType;
-	private boolean aggressiveWithTime;
-	private int aggressiveTicks = 5;
-	private int retryCount = 0;
 	
 	@Override
 	public PriceInstruction calculate( QuantityInstruction qtyInstruction, 
@@ -43,68 +39,20 @@ public class SDMAPriceAnalyzer extends AbstractPriceAnalyzer {
 		OrderType orderType = order.getOrderType();
 		double price = 0.0;
 		
-		if(supportMarketOrderType) {
+		if(orderType.equals(OrderType.Market) && strategy.isSimMarketOrder()) {
+			price = getSimMarketOrderPrice(strategy);
+			if(PriceUtils.validPrice(price))
+				pi.add(new PriceAllocation(order.getSymbol(), order.getSide(), price, qtyInstruction.getAggresiveQty(), 
+						ExchangeOrderType.LIMIT, strategy.getId()));
+			
+		} else {
 			ExchangeOrderType exOrderType = ExchangeOrderType.defaultMap(orderType);
 			price = order.getPrice();
 			pi.add(new PriceAllocation(order.getSymbol(), order.getSide(), price, qtyInstruction.getAggresiveQty(), 
 					exOrderType, strategy.getId()));
-		} else {
-			if(orderType.equals(OrderType.Market)) {
-				Quote quote = strategy.getAdjQuote();
-				if(null == quote)
-					return pi;
-				if(order.getSide().equals(OrderSide.Buy)) {
-					price = quote.getAsk();
-					if(!PriceUtils.validPrice(price)) { //if no ask get on top of depth
-						price = quote.getBid();
-						price = strategy.getTickTable().tickUp(price, false);
-					} else if(aggressiveWithTime && retryCount > 0) {
-						price = strategy.getTickTable().tickUp(price, retryCount * aggressiveTicks, false);
-					}
-				} else {
-					price = quote.getBid();
-					if(!PriceUtils.validPrice(price)) { //if no bid get on top of depth
-						price = quote.getAsk();
-						price = strategy.getTickTable().tickDown(price, false);
-					} else if(aggressiveWithTime && retryCount > 0) {
-						price = strategy.getTickTable().tickDown(price, retryCount * aggressiveTicks, false);
-					}
-				}
-				retryCount++;
-			} else {
-				price = order.getPrice();
-			}
-			if(PriceUtils.validPrice(price))
-				pi.add(new PriceAllocation(order.getSymbol(), order.getSide(), price, qtyInstruction.getAggresiveQty(), 
-						ExchangeOrderType.LIMIT, strategy.getId()));
-		}
-			
+		}			
+
 		return pi;
 	}
-
-	public boolean isSupportMarketOrderType() {
-		return supportMarketOrderType;
-	}
-
-	public void setSupportMarketOrderType(boolean supportMarketOrderType) {
-		this.supportMarketOrderType = supportMarketOrderType;
-	}
-
-	public boolean isAggressiveWithTime() {
-		return aggressiveWithTime;
-	}
-
-	public void setAggressiveWithTime(boolean aggressiveWithTime) {
-		this.aggressiveWithTime = aggressiveWithTime;
-	}
-
-	public int getAggressiveTicks() {
-		return aggressiveTicks;
-	}
-
-	public void setAggressiveTicks(int aggressiveTicks) {
-		this.aggressiveTicks = aggressiveTicks;
-	}
-	
 	
 }

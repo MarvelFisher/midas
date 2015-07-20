@@ -28,9 +28,11 @@ public class SDMAStrategy extends SingleOrderStrategy {
 
 	@Override
 	public void init() throws StrategyException {
-		if(!parentOrder.getOrderType().equals(OrderType.Market))
+		if(this.isSimMarketOrder())
+			setQuoteRequired(true);
+		else
 			setQuoteRequired(false);
-		
+			
 		setTimerEventRequired(false);
 		super.init();
 	}

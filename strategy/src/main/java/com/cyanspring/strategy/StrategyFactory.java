@@ -148,6 +148,9 @@ public class StrategyFactory implements IStrategyFactory, ApplicationContextAwar
 		if(null == strategy.isRoundQty())
 			strategy.setRoundQty(globalStrategySettings.isRoundQty());
 
+		if(null == strategy.isSimMarketOrder())
+			strategy.setSimMarketOrder(globalStrategySettings.isSimMarketOrder());
+		
 		return strategy;
 	}
 

@@ -14,16 +14,22 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.strategy.PriceAllocation;
 import com.cyanspring.common.strategy.PriceInstruction;
+import com.cyanspring.common.type.ExchangeOrderType;
+import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.PriceUtils;
 
 public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
-
 	protected abstract PriceInstruction calculate(QuantityInstruction qtyInstruction,
 			SingleOrderStrategy strategy);
+
+	private boolean aggressiveWithTime = true;
+	private int aggressiveTicks = 5;
+	private int retryCount = 0;
 	
 	protected void finalizePrice(PriceInstruction pi,
 			SingleOrderStrategy strategy) {
@@ -88,4 +94,50 @@ public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
 		return pi;
 	}
 
+	public double getSimMarketOrderPrice(SingleOrderStrategy strategy) {
+		ParentOrder order = strategy.getParentOrder();
+		Quote quote = strategy.getAdjQuote();
+		if(null == quote) {
+			strategy.logError("Price analyzer requires quote but quote is null");
+			return 0.0;
+		}
+		
+		double price;
+		if(order.getSide().equals(OrderSide.Buy)) {
+			price = quote.getAsk();
+			if(!PriceUtils.validPrice(price)) { //if no ask get on top of depth
+				price = quote.getBid();
+				price = strategy.getTickTable().tickUp(price, false);
+			} else if(aggressiveWithTime && retryCount > 0) {
+				price = strategy.getTickTable().tickUp(price, retryCount * aggressiveTicks, false);
+			}
+		} else {
+			price = quote.getBid();
+			if(!PriceUtils.validPrice(price)) { //if no bid get on top of depth
+				price = quote.getAsk();
+				price = strategy.getTickTable().tickDown(price, false);
+			} else if(aggressiveWithTime && retryCount > 0) {
+				price = strategy.getTickTable().tickDown(price, retryCount * aggressiveTicks, false);
+			}
+		}
+		retryCount++;
+		return price;
+	}
+	
+	public boolean isAggressiveWithTime() {
+		return aggressiveWithTime;
+	}
+
+	public void setAggressiveWithTime(boolean aggressiveWithTime) {
+		this.aggressiveWithTime = aggressiveWithTime;
+	}
+
+	public int getAggressiveTicks() {
+		return aggressiveTicks;
+	}
+
+	public void setAggressiveTicks(int aggressiveTicks) {
+		this.aggressiveTicks = aggressiveTicks;
+	}
+	
 }

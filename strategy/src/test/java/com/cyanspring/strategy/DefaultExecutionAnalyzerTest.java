@@ -333,6 +333,18 @@ public class DefaultExecutionAnalyzerTest {
 			
 		}
 
+		@Override
+		public Boolean isSimMarketOrder() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void setSimMarketOrder(Boolean simMarketOrder) {
+			// TODO Auto-generated method stub
+			
+		}
+
 
 	}
 	

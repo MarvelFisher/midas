@@ -77,4 +77,6 @@ public interface IStrategy extends Serializable{
 	public void setRoundQty(Boolean roundQty);
 	public String getAccount();
 	public DataObject getDataObject();
+	public Boolean isSimMarketOrder();
+	public void setSimMarketOrder(Boolean simMarketOrder);
 }

@@ -16,6 +16,7 @@
         <property name="multiInstrumentCommonDisplayFields" ref="multiInstrumentCommonDisplayFields" />
         <property name="multiInstrumentCommonFieldDefs" ref="multiInstrumentCommonFieldDefs" />
         <property name="validateQuote" value="false" />
+        <property name="simMarketOrder" value="true" />
     </bean>
 
     <bean id="server" class="com.cyanspring.server.Server">
@@ -48,14 +49,6 @@
         </property>
     </bean>
     
-	<bean id="strategyFactory" class="com.cyanspring.strategy.StrategyFactory">
-		<property name="mapping">
-	 		<map key-type="java.lang.String" value-type="java.lang.String">
-	 			<entry key="SDMA" value="CTPDMA"/>
-	 		</map>
-		</property>
-	</bean>
-
     <bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
     

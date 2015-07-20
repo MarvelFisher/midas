@@ -1,6 +1,7 @@
 package com.cyanspring.common.strategy;
 
 import java.util.List;
+
 import com.cyanspring.common.business.FieldDef;
 
 public class GlobalStrategySettings {
@@ -8,6 +9,7 @@ public class GlobalStrategySettings {
 	private boolean validateQuote = false;
 	private boolean roundPrice = false;
 	private boolean roundQty = false;
+	private boolean simMarketOrder = false;
 	private List<String> singleOrderCommonDisplayFields;
 	private List<FieldDef> singleOrderCommonFieldDefs;
 	private List<String> singleInstrumentCommonDisplayFields;
@@ -121,4 +123,12 @@ public class GlobalStrategySettings {
 		this.roundQty = roundQty;
 	}
 	
+	public boolean isSimMarketOrder() {
+		return simMarketOrder;
+	}
+
+	public void setSimMarketOrder(boolean simMarketOrder) {
+		this.simMarketOrder = simMarketOrder;
+	}
+
 }
