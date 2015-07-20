@@ -89,6 +89,7 @@ public class CentralDbProcessor implements IPlugin
 	private MarketSessionType sessionType = null ;
 	private String tradedate ;
 	static boolean isStartup = true;
+	boolean isRetrieving = false;
 	private boolean calledRefdata = false;
 	private boolean isProcessQuote = false;
 	private Queue<QuoteEvent> quoteBuffer;
@@ -174,7 +175,7 @@ public class CentralDbProcessor implements IPlugin
 			appServIDList.add(~index, event.getSender());
 		}
 		if (!isStartup)
-			sendCentralReady(event.getSender());
+			respondCentralReady(event.getSender());
 	}
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) 
@@ -527,19 +528,16 @@ public class CentralDbProcessor implements IPlugin
 				}
 				else
 				{
-					for (String appserv : appServIDList)
-					{
-						sendCentralReady(appserv);
-					}
+					sendCentralReady();
 				}
 				calledRefdata = true;
 			} 
 			catch (IOException e) 
 			{
-				log.error(e.getMessage(), e);;
+				log.error(e.getMessage(), e);
+				isStartup = false;
 			}
 		}
-		isStartup = false;
 		for (SymbolChef chef : SymbolChefList)
 		{
 			chef.chefStart();
@@ -549,13 +547,18 @@ public class CentralDbProcessor implements IPlugin
 	
 	protected void retrieveChart()
 	{
+		if (isRetrieving)
+		{
+			return;
+		}
+		isRetrieving = true;
 		Thread retrieveThread = new Thread(new Runnable() 
 		{
 			@Override
 			public void run() 
 			{
 				log.debug("Retrieve Chart thread start");
-				while (isStartup)
+				while (calledRefdata == false)
 				{
 					try 
 					{
@@ -572,6 +575,12 @@ public class CentralDbProcessor implements IPlugin
 //				}
 				getAllChartPrice();
 				log.debug("Retrieve Chart thread finish");
+				isRetrieving = false;
+
+				if (isStartup)
+				{
+					sendCentralReady();
+				}
 			}
 		});
 		retrieveThread.setName("CDP_Retrieve_Chart");
@@ -620,13 +629,7 @@ public class CentralDbProcessor implements IPlugin
 			if (symboldata != null)
 			{
 				symboldata.setMapHistorical(entry.getValue());
-			}
-		}
-		if (isStartup)
-		{
-			for (String appserv : appServIDList)
-			{
-				sendCentralReady(appserv);
+				symboldata.set52WHLByMapHistorical();
 			}
 		}
 			
@@ -636,7 +639,15 @@ public class CentralDbProcessor implements IPlugin
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, (-1) * (getHistoricalDataPeriod().get(strType) + 2));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		List<HistoricalPrice> historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
+		List<HistoricalPrice> historical;
+		if (strType.equals("D") || strType.equals("W") || strType.equals("M"))
+		{
+			historical = getDbhnd().getTotalValue(market, strType, null);
+		}
+		else
+		{
+			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
+		}
 		HashMap<String, List<HistoricalPrice>> subMap;
 		for (HistoricalPrice price : historical)
 		{
@@ -701,7 +712,16 @@ public class CentralDbProcessor implements IPlugin
 			isProcessQuote = true;
 		//this.sessionType = sessionType;
 	}
-	public void sendCentralReady(String appserv)
+	public void sendCentralReady()
+	{
+		log.info("SymbolData is ready, send CDPReadyEvent to all connected appServer");
+		for (String appserv : appServIDList)
+		{
+			respondCentralReady(appserv);
+		}
+		isStartup = false;
+	}
+	public void respondCentralReady(String appserv)
 	{
 		CentralDbReadyEvent event = new CentralDbReadyEvent(null, appserv);
 		event.setTickTableList(tickTableManager.getTickTables());

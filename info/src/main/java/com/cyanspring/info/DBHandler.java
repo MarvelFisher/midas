@@ -396,7 +396,10 @@ public class DBHandler
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
     	String sqlcmd = "" ;
-    	sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC;", strTable, retrieveDate);
+    	if (retrieveDate == null)
+    		sqlcmd = String.format("SELECT * FROM %s ORDER BY `KEYTIME` DESC;", strTable);
+    	else
+    		sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC;", strTable, retrieveDate);
     	return getHistoricalPrice(sqlcmd);
     }
     
