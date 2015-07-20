@@ -87,11 +87,20 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 			iPacketLen = packetlen + 4;
 			iReceivedBytes += iPacketLen; 
 			if(byIsCompressed == 0) {
-				Object obj = MsgPack.unpack(body_buf);
-				out.add(obj);
+				try {
+					Object obj = MsgPack.unpack(body_buf);			
+					out.add(obj);
+				} catch(Exception e) {
+					throw new MsgPackException("Exception occurs at Unpack normal packet");
+				}
 			} else {
-				byte[] decompBuf = CompressUtil.decompress(body_buf);			
-				out.add(MsgPack.unpack(decompBuf));
+				byte[] decompBuf = CompressUtil.decompress(body_buf);
+				try {
+					out.add(MsgPack.unpack(decompBuf));
+				} catch(Exception e) {
+					decompBuf = null;
+					throw new MsgPackException("Exception occurs at Unpack compressed packet");
+				}
 				decompBuf = null;
 			}
 			body_buf = null;			

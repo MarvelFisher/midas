@@ -3,19 +3,16 @@ package com.cyanspring.adaptor.future.wind.gateway;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
-
-import net.asdfa.msgpack.MsgPack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.Network.Transport.MsgPackException;
 
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
@@ -25,11 +22,7 @@ import cn.com.wind.td.tdf.TDF_TRANSACTION;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	private static final ConcurrentHashMap<Channel,Registration> channels = new ConcurrentHashMap<Channel,Registration>();
@@ -277,7 +270,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				if(false == clientHeartBeat) {				
         			String strlog = "in : [" + msg + "] , " + channel.remoteAddress();
         			//System.out.println(strlog);
-        			log.info(strlog);					
+        			log.debug(strlog);					
 				}
 				int endindex = msg.indexOf("|Hash=");
 				if (endindex > 0) {
@@ -644,6 +637,9 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
 			throws Exception {    	
 		log.info(e.getMessage() + " , from : " + ctx.channel().remoteAddress().toString(),e);
+		if(e instanceof MsgPackException) {
+			return;
+		}
 		ctx.close();
 	}
 
