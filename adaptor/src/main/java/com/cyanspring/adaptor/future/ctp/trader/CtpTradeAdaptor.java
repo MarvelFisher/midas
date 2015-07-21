@@ -150,5 +150,13 @@ public class CtpTradeAdaptor implements IStreamAdaptor<IDownStreamConnection> {
 	public void setMaxOrderCount(int maxOrderCount) {
 		this.maxOrderCount = maxOrderCount;
 	}
+
+	public String getConnectionPrefix() {
+		return connectionPrefix;
+	}
+
+	public void setConnectionPrefix(String connectionPrefix) {
+		this.connectionPrefix = connectionPrefix;
+	}
 	
 }
