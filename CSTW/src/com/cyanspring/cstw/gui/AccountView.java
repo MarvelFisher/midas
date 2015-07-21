@@ -83,9 +83,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private final String ID_COUNT_ACCOUNT_ACTION = "COUNT_ACCOUNT";
 	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
 	private final String ID_SEARCH_ID_ACTION = "SEARCH_ID";
-	private final String ID_ACTIVE_ACCOUNT_ACTION = "ACTIVE_ACCOUNT";
 	private final String ID_CHANGE_ACCOUNT_STATE_ACTION = "CHANGE_ACCOUNT_STATE";
-
 
 	private Composite searchBarComposite;
 	private GridData gd_searchBar;
@@ -94,6 +92,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private ImageRegistry imageRegistry;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 10000;
+	private final int autoRefreshLimitUser = 1000;
 	private boolean show;
 	
 	private final RGB PURPLE = new RGB(171,130,255);
@@ -269,6 +268,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
+				log.info("createManualRefreshAction.isChecked():"+createManualRefreshAction.isChecked());
 				if(!createManualRefreshAction.isChecked()) {
 					Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
 				} else { 
@@ -532,7 +532,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						return;
 					if (accounts.toArray().size() > 0)
 						createOpenPositionColumns(accounts.toArray());
-
+					
 					viewer.refresh();
 				}
 			}
@@ -572,6 +572,13 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			}
 			log.info("Loaded accounts: " + evt.getAccounts().size());
 			show = true;
+				
+			if(accounts.size()<=autoRefreshLimitUser){
+				if(!createManualRefreshAction.isChecked())
+					createManualRefreshAction.setChecked(true);
+				createManualRefreshAction.run();
+			}			
+			
 			showAccounts();
 		} else if (event instanceof AccountUpdateEvent) {
 			processAccountUpdate(((AccountUpdateEvent) event).getAccount());
