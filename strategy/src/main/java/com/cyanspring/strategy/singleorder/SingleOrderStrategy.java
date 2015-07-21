@@ -74,6 +74,7 @@ import com.cyanspring.common.type.OrderAction;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
+import com.cyanspring.common.type.TimeInForce;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.OrderUtils;
 import com.cyanspring.common.util.PriceUtils;
@@ -276,7 +277,13 @@ public abstract class SingleOrderStrategy extends Strategy {
 	@Override
 	public ChildOrder createChildOrder(String parentId, String symbol, OrderSide side, double quantity, double price, ExchangeOrderType type) {
 		//ignore id, symbol & side specification for single order strategy. They should be the same as parent orders.
-		return parentOrder.createChild(quantity, price, type);
+		ChildOrder order = parentOrder.createChild(quantity, price, type);
+		if(this.isSimMarketOrder() && this.parentOrder.getOrderType().equals(OrderType.Market)) {
+			log.debug("Setting order KOF: " + order.getId());
+			order.put(OrderField.TIF.value(), TimeInForce.FILL_OR_KILL);
+		}
+		
+		return order;
 	}
 
 	public double getQtyInMarket() {
