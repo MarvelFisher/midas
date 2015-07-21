@@ -12,6 +12,9 @@
 		<property name="timerInterval" value="2000"/>
 		<property name="hpInterval" value="800"/>
 		<property name="strategyName" value="STOP"/>
+		<property name="cancelOnCancel" value="true"/>
+		<property name="rejectOnReject" value="true"/>
+		<property name="maxCancelRetry" value="2"/>
 		<property name="quantityAnalyzer">
 			<bean class="com.cyanspring.strategy.singleorder.AllQuantityAnalyzer"></bean>	
 		</property>
