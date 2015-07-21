@@ -129,7 +129,7 @@ public class FutureItem implements AutoCloseable {
             tickTime = DateUtil.now();
         }
 
-        if (PriceUtils.GreaterThan(futureData.getMatch(), 0)) {
+        if (futureData.getPreClose() > 0) {
 
             //modify tick Time
         	if (QuoteMgr.isModifyTickTime()) {
@@ -202,7 +202,7 @@ public class FutureItem implements AutoCloseable {
             WindGateWayAdapter.instance.saveLastQuote(quote);
             WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
         }else{
-            log.debug(WindDef.TITLE_FUTURE + " " + WindDef.WARN_LAST_LESS_THAN_ZERO + "," + futureData.getWindCode());
+            log.debug(WindDef.TITLE_FUTURE + " " + WindDef.WARN_PRECLOSE_LESS_THAN_ZERO + "," + futureData.getWindCode());
         }
 
         boolean quoteExtendIsChange = false;

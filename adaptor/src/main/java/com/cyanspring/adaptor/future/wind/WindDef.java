@@ -53,6 +53,7 @@ public final class WindDef {
     public static final String TITLE_INDEX = "INDEX";
     public static final String TITLE_TRANSATION = "TRANS";
     public static final String WARN_LAST_LESS_THAN_ZERO = "QUOTE WARNING : Last less than Zero";
+    public static final String WARN_PRECLOSE_LESS_THAN_ZERO = "QUOTE WARNING : preClose less than Zero";
     public static final String WARN_TRADEDATE_NOT_MATCH = "QUOTE WARNING : TradeDate NOT match";
     public static final String WARN_TIME_FORMAT_ERROR = "QUOTE WARNING : Time format fault";
     public static final String WARN_TURNOVER_LESS_THAN_ZERO = "QUOTE WARNING : Turnover less than Zero";
