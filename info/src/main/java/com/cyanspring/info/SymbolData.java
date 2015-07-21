@@ -867,16 +867,11 @@ public class SymbolData implements Comparable<SymbolData>
 		ArrayList<HistoricalPrice> listPrice;
 		if (getMapHistorical().get(type) == null)
 		{
-//			listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
-//			if (listPrice == null)
-//			{
-//				return null;
-//			}
 			getChartPrice(type);
 		}
 		int limit = (dataCount > getMapHistorical().get(type).size()) ? getMapHistorical().get(type).size() : dataCount;
 		listPrice = new ArrayList<HistoricalPrice>();
-		listPrice.addAll(getMapHistorical().get(type).subList(0, limit));
+		listPrice.addAll(getMapHistorical().get(type).subList(listPrice.size() - limit, listPrice.size()));
 		Collections.sort(listPrice);
 		
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
