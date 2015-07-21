@@ -233,7 +233,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(535, "CSTW Login failed!"));			
 			addAndCheck(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, getBean(536, "Delete group management failed!"));			
 			addAndCheck(ErrorMessage.CHANGE_USER_ROLE_FAILED, getBean(537, "Change user role failed!"));			
-			addAndCheck(ErrorMessage.FREEZE_ACCOUNT_FAILED, getBean(538, "Freeze account failed!"));			
+			addAndCheck(ErrorMessage.FREEZE_ACCOUNT_FAILED, getBean(538, "Freeze account failed!"));		
+			addAndCheck(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, getBean(539, "Change account state failed!"));			
+
 
 			// client errors start with 600
 			addAndCheck(ErrorMessage.NEED_RESTART_APP,getBean(600, "Please restart your App"));			

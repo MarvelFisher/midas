@@ -31,7 +31,8 @@ public enum ImageID {
 	FORWARD_ICON("icons/forward_nav.png"),
 	BACKWARD_ICON("icons/backward_nav.png"),
 	ROLE_ICON("icons/role.png"),
-	FREZZE_ICON("icons/frezze.png")
+	FREZZE_ICON("icons/frezze.png"),
+	AMEND_OPTIONS_ICON("icons/amendOptions.png")
 	;
 	private String value;
 	ImageID(String value) {
