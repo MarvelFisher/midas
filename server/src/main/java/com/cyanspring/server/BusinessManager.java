@@ -855,6 +855,7 @@ public class BusinessManager implements ApplicationContextAware {
 			if(!event.isNeedClearOrderPosition()){
 				return;
 			}		
+
 			List<Account> accounts = accountKeeper.getAllAccounts();
 			for (Account account : accounts) {
 				AccountSetting accountSetting = accountKeeper
