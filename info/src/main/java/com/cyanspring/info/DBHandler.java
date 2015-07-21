@@ -339,19 +339,27 @@ public class DBHandler
     		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
-				price = new HistoricalPrice();
-				price.setTradedate(rs.getString("TRADEDATE"));
-				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
-				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
-				price.setSymbol(rs.getString("SYMBOL")) ;
-				price.setOpen(rs.getDouble("OPEN_PRICE"));
-				price.setClose(rs.getDouble("CLOSE_PRICE"));
-				price.setHigh(rs.getDouble("HIGH_PRICE"));
-				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setVolume(rs.getLong("VOLUME"));
-				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
-				price.setTurnover(rs.getLong("TURNOVER"));
-				retList.add(price);
+				try
+				{
+					price = new HistoricalPrice();
+					price.setTradedate(rs.getString("TRADEDATE"));
+					if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+					if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+					price.setSymbol(rs.getString("SYMBOL")) ;
+					price.setOpen(rs.getDouble("OPEN_PRICE"));
+					price.setClose(rs.getDouble("CLOSE_PRICE"));
+					price.setHigh(rs.getDouble("HIGH_PRICE"));
+					price.setLow(rs.getDouble("LOW_PRICE"));
+					price.setVolume(rs.getLong("VOLUME"));
+					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+					price.setTurnover(rs.getLong("TURNOVER"));
+					retList.add(price);
+				}
+		    	catch (Exception e) 
+				{
+		            log.error(e.getMessage(), e) ;
+		            continue;
+				} 
 			}
 			rs.close();
 			return retList;
@@ -362,11 +370,6 @@ public class DBHandler
             log.trace(sqlcmd);
 			return null ;
 		} 
-    	catch (ParseException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-			return null ;
-		}
     	finally
     	{
     		closeConnect(connect);
@@ -419,19 +422,27 @@ public class DBHandler
     		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
-				price = new HistoricalPrice();
-				price.setTradedate(rs.getString("TRADEDATE"));
-				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
-				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
-				price.setSymbol(rs.getString("SYMBOL")) ;
-				price.setOpen(rs.getDouble("OPEN_PRICE"));
-				price.setClose(rs.getDouble("CLOSE_PRICE"));
-				price.setHigh(rs.getDouble("HIGH_PRICE"));
-				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setVolume(rs.getLong("VOLUME"));
-				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
-				price.setTurnover(rs.getLong("TURNOVER"));
-				retList.add(price);
+				try
+				{
+					price = new HistoricalPrice();
+					price.setTradedate(rs.getString("TRADEDATE"));
+					if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+					if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+					price.setSymbol(rs.getString("SYMBOL")) ;
+					price.setOpen(rs.getDouble("OPEN_PRICE"));
+					price.setClose(rs.getDouble("CLOSE_PRICE"));
+					price.setHigh(rs.getDouble("HIGH_PRICE"));
+					price.setLow(rs.getDouble("LOW_PRICE"));
+					price.setVolume(rs.getLong("VOLUME"));
+					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+					price.setTurnover(rs.getLong("TURNOVER"));
+					retList.add(price);
+				}
+		    	catch (Exception e) 
+				{
+		            log.error(e.getMessage(), e) ;
+		            continue;
+				}
 			}
 			rs.close();
 			return retList;
@@ -442,11 +453,6 @@ public class DBHandler
             log.trace(sqlcmd);
 			return null ;
 		} 
-    	catch (ParseException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-			return null ;
-		}
     	finally
     	{
     		closeConnect(connect);
