@@ -1046,7 +1046,10 @@ public class SymbolData implements Comparable<SymbolData>
 		if (mapHistorical.get("M") != null)
 			msg += "M:" + mapHistorical.get("M").size();
 		log.debug(msg);
-		this.mapHistorical = mapHistorical;
+		synchronized (getMapHistorical())
+		{
+			this.mapHistorical = mapHistorical;
+		}
 	}
 	public void set52WHLByMapHistorical()
 	{
