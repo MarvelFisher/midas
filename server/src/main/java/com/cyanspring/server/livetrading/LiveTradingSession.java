@@ -202,7 +202,13 @@ public class LiveTradingSession implements IPlugin {
 			setLiveTradingState(LiveTradingState.USER_LIVE_TRADING_OFF);
 			try {	
 				log.info("User Live Trading Stop:"+Clock.getInstance().now());
-				eventManager.sendEvent(new LiveTradingEndEvent(null, null));
+				boolean isNeedClearPositionAndOrder = true;
+				if(null != liveTradingSetting)
+					isNeedClearPositionAndOrder = liveTradingSetting.isNeedClearOrderPostionOnTradingMode();
+				
+				log.info("isNeedClearPositionAndOrder:"+isNeedClearPositionAndOrder);
+				
+				eventManager.sendEvent(new LiveTradingEndEvent(null, null,isNeedClearPositionAndOrder));
 				scheduleLiveTradingEvent(stopUserTradingEvent);			
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);

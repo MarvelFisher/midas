@@ -18,6 +18,7 @@
 		<property name="changeSettingFrozenDays" value="0"/>
 		<property name="userStopLiveTradingStartTime" ref="stopLiveTradingStartTime"/>
         <property name="userStopLiveTradingEndTime" ref="stopLiveTradingEndTime"/>
+        <property name="needClearOrderPostionOnTradingMode" value="false"/>
 	</bean>
 
 	<bean id="liveTradingRuleHandler" class="com.cyanspring.server.livetrading.rule.LiveTradingRuleHandler">		

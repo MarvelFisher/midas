@@ -852,7 +852,9 @@ public class BusinessManager implements ApplicationContextAware {
 	public void processLiveTradingEndEvent(LiveTradingEndEvent event) {
 		// close all position and orders accounts that has live trading
 		try {
-
+			if(!event.isNeedClearOrderPosition()){
+				return;
+			}	
 			List<Account> accounts = accountKeeper.getAllAccounts();
 			for (Account account : accounts) {
 				AccountSetting accountSetting = accountKeeper
