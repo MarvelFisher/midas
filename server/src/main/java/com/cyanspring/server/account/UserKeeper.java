@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
@@ -71,17 +72,6 @@ public class UserKeeper {
 			User user = new User(Default.getUser(), "guess?");
 			user.setDefaultAccount(Default.getAccount());
 			user.setUserType(UserType.SUPPORT);
-			this.users.putIfAbsent(user.getId(), user);
-			return user;
-		}
-		return null;
-	}
-	
-	public User tryCreateAdminUser() {
-		if(!userExists(ADMIN)) {
-			User user = new User(ADMIN, ADMIN_PW);
-			user.setDefaultAccount(ADMIN);
-			user.setUserType(UserType.ADMIN);
 			user.setRole(UserRole.Admin);
 			this.users.putIfAbsent(user.getId(), user);
 			return user;
@@ -197,6 +187,16 @@ public class UserKeeper {
 		List<User> userList = new ArrayList<User>();
 		userList.addAll(users.values());
 		return userList;
+	}
+	
+	public boolean isAdmin(String id, String pwd){
+		
+		if(StringUtils.hasText(id) && StringUtils.hasText(pwd) 
+				&& id.equals(UserKeeper.ADMIN) && pwd.equals(UserKeeper.ADMIN_PW)){
+			return true;
+		}
+		
+		return false;
 	}
 
 }

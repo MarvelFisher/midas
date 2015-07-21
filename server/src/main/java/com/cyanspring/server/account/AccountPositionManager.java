@@ -669,13 +669,25 @@ public class AccountPositionManager implements IPlugin {
         }
     }
     
-    
     public void processCSTWUserLoginEvent(CSTWUserLoginEvent event){
     	String id = event.getId();
     	String pwd = event.getPassword();
     	boolean isOk = false;
     	String message = "";
     	UserGroup userGroup = null;
+    	
+    	if(userKeeper.isAdmin(id, pwd)){
+    		userGroup = new UserGroup(id,UserRole.Admin);
+    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup);
+    		try {
+    			eventManager.sendRemoteEvent(reply);
+    		} catch (Exception e) {
+    			log.warn(e.getMessage(),e);
+    		}
+    		return;
+    	}
+    	
+    	
     	try{
 	    	if(!StringUtils.hasText(id) || !StringUtils.hasText(pwd)){
         		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
@@ -700,7 +712,8 @@ public class AccountPositionManager implements IPlugin {
 	    	if( null == userGroup ){
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
-	    		
+	    	
+	    	
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());			
 			user.setLastLogin(Clock.getInstance().now());
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));			    	 	
@@ -1587,10 +1600,6 @@ public class AccountPositionManager implements IPlugin {
     
     public void injectGroups(List<GroupManagement> groups) {
     	userKeeper.injectGroup(groups);
-        User adminUser = userKeeper.tryCreateAdminUser();
-        if (null != adminUser)
-            eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, adminUser,
-                    new CreateUserEvent(PersistenceManager.ID, null, adminUser, "TW", "TW", "")));    
     }
 
     public void injectAccounts(List<Account> accounts) {
