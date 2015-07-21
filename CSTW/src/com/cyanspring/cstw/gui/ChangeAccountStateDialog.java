@@ -30,6 +30,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 
 public class ChangeAccountStateDialog extends Dialog implements IAsyncEventListener{
@@ -152,7 +153,7 @@ public class ChangeAccountStateDialog extends Dialog implements IAsyncEventListe
 				renewAccount(reply.getAccount());
 				account = reply.getAccount();
 			}else{
-				pushMessageToLabel(getReplyErrorMessage(reply.getMessage()));
+				GUIUtils.showMessageBox(getReplyErrorMessage(reply.getMessage()), parent);
 			}
 		}
 	}
