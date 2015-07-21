@@ -779,7 +779,7 @@ public class AccountPositionManager implements IPlugin {
     			try {
 					userKeeper.deleteGroup(group);;
 					successList.add(group);
-					resultMap.put(group, "SUCESS");
+					resultMap.put(group, "SUCCESS");
 				} catch (UserException e) {
 					isOk = false;
 					resultMap.put(group, e.getLocalizedMessage());
