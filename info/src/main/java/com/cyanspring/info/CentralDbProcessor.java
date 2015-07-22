@@ -624,9 +624,29 @@ public class CentralDbProcessor implements IPlugin
 		}
 		String symbol;
 		SymbolData symboldata;
+    	ArrayList<String> symbolarr = new ArrayList<String>();
 		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : retrieveMap.entrySet())
 		{
-			symbol = entry.getKey();
+			symbolarr.clear();
+	    	symbolarr.add(entry.getKey());
+	    	ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolStrings(symbolarr);
+	    	if (symbolinfos.size() < 1)
+	    	{
+	    		continue;
+	    	}
+	    	if (symbolinfos.get(0).getHint() == null)
+	    	{
+	    		symbol = symbolinfos.get(0).getCode(); 
+	    	}
+	    	else if (entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
+	    	{
+	    		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
+	    	}
+	    	else
+	    	{
+	    		continue;
+	    	}
+//			symbol = entry.getKey();
 			symboldata = getChefBySymbol(symbol).getSymbolData(symbol);
 			if (symboldata != null)
 			{
