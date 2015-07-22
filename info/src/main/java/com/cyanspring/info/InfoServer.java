@@ -142,6 +142,11 @@ public class InfoServer
 		IdGenerator.getInstance().setPrefix(systemInfo.getId()+"-");
 		
 		// setting ready List
+		if(null != plugins) {
+			for(IPlugin plugin: plugins) {
+				readyMap.put(plugin.toString(), false);
+			}
+		}
 		readyList = new ReadyList(readyMap);
 		
 		// create eventManager as server
@@ -220,6 +225,7 @@ public class InfoServer
 		if(null != plugins) {
 			for(IPlugin plugin: plugins) {
 				plugin.init();
+				readyList.update(plugin.toString(), true);
 			}
 		}
 		if (useLocalMdReceiver)
@@ -243,7 +249,7 @@ public class InfoServer
 			map.put(key, value);
 			boolean now = allUp();
 			if(!serverReady && now) {
-				waitForCDbPReady();
+//				waitForCDbPReady();
 				serverReady = true;
 				log.info("Server is ready: " + now);
 				ServerReadyEvent event = new ServerReadyEvent(now);
