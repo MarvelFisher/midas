@@ -279,6 +279,7 @@
         <constructor-arg>
             <list>
                 <ref bean="ctpAdaptor" />
+                <ref bean="stpAdaptor" />             
             </list>
         </constructor-arg>
         <constructor-arg>
