@@ -120,6 +120,7 @@ public class Registration {
 	
 	private int symbolPosition(ArrayList<String>lst,String symbol,boolean bAdd) {
 		int iPos;
+		symbol = symbol.toUpperCase();  // 因為 SHF , DCE 註冊時,商品代碼要用小寫,但是傳回來的商品代碼是大寫 !!!
 		synchronized(lst) {
 			iPos = Collections.binarySearch(lst,symbol);
 			if(bAdd && iPos < 0) {
@@ -130,10 +131,10 @@ public class Registration {
 	}
 	
 	
-	public boolean addSymbol(String symbol) {
+	public boolean addSymbol(String symbol) {		
 		if(hadSymbolMarket(symbol)) {
 			return false;
-		}
+		}		
 		int iPos = symbolPosition(symbolList,symbol,true);
 		if(iPos >= 0) {
 			return false;

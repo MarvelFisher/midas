@@ -229,6 +229,9 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			if(canRemove) {
 				registrationGlobal.removeTransaction(symbol);
 				log.info("Remove transaction from registrationGlobal : " + symbol);
+				if(WindGateway.mpCascading) { 
+					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=UnSubsTrans|Symbol=" + symbol,true));	
+				}					
 			}
 		}    	
     }     

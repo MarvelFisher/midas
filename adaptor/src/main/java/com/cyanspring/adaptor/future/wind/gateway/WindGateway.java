@@ -936,7 +936,8 @@ public class WindGateway implements Runnable {
 			if(codes != null) {
 					mapCode.clear();
 					for(TDF_CODE code : codes) {			
-						mapCode.put(code.getWindCode(),code);
+						String wc = code.getWindCode();
+						mapCode.put(wc,code);
 						/*
 						String cnName = code.getCNName();
 						byte[] cn = code.getCNName().getBytes("UTF8");
@@ -991,7 +992,7 @@ public class WindGateway implements Runnable {
 	public void requestSymbolMF(String sym) {
 		if(demo != null)
 		{
-			demo.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
+			demo.AddRequest(new WindRequest(WindRequest.Subscribe,sym));
 		}	
 	}
 	
