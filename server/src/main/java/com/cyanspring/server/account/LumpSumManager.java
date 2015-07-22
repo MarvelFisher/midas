@@ -17,6 +17,8 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 
 import com.cyanspring.server.BusinessManager;
+import com.cyanspring.server.livetrading.TradingUtil;
+import com.cyanspring.server.order.RiskOrderController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,9 @@ public class LumpSumManager implements IPlugin {
 
     @Autowired
     private BusinessManager businessManager;
+
+    @Autowired
+    private RiskOrderController riskOrderController;
 
     private Map<String, Quote> marketData = new HashMap<>();
     private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -90,9 +95,9 @@ public class LumpSumManager implements IPlugin {
             if (!PriceUtils.isZero(qty)) {
                 try {
                 	log.info("Send close position event, symbol: {}, qty: {}", symbol, qty);
-                    businessManager.processClosePosition(null, null, null, OrderReason.ManualClose,
+                    businessManager.processClosePosition(null, null, null, OrderReason.DayTradingMode,
                             accountKeeper.getAccount(Default.getAccount()), symbol,
-                            qty > 0 ? OrderSide.Sell : OrderSide.Buy, qty);
+                            qty > 0 ? OrderSide.Sell : OrderSide.Buy, Math.abs(qty));
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
@@ -134,6 +139,7 @@ public class LumpSumManager implements IPlugin {
         List<Account> list = accountKeeper.getAllAccounts();
 
         for (Account account : list) {
+            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
             try {
                 if (account.getId().equals(Default.getAccount()))
                     continue;
@@ -168,7 +174,7 @@ public class LumpSumManager implements IPlugin {
                 Math.abs(qty),
                 price,
                 "", "",
-                "", "LumpSum",
+                "", IdGenerator.getInstance().getNextID() + "LumpSum",
                 user, account, route);
         exec.put(OrderField.ID.value(), IdGenerator.getInstance().getNextID() + "LumpSum");
         return exec;
