@@ -7,6 +7,7 @@ public class MarketDataDef {
     public static final int QUOTE_TIME_ERROR = 3;
 
     //Quote Source
+    public static final int QUOTE_CLEAN_SESSION = -1;
     public static final int QUOTE_SOURCE_RESEND = 0;
     public static final int QUOTE_SOURCE_IB = 1;
     public static final int QUOTE_SOUECE_ID = 2;

@@ -109,7 +109,7 @@ public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
 				price = quote.getBid();
 				price = strategy.getTickTable().tickUp(price, false);
 			} else if(aggressiveWithTime && retryCount > 0) {
-				price = strategy.getTickTable().tickUp(price, retryCount * aggressiveTicks, false);
+				price = strategy.getTickTable().tickUp(price, Math.min(retryCount, strategy.getMaxCancelRetry()) * aggressiveTicks, false);
 			}
 		} else {
 			price = quote.getBid();
@@ -117,7 +117,7 @@ public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
 				price = quote.getAsk();
 				price = strategy.getTickTable().tickDown(price, false);
 			} else if(aggressiveWithTime && retryCount > 0) {
-				price = strategy.getTickTable().tickDown(price, retryCount * aggressiveTicks, false);
+				price = strategy.getTickTable().tickDown(price, Math.min(retryCount, strategy.getMaxCancelRetry()) * aggressiveTicks, false);
 			}
 		}
 		retryCount++;
@@ -138,6 +138,5 @@ public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
 
 	public void setAggressiveTicks(int aggressiveTicks) {
 		this.aggressiveTicks = aggressiveTicks;
-	}
-	
+	}	
 }

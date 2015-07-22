@@ -184,7 +184,6 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(InternalResetAccountRequestEvent.class, null);
             subscribeToEvent(SettlementEvent.class, null);
             subscribeToEvent(AccountStateRequestEvent.class,null);
-            subscribeToEvent(ActiveAccountRequestEvent.class,null);
             subscribeToEvent(CreateGroupManagementEvent.class,null);
             subscribeToEvent(DeleteGroupManagementEvent.class,null);
             subscribeToEvent(GroupManageeRequestEvent.class,null);
@@ -192,6 +191,8 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(AllUserSnapshotRequestEvent.class,null);
             subscribeToEvent(ChangeUserRoleEvent.class,null);
             subscribeToEvent(AddCashEvent.class, null);
+            subscribeToEvent(ChangeAccountStateRequestEvent.class,null);
+
         }
 
         @Override
@@ -571,13 +572,130 @@ public class AccountPositionManager implements IPlugin {
         log.info("User created in cache: " + event.getUser().getId());
     }
     
+    public void processChangeAccountStateRequestEvent(ChangeAccountStateRequestEvent event){
+    	String id = event.getId();
+    	String message = "";
+    	boolean isOk =false;
+    	AccountState newState = event.getState();
+    	Account account = null;
+    	check :{
+    		
+    		if(!StringUtils.hasText(id)){
+    			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "id is empty!");
+    			break check;
+    		}
+    		
+    		if( null == newState ){
+    			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "State is empty!");
+    			break check;
+    		}
+    		
+    		account = accountKeeper.getAccount(id);
+    		if( null == account){
+    			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "can't find this account!");
+    			break check;
+    		}
+    		
+    		if(newState.equals(account.getState())){
+    			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "State aready is:"+newState.name());
+    			break check;
+    		}
+    		
+    	}
+    	
+    	if(!StringUtils.hasText(message)){
+        	if(AccountState.ACTIVE.equals(newState)){
+        		activeAccount(account,event);
+        	}else if(AccountState.FROZEN.equals(newState) || AccountState.TERMINATED.equals(newState)){
+            	TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, OrderReason.CompanyManualClose, riskOrderController);
+            	setAccountState(account,newState,event);
+        	}
+    	}else{
+    		ChangeAccountStateReplyEvent reply = new ChangeAccountStateReplyEvent(event.getKey(),event.getSender(),isOk,message,account);
+            try {
+				eventManager.sendRemoteEvent(reply);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
+    }
+    
+    private void setAccountState(Account account, AccountState newState,ChangeAccountStateRequestEvent event) {
+		log.info("Account:{}, old state:{} --> new state:{}",new Object[]{account.getId(),account.getState(),newState});
+    	account.setState(newState);
+    	ChangeAccountStateReplyEvent reply = new ChangeAccountStateReplyEvent(event.getKey(),event.getSender(),true,"",account);
+        try {
+			eventManager.sendRemoteEvent(reply);
+			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
+		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
+		}
+	}
+    
+    private void activeAccount(Account account,ChangeAccountStateRequestEvent event){
+    	AccountSetting accountSetting;
+    	TerminateStopLossCheck terminateCheck = new TerminateStopLossCheck();
+    	FrozenStopLossCheck frozenCheck  = new FrozenStopLossCheck();
+    	boolean isOk = true;
+    	String message = "";
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+
+			ChangeAccountStateReplyEvent reply = null;
+	    	
+	    	if(AccountState.ACTIVE.equals(account.getState())){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_ALREADY_ACTIVE,"Account already in ACTIVE state"); 
+	            reply = new ChangeAccountStateReplyEvent(event.getKey()
+	            		,event.getSender(),isOk,message,account);
+	    	}else if(terminateCheck.isOverTerminateLoss(account, accountSetting)){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_TERMINATE_LOSS,"Still over terminate loss, you must set terminate loss percent/value under current loss"); 
+	            reply = new ChangeAccountStateReplyEvent(event.getKey()
+	            		,event.getSender(),isOk,message,account);
+	    	}else if(frozenCheck.isOverFrozenLoss(account, accountSetting)){
+	        	isOk = false;
+	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FROZEN_LOSS,"Still over frozen loss, you must set frozen loss percent/value under current loss"); 
+	            reply = new ChangeAccountStateReplyEvent(event.getKey()
+	            		,event.getSender(),isOk,message,account);
+	    	}
+	    		
+	    	if(isOk){
+	    		log.info("Active Account:{}, old state:{}",account.getId(),account.getState());
+		    	account.setState(AccountState.ACTIVE);
+		        reply = new ChangeAccountStateReplyEvent(event.getKey()
+	            		,event.getSender(),isOk,message,account);
+				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
+	    	}
+
+            eventManager.sendRemoteEvent(reply);
+        
+		} catch (AccountException e) {
+            log.error(e.getMessage(), e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+    
     public void processCSTWUserLoginEvent(CSTWUserLoginEvent event){
-    	log.info("processCSTWUserLoginEvent");
     	String id = event.getId();
     	String pwd = event.getPassword();
     	boolean isOk = false;
     	String message = "";
     	UserGroup userGroup = null;
+    	
+    	if(userKeeper.isAdmin(id, pwd)){
+    		userGroup = new UserGroup(id,UserRole.Admin);
+    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup);
+    		try {
+    			eventManager.sendRemoteEvent(reply);
+    		} catch (Exception e) {
+    			log.warn(e.getMessage(),e);
+    		}
+    		return;
+    	}
+    	
+    	
     	try{
 	    	if(!StringUtils.hasText(id) || !StringUtils.hasText(pwd)){
         		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
@@ -602,7 +720,8 @@ public class AccountPositionManager implements IPlugin {
 	    	if( null == userGroup ){
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
-	    		
+	    	
+	    	
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());			
 			user.setLastLogin(Clock.getInstance().now());
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));			    	 	
@@ -668,7 +787,7 @@ public class AccountPositionManager implements IPlugin {
     			try {
 					userKeeper.deleteGroup(group);;
 					successList.add(group);
-					resultMap.put(group, "SUCESS");
+					resultMap.put(group, "SUCCESS");
 				} catch (UserException e) {
 					isOk = false;
 					resultMap.put(group, e.getLocalizedMessage());
@@ -1045,58 +1164,6 @@ public class AccountPositionManager implements IPlugin {
 
         for (String symbol : fxSymbols) {
             eventManager.sendEvent(new QuoteSubEvent(AccountPositionManager.ID, null, symbol));
-        }
-    }
-    
-    public void processActiveAccountRequestEvent(ActiveAccountRequestEvent event){
-    	boolean isOk = true;
-    	String message = "";
-    	String id = event.getAccount();
-    	Account account = accountKeeper.getAccount(id);
-    	AccountSetting accountSetting;
-    	TerminateStopLossCheck terminateCheck = new TerminateStopLossCheck();
-    	FrozenStopLossCheck frozenCheck  = new FrozenStopLossCheck();
-		try {
-			accountSetting = accountKeeper.getAccountSetting(id);
-
-	    	ActiveAccountReplyEvent reply = null;
-	    	
-	    	if(null == account){
-	    		isOk = false;
-	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST,"Account not exist"); 
-	            reply = new ActiveAccountReplyEvent(event.getKey()
-	        			,event.getSender(),id,isOk,message);
-	    	}else if(AccountState.ACTIVE.equals(account.getState())){
-	        	isOk = false;
-	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_ALREADY_ACTIVE,"Account already in ACTIVE state"); 
-	            reply = new ActiveAccountReplyEvent(event.getKey()
-	            		,event.getSender(),id,isOk,message);
-	    	}else if(terminateCheck.isOverTerminateLoss(account, accountSetting)){
-	        	isOk = false;
-	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_TERMINATE_LOSS,"Still over terminate loss, you must set terminate loss percent/value under current loss"); 
-	            reply = new ActiveAccountReplyEvent(event.getKey()
-	            		,event.getSender(),id,isOk,message);
-	    	}else if(frozenCheck.isOverFrozenLoss(account, accountSetting)){
-	        	isOk = false;
-	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FROZEN_LOSS,"Still over frozen loss, you must set frozen loss percent/value under current loss"); 
-	            reply = new ActiveAccountReplyEvent(event.getKey()
-	            		,event.getSender(),id,isOk,message);
-	    	}
-	    		
-	    	if(isOk){
-	    		log.info("Active Account:{}, old state:{}",account.getId(),account.getState());
-		    	account.setState(AccountState.ACTIVE);
-		        reply = new ActiveAccountReplyEvent(event.getKey()
-		        		,event.getSender(),id,isOk,message);
-				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
-	    	}
-
-            eventManager.sendRemoteEvent(reply);
-        
-		} catch (AccountException e) {
-            log.error(e.getMessage(), e);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
     }
     
@@ -1541,10 +1608,6 @@ public class AccountPositionManager implements IPlugin {
     
     public void injectGroups(List<GroupManagement> groups) {
     	userKeeper.injectGroup(groups);
-        User adminUser = userKeeper.tryCreateAdminUser();
-        if (null != adminUser)
-            eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, adminUser,
-                    new CreateUserEvent(PersistenceManager.ID, null, adminUser, "TW", "TW", "")));    
     }
 
     public void injectAccounts(List<Account> accounts) {

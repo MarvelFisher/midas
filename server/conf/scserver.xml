@@ -94,7 +94,7 @@
 	<bean id="windAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="showGui" value="true"/>
-		<property name="gatewayIp" value="10.0.0.20"/>
+		<property name="gatewayIp" value="10.0.0.32"/>
 		<property name="gatewayPort" value="10048"/>
 		<property name="marketDataLog" value="false"/>
 		<property name="msgPack" value="true"/>

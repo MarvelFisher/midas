@@ -104,6 +104,18 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 + ", map size: " + sessionMonitor.size() + ", checkTime: "
                 + chkTime);
 
+        //Clean Quote Send
+        if(aggregator != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN){
+            for (Quote quote : quotes.values()) {
+                if (quote != null ) {
+                    log.debug("PreOpen Send Clean Session quote:" + quote.getSymbol());
+                    processCleanSession(quote);
+                    clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+                    printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, quote, MarketDataDef.QUOTE_GENERAL);
+                }
+            }
+        }
+
         if (aggregator != null) {
             aggregator.onMarketSession(event.getSession());
         }
@@ -113,6 +125,19 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
 
         if (!isInitReqDataEnd) isInitMarketSessionReceived = true;
+    }
+
+    public Quote processCleanSession(Quote quote){
+        quote.setAsk(0);
+        quote.setAskVol(0);
+        quote.setBid(0);
+        quote.setBidVol(0);
+        quote.setTurnover(0);
+        quote.setTotalVolume(0);
+        quote.setLast(0);
+        if(null != quote.getBids() && quote.getBids().size() > 0) quote.getBids().clear();
+        if(null != quote.getAsks() && quote.getAsks().size() > 0) quote.getAsks().clear();
+        return quote;
     }
 
     public void processRefDataEvent(RefDataEvent event) {
@@ -209,15 +234,24 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (inEvent.getSourceId()==MarketDataDef.QUOTE_SOUECE_ID || inEvent.getSourceId()==MarketDataDef.QUOTE_SOURCE_IB) {
             if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
                     || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
+                //get IB close & Open price
+                if(inEvent.getSourceId()==MarketDataDef.QUOTE_SOURCE_IB){
+                    if(quotes.containsKey(quote.getSymbol())){
+                        Quote tmpQuote = quotes.get(quote.getSymbol());
+                        if(PriceUtils.GreaterThan(quote.getClose(), 0)) tmpQuote.setClose(quote.getClose());
+                        if(PriceUtils.GreaterThan(quote.getOpen(), 0)) tmpQuote.setOpen(quote.getOpen());
+                    }
+                }
                 return;
             }
+            if(null != quoteChecker && !quoteChecker.checkBidAskPirce(quote)) return;
             if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN) {
                 if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionEvent.getEnd()) >= 0) {
                     quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(), 1, TimeUnit.SECONDS));
                 }
             }
             if (null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
-            if (null != quoteChecker && (!quoteChecker.checkQuotePrice(quote) || !quoteChecker.checkBidAskPirce(quote))) {
+            if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote)) {
                 printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, MarketDataDef.QUOTE_PRICE_ERROR);
                 return;
             }

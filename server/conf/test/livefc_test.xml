@@ -279,6 +279,7 @@
         <constructor-arg>
             <list>
                 <ref bean="ctpAdaptor" />
+                <ref bean="stpAdaptor" />             
             </list>
         </constructor-arg>
         <constructor-arg>
@@ -295,8 +296,8 @@
     </bean>
 
 	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
-		<property name="maxRiskOrderCount"  value="30"/>
-		<property name="maxTotalOrderCount"  value="400"/>
+		<property name="maxRiskOrderCount"  ref="maxRiskOrderCount"/>
+		<property name="maxTotalOrderCount"  ref="maxTotalOrderCount"/>
 	</bean>
 
     <bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">

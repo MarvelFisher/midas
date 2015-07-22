@@ -9,8 +9,11 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -339,19 +342,27 @@ public class DBHandler
     		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
-				price = new HistoricalPrice();
-				price.setTradedate(rs.getString("TRADEDATE"));
-				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
-				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
-				price.setSymbol(rs.getString("SYMBOL")) ;
-				price.setOpen(rs.getDouble("OPEN_PRICE"));
-				price.setClose(rs.getDouble("CLOSE_PRICE"));
-				price.setHigh(rs.getDouble("HIGH_PRICE"));
-				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setVolume(rs.getLong("VOLUME"));
-				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
-				price.setTurnover(rs.getLong("TURNOVER"));
-				retList.add(price);
+				try
+				{
+					price = new HistoricalPrice();
+					price.setTradedate(rs.getString("TRADEDATE"));
+					if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+					if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+					price.setSymbol(rs.getString("SYMBOL")) ;
+					price.setOpen(rs.getDouble("OPEN_PRICE"));
+					price.setClose(rs.getDouble("CLOSE_PRICE"));
+					price.setHigh(rs.getDouble("HIGH_PRICE"));
+					price.setLow(rs.getDouble("LOW_PRICE"));
+					price.setVolume(rs.getLong("VOLUME"));
+					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+					price.setTurnover(rs.getLong("TURNOVER"));
+					retList.add(price);
+				}
+		    	catch (Exception e) 
+				{
+		            log.error(e.getMessage(), e) ;
+		            continue;
+				} 
 			}
 			rs.close();
 			return retList;
@@ -362,11 +373,6 @@ public class DBHandler
             log.trace(sqlcmd);
 			return null ;
 		} 
-    	catch (ParseException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-			return null ;
-		}
     	finally
     	{
     		closeConnect(connect);
@@ -388,23 +394,7 @@ public class DBHandler
     		sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL`='%s' ORDER BY `KEYTIME` DESC LIMIT %d;", 
     				strTable, symbol, dataCount);    		
     	}
-    	return getHistoricalPrice(sqlcmd); 
-    }
-    
-    public List<HistoricalPrice> getTotalValue(String market, String type, String retrieveDate)
-    {
-    	String prefix = (market.equals("FX")) ? "0040" : market;
-    	String strTable = String.format("%s_%s", prefix, type) ;
-    	String sqlcmd = "" ;
-    	if (retrieveDate == null)
-    		sqlcmd = String.format("SELECT * FROM %s ORDER BY `KEYTIME` DESC;", strTable);
-    	else
-    		sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s' ORDER BY `KEYTIME` DESC;", strTable, retrieveDate);
-    	return getHistoricalPrice(sqlcmd);
-    }
-    
-    public List<HistoricalPrice> getHistoricalPrice(String sqlcmd)
-    {
+
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		Connection connect = getConnect();
@@ -412,28 +402,39 @@ public class DBHandler
 		{
 			return null;
 		}
-		ResultSet rs = querySQL(connect, sqlcmd);		
+		log.debug("Query: " + sqlcmd);
+		ResultSet rs = querySQL(connect, sqlcmd);
+		log.debug("Query return: " + sqlcmd);
     	try 
     	{
     		HistoricalPrice price;
     		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
-				price = new HistoricalPrice();
-				price.setTradedate(rs.getString("TRADEDATE"));
-				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
-				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
-				price.setSymbol(rs.getString("SYMBOL")) ;
-				price.setOpen(rs.getDouble("OPEN_PRICE"));
-				price.setClose(rs.getDouble("CLOSE_PRICE"));
-				price.setHigh(rs.getDouble("HIGH_PRICE"));
-				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setVolume(rs.getLong("VOLUME"));
-				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
-				price.setTurnover(rs.getLong("TURNOVER"));
-				retList.add(price);
+				try
+				{
+					price = new HistoricalPrice();
+					price.setTradedate(rs.getString("TRADEDATE"));
+					if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+					if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+					price.setSymbol(rs.getString("SYMBOL")) ;
+					price.setOpen(rs.getDouble("OPEN_PRICE"));
+					price.setClose(rs.getDouble("CLOSE_PRICE"));
+					price.setHigh(rs.getDouble("HIGH_PRICE"));
+					price.setLow(rs.getDouble("LOW_PRICE"));
+					price.setVolume(rs.getLong("VOLUME"));
+					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+					price.setTurnover(rs.getLong("TURNOVER"));
+					retList.add(price);
+				}
+		    	catch (Exception e) 
+				{
+		            log.error(e.getMessage(), e) ;
+		            continue;
+				}
 			}
 			rs.close();
+			log.debug("Get Historical List size: " + retList.size());
 			return retList;
 		} 
     	catch (SQLException e) 
@@ -442,16 +443,149 @@ public class DBHandler
             log.trace(sqlcmd);
 			return null ;
 		} 
-    	catch (ParseException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-			return null ;
-		}
     	finally
     	{
     		closeConnect(connect);
     	}
     }
+    
+    public Map<String, List<HistoricalPrice>> getTotalValue(String market, String type, String retrieveDate)
+    {
+    	String prefix = (market.equals("FX")) ? "0040" : market;
+    	String strTable = String.format("%s_%s", prefix, type) ;
+    	String sqlcmd = "" ;
+    	if (retrieveDate == null)
+    		sqlcmd = String.format("SELECT * FROM %s;", strTable);
+    	else
+    		sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s';", strTable, retrieveDate);
+
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return null;
+		}
+		log.debug("Query: " + sqlcmd);
+		ResultSet rs = querySQL(connect, sqlcmd);
+		log.debug("Query return: " + sqlcmd);		
+    	try 
+    	{
+    		HistoricalPrice price;
+    		HashMap<String, List<HistoricalPrice>> retMap = new HashMap<String, List<HistoricalPrice>>();
+    		String symbol;
+    		List<HistoricalPrice> lst;    
+    		int nCount = 0;
+    		int nPos;
+			while (rs.next())
+			{
+				try
+				{
+					symbol = rs.getString("SYMBOL");
+					lst = retMap.get(symbol);
+					if (lst == null)
+					{
+						lst = new ArrayList<HistoricalPrice>();
+						retMap.put(symbol, lst);
+					}
+					price = new HistoricalPrice();
+					price.setTradedate(rs.getString("TRADEDATE"));
+					if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+					if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+					price.setSymbol(rs.getString("SYMBOL")) ;
+					price.setOpen(rs.getDouble("OPEN_PRICE"));
+					price.setClose(rs.getDouble("CLOSE_PRICE"));
+					price.setHigh(rs.getDouble("HIGH_PRICE"));
+					price.setLow(rs.getDouble("LOW_PRICE"));
+					price.setVolume(rs.getLong("VOLUME"));
+					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+					price.setTurnover(rs.getLong("TURNOVER"));
+					nPos = Collections.binarySearch(lst, price);
+					if (nPos < 0)
+					{
+						lst.add(~nPos, price);
+						if (lst.size() > 1024)
+						{
+							lst.remove(0);
+						}
+					}
+	//				lst.add(price);
+					nCount++;
+				}
+				catch (Exception e)
+				{
+		            log.error(e.getMessage(), e) ;
+		            continue;
+				}
+			}
+			rs.close();
+			log.debug("Get Historical List size: " + nCount);
+			return retMap;
+		} 
+    	catch (SQLException e) 
+		{
+            log.error(e.getMessage(), e) ;
+            log.trace(sqlcmd);
+			return null ;
+		} 
+    	finally
+    	{
+    		closeConnect(connect);
+    	}
+    }
+    
+//    public List<HistoricalPrice> getHistoricalPrice(String sqlcmd)
+//    {
+//    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//    	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//		Connection connect = getConnect();
+//		if (connect == null)
+//		{
+//			return null;
+//		}
+//		log.debug("Query: " + sqlcmd);
+//		ResultSet rs = querySQL(connect, sqlcmd);
+//		log.debug("Query return: " + sqlcmd);
+//    	try 
+//    	{
+//    		HistoricalPrice price;
+//    		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
+//			while (rs.next())
+//			{
+//				price = new HistoricalPrice();
+//				price.setTradedate(rs.getString("TRADEDATE"));
+//				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+//				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+//				price.setSymbol(rs.getString("SYMBOL")) ;
+//				price.setOpen(rs.getDouble("OPEN_PRICE"));
+//				price.setClose(rs.getDouble("CLOSE_PRICE"));
+//				price.setHigh(rs.getDouble("HIGH_PRICE"));
+//				price.setLow(rs.getDouble("LOW_PRICE"));
+//				price.setVolume(rs.getLong("VOLUME"));
+//				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+//				price.setTurnover(rs.getLong("TURNOVER"));
+//				retList.add(price);
+//			}
+//			rs.close();
+//			log.debug("Get Historical List size: " + retList.size());
+//			return retList;
+//		} 
+//    	catch (SQLException e) 
+//		{
+//            log.error(e.getMessage(), e) ;
+//            log.trace(sqlcmd);
+//			return null ;
+//		} 
+//    	catch (ParseException e) 
+//    	{
+//            log.error(e.getMessage(), e) ;
+//			return null ;
+//		}
+//    	finally
+//    	{
+//    		closeConnect(connect);
+//    	}
+//    }
     
     public void deletePrice(String market, String type, String symbol, HistoricalPrice price)
     {

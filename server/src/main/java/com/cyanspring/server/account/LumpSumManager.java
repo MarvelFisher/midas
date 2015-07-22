@@ -52,7 +52,6 @@ public class LumpSumManager implements IPlugin {
     private BusinessManager businessManager;
 
     private Map<String, Quote> marketData = new HashMap<>();
-    private Map<String, List<OpenPosition>> symbolPositionMap = new HashMap<>();  // symbol/OpenPosition
     private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     private String dailyCloseTime;
 
@@ -97,10 +96,6 @@ public class LumpSumManager implements IPlugin {
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }
-            } else {
-                List<OpenPosition> oPositions = getAccountsPositionBySymbol(symbol);
-                for (OpenPosition finPosition : oPositions)
-                    removeAccountPositionBySymbol(symbol, finPosition);
             }
         }
         log.info("End lumpSum process");
@@ -134,23 +129,6 @@ public class LumpSumManager implements IPlugin {
         positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
-    private List<OpenPosition> getAccountsPositionBySymbol(String symbol) {
-        List<OpenPosition> list = symbolPositionMap.get(symbol);
-        if (list == null) {
-            log.info("{} not find in the map", symbol);
-            list = new ArrayList<>();
-        }
-        return list;
-    }
-
-    private void removeAccountPositionBySymbol(String symbol, OpenPosition position) {
-        List<OpenPosition> oPositions = symbolPositionMap.get(symbol);
-        oPositions.remove(position);
-
-        if (oPositions.size() == 0)
-            symbolPositionMap.remove(symbol);
-    }
-
     private Map<String, Double> calculateTotalSymbolPosition() {
         Map<String, Double> totalPositions = new HashMap<>();
         List<Account> list = accountKeeper.getAllAccounts();
@@ -167,17 +145,6 @@ public class LumpSumManager implements IPlugin {
                         num = 0.0;
                     num += position.getQty();
                     totalPositions.put(position.getSymbol(), num);
-
-                    List<OpenPosition> positions = symbolPositionMap.get(position.getSymbol());
-                    if (positions == null) {
-                        positions = new ArrayList<>();
-                        positions.add(position);
-                        symbolPositionMap.put(position.getSymbol(), positions);
-                        continue;
-                    }
-                    if (!positions.contains(position))
-                        positions.add(position);
-
                     processClosePositionExecution(position.getSymbol(), position);
                 }
             } catch (Exception e) {

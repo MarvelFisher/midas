@@ -8,6 +8,7 @@ public class LiveTradingSetting {
 	private String 	userStopLiveTradingStartTime;
 	private String 	userStopLiveTradingEndTime;
 	private int changeSettingFrozenDays;
+	private boolean needClearOrderPostionOnTradingMode =true;
 	
 	public String getUserStopLiveTradingStartTime() {
 		return userStopLiveTradingStartTime;
@@ -44,6 +45,13 @@ public class LiveTradingSetting {
 	}
 	public void setChangeSettingFrozenDays(int changeSettingFrozenDays) {
 		this.changeSettingFrozenDays = changeSettingFrozenDays;
+	}
+	public boolean isNeedClearOrderPostionOnTradingMode() {
+		return needClearOrderPostionOnTradingMode;
+	}
+	public void setNeedClearOrderPostionOnTradingMode(
+			boolean needClearOrderPostionOnTradingMode) {
+		this.needClearOrderPostionOnTradingMode = needClearOrderPostionOnTradingMode;
 	}
 	
 }

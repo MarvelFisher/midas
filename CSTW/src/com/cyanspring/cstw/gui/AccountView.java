@@ -2,7 +2,10 @@ package com.cyanspring.cstw.gui;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.IDialogBlockedHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -23,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -42,8 +46,6 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
-import com.cyanspring.common.event.account.ActiveAccountReplyEvent;
-import com.cyanspring.common.event.account.ActiveAccountRequestEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
@@ -77,17 +79,14 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createCountAccountAction;
 	private Action createManualRefreshAction;
 	private Action createSearchIdAction;
-	private Action createActiveAccountAction;
-	private Action createFrezzeAccountAction;
+	private Action createChangeAccountStateAction;
 	
 	private final String ID_CREATE_USER_ACTION = "CREATE_USER"; 
 	private final String ID_ADD_CASH_ACTION = "ADD_CASH";
 	private final String ID_COUNT_ACCOUNT_ACTION = "COUNT_ACCOUNT";
 	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
 	private final String ID_SEARCH_ID_ACTION = "SEARCH_ID";
-	private final String ID_ACTIVE_ACCOUNT_ACTION = "ACTIVE_ACCOUNT";
-	private final String ID_FREZZE_ACCOUNT_ACTION = "FREZZE_ACCOUNT";
-
+	private final String ID_CHANGE_ACCOUNT_STATE_ACTION = "CHANGE_ACCOUNT_STATE";
 
 	private Composite searchBarComposite;
 	private GridData gd_searchBar;
@@ -96,6 +95,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private ImageRegistry imageRegistry;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 10000;
+	private final int autoRefreshLimitUser = 1000;
 	private boolean show;
 	
 	private final RGB PURPLE = new RGB(171,130,255);
@@ -172,9 +172,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createUserAccountAction(parent);
 		createCountAccountAction(parent);
 		createResetAccountAction(parent);
-		createActiveAccountAction(parent);
 		createSearchIdAction(parent);
-//		createFrezzeAccountAction(parent);
+		createChangeAccountStateAction(parent);
 
 		if (Business.getInstance().isFirstServerReady())
 			sendSubscriptionRequest(Business.getInstance().getFirstServer());
@@ -188,22 +187,40 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	}
 	
-	private void createFrezzeAccountAction(Composite parent) {
-		createFrezzeAccountAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+	private void createChangeAccountStateAction(final Composite parent) {
+		createChangeAccountStateAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
-
-
+				if( null == currentAccount ){
+					showMessageBox("You need select a account",parent);
+				}else{
+					if(!StringUtils.hasText(currentAccount.getId())){
+						showMessageBox("account id is empty",parent);
+						return;
+					}
+					log.info("currentAccount:{}",currentAccount.getId());
+					ChangeAccountStateDialog dialog = new ChangeAccountStateDialog(parent.getShell(), currentAccount);
+					dialog.open();
+					
+					Account tempAccount = dialog.getAccount();
+					log.info("tempAccount:{}",tempAccount.getState());
+					Account account = accounts.get(tempAccount.getId());
+					account.setState(tempAccount.getState());
+					accounts.put(tempAccount.getId(),account);
+					show = true;
+					showAccounts();
+					
+				}
 			}
 		};
-		createFrezzeAccountAction.setId(ID_FREZZE_ACCOUNT_ACTION);
-		createFrezzeAccountAction.setText("Frezze Account");
-		createFrezzeAccountAction.setToolTipText("Frezze Account");
+		createChangeAccountStateAction.setId(ID_CHANGE_ACCOUNT_STATE_ACTION);
+		createChangeAccountStateAction.setText("Change Account State");
+		createChangeAccountStateAction.setToolTipText("Change Account State");
 
 		ImageDescriptor imageDesc = imageRegistry
-				.getDescriptor(ImageID.FREZZE_ICON.toString());
-		createFrezzeAccountAction.setImageDescriptor(imageDesc);
+				.getDescriptor(ImageID.AMEND_OPTIONS_ICON.toString());
+		createChangeAccountStateAction.setImageDescriptor(imageDesc);
 		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(createFrezzeAccountAction);		
+		bars.getToolBarManager().add(createChangeAccountStateAction);		
 	}
 
 	private void initSearchBar(Composite parent) {
@@ -255,6 +272,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
+				log.info("createManualRefreshAction.isChecked():"+createManualRefreshAction.isChecked());
 				if(!createManualRefreshAction.isChecked()) {
 					Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
 				} else { 
@@ -331,42 +349,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 	
-	private void createActiveAccountAction(final Composite parent) {
-		// create local toolbars
-		createActiveAccountAction = new Action() {
-			public void run() {
-				if( null == currentAccount ){
-					showMessageBox("You need select a account",parent);
-				}else{
-					if(AccountState.ACTIVE.equals(currentAccount.getState())){
-						showMessageBox("this account is already in ACTIVE state",parent);
-						return;
-					}
-					if(!StringUtils.hasText(currentAccount.getId())){
-						showMessageBox("account id is empty",parent);
-						return;
-					}
-//					log.info("ActiveAccountRequestEvent currentAccount:{}",currentAccount.getId());
-					ActiveAccountRequestEvent event = new ActiveAccountRequestEvent(ID, Business.getInstance().getFirstServer(), currentAccount.getId()); 
-					try {
-						Business.getInstance().getEventManager().sendRemoteEvent(event);
-					} catch (Exception e) {
-						log.error(e.getMessage(), e);
-					}
-				}
-			}
-		};
-		createActiveAccountAction.setId(ID_ACTIVE_ACCOUNT_ACTION);
-		createActiveAccountAction.setText("Active Account");
-		createActiveAccountAction.setToolTipText("Active Account");
-
-		ImageDescriptor imageDesc = imageRegistry
-				.getDescriptor(ImageID.ACTIVE_ICON.toString());
-		createActiveAccountAction.setImageDescriptor(imageDesc);
-
-		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(createActiveAccountAction);
-	}
 	private void createCountAccountAction(final Composite parent) {
 		// create local toolbars
 		createCountAccountAction = new Action() {
@@ -503,8 +485,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				.subscribe(AccountDynamicUpdateEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(AllAccountSnapshotReplyEvent.class, ID, this);
-		Business.getInstance().getEventManager()
-				.subscribe(ActiveAccountReplyEvent.class, ID, this);
 
 		AllAccountSnapshotRequestEvent request = new AllAccountSnapshotRequestEvent(
 				ID, server);
@@ -574,7 +554,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						return;
 					if (accounts.toArray().size() > 0)
 						createOpenPositionColumns(accounts.toArray());
-
+					
 					viewer.refresh();
 				}
 			}
@@ -584,8 +564,13 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	@Override
+	public void dispose() {
+		Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);		
+		super.dispose();
+	}
+	
+	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -609,6 +594,13 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			}
 			log.info("Loaded accounts: " + evt.getAccounts().size());
 			show = true;
+				
+			if(accounts.size()<=autoRefreshLimitUser){
+				if(!createManualRefreshAction.isChecked())
+					createManualRefreshAction.setChecked(true);
+				createManualRefreshAction.run();
+			}			
+			
 			showAccounts();
 		} else if (event instanceof AccountUpdateEvent) {
 			processAccountUpdate(((AccountUpdateEvent) event).getAccount());
@@ -618,20 +610,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof AsyncTimerEvent) {
 			show = true;
 			showAccounts();
-		}else if (event instanceof ActiveAccountReplyEvent){
-			ActiveAccountReplyEvent replyEvent = (ActiveAccountReplyEvent) event;
-			if(replyEvent.isOk()){
-				showMessageBox(replyEvent.getAccount()+" set to ACTIVE success!", parentComposite);
-				String id = replyEvent.getAccount();
-				Account account = accounts.get(id);
-				account.setState(AccountState.ACTIVE);
-				accounts.put(id,account);
-				show = true;
-				showAccounts();
-			}else{
-				MessageBean bean = MessageLookup.getMsgBeanFromEventMessage(replyEvent.getMessage());
-				showMessageBox(bean.getLocalMsg(), parentComposite);
-			}
 		}
 	}
 
