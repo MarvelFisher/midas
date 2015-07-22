@@ -169,10 +169,12 @@ public class CentralDbProcessor implements IPlugin
 
 	public void processCentralDbSubscribeEvent(CentralDbSubscribeEvent event) 
 	{
+		log.info("process CentralDbSubscribeEvent " + event.getSender());
 		int index = Collections.binarySearch(appServIDList, event.getSender());
 		if (index < 0)
 		{
 			appServIDList.add(~index, event.getSender());
+			log.info("appServIDList add " + event.getSender());
 		}
 		if (!isStartup)
 			respondCentralReady(event.getSender());
