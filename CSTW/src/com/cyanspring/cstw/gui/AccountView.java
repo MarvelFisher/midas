@@ -71,7 +71,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private boolean columnCreated;
 	private Menu menu;
 	private CreateUserDialog createUserDialog;
+	private AddCashDialog addCashDialog;
 	private Action createUserAction;
+	private Action addCashAction;
 	private Action createCountAccountAction;
 	private Action createManualRefreshAction;
 	private Action createSearchIdAction;
@@ -79,6 +81,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createFrezzeAccountAction;
 	
 	private final String ID_CREATE_USER_ACTION = "CREATE_USER"; 
+	private final String ID_ADD_CASH_ACTION = "ADD_CASH";
 	private final String ID_COUNT_ACCOUNT_ACTION = "COUNT_ACCOUNT";
 	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
 	private final String ID_SEARCH_ID_ACTION = "SEARCH_ID";
@@ -165,6 +168,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			}
 		});
 		createManualRefreshToggleAction(parent);
+		createAddCashAction(parent);
 		createUserAccountAction(parent);
 		createCountAccountAction(parent);
 		createResetAccountAction(parent);
@@ -270,6 +274,24 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createManualRefreshAction.setImageDescriptor(imageDesc);
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createManualRefreshAction);
+	}
+	
+	private void createAddCashAction(final Composite parent) {		
+		addCashAction = new Action() {
+			public void run(){
+				addCashDialog = new AddCashDialog(parent.getShell(), currentAccount);
+				addCashDialog.open();
+			}
+		};
+		addCashAction.setId(ID_ADD_CASH_ACTION);
+		addCashAction.setText("Add Cash");
+		addCashAction.setToolTipText("Add more cash");
+		
+		ImageDescriptor img = imageRegistry.getDescriptor(ImageID.PLUS_ICON.toString());
+		
+		addCashAction.setImageDescriptor(img);
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(addCashAction);
 	}
 	
 	private void createUserAccountAction(final Composite parent) {

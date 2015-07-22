@@ -16,6 +16,10 @@ public class CashAudit implements Serializable {
     private Date time;
     private double cashDeposited;
     private double addCash;
+    
+    public CashAudit(){
+    	
+    }
 
     public CashAudit(String accountID, AuditType type, Date time, double cashDeposited, double addCash) {
         this.accountID = accountID;

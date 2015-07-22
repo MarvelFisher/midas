@@ -1,5 +1,6 @@
 package com.cyanspring.common.event.account;
 
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.AuditType;
 import com.cyanspring.common.business.CashAudit;
 import com.cyanspring.common.event.RemoteAsyncEvent;
@@ -14,10 +15,10 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
  */
 public class PmAddCashEvent extends RemoteAsyncEvent{
 
-    private String account;
+    private Account account;
     private double cash;
     private AuditType type;
-    public PmAddCashEvent(String key, String receiver, String account, double cash, AuditType type) {
+    public PmAddCashEvent(String key, String receiver, Account account, double cash, AuditType type) {
         super(key, receiver);
         this.account = account;
         this.cash = cash;
@@ -36,15 +37,15 @@ public class PmAddCashEvent extends RemoteAsyncEvent{
         return cash;
     }
 
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
     public void setCash(double cash) {
         this.cash = cash;
     }
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 }

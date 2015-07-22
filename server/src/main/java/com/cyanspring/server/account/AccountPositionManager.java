@@ -411,9 +411,17 @@ public class AccountPositionManager implements IPlugin {
 
     public void processAddCashEvent(AddCashEvent event) {
         log.info("process AddCashEvent, account: {}, cash: {}", event.getAccount(), event.getCash());
+        Account account = accountKeeper.getAccount(event.getAccount());
+        
+        if(account == null){
+        	log.error("Cannot find account: {}", event.getAccount());
+        	return;
+        }
+        account.addCash(event.getCash());        
         PmAddCashEvent pmAddCashEvent = new PmAddCashEvent(null, null,
-                event.getAccount(), event.getCash(), AuditType.DEPOSIT);
+                account, event.getCash(), AuditType.DEPOSIT);
         eventManager.sendEvent(pmAddCashEvent);
+        positionListener.onAccountUpdate(account);
     }
 
     public void processUserLoginEvent(UserLoginEvent event) {

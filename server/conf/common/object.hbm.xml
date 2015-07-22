@@ -271,13 +271,18 @@
   	</composite-id> 	
   </class>
 
-  <!--<class name="com.cyanspring.common.business.CashAudit" table="ANYONE.CASH_AUDIT">-->
-      <!--<id column="ACCOUNT_ID" name="id"	type="java.lang.String"/>-->
-      <!--<property name="type" column="TYPE" type="java.lang.String"/>-->
-      <!--<property name="addCash" column="ADD_CASH" type="java.lang.Double"/>-->
-      <!--<property name="cashDeposited" column="CASH_DEPOSITED" type="java.lang.Double"/>-->
-      <!--<property name="time" column="ADD_TIME" type="java.util.Date"/>-->
-  <!--</class>-->
+  <class name="com.cyanspring.common.business.CashAudit" table="ANYONE.CASH_AUDIT">
+      <id name="accountID" column="ACCOUNT_ID"	type="java.lang.String"/>
+      <property name="type" column="TYPE">
+      	<type name="org.hibernate.type.EnumType">
+        <param name="enumClass">com.cyanspring.common.business.AuditType</param>
+        <param name="type">12</param>
+    	</type>
+      </property>
+      <property name="addCash" column="ADD_CASH" type="java.lang.Double"/>
+      <property name="cashDeposited" column="CASH_DEPOSITED" type="java.lang.Double"/>
+      <property name="time" column="ADD_TIME" type="java.util.Date"/>
+  </class>
 
   <sql-query name="rollEndOfDay1">
     <![CDATA[

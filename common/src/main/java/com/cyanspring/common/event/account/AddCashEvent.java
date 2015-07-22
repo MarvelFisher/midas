@@ -14,7 +14,7 @@ public class AddCashEvent extends RemoteAsyncEvent{
     private String account;
     private double cash;
 
-    public AddCashEvent(String key, String receiver, String account) {
+    public AddCashEvent(String key, String receiver, String account, double cash) {
         super(key, receiver);
         this.account = account;
         this.cash = cash;

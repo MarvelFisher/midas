@@ -22,8 +22,10 @@ import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
 
 import org.hibernate.*;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1525,24 +1527,16 @@ public class PersistenceManager {
 		}
 	}
 
-    public void processPmAddCashEvent(PmAddCashEvent event) {
+    @SuppressWarnings("unchecked")
+	public void processPmAddCashEvent(PmAddCashEvent event) {
+    	double cashDeposited = event.getAccount().getCashDeposited();
+        double cash = event.getCash();
+    	log.info("process PmAddCashEvent, account: {}, cash: {}", event.getAccount().getId(), cash);
         Session session = sessionFactory.openSession();
         Transaction tx = null;
-        double cashDeposited = 0.0;
-        try {
-            tx = session.beginTransaction();
-            Criteria criteria = session.createCriteria(CashAudit.class).setProjection(Projections.max("ADD_TIME"));
-            criteria.add(Restrictions.eq("ACCOUNT_ID", event.getAccount()));
-            List<CashAudit> list = (List<CashAudit>) criteria.list();
-            if (list != null || list.size() > 0)
-                cashDeposited = list.get(0).getCashDeposited();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-
-        CashAudit cashAudit = new CashAudit(event.getAccount(), event.getType(),
-                Clock.getInstance().now(), cashDeposited, event.getCash());
-
+   
+        CashAudit cashAudit = new CashAudit(event.getAccount().getId(), event.getType(),
+                Clock.getInstance().now(), cashDeposited, cash);
         try {
             tx = session.beginTransaction();
             session.save(cashAudit);
