@@ -378,4 +378,8 @@
     <bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
 
+	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
+		<property name="maxRiskOrderCount"  ref="maxRiskOrderCount"/>
+		<property name="maxTotalOrderCount"  ref="maxTotalOrderCount"/>
+	</bean>
 </beans>
