@@ -179,57 +179,25 @@
         </property>
     </bean>
 	<bean id="ctpAdaptor" class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeAdaptor">
-		<property name="url">
-			<value>tcp://180.168.146.181:10200</value>
-		</property>
-		<property name="conLog">
-			<value>./tradeCon/</value>
-		</property>
-		<property name="user">
-			<value>00091</value>
-		</property>
-		<property name="password">
-			<value>hkfdt1234</value>
-		</property>
-		<property name="broker">
-			<value>0253</value>
-		</property>
-		<property name="connectionCount">
-			<value>1</value>
-		</property>
-		<property name="libPath">
-			<value>./ctplib/linux64/thosttraderapi.so</value>
-		</property>
-        <property name="symbolConverter">
-            <bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/>
-        </property>
+		<property name="url"><value>tcp://180.168.146.181:10200</value></property>
+		<property name="conLog"><value>./tradeCon/</value></property>
+		<property name="user"><value>00091</value></property>
+		<property name="password"><value>hkfdt1234</value></property>
+		<property name="broker"><value>0253</value></property>
+		<property name="connectionCount"><value>1</value></property>
+		<property name="libPath"><value>./ctplib/linux64/thosttraderapi.so</value></property>
+        <property name="symbolConverter"><bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/></property>
 	</bean>
 	
 	<bean id="stpAdaptor" class="com.cyanspring.adaptor.future.ctp.trader.CtpTradeAdaptor">
-		<property name="url">
-			<value>tcp://180.168.146.181:10200</value>
-		</property>
-		<property name="conLog">
-			<value>./tradeCon2/</value><!-- must different to other Adaptor -->
-		</property>
-		<property name="user">
-			<value>00091</value>
-		</property>
-		<property name="password">
-			<value>hkfdt1234</value>
-		</property>
-		<property name="broker">
-			<value>0253</value>
-		</property>
-		<property name="connectionCount">
-			<value>1</value>
-		</property>
-		<property name="libPath">
-			<value>./ctplib/linux64/thosttraderapi.so</value>
-		</property>
-        <property name="symbolConverter">
-            <bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/>
-        </property>
+		<property name="url"><value>tcp://180.168.146.181:10200</value></property>
+		<property name="conLog"><value>./tradeCon2/</value></property><!-- must different to other Adaptor -->
+		<property name="user"><value>00091</value></property>
+		<property name="password"><value>hkfdt1234</value></property>
+		<property name="broker"><value>0253</value></property>
+		<property name="connectionCount"><value>1</value></property>
+		<property name="libPath"><value>./ctplib/linux64/thosttraderapi.so</value></property>
+        <property name="symbolConverter"><bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/></property>
         <property name="connectionPrefix" value="STP"></property>
 	</bean>
 </beans>
