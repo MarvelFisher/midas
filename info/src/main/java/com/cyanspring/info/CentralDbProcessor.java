@@ -93,6 +93,8 @@ public class CentralDbProcessor implements IPlugin
 	private boolean calledRefdata = false;
 	private boolean isProcessQuote = false;
 	private Queue<QuoteEvent> quoteBuffer;
+	
+	private boolean runInsertSQL = true;
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -938,7 +940,10 @@ public class CentralDbProcessor implements IPlugin
 			}
 		});
 		insertThread.setName("CDP_Insert_SQL");
-		insertThread.start();
+		if (isRunInsertSQL())
+		{
+			insertThread.start();
+		}
 	}
 
 	public int getnChefCount() {
@@ -1054,6 +1059,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setHistoricalDataPeriod(HashMap<String, Integer> historicalDataPeriod) {
 		this.historicalDataPeriod = historicalDataPeriod;
+	}
+
+	public boolean isRunInsertSQL() {
+		return runInsertSQL;
+	}
+
+	public void setRunInsertSQL(boolean runInsertSQL) {
+		this.runInsertSQL = runInsertSQL;
 	}
 	
 }
