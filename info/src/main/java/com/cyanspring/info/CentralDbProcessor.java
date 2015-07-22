@@ -169,10 +169,12 @@ public class CentralDbProcessor implements IPlugin
 
 	public void processCentralDbSubscribeEvent(CentralDbSubscribeEvent event) 
 	{
+		log.info("process CentralDbSubscribeEvent " + event.getSender());
 		int index = Collections.binarySearch(appServIDList, event.getSender());
 		if (index < 0)
 		{
 			appServIDList.add(~index, event.getSender());
+			log.info("appServIDList add " + event.getSender());
 		}
 		if (!isStartup)
 			respondCentralReady(event.getSender());
@@ -622,9 +624,26 @@ public class CentralDbProcessor implements IPlugin
 		}
 		String symbol;
 		SymbolData symboldata;
+    	ArrayList<String> symbolarr = new ArrayList<String>();
 		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : retrieveMap.entrySet())
 		{
-			symbol = entry.getKey();
+			symbolarr.clear();
+	    	symbolarr.add(entry.getKey());
+	    	ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolStrings(symbolarr);
+	    	if (symbolinfos.size() < 1)
+	    	{
+	    		continue;
+	    	}
+	    	if (symbolinfos.get(0).getHint() == null 
+	    			|| entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
+	    	{
+	    		symbol = symbolinfos.get(0).getCode(); 
+	    	}
+	    	else
+	    	{
+	    		continue;
+	    	}
+//			symbol = entry.getKey();
 			symboldata = getChefBySymbol(symbol).getSymbolData(symbol);
 			if (symboldata != null)
 			{

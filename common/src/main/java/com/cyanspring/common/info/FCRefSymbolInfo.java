@@ -28,12 +28,23 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 		}
 		for (SymbolInfo symbolinfo : refSymbolInfo)
 		{
-			if (symbolListClr.contains(symbolinfo.getCode()) || symbolListClr.contains(symbolinfo.getHint()))
+			if (symbolListClr.contains(symbolinfo.getCode()) 
+					|| symbolListClr.contains(symbolinfo.getHint()) )
 			{
 				index = symbolListClr.indexOf(symbolinfo.getCode());
 				if (index < 0)
 				{
 					index = symbolListClr.indexOf(symbolinfo.getHint());
+				}
+				infoList.remove(index);
+				infoList.add(index, symbolinfo);
+			}
+			else if (symbolListClr.contains(symbolinfo.getHint() + "." + symbolinfo.getExchange()))
+			{
+				index = symbolListClr.indexOf(symbolinfo.getCode());
+				if (index < 0)
+				{
+					index = symbolListClr.indexOf(symbolinfo.getHint() + "." + symbolinfo.getExchange());
 				}
 				infoList.remove(index);
 				infoList.add(index, symbolinfo);
