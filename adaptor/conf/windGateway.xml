@@ -6,13 +6,16 @@
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     
     <bean id="WindGateway" class="com.cyanspring.adaptor.future.wind.gateway.WindGateway">
-
+    
+		<property name="dedicatedWindThread" value="true"></property>
+		
     	<!-- Wind Merchandise Server , 若 IP 設為空字串,就不會登入 Wind -->
     	<property name="windMFServerIP" value=""/><!-- "114.80.154.34"/> -->     
     	<property name="windMFServerPort" value="10050"/> 	
     	<property name="windMFServerUserId" value="TD1001888002"/>
     	<property name="windMFServerUserPwd" value="35328058"/>
-    	<property name="stockTypeFlags" value="17"/>
+    	<property name="merchandiseTypeFlags" value="17"/>
+
     	<!--
 		DATA_TYPE_ALL = 0,//所有数据    
 		DATA_TYPE_INDEX = 0x1,  // 指数 
@@ -23,11 +26,12 @@
 		-->		
     	
     	<!-- Wind Stock / Index Future Server , 若 IP 設為空字串,就不會登入 Wind -->
-    	<property name="windSFServerIP" value="114.80.154.34"/>      
+    	<property name="windSFServerIP" value="114.80.154.34"/><!-- "114.80.154.34"/> -->         
     	<property name="windSFServerPort" value="10051"/> 	
     	<property name="windSFServerUserId" value="TD1004012004"/>
     	<property name="windSFServerUserPwd" value="70173844"/>
-    	<property name="merchandiseTypeFlags" value="3"/>
+    	<property name="stockTypeFlags" value="3"/>
+
 		<!--
 		DATA_TYPE_ALL = 0,//所有数据    
 		DATA_TYPE_INDEX = 0x1,  // 指数 
@@ -48,7 +52,9 @@
 		<!--  Msg Pack Lite Cascading Configure -->    	
     	<property name="mpCascading" value="true"/>
     	<property name="mpUpstreamIp" value="10.0.0.32"/>
-    	<property name="mpUpstreamPort" value="10048"/>    	
+    	<property name="mpUpstreamPort" value="10048"/>   
+    	
+    	 	
     	    	
     </bean>
  

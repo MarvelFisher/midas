@@ -71,6 +71,7 @@ public class WindGateway implements Runnable {
 	public static int mpUpstreamPort = 10048;
 	
 	public static MsgPackLiteServer msgPackLiteServer = null;
+	public static boolean dedicatedWindThread = false;
 	Demo demo = null,demoStock = null;
 	
 	
@@ -192,6 +193,13 @@ public class WindGateway implements Runnable {
 	}
 	public void setMerchandiseTypeFlags(int flag) {
 		merchandiseTypeFlags = flag;
+	}
+	
+	public boolean getDedicatedWindThread() {
+		return dedicatedWindThread;
+	}
+	public void setDedicatedWindThread(boolean b) {
+		dedicatedWindThread = b;
 	}
 		
 	
@@ -980,13 +988,21 @@ public class WindGateway implements Runnable {
 			demoStock.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
 		}	
 	}
+	public void requestSymbolMF(String sym) {
+		if(demo != null)
+		{
+			demo.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
+		}	
+	}
 	
+	/*
 	public void requestCodeTable(String market) {
 		if(demoStock != null)
 		{
 			demoStock.AddRequest(new WindRequest(WindRequest.RequestCodeTable,market.toUpperCase()));
 		}
-	}	
+	}
+	*/	
 	
 	public void run()
 	{	
@@ -1013,7 +1029,7 @@ public class WindGateway implements Runnable {
 			} else {
 				if(windMFServerIP != null && windMFServerIP != "")
 				{
-					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this);
+					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread);
 					DataHandler dh = new DataHandler (demo);
 					t1 = new Thread(dh,"windMerchandise");
 					t1.start();
@@ -1024,7 +1040,7 @@ public class WindGateway implements Runnable {
 				
 				if(windSFServerIP != null && windSFServerIP != "")
 				{
-					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this);
+					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread);
 					DataHandler dhStock = new DataHandler (demoStock);
 					t1Stock = new Thread(dhStock,"windFutureAndStock");
 					t1Stock.start();

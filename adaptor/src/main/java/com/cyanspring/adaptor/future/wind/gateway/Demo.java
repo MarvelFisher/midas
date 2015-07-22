@@ -47,13 +47,17 @@ public class Demo {
 	TDFClient client = new TDFClient();
 	ConcurrentLinkedQueue<WindRequest> requestQueue = new ConcurrentLinkedQueue<WindRequest>();
 	boolean bServerReady = false;
-
+	boolean dedicatedWindThread = false;
+	
+	ConcurrentLinkedQueue<TDF_MSG> transactionQueue = new ConcurrentLinkedQueue<TDF_MSG>();
+	ConcurrentLinkedQueue<TDF_MSG> quotationQueue = new ConcurrentLinkedQueue<TDF_MSG>();
+	Thread trdQuotation,trdTransaction;
 	
 	
 	public int getPort() {
 		return this.port;
 	}
-	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay) {
+	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d) {
 		this.ip = ip;
 		this.port = port;
 		this.username = username;
@@ -62,6 +66,15 @@ public class Demo {
 		this.windGateway = gateWay;
 		this.openTypeFlags = typeFlags;
 		this.quitFlag = true;
+		this.dedicatedWindThread = d;
+		
+		if(d) {
+			trdQuotation = new Thread( new MsgProcessor(windGateway,quotationQueue),"ProcessQuotation");			
+			trdTransaction = new Thread( new MsgProcessor(windGateway,transactionQueue),"ProcessTransaction");
+			trdQuotation.start();
+			trdTransaction.start();
+		}
+
 		/*
 		int err = reconnect();
 		if( err != TDF_ERR.TDF_ERR_SUCCESS)
@@ -74,6 +87,7 @@ public class Demo {
 	
 	public int reconnect()
 	{
+
 		TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
 		setting.setIp(ip);
 		setting.setPort( Integer.toString(port));
@@ -187,6 +201,9 @@ public class Demo {
 	
 	void run() {
 		int err;
+		TDF_MSG_DATA data;
+		
+
 		while (!quitFlag) {
 			
 			processRequest();
@@ -211,7 +228,7 @@ public class Demo {
 				quitFlag = true;
 				break;
 			case TDF_MSG_ID.MSG_SYS_CONNECT_RESULT:{
-				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
+				data = TDFClient.getMessageData(msg, 0);
 				System.out.println("CONNECT RESULT");
 				log.info("Receive Wind CONNECT RESULT");
 				connectResult = data.getConnectResult();
@@ -219,7 +236,7 @@ public class Demo {
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_LOGIN_RESULT:{
-				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
+				data = TDFClient.getMessageData(msg, 0);
 				loginResult = data.getLoginResult();
 				PrintHelper.printLoginResult(data.getLoginResult());
 				break;
@@ -227,7 +244,7 @@ public class Demo {
 			case TDF_MSG_ID.MSG_SYS_CODETABLE_RESULT:{
 				System.out.println("CODE TABLE RESULT");
 				log.info("Receive Wind CODE TABLE RESULT");
-				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
+				data = TDFClient.getMessageData(msg, 0);
 				codeTableResult = data.getCodeTableResult();
 				PrintHelper.printCodeTableResult(data.getCodeTableResult());
 				if(windGateway != null)
@@ -246,7 +263,7 @@ public class Demo {
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_MARKET_CLOSE:{
-				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
+				data = TDFClient.getMessageData(msg, 0);
 				marketClose = data.getMarketClose();
 				PrintHelper.printMarketClose(data.getMarketClose());
 				if(windGateway != null)
@@ -256,7 +273,7 @@ public class Demo {
 				break;
 			}
 			case TDF_MSG_ID.MSG_SYS_QUOTATIONDATE_CHANGE: {				
-				TDF_MSG_DATA data = TDFClient.getMessageData(msg, 0);
+				data = TDFClient.getMessageData(msg, 0);
 				dateChange = data.getDateChange();
 				PrintHelper.printDateChange(data.getDateChange());
 				if(windGateway != null)
@@ -268,17 +285,18 @@ public class Demo {
 			//�����Ϣ
 			case TDF_MSG_ID.MSG_DATA_MARKET:
 				log.debug("MARKET DATA Count : " + msg.getAppHead().getItemCount());
-				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i); 
-					//PrintHelper.printDataMarket(data.getMarketData());
-					if(windGateway != null)
-					{
-						windGateway.receiveMarketData(data.getMarketData());
-					}							
-				}			
+				if(dedicatedWindThread) {
+					quotationQueue.add(msg);
+					break;
+				}
 				if(windGateway != null) {
-					windGateway.flushAllClientMsgPack();
-				}								
+					for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+						data = TDFClient.getMessageData(msg, i); 
+						//PrintHelper.printDataMarket(data.getMarketData());
+						windGateway.receiveMarketData(data.getMarketData());						
+					}			
+					windGateway.flushAllClientMsgPack();					
+				}						
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printDataMarket(TDFClient.getMessageData(msg, 0).getMarketData());
@@ -291,17 +309,18 @@ public class Demo {
 				break;
 			case TDF_MSG_ID.MSG_DATA_INDEX:
 				log.debug("INDEX DATA Count : " + msg.getAppHead().getItemCount());
-				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
-					if(windGateway != null)
-					{
-						windGateway.receiveIndexData(data.getIndexData());
-					}					
-					//PrintHelper.printIndexData(data.getIndexData());
-				}	
+				if(dedicatedWindThread) {
+					quotationQueue.add(msg);
+					break;
+				}				
 				if(windGateway != null) {
+					for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+							data = TDFClient.getMessageData(msg, i);
+							windGateway.receiveIndexData(data.getIndexData());					
+						//PrintHelper.printIndexData(data.getIndexData());
+					}	
 					windGateway.flushAllClientMsgPack();
-				}								
+				}
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printIndexData(TDFClient.getMessageData(msg, 0).getIndexData());
@@ -313,16 +332,18 @@ public class Demo {
 				break;
 			case TDF_MSG_ID.MSG_DATA_FUTURE:
 				log.debug("FUTURE DATA Count : " + msg.getAppHead().getItemCount());
-				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
-					//PrintHelper.printFutureData(data.getFutureData());
-					if(windGateway != null) {						
-						windGateway.receiveFutureData(data.getFutureData());
-					}						
-				}					
+				if(dedicatedWindThread) {
+					quotationQueue.add(msg);
+					break;
+				}				
 				if(windGateway != null) {
+					for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+						data = TDFClient.getMessageData(msg, i);
+						//PrintHelper.printFutureData(data.getFutureData());						
+							windGateway.receiveFutureData(data.getFutureData());						
+					}					
 					windGateway.flushAllClientMsgPack();
-				}								
+				}
 				/*
 				if(System.currentTimeMillis() - LastPrintTime  > 10 * 1000 && msg.getAppHead().getItemCount()>0){
 					PrintHelper.printFutureData(TDFClient.getMessageData(msg, 0).getFutureData());
@@ -334,15 +355,18 @@ public class Demo {
 				break;
 			case TDF_MSG_ID.MSG_DATA_TRANSACTION:
 				log.debug("TRANSACTION DATA Count : " + msg.getAppHead().getItemCount());
-				for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-					TDF_MSG_DATA data = TDFClient.getMessageData(msg, i);
-					//PrintHelper.printTransaction(data.getTransaction());
-					if(windGateway != null) {						
-						windGateway.receiveTransaction(data.getTransaction());
-					}							
-				}
+				if(dedicatedWindThread) {
+					transactionQueue.add(msg);
+					break;
+				}				
 				if(windGateway != null) {
+					for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+						data = TDFClient.getMessageData(msg, i);
+						//PrintHelper.printTransaction(data.getTransaction());				
+						windGateway.receiveTransaction(data.getTransaction());						
+					}
 					windGateway.flushAllClientMsgPack();
+
 				}
 
 				/*
@@ -411,7 +435,7 @@ public class Demo {
 		// Proxy Mode
 		//Demo d = new Demo("10.100.7.18", 10001, "dev_test", "dev_test", 
 		//			"10.100.6.125", 3128, "", "");
-		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null);
+		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false);
 		DataHandler dh = new DataHandler (demo);
 		Thread t1 = new Thread(dh);
 		t1.start();	
@@ -500,5 +524,86 @@ class DataWrite  implements Runnable { //д���������ʱ���
 		}
 		PrintHelper.WriteData(demo);
 		PrintHelper.CloseDataFiles();
+	}
+}
+
+
+class MsgProcessor implements Runnable {
+	private WindGateway windGateway = null;
+	ConcurrentLinkedQueue<TDF_MSG> queue = null;
+	boolean quitFlag = false;
+	
+	private static final Logger log = LoggerFactory
+			.getLogger(com.cyanspring.adaptor.future.wind.gateway.MsgProcessor.class);	
+	
+	public MsgProcessor(WindGateway w,ConcurrentLinkedQueue<TDF_MSG> q) {
+		windGateway = w;
+		queue = q;
+	}
+	
+	public void run() {		
+		TDF_MSG msg;
+		while(!quitFlag) {
+			try {
+				while(queue.size() > 0) {
+					msg = queue.peek();
+					if(msg != null) {					
+						queue.remove(msg);
+						ProcessMessage(msg);
+					}
+				}
+				Thread.sleep(5);
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);				
+			}
+		}		
+	}
+	
+	void ProcessMessage(TDF_MSG msg) {
+		if(windGateway == null) {
+			return;
+		}
+		TDF_MSG_DATA data;
+		
+		switch(msg.getDataType()) {
+		case TDF_MSG_ID.MSG_DATA_MARKET:
+			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+				data = TDFClient.getMessageData(msg, i); 
+				windGateway.receiveMarketData(data.getMarketData());						
+			}			
+			windGateway.flushAllClientMsgPack();								
+							
+			break;
+		case TDF_MSG_ID.MSG_DATA_INDEX:			
+			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+				data = TDFClient.getMessageData(msg, i);
+				windGateway.receiveIndexData(data.getIndexData());				
+			}	
+			windGateway.flushAllClientMsgPack();
+							
+			break;
+		case TDF_MSG_ID.MSG_DATA_FUTURE:
+			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+				data = TDFClient.getMessageData(msg, i);
+				if(windGateway != null) {						
+					windGateway.receiveFutureData(data.getFutureData());
+				}						
+			}					
+			if(windGateway != null) {
+				windGateway.flushAllClientMsgPack();
+			}								
+			break;
+		case TDF_MSG_ID.MSG_DATA_TRANSACTION:
+			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
+				data = TDFClient.getMessageData(msg, i);
+				if(windGateway != null) {						
+					windGateway.receiveTransaction(data.getTransaction());
+				}							
+			}
+			if(windGateway != null) {
+				windGateway.flushAllClientMsgPack();
+			}
+			break;						
+		}		
 	}
 }
