@@ -634,13 +634,10 @@ public class CentralDbProcessor implements IPlugin
 	    	{
 	    		continue;
 	    	}
-	    	if (symbolinfos.get(0).getHint() == null)
+	    	if (symbolinfos.get(0).getHint() == null 
+	    			|| entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
 	    	{
 	    		symbol = symbolinfos.get(0).getCode(); 
-	    	}
-	    	else if (entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
-	    	{
-	    		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
 	    	}
 	    	else
 	    	{
