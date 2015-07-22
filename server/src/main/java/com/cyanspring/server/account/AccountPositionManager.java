@@ -1377,9 +1377,9 @@ public class AccountPositionManager implements IPlugin {
 		}
     	
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
-			
-			log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
+
 			if(account.getState().equals(AccountState.ACTIVE)) {
+				log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
 				account.setState(AccountState.FROZEN);
 				try {
 					eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));

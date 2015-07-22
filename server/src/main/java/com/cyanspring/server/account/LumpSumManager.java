@@ -88,14 +88,14 @@ public class LumpSumManager implements IPlugin {
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
-    	log.info("Start lumpSum process.");
+        log.info("Start lumpSum process.");
         Map<String, Double> totalPositions = calculateTotalSymbolPosition();
         for (Map.Entry<String, Double> entry : totalPositions.entrySet()) {
             String symbol = entry.getKey();
             double qty = entry.getValue();
             if (!PriceUtils.isZero(qty)) {
                 try {
-                	log.info("Send close position event, symbol: {}, qty: {}", symbol, qty);
+                    log.info("Send close position event, symbol: {}, qty: {}", symbol, qty);
                     businessManager.processClosePosition(null, null, null, OrderReason.DayTradingMode,
                             accountKeeper.getAccount(Default.getAccount()), symbol,
                             qty > 0 ? OrderSide.Sell : OrderSide.Buy, Math.abs(qty));
@@ -130,8 +130,8 @@ public class LumpSumManager implements IPlugin {
         if (exec == null) {
             log.warn("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount());
             return;
-        } else 
-        	log.info(exec.toString());
+        } else
+            log.info(exec.toString());
         positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
@@ -140,18 +140,22 @@ public class LumpSumManager implements IPlugin {
         List<Account> list = accountKeeper.getAllAccounts();
 
         for (Account account : list) {
-            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
             try {
-                if (account.getId().equals(Default.getAccount()))
+                if (account.getId().equals(Default.getAccount())) {
+                    List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
+                    for (OpenPosition position : positions) {
+                        processClosePositionExecution(position.getSymbol(), position);
+                    }
                     continue;
+                }
                 AccountSetting setting = accountKeeper.getAccountSetting(account.getId());
                 if (setting == null)
-                	continue;
+                    continue;
                 if (!StringUtils.hasText(setting.getRoute()))
-                	continue;
+                    continue;
                 if (!setting.isLiveTrading())
-                	continue;
-
+                    continue;
+                TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
                 List<OpenPosition> oPositions = positionKeeper.getOverallPosition(account);
                 for (OpenPosition position : oPositions) {
                     Double num = totalPositions.get(position.getSymbol());
