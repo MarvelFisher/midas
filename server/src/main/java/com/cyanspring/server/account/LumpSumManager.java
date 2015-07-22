@@ -22,6 +22,7 @@ import com.cyanspring.server.order.RiskOrderController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -143,6 +144,13 @@ public class LumpSumManager implements IPlugin {
             try {
                 if (account.getId().equals(Default.getAccount()))
                     continue;
+                AccountSetting setting = accountKeeper.getAccountSetting(account.getId());
+                if (setting == null)
+                	continue;
+                if (!StringUtils.hasText(setting.getRoute()))
+                	continue;
+                if (!setting.isLiveTrading())
+                	continue;
 
                 List<OpenPosition> oPositions = positionKeeper.getOverallPosition(account);
                 for (OpenPosition position : oPositions) {
