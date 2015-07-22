@@ -1,6 +1,8 @@
 package com.cyanspring.cstw.gui;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -16,6 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +30,7 @@ import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.ImageID;
 
 public class LoginDialog extends Dialog implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -37,14 +41,26 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 	private Button btnOk, btnCancel;
 	private String id = IdGenerator.getInstance().getNextID();
 	private boolean loginOk;
+	private ImageRegistry imageRegistry;
 
 	public LoginDialog(Shell parentShell) {
 		super(parentShell);
+		setShellStyle(SWT.BORDER);
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		
+		// create ImageRegistery
+		imageRegistry = Activator.getDefault().getImageRegistry();
+		
 		Composite container = (Composite) super.createDialogArea(parent);
+		
+		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		ImageDescriptor backward_imageDesc = imageRegistry
+				.getDescriptor(ImageID.LOGIN_BG.toString());
+		container.setBackgroundImage(backward_imageDesc.createImage());
+		
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginRight = 30;
 		layout.marginLeft = 30;
@@ -52,7 +68,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 
 		Label lblUser = new Label(container, SWT.NONE);
 		lblUser.setText("User Id:");
-
+		lblUser.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtUser = new Text(container, SWT.BORDER);
 		txtUser.setText("");
 		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
@@ -70,6 +86,8 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		Label lblPassword = new Label(container, SWT.NONE);
 		GridData gd_lblNewLabel = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 1, 1);
+		lblPassword.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+
 		gd_lblNewLabel.horizontalIndent = 1;
 		lblPassword.setLayoutData(gd_lblNewLabel);
 		lblPassword.setText("Password:");
@@ -86,13 +104,6 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 	        }
 	      });
 		
-		
-		Label lblBlank = new Label(container, SWT.NONE);
-		GridData gdLblBlank = new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 2, 1);
-		gdLblBlank.horizontalIndent = 1;
-		lblBlank.setLayoutData(gdLblBlank);
-		lblBlank.setText("          ");
 
 		lblMessage = new Label(container, SWT.NONE);
 		GridData gdLblMessage = new GridData(SWT.FILL, SWT.CENTER, true,
@@ -102,7 +113,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		lblMessage.setText("");
 		Color red = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 		lblMessage.setForeground(red);
-		
+		lblMessage.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		return container;
 	}
 	
@@ -123,7 +134,8 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 	
 	@Override
 	protected Control createButtonBar(Composite parent) {
-		Composite buttonArea =  new Composite(parent, SWT.NONE);		
+		Composite buttonArea =  new Composite(parent, SWT.NONE);
+		buttonArea.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		GridLayout layoutButtons = new GridLayout(2, true);
 		layoutButtons.marginRight = 30;
 		layoutButtons.marginLeft = 30;

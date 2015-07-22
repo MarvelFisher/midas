@@ -33,7 +33,8 @@ public enum ImageID {
 	ROLE_ICON("icons/role.png"),
 	FREZZE_ICON("icons/frezze.png"),
 	AMEND_OPTIONS_ICON("icons/amendOptions.png"),
-	MONEY_ICON("icons/money.png")
+	MONEY_ICON("icons/money.png"),
+	LOGIN_BG("icons/loginBg.png")
 	;
 	private String value;
 	ImageID(String value) {
