@@ -505,6 +505,16 @@ public class WindAPIAdapter implements IMarketDataAdaptor,
         }
     }
 
+    @Override
+    public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
+
+    }
+
+    @Override
+    public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
+
+    }
+
     public void sendInnerQuote(InnerQuote innerQuote){
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients) {

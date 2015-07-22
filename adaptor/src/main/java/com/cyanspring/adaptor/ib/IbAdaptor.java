@@ -279,6 +279,20 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
     }
 
+    @Override
+    public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
+        for(String symbol: subscribeList){
+            subscribeMarketData(symbol, listener);
+        }
+    }
+
+    @Override
+    public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
+        for(String symbol: unSubscribeList){
+            unsubscribeMarketData(symbol, listener);
+        }
+    }
+
     // //////////////////////////////////////////////
     // End: implementation of IMarketDataAdaptor
     // //////////////////////////////////////////////

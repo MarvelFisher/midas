@@ -170,7 +170,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(stockData.getActionDay() > stockData.getTradingDay() && stockData.getActionDay()==tradeDateForWindFormat)
+                if (stockData.getActionDay() > stockData.getTradingDay() && stockData.getActionDay() == tradeDateForWindFormat)
                     stockData.setTradingDay(stockData.getActionDay());
                 if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
                     return;
@@ -187,7 +187,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(indexData.getActionDay() > indexData.getTradingDay() && indexData.getActionDay()==tradeDateForWindFormat)
+                if (indexData.getActionDay() > indexData.getTradingDay() && indexData.getActionDay() == tradeDateForWindFormat)
                     indexData.setTradingDay(indexData.getActionDay());
                 if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
                     return;
@@ -429,47 +429,42 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     @Override
     public void subscribeMarketData(String symbol,
                                     IMarketDataListener listener) throws MarketDataException {
-
         if (symbol.isEmpty())
             return;
-
         log.info("subscribeMarketData Symbol: " + symbol);
+        if (!QuoteMgr.instance().checkSymbol(symbol)) {
+            ClientHandler.subscribe(symbol);
+        }
+        checkUserClient(symbol, listener, true);
+    }
 
-        String commodity = commodityBySymbolMap.get(symbol);
-        // Future
-        if ("F".equals(commodity)) {
-            if (!QuoteMgr.instance().checkFutureSymbol(symbol)) {
-                ClientHandler.subscribe(symbol);
-            }
-            QuoteMgr.instance().addFutureSymbol(symbol);
-        }
-        // Stock
-        if ("S".equals(commodity)) {
-            if (!QuoteMgr.instance().checkStockSymbol(symbol)) {
-                ClientHandler.subscribe(symbol);
-            }
-            QuoteMgr.instance().addStockSymbol(symbol);
-        }
-        //Index
-        if ("I".equals(commodity)) {
-            if (!QuoteMgr.instance().checkIndexSymbol(symbol)) {
-                ClientHandler.subscribe(symbol);
-            }
-            QuoteMgr.instance().addIndexSymbol(symbol);
-        }
-
+    /**
+     * Check UserClient Symbol & Process
+     * @param symbol
+     * @param listener
+     * @param controlFlag add:true,remove:false
+     */
+    public void checkUserClient(String symbol, IMarketDataListener listener, boolean controlFlag){
         boolean bFound = false;
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
         for (UserClient client : clients)
             if (client.listener == listener) {
-                client.addSymbol(symbol);
+                if(controlFlag){
+                    client.addSymbol(symbol);
+                }else{
+                    client.removeSymbol(symbol);
+                }
                 bFound = true;
                 break;
             }
 
         if (!bFound) {
             UserClient client = new UserClient(listener);
-            client.addSymbol(symbol);
+            if(controlFlag) {
+                client.addSymbol(symbol);
+            }else{
+                client.removeSymbol(symbol);
+            }
             clientsList.add(client);
         }
     }
@@ -477,20 +472,43 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     @Override
     public void unsubscribeMarketData(String instrument,
                                       IMarketDataListener listener) {
+        checkUserClient(instrument, listener, false);
+    }
 
-        boolean bFound = false;
-        List<UserClient> clients = new ArrayList<UserClient>(clientsList);
-        for (UserClient client : clients)
-            if (client.listener == listener) {
-                client.removeSymbol(instrument);
-                bFound = true;
-                break;
+    @Override
+    public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
+        if (subscribeList == null || subscribeList.size() == 0) return;
+        StringBuffer sb;
+        List<List<String>> subscribeLists = chopped(subscribeList,WindDef.SUBSCRIBE_MAX_COUNT); //split subscribeList
+        for(int i=0; i< subscribeLists.size(); i++){
+            sb = new StringBuffer();
+            for(String symbol: subscribeLists.get(i)){
+                if(sb.toString().equals("")){
+                    sb.append(symbol);
+                }else{
+                    sb.append(";").append(symbol);
+                }
+                checkUserClient(symbol, listener, true);
             }
+            ClientHandler.subscribe(sb.toString());
+        }
+    }
 
-        if (!bFound) {
-            UserClient client = new UserClient(listener);
-            client.removeSymbol(instrument);
-            clientsList.add(client);
+    static <T> List<List<T>> chopped(List<T> list, final int L) {
+        List<List<T>> parts = new ArrayList<List<T>>();
+        final int N = list.size();
+        for (int i = 0; i < N; i += L) {
+            parts.add(new ArrayList<T>(
+                            list.subList(i, Math.min(N, i + L)))
+            );
+        }
+        return parts;
+    }
+
+    @Override
+    public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
+        for (String symbol : unSubscribeList) {
+            unsubscribeMarketData(symbol, listener);
         }
     }
 
@@ -545,7 +563,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             String mainMarket = "S"; //default main market
             RefDataEvent refDataEvent = (RefDataEvent) object;
             for (RefData refData : refDataEvent.getRefDataList()) {
-                commodityBySymbolMap.put(refData.getSymbol(), refData.getCommodity());
                 if ("S".equals(refData.getCommodity())) {
                     marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
                     mainMarket = "S";
@@ -594,10 +611,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         }
     }
 
-    public void printDataTimeStat(){
+    public void printDataTimeStat() {
         //print time stat log
-        if(recordReceiveQuoteInfoBySymbolMap!=null && recordReceiveQuoteInfoBySymbolMap.size()>0){
-            for(DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()){
+        if (recordReceiveQuoteInfoBySymbolMap != null && recordReceiveQuoteInfoBySymbolMap.size() > 0) {
+            for (DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()) {
                 dataTimeStat.printStat();
             }
         }

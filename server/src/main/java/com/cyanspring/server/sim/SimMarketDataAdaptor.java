@@ -140,6 +140,20 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		}
 	}
 
+	@Override
+	public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) {
+		for(String symbol : subscribeList) {
+			subscribeMarketData(symbol, listener);
+		}
+	}
+
+	@Override
+	public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
+		for(String symbol: unSubscribeList){
+			unsubscribeMarketData(symbol, listener);
+		}
+	}
+
 	public void sendState(boolean on) {
 		for (IMarketDataStateListener listener : marketDataStateListeners) {
 			listener.onState(on);

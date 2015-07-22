@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.cyanspring.common.marketdata;
 
+import java.util.List;
+
 public interface IMarketDataAdaptor {
 	public void init() throws Exception;
 	public void uninit();
@@ -18,6 +20,8 @@ public interface IMarketDataAdaptor {
 	public void unsubscribeMarketDataState(IMarketDataStateListener listener);
 	public void subscribeMarketData(String instrument, IMarketDataListener listener) throws MarketDataException;
 	public void unsubscribeMarketData(String instrument, IMarketDataListener listener);
+	public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException;
+	public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener);
 	public void subscirbeSymbolData(ISymbolDataListener listener) ;
 	public void unsubscribeSymbolData(ISymbolDataListener listener);
 	public void refreshSymbolInfo(String market);

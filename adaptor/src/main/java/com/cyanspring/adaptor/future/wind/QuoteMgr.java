@@ -50,6 +50,13 @@ public class QuoteMgr implements IReqThreadCallback {
         thread.addRequest(reqObj);
     }
 
+    public boolean checkSymbol(String symbol){
+        boolean futureExist = FutureItem.futureItemBySymbolMap.containsKey(symbol);
+        boolean stockExist = StockItem.stockItemBySymbolMap.containsKey(symbol);
+        boolean indexExist = IndexItem.indexItemBySymbolMap.containsKey(symbol);
+        return futureExist || stockExist || indexExist;
+    }
+
     public boolean checkFutureSymbol(String strSymbol) {
         return FutureItem.futureItemBySymbolMap.containsKey(strSymbol); //Future
     }

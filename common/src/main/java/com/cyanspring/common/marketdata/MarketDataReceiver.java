@@ -523,9 +523,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 if (!adaptor.getState())
                     continue;
 
-                for (String symbol : preSubscriptionList) {
-                    adaptor.subscribeMarketData(symbol, this);
-                }
+                adaptor.subscribeMultiMarketData(preSubscriptionList, this);
             }
         } catch (MarketDataException e) {
             log.error(e.getMessage(), e);
