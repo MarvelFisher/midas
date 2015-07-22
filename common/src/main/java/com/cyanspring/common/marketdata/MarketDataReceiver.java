@@ -135,8 +135,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         quote.setTurnover(0);
         quote.setTotalVolume(0);
         quote.setLast(0);
-        quote.asks.clear();
-        quote.bids.clear();
+        if(null != quote.getBids() && quote.getBids().size() > 0) quote.getBids().clear();
+        if(null != quote.getAsks() && quote.getAsks().size() > 0) quote.getAsks().clear();
         return quote;
     }
 
