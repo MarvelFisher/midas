@@ -100,7 +100,7 @@ public class AddCashDialog extends Dialog {
 				if (!confirm)
 					return;
 				log.info("accountID:{}, cash:{}", accountID, cash);
-				if (StringUtils.hasLength(accountID) && !PriceUtils.isZero(cash)) {
+				if (StringUtils.hasText(accountID) && !PriceUtils.isZero(cash)) {
 					IRemoteEventManager eventManager = Business.getInstance().getEventManager();
 					try {
 						String server = Business.getInstance().getFirstServer();
