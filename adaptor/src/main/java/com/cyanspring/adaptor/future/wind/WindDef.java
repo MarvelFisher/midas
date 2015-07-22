@@ -48,6 +48,7 @@ public final class WindDef {
     public static final long timerInterval = 5000;
     public static final long SmallSessionTimeInterval = 30 * 60 * 1000;
     public static final int ReceiveQuoteTimeInterval = 30 * 60 * 1000;
+    public static final int SUBSCRIBE_MAX_COUNT = 500;
     public static final String TITLE_FUTURE = "FUTURE";
     public static final String TITLE_STOCK = "STOCK";
     public static final String TITLE_INDEX = "INDEX";

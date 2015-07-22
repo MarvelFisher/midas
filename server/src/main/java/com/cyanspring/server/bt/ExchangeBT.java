@@ -550,6 +550,20 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		
 	}
 
+	@Override
+	public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
+		for(String symbol: subscribeList){
+			subscribeMarketData(symbol, listener);
+		}
+	}
+
+	@Override
+	public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
+		for(String symbol: unSubscribeList){
+			unsubscribeMarketData(symbol, listener);
+		}
+	}
+
 	public ITickDataReader getTickDataReader() {
 		return tickDataReader;
 	}
