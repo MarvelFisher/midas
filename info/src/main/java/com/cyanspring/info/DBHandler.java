@@ -479,36 +479,44 @@ public class DBHandler
     		int nPos;
 			while (rs.next())
 			{
-				symbol = rs.getString("SYMBOL");
-				lst = retMap.get(symbol);
-				if (lst == null)
+				try
 				{
-					lst = new ArrayList<HistoricalPrice>();
-					retMap.put(symbol, lst);
-				}
-				price = new HistoricalPrice();
-				price.setTradedate(rs.getString("TRADEDATE"));
-				if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
-				if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
-				price.setSymbol(rs.getString("SYMBOL")) ;
-				price.setOpen(rs.getDouble("OPEN_PRICE"));
-				price.setClose(rs.getDouble("CLOSE_PRICE"));
-				price.setHigh(rs.getDouble("HIGH_PRICE"));
-				price.setLow(rs.getDouble("LOW_PRICE"));
-				price.setVolume(rs.getLong("VOLUME"));
-				price.setTotalVolume(rs.getLong("TOTALVOLUME"));
-				price.setTurnover(rs.getLong("TURNOVER"));
-				nPos = Collections.binarySearch(lst, price);
-				if (nPos < 0)
-				{
-					lst.add(~nPos, price);
-					if (lst.size() > 1024)
+					symbol = rs.getString("SYMBOL");
+					lst = retMap.get(symbol);
+					if (lst == null)
 					{
-						lst.remove(0);
+						lst = new ArrayList<HistoricalPrice>();
+						retMap.put(symbol, lst);
 					}
+					price = new HistoricalPrice();
+					price.setTradedate(rs.getString("TRADEDATE"));
+					if (rs.getString("KEYTIME") != null) price.setKeytime(sdf.parse(rs.getString("KEYTIME")));
+					if (rs.getString("DATATIME") != null) price.setDatatime(sdf.parse(rs.getString("DATATIME")));
+					price.setSymbol(rs.getString("SYMBOL")) ;
+					price.setOpen(rs.getDouble("OPEN_PRICE"));
+					price.setClose(rs.getDouble("CLOSE_PRICE"));
+					price.setHigh(rs.getDouble("HIGH_PRICE"));
+					price.setLow(rs.getDouble("LOW_PRICE"));
+					price.setVolume(rs.getLong("VOLUME"));
+					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
+					price.setTurnover(rs.getLong("TURNOVER"));
+					nPos = Collections.binarySearch(lst, price);
+					if (nPos < 0)
+					{
+						lst.add(~nPos, price);
+						if (lst.size() > 1024)
+						{
+							lst.remove(0);
+						}
+					}
+	//				lst.add(price);
+					nCount++;
 				}
-//				lst.add(price);
-				nCount++;
+				catch (Exception e)
+				{
+		            log.error(e.getMessage(), e) ;
+		            continue;
+				}
 			}
 			rs.close();
 			log.debug("Get Historical List size: " + nCount);
@@ -520,11 +528,6 @@ public class DBHandler
             log.trace(sqlcmd);
 			return null ;
 		} 
-    	catch (ParseException e) 
-    	{
-            log.error(e.getMessage(), e) ;
-			return null ;
-		}
     	finally
     	{
     		closeConnect(connect);
