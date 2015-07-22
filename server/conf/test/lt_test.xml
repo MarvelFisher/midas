@@ -41,9 +41,7 @@
     <bean id="lumpSumManager" class="com.cyanspring.server.account.LumpSumManager">
         <property name="dailyCloseTime" value="11:00:00"/>
     </bean>
-    
-    <bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController"></bean>
-    
+       
     <bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
     
