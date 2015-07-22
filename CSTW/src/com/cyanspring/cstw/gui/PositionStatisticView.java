@@ -60,6 +60,9 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 1000;
 	
+	private boolean isAggregateColumnCreated = false;
+	private boolean isAllPositionColumnCreate = false;
+	
 	@Override
 	public void onEvent(AsyncEvent event) {
 		
@@ -279,14 +282,20 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 						openPositionViewer.refresh();
 						return;
 					}
-					List<ColumnProperty> properties = openPositionViewer
-							.setObjectColumnProperties(psbList.get(0));				
-					properties = filterColumn(properties);
-
-					if(properties.size() < openPositionViewer.getComparator().getColumn())
-						openPositionViewer.getComparator().setColumn(0);
 					
-					openPositionViewer.setSmartColumnProperties(psbList.get(0).getClass().getName(),properties);
+					if(!isAggregateColumnCreated){
+						List<ColumnProperty> properties = openPositionViewer
+								.setObjectColumnProperties(psbList.get(0));				
+						properties = filterColumn(properties);
+						
+						if(properties.size() < openPositionViewer.getComparator().getColumn())
+							openPositionViewer.getComparator().setColumn(0);
+						
+						openPositionViewer.setSmartColumnProperties(psbList.get(0).getClass().getName(),properties);
+
+						isAggregateColumnCreated=true;
+					}
+					
 					openPositionViewer.setInput(psbList);			
 					openPositionViewer.refresh();
 				}
@@ -310,10 +319,13 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 						openPositionViewer.refresh();
 						return;
 					}
+					if( !isAllPositionColumnCreate){
+						List<ColumnProperty> properties = openPositionViewer
+								.setObjectColumnProperties(psbList.get(0));
+						openPositionViewer.setSmartColumnProperties(psbList.get(0).getClass().getName(),properties);
+						isAllPositionColumnCreate = true;
+					}
 					
-					List<ColumnProperty> properties = openPositionViewer
-							.setObjectColumnProperties(psbList.get(0));
-					openPositionViewer.setSmartColumnProperties(psbList.get(0).getClass().getName(),properties);
 					openPositionViewer.setInput(psbList);
 					openPositionViewer.refresh();
 				}
@@ -367,6 +379,10 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 		
 		aggregateAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
+				
+				isAggregateColumnCreated = false;
+				isAllPositionColumnCreate = false;
+				
 				if(!aggregateAction.isChecked()) {
 					showAllOpenPosition();
 				} else { 
