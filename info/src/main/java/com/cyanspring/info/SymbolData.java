@@ -127,7 +127,8 @@ public class SymbolData implements Comparable<SymbolData>
 			Quote q;
 			while ((q = quoteTmp.poll()) != null)
 			{
-				if (PriceUtils.isZero(q.getTotalVolume()) || PriceUtils.isZero(q.getTurnover()))
+				if (centralDB.getServerMarket().equals("FX") == false &&
+						(PriceUtils.isZero(q.getTotalVolume()) || PriceUtils.isZero(q.getTurnover())))
 				{
 					continue;
 				}
