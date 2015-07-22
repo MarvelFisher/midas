@@ -210,7 +210,7 @@
 			<value>tcp://180.168.146.181:10200</value>
 		</property>
 		<property name="conLog">
-			<value>./tradeCon/</value>
+			<value>./tradeCon2/</value><!-- must different to other Adaptor -->
 		</property>
 		<property name="user">
 			<value>00091</value>

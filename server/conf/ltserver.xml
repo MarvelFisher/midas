@@ -128,7 +128,7 @@
     <bean id="derbyPort" class="java.lang.String">
         <constructor-arg value="1527" />
     </bean>
-    
+
     <!-- risk control -->
 	<bean id="maxRiskOrderCount" class="java.lang.Integer">
         <constructor-arg value="100" />
