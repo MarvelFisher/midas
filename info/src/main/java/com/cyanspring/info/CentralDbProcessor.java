@@ -93,6 +93,8 @@ public class CentralDbProcessor implements IPlugin
 	private boolean calledRefdata = false;
 	private boolean isProcessQuote = false;
 	private Queue<QuoteEvent> quoteBuffer;
+	
+	private boolean runInsertSQL = true;
 
 	// for checking SQL connect 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -658,7 +660,7 @@ public class CentralDbProcessor implements IPlugin
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, (-1) * (getHistoricalDataPeriod().get(strType) + 2));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		List<HistoricalPrice> historical;
+		Map<String, List<HistoricalPrice>> historical;
 		if (strType.equals("D") || strType.equals("W") || strType.equals("M"))
 		{
 			historical = getDbhnd().getTotalValue(market, strType, null);
@@ -668,18 +670,18 @@ public class CentralDbProcessor implements IPlugin
 			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
 		}
 		HashMap<String, List<HistoricalPrice>> subMap;
-		for (HistoricalPrice price : historical)
+		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())
 		{
-			if (retrieveMap.get(price.getSymbol()) == null)
+			if (retrieveMap.get(entry.getKey()) == null)
 			{
-				retrieveMap.put(price.getSymbol(), new HashMap<String, List<HistoricalPrice>>());
+				retrieveMap.put(entry.getKey(), new HashMap<String, List<HistoricalPrice>>());
 			}
-			subMap = retrieveMap.get(price.getSymbol());
+			subMap = retrieveMap.get(entry.getKey());
 			if (subMap.get(strType) == null)
 			{
 				subMap.put(strType, new ArrayList<HistoricalPrice>());
 			}
-			subMap.get(strType).add(price);
+			subMap.put(strType, entry.getValue());
 		}
 		return;
 	}
@@ -822,10 +824,12 @@ public class CentralDbProcessor implements IPlugin
 		}
 		if (getnChefCount() <= 1)
 		{
+			numOfHisThreads = 1;
 			SymbolChefList.add(new SymbolChef("Symbol_Chef_0"));
 		}
 		else
 		{
+			numOfHisThreads = getnChefCount();
 			for (int ii = 0; ii < getnChefCount(); ii++)
 			{
 				SymbolChefList.add(new SymbolChef("Symbol_Chef_" + ii));
@@ -936,7 +940,10 @@ public class CentralDbProcessor implements IPlugin
 			}
 		});
 		insertThread.setName("CDP_Insert_SQL");
-		insertThread.start();
+		if (isRunInsertSQL())
+		{
+			insertThread.start();
+		}
 	}
 
 	public int getnChefCount() {
@@ -1052,6 +1059,14 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setHistoricalDataPeriod(HashMap<String, Integer> historicalDataPeriod) {
 		this.historicalDataPeriod = historicalDataPeriod;
+	}
+
+	public boolean isRunInsertSQL() {
+		return runInsertSQL;
+	}
+
+	public void setRunInsertSQL(boolean runInsertSQL) {
+		this.runInsertSQL = runInsertSQL;
 	}
 	
 }
