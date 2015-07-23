@@ -303,9 +303,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		};
 		addCashAction.setId(ID_ADD_CASH_ACTION);
 		addCashAction.setText("Add Cash");
-		addCashAction.setToolTipText("Add more cash");
+		addCashAction.setToolTipText("Add cash");
 		
-		ImageDescriptor img = imageRegistry.getDescriptor(ImageID.PLUS_ICON.toString());
+		ImageDescriptor img = imageRegistry.getDescriptor(ImageID.MONEY_ICON.toString());
 		
 		addCashAction.setImageDescriptor(img);
 		IActionBars bars = getViewSite().getActionBars();
