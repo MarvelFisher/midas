@@ -465,7 +465,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
             String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value());
             quoteExt.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
-            quoteExtends.put(symbol, quoteExt);
+            if(quoteExtends.containsKey(symbol)) {
+                DataObject quoteExtTmp = quoteExtends.get(symbol);
+                quoteExtTmp.update(quoteExt);
+            }else{
+                quoteExtends.put(symbol, quoteExt);
+            }
             QuoteExtEvent event = new QuoteExtEvent(quoteExt.get(String.class,
                     QuoteExtDataField.SYMBOL.value()), null, quoteExt, sourceId);
             sendQuoteEvent(event);
