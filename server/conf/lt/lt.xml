@@ -36,7 +36,6 @@
 				<ref bean="trailingStopManager"/>
 				<ref bean="liveTradingSession" />	
 				<ref bean="statisticManager" />	
-				<ref bean="lumpSumManager"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -46,11 +45,7 @@
 			</map>
 		</property>
 	</bean>
-	
-	<bean id="lumpSumManager" class="com.cyanspring.server.account.LumpSumManager">
-        <property name="dailyCloseTime" ref="lumpSumClose"/>
-    </bean>
-	
+
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 	
