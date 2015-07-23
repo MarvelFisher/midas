@@ -1,3 +1,4 @@
+
 package com.cyanspring.cstw.gui;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -55,7 +56,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		
 		Composite container = (Composite) super.createDialogArea(parent);
-		
+		container.setBackgroundMode(SWT.INHERIT_FORCE);
 		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		ImageDescriptor backward_imageDesc = imageRegistry
 				.getDescriptor(ImageID.LOGIN_BG.toString());
@@ -68,7 +69,6 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 
 		Label lblUser = new Label(container, SWT.NONE);
 		lblUser.setText("User Id:");
-		lblUser.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtUser = new Text(container, SWT.BORDER);
 		txtUser.setText("");
 		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
@@ -86,8 +86,6 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		Label lblPassword = new Label(container, SWT.NONE);
 		GridData gd_lblNewLabel = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 1, 1);
-		lblPassword.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-
 		gd_lblNewLabel.horizontalIndent = 1;
 		lblPassword.setLayoutData(gd_lblNewLabel);
 		lblPassword.setText("Password:");
@@ -108,12 +106,10 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		lblMessage = new Label(container, SWT.NONE);
 		GridData gdLblMessage = new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 2, 1);
-		gdLblMessage.horizontalIndent = 1;
 		lblMessage.setLayoutData(gdLblMessage);
 		lblMessage.setText("");
 		Color red = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 		lblMessage.setForeground(red);
-		lblMessage.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		return container;
 	}
 	
