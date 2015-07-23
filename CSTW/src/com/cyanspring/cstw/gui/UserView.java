@@ -2,6 +2,7 @@ package com.cyanspring.cstw.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -29,7 +31,9 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotRequestEvent;
 import com.cyanspring.common.event.account.UserUpdateEvent;
+import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
@@ -45,6 +49,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<User> users = new ArrayList<User>();
+	private ArrayMap <String,User> userMap = new ArrayMap<String,User>();
 	private boolean columnCreated = false;
 	
 	private Action createGroupManagementAction;
@@ -58,20 +63,39 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 	public void onEvent(AsyncEvent event) {
 		if( event instanceof AllUserSnapshotReplyEvent){
 			AllUserSnapshotReplyEvent reply = (AllUserSnapshotReplyEvent) event;
-			showUsers(reply.getUsers());
+			users = reply.getUsers();
+			setUserMap(reply.getUsers());
+			showUsers();
 		}else if(event instanceof UserUpdateEvent){
 			UserUpdateEvent reply = (UserUpdateEvent) event;
+			log.info("userupdate reply:{}",reply.getUser().getId());
 			updateUser(reply.getUser());
 		}
 	}
 
-	private void updateUser(User user) {
-//		viewer.getTable().
-//		Column viewer.getTable().getColumns();
+	private void setUserMap(List<User> users) {
+		for(User user:users){
+			userMap.put(user.getId(), user);
+		}
 	}
 
-	private void showUsers(List<User> userList) {
-		this.users = userList; 
+	private void updateUser(User user) {
+		userMap.put(user.getId(), user);
+		showUsers();
+	}
+
+	protected User findUser(TableItem item) {
+		String id = item.getText(0);
+		for(User user:users){
+			if(id.equals(user.getId())){
+				return user;
+			}
+		}
+		return null;
+	}
+	
+	private void showUsers() {
+	
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -80,12 +104,13 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 						return;
 					
 					if (!columnCreated) {
-						Object obj = users.get(0);
+						ArrayList <User> tempList = userMap.toArray();
+						Object obj = tempList.get(0);
 						List<ColumnProperty> properties = viewer
 								.setObjectColumnProperties(obj);
 						viewer.setSmartColumnProperties(obj.getClass().getName(),
 								properties);
-						viewer.setInput(users);
+						viewer.setInput(tempList);
 						columnCreated = true;
 					}
 
@@ -131,13 +156,14 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		
 		sendAllUserRequest();	
 		subEvent(AllUserSnapshotReplyEvent.class);
-		
+		subEvent(UserUpdateEvent.class);
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
 		unSubEvent(AllUserSnapshotReplyEvent.class);
+		unSubEvent(UserUpdateEvent.class);
 	}
 	
 	private void sendAllUserRequest() {
@@ -155,7 +181,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		}
 		
 		if(items.length > 1){
-			showMessageBox("Select one user, not multiple user!", parent);
+			showMessageBox("Select just one user!", parent);
 			return null;
 		}
 		
@@ -194,15 +220,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		bars.getToolBarManager().add(createChangeRoleAction);		
 	}
 	
-	protected User findUser(TableItem item) {
-		String id = item.getText(0);
-		for(User user:users){
-			if(id.equals(user.getId())){
-				return user;
-			}
-		}
-		return null;
-	}
+
 
 	private void createGroupManagementAction(final Composite parent) {
 
@@ -213,7 +231,13 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 				if( null == item)
 					return ;
 				
-				createGroupDialog = new GroupManagementDialog(parent.getShell(),item.getText(0),users);
+				User user = (User)item.getData();
+				if(UserRole.Trader.equals(user.getRole())){
+					GUIUtils.showMessageBox(""+user.getId()+" is a Trader that can't manage someone else.", parent);
+					return ;
+				}
+				
+				createGroupDialog = new GroupManagementDialog(parent.getShell(),item.getText(0),userMap.toArray());
 				createGroupDialog.open();
 			}
 		};

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -46,6 +47,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 
 public class GroupManagementDialog extends Dialog implements IAsyncEventListener{
@@ -78,13 +80,9 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		this.accountId = accountId;
 		this.users = users;
 		for(User user:users){
-			nonManageeList.add(user.getId());
+			if(!UserRole.Admin.equals(user.getRole()))
+				nonManageeList.add(user.getId());
 		}
-//		this.accounts = accounts;
-//		accountList = accounts.toArray();		
-//		for(Account account:accountList){
-//			nonManageeList.add(account.getUserId());
-//		}
 		log.info("GroupManagementDialog set user:{}",accountId);
 	}
 	
@@ -330,27 +328,26 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 					}
 					
 				});
-
+				this.userGroup = reply.getUserGroup();
+				showManageeList();
 			}
 		}else if(event instanceof CreateGroupManagementReplyEvent){
 			log.info("receive CreateGroupManagementReplyEvent");
 			CreateGroupManagementReplyEvent reply = (CreateGroupManagementReplyEvent) event;
 			showConfirmResultOnLabel(reply.getResult());
-			if(reply.isOk()){
-				sendGroupManageeRequestEvent();
-			}else{
+			if(!reply.isOk()){
 				pushMessageToLabel( getReplyErrorMessage(reply.getMessage()));
-			}			
+			}
+			sendGroupManageeRequestEvent();
+						
 		}else if(event instanceof DeleteGroupManagementReplyEvent){
 			log.info("receive DeleteGroupManagementReplyEvent");
 			DeleteGroupManagementReplyEvent reply = (DeleteGroupManagementReplyEvent) event;
 			showConfirmResultOnLabel(reply.getResult());
-
-			if(reply.isOk()){
-				sendGroupManageeRequestEvent();
-			}else{
+			if(!reply.isOk()){
 				pushMessageToLabel( getReplyErrorMessage(reply.getMessage()));
 			}
+			sendGroupManageeRequestEvent();
 		}
 	}
 	private String getReplyErrorMessage(String msg){
@@ -371,11 +368,27 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	
 	private void showConfirmResultOnLabel(Map <GroupManagement,String> resultMap){
 		Set <Entry<GroupManagement,String>> entrys =  resultMap.entrySet();
+		StringBuffer sb = new StringBuffer();
 		for(Entry <GroupManagement,String>entry:entrys){
 			GroupManagement gm = entry.getKey();
 			String msg = entry.getValue();
-			pushMessageToLabel("Manager:"+gm.getManager()+" - Managee:"+gm.getManaged()+"  Message:"+msg);
+			sb.append("Manager:"+gm.getManager()+" - Managee:"+gm.getManaged()+"  Message:"+msg+" \n");
 		}
+		GUIUtils.showMessageBox(sb.toString(), parent);
+	}
+	
+	private void clearViewList(){
+		parent.getDisplay().syncExec(new Runnable(){
+
+			@Override
+			public void run() {			
+				nonManageeListView.getList().removeAll();
+				manageeListView.getList().removeAll();
+				manageeList.clear();
+				nonManageeList.clear();
+			}
+			
+		});		
 	}
 	
 	private void showManageeList() {
@@ -389,20 +402,25 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		
 		try { 
 			displayLock.lock();
+			clearViewList();
 			final ArrayList <String>tempList = new ArrayList<String>();
 			java.util.List <UserGroup> manageeGroupList = userGroup.getNoneRecursiveManageeList();
 			for(UserGroup ug : manageeGroupList){
 				manageeList.add(ug.getUser());
 			}
-			
-			for(String user:nonManageeList){
-				if(!manageeList.contains(user)
-						&& !accountId.equals(user)){
-					tempList.add(user);
+			log.info("manageeList:{}",manageeList.size());
+
+			for(User user : users){
+				if(!manageeList.contains(user.getId())
+						&& !accountId.equals(user.getId())
+						&& !UserRole.Admin.equals(user.getRole())){
+					tempList.add(user.getId());
 				}
 			}
 		
-			parent.getDisplay().asyncExec(new Runnable(){
+			log.info("manageeList:{}",manageeList.size());
+			log.info("tempList:{}",tempList.size());
+			parent.getDisplay().syncExec(new Runnable(){
 
 				@Override
 				public void run() {			
