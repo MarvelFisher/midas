@@ -828,7 +828,7 @@ public class WindGateway implements Runnable {
 		}
 		TDF_TRANSACTION data = mapTransaction.get(symbol);
 		mapTransaction.put(symbol,transactionData);
-		if(WindGatewayHandler.isRegisteredTransactionByClient(symbol)) {
+		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredTransactionByClient(symbol)) {
 			String str = publishTransactionChanges(data,transactionData);
 			publishWindTransaction(str,symbol);
 		}
@@ -847,7 +847,7 @@ public class WindGateway implements Runnable {
 		String symbol = futureData.getWindCode();
 		TDF_FUTURE_DATA data = mapFutureData.get(symbol);
 		mapFutureData.put(symbol,futureData);
-		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
+		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishFutureChanges(data,futureData);
 			publishWindData(str,symbol);
 		}
@@ -874,7 +874,7 @@ public class WindGateway implements Runnable {
 			}
 		}
 			
-		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
+		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishMarketDataChanges(data,marketData);
 			publishWindData(str,symbol);
 		}
@@ -894,7 +894,7 @@ public class WindGateway implements Runnable {
 		String symbol = indexData.getWindCode();
 		TDF_INDEX_DATA data = mapIndexData.get(symbol);
 		mapIndexData.put(indexData.getWindCode(),indexData);
-		if(WindGatewayHandler.isRegisteredByClient(symbol)) {		
+		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishIndexDataChanges(data,indexData);
 			publishWindData(str,symbol);
 		}
@@ -910,7 +910,9 @@ public class WindGateway implements Runnable {
 		String str = "API=MarketClose|Market=" + marketClose.getMarket() + 				
 				"|Time=" + marketClose.getTime() + "|Info=" + marketClose.getInfo();
 		log.info(str);
-		publishWindData(str,null);	
+		if(windGatewayInitializer != null) {
+			publishWindData(str,null);
+		}
 		MsgPackLiteDataServerHandler.sendMarketClose(marketClose.getMarket(),marketClose.getTime(),marketClose.getInfo());
 		
 	}
@@ -919,7 +921,9 @@ public class WindGateway implements Runnable {
 		String str = "API=QDateChange|Market=" + dateChange.getMarket() +
 				"|OldDate=" + dateChange.getOldDate() + "|NewDate=" + dateChange.getNewDate();
 		log.info(str);
-		publishWindData(str,null);	
+		if(windGatewayInitializer != null) {
+			publishWindData(str,null);	
+		}
 		MsgPackLiteDataServerHandler.sendQuotationDateChange(dateChange.getMarket(),dateChange.getOldDate(),dateChange.getNewDate());
 	}
 	
@@ -1062,16 +1066,18 @@ public class WindGateway implements Runnable {
 			
 			try
 			{
-				windGatewayInitializer = new WindGatewayInitializer();
-				ServerBootstrap  bootstrap = new ServerBootstrap()
-				.group(bossGroup,workerGroup)
-				.channel(NioServerSocketChannel.class)
-				.option(ChannelOption.SO_KEEPALIVE, true)
-				.option(ChannelOption.TCP_NODELAY, true)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
-				.childHandler(windGatewayInitializer);
-			
-				bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+				if(serverPort != 0) {
+					windGatewayInitializer = new WindGatewayInitializer();
+					ServerBootstrap  bootstrap = new ServerBootstrap()
+					.group(bossGroup,workerGroup)
+					.channel(NioServerSocketChannel.class)
+					.option(ChannelOption.SO_KEEPALIVE, true)
+					.option(ChannelOption.TCP_NODELAY, true)
+					.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
+					.childHandler(windGatewayInitializer);
+				
+					bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+				}
 			}
 			finally
 			{
