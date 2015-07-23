@@ -110,7 +110,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 if (quote != null ) {
                     log.debug("PreOpen Send Clean Session quote:" + quote.getSymbol());
                     processCleanSession(quote);
-                    clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+                    eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
                     printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, quote, MarketDataDef.QUOTE_GENERAL);
                 }
             }
