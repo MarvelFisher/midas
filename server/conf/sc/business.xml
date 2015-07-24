@@ -35,12 +35,18 @@
 	</bean>
 	<bean id="ceilFloorValidator" class="com.cyanspring.server.validation.CeilFloorValidator">   
 	</bean>
-		<!-- For MarketSessionValidator -->	
+	
+	<!-- For MarketSessionValidator -->
 	<bean id="availableTimeList" class="java.util.ArrayList">
 	 	<constructor-arg>
 	        <list>
 	             <bean id="rejectOrderTimeOnPreopenState" class="com.cyanspring.server.validation.bean.AvailableTimeBean">
 				 	 <property name="marketSession" value="PREOPEN"/>
+				 	 <property name="startTime" value="08:30:00"/>
+				 	 <property name="endTime" value="09:00:00"/>
+				 </bean>
+				 <bean id="rejectOrderTimeOnOpenState" class="com.cyanspring.server.validation.bean.AvailableTimeBean">
+				 	 <property name="marketSession" value="OPEN"/>
 				 	 <property name="startTime" value="09:00:00"/>
 				 	 <property name="endTime" value="09:05:00"/>
 				 </bean>
