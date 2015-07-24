@@ -1133,8 +1133,9 @@ public class WindGateway implements Runnable {
 		String OS = System.getProperty("os.name").toLowerCase();
 		if (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 ) {
 			log.info("OS : " + OS);
+			System.load("libtdfapi_jni.so");
 			System.load("libWHNetWork.so");
-			System.load("libTDBAPI_v2.so");
+			System.load("libTDFAPI_v2.5.so");
 		}
 		
 		String current = null;
