@@ -1,9 +1,6 @@
 package com.cyanspring.server.account;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -89,11 +86,11 @@ public class AccountKeeper {
 	
 	private void checkLiveTradingStopLossValue(AccountSetting oldSetting,AccountSetting newSetting,Account account)throws AccountException{
 			
-		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getFreezePercent()
-				, oldSetting.getFreezeValue());
+		double comDailyStopLoss = TradingUtil.getMinValue(account.getStartAccountValue() * oldSetting.getFreezePercent()
+                , oldSetting.getFreezeValue());
 		
-		double comPositionStopLoss = TradingUtil.getMinValue(account.getStartAccountValue()*oldSetting.getStopLossPercent()
-				, oldSetting.getCompanySLValue());
+		double comPositionStopLoss = TradingUtil.getMinValue(account.getStartAccountValue() * oldSetting.getStopLossPercent()
+                , oldSetting.getCompanySLValue());
 		
 		if(!PriceUtils.isZero(comDailyStopLoss) 
 				&& PriceUtils.GreaterThan(newSetting.getDailyStopLoss(), comDailyStopLoss)){
@@ -305,4 +302,28 @@ public class AccountKeeper {
 		}
 		return result;
 	}
+
+    public List<String> getAllRouters(){
+        List<String> list = new ArrayList<>();
+        for (AccountSetting s : accountSettings.values()){
+            String router = s.getRoute();
+            if (router == null || router.equals(""))
+                continue;
+            if (!list.contains(router))
+                list.add(router);
+        }
+        return list;
+    }
+
+    public List<Account> getAccountsByRouter(String router) throws AccountException {
+        List<Account> list = new ArrayList<>();
+        List<Account> accounts = getAllAccounts();
+        for (Account account : accounts) {
+            AccountSetting setting = getAccountSetting(account.getId());
+            if (setting.getRoute().equals(router))
+                list.add(account);
+        }
+
+        return list;
+    }
 }
