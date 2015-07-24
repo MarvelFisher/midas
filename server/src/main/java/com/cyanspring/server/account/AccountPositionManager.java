@@ -52,6 +52,7 @@ import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.fx.FxUtils;
@@ -192,7 +193,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(ChangeUserRoleEvent.class,null);
             subscribeToEvent(AddCashEvent.class, null);
             subscribeToEvent(ChangeAccountStateRequestEvent.class,null);
-
+            subscribeToEvent(ManualClosePositionRequestEvent.class, null);
         }
 
         @Override
@@ -408,6 +409,23 @@ public class AccountPositionManager implements IPlugin {
         scheduleManager.uninit();
         eventProcessor.uninit();
         timerProcessor.uninit();
+    }
+    
+    public void processManualClosePositionRequestEvent(ManualClosePositionRequestEvent event) {
+    	OpenPosition position = event.getOpenPosition();
+    	log.info("processManualClosePositionRequestEvent, account: {}, symbol: {}", position.getAccount(), position.getSymbol());
+    	Quote quote = marketData.get(position.getSymbol());
+    	double price = QuoteUtils.getMarketablePrice(quote, position.getQty());
+    	Execution exec = new Execution(position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy, 
+    			Math.abs(position.getQty()), price, "", "", "", IdGenerator.getInstance().getNextID(), 
+    			position.getUser(), position.getAccount(), "");
+    	
+    	try {
+			positionKeeper.processExecution(exec, accountKeeper.getAccount(position.getAccount()));
+		} catch (PositionException e) {
+			log.error(e.getMessage(), e);
+		}
+    
     }
 
     public void processAddCashEvent(AddCashEvent event) {

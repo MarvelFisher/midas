@@ -42,6 +42,7 @@ import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
@@ -375,6 +376,32 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					log.error(e.getMessage(), e);
 				}
 			}
+		});
+		
+		MenuItem mCPItem = new MenuItem(menu, SWT.PUSH);
+		mCPItem.setText("Manual close position");
+		mCPItem.addListener(SWT.Selection, new Listener(){
+
+			@Override
+			public void handleEvent(Event event) {
+				try {
+					Table table = openPositionViewer.getTable();
+					TableItem items[] = table.getSelection();
+					for(TableItem item : items){
+						Object obj = item.getData();
+						if(obj instanceof OpenPosition){
+							OpenPosition position = (OpenPosition) obj;
+							String server = Business.getInstance().getFirstServer();
+							ManualClosePositionRequestEvent request = new ManualClosePositionRequestEvent(position.getAccount(), server,
+									position, IdGenerator.getInstance().getNextID());
+							Business.getInstance().getEventManager().sendRemoteEvent(request);
+						}
+					}
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+			
 		});
 		openPositionViewer.setBodyMenu(menu);
 	}
