@@ -64,6 +64,27 @@ public class Registration {
 		return strb.toString();
 	}	
 	
+    private boolean IsMFSymbol(String str) {
+        int dp = str.indexOf(".");
+        if(dp == -1 || str.length()- dp > 3) {
+            return true;
+        }
+        return false;
+    }
+    private String ConvertMFSymbol(String str) {
+        int dp = str.indexOf(".SHF");
+        if (dp < 0)
+        {
+            dp = str.indexOf(".DCE");
+        }
+        if (dp > 0)
+        {
+            String code = str.substring(0, dp);
+            String market = str.substring(dp);
+            return code.toLowerCase() + market;
+        }
+        return str;
+    }
 	
 	public String getSubscribeSymbol() {
 		if(symbolList.size() <= 0) {
@@ -72,11 +93,12 @@ public class Registration {
 		StringBuilder strb = new StringBuilder("API=SUBSCRIBE|Symbol=");
 		int iCount = 0;
 		for(String symbol : symbolList) {
-			//if(other != null && other.hadSymbolMarket(symbol)) {
-			//	continue;
-			//}
 			if(iCount != 0) {
 				strb.append(";");
+			}
+			if(IsMFSymbol(symbol))
+			{
+				continue;
 			}
 			strb.append(symbol);
 			iCount += 1;
@@ -86,6 +108,29 @@ public class Registration {
 		}
 		return strb.toString();		
 	}
+	
+	public String getSubscribeSymbolMF() {
+		if(symbolList.size() <= 0) {
+			return null;
+		}
+		StringBuilder strb = new StringBuilder("API=SUBSCRIBEMF|Symbol=");
+		int iCount = 0;
+		for(String symbol : symbolList) {
+			if(iCount != 0) {
+				strb.append(";");
+			}
+			if(IsMFSymbol(symbol) == false)
+			{
+				continue;
+			}								
+			strb.append(ConvertMFSymbol(symbol)); // 因為 SHF , DCE 註冊時,商品代碼要用小寫,但是傳回來的商品代碼是大寫 !!!	
+			iCount += 1;
+		}
+		if(iCount == 0) {
+			return null;
+		}
+		return strb.toString();		
+	}	
 	
 	public String getSubscribeTransaction() {
 		if(transactionList.size() <= 0) {

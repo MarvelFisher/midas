@@ -1590,21 +1590,25 @@ public class AccountPositionManager implements IPlugin {
         List<Account> list = accountKeeper.getAllAccounts();
         for (Account account : list) {
         	
+        	boolean sendUpdate = false;
         	if(AccountState.FROZEN.equals(account.getState())){
-        		
+        		sendUpdate = true;
+        	}
+        	
+            Account copy = positionKeeper.rollAccount(account);
+            eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, copy));
+
+            if(sendUpdate){ // notify frozen accounts are reactivated
     			AccountUpdateEvent event = new AccountUpdateEvent(account.getId(), null, account);
-    	    	
     			try {
 					eventManager.sendRemoteEvent(event);
 				} catch (Exception e) {
 					log.info(e.getMessage(),e);
 				}
         	}
-        	
-            Account copy = positionKeeper.rollAccount(account);
-            eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, copy));
             account.resetDailyPnL();
         }
+
         eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, tradeDate));
     }
 

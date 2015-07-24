@@ -23,7 +23,7 @@ public abstract class BaseAccount implements Serializable {
 	private double cashAvailable;
 	private double marginHeld;
 	private double cashDeduct;
-
+	private double unitPrice = 1.0;
 	private Date created;
 	
 	//jimmy#livetrading
@@ -182,13 +182,11 @@ public abstract class BaseAccount implements Serializable {
 	}
 
 	public synchronized double getUnitPrice() {
-		if(!PriceUtils.isZero(this.cashDeposited)) {
-			return rollPrice + this.urPnL/this.cashDeposited;
-		}
-		return rollPrice;
+		return unitPrice;
 	}
 
 	protected void setUnitPrice(double unitPrice) {
+		this.unitPrice = unitPrice;
 	}
 	
 	public synchronized double getRollPrice() {
@@ -239,6 +237,7 @@ public abstract class BaseAccount implements Serializable {
 	public synchronized void addCash(double value) {
 		this.cash += value;
 		this.cashDeposited += value;
+        this.startAccountValue += value;
 	}
 	
 	public synchronized void updatePnL(double pnl) {
@@ -251,12 +250,13 @@ public abstract class BaseAccount implements Serializable {
 		if(!PriceUtils.isZero(this.cashDeposited))
 			this.rollPrice += this.PnL/this.cashDeposited;
 		
+		double roi = (this.getValue() - this.getStartAccountValue())/this.getStartAccountValue();
+		this.unitPrice = this.unitPrice * (1 + roi);
+		setStartAccountValue(getValue());
 		
 		if(null == getState() || FROZEN == getState()){
 			setState(ACTIVE);
 		}		
-		setStartAccountValue(getValue());
-		
 	}
 
 	public synchronized void resetDailyPnL() {

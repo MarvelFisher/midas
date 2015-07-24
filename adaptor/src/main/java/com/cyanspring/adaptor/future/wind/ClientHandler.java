@@ -193,13 +193,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         LogUtil.logInfo(log, "Wind channel Active");
         context = ctx;
 
-        String[] arrSymbol = WindGateWayAdapter.instance.getRefSymbol();
-        if (arrSymbol.length > 0) {
-            for (String symbol : arrSymbol) {
-                subscribe(symbol);
-            }
-        }
-
         WindGateWayAdapter adaptor = WindGateWayAdapter.instance;
         WindGateWayAdapter.isConnected = true;
         WindGateWayAdapter.isConnecting = false;

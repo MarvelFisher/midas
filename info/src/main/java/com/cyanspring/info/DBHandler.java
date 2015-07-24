@@ -504,7 +504,7 @@ public class DBHandler
 					if (nPos < 0)
 					{
 						lst.add(~nPos, price);
-						if (lst.size() > 1024)
+						if (lst.size() > 1440)
 						{
 							lst.remove(0);
 						}

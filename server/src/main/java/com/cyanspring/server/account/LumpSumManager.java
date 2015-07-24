@@ -1,7 +1,6 @@
 package com.cyanspring.server.account;
 
 import com.cyanspring.common.Clock;
-import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.*;
 import com.cyanspring.common.business.Execution;
@@ -22,7 +21,6 @@ import com.cyanspring.server.order.RiskOrderController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -88,23 +86,7 @@ public class LumpSumManager implements IPlugin {
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
-        log.info("Start lumpSum process.");
-        Map<String, Double> totalPositions = calculateTotalSymbolPosition();
-        for (Map.Entry<String, Double> entry : totalPositions.entrySet()) {
-            String symbol = entry.getKey();
-            double qty = entry.getValue();
-            if (!PriceUtils.isZero(qty)) {
-                try {
-                    log.info("Send close position event, symbol: {}, qty: {}", symbol, qty);
-                    businessManager.processClosePosition(null, null, null, OrderReason.DayTradingMode,
-                            accountKeeper.getAccount(Default.getAccount()), symbol,
-                            qty > 0 ? OrderSide.Sell : OrderSide.Buy, Math.abs(qty));
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-        }
-        log.info("End lumpSum process");
+        processLumpSum();
         setScheduleLumpSumEvent();
     }
 
@@ -128,49 +110,85 @@ public class LumpSumManager implements IPlugin {
         Execution exec = createClosePositionExec(symbol,
                 oPosition.getQty(), oPosition.getUser(), oPosition.getAccount(), "");
         if (exec == null) {
-            log.warn("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount());
+            log.error("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount());
             return;
         } else
             log.info(exec.toString());
         positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
-    private Map<String, Double> calculateTotalSymbolPosition() {
-        Map<String, Double> totalPositions = new HashMap<>();
-        List<Account> list = accountKeeper.getAllAccounts();
+    private void processLumpSum() {
+        log.info("Start lumpSum process.");
+        List<Account> allAccount = accountKeeper.getAllAccounts();
+        for (Account account : allAccount)
+            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
 
-        for (Account account : list) {
+        List<String> routers = accountKeeper.getAllRouters();
+        for (String router : routers) {
             try {
-                if (account.getId().equals(Default.getAccount())) {
+                Map<String, List<OpenPosition>> pMap = new HashMap<>(); // symbol/positions
+                List<Account> accounts = accountKeeper.getAccountsByRouter(router);
+                for (Account account : accounts) {
+                    AccountSetting setting = accountKeeper.getAccountSetting(account.getId());
+                    if (!setting.isLiveTrading())
+                        continue;
                     List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
                     for (OpenPosition position : positions) {
-                        processClosePositionExecution(position.getSymbol(), position);
+                        List<OpenPosition> pList = pMap.get(position.getSymbol());
+                        if (pList == null) {
+                            pList = new ArrayList<>();
+                            pMap.put(position.getSymbol(), pList);
+                            pList.add(position);
+                            continue;
+                        }
+
+                        Double positionQty = position.getQty();
+                        OpenPosition p = pList.get(0);
+
+                        if (p == null || PriceUtils.Equal(Math.signum(positionQty), Math.signum(p.getQty()))) {
+                            pList.add(position);
+                        } else {
+                            List<OpenPosition> removes = new ArrayList<>();
+                            double remain;
+                            for (OpenPosition o : pList) {
+                                double qty = o.getQty();
+                                remain = Math.abs(qty) - Math.abs(positionQty);
+                                if (remain > 0) {
+                                    o.setQty(o.getQty() - positionQty);
+                                    processClosePositionExecution(position.getSymbol(), position);
+                                    break;
+                                } else if (remain < 0) {
+                                    positionQty -= qty;
+                                    removes.add(o);
+                                } else {
+                                    processClosePositionExecution(position.getSymbol(), position);
+                                    removes.add(o);
+                                    break;
+                                }
+                            }
+
+                            for (OpenPosition remove : removes) {
+                                processClosePositionExecution(remove.getSymbol(), remove);
+                                pList.remove(remove);
+                            }
+                        }
                     }
-                    continue;
                 }
-                AccountSetting setting = accountKeeper.getAccountSetting(account.getId());
-                if (setting == null)
-                    continue;
-                if (!StringUtils.hasText(setting.getRoute()))
-                    continue;
-                if (!setting.isLiveTrading())
-                    continue;
-                TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
-                List<OpenPosition> oPositions = positionKeeper.getOverallPosition(account);
-                for (OpenPosition position : oPositions) {
-                    Double num = totalPositions.get(position.getSymbol());
-                    if (num == null)
-                        num = 0.0;
-                    num += position.getQty();
-                    totalPositions.put(position.getSymbol(), num);
-                    processClosePositionExecution(position.getSymbol(), position);
+
+                for (List<OpenPosition> positions : pMap.values()) {
+                    for (OpenPosition position : positions) {
+                        businessManager.processClosePosition(null, null, null, OrderReason.DayTradingMode,
+                                accountKeeper.getAccount(position.getAccount()), position.getSymbol(),
+                                position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy, Math.abs(position.getQty()));
+                    }
                 }
+
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
         }
 
-        return totalPositions;
+        log.info("End lumpSum process");
     }
 
     private Execution createClosePositionExec(String symbol, double qty,

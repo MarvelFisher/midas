@@ -272,7 +272,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				log.info("createManualRefreshAction.isChecked():"+createManualRefreshAction.isChecked());
 				if(!createManualRefreshAction.isChecked()) {
 					Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
 				} else { 
