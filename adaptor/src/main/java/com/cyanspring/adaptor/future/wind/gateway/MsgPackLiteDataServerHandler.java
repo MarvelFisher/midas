@@ -43,7 +43,11 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		strSubscribe = registrationGlobal.getSubscribeTransaction();
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
-		}	
+		}
+		strSubscribe = registrationGlobal.getSubscribeSymbolMF();
+		if(strSubscribe != null) {
+			channel.write(addHashTail(strSubscribe,true));
+		}			
 	}
 
 	public static String addHashTail(String str,boolean bAddHash)
