@@ -433,6 +433,12 @@ public class WindDataParser extends AbstractWindDataParser {
                         case "SellTurnover":
                             stockData.setSellTurnover(Long.parseLong(value));
                             break;
+                        case "UnclassifiedVolume":
+                            stockData.setUnclassifiedVol(Long.parseLong(value));
+                            break;
+                        case "UnclassifiedTurnover":
+                            stockData.setUnclassifiedTurnover(Long.parseLong(value));
+                            break;
                         default:
                             break;
                     }
@@ -528,6 +534,10 @@ public class WindDataParser extends AbstractWindDataParser {
                 stockData.setSellVol(((Number) inputHashMap.get(FDTFields.SellVolume)).longValue());
             if (null != inputHashMap.get(FDTFields.SellTurnover))
                 stockData.setSellTurnover(((Number) inputHashMap.get(FDTFields.SellTurnover)).longValue());
+            if (null != inputHashMap.get(FDTFields.UnclassifiedVolume))
+                stockData.setUnclassifiedVol(((Number) inputHashMap.get(FDTFields.UnclassifiedVolume)).longValue());
+            if (null != inputHashMap.get(FDTFields.UnclassifiedTurnover))
+                stockData.setUnclassifiedTurnover(((Number) inputHashMap.get(FDTFields.UnclassifiedTurnover)).longValue());
         }
         return stockData;
     }

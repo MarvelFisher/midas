@@ -37,8 +37,10 @@ public class StockData {
     private int SD2;
     private long buyVol;
     private long sellVol;
+    private long unclassifiedVol;
     private long buyTurnover;
     private long sellTurnover;
+    private long unclassifiedTurnover;
 
     public String getWindCode() {
         return windCode;
@@ -318,5 +320,21 @@ public class StockData {
 
     public void setSellTurnover(long sellTurnover) {
         this.sellTurnover = sellTurnover;
+    }
+
+    public long getUnclassifiedVol() {
+        return unclassifiedVol;
+    }
+
+    public void setUnclassifiedVol(long unclassifiedVol) {
+        this.unclassifiedVol = unclassifiedVol;
+    }
+
+    public long getUnclassifiedTurnover() {
+        return unclassifiedTurnover;
+    }
+
+    public void setUnclassifiedTurnover(long unclassifiedTurnover) {
+        this.unclassifiedTurnover = unclassifiedTurnover;
     }
 }

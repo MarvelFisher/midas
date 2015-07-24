@@ -15,9 +15,13 @@ public enum QuoteExtDataField {
 	TIMESTAMP("TimeStamp"),
 	TIMESENT("TimeSent"),
 	BUYVOL("BuyVol"),
-	SELLVOL("SellVol")
+	SELLVOL("SellVol"),
+	UNCLASSIFIEDVOL("UnclassifiedVol"),
+	BUYTURNOVER("BuyTurnover"),
+	SELLTURNOVER("SellTurnover"),
+	UNCLASSIFIEDTURNOVER("UnclassifiedTurnover")
 	;
-	
+
 	static HashMap<String, QuoteExtDataField> map = new HashMap<String, QuoteExtDataField>();
 	
 	private String value;
