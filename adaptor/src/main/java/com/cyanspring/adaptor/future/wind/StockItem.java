@@ -38,9 +38,13 @@ public class StockItem implements AutoCloseable {
     private long volume = 0;
     private double highLimit = 0;
     private double lowLimit = 0;
+    private double preClose = 0;
     private long buyVol = 0;
     private long sellVol = 0;
-    private double preClose = 0;
+    private long unclassifiedVol = 0;
+    private long buyTurnover = 0;
+    private long sellTurnover = 0;
+    private long unclassifiedTurnover = 0;
 
     public static StockItem getItem(String symbolId, boolean enableCreateNew) {
 
@@ -96,8 +100,8 @@ public class StockItem implements AutoCloseable {
 
         //Get MarketSession
         String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
-        if(index == null) {
-            if(!item.isLogNoRefDataMessage) {
+        if (index == null) {
+            if (!item.isLogNoRefDataMessage) {
                 log.debug(WindDef.TITLE_STOCK + " " + WindDef.ERROR_NO_REFDATA + "," + stockData.getWindCode());
                 item.isLogNoRefDataMessage = true;
             }
@@ -189,10 +193,10 @@ public class StockItem implements AutoCloseable {
                     default:
                         quote.setStale(false);
                         //record time stat
-                        if(WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.containsKey(symbolId)){
+                        if (WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.containsKey(symbolId)) {
                             DataTimeStat dataTimeStat = WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.get(symbolId);
                             dataTimeStat.processReceiveQuoteTime(tickTime);
-                        }else{
+                        } else {
                             DataTimeStat dataTimeStat = new DataTimeStat(symbolId);
                             dataTimeStat.processReceiveQuoteTime(tickTime);
                             WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.put(symbolId, dataTimeStat);
@@ -268,6 +272,34 @@ public class StockItem implements AutoCloseable {
             quoteExtendIsChange = true;
         }
 
+        long unclassifiedVol = stockData.getUnclassifiedVol();
+        if (unclassifiedVol != item.unclassifiedVol) {
+            item.unclassifiedVol = unclassifiedVol;
+            quoteExtend.put(QuoteExtDataField.UNCLASSIFIEDVOL.value(), unclassifiedVol);
+            quoteExtendIsChange = true;
+        }
+
+        long buyTurnover = stockData.getBuyTurnover();
+        if (buyTurnover != item.buyTurnover) {
+            item.buyTurnover = buyTurnover;
+            quoteExtend.put(QuoteExtDataField.BUYTURNOVER.value(), buyTurnover);
+            quoteExtendIsChange = true;
+        }
+
+        long sellTurnover = stockData.getSellTurnover();
+        if (sellTurnover != item.sellTurnover) {
+            item.sellTurnover = sellTurnover;
+            quoteExtend.put(QuoteExtDataField.SELLTURNOVER.value(), sellTurnover);
+            quoteExtendIsChange = true;
+        }
+
+        long unclassifiedTurnover = stockData.getUnclassifiedTurnover();
+        if (unclassifiedTurnover != item.unclassifiedTurnover) {
+            item.unclassifiedTurnover = unclassifiedTurnover;
+            quoteExtend.put(QuoteExtDataField.UNCLASSIFIEDTURNOVER.value(), unclassifiedTurnover);
+            quoteExtendIsChange = true;
+        }
+
         double preClose = (double) stockData.getPreClose() / 10000;
         if (PriceUtils.Compare(item.preClose, preClose) != 0) {
             item.preClose = preClose;
@@ -291,7 +323,7 @@ public class StockItem implements AutoCloseable {
         }
 
         //Ceil,Floor,preClose must together send
-        if(specialQuoteExtendIsChange){
+        if (specialQuoteExtendIsChange) {
             quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
             quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
