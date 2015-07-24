@@ -35,7 +35,9 @@ public class QuoteSaver implements IQuoteSaver {
     private static final Logger log = LoggerFactory.getLogger(QuoteSaver.class);
     private XStream xstream = new XStream(new DomDriver());
     private long lastQuoteSaveInterval = 20000;
+    private long lastQuoteExtendSaveInterval = 20000;
     private Date lastQuoteSaveTime = Clock.getInstance().now();
+    private Date lastQuoteExtendSaveTime = Clock.getInstance().now();
 
     @Override
     public HashMap<String, Quote> loadQuotes(String fileName) {
@@ -108,13 +110,13 @@ public class QuoteSaver implements IQuoteSaver {
 
     @Override
     public void saveLastQuoteExtendToFile(String fileName, Map<String, DataObject> quoteExtends) {
-        if (TimeUtil.getTimePass(lastQuoteSaveTime) < lastQuoteSaveInterval)
+        if (TimeUtil.getTimePass(lastQuoteExtendSaveTime) < lastQuoteExtendSaveInterval)
             return;
 
         if (quoteExtends.size() <= 0)
             return;
 
-        lastQuoteSaveTime = Clock.getInstance().now();
+        lastQuoteExtendSaveTime = Clock.getInstance().now();
         saveQuotesToFile(fileName, quoteExtends);
     }
 
