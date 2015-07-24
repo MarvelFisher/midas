@@ -891,9 +891,9 @@ public class WindGateway implements Runnable {
 		if(indexData == null) {
 			return;
 		}
-		String symbol = indexData.getWindCode();
+		String symbol = indexData.getWindCode().toUpperCase();  // 配合 DCE SHF 以小寫註冊商品,但回來是大寫
 		TDF_INDEX_DATA data = mapIndexData.get(symbol);
-		mapIndexData.put(indexData.getWindCode(),indexData);
+		mapIndexData.put(symbol,indexData);
 		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishIndexDataChanges(data,indexData);
 			publishWindData(str,symbol);

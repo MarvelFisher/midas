@@ -1678,8 +1678,6 @@ public class PersistenceManager {
 		try {
 		    tx = session.beginTransaction();
 		    Query query;
-		    query = session.getNamedQuery("rollEndOfDay1");
-	        query.executeUpdate();
 		    query = session.getNamedQuery("rollEndOfDay2");
 		    query.setParameter("tradeDate", event.getTradeDateTime());
 			query.executeUpdate();

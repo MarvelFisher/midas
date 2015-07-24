@@ -43,7 +43,11 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		strSubscribe = registrationGlobal.getSubscribeTransaction();
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
-		}	
+		}
+		strSubscribe = registrationGlobal.getSubscribeSymbolMF();
+		if(strSubscribe != null) {
+			channel.write(addHashTail(strSubscribe,true));
+		}			
 	}
 
 	public static String addHashTail(String str,boolean bAddHash)
@@ -509,7 +513,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     }
        
     public static HashMap<Integer, Object> getIndexData(String symbol) {    
-    	TDF_INDEX_DATA data = WindGateway.mapIndexData.get(symbol);
+    	TDF_INDEX_DATA data = WindGateway.mapIndexData.get(symbol.toUpperCase());  // 因為 DCE SHF 註冊的時候要用小寫商品代碼,但是 Wind 回復大寫商品代碼 
     	if(data == null) {    	
     		return null;
     	}
