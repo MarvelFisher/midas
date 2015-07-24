@@ -67107,4 +67107,156 @@
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>I</string>
+      </entry>
+      <entry>
+        <string>Strategy</string>
+        <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>1000000</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.0</double>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Category</string>
+        <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>SH</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>1000000</int>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>000016.SH</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string></string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>上证50</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>上證50</string>
+      </entry>
+      <entry>
+        <string>Tradable</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Spell name</string>
+        <string></string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>SC</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>I</string>
+      </entry>
+      <entry>
+        <string>Strategy</string>
+        <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>1000000</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.0</double>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Category</string>
+        <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>SH</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>1000000</int>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>000905.SH</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string></string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>中证500</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>中證500</string>
+      </entry>
+      <entry>
+        <string>Tradable</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Spell name</string>
+        <string></string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>SC</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
 </list>
