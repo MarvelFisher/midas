@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.apievent.obj.OrderType;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
@@ -605,9 +606,9 @@ public class PositionKeeper {
 					}
 				}
 				
-				double value = getMarginValueByAccountAndSymbol(account, symbol, quote);
-				marginValue += value;
-				marginHeld += value / lev;
+				double value = getMarginValueByAccountAndSymbol(account, symbol, quote, lev);
+				marginValue += value * lev;
+				marginHeld += value;
 			}
 			account.setUrPnL(accountUrPnL);
 			
@@ -658,14 +659,59 @@ public class PositionKeeper {
 		return buyQty > sellQty? buyQty:-sellQty;
 	}
 	
-	private double getMarginValueByAccountAndSymbol(Account account, String symbol, Quote quote) {
-		double marginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
-		double price = QuoteUtils.getMarketablePrice(quote, marginQty);
-		if(!PriceUtils.validPrice(price))
-			price =	QuoteUtils.getValidPrice(quote);
-		return Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), quote.getSymbol(), 
-				marginQty, price));
+	private double getMarginValueByAccountAndSymbol(Account account, String symbol, Quote quote, double lev) {
+		double buyValue = 0;
+		double sellValue = 0;
+
+		synchronized(getSyncAccount(account.getId())) {
+			Map<String, Map<String, ParentOrder>> accountMap = parentOrders.get(account.getId());
+			if (null != accountMap) {
+				Map<String, ParentOrder> symbolMap = accountMap.get(symbol);
+				if(null != symbolMap) {
+					for(ParentOrder order: symbolMap.values()) {
+						double price;
+						double orderPrice = order.getPrice();
+						if(order.getOrderType().equals(OrderType.Limit) && PriceUtils.validPrice(orderPrice)) {
+							price = orderPrice;
+						} else {
+							price = QuoteUtils.getMarketablePrice(quote, order.getSide().isBuy()?1:-1);
+							if(!PriceUtils.validPrice(price))
+								price =	QuoteUtils.getValidPrice(quote);
+						}
+						if(!order.getOrdStatus().isCompleted()) {
+							double value = Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), quote.getSymbol(), 
+									(order.getQuantity() - order.getCumQty()), price));
+							if(order.getSide().isBuy()) {
+								buyValue += value/lev;
+							} else {
+								sellValue += value/lev;
+							}
+						}
+					}
+				}
+			}
+			
+			OpenPosition overallPosition = getOverallPosition(account, symbol);
+			double positionQty = overallPosition.getQty();
+			
+			if(positionQty > 0)
+				buyValue += overallPosition.getMargin();
+			else
+				buyValue += overallPosition.getMargin();
+		}
+		
+		// take the maximum one
+		return buyValue > sellValue? buyValue:sellValue;
 	}
+	
+//	private double getMarginValueByAccountAndSymbol(Account account, String symbol, Quote quote) {
+//		double marginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
+//		double price = QuoteUtils.getMarketablePrice(quote, marginQty);
+//		if(!PriceUtils.validPrice(price))
+//			price =	QuoteUtils.getValidPrice(quote);
+//		return Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), quote.getSymbol(), 
+//				marginQty, price));
+//	}
 	
 	public boolean checkMarginDeltaByAccountAndSymbol(Account account, String symbol, Quote quote, double extraQty) throws AccountException {
 		double currentMarginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
