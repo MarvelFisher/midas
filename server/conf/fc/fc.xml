@@ -285,11 +285,13 @@
 		<constructor-arg>
 			<map>
 				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
+				<entry key="INDEX"><ref bean="shSessionChecker"/></entry>
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
 				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
+				<entry key="INDEX"><ref bean="shTradeDateManager"/></entry>
 			</map>
 		</constructor-arg>
 	</bean>
