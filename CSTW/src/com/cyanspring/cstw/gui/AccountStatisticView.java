@@ -4,10 +4,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +55,6 @@ public class AccountStatisticView extends ViewPart implements
 			Iterator<String> i = map.keySet().iterator();
 			while(i.hasNext()){
 				String key =(String) i.next();
-				log.info("key:{} , value:{}",key,map.get(key));
 			}
 			displayObject(statisticEvent.getAccount());
 		}else{
@@ -71,6 +73,17 @@ public class AccountStatisticView extends ViewPart implements
 		viewer.init();
 		createRefreshAction(parent);
 		sendAccountStatisticRequest();
+		
+
+		MenuManager menuMgr = new MenuManager();
+		menuMgr.add(refreshAction);
+		Menu menu = menuMgr.createContextMenu(viewer.getTable());
+
+//		Menu  menu = new Menu(viewer.getTable().getShell(), SWT.POP_UP);
+
+		viewer.getTable().setMenu(menu);
+//		getSite().registerContextMenu(menuMgr, viewer);
+//		getSite().setSelectionProvider(viewer);
 	}
 
 	private void displayObject(final Map<String, Object> object) {

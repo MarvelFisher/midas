@@ -19,9 +19,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -37,7 +41,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -77,6 +80,7 @@ import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
+import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
@@ -140,6 +144,26 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private String maTag;
 	private String maValue;
 
+	private Action popForceCancel;
+	private Action popPause;
+	private Action popStop;
+	private Action popStart;
+	private Action popClearAlert;
+	private Action popMultiAmend;
+	private Action popCreate;
+	private Action popCancel;
+	private Action popSave;
+	
+	private final String MENU_ID_FORCECANCEL = "POPUP_FORCE_CANCEL";
+	private final String MENU_ID_PAUSE = "POPUP_PAUSE";
+	private final String MENU_ID_STOP = "POPUP_STOP";
+	private final String MENU_ID_START = "POPUP_START";
+	private final String MENU_ID_CLEARALERT = "POPUP_CLEAR_ALERT";
+	private final String MENU_ID_MULTIAMEND = "POPUP_MULTI_AMEND";
+	private final String MENU_ID_CREATE = "POPUP_CREATE";
+	private final String MENU_ID_CANCEL = "POPUP_CANCEL";
+	private final String MENU_ID_SAVE = "POPUP_SAVE";
+	
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
 	};
@@ -187,7 +211,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				.getXstream(), strFile, BeanHolder.getInstance()
 				.getDataConverter());
 		viewer.init();
-
+		
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 1;
@@ -245,6 +269,20 @@ public class SingleOrderStrategyView extends ViewPart implements
 		showOrders();
 		this.parent = parent;
 		initKeyListener();
+		
+		
+		ISelectionProvider is = getViewSite().getSelectionProvider();
+		MenuManager mm = new MenuManager();
+		IMenuManager imm = getViewSite().getActionBars().getMenuManager();
+		IContributionItem actions[] = imm.getItems();
+		
+		log.info("actions size:{}",actions.length);
+		for(IContributionItem item : actions){
+			log.info("action:{}",item.getId());
+		}
+		
+
+		
 	}
 
 	private void initKeyListener() {
@@ -521,93 +559,188 @@ public class SingleOrderStrategyView extends ViewPart implements
 	}
 
 	private void createBodyMenu(final Composite parent) {
-		final Table table = viewer.getTable();
-		menu = new Menu(table.getShell(), SWT.POP_UP);
-
-		MenuItem item;
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Pause");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.Pause);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Stop");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.Stop);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Start");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.Start);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Clear alert");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.ClearAlert);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Multi Amend");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				amendDialog = new AmendDialog(parent.getShell());
-				amendDialog.open();
-				if (amendDialog.getReturnCode() == org.eclipse.jface.window.Window.OK) {
-					maTag = amendDialog.getField();
-					maValue = amendDialog.getValue();
-					if (null == maTag || maTag.equals(""))
-						return;
-					strategyAction(StrategyAction.MultiAmend);
-				}
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Create");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.Create);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Cancel");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.Cancel);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Force cancel");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.ForceCancel);
-			}
-		});
-
-		item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Save");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				strategyAction(StrategyAction.Save);
-			}
-		});
-
+		
+		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());
+		
+		menuMgr.add(createPopCancelAction());
+		menuMgr.add(createPopForceCancelAction());
+		menuMgr.add(createPopPauseAction());
+		menuMgr.add(createPopClearAlertAction());
+		menuMgr.add(createPopCreateAction());
+		menuMgr.add(createPopMultiAmendAction());
+		menuMgr.add(createPopStartAction());
+		menuMgr.add(createPopStopAction());
+		menuMgr.add(createPopSaveAction());
+		
+		menu = menuMgr.createContextMenu(viewer.getTable());	
 		viewer.setBodyMenu(menu);
 	}
+	
+	private Action createPopSaveAction(){
+		popSave = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.Save);
+			}
+		};
+		
+		popSave.setId(MENU_ID_SAVE);
+		popSave.setText("Save");
+		popSave.setToolTipText("Save");
 
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.SAVE_ICON.toString());
+		popSave.setImageDescriptor(imageDesc);
+		return popSave;
+	}
+	
+	private Action createPopCreateAction(){
+		popCreate = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.Create);
+			}
+		};
+		
+		popCreate.setId(MENU_ID_CREATE);
+		popCreate.setText("Create");
+		popCreate.setToolTipText("Create");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PLUS_ICON.toString());
+		popCreate.setImageDescriptor(imageDesc);
+		return popCreate;
+	}
+	
+	private Action createPopMultiAmendAction(){
+		popMultiAmend = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.MultiAmend);
+			}
+		};
+		
+		popMultiAmend.setId(MENU_ID_MULTIAMEND);
+		popMultiAmend.setText("Multi Amend");
+		popMultiAmend.setToolTipText("Multi Amend");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PIN_ICON.toString());
+		popMultiAmend.setImageDescriptor(imageDesc);
+		return popMultiAmend;
+	}
+	
+	private Action createPopClearAlertAction(){
+		popClearAlert = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.ClearAlert);
+			}
+		};
+		
+		popClearAlert.setId(MENU_ID_CLEARALERT);
+		popClearAlert.setText("Clear Alert");
+		popClearAlert.setToolTipText("Clear Alert");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.ALERT_ICON.toString());
+		popClearAlert.setImageDescriptor(imageDesc);
+		return popClearAlert;
+	}
+	
+	private Action createPopStartAction(){
+		popStart = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.Start);
+			}
+		};
+		
+		popStart.setId(MENU_ID_START);
+		popStart.setText("Start");
+		popStart.setToolTipText("Start");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.START_ICON.toString());
+		popStart.setImageDescriptor(imageDesc);
+		return popStart;
+	}
+	
+	private Action createPopStopAction(){
+		popStop = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.Stop);
+			}
+		};
+		
+		popStop.setId(MENU_ID_STOP);
+		popStop.setText("Stop");
+		popStop.setToolTipText("Stop");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.STOP_ICON.toString());
+		popStop.setImageDescriptor(imageDesc);
+		return popStop;
+	}
+	
+	private Action createPopPauseAction(){
+		popPause = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.Pause);
+			}
+		};
+		
+		popPause.setId(MENU_ID_PAUSE);
+		popPause.setText("Pause");
+		popPause.setToolTipText("Pause");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PAUSE_ICON.toString());
+		popPause.setImageDescriptor(imageDesc);
+		return popPause;
+	}
+
+	
+	
+	private Action createPopForceCancelAction(){
+		popForceCancel = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.ForceCancel);
+			}
+		};
+		
+		popForceCancel.setId(MENU_ID_FORCECANCEL);
+		popForceCancel.setText("Force Cancel");
+		popForceCancel.setToolTipText("Force Cancel");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.SKULL_ICON.toString());
+		popForceCancel.setImageDescriptor(imageDesc);
+		return popForceCancel;
+	}
+
+	
+	private Action createPopCancelAction(){
+		popCancel = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				strategyAction(StrategyAction.Cancel);
+			}
+		};
+		
+		popCancel.setId(MENU_ID_CANCEL);
+		popCancel.setText("Cancel");
+		popCancel.setToolTipText("Cancel");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.CANCEL_ICON.toString());
+		popCancel.setImageDescriptor(imageDesc);
+		return popCancel;
+	}
+	
 	private void createEnterOrderAction(final Composite parent) {
 		orderDialog = new OrderDialog(parent.getShell());
 		// create local toolbars

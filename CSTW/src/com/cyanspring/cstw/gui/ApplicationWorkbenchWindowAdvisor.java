@@ -10,22 +10,19 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.IHandler2;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.eclipse.ui.commands.ICommandService;
-import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.handlers.IHandlerService;
-import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +32,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.gui.command.auth.AuthProvider;
+import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -64,53 +62,38 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		IWorkbenchPage page = window.getActivePage();
 		
 		try {
-			
-//			page.showView(SingleOrderStrategyView.ID);
-//			page.showView(SingleInstrumentStrategyView.ID);
-//			page.showView(ChildOrderView.ID);
-//			page.showView(PropertyView.ID);
-//			page.showView(StrategyLogView.ID);
-//			page.showView(PositionView.ID);
+			//add listener
+			ViewAuthListener authListener =new  ViewAuthListener();
+			page.addPartListener(authListener);
+
 			if(Business.getInstance().isLoginRequired()) {
 				LoginDialog loginDialog = new LoginDialog(window.getShell());
 				loginDialog.open();
 			}
 			
-			
 			setUserAccount(Business.getInstance().getUser(), Business.getInstance().getAccount());
 			
-			
+			// check login role
 			log.info("fire account login menu change :{}",Business.getInstance().getUserGroup().getRole().name());
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window.getService(ISourceProviderService.class);
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
 			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
 			commandStateService.fireAccountChanged();
-			
-				
-//			IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
-//			
-//
-//			IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
-//			
-//			ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-//
-//			
-//			MenuItem mi[] = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getMenuBar().getItems();
-//			log.info("get menu");
-//			for(MenuItem m : mi){
-//				log.info("menu:{}",m.getText());
-//				m.
-//				Menu menu2 = m.getMenu();
-//				if(menu2 != null){
-//					MenuItem m2[] = menu2.getItems();
-//					log.info("item size:{}",menu2.getItemCount());
-//					for(MenuItem mi2 :m2){
-//						log.info("menu2:{}",mi2.getText());
-//					}
-//				}else{
-//					log.info("menu2 is null");
-//				}
-//			}
+						
+			// filter already open view 
+			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
+			for(IWorkbenchPage activePage: pages){
+				IViewReference vrs[] = activePage.getViewReferences();
+				for(IViewReference vr : vrs){
+//					log.info("view:{} hasViewAuth:{}",vr.getPartName(),Business.getInstance().hasViewAuth(vr.getPartName()));
+					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
+						activePage.hideView(vr);				
+					}else{
+						authListener.filterViewAllAction(vr.getPartName(), vr.getPart(true));
+					}
+					
+				}
+			}
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

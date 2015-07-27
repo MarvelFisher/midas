@@ -22,7 +22,7 @@ public class AuthProvider extends AbstractSourceProvider{
 	  public final static String RISK_MANAGER = UserRole.RiskManager.name();
 	  public final static String TRADER = UserRole.Trader.name();
 	  public final static String ENABLED = "ENABLED";
-	  public final static String DISENABLED = "DISENABLED";
+	  public final static String DISABLED = "DISABLED";
 	  private boolean enabled = true;
 	  public Map stateMap = new HashMap();
 	@Override
@@ -32,8 +32,12 @@ public class AuthProvider extends AbstractSourceProvider{
 
 	@Override
 	public Map getCurrentState() {
-		UserRole role = Business.getInstance().getUserGroup().getRole();
-	    stateMap.put(role.name(), DISENABLED);
+
+	    String names[] = getProvidedSourceNames();
+	    for(String name:names){
+	    	stateMap.put(name,DISABLED);
+	    }
+	    
 	    return stateMap;
 	}
 
@@ -41,12 +45,21 @@ public class AuthProvider extends AbstractSourceProvider{
 	public String[] getProvidedSourceNames() {
 		return new String[] { ADMIN,RISK_MANAGER,TRADER };
 	}
-	
+
 	public void fireAccountChanged(){
 		stateMap.clear();
 		UserRole role = Business.getInstance().getUserGroup().getRole();
 		log.info("get role again:{}",role.name());
-	    stateMap.put(role.name(), ENABLED);
+		
+	    String names[] = getProvidedSourceNames();
+	    for(String name:names){
+	    	if(role.name().equals(name)){
+	    	    stateMap.put(role.name(), ENABLED);
+	    	}else{
+		    	stateMap.put(name,DISABLED);
+	    	} 	
+	    }
+		
 		fireSourceChanged(0, stateMap);
 	}
 

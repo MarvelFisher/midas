@@ -119,7 +119,7 @@
             class="com.cyanspring.cstw.gui.PositionStatisticView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.PositionStatisticView"
-            name="Open Position Statistic"
+            name="Open Position"
             restorable="true">
       </view>
       <view
@@ -128,6 +128,14 @@
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.AccountStatisticViewer"
             name="Account Statistic"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.gui.UserView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.UserViewer"
+            name="User View"
             restorable="true">
       </view>
    </extension>
@@ -154,18 +162,22 @@
                   label="Load strategy"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>                  
             </command>
             <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>                
             </command>
          </menu>
@@ -176,9 +188,11 @@
                   label="Single Instrument Strategy"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -186,9 +200,11 @@
                   label="Multi Instrument Strategy"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -196,9 +212,17 @@
                   label="Single Order Strategy"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+		               <with variable="Trader">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -206,9 +230,11 @@
                   label="Strategy Properties"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -216,9 +242,11 @@
                   label="Child Orders"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -226,9 +254,11 @@
                   label="Strategy Logs"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -236,25 +266,32 @@
                   label="Executions"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+                  	</or>
             	  </visibleWhen>
-          
             </command>
             <command
                   commandId="CSTW.AccountView"
                   label="Accounts"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-            	  </visibleWhen>
-            	  <visibleWhen checkEnabled="false">
 		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+		               <with variable="Trader">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -262,14 +299,14 @@
                   label="Account Settings"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-            	  </visibleWhen>
-            	  <visibleWhen checkEnabled="false">
 		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -277,30 +314,29 @@
                   label="Account Position"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-            	  </visibleWhen>
-            	  <visibleWhen checkEnabled="false">
 		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-            	  </visibleWhen>
-            	  
+		               <with variable="Trader">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+                  	</or>
+            	  </visibleWhen>      	  
             </command>
             <command
                   commandId="CSTW.MarketDataView"
                   label="Market Data"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-            	  </visibleWhen>
-            	  <visibleWhen checkEnabled="false">
-		               <with variable="RiskManager">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -308,24 +344,23 @@
                   label="Watch list"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
                   commandId="CSTW.PositionStatisticView"
-                  label="Open Position Statistic"
+                  label="Open Position"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-            	  </visibleWhen>
-            	  <visibleWhen checkEnabled="false">
-		               <with variable="RiskManager">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
+                  	</or>
             	  </visibleWhen>
             </command>
             <command
@@ -333,9 +368,11 @@
                   label="Account Statistic"
                   style="push">
                   <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
+                  	<or>
+                  	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+                  	</or>
             	  </visibleWhen>       
             </command>
             <menu
@@ -345,10 +382,27 @@
                      label="Single Order Strategy"
                      style="push">
                      <visibleWhen checkEnabled="false">
-		               <with variable="Admin">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
+	                  	<or>
+	                  	   <with variable="Admin">
+			                  <equals value="ENABLED"></equals>        
+			               </with>
+	                  	</or>
             	  </visibleWhen>
+               </command>
+            </menu>
+            <menu
+                  label="User Management">
+               <command
+                     commandId="CSTW.usermanagement.UserView"
+                     label="Users"
+                     style="push">
+                     <visibleWhen checkEnabled="false">
+	                  	<or>
+	                  	   <with variable="Admin">
+			                  <equals value="ENABLED"></equals>        
+			               </with>
+	                  	</or>
+            	  	 </visibleWhen>
                </command>
             </menu>
          </menu>
@@ -460,13 +514,19 @@
             defaultHandler="com.cyanspring.cstw.gui.command.PositionStatisticViewCommand"
             description="Position Statistic"
             id="CSTW.PositionStatisticView"
-            name="Open Position Statistic">
+            name="Open Position">
       </command>
       <command
             defaultHandler="com.cyanspring.cstw.gui.command.AccountStatisticViewCommand"
             description="Account Statistic"
             id="CSTW.AccountStatisticView"
             name="Account Statistic">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.UserViewCommand"
+            description="Users"
+            id="CSTW.usermanagement.UserView"
+            name="Users">
       </command>
    </extension>
    <extension

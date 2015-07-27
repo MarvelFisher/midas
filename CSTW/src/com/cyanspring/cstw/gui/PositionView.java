@@ -3,6 +3,9 @@ package com.cyanspring.cstw.gui;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -46,10 +49,13 @@ import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
+import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class PositionView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -69,9 +75,12 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	
 	private DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
 	private String currentAccount = Business.getInstance().getAccount();
+	private ImageRegistry imageRegistry;
+
 	
 	@Override
 	public void createPartControl(Composite parent) {
+		imageRegistry = Activator.getDefault().getImageRegistry();
 		// create views
 		final Composite mainComposite = new Composite(parent,SWT.BORDER);
     	//create top composite
@@ -347,43 +356,54 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		executionViewer.init();
 	}
 	
-	private void createMenu(Composite parent) {
-		menu = new Menu(openPositionViewer.getTable().getShell(), SWT.POP_UP);
-		MenuItem item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Close position");
-		item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				try {
-					Table table = openPositionViewer.getTable();
+	private Action popClosePosition;
+	private Action popManualClosePosition;
+	private final String MENU_ID_CLOSEPOSITION = "POPUP_CLOSE_POSITION";
+	private final String MENU_ID_MANUALCLOSEPOSITION = "POPUP_MANUAL_CLOSE_POSITION";
+	
+	private Action createPopClosePosition(){
+		popClosePosition = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				Table table = openPositionViewer.getTable();
 
-					TableItem items[] = table.getSelection();
+				TableItem items[] = table.getSelection();
 
-					for(TableItem item: items) {
-						Object obj = item.getData();
-						if (obj instanceof OpenPosition) {
-							OpenPosition position = (OpenPosition)obj;
-							//TODO: we need to change when CSTW talks to multip servers
-							String server = Business.getInstance().getFirstServer();
-							
-							ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
-									server, position.getAccount(), 
-									position.getSymbol(), 0.0, OrderReason.ManualClose, 
-									IdGenerator.getInstance().getNextID());
+				for(TableItem item: items) {
+					Object obj = item.getData();
+					if (obj instanceof OpenPosition) {
+						OpenPosition position = (OpenPosition)obj;
+						//TODO: we need to change when CSTW talks to multip servers
+						String server = Business.getInstance().getFirstServer();
+						
+						ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
+								server, position.getAccount(), 
+								position.getSymbol(), 0.0, OrderReason.ManualClose, 
+								IdGenerator.getInstance().getNextID());
+						try {
 							Business.getInstance().getEventManager().sendRemoteEvent(request);
+						} catch (Exception e) {
+							log.error(e.getMessage(),e);
 						}
 					}
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
 				}
 			}
-		});
+		};
 		
-		MenuItem mCPItem = new MenuItem(menu, SWT.PUSH);
-		mCPItem.setText("Manual close position");
-		mCPItem.addListener(SWT.Selection, new Listener(){
+		popClosePosition.setId(MENU_ID_CLOSEPOSITION);
+		popClosePosition.setText("Close Position");
+		popClosePosition.setToolTipText("Close Position");
 
-			@Override
-			public void handleEvent(Event event) {
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.ORDER_CLOSE_ICON.toString());
+		popClosePosition.setImageDescriptor(imageDesc);
+		return popClosePosition;
+	}
+	
+	private Action createPopManualClosePosition(){
+		popManualClosePosition = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
 				try {
 					Table table = openPositionViewer.getTable();
 					TableItem items[] = table.getSelection();
@@ -401,9 +421,85 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					log.error(e.getMessage(), e);
 				}
 			}
-			
-		});
+		};
+		
+		popManualClosePosition.setId(MENU_ID_MANUALCLOSEPOSITION);
+		popManualClosePosition.setText("Manual Close Position");
+		popManualClosePosition.setToolTipText("Manual Close Position");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.MANUAL_CLOSE_ICON.toString());
+		popManualClosePosition.setImageDescriptor(imageDesc);
+		return popManualClosePosition;
+	}
+	
+	private void createMenu(Composite parent) {
+		
+		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());
+		
+		menuMgr.add(createPopClosePosition());
+		menuMgr.add(createPopManualClosePosition());
+	
+		menu = menuMgr.createContextMenu(openPositionViewer.getTable());	
 		openPositionViewer.setBodyMenu(menu);
+		
+		
+//		menu = new Menu(openPositionViewer.getTable().getShell(), SWT.POP_UP);
+//		MenuItem item = new MenuItem(menu, SWT.PUSH);
+//		item.setText("Close position");
+//		item.addListener(SWT.Selection, new Listener() {
+//			public void handleEvent(Event event) {
+//				try {
+//					Table table = openPositionViewer.getTable();
+//
+//					TableItem items[] = table.getSelection();
+//
+//					for(TableItem item: items) {
+//						Object obj = item.getData();
+//						if (obj instanceof OpenPosition) {
+//							OpenPosition position = (OpenPosition)obj;
+//							//TODO: we need to change when CSTW talks to multip servers
+//							String server = Business.getInstance().getFirstServer();
+//							
+//							ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
+//									server, position.getAccount(), 
+//									position.getSymbol(), 0.0, OrderReason.ManualClose, 
+//									IdGenerator.getInstance().getNextID());
+//							Business.getInstance().getEventManager().sendRemoteEvent(request);
+//						}
+//					}
+//				} catch (Exception e) {
+//					log.error(e.getMessage(), e);
+//				}
+//			}
+//		});
+//		
+//		MenuItem mCPItem = new MenuItem(menu, SWT.PUSH);
+//		mCPItem.setText("Manual close position");
+//		mCPItem.addListener(SWT.Selection, new Listener(){
+//
+//			@Override
+//			public void handleEvent(Event event) {
+//				try {
+//					Table table = openPositionViewer.getTable();
+//					TableItem items[] = table.getSelection();
+//					for(TableItem item : items){
+//						Object obj = item.getData();
+//						if(obj instanceof OpenPosition){
+//							OpenPosition position = (OpenPosition) obj;
+//							String server = Business.getInstance().getFirstServer();
+//							ManualClosePositionRequestEvent request = new ManualClosePositionRequestEvent(position.getAccount(), server,
+//									position, IdGenerator.getInstance().getNextID());
+//							Business.getInstance().getEventManager().sendRemoteEvent(request);
+//						}
+//					}
+//				} catch (Exception e) {
+//					log.error(e.getMessage(), e);
+//				}
+//			}
+//			
+//		});
+//		openPositionViewer.setBodyMenu(menu);
 	}
 	
 	@Override
