@@ -148,6 +148,15 @@ public class SymbolChef implements Runnable{
 			entry.getValue().getAllChartPrice();
 		}
 	}
+	
+	public void checkAllChartPrice()
+	{
+		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		{
+			entry.getValue().checkAllChartPrice();
+		}
+	}
+	
 	public List<String> getAllMarket()
 	{
 		ArrayList<String> marketList = new ArrayList<String>();
