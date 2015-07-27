@@ -205,5 +205,10 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	public void setTotalVolume(double totalVolume) {
 		this.totalVolume = totalVolume;
 	}
+	public boolean notNull()
+	{
+		boolean ret = (tradedate != null && keytime != null && datatime != null && symbol != null);
+		return ret;
+	}
 
 }

@@ -501,6 +501,8 @@ public class DBHandler
 					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
 					price.setTurnover(rs.getLong("TURNOVER"));
 					nPos = Collections.binarySearch(lst, price);
+					
+					if (price.notNull() == false) continue;
 					if (nPos < 0)
 					{
 						lst.add(~nPos, price);
