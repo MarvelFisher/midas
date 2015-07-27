@@ -1287,8 +1287,6 @@ public class AccountPositionManager implements IPlugin {
 	            perfDataRm.start();
 	            List<Account> accounts = accountKeeper.getRmJobs().getJobs();
 	            for (Account account : accounts) {
-                    if (account.getId().equals(Default.getAccount()))
-                        continue;
 	                positionKeeper.updateAccountDynamicData(account);
 
 	                AccountSetting accountSetting = null;
