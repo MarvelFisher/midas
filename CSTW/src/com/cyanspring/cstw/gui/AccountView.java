@@ -574,12 +574,20 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void processAccountUpdate(Account account) {
-		if(Business.getInstance().isManagee(account.getId())){
+		if(inAuthList(account)){
 			accounts.put(account.getId(), account);
 		}
 		show = true;
 	}
 
+	private boolean inAuthList(Account account){
+		if(Business.getInstance().getAccount().equals(account.getUserId())
+				||Business.getInstance().isManagee(account.getUserId())){
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof ServerStatusEvent) {
@@ -587,7 +595,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
 			for (Account account : evt.getAccounts()) {
-				if(Business.getInstance().isManagee(account.getId())){
+				if(inAuthList(account)){
 					accounts.put(account.getId(), account);
 				}
 			}

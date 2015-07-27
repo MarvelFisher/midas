@@ -467,6 +467,20 @@ public class SymbolData implements Comparable<SymbolData>
 		log.debug("Retrieve chart data [" + strSymbol + "] finish");
 	}
 	
+	public void checkAllChartPrice()
+	{
+		log.info("Check chart data [" + strSymbol + "]");
+		String[] types = {"1","R","A","Q","H","6","T","D","W","M"};
+		for (String type : types)
+		{
+			if (getMapHistorical().get(type) == null)
+			{
+				getChartPrice(type);
+			}
+		}
+		log.info("Check chart data [" + strSymbol + "] finish");
+	}
+	
 	public void getChartPrice(String strType)
 	{
 		synchronized(getMapHistorical())

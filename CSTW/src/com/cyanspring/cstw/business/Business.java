@@ -443,12 +443,12 @@ public class Business {
 	}
 	
 	public boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
-		log.info("processCSTWUserLoginReplyEvent");
 		if(!event.isOk())
 			return false;
 		
 		UserGroup userGroup = event.getUserGroup();
 		this.user = userGroup.getUser();
+		this.account = userGroup.getUser();
 		this.userGroup = userGroup;
 		log.info("login user:{},{}",user,userGroup.getRole());
 		
@@ -497,5 +497,9 @@ public class Business {
 	
 	public boolean hasAuth(String view,String action){
 		return this.authManager.hasAuth(userGroup.getRole(), view, action);
+	}
+	
+	public boolean hasViewAuth(String view){
+		return this.authManager.hasViewAuth(userGroup.getRole(), view);
 	}
 }

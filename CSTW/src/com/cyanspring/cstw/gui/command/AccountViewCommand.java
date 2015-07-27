@@ -22,8 +22,6 @@ public class AccountViewCommand extends AbstractHandler{
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();
 		try {
-			page.addPartListener(new ViewAuthListener());
-
 			page.showView(AccountView.ID);
 		} catch (PartInitException e) {
 			log.error(e.getMessage(), e);

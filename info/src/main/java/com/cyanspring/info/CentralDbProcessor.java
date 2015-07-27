@@ -573,10 +573,6 @@ public class CentralDbProcessor implements IPlugin
 						e.printStackTrace();
 					}
 				}
-//				for (SymbolChef chef : SymbolChefList)
-//				{
-//					chef.getAllChartPrice();
-//				}
 				getAllChartPrice();
 				log.debug("Retrieve Chart thread finish");
 				isRetrieving = false;
@@ -584,6 +580,10 @@ public class CentralDbProcessor implements IPlugin
 				if (isStartup)
 				{
 					sendCentralReady();
+				}
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.checkAllChartPrice();
 				}
 			}
 		});

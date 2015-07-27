@@ -34,7 +34,11 @@ public enum ImageID {
 	FREZZE_ICON("icons/frezze.png"),
 	AMEND_OPTIONS_ICON("icons/amendOptions.png"),
 	MONEY_ICON("icons/money.png"),
-	LOGIN_BG("icons/loginBg.png")
+	LOGIN_BG("icons/loginBg.png"), 
+	SKULL_ICON("icons/skull.png"),
+	ALERT_ICON("icons/alert.png"),
+	ORDER_CLOSE_ICON("icons/orderclose.png"),
+	MANUAL_CLOSE_ICON("icons/manualclose.png")
 	;
 	private String value;
 	ImageID(String value) {
