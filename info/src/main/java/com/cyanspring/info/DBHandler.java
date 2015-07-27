@@ -436,7 +436,8 @@ public class DBHandler
 					price.setVolume(rs.getLong("VOLUME"));
 					price.setTotalVolume(rs.getLong("TOTALVOLUME"));
 					price.setTurnover(rs.getLong("TURNOVER"));
-					retList.add(price);
+					
+					if (price.notNull()) retList.add(price);
 				}
 		    	catch (Exception e) 
 				{

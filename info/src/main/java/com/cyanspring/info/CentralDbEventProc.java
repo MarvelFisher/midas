@@ -62,14 +62,32 @@ public class CentralDbEventProc implements Runnable
 		}
     }
     
-    public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
+    public void processHistoricalPriceRequestEvent(final HistoricalPriceRequestEvent event, boolean check)
 	{
 		String symbol = event.getSymbol() ;
+		String type   = event.getHistoryType() ;
+		int dataCount = event.getDataCount(); 
+		SymbolData symboldata = centraldb.getChefBySymbol(symbol).getSymbolData(symbol); 
+		if (symboldata != null && check)
+		{
+			if (symboldata.getMapHistorical().get(type) == null)
+			{
+				Thread retThread = new Thread(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{
+						processHistoricalPriceRequestEvent(event, false);
+					}
+				});
+				retThread.setName("Ret_" + symbol + "_" + type);
+				retThread.start();
+				return;
+			}
+		}
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
 		retEvent.setSymbol(symbol);
 		log.info("Process Historical Price Request");
-		String type   = event.getHistoryType() ;
-		int dataCount = event.getDataCount(); 
 		List<HistoricalPrice> listPrice = null;
 		log.debug("Process Historical Price Request Symbol: " + symbol + " Type: " + type + " DataCounts: " + dataCount);
 		
@@ -237,7 +255,7 @@ public class CentralDbEventProc implements Runnable
 	{
 		if (event instanceof HistoricalPriceRequestEvent)
 		{
-			processHistoricalPriceRequestEvent((HistoricalPriceRequestEvent)event);
+			processHistoricalPriceRequestEvent((HistoricalPriceRequestEvent)event, true);
 		}
 		else if (event instanceof MarketSessionEvent)
 		{
