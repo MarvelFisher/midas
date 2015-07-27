@@ -600,7 +600,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                             + marketSessionEvent.getEnd());
             MarketSessionType marketSessionType = marketSessionEvent.getSession();
 
-            if (marketSessionType == MarketSessionType.OPEN || marketSessionType == MarketSessionType.PREOPEN) {
+            if (marketSessionType == MarketSessionType.PREOPEN) {
+                bigSessionIsClose = false;
+                stockDataBySymbolMap.clear();
+                StockItem.stockItemBySymbolMap.clear();
+            }
+            if (marketSessionType == MarketSessionType.OPEN) {
                 bigSessionIsClose = false;
             }
             if (marketSessionType == MarketSessionType.CLOSE) {
