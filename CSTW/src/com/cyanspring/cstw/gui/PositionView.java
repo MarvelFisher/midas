@@ -77,6 +77,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private String currentAccount = Business.getInstance().getAccount();
 	private ImageRegistry imageRegistry;
 
+	//pop up menu action
+	private Action popClosePosition;
+	private Action popManualClosePosition;
+	private final String MENU_ID_CLOSEPOSITION = "POPUP_CLOSE_POSITION";
+	private final String MENU_ID_MANUALCLOSEPOSITION = "POPUP_MANUAL_CLOSE_POSITION";
 	
 	@Override
 	public void createPartControl(Composite parent) {
@@ -355,12 +360,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		executionViewer.init();
 	}
-	
-	private Action popClosePosition;
-	private Action popManualClosePosition;
-	private final String MENU_ID_CLOSEPOSITION = "POPUP_CLOSE_POSITION";
-	private final String MENU_ID_MANUALCLOSEPOSITION = "POPUP_MANUAL_CLOSE_POSITION";
-	
+
 	private Action createPopClosePosition(){
 		popClosePosition = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
@@ -435,71 +435,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	
 	private void createMenu(Composite parent) {
 		
-		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());
-		
+		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());		
 		menuMgr.add(createPopClosePosition());
-		menuMgr.add(createPopManualClosePosition());
-	
+		menuMgr.add(createPopManualClosePosition());	
 		menu = menuMgr.createContextMenu(openPositionViewer.getTable());	
 		openPositionViewer.setBodyMenu(menu);
-		
-		
-//		menu = new Menu(openPositionViewer.getTable().getShell(), SWT.POP_UP);
-//		MenuItem item = new MenuItem(menu, SWT.PUSH);
-//		item.setText("Close position");
-//		item.addListener(SWT.Selection, new Listener() {
-//			public void handleEvent(Event event) {
-//				try {
-//					Table table = openPositionViewer.getTable();
-//
-//					TableItem items[] = table.getSelection();
-//
-//					for(TableItem item: items) {
-//						Object obj = item.getData();
-//						if (obj instanceof OpenPosition) {
-//							OpenPosition position = (OpenPosition)obj;
-//							//TODO: we need to change when CSTW talks to multip servers
-//							String server = Business.getInstance().getFirstServer();
-//							
-//							ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), 
-//									server, position.getAccount(), 
-//									position.getSymbol(), 0.0, OrderReason.ManualClose, 
-//									IdGenerator.getInstance().getNextID());
-//							Business.getInstance().getEventManager().sendRemoteEvent(request);
-//						}
-//					}
-//				} catch (Exception e) {
-//					log.error(e.getMessage(), e);
-//				}
-//			}
-//		});
-//		
-//		MenuItem mCPItem = new MenuItem(menu, SWT.PUSH);
-//		mCPItem.setText("Manual close position");
-//		mCPItem.addListener(SWT.Selection, new Listener(){
-//
-//			@Override
-//			public void handleEvent(Event event) {
-//				try {
-//					Table table = openPositionViewer.getTable();
-//					TableItem items[] = table.getSelection();
-//					for(TableItem item : items){
-//						Object obj = item.getData();
-//						if(obj instanceof OpenPosition){
-//							OpenPosition position = (OpenPosition) obj;
-//							String server = Business.getInstance().getFirstServer();
-//							ManualClosePositionRequestEvent request = new ManualClosePositionRequestEvent(position.getAccount(), server,
-//									position, IdGenerator.getInstance().getNextID());
-//							Business.getInstance().getEventManager().sendRemoteEvent(request);
-//						}
-//					}
-//				} catch (Exception e) {
-//					log.error(e.getMessage(), e);
-//				}
-//			}
-//			
-//		});
-//		openPositionViewer.setBodyMenu(menu);
 	}
 	
 	@Override
@@ -675,6 +615,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 	
+	
+	
 	private void processOpenPosition(OpenPosition position) {
 		if(null == openPositions)
 			return;
@@ -750,6 +692,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			log.info("Close position reply: " + evt.getAccount() + ", " + evt.getSymbol() + ", " + evt.isOk() + ", " + evt.getMessage());
 		} else if(event instanceof AccountSelectionEvent) {
 			AccountSelectionEvent evt = (AccountSelectionEvent)event;
+			log.info("get AccountSelectionEvent::{}",evt.getAccount());
+
 			sendSubscriptionRequest(evt.getAccount());
 		}
 	}

@@ -39,6 +39,7 @@
 		<constructor-arg value="MANUAL_REFRESH"/>
 		<constructor-arg >					   
 		<array>
+			<value>Trader</value>
 			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
