@@ -8,8 +8,10 @@
 >
 
 	<context:annotation-config />
+	<context:property-placeholder location="classpath:env.properties"/>
 	<import resource="classpath*:common.xml" />
 	<import resource="classpath:auth/ViewAction.xml" />
+	
  
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://localhost:61616"></property>
