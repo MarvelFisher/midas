@@ -520,10 +520,12 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         		} else {
         			log.debug("Ignore error code: " + order);
         		}
-        	} else if (order.getOrdStatus().equals(OrdStatus.PENDING_NEW) && 
+        	} else if ((order.getOrdStatus().equals(OrdStatus.PENDING_NEW) || 
+        		order.getOrdStatus().equals(OrdStatus.PENDING_REPLACE))&& 
                 (errorCode == 399 && errorMsg.contains("Warning"))) {
                 order.setOrdStatus(autoStatus(order));
-                downStreamListener.onOrder(ExecType.NEW, order, null, "");
+                ExecType execType = ExecType.pendingToReady(order.getOrdStatus());
+                downStreamListener.onOrder(execType, order, null, "");
             } else {
                 order.setOrdStatus(OrdStatus.REJECTED);
                 downStreamListener.onOrder(ExecType.REJECTED, order, null,
