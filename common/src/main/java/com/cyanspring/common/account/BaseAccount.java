@@ -237,6 +237,7 @@ public abstract class BaseAccount implements Serializable {
 	public synchronized void addCash(double value) {
 		this.cash += value;
 		this.cashDeposited += value;
+        this.startAccountValue += value;
 	}
 	
 	public synchronized void updatePnL(double pnl) {
