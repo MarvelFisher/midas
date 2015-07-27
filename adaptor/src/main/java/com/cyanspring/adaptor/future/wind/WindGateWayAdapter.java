@@ -170,7 +170,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(stockData.getActionDay() > stockData.getTradingDay() && stockData.getActionDay()==tradeDateForWindFormat)
+                if (stockData.getActionDay() > stockData.getTradingDay() && stockData.getActionDay() == tradeDateForWindFormat)
                     stockData.setTradingDay(stockData.getActionDay());
                 if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
                     return;
@@ -187,7 +187,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(indexData.getActionDay() > indexData.getTradingDay() && indexData.getActionDay()==tradeDateForWindFormat)
+                if (indexData.getActionDay() > indexData.getTradingDay() && indexData.getActionDay() == tradeDateForWindFormat)
                     indexData.setTradingDay(indexData.getActionDay());
                 if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
                     return;
@@ -583,7 +583,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                             + marketSessionEvent.getEnd());
             MarketSessionType marketSessionType = marketSessionEvent.getSession();
 
-            if (marketSessionType == MarketSessionType.OPEN || marketSessionType == MarketSessionType.PREOPEN) {
+            if (marketSessionType == MarketSessionType.PREOPEN) {
+                bigSessionIsClose = false;
+                stockDataBySymbolMap.clear();
+                StockItem.stockItemBySymbolMap.clear();
+            }
+            if (marketSessionType == MarketSessionType.OPEN) {
                 bigSessionIsClose = false;
             }
             if (marketSessionType == MarketSessionType.CLOSE) {
@@ -594,10 +599,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         }
     }
 
-    public void printDataTimeStat(){
+    public void printDataTimeStat() {
         //print time stat log
-        if(recordReceiveQuoteInfoBySymbolMap!=null && recordReceiveQuoteInfoBySymbolMap.size()>0){
-            for(DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()){
+        if (recordReceiveQuoteInfoBySymbolMap != null && recordReceiveQuoteInfoBySymbolMap.size() > 0) {
+            for (DataTimeStat dataTimeStat : recordReceiveQuoteInfoBySymbolMap.values()) {
                 dataTimeStat.printStat();
             }
         }

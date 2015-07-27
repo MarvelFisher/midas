@@ -295,10 +295,15 @@ public class StockItem implements AutoCloseable {
             quoteExtend.put(QuoteExtDataField.CEIL.value(), highLimit);
             quoteExtend.put(QuoteExtDataField.FLOOR.value(), lowLimit);
             quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
+            if(PriceUtils.Equal(highLimit, 0) || PriceUtils.Equal(lowLimit, 0) || PriceUtils.Equal(preClose, 0)){
+                quoteExtend.remove(QuoteExtDataField.CEIL.value());
+                quoteExtend.remove(QuoteExtDataField.FLOOR.value());
+                quoteExtend.remove(QuoteExtDataField.PRECLOSE.value());
+            }
         }
 
         // process send quote Extend
-        if (quoteExtendIsChange) {
+        if (quoteExtendIsChange && quoteExtend.getFields().size() > 0) {
             quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbolId);
             quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
             WindGateWayAdapter.instance.saveLastQuoteExtend(quoteExtend);
