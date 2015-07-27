@@ -944,6 +944,10 @@ public class CentralDbProcessor implements IPlugin
 		{
 			insertThread.start();
 		}
+		else
+		{
+			retrieveChart();
+		}
 	}
 
 	public int getnChefCount() {
