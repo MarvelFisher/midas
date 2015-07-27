@@ -19,7 +19,10 @@ public enum QuoteExtDataField {
 	UNCLASSIFIEDVOL("UnclassifiedVol"),
 	BUYTURNOVER("BuyTurnover"),
 	SELLTURNOVER("SellTurnover"),
-	UNCLASSIFIEDTURNOVER("UnclassifiedTurnover")
+	UNCLASSIFIEDTURNOVER("UnclassifiedTurnover"),
+	FREESHARES("FreeShares"),
+	TOTOALSHARES("TotalShares"),
+	PERATIO("PERatio")
 	;
 
 	static HashMap<String, QuoteExtDataField> map = new HashMap<String, QuoteExtDataField>();
