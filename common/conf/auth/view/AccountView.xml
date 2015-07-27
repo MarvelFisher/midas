@@ -22,16 +22,16 @@
 		<constructor-arg value="Account View"/><!-- view name -->
 		<constructor-arg value="CREATE_USER"/> <!-- action id -->
 		<constructor-arg >					   <!-- permission:UserRole -->
-		<array>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>
 	
 	<bean id="accountViewAction2" class="com.cyanspring.common.cstw.auth.ViewActionBean">
 		<constructor-arg value="Account View"/>
 		<constructor-arg value="COUNT_ACCOUNT"/>
-		<constructor-arg ><null/></constructor-arg>
+		<constructor-arg >
+		<null/>
+		</constructor-arg>
 	</bean>	
 	
 	<bean id="accountViewAction3" class="com.cyanspring.common.cstw.auth.ViewActionBean">
