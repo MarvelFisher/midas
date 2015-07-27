@@ -7,6 +7,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -23,6 +25,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,15 +237,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		// finally lay them out
 		mainComposite.layout();
 		
-		if(!Business.getInstance().isLoginRequired())
-			Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
-
+		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(AccountSnapshotReplyEvent.class, ID, this);
-
 		if(Business.getInstance().getOrderManager().isReady())
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		else
 			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
+
 	}
 	
 	// account fields
@@ -359,6 +360,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		executionViewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		executionViewer.init();
+		
 	}
 
 	private Action createPopClosePosition(){
@@ -615,8 +617,6 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 	
-	
-	
 	private void processOpenPosition(OpenPosition position) {
 		if(null == openPositions)
 			return;
@@ -688,12 +688,12 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			}
 			showExecutions(false);
 		} else if(event instanceof ClosePositionReplyEvent) {
+			
 			ClosePositionReplyEvent evt = (ClosePositionReplyEvent)event;
 			log.info("Close position reply: " + evt.getAccount() + ", " + evt.getSymbol() + ", " + evt.isOk() + ", " + evt.getMessage());
 		} else if(event instanceof AccountSelectionEvent) {
+			
 			AccountSelectionEvent evt = (AccountSelectionEvent)event;
-			log.info("get AccountSelectionEvent::{}",evt.getAccount());
-
 			sendSubscriptionRequest(evt.getAccount());
 		}
 	}

@@ -202,7 +202,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					dialog.open();
 					
 					Account tempAccount = dialog.getAccount();
-					log.info("tempAccount:{}",tempAccount.getState());
 					Account account = accounts.get(tempAccount.getId());
 					account.setState(tempAccount.getState());
 					accounts.put(tempAccount.getId(),account);
@@ -565,7 +564,15 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void dispose() {
 		Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);		
+		unSubEvent(AccountUpdateEvent.class);
+		unSubEvent(AccountDynamicUpdateEvent.class);
+		unSubEvent(AllAccountSnapshotReplyEvent.class);
+
 		super.dispose();
+	}
+	
+	private void unSubEvent(Class<? extends AsyncEvent> clazz){
+		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
 	}
 	
 	@Override
@@ -574,6 +581,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void processAccountUpdate(Account account) {
+		
 		if(inAuthList(account)){
 			accounts.put(account.getId(), account);
 		}
@@ -581,7 +589,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private boolean inAuthList(Account account){
-		if(Business.getInstance().getAccount().equals(account.getUserId())
+		
+		if(Business.getInstance().getUser().equals(account.getUserId())
 				||Business.getInstance().isManagee(account.getUserId())){
 			return true;
 		}
@@ -594,7 +603,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			sendSubscriptionRequest(((ServerStatusEvent) event).getServer());
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
-			for (Account account : evt.getAccounts()) {
+			for (Account account : evt.getAccounts()) {				
 				if(inAuthList(account)){
 					accounts.put(account.getId(), account);
 				}

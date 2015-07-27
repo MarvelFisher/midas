@@ -1258,6 +1258,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			timerEvent = null;
 			asyncShowOrders();
 		} else if (event instanceof AccountSelectionEvent) {
+			
 			accountId = ((AccountSelectionEvent) event).getAccount();
 			if (pinned) {
 				accountFilter.setMatch("Account", accountId);

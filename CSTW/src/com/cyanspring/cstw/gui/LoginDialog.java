@@ -63,8 +63,9 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		container.setBackgroundImage(backward_imageDesc.createImage());
 		
 		GridLayout layout = new GridLayout(2, false);
-		layout.marginRight = 30;
-		layout.marginLeft = 30;
+		layout.marginRight = 10;
+		layout.marginLeft = 40;
+		layout.marginTop = 30;
 		container.setLayout(layout);
 
 		Label lblUser = new Label(container, SWT.NONE);
