@@ -104,18 +104,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 + ", map size: " + sessionMonitor.size() + ", checkTime: "
                 + chkTime);
 
-        //Clean Quote Send
-        if(aggregator != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN){
-            for (Quote quote : quotes.values()) {
-                if (quote != null ) {
-                    log.debug("PreOpen Send Clean Session quote:" + quote.getSymbol());
-                    processCleanSession(quote);
-                    eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
-                    printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, quote, MarketDataDef.QUOTE_GENERAL);
-                }
-            }
-        }
-
         if (aggregator != null) {
             aggregator.onMarketSession(event.getSession());
         }
@@ -125,19 +113,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
 
         if (!isInitReqDataEnd) isInitMarketSessionReceived = true;
-    }
-
-    public Quote processCleanSession(Quote quote){
-        quote.setAsk(0);
-        quote.setAskVol(0);
-        quote.setBid(0);
-        quote.setBidVol(0);
-        quote.setTurnover(0);
-        quote.setTotalVolume(0);
-        quote.setLast(0);
-        if(null != quote.getBids() && quote.getBids().size() > 0) quote.getBids().clear();
-        if(null != quote.getAsks() && quote.getAsks().size() > 0) quote.getAsks().clear();
-        return quote;
     }
 
     public void processRefDataEvent(RefDataEvent event) {

@@ -4,14 +4,10 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateEvent;
-import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
+import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.staticdata.IRefDataListener;
-import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +27,8 @@ import java.util.*;
 public class MarketDataManager extends MarketDataReceiver {
     private static final Logger log = LoggerFactory.getLogger(MarketDataManager.class);
     private IQuoteSaver quoteSaver;
+    private IQuoteCleaner quoteCleaner;
+    private IQuoteExtendCleaner quoteExtendCleaner;
     private String tickDir = "ticks";
     private String lastQuoteFile = "last.xml";
     private String lastQuoteExtendFile = "lastExtend.xml";
@@ -152,6 +150,32 @@ public class MarketDataManager extends MarketDataReceiver {
                 if (!adaptor.getState())
                     continue;
                 adaptor.subscribeMarketData(symbol, this);
+            }
+        }
+    }
+
+    public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
+        super.processMarketSessionEvent(event);
+        //Clear Quote & Send
+        if(quoteCleaner != null && event != null && event.getSession() == MarketSessionType.PREOPEN){
+            for (Quote quote : quotes.values()) {
+                if (quote != null ) {
+
+                    log.debug("PreOpen Send Clear Session quote:" + quote.getSymbol());
+                    quoteCleaner.clear(quote);
+                    quote.setTimeSent(Clock.getInstance().now());
+                    printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, quote, MarketDataDef.QUOTE_GENERAL);
+                    eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+
+                    if(quoteExtendCleaner != null && quoteExtends.containsKey(quote.getSymbol())){
+                        DataObject quoteExtend = quoteExtends.get(quote.getSymbol());
+                        quoteExtendCleaner.clear(quoteExtend);
+                        quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
+                        eventManager.sendRemoteEvent(new QuoteExtEvent(quoteExtend.get(String.class,
+                                QuoteExtDataField.SYMBOL.value()), null, quoteExtend, MarketDataDef.QUOTE_CLEAN_SESSION));
+                    }
+
+                }
             }
         }
     }
@@ -300,6 +324,14 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {
         this.quoteSaver = quoteSaver;
+    }
+
+    public void setQuoteCleaner(IQuoteCleaner quoteCleaner) {
+        this.quoteCleaner = quoteCleaner;
+    }
+
+    public void setQuoteExtendCleaner(IQuoteExtendCleaner quoteExtendCleaner) {
+        this.quoteExtendCleaner = quoteExtendCleaner;
     }
 
     public void setBroadcastQuote(boolean broadcastQuote) {

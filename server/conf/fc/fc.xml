@@ -293,4 +293,7 @@
 			</map>
 		</constructor-arg>
 	</bean>
+
+	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
+	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
 </beans>
