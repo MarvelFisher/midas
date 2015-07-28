@@ -868,16 +868,12 @@ public class SymbolData implements Comparable<SymbolData>
 		ArrayList<HistoricalPrice> listPrice;
 		if (getMapHistorical().get(type) == null)
 		{
-//			listPrice = (ArrayList<HistoricalPrice>) centralDB.getDbhnd().getCountsValue(market, type, strSymbol, dataCount);
-//			if (listPrice == null)
-//			{
-//				return null;
-//			}
 			getChartPrice(type);
 		}
 		int limit = (dataCount > getMapHistorical().get(type).size()) ? getMapHistorical().get(type).size() : dataCount;
 		listPrice = new ArrayList<HistoricalPrice>();
 		listPrice.addAll(getMapHistorical().get(type).subList(0, limit));
+		while(listPrice.contains(null)) listPrice.remove(null);
 		Collections.sort(listPrice);
 		
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
@@ -1052,7 +1048,10 @@ public class SymbolData implements Comparable<SymbolData>
 		if (mapHistorical.get("M") != null)
 			msg += "M:" + mapHistorical.get("M").size();
 		log.debug(msg);
-		this.mapHistorical = mapHistorical;
+		synchronized (getMapHistorical())
+		{
+			this.mapHistorical = mapHistorical;
+		}
 	}
 	public void set52WHLByMapHistorical()
 	{
