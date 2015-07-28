@@ -164,7 +164,7 @@ public class MarketDataManager extends MarketDataReceiver {
                     log.debug("PreOpen Send Clear Session quote:" + quote.getSymbol());
                     quoteCleaner.clear(quote);
                     quote.setTimeSent(Clock.getInstance().now());
-                    printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, quote, MarketDataDef.QUOTE_GENERAL);
+                    printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, quote, QuoteLogLevel.GENERAL);
                     eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
 
                     if(quoteExtendCleaner != null && quoteExtends.containsKey(quote.getSymbol())){
@@ -172,7 +172,7 @@ public class MarketDataManager extends MarketDataReceiver {
                         quoteExtendCleaner.clear(quoteExtend);
                         quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                         eventManager.sendRemoteEvent(new QuoteExtEvent(quoteExtend.get(String.class,
-                                QuoteExtDataField.SYMBOL.value()), null, quoteExtend, MarketDataDef.QUOTE_CLEAN_SESSION));
+                                QuoteExtDataField.SYMBOL.value()), null, quoteExtend, QuoteSource.CLEAN_SESSION.getValue()));
                     }
 
                 }
