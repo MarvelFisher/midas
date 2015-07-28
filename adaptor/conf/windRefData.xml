@@ -76,7 +76,8 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refDataFile" value="refdata/refData_sc.xml" />
+        <property name="refDataFile" value="refdata/refData_sc.xml"/>
+        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
     </bean>
 
     <bean id="refDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

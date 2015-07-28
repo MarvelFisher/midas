@@ -4,6 +4,7 @@ import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.data.JdbcSQLHandler;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
@@ -39,6 +40,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +56,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     private int gatewayPort = 10048;
     private boolean msgPack = true;
     private String refDataFile;
+    private String windbaseDataFile;
     private boolean isAlive = true;
     static volatile boolean isConnected = false;
     static volatile boolean codeTableIsProcessEnd = false;
@@ -72,6 +75,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     HashMap<RefDataField, Object> refDataFCHashMap = new HashMap<>();
     static ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, RefData> refDataHashMap = new ConcurrentHashMap<>();
+    static HashMap<String, WindBaseDBData> windBaseDBDataHashMap;
     protected WindDataParser windDataParser = new WindDataParser();
     protected static WindRefDataAdapter instance = null;
     EventLoopGroup eventLoopGroup = null;
@@ -265,6 +269,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         log.debug("db process start");
         HashMap<String,WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
         WindBaseDBData windBaseDBData = null;
+        Date timeStamp;
         Connection conn = null;
         Statement stmt = null;
         try {
@@ -273,26 +278,76 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             conn = jdbcSQLHandler.getConnect();
             stmt = conn.createStatement();
             String sql =
-                    "SELECT S_INFO_WINDCODE WINDCODE,S_INFO_NAME CNNAME,IFNULL(S_INFO_COMPNAMEENG,'') ENNAME,S_INFO_PINYIN PINYIN,'S' MARKETTYPE\n" +
-                    "from WindFileSync.ASHAREDESCRIPTION\n" +
-                    "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') AND S_INFO_DELISTDATE IS NULL AND S_INFO_NAME NOT LIKE '%ST%'\n" +
-                    "UNION ALL\n" +
-                    "SELECT S_INFO_WINDCODE,S_INFO_NAME,'' ENG,'' PINYIN,'I' AS MARKETTYPE\n" +
-                    "FROM WindFileSync.AINDEXDESCRIPTION\n" +
-                    "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') \n" +
-                    "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','000905.SH','000016.SH','399300.SZ')\n" +
-                    "ORDER BY MARKETTYPE,WINDCODE;";
+                    "SELECT \n" +
+                            "\tMAIN.*,IFNULL(SFREE.FREESHARES,0) FREESHARES,IFNULL(STOTAL.TOTALSHARES,0) TOTALSHARES\n" +
+                            "    ,IFNULL(SPE.PERATIO,0) PERATIO\n" +
+                            "FROM\n" +
+                            "(\n" +
+                            "SELECT \n" +
+                            "\tS_INFO_WINDCODE WINDCODE,S_INFO_NAME CNNAME,IFNULL(S_INFO_COMPNAMEENG,'') ENNAME,S_INFO_PINYIN PINYIN,'S' MARKETTYPE\n" +
+                            "FROM WindFileSync.ASHAREDESCRIPTION\n" +
+                            "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') AND S_INFO_DELISTDATE IS NULL AND S_INFO_NAME NOT LIKE '%ST%'\n" +
+                            "UNION ALL\n" +
+                            "SELECT \n" +
+                            "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
+                            "\t,S_INFO_NAME,'' ENG,'' PINYIN,'I' AS MARKETTYPE\n" +
+                            "FROM WindFileSync.AINDEXDESCRIPTION\n" +
+                            "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') \n" +
+                            "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ')\n" +
+                            ") AS MAIN\n" +
+                            "LEFT JOIN\n" +
+                            "(\n" +
+                            "\tSELECT SF.S_INFO_WINDCODE WINDCODE, SF.S_SHARE_FREESHARES*10000 FREESHARES\n" +
+                            "\tFROM WindFileSync.ASHAREFREEFLOAT SF\n" +
+                            "\tRIGHT JOIN\n" +
+                            "\t(\n" +
+                            "\tselect MAX(CHANGE_DT1) MAXCDT,S_INFO_WINDCODE WINDCODE\n" +
+                            "\tfrom WindFileSync.ASHAREFREEFLOAT\n" +
+                            "\tgroup by S_INFO_WINDCODE\n" +
+                            "\t) MAXSF ON SF.S_INFO_WINDCODE = MAXSF.WINDCODE AND SF.CHANGE_DT1 = MAXSF.MAXCDT\n" +
+                            ") SFREE ON SFREE.WINDCODE = MAIN.WINDCODE\n" +
+                            "LEFT JOIN\n" +
+                            "(\n" +
+                            "\tSELECT SA.S_INFO_WINDCODE WINDCODE, SA.TOT_SHR*10000 TOTALSHARES\n" +
+                            "\tFROM WindFileSync.ASHARECAPITALIZATION SA\n" +
+                            "\tRIGHT JOIN\n" +
+                            "\t(\n" +
+                            "\tselect MAX(CHANGE_DT1) MAXCDT,S_INFO_WINDCODE WINDCODE\n" +
+                            "\tfrom WindFileSync.ASHARECAPITALIZATION\n" +
+                            "\tgroup by S_INFO_WINDCODE\n" +
+                            "\t) MAXSA ON SA.S_INFO_WINDCODE = MAXSA.WINDCODE AND SA.CHANGE_DT1 = MAXSA.MAXCDT\n" +
+                            ") STOTAL ON STOTAL.WINDCODE = MAIN.WINDCODE\n" +
+                            "LEFT JOIN\n" +
+                            "(\n" +
+                            "\tSELECT SEOD.S_INFO_WINDCODE WINDCODE, SEOD.S_VAL_PE PERATIO\n" +
+                            "\tFROM WindFileSync.ASHAREEODDERIVATIVEINDICATOR SEOD\n" +
+                            "\tRIGHT JOIN\n" +
+                            "\t(\n" +
+                            "\tselect MAX(TRADE_DT) MAXDT,S_INFO_WINDCODE WINDCODE\n" +
+                            "\tfrom WindFileSync.ASHAREEODDERIVATIVEINDICATOR\n" +
+                            "\tgroup by S_INFO_WINDCODE\n" +
+                            "\t) MAXSEOD ON SEOD.S_INFO_WINDCODE = MAXSEOD.WINDCODE AND SEOD.TRADE_DT = MAXSEOD.MAXDT\n" +
+                            ") SPE ON SPE.WINDCODE = MAIN.WINDCODE\n" +
+                            "ORDER BY MAIN.MARKETTYPE,MAIN.WINDCODE;";
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 String windcode = rs.getString("WINDCODE");
                 String cnName = rs.getString("CNNAME");
                 String pinyin = rs.getString("PINYIN");
                 String twName = ChineseConvert.StoT(cnName);
+                Number freeShares = rs.getBigDecimal("FREESHARES");
+                Number totalShares = rs.getBigDecimal("TOTALSHARES");
+                Number peRatio = rs.getBigDecimal("PERATIO");
                 windBaseDBData = new WindBaseDBData();
                 windBaseDBData.setSymbol(windcode);
                 windBaseDBData.setSpellName(pinyin);
                 windBaseDBData.setCNDisplayName(cnName);
                 windBaseDBData.setTWDisplayName(twName);
+                windBaseDBData.setFreeShares(freeShares.longValue());
+                windBaseDBData.setTotalShares(totalShares.longValue());
+                windBaseDBData.setPERatio(peRatio.doubleValue());
+                timeStamp = Clock.getInstance().now();
+                windBaseDBData.setTimeStamp(timeStamp);
                 windBaseDBDataHashMap.put(windcode, windBaseDBData);
                 log.debug(",C," + windcode + "," + cnName + "," + twName + "," + pinyin);
             }
@@ -316,6 +371,20 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         }
         log.debug("db process end");
         return windBaseDBDataHashMap;
+    }
+
+    private <K,T> void saveRefDataToFile(String path, HashMap<K,T> hashMap) {
+        File file = new File(path);
+        XStream xstream = new XStream(new DomDriver("UTF-8"));
+        try {
+            file.createNewFile();
+            FileOutputStream os = new FileOutputStream(file);
+            OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+            xstream.toXML(hashMap, writer);
+            os.close();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     private <T> void saveRefDataToFile(String path, List<T> list) {
@@ -364,9 +433,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
         // start server
 
+//        refDataAdaptor.init();
+//        TimeUnit.SECONDS.sleep(10);
+//        refDataAdaptor.uninit();
+
+        //RefData補拼音,簡繁體股名 使用
         log.debug("Process RefData Begin");
         WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapter");
-        HashMap<String, WindBaseDBData> windBaseDBDataHashMap = refDataAdaptor.processDBTask();
+        windBaseDBDataHashMap = refDataAdaptor.processDBTask();
         List<RefData> refDataList = refDataAdaptor.getRefDataListFromFile();
         for(RefData refData : refDataList){
             WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(refData.getSymbol());
@@ -381,11 +455,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             if(windBaseDBData.getSpellName() != null && !"".equals(windBaseDBData.getSpellName()))
                 refData.setSpellName(windBaseDBData.getSpellName());
         }
-        refDataAdaptor.saveRefDataToFile(refDataAdaptor.refDataFile, refDataList);
+        refDataAdaptor.saveRefDataToFile(refDataAdaptor.windbaseDataFile, windBaseDBDataHashMap);
         log.debug("Process RefData End");
-//        refDataAdaptor.init();
-//        TimeUnit.SECONDS.sleep(10);
-//        refDataAdaptor.uninit();
     }
 
     public String getGatewayIp() {
@@ -458,6 +529,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     public void setRefDataFile(String refDataFile) {
         this.refDataFile = refDataFile;
+    }
+
+    public void setWindbaseDataFile(String windbaseDataFile) {
+        this.windbaseDataFile = windbaseDataFile;
     }
 
     public void setBasicDataSource(BasicDataSource basicDataSource) {
