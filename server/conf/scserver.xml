@@ -86,6 +86,8 @@
 		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 		<property name="quoteSaver" ref="quoteSaver"/>
+		<property name="quoteCleaner" ref="quoteCleaner"/>
+		<property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
         <property name="broadcastQuote" value="false"/>
 	</bean>
 
