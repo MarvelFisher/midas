@@ -10,25 +10,29 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.osgi.storage.url.reference.ReferenceInputStream;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
@@ -44,7 +48,6 @@ import com.cyanspring.common.event.account.GroupManageeReplyEvent;
 import com.cyanspring.common.event.account.GroupManageeRequestEvent;
 import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.GUIUtils;
@@ -70,10 +73,25 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 //	private ArrayList <Account>accountList = new ArrayList<Account>();
 	private ArrayList <String>manageeList = new ArrayList<String>();
 	private ArrayList <String>nonManageeList = new ArrayList<String>();
-	private ListViewer manageeListView;
-	private ListViewer nonManageeListView;
+//	private ListViewer manageeListView;
+//	private ListViewer nonManageeListView;
+	private TableViewer manageeListView;
+	private Table manageeTable;
+	
+	private TableViewer nonManageeListView;
+	private Table nonManageeTable;
 	private Composite parent;
 	private ReentrantLock displayLock = new ReentrantLock();
+	
+	
+	private final RGB PURPLE = new RGB(171,130,255);
+	private final RGB BLACK = new RGB(0,0,0);
+	private final RGB GREEN = new RGB(27,154,13);
+	private final RGB RED = new RGB(179,0,0);
+	private final Color RISK_MANAGER_COLOR = new Color(Display.getCurrent(), RED);
+	private final Color TRADER_COLOR = new Color(Display.getCurrent(), GREEN);
+	private final Color ADMIN_COLOR = new Color(Display.getCurrent(), PURPLE);
+
 	
 	protected GroupManagementDialog(Shell parentShell,String accountId,java.util.List<User> users) {
 		super(parentShell);
@@ -92,6 +110,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
+	
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		this.parent = parent;
 		Composite container = new Composite(parent, SWT.NONE);
@@ -104,19 +123,19 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		setManagerLabel(lblManager,accountId);
 		
 		Label lblNonAssignAccont = new Label(container, SWT.NONE);
-		lblNonAssignAccont.setText("Non Assign Trader");
+		lblNonAssignAccont.setText("Non Assign User");
 		
-		manageeListView = new ListViewer(container, SWT.BORDER | SWT.V_SCROLL);
-		List list = manageeListView.getList();
-		GridData gd_list = new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1);
-		gd_list.widthHint = 112;
-		gd_list.heightHint = 202;
-		list.setLayoutData(gd_list);
+		manageeListView = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.SCROLLBAR_OVERLAY);
+		manageeTable = manageeListView.getTable();
+		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_table.widthHint=70;
+		gd_table.heightHint=150;		
+		manageeTable.setLayoutData(gd_table);
 		
 		Composite composite = new Composite(container, SWT.NONE);
 		GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_composite.widthHint = 115;
-		gd_composite.heightHint = 98;
+		gd_composite.widthHint = 150;
+		gd_composite.heightHint = 150;
 		composite.setLayoutData(gd_composite);
 		composite.setLayout(new FillLayout(SWT.VERTICAL));
 		
@@ -155,13 +174,37 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 			}
 		});
 			
-		nonManageeListView= new ListViewer(container, SWT.BORDER | SWT.V_SCROLL);
-		List list_1 = nonManageeListView.getList();
-		GridData gd_list_1 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_list_1.heightHint = 207;
-		gd_list_1.widthHint = 120;
-		list_1.setLayoutData(gd_list_1);
-				
+		nonManageeListView= new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION | SWT.SCROLLBAR_OVERLAY);
+		nonManageeTable = nonManageeListView.getTable();
+		
+		GridData gd_table2 = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		gd_table2.widthHint=70;
+		gd_table2.heightHint=150;
+		nonManageeTable.setLayoutData(gd_table2);
+		
+		Label lblroleColor = new Label(container, SWT.NONE);
+		GridData gdLblMessage4 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage4.horizontalIndent = 1;
+		lblroleColor.setLayoutData(gdLblMessage4);
+		lblroleColor.setText("Role Color :");
+		
+		Label lblriskColor = new Label(container, SWT.NONE);
+		GridData gdLblMessage3 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage3.horizontalIndent = 1;
+		lblriskColor.setLayoutData(gdLblMessage3);
+		lblriskColor.setText("Risk Manager");
+		lblriskColor.setForeground(RISK_MANAGER_COLOR);
+		
+		Label lbltraderColor = new Label(container, SWT.NONE);
+		GridData gdLblMessage2 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage2.horizontalIndent = 1;
+		lbltraderColor.setLayoutData(gdLblMessage2);
+		lbltraderColor.setText("Trader");
+		lbltraderColor.setForeground(TRADER_COLOR);
+		
 		lblMessage = new Label(container, SWT.NONE);
 		GridData gdLblMessage = new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 2, 1);
@@ -171,8 +214,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		Color red = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 		lblMessage.setForeground(red);
 		
-		sendGroupManageeRequestEvent();
-		
+		sendGroupManageeRequestEvent();		
 		return super.createDialogArea(parent);
 	}
 	private void sendGroupManageeRequestEvent(){
@@ -183,8 +225,11 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		IStructuredSelection sel = (IStructuredSelection)nonManageeListView.getSelection();
 		if( null == sel )
 			return ;
+		
+		
 		manageeListView.add(sel.getFirstElement());
 		nonManageeListView.remove(sel.getFirstElement());
+		setRoleColor(manageeListView);
 	}
 
 	protected void doDeAssign() {
@@ -193,6 +238,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 			return ;
 		nonManageeListView.add(sel.getFirstElement());
 		manageeListView.remove(sel.getFirstElement());
+		setRoleColor(nonManageeListView);
 	}
 
 	@Override
@@ -227,16 +273,26 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		return buttonArea;
 	}
 	
+	private java.util.List<String> getList(Table table){
+		java.util.List <String>datas = new ArrayList<String>();
+		TableItem items[]= table.getItems();
+		for(TableItem item : items){
+			datas.add(item.getText(0));
+		}
+		return datas;
+	}
+	
+	
 	protected void sendManageeSet() {
-		log.info("into sendManageeSet");
+		
 		java.util.List<GroupManagement> groupList = new ArrayList<GroupManagement>();
-		List manageeList = manageeListView.getList();
-		for( int i = 0 ; i<manageeList.getItemCount() ; i++){		
-			String managee = manageeList.getItem(i);
+		
+		java.util.List <String>manageeList = getList(manageeTable);
+		for( int i = 0 ; i<manageeList.size() ; i++){		
+			String managee = manageeList.get(i);
 			GroupManagement gm = new GroupManagement(accountId,managee);
 			groupList.add(gm);
 		}
-		
 		
 		java.util.List<UserGroup> originManageeList = userGroup.getNoneRecursiveManageeList();
 		java.util.List<GroupManagement> addList = new ArrayList<GroupManagement>();
@@ -267,20 +323,18 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 			if(!isExist)
 				delList.add(new GroupManagement(userGroup.getUser(),ug.getUser()));
 		}
-		
-		
-		
-		for(GroupManagement gm :groupList){
-			log.info("group manager:{}, managee:{}",gm.getManager(),gm.getManaged());
-		}
-		
-		for(GroupManagement gm :addList){
-			log.info("add manager:{}, managee:{}",gm.getManager(),gm.getManaged());
-		}
-		
-		for(GroupManagement gm :delList){
-			log.info("del manager:{}, managee:{}",gm.getManager(),gm.getManaged());
-		}
+			
+//		for(GroupManagement gm :groupList){
+//			log.info("group manager:{}, managee:{}",gm.getManager(),gm.getManaged());
+//		}
+//		
+//		for(GroupManagement gm :addList){
+//			log.info("add manager:{}, managee:{}",gm.getManager(),gm.getManaged());
+//		}
+//		
+//		for(GroupManagement gm :delList){
+//			log.info("del manager:{}, managee:{}",gm.getManager(),gm.getManaged());
+//		}
 		
 		if(!addList.isEmpty()){
 			CreateGroupManagementEvent addEvent = new CreateGroupManagementEvent(ID, Business.getInstance().getFirstServer(),addList);
@@ -382,8 +436,9 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 
 			@Override
 			public void run() {			
-				nonManageeListView.getList().removeAll();
-				manageeListView.getList().removeAll();
+				
+				nonManageeListView.getTable().removeAll();
+				manageeListView.getTable().removeAll();
 				manageeList.clear();
 				nonManageeList.clear();
 			}
@@ -392,13 +447,6 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	}
 	
 	private void showManageeList() {
-//		Set <UserGroup>manageeSet = userGroup.getManageeSet();
-//		Iterator<UserGroup> mangeeIte = manageeSet.iterator();
-//		final ArrayList <String>tempList = new ArrayList<String>();
-//		while(mangeeIte.hasNext()){
-//			UserGroup ug = mangeeIte.next();
-//			manageeList.add(ug.getUser());
-//		}
 		
 		try { 
 			displayLock.lock();
@@ -408,7 +456,6 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 			for(UserGroup ug : manageeGroupList){
 				manageeList.add(ug.getUser());
 			}
-			log.info("manageeList:{}",manageeList.size());
 
 			for(User user : users){
 				if(!manageeList.contains(user.getId())
@@ -418,21 +465,51 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 				}
 			}
 		
-			log.info("manageeList:{}",manageeList.size());
-			log.info("tempList:{}",tempList.size());
+//			log.info("manageeList:{}",manageeList.size());
+//			log.info("tempList:{}",tempList.size());
 			parent.getDisplay().syncExec(new Runnable(){
 
 				@Override
 				public void run() {			
 					nonManageeListView.add(tempList.toArray(new String[tempList.size()]));
 					manageeListView.add(manageeList.toArray(new String[manageeList.size()]));
-				}
-				
+					setRoleColor(nonManageeListView);
+					setRoleColor(manageeListView);
+
+				}			
 			});		
 		}finally{
 			displayLock.unlock();
 		}
 
+	}
+	
+	private void setRoleColor(TableViewer view) {
+		Table table = view.getTable();
+		
+		TableItem items[] = table.getItems();
+		for(TableItem item:items){
+			String id = item.getText(0);
+			User tempUser = null;
+			
+			for(User user:users){
+				if(user.getId().equals(id)){
+					tempUser = user;
+					break;
+				}
+			}
+			log.info("tempUser:{}",tempUser.getId());
+
+			if(null != tempUser){
+				if(UserRole.Admin.equals(tempUser.getRole())){
+					item.setForeground(0,ADMIN_COLOR);
+				}else if(UserRole.RiskManager.equals(tempUser.getRole())){
+					item.setForeground(0,RISK_MANAGER_COLOR);
+				}else if(UserRole.Trader.equals(tempUser.getRole())){
+					item.setForeground(0,TRADER_COLOR);
+				}
+			}
+		}
 	}
 
 	private void subEvent(Class<? extends AsyncEvent> clazz){
