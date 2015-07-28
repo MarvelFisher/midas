@@ -35,6 +35,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="0" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="INDEX" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="I"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="SC"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
     </util:map>
 
@@ -62,6 +63,9 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).DENOMINATOR}" value="0.0"/>
     </util:map>
 
+    <util:map id="windBaseDBDataHashMap" map-class="java.util.HashMap" value-type="com.cyanspring.adaptor.future.wind.data.WindBaseDBData">
+    </util:map>
+
     <bean id="refDataAdapter"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="gatewayIp" value="#{windAdaptor.gatewayIp}" />
@@ -69,6 +73,7 @@
         <property name="marketDataLog" value="#{windAdaptor.marketDataLog}"/>
         <property name="msgPack" value="#{windAdaptor.msgPack}"/>
         <property name="refDataFile" value="#{refDataManager.refDataFile}" />
+        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
         <property name="basicDataSource" ref="refDataSource"/>
         <property name="marketsList">
             <list>
@@ -79,6 +84,7 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
+        <property name="windBaseDBDataHashMap" ref="windBaseDBDataHashMap"/>
     </bean>
 
 </beans>

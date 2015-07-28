@@ -14,17 +14,17 @@ public class WindBaseDBData extends DataObject {
     public void setSymbol(String symbol) {
         this.set(symbol, RefDataField.SYMBOL.value());
     }
-    public String getTWDisplayName() {
-        return this.get(String.class, RefDataField.TW_DISPLAYNAME.value());
-    }
-    public void setTWDisplayName(String twName) {
-        this.set(twName, RefDataField.TW_DISPLAYNAME.value());
-    }
     public String getCNDisplayName() {
         return this.get(String.class, RefDataField.CN_DISPLAYNAME.value());
     }
     public void setCNDisplayName(String cnName) {
         this.set(cnName, RefDataField.CN_DISPLAYNAME.value());
+    }
+    public String getENDisplayName() {
+        return this.get(String.class, RefDataField.EN_DISPLAYNAME.value());
+    }
+    public void setENDisplayName(String enName) {
+        this.set(enName, RefDataField.EN_DISPLAYNAME.value());
     }
     public String getSpellName() {
         return this.get(String.class, RefDataField.SPELL_NAME.value());
