@@ -28,7 +28,6 @@
 		</property>
 		<property name="eventExecuteTiming">
 	  		<map key-type="java.lang.Class" value-type="com.cyanspring.common.strategy.ExecuteTiming">
-		        <entry key="com.cyanspring.common.event.marketdata.QuoteEvent" value="NOW" />
 		        <entry key="com.cyanspring.common.event.strategy.ExecutionInstructionResponseEvent" value="NOW" />
 		    </map>
 		</property>
