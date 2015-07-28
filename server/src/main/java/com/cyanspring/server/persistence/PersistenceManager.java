@@ -1535,7 +1535,8 @@ public class PersistenceManager {
         Session session = sessionFactory.openSession();
         Transaction tx = null;
    
-        CashAudit cashAudit = new CashAudit(event.getAccount().getId(), event.getType(),
+        CashAudit cashAudit = new CashAudit(IdGenerator.getInstance().getNextID(),
+        		event.getAccount().getId(), event.getType(),
                 Clock.getInstance().now(), cashDeposited, cash);
         try {
             tx = session.beginTransaction();

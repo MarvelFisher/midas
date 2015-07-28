@@ -272,7 +272,8 @@
   </class>
 
   <class name="com.cyanspring.common.business.CashAudit" table="ANYONE.CASH_AUDIT">
-      <id name="accountID" column="ACCOUNT_ID"	type="java.lang.String"/>
+      <id name="cashID" column="CASH_ID" type="java.lang.String"/>
+      <property name="accountID" column="ACCOUNT_ID"	type="java.lang.String"/>
       <property name="type" column="TYPE">
       	<type name="org.hibernate.type.EnumType">
         <param name="enumClass">com.cyanspring.common.business.AuditType</param>

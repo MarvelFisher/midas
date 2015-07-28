@@ -11,6 +11,7 @@ import java.util.Date;
  * @since 1.0
  */
 public class CashAudit implements Serializable {
+	private String cashID;
     private String accountID;
     private AuditType type;
     private Date time;
@@ -21,15 +22,24 @@ public class CashAudit implements Serializable {
     	
     }
 
-    public CashAudit(String accountID, AuditType type, Date time, double cashDeposited, double addCash) {
-        this.accountID = accountID;
+    public CashAudit(String cashID, String accountID, AuditType type, Date time, double cashDeposited, double addCash) {
+        this.cashID = cashID;
+    	this.accountID = accountID;
         this.type = type;
         this.time = time;
         this.cashDeposited = cashDeposited;
         this.addCash = addCash;
     }
+    
+    public String getCashID() {
+		return cashID;
+	}
 
-    public String getAccountID() {
+	public void setCashID(String cashID) {
+		this.cashID = cashID;
+	}
+
+	public String getAccountID() {
         return accountID;
     }
 
