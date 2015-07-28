@@ -164,6 +164,51 @@ public class TraderHelper {
 		return result;
 	}
 	
+	public static String readTimeCondition( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_TC_IOC:
+			result = "THOST_FTDC_TC_IOC";
+			break;
+		case TraderLibrary.THOST_FTDC_TC_GFS:
+			result = "THOST_FTDC_TC_GFS";
+			break;
+		case TraderLibrary.THOST_FTDC_TC_GFD:
+			result = "THOST_FTDC_TC_GFD";
+			break;
+		case TraderLibrary.THOST_FTDC_TC_GTD:
+			result = "THOST_FTDC_TC_GTD";
+			break;
+		case TraderLibrary.THOST_FTDC_TC_GTC:
+			result = "THOST_FTDC_TC_GTC";
+			break;
+		case TraderLibrary.THOST_FTDC_TC_GFA:
+			result = "THOST_FTDC_TC_GFA";
+			break;
+		default:
+			result = "Not Defined";	
+		}
+		return result;
+	}
+	
+	public static String readVolumeCondition( byte code ) {
+		String result = null;
+		switch (code) {
+		case TraderLibrary.THOST_FTDC_VC_AV:
+			result = "THOST_FTDC_VC_AV";
+			break;
+		case TraderLibrary.THOST_FTDC_VC_MV:
+			result = "THOST_FTDC_VC_MV";
+			break;
+		case TraderLibrary.THOST_FTDC_VC_CV:
+			result = "THOST_FTDC_VC_CV";
+			break;
+		default:
+			result = "Not Defined";	
+		}
+		return result;
+	}
+	
 	public static String toGBKString(byte[] bytes) {
 		try {
 			String msg = new String(bytes, "GB2312");

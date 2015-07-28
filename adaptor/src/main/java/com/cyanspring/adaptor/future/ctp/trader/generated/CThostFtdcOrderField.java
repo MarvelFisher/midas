@@ -525,10 +525,10 @@ public class CThostFtdcOrderField extends StructObject {
 		sb.append("		OrderType = " + OrderType() + ";\n");
 		sb.append("		VolumeTraded = " + VolumeTraded() + ";\n");
 		sb.append("		VolumeTotal = " + VolumeTotal() + ";\n");
-		
+		sb.append("		TimeCondition = " + TimeCondition() + " -> " + TraderHelper.readTimeCondition(TimeCondition()) + ";\n");
+		sb.append("		VolumeCondition = " + VolumeCondition() + " -> " + TraderHelper.readVolumeCondition(VolumeCondition()) + ";\n");
 		sb.append("		MinVolume = " + MinVolume() + ";\n");		
-		sb.append("		UserID = " + UserID().getCString() + ";\n");
-		sb.append("		TimeCondition = " + TimeCondition() + ";\n");
+		sb.append("		UserID = " + UserID().getCString() + ";\n");		
 		sb.append("		GTDDate = " + GTDDate().getCString() + ";\n");
 		sb.append("		ContingentCondition = " + ContingentCondition() + ";\n");
 		sb.append("		StopPrice = " + StopPrice() + ";\n");
