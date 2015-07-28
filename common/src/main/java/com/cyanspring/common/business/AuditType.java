@@ -10,5 +10,6 @@ package com.cyanspring.common.business;
  */
 public enum AuditType {
     DEPOSIT,
-    DIVIDED
+    DIVIDED,
+    RESET_ACCOUNT
 }

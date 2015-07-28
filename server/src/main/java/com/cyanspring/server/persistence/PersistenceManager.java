@@ -372,6 +372,13 @@ public class PersistenceManager {
 	        log.info("AccountsDaily Records deleted: " + rowCount);
 
 	        tx.commit();
+
+            CashAudit cashAudit = new CashAudit(IdGenerator.getInstance().getNextID(),
+                    account, AuditType.RESET_ACCOUNT,
+                    Clock.getInstance().now(), Default.getAccountCash(), 0);
+            tx = session.beginTransaction();
+            session.save(cashAudit);
+            tx.commit();
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -380,7 +387,7 @@ public class PersistenceManager {
 		}
 		finally {
 			session.close();
-		}		
+		}
 	}
 
 	private void persistXml(String id, PersistType persistType, StrategyState state, String user, 
