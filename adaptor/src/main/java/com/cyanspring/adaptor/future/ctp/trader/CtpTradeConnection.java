@@ -231,6 +231,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		if ( !isEmptyString(exchangeId) && !isEmptyString(orderSysId) ) {
 			String exchangeOrderId = TraderHelper.genExchangeOrderId(exchangeId, orderSysId);
 			exchangeSerial2Serial.put(exchangeOrderId, clOrderId);
+			log.info("Store exchange order id:" + exchangeOrderId);
 		}
 
 		if ( status != null ) {
