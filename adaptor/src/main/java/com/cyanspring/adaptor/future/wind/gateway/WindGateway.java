@@ -1096,6 +1096,7 @@ public class WindGateway implements Runnable {
 					bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
 				} else {
 					Thread.sleep(3000);  // sleep 一下,等 MsgPackServer 的 Thread 啟動
+					mpServerThread.join();
 				}
 					
 			}
@@ -1129,11 +1130,13 @@ public class WindGateway implements Runnable {
 				if(mpClientThread != null) {
 					mpDataClient.stop();
 					mpClientThread.join();				
-				}				
+				}		
+				/*
 				if(mpServerThread != null) {
 					msgPackLiteServer.stop();
 					mpServerThread.join();
 				}
+				*/
 				
 				if(bossGroup != null) {
 					bossGroup.shutdownGracefully();

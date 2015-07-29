@@ -51,7 +51,7 @@
     
 		<!--  Msg Pack Lite Cascading Configure -->    	
     	<property name="mpCascading" value="true"/>
-    	<property name="mpUpstreamIp" value="10.0.0.32"/>
+    	<property name="mpUpstreamIp" value="61.152.93.132"/>
     	<property name="mpUpstreamPort" value="10048"/>   
     	
     	 	
@@ -60,7 +60,7 @@
  
  	<!--  Msg Pack Lite Gateway Configure -->
     <bean id="MsgPackLiteServer" class="com.cyanspring.adaptor.future.wind.gateway.MsgPackLiteServer">    
-    	<property name="serverPort" value="10046"/>
+    	<property name="serverPort" value="10048"/>
     	<property name="readIdleInterval" value="5"/>
     	<property name="writeIdleInterval" value="3"/>
     </bean>
