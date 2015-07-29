@@ -138,7 +138,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			byte flag = positionRecord.holdQuantity(symbol, order.getSide().isBuy(), order.getQuantity());
 			order.put(OrderField.FLAG.value(), flag);
 			proxy.newOrder(ordRef, order);
-			log.info("Send Order: " + ordRef + "," + flag);
+			log.info("Send Order: " + ordRef + "," + TraderHelper.readCombOffsetFlag(flag));
 		}
 
 		@Override
@@ -223,14 +223,16 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			log.debug("Skipping update since ordStatus doesn't change: " + status);
 			return;
 		}
-		// store exchange serial ID
-		if ( TraderHelper.isTradedStatus(statusCode) ) {
-			String exchangeId = update.ExchangeID().getCString();
-			String orderSysId =  update.OrderSysID().getCString();
+		// store exchange serial ID				
+		String exchangeId = update.ExchangeID().getCString();
+		String orderSysId =  update.OrderSysID().getCString();
+		exchangeId = exchangeId.trim();
+		orderSysId = orderSysId.trim();
+		if ( !isEmptyString(exchangeId) && !isEmptyString(orderSysId) ) {
 			String exchangeOrderId = TraderHelper.genExchangeOrderId(exchangeId, orderSysId);
 			exchangeSerial2Serial.put(exchangeOrderId, clOrderId);
+			log.info("Store exchange order id:" + exchangeOrderId);
 		}
-		
 
 		if ( status != null ) {
 			order.setOrdStatus(status);
@@ -243,8 +245,11 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		}
 		
 		// return remaining position holding
-		returnRemainingPosition(order, update.CombOffsetFlag().getByte());
-		
+		returnRemainingPosition(order, update.CombOffsetFlag().getByte());		
+	} 
+	
+	private boolean isEmptyString(String str) {
+		return str == null ? true : "".equals(str);
 	}
 	
 	private void returnRemainingPosition(ChildOrder order, byte flag) {
@@ -265,7 +270,12 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	 */
 	@Override
 	public void onTrade(CThostFtdcTradeField trade) {		
-		String exchangeOrderId = TraderHelper.genExchangeOrderId(trade.ExchangeID().getCString(), trade.OrderSysID().getCString());
+		log.info("Traded: " + trade);
+		String exchangeId = trade.ExchangeID().getCString();
+		String orderSysId =  trade.OrderSysID().getCString();
+		exchangeId = exchangeId.trim();
+		orderSysId = orderSysId.trim();
+		String exchangeOrderId = TraderHelper.genExchangeOrderId(exchangeId, orderSysId);
 		String clOrderId = exchangeSerial2Serial.get(exchangeOrderId);
 		if ( null == clOrderId ) {
 			log.info("Order not found： " + exchangeOrderId);
@@ -275,8 +285,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		if ( null == order ) {
 			log.info("Order not found: " + clOrderId);
 			return;
-		}
-		log.info("Traded: " + trade);
+		}		
 		Double volumeTraded = tradePendings.remove(clOrderId);
 		if(null == volumeTraded) {
 			log.error("Received trade without order update");
