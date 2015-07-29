@@ -113,6 +113,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 log.info("RefData Adapter disconnect with - " + gatewayIp + " : " + gatewayPort + " , will try again after 3 seconds.");
                 Thread.sleep(3000);
             }
+        } catch (InterruptedException ie) {
+            log.warn(ie.getMessage(), ie);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -146,10 +148,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 }
                 //Check WindBaseDB Data
                 String windCode = codeTableData.getWindCode();
-                if(!windBaseDBDataHashMap.containsKey(windCode)){
-                    if(marketDataLog) log.warn("WindBase DB Not this Symbol," + windCode);
+                if (!windBaseDBDataHashMap.containsKey(windCode)) {
+                    if (marketDataLog) log.warn("WindBase DB Not this Symbol," + windCode);
                     return;
-                }else{
+                } else {
                     windBaseDBData = windBaseDBDataHashMap.get(windCode);
                 }
                 codeTableData.setCnName(windBaseDBData.getCNDisplayName());
@@ -351,12 +353,12 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         }
     }
 
-    public static <K,T> HashMap<K,T> getHashMapFromFile(String hashMapPath) throws Exception {
+    public static <K, T> HashMap<K, T> getHashMapFromFile(String hashMapPath) throws Exception {
         XStream xstream = new XStream(new DomDriver());
         File file = new File(hashMapPath);
-        HashMap<K,T> hashMap;
+        HashMap<K, T> hashMap;
         if (file.exists()) {
-            hashMap = (HashMap<K,T>) xstream.fromXML(file);
+            hashMap = (HashMap<K, T>) xstream.fromXML(file);
         } else {
             throw new Exception("Missing file: " + hashMapPath);
         }
@@ -392,10 +394,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             windBaseDBDataHashMap = getWindBaseDBData();
             dbRetryCount++;
         }
-        if(windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0){
+        if (windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0) {
             //getData from file
             windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
-        }else{
+        } else {
             saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
         }
         //connect WindGW
@@ -422,9 +424,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         //Wait CodeTable Process
         log.debug("wait codetable process");
         try {
-                while (!codeTableIsProcessEnd && serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
-                    TimeUnit.SECONDS.sleep(1);
-                }
+            while (!codeTableIsProcessEnd && serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
+                TimeUnit.SECONDS.sleep(1);
+            }
         } catch (InterruptedException e) {
         }
         //send RefData Listener
