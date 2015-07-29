@@ -1060,9 +1060,12 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			return;
 		}
-		Collections.sort(listPrice);
-		int head = (listPrice.size() > 52) ? (listPrice.size() - 52) : 0;
-		List<HistoricalPrice> listPrice52 = listPrice.subList(head, listPrice.size()-1);
+		List<HistoricalPrice> sortlistPrice = new ArrayList<HistoricalPrice>();
+		sortlistPrice.addAll(listPrice);
+		Collections.sort(sortlistPrice);
+		int size = sortlistPrice.size();
+		int head = (size > 52) ? (size - 52) : 0;
+		List<HistoricalPrice> listPrice52 = sortlistPrice.subList(head, size-1);
 		double dHigh = 0 ; 
 		double dLow = 0 ;
 		for (HistoricalPrice price : listPrice52)
