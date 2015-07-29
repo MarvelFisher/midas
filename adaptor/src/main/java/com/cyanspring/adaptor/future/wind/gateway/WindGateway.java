@@ -1076,12 +1076,14 @@ public class WindGateway implements Runnable {
 			}
 	
 		
-			EventLoopGroup bossGroup   = new NioEventLoopGroup(2);
-			EventLoopGroup workerGroup = new NioEventLoopGroup(16);
+			EventLoopGroup bossGroup = null;
+			EventLoopGroup workerGroup = null;
 			
 			try
 			{
 				if(serverPort != 0) {
+					bossGroup   = new NioEventLoopGroup(2);
+					workerGroup = new NioEventLoopGroup(16);
 					windGatewayInitializer = new WindGatewayInitializer();
 					ServerBootstrap  bootstrap = new ServerBootstrap()
 					.group(bossGroup,workerGroup)
@@ -1092,7 +1094,10 @@ public class WindGateway implements Runnable {
 					.childHandler(windGatewayInitializer);
 				
 					bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+				} else {
+					Thread.sleep(3000);  // sleep 一下,等 MsgPackServer 的 Thread 啟動
 				}
+					
 			}
 			finally
 			{
@@ -1130,8 +1135,10 @@ public class WindGateway implements Runnable {
 					mpServerThread.join();
 				}
 				
-				bossGroup.shutdownGracefully();
-				workerGroup.shutdownGracefully();			
+				if(bossGroup != null) {
+					bossGroup.shutdownGracefully();
+					workerGroup.shutdownGracefully();
+				}
 			}
 		} 
 		catch(Exception e)
@@ -1164,7 +1171,7 @@ public class WindGateway implements Runnable {
         ApplicationContext context = 
 	             new FileSystemXmlApplicationContext("conf/WindGateway.xml");
         if(context.containsBean("MsgPackLiteServer")) {
-        	msgPackLiteServer = (MsgPackLiteServer)context.getBean("MsgPackLiteServer");
+        	msgPackLiteServer = (MsgPackLiteServer)context.getBean("MsgPackLiteServer");        	
         }
         instance = (WindGateway)context.getBean("WindGateway");
         Thread serverThread = new Thread(instance,"windDataServer");
