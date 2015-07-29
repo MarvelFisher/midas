@@ -106,14 +106,14 @@ public class LumpSumManager implements IPlugin {
         eventProcessor.uninit();
     }
 
-    private void processClosePositionExecution(String symbol, OpenPosition oPosition) throws PositionException {
-        Execution exec = createClosePositionExec(symbol,
-                oPosition.getQty(), oPosition.getUser(), oPosition.getAccount(), "");
+    private void processClosePositionExecution(String symbol, OpenPosition oPosition, double qty) throws PositionException {
+    	Execution exec = createClosePositionExec(symbol,
+        		qty, oPosition.getUser(), oPosition.getAccount(), "");
         if (exec == null) {
             log.error("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount());
             return;
         } else
-            log.info(exec.toString());
+            log.info("processClosePositionExecution: " + exec.toString());
         positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
@@ -126,57 +126,77 @@ public class LumpSumManager implements IPlugin {
         List<String> routers = accountKeeper.getAllRouters();
         for (String router : routers) {
             try {
-                Map<String, List<OpenPosition>> pMap = new HashMap<>(); // symbol/positions
+                Map<String, List<OpenPosition>> totalPositions = new HashMap<>(); // symbol/positions
+                Map<String, OpenPosition> originPositions = new HashMap<>();
                 List<Account> accounts = accountKeeper.getAccountsByRouter(router);
                 for (Account account : accounts) {
                     AccountSetting setting = accountKeeper.getAccountSetting(account.getId());
                     if (!setting.isLiveTrading())
                         continue;
-                    List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
-                    for (OpenPosition position : positions) {
-                        List<OpenPosition> pList = pMap.get(position.getSymbol());
+                    List<OpenPosition> accountPositions = positionKeeper.getOverallPosition(account);
+                    for (OpenPosition accountPosition : accountPositions) {
+                    	originPositions.put(accountPosition.getAccount() + accountPosition.getSymbol(), accountPosition.clone());
+                        List<OpenPosition> pList = totalPositions.get(accountPosition.getSymbol());
                         if (pList == null) {
                             pList = new ArrayList<>();
-                            pMap.put(position.getSymbol(), pList);
-                            pList.add(position);
+                            totalPositions.put(accountPosition.getSymbol(), pList);
+                            pList.add(accountPosition);
                             continue;
                         }
 
-                        Double positionQty = position.getQty();
+                        Double positionQty = accountPosition.getQty();
                         OpenPosition p = pList.get(0);
 
                         if (p == null || PriceUtils.Equal(Math.signum(positionQty), Math.signum(p.getQty()))) {
-                            pList.add(position);
+                            pList.add(accountPosition);
                         } else {
                             List<OpenPosition> removes = new ArrayList<>();
                             double remain;
+                            boolean closed = false;
                             for (OpenPosition o : pList) {
                                 double qty = o.getQty();
                                 remain = Math.abs(qty) - Math.abs(positionQty);
                                 if (remain > 0) {
-                                    o.setQty(o.getQty() - positionQty);
-                                    processClosePositionExecution(position.getSymbol(), position);
+                                    o.setQty(o.getQty() + positionQty);
+                                    processClosePositionExecution(accountPosition.getSymbol(), accountPosition, accountPosition.getQty());
+                                    closed = true;
                                     break;
                                 } else if (remain < 0) {
-                                    positionQty -= qty;
+                                    positionQty += qty;
                                     removes.add(o);
                                 } else {
-                                    processClosePositionExecution(position.getSymbol(), position);
+                                    processClosePositionExecution(accountPosition.getSymbol(), accountPosition, accountPosition.getQty());
                                     removes.add(o);
+                                    closed = true;
                                     break;
                                 }
                             }
+                            
+                            if(!closed){
+//                            	double minus = position.getQty() - positionQty;
+//                            	processClosePositionExecution(position.getSymbol(), position, minus);
+                            	accountPosition.setQty(positionQty);
+                            	pList.add(accountPosition);
+                            }
 
                             for (OpenPosition remove : removes) {
-                                processClosePositionExecution(remove.getSymbol(), remove);
+                            	OpenPosition oPosition = originPositions.get(remove.getAccount() + remove.getSymbol());
+                                processClosePositionExecution(oPosition.getSymbol(), oPosition, oPosition.getQty());
                                 pList.remove(remove);
                             }
                         }
                     }
                 }
 
-                for (List<OpenPosition> positions : pMap.values()) {
+                for (List<OpenPosition> positions : totalPositions.values()) {
                     for (OpenPosition position : positions) {
+                    	OpenPosition oPosition = originPositions.get(position.getAccount() + position.getSymbol());
+                    	if(!PriceUtils.Equal(position.getQty(), oPosition.getQty()))
+                    		processClosePositionExecution(oPosition.getSymbol(), oPosition, oPosition.getQty() - position.getQty());
+                    	
+                    	log.info("process close position, account: " 
+                    			+ position.getAccount() + ", symbol: " + position.getSymbol() + ", Qty: " + position.getQty());
+                    	
                         businessManager.processClosePosition(null, null, null, OrderReason.DayTradingMode,
                                 accountKeeper.getAccount(position.getAccount()), position.getSymbol(),
                                 position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy, Math.abs(position.getQty()));
