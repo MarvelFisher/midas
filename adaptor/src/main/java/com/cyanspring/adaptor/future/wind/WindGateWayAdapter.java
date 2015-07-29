@@ -69,7 +69,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteExt
     static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<>(); //SaveIndexMarketSession
     static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<>(); // SaveSymbolRule
-    static ConcurrentHashMap<String, String> commodityBySymbolMap = new ConcurrentHashMap<>(); //Save Commodity
     HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<>(); //calculate dataTimeStat
 
     RequestThread thread = null;

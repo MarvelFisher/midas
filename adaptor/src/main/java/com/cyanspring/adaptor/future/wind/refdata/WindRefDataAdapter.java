@@ -75,7 +75,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     protected
     @Resource(name = "refDataFutureChinaHashMap")
     HashMap<RefDataField, Object> refDataFCHashMap = new HashMap<>();
-    private HashMap<String, WindBaseDBData> windBaseDBDataHashMap;
+    public static HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
     static ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
     static ConcurrentHashMap<String, RefData> refDataHashMap = new ConcurrentHashMap<>();
     protected WindDataParser windDataParser = new WindDataParser();
@@ -203,32 +203,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         if (thread != null) {
             thread.addRequest(objReq);
         }
-    }
-
-    @Override
-    public void init() throws Exception {
-        isAlive = true;
-        serverRetryCount = 0;
-        dbRetryCount = 0;
-        instance = this;
-        //connect WindSyn DB
-        windBaseDBDataHashMap.clear();
-        windBaseDBDataHashMap = getWindBaseDBData();
-        while ((windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0)
-                && dbRetryCount <= WindRefDataAdapter.WINDBASEDB_RETRY_COUNT) {
-            windBaseDBDataHashMap = getWindBaseDBData();
-            dbRetryCount++;
-        }
-        if(windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0){
-            //getData from file
-            windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
-        }else{
-            saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
-        }
-        //connect WindGW
-        initReqThread();
-        RequestMgr.instance().init();
-        addReqData(new Integer(0));
     }
 
     public void closeNetty() {
@@ -403,6 +377,33 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         }
     }
 
+
+    @Override
+    public void init() throws Exception {
+        isAlive = true;
+        serverRetryCount = 0;
+        dbRetryCount = 0;
+        instance = this;
+        //connect WindSyn DB
+        windBaseDBDataHashMap.clear();
+        windBaseDBDataHashMap = getWindBaseDBData();
+        while ((windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0)
+                && dbRetryCount <= WindRefDataAdapter.WINDBASEDB_RETRY_COUNT) {
+            windBaseDBDataHashMap = getWindBaseDBData();
+            dbRetryCount++;
+        }
+        if(windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0){
+            //getData from file
+            windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
+        }else{
+            saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
+        }
+        //connect WindGW
+        initReqThread();
+        RequestMgr.instance().init();
+        addReqData(new Integer(0));
+    }
+
     @Override
     public void uninit() {
         isAlive = false;
@@ -412,6 +413,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         codeTableIsProcessEnd = false;
         refDataHashMap.clear();
         codeTableDataBySymbolMap.clear();
+        windBaseDBDataHashMap.clear();
     }
 
     @Override
@@ -420,11 +422,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         //Wait CodeTable Process
         log.debug("wait codetable process");
         try {
-            if (serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
-                while (!codeTableIsProcessEnd) {
+                while (!codeTableIsProcessEnd && serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
                     TimeUnit.SECONDS.sleep(1);
                 }
-            }
         } catch (InterruptedException e) {
         }
         //send RefData Listener
@@ -575,7 +575,4 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         this.basicDataSource = basicDataSource;
     }
 
-    public void setWindBaseDBDataHashMap(HashMap<String, WindBaseDBData> windBaseDBDataHashMap) {
-        this.windBaseDBDataHashMap = windBaseDBDataHashMap;
-    }
 }

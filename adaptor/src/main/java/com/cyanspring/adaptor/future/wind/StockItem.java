@@ -3,6 +3,8 @@ package com.cyanspring.adaptor.future.wind;
 import com.cyanspring.adaptor.future.wind.data.AbstractWindDataParser;
 import com.cyanspring.adaptor.future.wind.data.DataTimeStat;
 import com.cyanspring.adaptor.future.wind.data.StockData;
+import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
+import com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
@@ -45,6 +47,9 @@ public class StockItem implements AutoCloseable {
     private long buyTurnover = 0;
     private long sellTurnover = 0;
     private long unclassifiedTurnover = 0;
+    private long freeshares = 0;
+    private long totalshares = 0;
+    private double peRatio = 0;
 
     public static StockItem getItem(String symbolId, boolean enableCreateNew) {
 
@@ -97,6 +102,7 @@ public class StockItem implements AutoCloseable {
 
         String symbolId = stockData.getWindCode();
         StockItem item = getItem(symbolId, true);
+        WindBaseDBData windBaseDBData = WindRefDataAdapter.windBaseDBDataHashMap.get(symbolId);
 
         //Get MarketSession
         String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
@@ -320,6 +326,28 @@ public class StockItem implements AutoCloseable {
             item.status = status;
             quoteExtend.put(QuoteExtDataField.STATUS.value(), status);
             quoteExtendIsChange = true;
+        }
+
+        //get from Wind Base DB
+        if(windBaseDBData != null) {
+            long freeshares = windBaseDBData.getFreeShares();
+            if (freeshares != item.freeshares) {
+                item.freeshares = freeshares;
+                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), freeshares);
+                quoteExtendIsChange = true;
+            }
+            long totalshares = windBaseDBData.getTotalShares();
+            if (totalshares != item.totalshares) {
+                item.totalshares = totalshares;
+                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(), totalshares);
+                quoteExtendIsChange = true;
+            }
+            double peRatio = windBaseDBData.getPERatio();
+            if (peRatio != item.peRatio) {
+                item.peRatio = peRatio;
+                quoteExtend.put(QuoteExtDataField.PERATIO.value(), peRatio);
+                quoteExtendIsChange = true;
+            }
         }
 
         //Ceil,Floor,preClose must together send

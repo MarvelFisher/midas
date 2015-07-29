@@ -21,6 +21,15 @@ public class QuoteExtendCleaner implements IQuoteExtendCleaner{
         if(quoteExtend.fieldExists(QuoteExtDataField.OPENINTEREST.value())){
             quoteExtend.put(QuoteExtDataField.OPENINTEREST.value(),0);
         }
+        if(quoteExtend.fieldExists(QuoteExtDataField.FREESHARES.value())){
+            quoteExtend.put(QuoteExtDataField.FREESHARES.value(),0);
+        }
+        if(quoteExtend.fieldExists(QuoteExtDataField.TOTOALSHARES.value())){
+            quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),0);
+        }
+        if(quoteExtend.fieldExists(QuoteExtDataField.PERATIO.value())){
+            quoteExtend.put(QuoteExtDataField.PERATIO.value(),0);
+        }
         quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(),Clock.getInstance().now());
         return quoteExtend;
     }
