@@ -138,7 +138,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			byte flag = positionRecord.holdQuantity(symbol, order.getSide().isBuy(), order.getQuantity());
 			order.put(OrderField.FLAG.value(), flag);
 			proxy.newOrder(ordRef, order);
-			log.info("Send Order: " + ordRef + "," + TraderHelper.readCombOffsetFlag(flag));
+			log.info("Send Order: " + order.getId() + ", " + ordRef + ", " + TraderHelper.readCombOffsetFlag(flag));
 		}
 
 		@Override
