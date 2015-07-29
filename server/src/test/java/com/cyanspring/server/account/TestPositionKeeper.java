@@ -324,7 +324,7 @@ public class TestPositionKeeper {
 		}
 
 		@Override
-		public void saveRefDataList(List<RefData> refDataList) {
+		public void injectRefDataList(List<RefData> refDataList) {
 
 		}
 

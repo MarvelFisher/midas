@@ -1,5 +1,12 @@
 package com.cyanspring.common.staticdata;
 
+import com.cyanspring.common.Default;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
+import com.cyanspring.common.staticdata.fu.IRefDataStrategy;
+import com.cyanspring.common.staticdata.fu.MappingData;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,13 +18,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.cyanspring.common.Default;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
-import com.cyanspring.common.staticdata.fu.IRefDataStrategy;
-import com.cyanspring.common.staticdata.fu.MappingData;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataFactory extends RefDataService {
 
@@ -114,8 +114,8 @@ public class RefDataFactory extends RefDataService {
     }
 
     @Override
-    public void saveRefDataList(List<RefData> refDataList) {
-        saveRefDataToFile(refDataFile, refDataList);
+    public void injectRefDataList(List<RefData> refDataList) {
+        this.refDataList = refDataList;
     }
 
     @Override

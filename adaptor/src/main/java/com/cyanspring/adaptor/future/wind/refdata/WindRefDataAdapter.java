@@ -415,7 +415,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         codeTableIsProcessEnd = false;
         refDataHashMap.clear();
         codeTableDataBySymbolMap.clear();
-        windBaseDBDataHashMap.clear();
     }
 
     @Override
@@ -432,7 +431,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         //send RefData Listener
         if (serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
             log.debug("get RefData from WindGW");
-            listener.onRefData(new ArrayList<RefData>(refDataHashMap.values()));
+            List<RefData> refDataList = new ArrayList<RefData>(refDataHashMap.values());
+            saveListToFile(refDataFile, refDataList); //Save RefData File
+            listener.onRefData(refDataList);
         } else {
             log.debug("get RefData from RefDataFile = " + refDataFile);
             List<RefData> refDataList = getListFromFile(refDataFile);
