@@ -403,7 +403,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	channel.writeAndFlush(map);
     }
     
-    public static void sendCodeTablePacketArray(Channel channel,ArrayList<HashMap<Integer,Object>>packetArray) {
+    public static void sendPacketArray(Channel channel,ArrayList<HashMap<Integer,Object>>packetArray) {
 		HashMap<Integer,Object> map = new HashMap<Integer,Object>();
 		map.put(FDTFields.PacketType,FDTFields.PacketArray);
 		map.put(FDTFields.ArrayOfPacket,packetArray);
@@ -436,13 +436,15 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	if(market == null) {    	
 			String logstr = "Missing Market while request Code Table : from " + channel.remoteAddress();
 			System.out.println(logstr);
-			log.warn(logstr);    		
+			log.warn(logstr); 
+			return;
     	}
     	ConcurrentHashMap<String,TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
     	if(lst == null || lst.size() == 0) {    	
 			String logstr = "No symbol at market : " + market + " , request from : " + channel.remoteAddress();
 			System.out.println(logstr);
-			log.warn(logstr);    		
+			log.warn(logstr);  
+			return;
     	}
 
     		ArrayList<HashMap<Integer,Object>>packetArray = new ArrayList<HashMap<Integer,Object>>();
@@ -459,14 +461,13 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	        map = codeToMap(code);
     	        map.put(FDTFields.SerialNumber, it.hasNext() ? i : -i);
     			packetArray.add(map);
-    			if(i % 100 == 0) {
-    				sendCodeTablePacketArray(channel,packetArray);
+    			if(i % maxMsgPackCount == 0) {
+    				sendPacketArray(channel,packetArray);
     				packetArray.clear();
-    				i = 0;
     			}    	   
     		}
     		if(packetArray.size() > 0) {
-				sendCodeTablePacketArray(channel,packetArray);
+				sendPacketArray(channel,packetArray);
 				packetArray.clear();
     		}
   	
@@ -497,7 +498,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     }
            
     public static HashMap<Integer, Object> getFutureData(String symbol) {    
-    	TDF_FUTURE_DATA data = WindGateway.mapFutureData.get(symbol);
+    	TDF_FUTURE_DATA data = WindGateway.mapFutureData.get(symbol.toUpperCase()); // 因為 DCE SHF 註冊的時候要用小寫商品代碼,但是 Wind 回復大寫商品代碼
     	if(data == null) {    	
     		return null;
     	}
@@ -513,7 +514,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     }
        
     public static HashMap<Integer, Object> getIndexData(String symbol) {    
-    	TDF_INDEX_DATA data = WindGateway.mapIndexData.get(symbol.toUpperCase());  // 因為 DCE SHF 註冊的時候要用小寫商品代碼,但是 Wind 回復大寫商品代碼 
+    	TDF_INDEX_DATA data = WindGateway.mapIndexData.get(symbol);   
     	if(data == null) {    	
     		return null;
     	}

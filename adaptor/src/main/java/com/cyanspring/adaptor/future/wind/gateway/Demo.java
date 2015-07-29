@@ -48,16 +48,18 @@ public class Demo {
 	ConcurrentLinkedQueue<WindRequest> requestQueue = new ConcurrentLinkedQueue<WindRequest>();
 	boolean bServerReady = false;
 	boolean dedicatedWindThread = false;
+	int iConnectionID = 0;
 	
 	ConcurrentLinkedQueue<TDF_MSG> transactionQueue = new ConcurrentLinkedQueue<TDF_MSG>();
+	ConcurrentLinkedQueue<TDF_MSG> futureQueue = new ConcurrentLinkedQueue<TDF_MSG>();
 	ConcurrentLinkedQueue<TDF_MSG> quotationQueue = new ConcurrentLinkedQueue<TDF_MSG>();
-	Thread trdQuotation,trdTransaction;
+	Thread trdQuotation,trdTransaction,trdFuture;
 	
 	
 	public int getPort() {
 		return this.port;
 	}
-	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d) {
+	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d , int cid) {
 		this.ip = ip;
 		this.port = port;
 		this.username = username;
@@ -67,11 +69,14 @@ public class Demo {
 		this.openTypeFlags = typeFlags;
 		this.quitFlag = true;
 		this.dedicatedWindThread = d;
+		this.iConnectionID = cid;
 		
 		if(d) {
 			trdQuotation = new Thread( new MsgProcessor(windGateway,quotationQueue),"ProcessQuotation");			
+			trdFuture    = new Thread( new MsgProcessor(windGateway,futureQueue),"ProcessFutures");
 			trdTransaction = new Thread( new MsgProcessor(windGateway,transactionQueue),"ProcessTransaction");
 			trdQuotation.start();
+			trdFuture.start();
 			trdTransaction.start();
 		}
 
@@ -100,14 +105,16 @@ public class Demo {
 		setting.setMarkets(openMarket);
 		setting.setDate(openData);
 		setting.setTime(openTime);
+		requestQueue.clear();
 		setting.setSubScriptions(subscription.toString());
 		setting.setTypeFlags(openTypeFlags);
-		setting.setConnectionID(0);
+		setting.setConnectionID(iConnectionID);
 		
-		log.info("try to connect : " + this.ip + " " + this.port );
+		log.info("try to connect : " + this.ip + " " + this.port + " , Connction id : " + iConnectionID);
 		int err = client.open(setting);
 		if (err == TDF_ERR.TDF_ERR_SUCCESS) {
 			this.quitFlag = false;
+			log.info("Connected , subscription : " + subscription.toString());			
 		}		
 		else
 		{
@@ -134,9 +141,10 @@ public class Demo {
 		setting.setMarkets(openMarket);
 		setting.setDate(openData);
 		setting.setTime(openTime);
+		requestQueue.clear();
 		setting.setSubScriptions(subscription.toString());
 		setting.setTypeFlags(openTypeFlags);
-		setting.setConnectionID(0);
+		setting.setConnectionID(iConnectionID);
 		
 		TDF_PROXY_SETTING proxySetting = new TDF_PROXY_SETTING();
 		proxySetting.setProxyHostIp(proxy_ip);
@@ -161,7 +169,7 @@ public class Demo {
 			if(subscription.indexOf(wr.strInfo) < 0)
 			{
 				subscription.append(";" + wr.strInfo);
-				requestQueue.add(wr);
+				requestQueue.add(wr);								
 			}
 		}
 	}
@@ -192,6 +200,7 @@ public class Demo {
 				if(wr.reqId == WindRequest.Subscribe)
 				{
 					client.setSubscription(wr.strInfo, SUBSCRIPTION_STYLE.SUBSCRIPTION_ADD);
+					log.info("Add Subscription : " + wr.strInfo);
 				}
 			}
 			return true;
@@ -206,7 +215,6 @@ public class Demo {
 
 		while (!quitFlag) {
 			
-			processRequest();
 			TDF_MSG msg = client.getMessage(10);
 			if (msg==null) {
 				while(processRequest()) ;
@@ -310,7 +318,7 @@ public class Demo {
 			case TDF_MSG_ID.MSG_DATA_INDEX:
 				log.debug("INDEX DATA Count : " + msg.getAppHead().getItemCount());
 				if(dedicatedWindThread) {
-					quotationQueue.add(msg);
+					futureQueue.add(msg);
 					break;
 				}				
 				if(windGateway != null) {
@@ -333,7 +341,7 @@ public class Demo {
 			case TDF_MSG_ID.MSG_DATA_FUTURE:
 				log.debug("FUTURE DATA Count : " + msg.getAppHead().getItemCount());
 				if(dedicatedWindThread) {
-					quotationQueue.add(msg);
+					futureQueue.add(msg);
 					break;
 				}				
 				if(windGateway != null) {
@@ -435,7 +443,7 @@ public class Demo {
 		// Proxy Mode
 		//Demo d = new Demo("10.100.7.18", 10001, "dev_test", "dev_test", 
 		//			"10.100.6.125", 3128, "", "");
-		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false);
+		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false,0);
 		DataHandler dh = new DataHandler (demo);
 		Thread t1 = new Thread(dh);
 		t1.start();	
@@ -571,7 +579,7 @@ class MsgProcessor implements Runnable {
 				data = TDFClient.getMessageData(msg, i); 
 				windGateway.receiveMarketData(data.getMarketData());						
 			}			
-			windGateway.flushAllClientMsgPack();								
+								
 							
 			break;
 		case TDF_MSG_ID.MSG_DATA_INDEX:			
@@ -579,31 +587,22 @@ class MsgProcessor implements Runnable {
 				data = TDFClient.getMessageData(msg, i);
 				windGateway.receiveIndexData(data.getIndexData());				
 			}	
-			windGateway.flushAllClientMsgPack();
 							
 			break;
 		case TDF_MSG_ID.MSG_DATA_FUTURE:
 			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-				data = TDFClient.getMessageData(msg, i);
-				if(windGateway != null) {						
-					windGateway.receiveFutureData(data.getFutureData());
-				}						
-			}					
-			if(windGateway != null) {
-				windGateway.flushAllClientMsgPack();
-			}								
+				data = TDFClient.getMessageData(msg, i);						
+				windGateway.receiveFutureData(data.getFutureData());					
+			}				
+											
 			break;
 		case TDF_MSG_ID.MSG_DATA_TRANSACTION:
 			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-				data = TDFClient.getMessageData(msg, i);
-				if(windGateway != null) {						
-					windGateway.receiveTransaction(data.getTransaction());
-				}							
-			}
-			if(windGateway != null) {
-				windGateway.flushAllClientMsgPack();
+				data = TDFClient.getMessageData(msg, i);					
+				windGateway.receiveTransaction(data.getTransaction());										
 			}
 			break;						
 		}		
+		windGateway.flushAllClientMsgPack();
 	}
 }

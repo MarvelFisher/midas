@@ -10,7 +10,7 @@
 		<property name="dedicatedWindThread" value="true"></property>
 		
     	<!-- Wind Merchandise Server , 若 IP 設為空字串,就不會登入 Wind -->
-    	<property name="windMFServerIP" value=""/><!-- "114.80.154.34"/> -->     
+    	<property name="windMFServerIP" value="114.80.154.34"/><!-- "114.80.154.34"/> -->     
     	<property name="windMFServerPort" value="10050"/>  <!-- 10050 -->	
     	<property name="windMFServerUserId" value="TD1003871001"/> <!-- TD1001888002 -->
     	<property name="windMFServerUserPwd" value="77022324"/>  <!-- 35328058 -->
@@ -26,7 +26,7 @@
 		-->		
     	
     	<!-- Wind Stock / Index Future Server , 若 IP 設為空字串,就不會登入 Wind -->
-    	<property name="windSFServerIP" value="114.80.154.34"/><!-- "114.80.154.34"/> -->         
+    	<property name="windSFServerIP" value=""/><!-- "114.80.154.34"/> -->         
     	<property name="windSFServerPort" value="10051"/> 	
     	<property name="windSFServerUserId" value="TD1004012003"/> <!-- TD1004012005 --> <!-- TD1004012004 -->
     	<property name="windSFServerUserPwd" value="72221970"/> <!-- 13840269 --> <!-- 70173844 -->

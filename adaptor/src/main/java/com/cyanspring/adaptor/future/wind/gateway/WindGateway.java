@@ -56,11 +56,13 @@ public class WindGateway implements Runnable {
 	private int windMFServerPort = 10050;
 	private String windMFServerUserId = "TD1001888002";
 	private String windMFServerUserPwd = "35328058";
+	private int windMFConnectionID = 0;
 	
 	private String windSFServerIP = "114.80.154.34";
 	private int windSFServerPort = 10051;
 	private String windSFServerUserId = "TD1001888001";
 	private String windSFServerUserPwd = "62015725";
+	private int windSFConnectionID = 0;
 	
 	public static boolean cascading = false;
 	public static String upstreamIp = "202.55.14.140";
@@ -109,6 +111,12 @@ public class WindGateway implements Runnable {
 	public void setWindMFServerUserPwd(String pwd) {
 		this.windMFServerUserPwd = pwd;
 	}	
+	public int getWindMFConnectionID() {
+		return this.windMFConnectionID;
+	}
+	public void setWindMFConnectionID(int id) {
+		this.windMFConnectionID = id;
+	}	
 
 	public String getWindSFServerIP() {
 		return this.windSFServerIP;
@@ -136,7 +144,14 @@ public class WindGateway implements Runnable {
 	}
 	public void setWindSFServerUserPwd(String pwd) {
 		this.windSFServerUserPwd = pwd;
-	}			
+	}		
+	
+	public int getWindSFConnectionID() {
+		return this.windSFConnectionID;
+	}
+	public void setWindSFConnectionID(int id) {
+		this.windSFConnectionID = id;
+	}
 	
 	public boolean getCascading() {
 		return cascading;
@@ -1034,7 +1049,7 @@ public class WindGateway implements Runnable {
 			} else {
 				if(windMFServerIP != null && windMFServerIP != "")
 				{
-					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread);
+					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread,windMFConnectionID);
 					DataHandler dh = new DataHandler (demo);
 					t1 = new Thread(dh,"windMerchandise");
 					t1.start();
@@ -1045,7 +1060,7 @@ public class WindGateway implements Runnable {
 				
 				if(windSFServerIP != null && windSFServerIP != "")
 				{
-					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread);
+					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSFConnectionID);
 					DataHandler dhStock = new DataHandler (demoStock);
 					t1Stock = new Thread(dhStock,"windFutureAndStock");
 					t1Stock.start();
@@ -1133,9 +1148,9 @@ public class WindGateway implements Runnable {
 		String OS = System.getProperty("os.name").toLowerCase();
 		if (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 ) {
 			log.info("OS : " + OS);
-			System.load("libtdfapi_jni.so");
-			System.load("libWHNetWork.so");
-			System.load("libTDFAPI_v2.5.so");
+			System.loadLibrary("libtdfapi_jni.so");
+			System.loadLibrary("libWHNetWork.so");
+			System.loadLibrary("libTDFAPI_v2.5.so");
 		}
 		
 		String current = null;
