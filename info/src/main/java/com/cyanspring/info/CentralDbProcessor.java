@@ -571,10 +571,6 @@ public class CentralDbProcessor implements IPlugin
 						e.printStackTrace();
 					}
 				}
-//				for (SymbolChef chef : SymbolChefList)
-//				{
-//					chef.getAllChartPrice();
-//				}
 				getAllChartPrice();
 				log.debug("Retrieve Chart thread finish");
 				isRetrieving = false;
@@ -582,6 +578,10 @@ public class CentralDbProcessor implements IPlugin
 				if (isStartup)
 				{
 					sendCentralReady();
+				}
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.checkAllChartPrice();
 				}
 			}
 		});
@@ -658,7 +658,7 @@ public class CentralDbProcessor implements IPlugin
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, (-1) * (getHistoricalDataPeriod().get(strType) + 2));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		List<HistoricalPrice> historical;
+		Map<String, List<HistoricalPrice>> historical;
 		if (strType.equals("D") || strType.equals("W") || strType.equals("M"))
 		{
 			historical = getDbhnd().getTotalValue(market, strType, null);
@@ -668,18 +668,18 @@ public class CentralDbProcessor implements IPlugin
 			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
 		}
 		HashMap<String, List<HistoricalPrice>> subMap;
-		for (HistoricalPrice price : historical)
+		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())
 		{
-			if (retrieveMap.get(price.getSymbol()) == null)
+			if (retrieveMap.get(entry.getKey()) == null)
 			{
-				retrieveMap.put(price.getSymbol(), new HashMap<String, List<HistoricalPrice>>());
+				retrieveMap.put(entry.getKey(), new HashMap<String, List<HistoricalPrice>>());
 			}
-			subMap = retrieveMap.get(price.getSymbol());
+			subMap = retrieveMap.get(entry.getKey());
 			if (subMap.get(strType) == null)
 			{
 				subMap.put(strType, new ArrayList<HistoricalPrice>());
 			}
-			subMap.get(strType).add(price);
+			subMap.put(strType, entry.getValue());
 		}
 		return;
 	}

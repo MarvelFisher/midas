@@ -467,6 +467,20 @@ public class SymbolData implements Comparable<SymbolData>
 		log.debug("Retrieve chart data [" + strSymbol + "] finish");
 	}
 	
+	public void checkAllChartPrice()
+	{
+		log.info("Check chart data [" + strSymbol + "]");
+		String[] types = {"1","R","A","Q","H","6","T","D","W","M"};
+		for (String type : types)
+		{
+			if (getMapHistorical().get(type) == null)
+			{
+				getChartPrice(type);
+			}
+		}
+		log.info("Check chart data [" + strSymbol + "] finish");
+	}
+	
 	public void getChartPrice(String strType)
 	{
 		synchronized(getMapHistorical())
@@ -491,7 +505,7 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			log.debug(String.format("Retrieve chart data [%s,%s,%s,%d]", market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType)));
 			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, (-1) * (centralDB.getHistoricalDataPeriod().get(strType) + 2));
+			cal.add(Calendar.DATE, (-1) * (centralDB.getHistoricalDataPeriod().get(strType) + 30));
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			List<HistoricalPrice> historical = centralDB.getDbhnd().getCountsValue(
 					market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
@@ -499,14 +513,14 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] get %d", 
 						market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));
-				if(historical.size() < centralDB.getHistoricalDataCount().get(strType)) 
-				{
-					cal.add(Calendar.DATE, -30);
-					historical = centralDB.getDbhnd().getCountsValue(
-							market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
-					log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] lack of data, query again get %d", 
-							market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));					
-				}
+//				if(historical.size() < centralDB.getHistoricalDataCount().get(strType)) 
+//				{
+//					cal.add(Calendar.DATE, -30);
+//					historical = centralDB.getDbhnd().getCountsValue(
+//							market, strType, strSymbol, centralDB.getHistoricalDataCount().get(strType), sdf.format(cal.getTime()), true);
+//					log.debug(String.format("Retrieve chart data [%s,%s,%s,%d] lack of data, query again get %d", 
+//							market, strSymbol, strType, centralDB.getHistoricalDataCount().get(strType), historical.size()));					
+//				}
 				getMapHistorical().put(strType,  historical);
 			}
 		}
@@ -870,10 +884,10 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			getChartPrice(type);
 		}
-		int limit = (dataCount > getMapHistorical().get(type).size()) ? getMapHistorical().get(type).size() : dataCount;
+		int size = getMapHistorical().get(type).size();
+		int limit = (dataCount > size) ? size : dataCount;
 		listPrice = new ArrayList<HistoricalPrice>();
-		listPrice.addAll(getMapHistorical().get(type).subList(0, limit));
-		while(listPrice.contains(null)) listPrice.remove(null);
+		listPrice.addAll(getMapHistorical().get(type).subList(size - limit, size));
 		Collections.sort(listPrice);
 		
 		if (centralDB.getSessionType() == MarketSessionType.OPEN)
