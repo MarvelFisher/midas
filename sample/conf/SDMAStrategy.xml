@@ -34,6 +34,7 @@
 	</bean>
 
 	<bean id="sdmaPriceAnalyzer" class="com.cyanspring.sample.singleorder.sdma.SDMAPriceAnalyzer" scope="prototype">
+		<property name="aggressiveTicks" value="25"/>
 	</bean>
 	
 </beans>
