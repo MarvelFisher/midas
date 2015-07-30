@@ -3,6 +3,8 @@ package com.cyanspring.adaptor.future.wind.gateway;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,9 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	
 	private int bufLenMin = 0,bufLenMax = 0,blockCount = 0;
 	private long throughput = 0,msLastTime = 0,msDiff = 0;
+	
+	public static HashMap<String,HashMap<Integer,Object>> mapQuotation = new HashMap<String,HashMap<Integer,Object>>();
+	public static HashMap<String,HashMap<Integer,Object>> mapTransaction = new HashMap<String,HashMap<Integer,Object>>();
 	
 	public void channelActive(ChannelHandlerContext arg0) throws Exception {
 		
@@ -44,7 +49,8 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 
 	public void channelInactive(ChannelHandlerContext arg0) throws Exception {
 		ctx = null;
-
+		mapQuotation.clear();
+		mapTransaction.clear();
 	}
 	
 	public void channelRead(ChannelHandlerContext arg0, Object arg1)
@@ -122,6 +128,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		}
 	}
 	
+	
 	private void processData(HashMap<Integer,Object> in) {
 		
 		try {
@@ -149,6 +156,12 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				if(in.containsKey(FDTFields.WindSymbolCode)) {
 					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
 					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistrationTransaction(in, symbol);
+					HashMap<Integer,Object> mp = mapTransaction.get(symbol);
+					if(mp == null) {
+						mapTransaction.put(symbol, in);
+					} else {
+						mp.putAll(in);
+					}
 				}
 				break;
 			case FDTFields.WindIndexData :
@@ -157,6 +170,12 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				if(in.containsKey(FDTFields.WindSymbolCode)) {
 					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
 					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(in, symbol);
+					HashMap<Integer,Object> mp = mapQuotation.get(symbol);
+					if(mp == null) {
+						mapQuotation.put(symbol, in);
+					} else {
+						mp.putAll(in);
+					}					
 				}
 				break;
 			case FDTFields.WindHeartBeat :

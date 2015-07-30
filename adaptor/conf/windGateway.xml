@@ -51,7 +51,7 @@
     
 		<!--  Msg Pack Lite Cascading Configure -->    	
     	<property name="mpCascading" value="true"/>
-    	<property name="mpUpstreamIp" value="61.152.93.132"/>
+    	<property name="mpUpstreamIp" value="10.0.0.33"/> <!-- 61.152.93.132 -->
     	<property name="mpUpstreamPort" value="10048"/>   
     	
     	 	

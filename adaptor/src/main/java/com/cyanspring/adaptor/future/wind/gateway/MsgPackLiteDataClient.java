@@ -35,7 +35,7 @@ public class MsgPackLiteDataClient implements Runnable {
 	
 	private void runNetty() {
 		log.debug("Run Netty Message Pack Lite Data Client");
-		EventLoopGroup group = new NioEventLoopGroup(2);
+		EventLoopGroup group = new NioEventLoopGroup(4);
 		ChannelFuture f;
 		Bootstrap bootstrap = new Bootstrap()
 		.group(group)

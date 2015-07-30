@@ -120,44 +120,45 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		StringBuilder subscribeSF = null , subscribeMF = null;
 		for(String str : sym_arr)
 		{
-			map = getMarketData(str);
-			if(map == null)
-			{
-				map = getFutureData(str);
-				if(map == null)
-				{
-					map = getIndexData(str);
-					if(map == null)
-					{	
-						if(WindGateway.mpCascading) {
-							if(bTransaction == false) { // 如果是要求逐筆成交,就透過 SubsTrans 來訂閱,就同時會收到 quote 與 transaction
-								if(isMF) {
-									if(subscribeMF == null) {
-										subscribeMF = new StringBuilder("API=SUBSCRIBEMF|Symbol=" + str);
-									} else {
-										subscribeMF.append(";" + str);
-									}
-									//MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBEMF|Symbol=" + str,true));
-								} else {
-									if(subscribeSF == null) {
-										subscribeSF = new StringBuilder("API=SUBSCRIBE|Symbol=" + str);
-									} else {
-										subscribeSF.append(";" + str);
-									}									
-									//MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SUBSCRIBE|Symbol=" + str,true));
-								}
-							}
-						} else {
-							if(isMF) {
-								WindGateway.instance.requestSymbolMF(str);
+			if(WindGateway.mpCascading) {
+				map = MsgPackLiteDataClientHandler.mapQuotation.get(str);
+				if(map == null) {
+					if(bTransaction == false) { // 如果是要求逐筆成交,就透過 SubsTrans 來訂閱,就同時會收到 quote 與 transaction
+						if(isMF) {
+							if(subscribeMF == null) {
+								subscribeMF = new StringBuilder("API=SUBSCRIBEMF|Symbol=" + str);
 							} else {
-								WindGateway.instance.requestSymbol(str);
-							}
-							log.debug("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());
+								subscribeMF.append(";" + str);
+							}							
+						} else {
+							if(subscribeSF == null) {
+								subscribeSF = new StringBuilder("API=SUBSCRIBE|Symbol=" + str);
+							} else {
+								subscribeSF.append(";" + str);
+							}																
 						}
+						log.debug("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString()); 
+					}					
+				}
+			} else {
+    			map = getMarketData(str);
+    			if(map == null)
+    			{
+    				map = getFutureData(str);
+    				if(map == null)
+    				{
+    					map = getIndexData(str);    			
+    				}    				
+    			}
+    			if(map == null) {
+					if(isMF) {
+						WindGateway.instance.requestSymbolMF(str);
+					} else {
+						WindGateway.instance.requestSymbol(str);
 					}
-				}						
-			}
+					log.debug("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());    				
+    			}
+			}								
 						
 			if(bTransaction == false) {
 				cnt = lst.addMsgPack(map);
@@ -189,7 +190,11 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		HashMap<Integer, Object> map;
 		for(String str : sym_arr)
 		{
-			map = getTransaction(str);
+	    	if(WindGateway.mpCascading) {
+	    		map =  MsgPackLiteDataClientHandler.mapTransaction.get(str);
+	    	} else {			
+	    		map = getTransaction(str);
+	    	}
 			if(map == null) {
 				if(WindGateway.mpCascading) { //) && registrationGlobal.hadTransaction(str) == false) {
 					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=SubsTrans|Symbol=" + str,true));	
@@ -203,8 +208,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			// 先加到  Global Register Symbol
 			registrationGlobal.addTransaction(str);								
 			// 加到 Client 的 Registration
-			if(lst.addTransaction(str) == false) {								
-				//log.info("Re-subscribe , Send Snapshot : " + str + " , from : " + channel.remoteAddress().toString());
+			if(lst.addTransaction(str) == false) { // 已存在,重複訂閱.								
+				log.info("Re-subscribe transaction , " + ((map == null) ? "Subscribe to server : " : "Send Snapshot : ") + str + " , from : " + channel.remoteAddress().toString());
 			}					
 		}   
 		if(lst.MsgPackArrayCount() > 0) {
@@ -234,7 +239,10 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				registrationGlobal.removeTransaction(symbol);
 				log.info("Remove transaction from registrationGlobal : " + symbol);
 				if(WindGateway.mpCascading) { 
-					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=UnSubsTrans|Symbol=" + symbol,true));	
+					MsgPackLiteDataClientHandler.sendRequest(addHashTail("API=UnSubsTrans|Symbol=" + symbol,true));
+					if(MsgPackLiteDataClientHandler.mapTransaction.containsKey(symbol)) {
+						MsgPackLiteDataClientHandler.mapTransaction.remove(symbol);
+					}
 				}					
 			}
 		}    	
