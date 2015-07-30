@@ -1,9 +1,11 @@
 package com.cyanspring.cstw.gui;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -11,7 +13,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.osgi.storage.url.reference.ReferenceInputStream;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,9 +27,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,6 @@ import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 
 public class GroupManagementDialog extends Dialog implements IAsyncEventListener{
@@ -68,31 +68,27 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	private String accountId;
 	private String ID = IdGenerator.getInstance().getNextID();
 	private UserGroup userGroup;
-//	private ArrayMap<String, Account> accounts = new ArrayMap<String, Account>();
 	private java.util.List<User> users = new ArrayList();
-//	private ArrayList <Account>accountList = new ArrayList<Account>();
 	private ArrayList <String>manageeList = new ArrayList<String>();
 	private ArrayList <String>nonManageeList = new ArrayList<String>();
-//	private ListViewer manageeListView;
-//	private ListViewer nonManageeListView;
 	private TableViewer manageeListView;
-	private Table manageeTable;
-	
+	private Table manageeTable;	
 	private TableViewer nonManageeListView;
 	private Table nonManageeTable;
+	private TableViewer messageTableView;
+	private Table messageTable;
+	private Stack <String> messageStack = new Stack<String>();
 	private Composite parent;
+	private Composite container;
 	private ReentrantLock displayLock = new ReentrantLock();
 	
-	
 	private final RGB PURPLE = new RGB(171,130,255);
-	private final RGB BLACK = new RGB(0,0,0);
 	private final RGB GREEN = new RGB(27,154,13);
 	private final RGB RED = new RGB(179,0,0);
 	private final Color RISK_MANAGER_COLOR = new Color(Display.getCurrent(), RED);
 	private final Color TRADER_COLOR = new Color(Display.getCurrent(), GREEN);
 	private final Color ADMIN_COLOR = new Color(Display.getCurrent(), PURPLE);
 
-	
 	protected GroupManagementDialog(Shell parentShell,String accountId,java.util.List<User> users) {
 		super(parentShell);
 		this.accountId = accountId;
@@ -114,6 +110,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		this.parent = parent;
 		Composite container = new Composite(parent, SWT.NONE);
+		this.container = container;
 		container.setLayout(new GridLayout(3, false));
 		container.getShell().setText("Managee Assign");
 		Label lblManagee = new Label(container, SWT.NONE);
@@ -189,6 +186,14 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		lblroleColor.setLayoutData(gdLblMessage4);
 		lblroleColor.setText("Role Color :");
 		
+		Label lbladminColor = new Label(container, SWT.NONE);
+		GridData gdLblMessage7 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage7.horizontalIndent = 1;
+		lbladminColor.setLayoutData(gdLblMessage7);
+		lbladminColor.setText("Admin");
+		lbladminColor.setForeground(ADMIN_COLOR);
+		
 		Label lblriskColor = new Label(container, SWT.NONE);
 		GridData gdLblMessage3 = new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 2, 1);
@@ -214,9 +219,42 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		Color red = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 		lblMessage.setForeground(red);
 		
+		
+		Label lblMsg = new Label(container, SWT.NONE);
+		GridData gdLblMessage5 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage5.horizontalIndent = 1;
+		lblMsg.setLayoutData(gdLblMessage5);
+		lblMsg.setText("Message :");
+		
+		messageTableView = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+		messageTable = messageTableView.getTable();
+		GridData gd_message = new GridData(SWT.FILL, SWT.CENTER, true,false, 3, 1);
+		gd_message.horizontalIndent = 1;	
+		gd_message.heightHint=70;
+		messageTable.setLayoutData(gd_message);
+		
 		sendGroupManageeRequestEvent();		
 		return super.createDialogArea(parent);
 	}
+	
+	private void pushMessage(final String msg){
+		log.info("push msg:{}",msg);
+		messageStack.push(msg);
+	}
+	
+	private void refreshMessage(){
+		container.getDisplay().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(!messageStack.isEmpty()){
+					messageTableView.add( messageStack.pop());
+				}			
+			}
+		});
+	}
+	
 	private void sendGroupManageeRequestEvent(){
 		GroupManageeRequestEvent event = new GroupManageeRequestEvent(ID, Business.getInstance().getFirstServer(), accountId);
 		sendRemoteEvent(event);
@@ -366,7 +404,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if( event instanceof GroupManageeReplyEvent){
-			log.info("receive GroupManageeReplyEvent");
+			
 			GroupManageeReplyEvent reply = (GroupManageeReplyEvent) event;
 			if(reply.isOk()){
 				this.userGroup = reply.getUserGroup();
@@ -386,49 +424,34 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 				showManageeList();
 			}
 		}else if(event instanceof CreateGroupManagementReplyEvent){
-			log.info("receive CreateGroupManagementReplyEvent");
+			
 			CreateGroupManagementReplyEvent reply = (CreateGroupManagementReplyEvent) event;
-			showConfirmResultOnLabel(reply.getResult());
-			if(!reply.isOk()){
-				pushMessageToLabel( getReplyErrorMessage(reply.getMessage()));
-			}
+			showConfirmResultOnLabel(reply.getResult(),true);
 			sendGroupManageeRequestEvent();
-						
 		}else if(event instanceof DeleteGroupManagementReplyEvent){
-			log.info("receive DeleteGroupManagementReplyEvent");
+			
 			DeleteGroupManagementReplyEvent reply = (DeleteGroupManagementReplyEvent) event;
-			showConfirmResultOnLabel(reply.getResult());
-			if(!reply.isOk()){
-				pushMessageToLabel( getReplyErrorMessage(reply.getMessage()));
-			}
+			showConfirmResultOnLabel(reply.getResult(),false);
 			sendGroupManageeRequestEvent();
 		}
 	}
+	
 	private String getReplyErrorMessage(String msg){
 		 MessageBean bean = MessageLookup.getMsgBeanFromEventMessage(msg);
 		 return bean.getLocalMsg();
 	}
 	
-	private void pushMessageToLabel(final String msg){
-		parent.getDisplay().asyncExec(new Runnable(){
-
-			@Override
-			public void run() {
-				lblMessage.setText(msg+"\n"+lblMessage.getText());	
-			}
-			
-		});
-	}
-	
-	private void showConfirmResultOnLabel(Map <GroupManagement,String> resultMap){
+	private void showConfirmResultOnLabel(Map <GroupManagement,String> resultMap, boolean isAdd){
 		Set <Entry<GroupManagement,String>> entrys =  resultMap.entrySet();
-		StringBuffer sb = new StringBuffer();
 		for(Entry <GroupManagement,String>entry:entrys){
 			GroupManagement gm = entry.getKey();
 			String msg = entry.getValue();
-			sb.append("Manager:"+gm.getManager()+" - Managee:"+gm.getManaged()+"  Message:"+msg+" \n");
+			if(isAdd)
+				pushMessage("Add Managee:"+gm.getManaged()+"  Result:"+msg);
+			else
+				pushMessage("Delete Managee:"+gm.getManaged()+"  Result:"+msg);
 		}
-		GUIUtils.showMessageBox(sb.toString(), parent);
+		refreshMessage();
 	}
 	
 	private void clearViewList(){
@@ -475,7 +498,6 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 					manageeListView.add(manageeList.toArray(new String[manageeList.size()]));
 					setRoleColor(nonManageeListView);
 					setRoleColor(manageeListView);
-
 				}			
 			});		
 		}finally{
@@ -498,7 +520,6 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 					break;
 				}
 			}
-			log.info("tempUser:{}",tempUser.getId());
 
 			if(null != tempUser){
 				if(UserRole.Admin.equals(tempUser.getRole())){

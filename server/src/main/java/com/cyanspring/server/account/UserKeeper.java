@@ -29,8 +29,8 @@ public class UserKeeper {
 	private ConcurrentHashMap<String, User> users = new ConcurrentHashMap<String, User>();	
 	private ConcurrentHashMap<String,UserGroup> userGroups = new ConcurrentHashMap<String,UserGroup>();
 
-	public final static String ADMIN = "admin";
-	public final static String ADMIN_PW= "FDTADMIN";
+	public String CSTWAdmin = "admin";
+	public String CSTWPassword= "FDTADMIN";
 	
 	public void createUser(User user) throws UserException {
 		String lowCases = user.getId().toLowerCase();
@@ -168,6 +168,7 @@ public class UserKeeper {
 		 */
 		if(!manageeGroup.isManageRecursive(manager)){
 			managerGroup.putManagee(manageeGroup);
+			manageeGroup.putManager(managerGroup);
 		}else{
 			throw new UserException("Manager:"+manager+", Managee:"+managee+" cause recursive management",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
@@ -192,11 +193,27 @@ public class UserKeeper {
 	public boolean isAdmin(String id, String pwd){
 		
 		if(StringUtils.hasText(id) && StringUtils.hasText(pwd) 
-				&& id.equals(UserKeeper.ADMIN) && pwd.equals(UserKeeper.ADMIN_PW)){
+				&& id.equals(getCSTWAdmin()) && pwd.equals(getCSTWPassword())){
 			return true;
 		}
 		
 		return false;
 	}
 
+	public String getCSTWAdmin() {
+		return CSTWAdmin;
+	}
+
+	public void setCSTWAdmin(String cSTWAdmin) {
+		CSTWAdmin = cSTWAdmin;
+	}
+
+	public String getCSTWPassword() {
+		return CSTWPassword;
+	}
+
+	public void setCSTWPassword(String cSTWPassword) {
+		CSTWPassword = cSTWPassword;
+	}
+	
 }

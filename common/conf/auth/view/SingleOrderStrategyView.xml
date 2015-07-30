@@ -22,9 +22,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="POPUP_FORCE_CANCEL"/> <!-- action id -->
 		<constructor-arg >					   <!-- permission:UserRole -->
-		<array>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>
 		

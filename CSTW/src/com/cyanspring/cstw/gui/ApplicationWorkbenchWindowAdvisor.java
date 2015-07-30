@@ -10,19 +10,19 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
+import org.eclipse.core.commands.Command;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +62,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		IWorkbenchPage page = window.getActivePage();
 		
 		try {
+			
 			//add listener
 			ViewAuthListener authListener =new  ViewAuthListener();
 			page.addPartListener(authListener);
@@ -94,6 +95,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 					
 				}
 			}
+			
+			ICommandService cmdService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+			Command command = cmdService.getCommand("CSTW.showUserCommand");
+			cmdService.refreshElements("CSTW.showUserCommand", null);
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

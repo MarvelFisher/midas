@@ -644,10 +644,13 @@ public class AccountPositionManager implements IPlugin {
 		log.info("Account:{}, old state:{} --> new state:{}",new Object[]{account.getId(),account.getState(),newState});
     	account.setState(newState);
     	ChangeAccountStateReplyEvent reply = new ChangeAccountStateReplyEvent(event.getKey(),event.getSender(),true,"",account);
-        try {
+		AccountUpdateEvent accountStateUpdate = new AccountUpdateEvent(account.getId(), null, account);
+       
+    	try {
 			eventManager.sendRemoteEvent(reply);
 			eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
-		} catch (Exception e) {
+	    	eventManager.sendRemoteEvent(accountStateUpdate);				
+    	} catch (Exception e) {
 			log.warn(e.getMessage(),e);
 		}
 	}
@@ -685,6 +688,8 @@ public class AccountPositionManager implements IPlugin {
 		    	account.setState(AccountState.ACTIVE);
 		        reply = new ChangeAccountStateReplyEvent(event.getKey()
 	            		,event.getSender(),isOk,message,account);
+				AccountUpdateEvent accountStateUpdate = new AccountUpdateEvent(account.getId(), null, account);
+		    	eventManager.sendRemoteEvent(accountStateUpdate);
 				eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, account));	
 	    	}
 
@@ -805,9 +810,10 @@ public class AccountPositionManager implements IPlugin {
     	if( null != userKeeper){
     		for(GroupManagement group : groupList){
     			try {
-					userKeeper.deleteGroup(group);;
+					userKeeper.deleteGroup(group);
 					successList.add(group);
-					resultMap.put(group, "SUCCESS");
+					resultMap.put(group, "OK");
+					log.info("delete group : {},{}",group.getManager(),group.getManaged());
 				} catch (UserException e) {
 					isOk = false;
 					resultMap.put(group, e.getLocalizedMessage());
@@ -848,7 +854,7 @@ public class AccountPositionManager implements IPlugin {
     			try {
 					userKeeper.createGroup(group);
 					successList.add(group);
-					resultMap.put(group, "SUCESS");
+					resultMap.put(group, "OK");
 				} catch (UserException e) {
 					isOk = false;
 					resultMap.put(group, e.getLocalizedMessage());
@@ -1016,7 +1022,7 @@ public class AccountPositionManager implements IPlugin {
     		}
     		
         	if( null != userGroup){	
-        		if(UserRole.Trader.equals(role)){
+        		if(UserRole.Trader.equals(role) || UserRole.Admin.equals(role)){
         			needClearAllManagee = true;
         		}
         	}
@@ -1032,6 +1038,10 @@ public class AccountPositionManager implements IPlugin {
 	    	if(isOk){
 	    		log.info("{} change User role:{} to {} needClearAllManagee:{}",new Object[]{user.getId(),user.getRole(),role,needClearAllManagee});
 	    		user.setRole(role);
+	    		
+	    		if( null != userGroup)
+	    			userGroup.setRole(role);
+	    		
 	    		PmUpdateUserEvent updateUserEvent = new PmUpdateUserEvent(PersistenceManager.ID,null,user); 
 	            eventManager.sendEvent(updateUserEvent);
 	    		if(needClearAllManagee && !userGroup.getNoneRecursiveManageeList().isEmpty()){

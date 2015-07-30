@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
+import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -30,6 +31,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		super(configurer);
 	}
 	
+	@Override
+	protected void fillCoolBar(ICoolBarManager coolBar) {
+		// TODO Auto-generated method stub
+		super.fillCoolBar(coolBar);
+	}
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
 		ServerStatusDisplay.getInstance().setStatusLineManager(statusLine);

@@ -18,6 +18,7 @@ public class UserGroup implements Serializable{
 	private static final Logger log = LoggerFactory.getLogger(UserGroup.class);
 	private String user;
 	private UserRole role;
+	private Set <UserGroup>managerSet = new HashSet();
 	private List <UserGroup>manageeList = Collections.synchronizedList(new ArrayList<UserGroup>());
 	public  static final int MAX_LEVEL = 10;
 
@@ -124,6 +125,21 @@ public class UserGroup implements Serializable{
 		return level;
 	}
 	
+	public void putManager(UserGroup userGroup){
+		managerSet.add(userGroup);	
+	}
+	
+	public boolean hasManager(){
+		if(managerSet.size()>0){
+			return true;
+		}
+		return false;
+	}
+	
+	public List<UserGroup> getManagerList(){
+		return new ArrayList<UserGroup>(managerSet);
+	}
+	
 	public void putManagee(UserGroup userGroup){
 			
 		if(manageeList.contains(userGroup)){
@@ -164,6 +180,11 @@ public class UserGroup implements Serializable{
 			gmList.add(gm);
 		}
 		return gmList;
+	}
+	
+	public void reset(){
+		manageeList.clear();
+		managerSet.clear();
 	}
 	
 	public void clearManageeList(){

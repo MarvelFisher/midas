@@ -193,13 +193,11 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		createChangeRoleAction = new Action() {
 			public void run() {
 				
-				TableItem item = getSelection(parent);
-				
+				TableItem item = getSelection(parent);			
 				if( null == item)
 					return ; 
 				
-				User user = findUser(item);
-				
+				User user = (User)item.getData();		
 				if( null == user){
 					showMessageBox("can't find user", parent);
 					return;
