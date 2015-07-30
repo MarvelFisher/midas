@@ -477,18 +477,20 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     @Override
     public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
         if (subscribeList == null || subscribeList.size() == 0) return;
-        StringBuffer sb;
-        List<List<String>> subscribeLists = chopped(subscribeList,WindDef.SUBSCRIBE_MAX_COUNT); //split subscribeList
-        for(int i=0; i< subscribeLists.size(); i++){
-            sb = new StringBuffer();
-            for(String symbol: subscribeLists.get(i)){
-                if(sb.toString().equals("")){
-                    sb.append(symbol);
-                }else{
-                    sb.append(";").append(symbol);
-                }
-                checkUserClient(symbol, listener, true);
+        StringBuffer sb = new StringBuffer();
+        for(String symbol : subscribeList){
+            if(sb.length()+symbol.length() >= WindDef.SUBSCRIBE_MAX_LENGTH){
+                ClientHandler.subscribe(sb.toString());
+                sb = new StringBuffer();
             }
+            if(sb.toString().equals("")){
+                sb.append(symbol);
+            }else{
+                sb.append(";").append(symbol);
+            }
+            checkUserClient(symbol, listener, true);
+        }
+        if(sb.length() > 0){
             ClientHandler.subscribe(sb.toString());
         }
     }
