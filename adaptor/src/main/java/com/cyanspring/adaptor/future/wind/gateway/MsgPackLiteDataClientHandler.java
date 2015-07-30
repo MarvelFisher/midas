@@ -34,6 +34,8 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		ctx = arg0;
 		//ctx.channel().write(MsgPackLiteDataServerHandler.addHashTail("API=ReqHeartBeat",true));
 		//ctx.channel().write(MsgPackLiteDataServerHandler.addHashTail("API=GetMarkets",true));
+		mapQuotation.clear();
+		mapTransaction.clear();		
 		MsgPackLiteDataServerHandler.resubscribe(ctx.channel());
 		ctx.channel().flush();
 		log.info(ctx.channel().localAddress().toString() + " Connected with data server : " + ctx.channel().remoteAddress().toString());
@@ -49,8 +51,6 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 
 	public void channelInactive(ChannelHandlerContext arg0) throws Exception {
 		ctx = null;
-		mapQuotation.clear();
-		mapTransaction.clear();
 	}
 	
 	public void channelRead(ChannelHandlerContext arg0, Object arg1)
