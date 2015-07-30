@@ -64,7 +64,7 @@ public class Demo {
 		this.port = port;
 		this.username = username;
 		this.password = password;
-		this.LastPrintTime = System.currentTimeMillis();
+		System.currentTimeMillis();
 		this.windGateway = gateWay;
 		this.openTypeFlags = typeFlags;
 		this.quitFlag = true;
@@ -128,7 +128,7 @@ public class Demo {
 			String proxy_ip, int proxy_port, String proxy_user, String proxy_pwd) {
 		
 		this.quitFlag = false;
-		this.LastPrintTime = System.currentTimeMillis();
+		System.currentTimeMillis();
 		TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
 		setting.setIp(ip);
 		setting.setPort( Integer.toString(port));
@@ -161,16 +161,34 @@ public class Demo {
 	}
 	
 	protected Boolean quitFlag;
-	private long LastPrintTime;
 	
 	public void AddRequest(WindRequest wr)
 	{
 		if(wr.reqId == WindRequest.Subscribe) {
+			StringBuilder sb = null;
+			String[] syms = wr.strInfo.split(";");
+			for(String sym : syms) {
+				if(subscription.indexOf(sym) < 0)
+				{
+					subscription.append(";" + sym);
+					if(sb == null) {
+						sb = new StringBuilder(sym);
+					} else {
+						sb.append(";" + sym);
+					}
+				}				
+			}
+			if(sb != null) {
+				wr.strInfo = sb.toString();
+				requestQueue.add(wr);	
+			}			
+			/*
 			if(subscription.indexOf(wr.strInfo) < 0)
 			{
 				subscription.append(";" + wr.strInfo);
 				requestQueue.add(wr);								
 			}
+			*/
 		}
 	}
 	
