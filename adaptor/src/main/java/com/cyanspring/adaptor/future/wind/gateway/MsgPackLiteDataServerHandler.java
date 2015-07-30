@@ -152,9 +152,17 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     			}
     			if(map == null) {
 					if(isMF) {
-						WindGateway.instance.requestSymbolMF(str);
+						if(subscribeMF == null) {
+							subscribeMF = new StringBuilder(str);
+						} else {
+							subscribeMF.append(";" + str);
+						}						
 					} else {
-						WindGateway.instance.requestSymbol(str);
+						if(subscribeSF == null) {
+							subscribeSF = new StringBuilder(str);
+						} else {
+							subscribeSF.append(";" + str);
+						}							
 					}
 					log.debug("Sysmbol not found! : " + str + " , subscription from : " + channel.remoteAddress().toString());    				
     			}
@@ -177,12 +185,22 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			channel.writeAndFlush(lst.flushMsgPack());
 		}
 		
-		if(subscribeSF != null) {
-			MsgPackLiteDataClientHandler.sendRequest(addHashTail(subscribeSF.toString(),true));
-		}		
-		if(subscribeMF != null) {
-			MsgPackLiteDataClientHandler.sendRequest(addHashTail(subscribeMF.toString(),true));
-		}		
+		if(WindGateway.mpCascading) {
+			if(subscribeSF != null) {
+				MsgPackLiteDataClientHandler.sendRequest(addHashTail(subscribeSF.toString(),true));
+			}		
+			if(subscribeMF != null) {
+				MsgPackLiteDataClientHandler.sendRequest(addHashTail(subscribeMF.toString(),true));
+			}
+		} else {
+			if(subscribeSF != null) {
+				WindGateway.instance.requestSymbol(subscribeSF.toString());
+			}		
+			if(subscribeMF != null) {
+				WindGateway.instance.requestSymbolMF(subscribeMF.toString());
+			}			
+		}
+			
     }
     
     private static void subscribeTransactions(Channel channel , String symbols,Registration lst) {
@@ -626,12 +644,17 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     }
     
     public static void sendMessagePackToAllClient(HashMap<Integer, Object> map) {
-    	for(Channel channel : channels.keySet()) {    	
-    		channel.writeAndFlush(map);
+    	if(map != null) {
+	    	for(Channel channel : channels.keySet()) {    	
+	    		channel.writeAndFlush(map);
+	    	}
     	}
     }
     
     public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol) {
+    	if(map == null) {
+    		return;
+    	}
 		Iterator<?> it = channels.entrySet().iterator();
 		int cnt;
 		while (it.hasNext()) {
@@ -651,6 +674,9 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     }
     
     public static void sendMssagePackToAllClientByRegistrationTransaction(HashMap<Integer, Object> map,String symbol) {
+    	if(map == null) {
+    		return;
+    	}
 		Iterator<?> it = channels.entrySet().iterator();
 		int cnt;
 		while (it.hasNext()) {

@@ -199,10 +199,11 @@ public class Demo {
 				requestQueue.remove(wr);
 				if(wr.reqId == WindRequest.Subscribe)
 				{
-					client.setSubscription(wr.strInfo, SUBSCRIPTION_STYLE.SUBSCRIPTION_ADD);
+					client.setSubscription(wr.strInfo, SUBSCRIPTION_STYLE.SUBSCRIPTION_ADD);				
 					log.info("Add Subscription : " + wr.strInfo);
-				}
+				}				
 			}
+
 			return true;
 		}		
 		return false;
@@ -301,7 +302,7 @@ public class Demo {
 					for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
 						data = TDFClient.getMessageData(msg, i); 
 						//PrintHelper.printDataMarket(data.getMarketData());
-						windGateway.receiveMarketData(data.getMarketData());						
+						windGateway.receiveMarketData(data.getMarketData());
 					}			
 					windGateway.flushAllClientMsgPack();					
 				}						
@@ -553,13 +554,12 @@ class MsgProcessor implements Runnable {
 		TDF_MSG msg;
 		while(!quitFlag) {
 			try {
-				while(queue.size() > 0) {
-					msg = queue.peek();
+				do {
+					msg = queue.poll();
 					if(msg != null) {					
-						queue.remove(msg);
 						ProcessMessage(msg);
 					}
-				}
+				} while(msg != null);
 				Thread.sleep(5);
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);				
@@ -576,7 +576,7 @@ class MsgProcessor implements Runnable {
 		switch(msg.getDataType()) {
 		case TDF_MSG_ID.MSG_DATA_MARKET:
 			for (int i=0; i<msg.getAppHead().getItemCount(); i++) {
-				data = TDFClient.getMessageData(msg, i); 
+				data = TDFClient.getMessageData(msg, i); 				
 				windGateway.receiveMarketData(data.getMarketData());						
 			}			
 								
