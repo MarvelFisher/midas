@@ -69,6 +69,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private DynamicTableViewer executionViewer;
 	private Composite topComposite;
 	private Menu menu;
+	private SetClosePriceDialog closePriceDialog;
 	
 	// display data
 	private Account account;
@@ -402,10 +403,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		return popClosePosition;
 	}
 	
-	private Action createPopManualClosePosition(){
+	private Action createPopManualClosePosition(final Composite parent){
 		popManualClosePosition = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
+				
 				try {
 					Table table = openPositionViewer.getTable();
 					TableItem items[] = table.getSelection();
@@ -413,10 +415,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						Object obj = item.getData();
 						if(obj instanceof OpenPosition){
 							OpenPosition position = (OpenPosition) obj;
-							String server = Business.getInstance().getFirstServer();
-							ManualClosePositionRequestEvent request = new ManualClosePositionRequestEvent(position.getAccount(), server,
-									position, IdGenerator.getInstance().getNextID());
-							Business.getInstance().getEventManager().sendRemoteEvent(request);
+							closePriceDialog = new SetClosePriceDialog(parent.getShell(), position);
+							closePriceDialog.open();
 						}
 					}
 				} catch (Exception e) {
@@ -439,7 +439,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		
 		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());		
 		menuMgr.add(createPopClosePosition());
-		menuMgr.add(createPopManualClosePosition());	
+		menuMgr.add(createPopManualClosePosition(parent));	
 		menu = menuMgr.createContextMenu(openPositionViewer.getTable());	
 		openPositionViewer.setBodyMenu(menu);
 	}

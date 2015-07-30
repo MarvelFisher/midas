@@ -7,12 +7,24 @@ public class ManualClosePositionRequestEvent extends RemoteAsyncEvent {
 
 	private OpenPosition openPosition;
 	private String txId;
-	public ManualClosePositionRequestEvent(String key, String receiver, OpenPosition openPosition, String txId) {
+	private double price;
+	public ManualClosePositionRequestEvent(String key, String receiver, OpenPosition openPosition, String txId, double price) {
 		super(key, receiver);
 		this.openPosition = openPosition;
 		this.txId = txId;
+		this.price = price;
 	}
 	
+	public double getPrice() {
+		return price;
+	}
+
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+
 	public OpenPosition getOpenPosition() {
 		return openPosition;
 	}
