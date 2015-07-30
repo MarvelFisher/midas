@@ -435,6 +435,7 @@ public class DBHandler
 			}
 			rs.close();
 			log.debug("Get Historical List size: " + retList.size());
+			Collections.sort(retList);
 			return retList;
 		} 
     	catch (SQLException e) 
