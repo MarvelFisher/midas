@@ -51,7 +51,7 @@ public class WindGateway implements Runnable {
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.WindGateway.class);
 	
-	private int serverPort;
+	private int serverPort;  // delimiter string packet port
 	private String windMFServerIP = "114.80.154.34";
 	private int windMFServerPort = 10050;
 	private String windMFServerUserId = "TD1001888002";
@@ -699,7 +699,7 @@ public class WindGateway implements Runnable {
 		{
 			map.put(FDTFields.YieldToMaturity,data.getYieldToMaturity());
 		}
-		if(dirty == null || dirty.getPrefix() != data.getPrefix())
+		if(dirty == null || dirty.getPrefix().compareTo(data.getPrefix()) != 0)
 		{
 			map.put(FDTFields.Prefix,data.getPrefix());
 		}
@@ -715,7 +715,10 @@ public class WindGateway implements Runnable {
 		{
 			map.put(FDTFields.SD2,data.getSD2());
 		}		
-		
+		if(map.size() == 2) {
+			log.debug("Data No Change : " + symbol);
+			return null;
+		}
 		return map;
 	}	
 	

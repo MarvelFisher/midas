@@ -7,8 +7,6 @@
     
     <bean id="WindGateway" class="com.cyanspring.adaptor.future.wind.gateway.WindGateway">
     
-		<property name="dedicatedWindThread" value="true"></property>
-		
     	<!-- Wind Merchandise Server , 若 IP 設為空字串,就不會登入 Wind -->
     	<property name="windMFServerIP" value=""/><!-- "114.80.154.34"/> -->     
     	<property name="windMFServerPort" value="10050"/>  <!-- 10050 -->	
@@ -28,8 +26,8 @@
     	<!-- Wind Stock / Index Future Server , 若 IP 設為空字串,就不會登入 Wind -->
     	<property name="windSFServerIP" value="114.80.154.34"/><!-- "114.80.154.34"/> -->         
     	<property name="windSFServerPort" value="10051"/> 	
-    	<property name="windSFServerUserId" value="TD1004012003"/> <!-- TD1004012005 --> <!-- TD1004012004 -->
-    	<property name="windSFServerUserPwd" value="72221970"/> <!-- 13840269 --> <!-- 70173844 -->
+    	<property name="windSFServerUserId" value="TD1003871003"/> <!-- TD1004012003 --> <!-- TD1004012005 --> <!-- TD1004012004 -->
+    	<property name="windSFServerUserPwd" value="52480886"/> <!-- 72221970 --> <!-- 13840269 --> <!-- 70173844 -->
     	<property name="stockTypeFlags" value="3"/>
 
 		<!--
@@ -42,15 +40,19 @@
 		-->		    	
     	    	
     	
-    	<!-- 若 cacading 或是 mpCascading 設為 true , 就是 cacading mode , 不會直接與 Wind 連線 -->	
-    	<!--  DelimiterBased String Gateway and Cascading Configure -->	     	     	
+		<!-- 這是 DelimiterBased String packet 的 port , 若設為 0 , 則不使用 -->		
     	<property name="serverPort" value="0"/>
+		<!-- 要設為 true , 才會有獨立的 Thread 來處理從 Wind 收到的 Quote / Transaction -->
+		<property name="dedicatedWindThread" value="true"/>		
+				
+    	<!-- 若 cacading 或是 mpCascading 設為 true , 就是 cacading mode , 不會直接與 Wind 連線 -->	
+    	<!--  DelimiterBased String Gateway and Cascading Configure -->	     			
     	<property name="cascading" value="false"/>
     	<property name="upstreamIp" value="10.0.0.20"/>
     	<property name="upstreamPort" value="10049"/>
     
 		<!--  Msg Pack Lite Cascading Configure -->    	
-    	<property name="mpCascading" value="true"/>
+    	<property name="mpCascading" value="false"/>
     	<property name="mpUpstreamIp" value="10.0.0.33"/> <!-- 61.152.93.132 -->
     	<property name="mpUpstreamPort" value="10048"/>   
     	
