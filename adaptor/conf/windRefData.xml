@@ -63,7 +63,7 @@
 
     <bean id="refDataAdapter"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
-        <property name="gatewayIp" value="10.0.0.20"/>
+        <property name="gatewayIp" value="101.231.55.6"/>
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>

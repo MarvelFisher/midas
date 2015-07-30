@@ -155,7 +155,6 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
-        super.processMarketSessionEvent(event);
         //Clear Quote & Send
         if(quoteCleaner != null && event != null && event.getSession() == MarketSessionType.PREOPEN){
             for (Quote quote : quotes.values()) {
@@ -178,6 +177,7 @@ public class MarketDataManager extends MarketDataReceiver {
                 }
             }
         }
+        super.processMarketSessionEvent(event);
     }
 
     public void processRefDataEvent(RefDataEvent event) {

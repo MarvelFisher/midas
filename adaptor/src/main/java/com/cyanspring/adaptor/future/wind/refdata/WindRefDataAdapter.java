@@ -149,7 +149,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 //Check WindBaseDB Data
                 String windCode = codeTableData.getWindCode();
                 if (!windBaseDBDataHashMap.containsKey(windCode)) {
-                    if (marketDataLog) log.warn("WindBase DB Not this Symbol," + windCode);
+                    //only Stock record log
+                    if (codeTableData.getSecurityType() >= 16 ) log.warn("WindBase DB Not this Symbol," + windCode);
                     return;
                 } else {
                     windBaseDBData = windBaseDBDataHashMap.get(windCode);
@@ -159,7 +160,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 codeTableData.setEnglishName(windBaseDBData.getENDisplayName());
                 codeTableDataBySymbolMap.put(codeTableData.getWindCode(), codeTableData);
                 if (marketDataLog) {
-                    log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode() + ",C=" + codeTableData.getCnName()
+                    log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode()
                             + ",CT=" + ChineseConvert.StoT(codeTableData.getCnName()) + ",E="
                             + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
                             + ",Sp=" + codeTableData.getSpellName());
