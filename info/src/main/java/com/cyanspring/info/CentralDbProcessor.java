@@ -598,6 +598,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void getAllChartPrice()
 	{
+		clearAllChartPrice();
 		ArrayList<String> marketList = new ArrayList<String>();
 		for (SymbolChef chef : SymbolChefList)
 		{
@@ -659,6 +660,13 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 			
+	}
+	public void clearAllChartPrice()
+	{
+		for (SymbolChef chef : SymbolChefList)
+		{
+			chef.clearAllChartPrice();
+		}
 	}
 	public void getChartPrice(String market, String strType)
 	{

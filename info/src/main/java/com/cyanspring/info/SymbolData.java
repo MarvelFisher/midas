@@ -1035,6 +1035,10 @@ public class SymbolData implements Comparable<SymbolData>
 	public void setdCurTurnover(double dCurTurnover) {
 		this.dCurTurnover = dCurTurnover;
 	}
+	public void clearMapHistorical()
+	{
+		getMapHistorical().clear();
+	}
 	public HashMap<String, List<HistoricalPrice>> getMapHistorical() {
 		return mapHistorical;
 	}
