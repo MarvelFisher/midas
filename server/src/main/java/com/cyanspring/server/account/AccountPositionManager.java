@@ -372,7 +372,8 @@ public class AccountPositionManager implements IPlugin {
         boolean dynamicDataHasChanged(Account account) {
             Account last = accountUpdates.get(account.getId());
             if (last == null || account == null || last.getMargin() != account.getMargin() ||
-                    last.getUrPnL() != account.getUrPnL() || last.getCashAvailable() != account.getCashAvailable()) {
+                    last.getUrPnL() != account.getUrPnL() || last.getCashAvailable() != account.getCashAvailable()
+                    || last.getPnL() != account.getPnL()) {
                 try {
                     accountUpdates.put(account.getId(), account.clone());
                 } catch (CloneNotSupportedException e) {
