@@ -155,30 +155,44 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu">
+         <command
+               commandId="CSTW.showUserCommand"
+               icon="icons/user.png"
+               id="SHOW_USER"
+               label="Default">
+         </command>
          <menu
                label="File">
             <command
                   commandId="CSTW.LoadStrategyCommand"
                   label="Load strategy"
                   style="push">
-                  <visibleWhen checkEnabled="false">
-                  	<or>
-                  	   <with variable="Admin">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
-                  	</or>
-            	  </visibleWhen>                  
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="Admin">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
             </command>
             <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
-                  <visibleWhen checkEnabled="false">
-                  	<or>
-                  	   <with variable="Admin">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
-                  	</or>
-            	  </visibleWhen>                
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="Admin">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
             </command>
          </menu>
          <menu
@@ -527,6 +541,11 @@
             description="Users"
             id="CSTW.usermanagement.UserView"
             name="Users">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.handler.ElementHandler"
+            id="CSTW.showUserCommand"
+            name="showUserCommand">
       </command>
    </extension>
    <extension
