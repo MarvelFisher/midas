@@ -288,6 +288,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     }
 
+    public void printQuoteExtendLog(int sourceId, DataObject quoteExtend){
+        StringBuffer sbQuoteExtendLog = new StringBuffer();
+        for (String key : quoteExtend.getFields().keySet()) {
+            sbQuoteExtendLog.append("," + key + "=" + quoteExtend.getFields().get(key));
+        }
+        quoteLog.info("QuoteExtend Receive : " + "Source=" + sourceId + sbQuoteExtendLog.toString());
+    }
+
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         // flush out all quotes throttled
         for (Entry<String, QuoteEvent> entry : quotesToBeSent.entrySet()) {
@@ -432,12 +440,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         if (quoteExt != null && isQuoteExtendEventIsSend()) {
 
-            StringBuffer sbQuoteExtendLog = new StringBuffer();
-            for (String key : quoteExt.getFields().keySet()) {
-                sbQuoteExtendLog.append("," + key + "=" + quoteExt.getFields().get(key));
-            }
-            quoteLog.info("QuoteExtend Receive : " + "Source=" + sourceId + sbQuoteExtendLog.toString());
-
+            printQuoteExtendLog(sourceId, quoteExt);
             String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value());
             quoteExt.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
             if(quoteExtends.containsKey(symbol)) {

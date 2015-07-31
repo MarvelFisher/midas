@@ -179,7 +179,6 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("PreOpen Send Clear Session quote:" + quotes.size());
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
-                    log.debug("PreOpen Send Clear Session quote:" + quote.getSymbol());
                     quoteCleaner.clear(quote);
                     quote.setTimeSent(Clock.getInstance().now());
                     printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, quote, QuoteLogLevel.GENERAL);
@@ -204,9 +203,10 @@ public class MarketDataManager extends MarketDataReceiver {
                     quoteExtendCleaner.clear(quoteExtend);
                     quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     try {
+                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION.getValue(), quoteExtend);
                         eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION.getValue()));
                     } catch (Exception e) {
-                        log.error(e.getMessage(),e);
+                        log.error(e.getMessage(), e);
                     }
                 }
             }
