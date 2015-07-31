@@ -19,7 +19,7 @@ public class ElementHandler extends AbstractHandler implements IElementUpdater{
 	
 	@Override
 	public void updateElement(UIElement element, Map parameters) {
-		element.setText("User : "+Business.getInstance().getUser());	
+		element.setText("User : "+Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole());	
 	}
 
 }
