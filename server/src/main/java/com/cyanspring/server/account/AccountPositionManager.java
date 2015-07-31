@@ -414,14 +414,18 @@ public class AccountPositionManager implements IPlugin {
     
     public void processManualClosePositionRequestEvent(ManualClosePositionRequestEvent event) {
     	OpenPosition position = event.getOpenPosition();
+    	double price = event.getPrice();
     	log.info("processManualClosePositionRequestEvent, "
-    			+ "account: "+ position.getAccount() +", symbol: " + position.getSymbol() + ", price: " + event.getPrice());
+    			+ "account: "+ position.getAccount() +", symbol: " + position.getSymbol() + ", price: " + price);
     	
-    	if (PriceUtils.EqualLessThan(event.getPrice(), 0)) 
+    	if (PriceUtils.LessThan(price, 0)) 
     		log.warn("The close price is equal or less than zero.");
-    	
+    	else if (PriceUtils.Equal(price, 0)) {
+    		Quote quote = marketData.get(position.getSymbol());
+    		price = QuoteUtils.getMarketablePrice(quote, position.getQty());
+    	}
     	Execution exec = new Execution(position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy, 
-    			Math.abs(position.getQty()), event.getPrice(), "", "", "", IdGenerator.getInstance().getNextID(), 
+    			Math.abs(position.getQty()), price, "", "", "", IdGenerator.getInstance().getNextID(), 
     			position.getUser(), position.getAccount(), "");
     	
     	try {
