@@ -196,8 +196,8 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
             quotes.keySet().retainAll(preSubscriptionList);
             quoteExtends.keySet().retainAll(preSubscriptionList);
-            log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
             if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
+                log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
                 for (String symbol : quoteExtends.keySet()) {
                     DataObject quoteExtend = quoteExtends.get(symbol);
                     quoteExtendCleaner.clear(quoteExtend);
