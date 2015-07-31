@@ -884,6 +884,11 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 order.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
             }
 
+            // add defensive logic for a deadly IB bug where lastFillPrice some times  
+            // can be 0 when there is a fill
+            if(PriceUtils.isZero(lastFillPrice))
+            	lastFillPrice = avgFillPrice;
+            
             execution = new com.cyanspring.common.business.Execution(
                     order.getSymbol(), order.getSide(), filled - oldFilled,
                     lastFillPrice, order.getId(), order.getParentOrderId(),
