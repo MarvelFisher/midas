@@ -2,9 +2,14 @@ package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.*;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.event.marketsession.*;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -171,23 +176,13 @@ public class MarketDataManager extends MarketDataReceiver {
         }
         //Clear Quote & Send
         if(quoteCleaner != null && event != null && event.getSession() == MarketSessionType.PREOPEN){
+            log.debug("PreOpen Send Clear Session quote:" + quotes.size());
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
-
-                    log.debug("PreOpen Send Clear Session quote:" + quote.getSymbol());
                     quoteCleaner.clear(quote);
                     quote.setTimeSent(Clock.getInstance().now());
                     printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, quote, QuoteLogLevel.GENERAL);
                     eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
-
-                    if(quoteExtendCleaner != null && quoteExtends.containsKey(quote.getSymbol())){
-                        DataObject quoteExtend = quoteExtends.get(quote.getSymbol());
-                        quoteExtendCleaner.clear(quoteExtend);
-                        quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
-                        eventManager.sendRemoteEvent(new QuoteExtEvent(quoteExtend.get(String.class,
-                                QuoteExtDataField.SYMBOL.value()), null, quoteExtend, QuoteSource.CLEAN_SESSION.getValue()));
-                    }
-
                 }
             }
         }
@@ -201,6 +196,20 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
             quotes.keySet().retainAll(preSubscriptionList);
             quoteExtends.keySet().retainAll(preSubscriptionList);
+            if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
+                log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
+                for (String symbol : quoteExtends.keySet()) {
+                    DataObject quoteExtend = quoteExtends.get(symbol);
+                    quoteExtendCleaner.clear(quoteExtend);
+                    quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
+                    try {
+                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION.getValue(), quoteExtend);
+                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION.getValue()));
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+            }
         }
     }
 

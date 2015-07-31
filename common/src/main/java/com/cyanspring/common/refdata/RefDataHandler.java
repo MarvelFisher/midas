@@ -161,9 +161,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             refDataAdaptor.subscribeRefData(this);
             return;
         }
-        //close connect RefDataAdapter
         refDataAdaptor.uninit();
-        //process refdata
         refDataManager.injectRefDataList(refDataList);
     }
 

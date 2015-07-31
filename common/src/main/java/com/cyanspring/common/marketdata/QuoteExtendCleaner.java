@@ -15,6 +15,18 @@ public class QuoteExtendCleaner implements IQuoteExtendCleaner{
         if(quoteExtend.fieldExists(QuoteExtDataField.SELLVOL.value())){
             quoteExtend.put(QuoteExtDataField.SELLVOL.value(),0);
         }
+        if(quoteExtend.fieldExists(QuoteExtDataField.UNCLASSIFIEDVOL.value())){
+            quoteExtend.put(QuoteExtDataField.UNCLASSIFIEDVOL.value(),0);
+        }
+        if(quoteExtend.fieldExists(QuoteExtDataField.BUYTURNOVER.value())){
+            quoteExtend.put(QuoteExtDataField.BUYTURNOVER.value(),0);
+        }
+        if(quoteExtend.fieldExists(QuoteExtDataField.SELLTURNOVER.value())){
+            quoteExtend.put(QuoteExtDataField.SELLTURNOVER.value(),0);
+        }
+        if(quoteExtend.fieldExists(QuoteExtDataField.UNCLASSIFIEDTURNOVER.value())){
+            quoteExtend.put(QuoteExtDataField.UNCLASSIFIEDTURNOVER.value(),0);
+        }
         if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())){
             quoteExtend.put(QuoteExtDataField.SETTLEPRICE.value(),0);
         }
