@@ -18,9 +18,10 @@ public class UserGroup implements Serializable{
 	private static final Logger log = LoggerFactory.getLogger(UserGroup.class);
 	private String user;
 	private UserRole role;
-	private Set <UserGroup>managerSet = new HashSet();
+	private Set <UserGroup>managerSet = new HashSet<UserGroup>();
 	private List <UserGroup>manageeList = Collections.synchronizedList(new ArrayList<UserGroup>());
 	public  static final int MAX_LEVEL = 10;
+	private int currentLevel = 1;
 
 	public UserGroup(String user,UserRole role) {
 		this.user = user;
@@ -59,9 +60,7 @@ public class UserGroup implements Serializable{
 				continue;
 			}
 			
-//			System.out.println("check manager :"+manager+", managee.getUser():"+managee.getUser());
-			log.debug("check manager :"+manager+", managee.getUser():"+managee.getUser());
-			
+			log.debug("check manager :"+manager+", managee.getUser():"+managee.getUser());			
 			if(managee.isManageRecursive(manager)){
 					return true;
 			}
@@ -124,11 +123,7 @@ public class UserGroup implements Serializable{
 		}
 		return level;
 	}
-	
-	public void putManager(UserGroup userGroup){
-		managerSet.add(userGroup);	
-	}
-	
+
 	public boolean hasManager(){
 		if(managerSet.size()>0){
 			return true;
@@ -155,16 +150,92 @@ public class UserGroup implements Serializable{
 		for(UserGroup group : manageeList){
 			if(group.getUser().equals(user)){
 				managee = group;
+				break;
 			}
 		}
+		
+		int manageeLevel = managee.currentLevel;
 		if(null != managee)
 			manageeList.remove(managee);	
+		
+		if((manageeLevel+1) == currentLevel){
+			int tempLevel = countLevel(this);
+			if(tempLevel == currentLevel)
+				return;
+			
+			currentLevel = tempLevel;
+			assignManagerLevel(currentLevel,false);
+		}
+	}
+	
+	public void deleteManager(String user) throws Exception{
+		UserGroup manager = null;
+		for(UserGroup group : managerSet){
+			if(group.getUser().equals(user)){
+				manager = group;
+				break;
+			}
+		}
+		if( null != manager)
+			managerSet.remove(manager);
 	}
 	
 	public boolean isAdmin(){
 		return UserRole.Admin.equals(role)?true:false;
 	}
+	
+	public int findManagerMaxLevel(UserGroup userGroup){
+		return  findManagerMaxLevel(userGroup,0);
+	}
+	
+	public int findManagerMaxLevel(UserGroup userGroup,int count){
 
+		for(UserGroup user:userGroup.managerSet){
+			if(count < user.currentLevel){
+				count = user.currentLevel;
+				return user.findManagerMaxLevel(user,count);
+			}
+		}	
+		return count;
+	}
+
+	public boolean isOverMaxLevel(UserGroup userGroup){
+		
+		int maxLevel = findManagerMaxLevel(userGroup);
+//		log.info("isOverMaxLevel manangerLevel:{} maxLevel:{}",maxLevel,this.MAX_LEVEL);
+		if((maxLevel+currentLevel) > MAX_LEVEL){
+			return true;
+		}
+		return false;
+	}
+	
+	public void putManager(UserGroup userGroup){
+		
+		managerSet.add(userGroup);	
+		assignManagerLevel(currentLevel,true);
+	}
+	
+	private void assignManagerLevel(int currentLevel,boolean isAdd) {
+		
+		if(managerSet.isEmpty())
+			return;
+		
+		for(UserGroup user: managerSet){	
+			if(isAdd){
+				if(currentLevel>= user.currentLevel){
+					user.currentLevel = currentLevel+1;
+//					log.info("user:{},level:{}",user.getUser(),user.currentLevel);
+					user.assignManagerLevel(user.currentLevel,isAdd);
+					
+				}
+			}else{
+				user.currentLevel = currentLevel+1;
+//				log.info("de user:{},level:{}",user.getUser(),user.currentLevel);
+				user.assignManagerLevel(user.currentLevel,isAdd);
+			}	
+		}
+	}
+	
 	/**
 	 * only first level managee , like group management pair
 	 * @return
@@ -185,6 +256,7 @@ public class UserGroup implements Serializable{
 	public void reset(){
 		manageeList.clear();
 		managerSet.clear();
+		currentLevel=1;
 	}
 	
 	public void clearManageeList(){

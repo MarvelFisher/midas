@@ -90,7 +90,7 @@ public class UserKeeper {
 		String managee = gm.getManaged();
 		User managerInfo = users.get(manager);
 		UserGroup managerGroup = userGroups.get(manager);
-		
+		UserGroup manageeGroup = userGroups.get(managee);
 		if( null == managerInfo ){
 			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED);
 		}
@@ -102,6 +102,7 @@ public class UserKeeper {
 		if(managerGroup.isGroupPairExist(managee)){
 			try {
 				managerGroup.deleteManagee(managee);
+				manageeGroup.deleteManager(manager);
 			} catch (Exception e) {
 				throw new UserException("Exception : "+e.getMessage(),ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED);
 			}
@@ -158,8 +159,7 @@ public class UserKeeper {
 			throw new UserException("Managee:"+managee+" already exist!",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
-		int level = manageeGroup.countLevel(manageeGroup);
-		if(UserGroup.MAX_LEVEL < (level+1) ){
+		if(manageeGroup.isOverMaxLevel(managerGroup)){
 			throw new UserException("Manager:"+manager+", Managee:"+managee+" excceds Max level : "+UserGroup.MAX_LEVEL,ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
