@@ -73,7 +73,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitMarketSessionReceived = false;
     private volatile boolean isInitReqDataEnd = false;
     private volatile boolean isPreSubscribing = false;
-    private MarketSessionEvent marketSessionEvent;
+    protected MarketSessionEvent marketSessionEvent;
     boolean state = false;
     boolean isUninit = false;
     private String serverInfo = null;

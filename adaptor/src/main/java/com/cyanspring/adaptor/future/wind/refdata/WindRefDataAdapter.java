@@ -6,7 +6,9 @@ import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.data.JdbcSQLHandler;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
@@ -58,6 +60,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     private boolean msgPack = true;
     private String refDataFile;
     private String windbaseDataFile;
+    private String lastQuoteExtendFile;
     private boolean isAlive = true;
     static volatile boolean isConnected = false;
     static volatile boolean codeTableIsProcessEnd = false;
@@ -150,7 +153,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 String windCode = codeTableData.getWindCode();
                 if (!windBaseDBDataHashMap.containsKey(windCode)) {
                     //only Stock record log
-                    if (codeTableData.getSecurityType() >= 16 ) log.warn("WindBase DB Not this Symbol," + windCode);
+                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode);
                     return;
                 } else {
                     windBaseDBData = windBaseDBDataHashMap.get(windCode);
@@ -399,12 +402,31 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             //getData from file
             windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
         } else {
+            //write last ExtendFile
+            saveDBDataToQuoteExtendFile();
             saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
         }
         //connect WindGW
         initReqThread();
         RequestMgr.instance().init();
         addReqData(new Integer(0));
+    }
+
+    public void saveDBDataToQuoteExtendFile() throws Exception {
+        log.debug("write quoteExtend file begin");
+        HashMap<String, DataObject> quoteExtends = getHashMapFromFile(lastQuoteExtendFile);
+        if (quoteExtends != null && quoteExtends.size() > 0) {
+            for(String symbol: quoteExtends.keySet()){
+                if(!windBaseDBDataHashMap.containsKey(symbol)) continue;
+                DataObject quoteExtend = quoteExtends.get(symbol);
+                WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(symbol);
+                if(quoteExtend.fieldExists(QuoteExtDataField.FREESHARES.value())) quoteExtend.put(QuoteExtDataField.FREESHARES.value(),windBaseDBData.getFreeShares());
+                if(quoteExtend.fieldExists(QuoteExtDataField.TOTOALSHARES.value())) quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
+                if(quoteExtend.fieldExists(QuoteExtDataField.PERATIO.value())) quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());
+            }
+            saveHashMapToFile(lastQuoteExtendFile, quoteExtends);
+        }
+        log.debug("write quoteExtend file end");
     }
 
     @Override
@@ -569,6 +591,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     public void setRefDataFile(String refDataFile) {
         this.refDataFile = refDataFile;
+    }
+
+    public void setLastQuoteExtendFile(String lastQuoteExtendFile) {
+        this.lastQuoteExtendFile = lastQuoteExtendFile;
     }
 
     public void setWindbaseDataFile(String windbaseDataFile) {
