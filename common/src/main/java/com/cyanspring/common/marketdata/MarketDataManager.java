@@ -45,7 +45,6 @@ public class MarketDataManager extends MarketDataReceiver {
         clzList.add(TradeSubEvent.class);
         clzList.add(QuoteExtSubEvent.class);
         clzList.add(QuoteSubEvent.class);
-        clzList.add(TradeDateEvent.class);
         clzList.add(LastTradeDateQuotesRequestEvent.class);
         return clzList;
     }
@@ -155,7 +154,21 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
-        super.processMarketSessionEvent(event);
+        String newTradeDate = event.getTradeDate();
+        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
+            tradeDate = newTradeDate;
+            try {
+                List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
+                log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
+                if (quoteSaver != null) {
+                    quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
+                    quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
+                }
+                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
         //Clear Quote & Send
         if(quoteCleaner != null && event != null && event.getSession() == MarketSessionType.PREOPEN){
             for (Quote quote : quotes.values()) {
@@ -178,6 +191,7 @@ public class MarketDataManager extends MarketDataReceiver {
                 }
             }
         }
+        super.processMarketSessionEvent(event);
     }
 
     public void processRefDataEvent(RefDataEvent event) {
@@ -230,24 +244,6 @@ public class MarketDataManager extends MarketDataReceiver {
         if (quoteSaver != null) {
             quoteSaver.saveLastQuoteToFile(tickDir + "/" + lastQuoteFile, quotes);
             quoteSaver.saveLastQuoteExtendToFile(tickDir + "/" + lastQuoteExtendFile, quoteExtends);
-        }
-    }
-
-    public void processTradeDateEvent(TradeDateEvent event) {
-        String newTradeDate = event.getTradeDate();
-        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
-            tradeDate = newTradeDate;
-            try {
-                List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-                log.info("LastTradeDatesQuotes: " + lst + ", tradeDate:" + tradeDate);
-                if (quoteSaver != null) {
-                    quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
-                    quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
-                }
-                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
         }
     }
 
