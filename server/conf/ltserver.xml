@@ -131,11 +131,11 @@
 
     <!-- risk control -->
 	<bean id="maxRiskOrderCount" class="java.lang.Integer">
-        <constructor-arg value="100" />
+        <constructor-arg value="50" />
     </bean>
     
     <bean id="maxTotalOrderCount" class="java.lang.Integer">
-        <constructor-arg value="1000" />
+        <constructor-arg value="500" />
     </bean>
     
     <!-- order parameter setting -->
