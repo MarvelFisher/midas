@@ -280,7 +280,7 @@
 		<property name="quoteChecker">
 			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
 		</property>
-		<property name="rmUpdateInterval" value="200"/>
+		<property name="rmUpdateInterval" value="1000"/>
 		<property name="fxSymbols">
 			<list>
 				<value>AUDUSD</value>
