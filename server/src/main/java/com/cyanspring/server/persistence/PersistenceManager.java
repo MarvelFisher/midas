@@ -1486,6 +1486,12 @@ public class PersistenceManager {
 			for(Account account : event.getAccounts())
 				createAccount(account);
 			eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
+			
+			try {
+				eventManager.sendRemoteEvent(new UserUpdateEvent(null,null,user));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
 		
 		if(event.getOriginalEvent() != null)
