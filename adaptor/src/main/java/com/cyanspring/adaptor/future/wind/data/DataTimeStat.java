@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.future.wind.data;
 
 import com.cyanspring.adaptor.future.wind.WindDef;
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ public class DataTimeStat {
     private long quoteReceiveCount = 0;
     private long quoteOverTimeCount = 0;
     private long maxOverTime;
+    private Date lastRecordTime = Clock.getInstance().now();
+    private long timeInterval = 2*1000;
 
     public DataTimeStat(String symbol) {
         this.symbol = symbol;
@@ -28,7 +31,10 @@ public class DataTimeStat {
             quoteOverTimeCount++;
             if (overTime > maxOverTime) {
                 maxOverTime = overTime;
-                log.debug(symbol + " Come OverTime " + maxOverTime);
+                if(TimeUtil.getTimePass(lastRecordTime) > timeInterval) {
+                    log.debug(symbol + " Come OverTime " + maxOverTime);
+                    lastRecordTime = Clock.getInstance().now();
+                }
             }
         }
     }
