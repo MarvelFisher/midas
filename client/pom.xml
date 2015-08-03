@@ -149,16 +149,22 @@
             <groupId>com.cyanspring.apievent</groupId>
             <artifactId>api-event</artifactId>
             <version>${cyanspring.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/api-event-2.56.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.cyanspring.event</groupId>
             <artifactId>cyanspring-event</artifactId>
             <version>${cyanspring.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/cyanspring-event-2.56.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.cyanspring.transport</groupId>
             <artifactId>cyanspring-transport</artifactId>
             <version>${cyanspring.version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/cyanspring-transport-2.56.jar</systemPath>
         </dependency>
         
     </dependencies>

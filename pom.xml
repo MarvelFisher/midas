@@ -19,7 +19,6 @@
 		<module>custom</module>
 		<module>adaptor</module>
 		<module>server</module>
-		<module>client</module>
 		<module>soak</module>
 		<module>info</module>
 		<module>apievent</module>
