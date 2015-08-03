@@ -97,7 +97,7 @@ public class QuoteSaver implements IQuoteSaver {
             return;
 
         lastQuoteSaveTime = Clock.getInstance().now();
-        saveQuotesToFile(fileName, quotes);
+        synchronized (quotes){saveQuotesToFile(fileName, quotes);}
     }
 
     @Override
@@ -117,7 +117,7 @@ public class QuoteSaver implements IQuoteSaver {
             return;
 
         lastQuoteExtendSaveTime = Clock.getInstance().now();
-        saveQuotesToFile(fileName, quoteExtends);
+        synchronized (quoteExtends){saveQuotesToFile(fileName, quoteExtends);}
     }
 
     @Override
