@@ -16,6 +16,7 @@ public class FDTFields {
 	public final static int WindQuotationDateChange = 2022;
 	public final static int WindMarketClose = 20023;
 	public final static int WindHeartBeat = 20024;
+	public final static int WindConnected = 20025;
 
 
 	public final static int ArrayOfString = 101;

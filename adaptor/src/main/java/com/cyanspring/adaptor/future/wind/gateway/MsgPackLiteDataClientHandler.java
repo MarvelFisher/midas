@@ -178,6 +178,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 					}					
 				}
 				break;
+			case FDTFields.WindConnected :
 			case FDTFields.WindHeartBeat :
 			case FDTFields.WindCodeTable :
 			case FDTFields.WindMarketClose :

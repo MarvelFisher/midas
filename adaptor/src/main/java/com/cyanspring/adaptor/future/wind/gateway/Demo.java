@@ -285,6 +285,7 @@ public class Demo {
 						log.info("Receive Code Table - Market : " + markets[i] + " , Symbol Count : " + client.getCodeTable(markets[i]).length );
 						windGateway.receiveCodeTable(markets[i], client.getCodeTable(markets[i]));						
 					}
+					windGateway.connectedWithWind(markets);
 				}
 				bServerReady = true;
 				//printCodeTable();

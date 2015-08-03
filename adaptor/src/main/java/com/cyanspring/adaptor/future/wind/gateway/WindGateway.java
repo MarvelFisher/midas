@@ -834,7 +834,7 @@ public class WindGateway implements Runnable {
 	}
 	
 	public void receiveTransaction(TDF_TRANSACTION transactionData) {
-		if(transactionData == null) {
+		if(transactionData == null || transactionData.getPrice() == 0) {
 			return;
 		}
 		String symbol = transactionData.getWindCode();
@@ -977,6 +977,10 @@ public class WindGateway implements Runnable {
 			
 		}
 		
+	}
+	
+	public void connectedWithWind(String[] markets) {
+		MsgPackLiteDataServerHandler.connectedWithWind(markets);
 	}
 	
 	public void flushAllClientMsgPack() {

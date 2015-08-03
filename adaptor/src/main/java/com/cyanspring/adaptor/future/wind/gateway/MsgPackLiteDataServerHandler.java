@@ -401,6 +401,24 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	}
 	}	
     
+	public static void connectedWithWind(String[] markets) {
+
+		ArrayList<String>lst = new ArrayList<String>();
+		for(String market : markets) {
+			if(market == null || market.isEmpty()) {
+				continue;
+			}
+			lst.add(market);
+		}
+		
+    	HashMap<Integer,Object> map = new HashMap<Integer,Object>();
+    	map.put(FDTFields.PacketType,FDTFields.WindConnected);
+		if(markets.length > 0) {   	
+			map.put(FDTFields.ArrayOfString,lst);
+		}
+    	sendMessagePackToAllClient(map);
+	}
+    
     public static void sendMarkets(Channel channel)
     {
     	ArrayList<String>lst = new ArrayList<String>();
