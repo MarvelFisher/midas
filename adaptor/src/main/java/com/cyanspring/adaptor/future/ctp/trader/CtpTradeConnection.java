@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.bridj.StructObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +11,6 @@ import com.cyanspring.adaptor.future.ctp.trader.client.CtpPosition;
 import com.cyanspring.adaptor.future.ctp.trader.client.CtpTraderProxy;
 import com.cyanspring.adaptor.future.ctp.trader.client.ILtsTraderListener;
 import com.cyanspring.adaptor.future.ctp.trader.client.TraderHelper;
-import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInputOrderActionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcInvestorPositionField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcOrderField;
 import com.cyanspring.adaptor.future.ctp.trader.generated.CThostFtdcTradeField;
@@ -60,7 +58,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private long timerInterval = 3000;
 	private TimeThrottler throttler;
 	private boolean positionQueried;
-	private DailyKeyCounter dailyKeyCounter;
+	private DailyKeyCounter placeOrderCount;
+    private DailyKeyCounter cancelOrderCount;
 	
 	// client to delegate ctp
 	private CtpTraderProxy proxy;
@@ -79,7 +78,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	
 	@Override
 	public void init() throws Exception {	
-		dailyKeyCounter = new DailyKeyCounter(maxOrderCount);
+		placeOrderCount = new DailyKeyCounter(maxOrderCount);
+        cancelOrderCount = new DailyKeyCounter(maxOrderCount);
 		registerListeners();
 		positionRecord.clear();	
 		throttler = new TimeThrottler(queryPositionInterval);
@@ -122,10 +122,10 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	class DownStreamSender implements IDownStreamSender {
 		@Override
 		synchronized public void newOrder(ChildOrder order) throws DownStreamException {
-			if(!dailyKeyCounter.check(order.getSymbol())) {
+			if(!placeOrderCount.check(order.getSymbol())) {
 				order = order.clone();
 				order.setOrdStatus(OrdStatus.REJECTED);
-				String msg = "Max order count reach: " + CtpTradeConnection.this.maxOrderCount;
+				String msg = "Max place order count reach: " + CtpTradeConnection.this.maxOrderCount;
 				log.error(msg);
 				CtpTradeConnection.this.listener.onOrder(ExecType.REJECTED, order, null, msg);
 				return;
@@ -149,6 +149,14 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
+            if(!cancelOrderCount.check(order.getSymbol())) {
+                order = order.clone();
+                order.setOrdStatus(OrdStatus.REJECTED);
+                String msg = "Max cancel order count reach: " + CtpTradeConnection.this.maxOrderCount;
+                log.error(msg);
+                CtpTradeConnection.this.listener.onOrder(ExecType.REJECTED, order, null, msg);
+                return;
+            }
 			proxy.cancelOrder(order);
 			log.info("Cancel Order: " + order.getClOrderId());
 		}
