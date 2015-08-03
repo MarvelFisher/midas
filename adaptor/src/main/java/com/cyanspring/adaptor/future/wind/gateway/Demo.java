@@ -48,7 +48,7 @@ public class Demo {
 	ConcurrentLinkedQueue<WindRequest> requestQueue = new ConcurrentLinkedQueue<WindRequest>();
 	boolean bServerReady = false;
 	boolean dedicatedWindThread = false;
-	int iConnectionID = 0;
+	boolean bWholeMarket = false;
 	
 	ConcurrentLinkedQueue<TDF_MSG> transactionQueue = new ConcurrentLinkedQueue<TDF_MSG>();
 	ConcurrentLinkedQueue<TDF_MSG> futureQueue = new ConcurrentLinkedQueue<TDF_MSG>();
@@ -59,7 +59,7 @@ public class Demo {
 	public int getPort() {
 		return this.port;
 	}
-	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d , int cid) {
+	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d , boolean wm) {
 		this.ip = ip;
 		this.port = port;
 		this.username = username;
@@ -69,7 +69,7 @@ public class Demo {
 		this.openTypeFlags = typeFlags;
 		this.quitFlag = true;
 		this.dedicatedWindThread = d;
-		this.iConnectionID = cid;
+		this.bWholeMarket = wm;
 		
 		if(d) {
 			trdQuotation = new Thread( new MsgProcessor(windGateway,quotationQueue),"ProcessQuotation");			
@@ -106,15 +106,18 @@ public class Demo {
 		setting.setDate(openData);
 		setting.setTime(openTime);
 		requestQueue.clear();
+		if(bWholeMarket) {
+			subscription = new StringBuilder("");
+		}
 		setting.setSubScriptions(subscription.toString());
 		setting.setTypeFlags(openTypeFlags);
-		setting.setConnectionID(iConnectionID);
+		setting.setConnectionID(0);
 		
-		log.info("try to connect : " + this.ip + " " + this.port + " , Connction id : " + iConnectionID);
+		log.info("try to connect : " + this.ip + " " + this.port);
 		int err = client.open(setting);
 		if (err == TDF_ERR.TDF_ERR_SUCCESS) {
 			this.quitFlag = false;
-			log.info("Connected , subscription : " + subscription.toString());			
+			log.info("Connected , subscription : " + (bWholeMarket ? "Whole Market" : subscription.toString()));			
 		}		
 		else
 		{
@@ -144,7 +147,7 @@ public class Demo {
 		requestQueue.clear();
 		setting.setSubScriptions(subscription.toString());
 		setting.setTypeFlags(openTypeFlags);
-		setting.setConnectionID(iConnectionID);
+		setting.setConnectionID(0);
 		
 		TDF_PROXY_SETTING proxySetting = new TDF_PROXY_SETTING();
 		proxySetting.setProxyHostIp(proxy_ip);
@@ -462,7 +465,7 @@ public class Demo {
 		// Proxy Mode
 		//Demo d = new Demo("10.100.7.18", 10001, "dev_test", "dev_test", 
 		//			"10.100.6.125", 3128, "", "");
-		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false,0);
+		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false,false);
 		DataHandler dh = new DataHandler (demo);
 		Thread t1 = new Thread(dh);
 		t1.start();	
@@ -559,6 +562,7 @@ class MsgProcessor implements Runnable {
 	private WindGateway windGateway = null;
 	ConcurrentLinkedQueue<TDF_MSG> queue = null;
 	boolean quitFlag = false;
+	private long ticks;
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.MsgProcessor.class);	
@@ -566,6 +570,7 @@ class MsgProcessor implements Runnable {
 	public MsgProcessor(WindGateway w,ConcurrentLinkedQueue<TDF_MSG> q) {
 		windGateway = w;
 		queue = q;
+		ticks = System.currentTimeMillis();
 	}
 	
 	public void run() {		
@@ -577,6 +582,10 @@ class MsgProcessor implements Runnable {
 					if(msg != null) {					
 						ProcessMessage(msg);
 					}
+					//if(System.currentTimeMillis() >= ticks + 5000) {
+					//	ticks = System.currentTimeMillis();
+					//	log.info("Queue Size : " + queue.size());
+					//}					
 				} while(msg != null);
 				Thread.sleep(5);
 			} catch (Exception e) {

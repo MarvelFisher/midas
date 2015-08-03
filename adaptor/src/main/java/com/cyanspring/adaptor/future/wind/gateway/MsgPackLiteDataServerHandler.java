@@ -1,5 +1,6 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -448,7 +449,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     		map.put(FDTFields.SecurityExchange, code.getMarket());
     	}
     	if(code.getCNName() != null && code.getCNName().isEmpty() == false) {
-    		map.put(FDTFields.CNName, code.getCNName());
+			map.put(FDTFields.CNName, code.getCNName());
     	}
     	if(code.getENName() != null && code.getENName().isEmpty() == false) {
     		map.put(FDTFields.EnglishName, code.getENName());

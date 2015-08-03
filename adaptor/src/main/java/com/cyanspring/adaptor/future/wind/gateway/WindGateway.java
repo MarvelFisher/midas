@@ -56,13 +56,13 @@ public class WindGateway implements Runnable {
 	private int windMFServerPort = 10050;
 	private String windMFServerUserId = "TD1001888002";
 	private String windMFServerUserPwd = "35328058";
-	private int windMFConnectionID = 0;
+	private boolean windMFWholeMarket = false;
 	
 	private String windSFServerIP = "114.80.154.34";
 	private int windSFServerPort = 10051;
 	private String windSFServerUserId = "TD1001888001";
 	private String windSFServerUserPwd = "62015725";
-	private int windSFConnectionID = 0;
+	private boolean windSFWholeMarket = false;
 	
 	public static boolean cascading = false;
 	public static String upstreamIp = "202.55.14.140";
@@ -111,11 +111,11 @@ public class WindGateway implements Runnable {
 	public void setWindMFServerUserPwd(String pwd) {
 		this.windMFServerUserPwd = pwd;
 	}	
-	public int getWindMFConnectionID() {
-		return this.windMFConnectionID;
+	public boolean getWindMFWholeMarket() {
+		return this.windMFWholeMarket;
 	}
-	public void setWindMFConnectionID(int id) {
-		this.windMFConnectionID = id;
+	public void setWindMFWholeMarket(boolean b) {
+		this.windMFWholeMarket = b;
 	}	
 
 	public String getWindSFServerIP() {
@@ -146,11 +146,11 @@ public class WindGateway implements Runnable {
 		this.windSFServerUserPwd = pwd;
 	}		
 	
-	public int getWindSFConnectionID() {
-		return this.windSFConnectionID;
+	public boolean getWindSFWholeMarket() {
+		return this.windSFWholeMarket;
 	}
-	public void setWindSFConnectionID(int id) {
-		this.windSFConnectionID = id;
+	public void setWindSFWholeMarket(boolean b) {
+		this.windSFWholeMarket = b;
 	}
 	
 	public boolean getCascading() {
@@ -1006,13 +1006,13 @@ public class WindGateway implements Runnable {
 	}	
 	
 	public void requestSymbol(String sym) {
-		if(demoStock != null)
+		if(demoStock != null && windSFWholeMarket == false)
 		{
 			demoStock.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
 		}	
 	}
 	public void requestSymbolMF(String sym) {
-		if(demo != null)
+		if(demo != null && windMFWholeMarket == false)
 		{
 			demo.AddRequest(new WindRequest(WindRequest.Subscribe,sym));
 		}	
@@ -1052,7 +1052,7 @@ public class WindGateway implements Runnable {
 			} else {
 				if(windMFServerIP != null && windMFServerIP != "")
 				{
-					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread,windMFConnectionID);
+					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread,windMFWholeMarket);
 					DataHandler dh = new DataHandler (demo);
 					t1 = new Thread(dh,"windMerchandise");
 					t1.start();
@@ -1063,7 +1063,7 @@ public class WindGateway implements Runnable {
 				
 				if(windSFServerIP != null && windSFServerIP != "")
 				{
-					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSFConnectionID);
+					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSFWholeMarket);
 					DataHandler dhStock = new DataHandler (demoStock);
 					t1Stock = new Thread(dhStock,"windFutureAndStock");
 					t1Stock.start();
@@ -1156,6 +1156,7 @@ public class WindGateway implements Runnable {
 	
 	public static void main(String[] args) throws InterruptedException
 	{	
+		
 		DOMConfigurator.configure("conf/windGatewaylog4j.xml");
 			
 		String OS = System.getProperty("os.name").toLowerCase();
@@ -1172,7 +1173,9 @@ public class WindGateway implements Runnable {
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}
-	    log.info("Current dir : "+current);		
+		//System.setProperty("file.encoding","GBK");
+	    log.info("Current dir : "+current);
+	    log.info("Current CodePage : " + System.getProperty("file.encoding"));
 	
         ApplicationContext context = 
 	             new FileSystemXmlApplicationContext("conf/WindGateway.xml");
