@@ -146,7 +146,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     return;
                 }
                 //filter not index/Stock data
-                if (codeTableData == null || codeTableData.getSecurityType() > 32) {
+                if (codeTableData == null || codeTableData.getSecurityType() >= 22) {
                     return;
                 }
                 //Check WindBaseDB Data
@@ -313,9 +313,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             stmt.close();
             conn.close();
         } catch (SQLException se) {
-            se.printStackTrace();
+            log.warn(se.getMessage(),se);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn(e.getMessage(),e);
         } finally {
             try {
                 if (stmt != null) stmt.close();
@@ -324,7 +324,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             try {
                 if (conn != null) conn.close();
             } catch (SQLException se) {
-                se.printStackTrace();
+                log.warn(se.getMessage(),se);
             }
         }
         log.debug("wind baseDB process end");
