@@ -20,6 +20,7 @@ public class RefDataParser {
         switch ((String)defaultHashMap.get(RefDataField.COMMODITY)) {
             case "S":
             case "I":
+                refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
                 refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
                 refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));
                 refData.setLimitMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.LIMIT_MAXIMUM_LOT)));
