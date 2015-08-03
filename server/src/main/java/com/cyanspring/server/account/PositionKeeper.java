@@ -697,7 +697,7 @@ public class PositionKeeper {
 			if(positionQty > 0)
 				buyValue += overallPosition.getMargin();
 			else
-				buyValue += overallPosition.getMargin();
+				sellValue += overallPosition.getMargin();
 		}
 		
 		// take the maximum one
