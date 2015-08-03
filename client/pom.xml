@@ -143,5 +143,23 @@
 			<version>4.0.24.Final</version>
 			<scope>runtime</scope>
 		</dependency>
-	</dependencies>
+
+        <!-- cyan spring dependencies -->
+        <dependency>
+            <groupId>com.cyanspring.apievent</groupId>
+            <artifactId>api-event</artifactId>
+            <version>${cyanspring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cyanspring.event</groupId>
+            <artifactId>cyanspring-event</artifactId>
+            <version>${cyanspring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cyanspring.transport</groupId>
+            <artifactId>cyanspring-transport</artifactId>
+            <version>${cyanspring.version}</version>
+        </dependency>
+        
+    </dependencies>
 </project>
