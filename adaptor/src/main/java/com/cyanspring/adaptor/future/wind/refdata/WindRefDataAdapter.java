@@ -146,7 +146,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     return;
                 }
                 //filter not index/Stock data
-                if (codeTableData == null || codeTableData.getSecurityType() > 32) {
+                if (codeTableData == null || codeTableData.getSecurityType() >= 32) {
                     return;
                 }
                 //Check WindBaseDB Data

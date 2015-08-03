@@ -183,11 +183,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         sendQuoteEvent(event);
     }
 
-    private void logStaleInfo(Quote prev, Quote quote, boolean stale) {
-        log.info("Quote stale: " + quote.getSymbol() + ", " + stale
-                + ", Prev: " + prev + ", New: " + quote);
-    }
-
     public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
         Quote quote = inEvent.getQuote();
         Quote prev = quotes.get(quote.getSymbol());
@@ -232,15 +227,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
         }
         if (null == prev) {
-            logStaleInfo(prev, quote, quote.isStale());
             quotes.put(quote.getSymbol(), quote);
             clearAndSendQuoteEvent(inEvent.getQuoteEvent());
             return;
         } else {
             quotes.put(quote.getSymbol(), quote);
-            if (prev.isStale() != quote.isStale()) {
-                logStaleInfo(prev, quote, quote.isStale());
-            }
         }
 
         String symbol = inEvent.getQuote().getSymbol();
