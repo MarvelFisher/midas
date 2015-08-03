@@ -30,6 +30,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotRequestEvent;
+import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.UserUpdateEvent;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.cstw.business.Business;
@@ -37,39 +38,55 @@ import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class UserView extends ViewPart implements IAsyncEventListener{
 
 	private static final Logger log = LoggerFactory
-			.getLogger(PositionView.class);
+			.getLogger(UserView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.UserViewer";
 	private DynamicTableViewer viewer;
 	private ImageRegistry imageRegistry;
 	private Composite parentComposite = null;
 	
-	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
+	private long maxRefreshInterval = 10000;
+	private final int autoRefreshLimitUser = 1000;
+
 	private List<User> users = new ArrayList<User>();
 	private ArrayMap <String,User> userMap = new ArrayMap<String,User>();
 	private boolean columnCreated = false;
 	
 	private Action createGroupManagementAction;
 	private Action createChangeRoleAction;
+	private Action createManualRefreshAction;
+
 	private GroupManagementDialog createGroupDialog;
 
 	private final String ID_GROUP_MANAGEMENT_ACTION = "GROUP_MANAGEMENT";
 	private final String ID_CHANGE_ROLE = "CHANGE_ROLE";
-	
+	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
+
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if( event instanceof AllUserSnapshotReplyEvent){
 			AllUserSnapshotReplyEvent reply = (AllUserSnapshotReplyEvent) event;
 			users = reply.getUsers();
 			setUserMap(reply.getUsers());
+			
+			if(users.size()<=autoRefreshLimitUser){
+				if(!createManualRefreshAction.isChecked())
+					createManualRefreshAction.setChecked(true);
+				createManualRefreshAction.run();
+			}
+			
 			showUsers();
 		}else if(event instanceof UserUpdateEvent){
 			UserUpdateEvent reply = (UserUpdateEvent) event;
 			log.info("userupdate reply:{}",reply.getUser().getId());
 			updateUser(reply.getUser());
+		} else if (event instanceof AsyncTimerEvent) {
+			showUsers();
 		}
 	}
 
@@ -81,7 +98,6 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 
 	private void updateUser(User user) {
 		userMap.put(user.getId(), user);
-		showUsers();
 	}
 
 	protected User findUser(TableItem item) {
@@ -151,6 +167,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 			}
 		});
 		
+		createManualRefreshToggleAction(parent);
 		createGroupManagementAction(parent);
 		createChangeRoleAction(parent);
 		
@@ -164,6 +181,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		super.dispose();
 		unSubEvent(AllUserSnapshotReplyEvent.class);
 		unSubEvent(UserUpdateEvent.class);
+		cancelScheduleJob(refreshEvent);
 	}
 	
 	private void sendAllUserRequest() {
@@ -217,8 +235,6 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createChangeRoleAction);		
 	}
-	
-
 
 	private void createGroupManagementAction(final Composite parent) {
 
@@ -251,7 +267,30 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		
 	}
 	
+	private void createManualRefreshToggleAction(final Composite parent) {
 
+		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+			public void run() {
+				if(!createManualRefreshAction.isChecked()) {
+					cancelScheduleJob(refreshEvent);
+				} else { 
+					scheduleJob(refreshEvent, maxRefreshInterval);
+				}
+
+			}
+		};
+		createManualRefreshAction.setId(ID_MANUAL_REFRESH_ACTION);
+		createManualRefreshAction.setChecked(false);		
+		createManualRefreshAction.setText("AutoRefresh");
+		createManualRefreshAction.setToolTipText("AutoRefresh");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.REFRESH_ICON.toString());
+		createManualRefreshAction.setImageDescriptor(imageDesc);
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createManualRefreshAction);
+	}
+	
 	@Override
 	public void setFocus() {
 		
