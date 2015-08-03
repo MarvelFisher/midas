@@ -98,7 +98,10 @@ public class SetClosePriceDialog extends Dialog {
 	@Override
 	protected void okPressed(){
 		try {
-			closePrice = Double.parseDouble(price.getText());
+			if (price.getText() == null || price.getText().trim() == "") 
+				closePrice = 0.0;
+			else
+				closePrice = Double.parseDouble(price.getText());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

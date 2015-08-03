@@ -27,7 +27,7 @@
 				      <goal>copy-resources</goal>
 				    </goals>
 				    <configuration>
-				      <outputDirectory>${basedir}/../CSTWjars</outputDirectory>
+				      <outputDirectory>${basedir}/../client/lib</outputDirectory>
 				      <resources>          
 					<resource>
 					  <directory>${basedir}/target</directory>

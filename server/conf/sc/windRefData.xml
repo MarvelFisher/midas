@@ -71,6 +71,7 @@
         <property name="msgPack" value="#{windAdaptor.msgPack}"/>
         <property name="refDataFile" value="#{refDataManager.refDataFile}" />
         <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+        <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
         <property name="basicDataSource" ref="refDataSource"/>
         <property name="marketsList">
             <list>

@@ -35,7 +35,7 @@
 	</bean>
 
 	<bean id="beanHolder" class="com.cyanspring.common.BeanHolder">
-		<property name="loginRequired" value="false"></property>
+		<property name="loginRequired" value="true"></property>
 	</bean>
 
 	<bean id="alertColorConfig" class="java.util.HashMap">

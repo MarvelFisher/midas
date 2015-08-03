@@ -19,7 +19,7 @@
 			<bean class="com.cyanspring.strategy.singleorder.AllQuantityAnalyzer"></bean>	
 		</property>
 		<property name="priceAnalyzer">
-			<bean class="com.cyanspring.sample.singleorder.stop.StopPriceAnalyzer"></bean>	
+			<ref bean="stopPriceAnalyzer"/>
 		</property>
 		<property name="executionAnalyzer">
 			<ref bean="defaultExecutionAnalyzer"/>
@@ -39,4 +39,9 @@
 	        </list>
 		</property>
 	</bean>
+	
+	<bean id="stopPriceAnalyzer" class="com.cyanspring.sample.singleorder.stop.StopPriceAnalyzer" scope="prototype">
+		<property name="aggressiveTicks" value="25"/>
+	</bean>
+	
 </beans>

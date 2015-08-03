@@ -73,6 +73,15 @@
         <property name="broadcastQuote" value="false"/>
     </bean>
 
+	<!-- risk control -->
+	<bean id="maxRiskOrderCount" class="java.lang.Integer">
+        <constructor-arg value="50" />
+    </bean>
+    
+    <bean id="maxTotalOrderCount" class="java.lang.Integer">
+        <constructor-arg value="450" />
+    </bean>
+
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
 
