@@ -100,6 +100,7 @@ public class CentralDbProcessor implements IPlugin
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent checkEvent = new AsyncTimerEvent();
 	private AsyncTimerEvent insertEvent = new AsyncTimerEvent();
+	private AsyncTimerEvent retrieveEvent = new AsyncTimerEvent();
 	private long SQLDelayInterval = 1;
 	private long timeInterval = 60000;
 	private long checkSQLInterval = 10 * 60 * 1000;
@@ -198,6 +199,10 @@ public class CentralDbProcessor implements IPlugin
 			log.info("Get insertEvent, start insertSQL");
 			insertSQL();
 //			System.out.println("insert");
+		}
+		else if (event == retrieveEvent)
+		{
+			retrieveChart();
 		}
 	}
 	
@@ -593,6 +598,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void getAllChartPrice()
 	{
+		clearAllChartPrice();
 		ArrayList<String> marketList = new ArrayList<String>();
 		for (SymbolChef chef : SymbolChefList)
 		{
@@ -654,6 +660,13 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 			
+	}
+	public void clearAllChartPrice()
+	{
+		for (SymbolChef chef : SymbolChefList)
+		{
+			chef.clearAllChartPrice();
+		}
 	}
 	public void getChartPrice(String market, String strType)
 	{
@@ -946,7 +959,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		else
 		{
-			retrieveChart();
+			scheduleManager.scheduleTimerEvent(10 * 60 * 1000, eventProcessor, retrieveEvent);
 		}
 	}
 

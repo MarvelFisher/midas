@@ -157,6 +157,14 @@ public class SymbolChef implements Runnable{
 		}
 	}
 	
+	public void clearAllChartPrice()
+	{
+		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		{
+			entry.getValue().clearMapHistorical();
+		}
+	}
+	
 	public List<String> getAllMarket()
 	{
 		ArrayList<String> marketList = new ArrayList<String>();
