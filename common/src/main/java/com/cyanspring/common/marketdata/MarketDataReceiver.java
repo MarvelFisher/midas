@@ -282,9 +282,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void printQuoteExtendLog(int sourceId, DataObject quoteExtend){
         StringBuffer sbQuoteExtendLog = new StringBuffer();
         for (String key : quoteExtend.getFields().keySet()) {
-            sbQuoteExtendLog.append("," + key + "=" + quoteExtend.getFields().get(key));
+            sbQuoteExtendLog.append("," + (key.length() >= 3 ? key.substring(0,2) + key.substring(key.length()-1,key.length()) : key) + "=" + quoteExtend.getFields().get(key));
         }
-        quoteLog.info("QuoteExtend Receive : " + "Source=" + sourceId + sbQuoteExtendLog.toString());
+        quoteLog.info("QuoteExtend Receive : " + "Sc=" + sourceId + sbQuoteExtendLog.toString());
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
