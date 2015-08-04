@@ -666,6 +666,10 @@ public class WindDataParser extends AbstractWindDataParser {
                         }
                     }
                     switch (key) {
+                        case "CNName":
+                            codeTableData.setCnName(value);
+                            codeTableData.setSpellName(getSpellName(value,true));
+                            break;
                         case "ShortName":
                             codeTableData.setShortName(value);
                             break;
@@ -701,6 +705,10 @@ public class WindDataParser extends AbstractWindDataParser {
             } else {
                 codeTableData = new CodeTableData();
                 codeTableData.setWindCode(symbol);
+            }
+            if (null != inputHashMap.get(FDTFields.CNName)) {
+                codeTableData.setCnName(new String((byte[]) inputHashMap.get(FDTFields.CNName), "UTF-8"));
+                codeTableData.setSpellName(getSpellName(codeTableData.getCnName(), true));
             }
             if (null != inputHashMap.get(FDTFields.ShortName))
                 codeTableData.setShortName(new String((byte[]) inputHashMap.get(FDTFields.ShortName), "UTF-8"));

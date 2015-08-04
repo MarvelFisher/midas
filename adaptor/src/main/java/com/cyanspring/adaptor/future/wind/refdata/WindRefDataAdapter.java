@@ -55,8 +55,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     public static final int REFDATA_RETRY_COUNT = 2;
     public static final int WINDBASEDB_RETRY_COUNT = 2;
-    private String gatewayIp = "10.0.0.20";
-    private int gatewayPort = 10048;
+    private String gatewayIp;
+    private int gatewayPort;
     private boolean msgPack = true;
     private String refDataFile;
     private String windbaseDataFile;
@@ -132,6 +132,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             if (in_arr == null) return;
         }
         switch (datatype) {
+            case WindDef.MSG_WINDGW_CONNECTED:
+                log.debug("get WindGW connected" + inputMessageHashMap);
             case WindDef.MSG_SYS_CODETABLE_RESULT:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
                 CodeTableData codeTableData = null;
@@ -146,14 +148,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     return;
                 }
                 //filter not index/Stock data
-                if (codeTableData == null || codeTableData.getSecurityType() >= 22) {
+                if (codeTableData == null || codeTableData.getSecurityType() >= 22 || "36".equals(codeTableData.getWindCode().substring(0,2))) {
                     return;
                 }
                 //Check WindBaseDB Data
                 String windCode = codeTableData.getWindCode();
                 if (!windBaseDBDataHashMap.containsKey(windCode)) {
                     //only Stock record log
-                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode + "type=" + codeTableData.getSecurityType());
+                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode + ",T=" + codeTableData.getSecurityType());
                     return;
                 } else {
                     windBaseDBData = windBaseDBDataHashMap.get(windCode);
