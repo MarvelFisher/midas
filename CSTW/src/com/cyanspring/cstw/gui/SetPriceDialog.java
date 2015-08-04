@@ -19,45 +19,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.account.OpenPosition;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
+import com.cyanspring.common.event.order.UpdateOpenPositionPriceEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 
 import org.eclipse.swt.layout.GridData;
 
-public class SetClosePriceDialog extends Dialog {
-	private static final Logger log = LoggerFactory.getLogger(SetClosePriceDialog.class);
+public class SetPriceDialog extends Dialog {
+	private static final Logger log = LoggerFactory.getLogger(SetPriceDialog.class);
 	private Text price;
-	double closePrice;
+	double inputPrice;
 	private OpenPosition position;
+	private Mode mode;
+
 	/**
 	 * Create the dialog.
+	 * 
 	 * @param parentShell
 	 */
-	public SetClosePriceDialog(Shell parentShell, OpenPosition position) {
+	public SetPriceDialog(Shell parentShell, OpenPosition position, Mode mode) {
 		super(parentShell);
 		this.position = position;
+		this.mode = mode;
 	}
 
 	/**
 	 * Create contents of the dialog.
+	 * 
 	 * @param parent
 	 */
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
-		
+
 		Composite composite = new Composite(container, SWT.NONE);
 		GridLayout gl_composite = new GridLayout(2, false);
 		gl_composite.marginRight = 20;
 		gl_composite.marginLeft = 20;
 		composite.setLayout(gl_composite);
-		
+
 		Label priceLabel = new Label(composite, SWT.NONE);
 		priceLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, true, 1, 1));
 		priceLabel.setText("price: ");
-		
+
 		price = new Text(composite, SWT.BORDER);
 		price.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
@@ -66,6 +73,7 @@ public class SetClosePriceDialog extends Dialog {
 
 	/**
 	 * Create contents of the button bar.
+	 * 
 	 * @param parent
 	 */
 	@Override
@@ -74,11 +82,16 @@ public class SetClosePriceDialog extends Dialog {
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent select) {			
+			public void widgetSelected(SelectionEvent select) {
 				try {
 					String server = Business.getInstance().getFirstServer();
-					ManualClosePositionRequestEvent request = new ManualClosePositionRequestEvent(position.getAccount(), server,
-							position, IdGenerator.getInstance().getNextID(), closePrice);
+					RemoteAsyncEvent request = null;
+					if (mode == Mode.CLOSE_POSITION)
+						request = new ManualClosePositionRequestEvent(position.getAccount(), server, position,
+								IdGenerator.getInstance().getNextID(), inputPrice);
+					else if (mode == Mode.CHANGE_POSITION_PRICE)
+						request = new UpdateOpenPositionPriceEvent(position.getAccount(), server, 
+								inputPrice, position.getSymbol(), position.getAccount());
 					Business.getInstance().getEventManager().sendRemoteEvent(request);
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
@@ -94,17 +107,21 @@ public class SetClosePriceDialog extends Dialog {
 	protected Point getInitialSize() {
 		return new Point(220, 150);
 	}
-	
+
 	@Override
-	protected void okPressed(){
+	protected void okPressed() {
 		try {
-			if (price.getText() == null || price.getText().trim() == "") 
-				closePrice = 0.0;
+			if (price.getText() == null || price.getText().trim() == "")
+				inputPrice = 0.0;
 			else
-				closePrice = Double.parseDouble(price.getText());
+				inputPrice = Double.parseDouble(price.getText());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-	    super.okPressed();
+		super.okPressed();
+	}
+
+	enum Mode {
+		CLOSE_POSITION, CHANGE_POSITION_PRICE
 	}
 }

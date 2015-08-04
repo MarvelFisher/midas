@@ -862,6 +862,31 @@ public class PositionKeeper {
 		log.info("Resetting margin held done");
 	}
 	
+	public void updateAccountOpenPosition(String account, String symbol, double price) throws AccountException{
+		List<OpenPosition> list = getOpenPositions(account);
+		for (OpenPosition position : list) {
+			if (!position.getSymbol().equals(symbol))
+				continue;
+			if(refDataManager == null)
+				continue;
+			Account acc = accountKeeper.getAccount(account);
+			AccountSetting settings = accountKeeper.getAccountSetting(account);
+			RefData refData = refDataManager.getRefData(symbol);
+			double pricePerUnit = refData.getPricePerUnit();
+			if(PriceUtils.Equal(pricePerUnit, 0)){
+				pricePerUnit = 1.0;
+			}
+			double margin = pricePerUnit * price * position.getQty();
+			double leverage = leverageManager.getLeverage(refData, settings);
+			margin /= leverage;
+			acc.setMarginHeld(acc.getMarginHeld() - position.getMargin() + margin);
+			position.setMargin(margin);
+			position.setPrice(price);
+			this.notifyUpdateDetailOpenPosition(position);
+			this.notifyOpenPositionUpdate(position);
+		}		
+	}
+	
 	public void lockAccountPosition(ParentOrder order) throws AccountException {
 		closePositionLock.lockAccountPosition(order);
 	}
