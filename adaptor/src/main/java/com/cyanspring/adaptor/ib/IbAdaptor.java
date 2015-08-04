@@ -100,6 +100,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private boolean cancelOpenOrders = false;
     private Set<Integer> openOrderIds = new LinkedHashSet<Integer>();
     private boolean cancellingOpenOrders;
+    private long LastSend;
 
     public IbAdaptor() {
         clientSocket = new EClientSocket(this);
@@ -114,12 +115,22 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     while (true) {
                         if (clientSocket.isConnected() == false) {
                             ConnectToIBGateway();
+                        } else {
+                            if(System.currentTimeMillis() - LastSend > 15000) {
+                                log.warn("IB Gateway too long not tick,reconnect!");
+                                clientSocket.eDisconnect();
+                                //wait disconnect
+                                try {
+                                    TimeUnit.SECONDS.sleep(20);
+                                } catch (InterruptedException e) {}
+                                continue;
+                            }
                         }
                         gcChildOrders();
                         try {
                             TimeUnit.SECONDS.sleep(10);
                         } catch (InterruptedException e) {
-                            return;
+//                            return;
                         }
                     }
                 }
@@ -157,7 +168,10 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         } catch (InterruptedException e) {
             log.warn(e.getMessage(), e);
         }
-        if(clientSocket.isConnected()) log.info("IB connected");
+        if(clientSocket.isConnected()){
+            LastSend = System.currentTimeMillis();
+            log.info("IB connected");
+        }
     }
 
     @Override
@@ -592,6 +606,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     synchronized private void publishQuote(Quote quote) {
 //        if(!checkQuote(quote)) return;
+        LastSend = System.currentTimeMillis();
         quote = (Quote) quote.clone();
         quote.sourceId = 1;
         quote.setTimeStamp(new Date());
