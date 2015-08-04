@@ -153,7 +153,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 String windCode = codeTableData.getWindCode();
                 if (!windBaseDBDataHashMap.containsKey(windCode)) {
                     //only Stock record log
-                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode);
+                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode + "type=" + codeTableData.getSecurityType());
                     return;
                 } else {
                     windBaseDBData = windBaseDBDataHashMap.get(windCode);
@@ -313,9 +313,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             stmt.close();
             conn.close();
         } catch (SQLException se) {
-            log.warn(se.getMessage(),se);
+            log.error(se.getMessage(),se);
         } catch (Exception e) {
-            log.warn(e.getMessage(),e);
+            log.error(e.getMessage(),e);
         } finally {
             try {
                 if (stmt != null) stmt.close();
@@ -324,7 +324,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             try {
                 if (conn != null) conn.close();
             } catch (SQLException se) {
-                log.warn(se.getMessage(),se);
+                log.error(se.getMessage(),se);
             }
         }
         log.debug("wind baseDB process end");
