@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.info.GroupListRequestEvent;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
@@ -249,6 +250,11 @@ public class CentralDbEventProc implements Runnable
 	public void processRefDataEvent(RefDataEvent event) 
 	{
 		centraldb.onCallRefData(event);
+	}
+	
+	public void processGroupListRequestEvent(GroupListRequestEvent event)
+	{
+		centraldb.userRequestGroupList(event);
 	}
 	
 	public void parseEvent(RemoteAsyncEvent event) throws Exception

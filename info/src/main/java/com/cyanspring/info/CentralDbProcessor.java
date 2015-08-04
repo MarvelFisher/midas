@@ -35,6 +35,8 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.info.CentralDbReadyEvent;
 import com.cyanspring.common.event.info.CentralDbSubscribeEvent;
+import com.cyanspring.common.event.info.GroupListEvent;
+import com.cyanspring.common.event.info.GroupListRequestEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
@@ -144,6 +146,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestDateEvent.class, null);
+			subscribeToEvent(GroupListRequestEvent.class, null);
 		}
 
 		@Override
@@ -287,6 +290,10 @@ public class CentralDbProcessor implements IPlugin
 	{
 		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
+	public void processGroupListRequestEvent(GroupListRequestEvent event)
+	{
+		mapCentralDbEventProc.get("Request").onEvent(event);
+	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
 	{
@@ -354,7 +361,6 @@ public class CentralDbProcessor implements IPlugin
 		log.info("Process Request Group Symbol success Symbol: " + symbolinfos.size());
 		sendEvent(retEvent);
 	}
-	
 
 	public void userSetGroupSymbol(SymbolListSubscribeEvent retEvent, 
 			   String user, 
@@ -429,6 +435,22 @@ public class CentralDbProcessor implements IPlugin
 			log.info("Process Request Group Symbol success Symbol: " + symbolinfos.size());
 		}
 		sendEvent(retEvent);
+	}
+	
+	public void userRequestGroupList(GroupListRequestEvent event)
+	{
+		GroupListEvent retEvent = new GroupListEvent(null, event.getSender());
+		String user = event.getUserID();
+		String market = event.getMarket();
+		ArrayList<String> retList = (ArrayList<String>) this.getDbhnd().getGroupList(user, market);
+		if (retList == null)
+		{
+			retEvent.setGroupList(null);
+			retEvent.setOk(false);
+//				retEvent.setMessage("Can't find requested symbol");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.CONNECTION_BROKEN, "Lost connection to Info Database"));
+			log.debug("Process Request Group Symbol fail: Can't find requested symbol");
+		}
 	}
 	
 	public void writeToTick(Quote quote)

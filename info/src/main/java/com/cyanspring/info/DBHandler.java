@@ -181,6 +181,42 @@ public class DBHandler
 		}
 		return retsymbollist;
     }
+    public List<String> getGroupList(String user, String market)
+    {
+    	ArrayList<String> retsymbollist = new ArrayList<String>(); 
+		String sqlcmd = String.format("SELECT `GROUP` FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s';", 
+				user, market) ;
+
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return null;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
+		try 
+		{
+			int pos;
+			String group;
+			while(rs.next())
+			{
+				group = rs.getString("GROUP").toLowerCase();
+				pos = Collections.binarySearch(retsymbollist, group);
+				if (pos < 0)
+				{
+					retsymbollist.add(~pos, group);
+				}
+			}
+		} 
+		catch (SQLException e) 
+		{
+			log.error(e.getMessage(), e) ;
+		}
+		finally
+		{
+			closeConnect(connect);
+		}
+		return retsymbollist;
+    }
     public HistoricalPrice getLastValue(String market, String type, String symbol, boolean dir)
     {
     	if (market == null)
