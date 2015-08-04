@@ -1,24 +1,5 @@
 package com.cyanspring.adaptor.ib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.marketdata.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.RefDataField;
@@ -26,27 +7,24 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.stream.IStreamAdaptor;
-import com.cyanspring.common.type.ExchangeOrderType;
-import com.cyanspring.common.type.ExecType;
-import com.cyanspring.common.type.OrdStatus;
-import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.type.QtyPrice;
+import com.cyanspring.common.type.*;
 import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
-import com.ib.client.Contract;
-import com.ib.client.ContractDetails;
-import com.ib.client.EClientSocket;
-import com.ib.client.EWrapper;
-import com.ib.client.EWrapperMsgGenerator;
-import com.ib.client.Execution;
-import com.ib.client.Order;
-import com.ib.client.OrderState;
-import com.ib.client.UnderComp;
+import com.ib.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         IStreamAdaptor<IDownStreamConnection> {
@@ -100,7 +78,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private boolean cancelOpenOrders = false;
     private Set<Integer> openOrderIds = new LinkedHashSet<Integer>();
     private boolean cancellingOpenOrders;
-    private long LastSend;
+    private long lastTimeSend;
 
     public IbAdaptor() {
         clientSocket = new EClientSocket(this);
@@ -116,7 +94,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                         if (clientSocket.isConnected() == false) {
                             ConnectToIBGateway();
                         } else {
-                            if(System.currentTimeMillis() - LastSend > 15000) {
+                            if(System.currentTimeMillis() - lastTimeSend > 15000) {
                                 log.warn("IB Gateway too long not tick,reconnect!");
                                 clientSocket.eDisconnect();
                                 //wait disconnect
@@ -169,7 +147,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             log.warn(e.getMessage(), e);
         }
         if(clientSocket.isConnected()){
-            LastSend = System.currentTimeMillis();
+            lastTimeSend = System.currentTimeMillis();
             log.info("IB connected");
         }
     }
@@ -606,7 +584,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     synchronized private void publishQuote(Quote quote) {
 //        if(!checkQuote(quote)) return;
-        LastSend = System.currentTimeMillis();
+        lastTimeSend = System.currentTimeMillis();
         quote = (Quote) quote.clone();
         quote.sourceId = 1;
         quote.setTimeStamp(new Date());
