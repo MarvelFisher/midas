@@ -254,6 +254,7 @@ public class SymbolItem implements AutoCloseable {
 //        quote.setTimeStamp(new Date());
         InnerQuote innerQuote = new InnerQuote(2, quote); //Id Adapter soureid = 2
         innerQuote.setContributor(contributeCode);
+        innerQuote.setThrowQuoteTimeInterval(IdMarketDataAdaptor.instance.getThrowQuoteTimeInterval());
         IdMarketDataAdaptor.instance.sendInnerQuote(innerQuote);
     }
 

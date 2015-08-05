@@ -67,6 +67,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     private List<String> contributeList;
     private List<String> unContributeList;
     private Map<String,String> pluginContributeBySymbolMap;
+    private long throwQuoteTimeInterval = 0;
 
     @Override
     public void init() throws Exception {
@@ -509,4 +510,11 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         this.exch = exch;
     }
 
+    public long getThrowQuoteTimeInterval() {
+        return throwQuoteTimeInterval;
+    }
+
+    public void setThrowQuoteTimeInterval(long throwQuoteTimeInterval) {
+        this.throwQuoteTimeInterval = throwQuoteTimeInterval;
+    }
 }

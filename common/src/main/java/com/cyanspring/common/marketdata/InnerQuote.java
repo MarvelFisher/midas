@@ -7,6 +7,7 @@ public class InnerQuote {
     private Quote quote;
     private int sourceId;
     private String contributor;
+    private long throwQuoteTimeInterval = 0;
 
     public InnerQuote(int sourceId, Quote quote){
         this.quote = quote;
@@ -31,5 +32,13 @@ public class InnerQuote {
 
     public void setContributor(String contributor) {
         this.contributor = contributor;
+    }
+
+    public long getThrowQuoteTimeInterval() {
+        return throwQuoteTimeInterval;
+    }
+
+    public void setThrowQuoteTimeInterval(long throwQuoteTimeInterval) {
+        this.throwQuoteTimeInterval = throwQuoteTimeInterval;
     }
 }

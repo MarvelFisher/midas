@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +79,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean isUninit = false;
     private String serverInfo = null;
     private boolean nonWait = false;
-
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -263,13 +263,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void printQuoteLog(int sourceId, String contributor, Quote quote, QuoteLogLevel quoteLogLevel) {
         StringBuffer sb = new StringBuffer();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HH:mm:ss.SSS");
         sb.append("Sc=" + sourceId
                         + ",S=" + quote.getSymbol() + ",A=" + quote.getAsk()
                         + ",B=" + quote.getBid() + ",C=" + quote.getClose()
                         + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                         + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                         + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
-                        + ",ts=" + quote.getTimeStamp().toString()
+                        + ",ts=" + sdf.format(quote.getTimeStamp())
                         + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
                         + (sourceId == QuoteSource.ID.getValue() ? ",Cb=" + contributor : "")
         );
@@ -419,7 +420,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
             log.warn("Quotes receive time large than excepted.");
         }
-
+        if(quoteChecker != null){
+            if(!quoteChecker.checkTickTime(innerQuote.getQuote(), innerQuote.getThrowQuoteTimeInterval()))
+                printQuoteLog(innerQuote.getSourceId(), innerQuote.getContributor(), innerQuote.getQuote(), QuoteLogLevel.TIME_ERROR);
+        }
         chkDate = Clock.getInstance().now();
         InnerQuoteEvent event = new InnerQuoteEvent(innerQuote.getSymbol(), null,
                 innerQuote.getQuote(), innerQuote.getSourceId(), innerQuote.getContributor());
