@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.CoinControl;
 import com.cyanspring.common.business.CoinType;
 import com.cyanspring.common.event.AsyncEventProcessor;
@@ -69,28 +70,53 @@ public class CoinManager implements IPlugin{
 		eventProcessor.uninit();
 	}
 	
+	public Account getAccountFromUserId(String userId){
+		List <Account> accountList = accountKeeper.getAccounts(userId);
+		if(null == accountList || accountList.size() <= 0 ){
+			return null;
+		}
+		
+		return accountList.get(0);
+	}
+	
 	public void processCoinSettingRequestEvent(CoinSettingRequestEvent event){
-		String accountId = event.getAccountId();	
-		log.info("Receive Coin Setting :{}",accountId);
+		String userId = event.getUserId();	
+		log.info("Receive Coin Setting :{}",userId);
 		CoinType coinType = event.getCoinType();
 		boolean isOk = false;
 		String message = "";
 		Date now = new Date();	
 		Date endDate = event.getEndDate();
-
-		CoinControl coin = getCoinControlOrDefault(accountId);			
+		String accountId = "";
+		CoinControl coin = null;
+				
 	
 		check:{
 			
-			if(!accountKeeper.accountExists(accountId)){
+			if(Strings.isNullOrEmpty(userId)){
 				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "Account not exist!");
 				break check;
 			}
+			
+			Account account = getAccountFromUserId(userId);
+			if(null == account){
+				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "Account not exist!");
+				break check;
+			}
+			
+			accountId = account.getId();
 			
 			if(null == endDate){
 				message = MessageLookup.buildEventMessage(ErrorMessage.COIN_END_DATE_NOT_SETTING, "Coin end date not setting!");
 				break check;
 			}			
+
+			coin = getCoinControlOrDefault(accountId);	
+			
+			if(null == coin){
+				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "get coin control error!");
+				break check;
+			}
 			
 			if(null == coinType){
 				message = MessageLookup.buildEventMessage(ErrorMessage.COIN_TYPE_NOT_FOUND, "Coin type not found!");
@@ -163,6 +189,9 @@ public class CoinManager implements IPlugin{
 	
 	private CoinControl getCoinControlOrDefault(String accountId){
 	
+		if(Strings.isNullOrEmpty(accountId))
+			return null;
+		
 		CoinControl coin = accountCoinControlMap.get(accountId);		
 		if(null == coin){
 			coin = CoinControl.createDefaultCoinControl(accountId);
