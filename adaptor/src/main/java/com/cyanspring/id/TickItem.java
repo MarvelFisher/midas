@@ -39,18 +39,14 @@ public class TickItem {
 	 * @param tValue
 	 */
 	void setValue(int nField, Date tValue) {
-		//writeLockList.lock();
 		switch (nField) {
-		case FieldID.LastTradeTime: {	
+		case FieldID.QuoteTime: {
 			time = tValue;
-			//Calendar cal = Calendar.getInstance();
-			//cal.setTime(time);
 		}
 			break;
 		default:
 			break;
 		}
-		//writeLockList.unlock();
 	}
 
 	/**

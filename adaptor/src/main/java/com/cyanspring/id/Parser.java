@@ -190,7 +190,7 @@ public class Parser implements IReqThreadCallback {
         int nDP = 0;
         String nContributeCode = "";
 
-        Date tTime = new Date(0);
+        long quoteTime = 0;
         String[] vec = StringUtil.split(strLine, '|');
         int nSource = 0;
         for (int i = 0; i < vec.length; i++) {
@@ -228,20 +228,15 @@ public class Parser implements IReqThreadCallback {
                 case FieldID.DisplayPrecision: {
                     nDP = Integer.parseInt(vec2[1]);
                 }
-                break;
-                case FieldID.LastTradeTime: {
-
-                    tTime = new Date(); //(long) (Double.parseDouble(vec2[1]) * 1000));
-                }
-                break;
+                    break;
+                case FieldID.LastTradeTime:
+//                    tTime = new Date(); //(long) (Double.parseDouble(vec2[1]) * 1000));
+                    break;
                 case FieldID.LastActivityTime:
-                case FieldID.QuoteTime: {
-                    if (0 == tTime.getTime()) {
-                        tTime = new Date(
-                                (long) (Double.parseDouble(vec2[1]) * 1000));
-                    }
-                }
-                break;
+                    break;
+                case FieldID.QuoteTime:
+                    quoteTime = (long) (Double.parseDouble(vec2[1]) * 1000);
+                    break;
                 default: {
                     dataByFieldIdMap.put(nField, vec2[1]);
                 }
@@ -253,7 +248,7 @@ public class Parser implements IReqThreadCallback {
             return false;
         }
 
-        if (0 == tTime.getTime()) {
+        if (0 == quoteTime) {
             return false;
         }
 
@@ -280,10 +275,12 @@ public class Parser implements IReqThreadCallback {
             }
         }
 
+        Date tickTime = new Date(quoteTime); //convert quote time
+
         // Get ForexData and process ForexData
         SymbolItem item = QuoteMgr.instance().getItem(strID);
         if (item != null) {
-            item.parseTick(time, tTime, nDP, dataByFieldIdMap);
+            item.parseTick(time, tickTime, nDP, dataByFieldIdMap);
             return true;
         }
 

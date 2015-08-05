@@ -184,7 +184,7 @@ public class SymbolItem implements AutoCloseable {
         if (dataByFieldIdMap.containsKey(FieldID.AskPrice)
                 && dataByFieldIdMap.containsKey(FieldID.BidPrice)) {
             bTick = true;
-            tick.setValue(FieldID.LastTradeTime, timeTick);
+            tick.setValue(FieldID.QuoteTime, timeTick);
         }
 
         Set<Integer> set = dataByFieldIdMap.keySet();
@@ -251,7 +251,7 @@ public class SymbolItem implements AutoCloseable {
         }
 
         Quote quote = getQuote();
-        quote.setTimeStamp(new Date());
+//        quote.setTimeStamp(new Date());
         InnerQuote innerQuote = new InnerQuote(2, quote); //Id Adapter soureid = 2
         innerQuote.setContributor(contributeCode);
         IdMarketDataAdaptor.instance.sendInnerQuote(innerQuote);
