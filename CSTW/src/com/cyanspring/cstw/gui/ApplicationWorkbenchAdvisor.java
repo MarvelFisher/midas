@@ -41,7 +41,16 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		super.initialize(configurer);
 		configurer.setSaveAndRestore(true);
 	}
-
+	@Override
+	public void preStartup() {
+		try {
+			Business.getInstance().start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		super.preStartup();
+	}
 	@Override
 	public void postStartup() {
 		try {
@@ -49,7 +58,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 //			ApplicationContext spring = new FileSystemXmlApplicationContext(Business.getInstance().getConfigPath() + "cstw.xml");
 //			SysSettings sys = (SysSettings)spring.getBean("sysSettings");
 //			log.debug("SysSettings: " + sys.CONF_PATH);
-			Business.getInstance().start();			
+//			Business.getInstance().start();			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 //			MessageDialog.openError(
