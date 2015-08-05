@@ -864,27 +864,52 @@ public class PositionKeeper {
 	
 	public void updateAccountOpenPosition(String account, String symbol, double price) throws AccountException{
 		List<OpenPosition> list = getOpenPositions(account);
+		Account acc = accountKeeper.getAccount(account);
+		AccountSetting settings = accountKeeper.getAccountSetting(account);
 		for (OpenPosition position : list) {
 			if (!position.getSymbol().equals(symbol))
 				continue;
 			if(refDataManager == null)
 				continue;
-			Account acc = accountKeeper.getAccount(account);
-			AccountSetting settings = accountKeeper.getAccountSetting(account);
+
+			Quote quote = quoteFeeder.getQuote(symbol);
+			if(quote == null)
+				continue;
+			
+			double qPrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
+			if(!PriceUtils.validPrice(qPrice))
+				qPrice = QuoteUtils.getValidPrice(quote);
+			if(!PriceUtils.validPrice(qPrice))
+				continue;
+			
+			
 			RefData refData = refDataManager.getRefData(symbol);
 			double pricePerUnit = refData.getPricePerUnit();
+			
 			if(PriceUtils.Equal(pricePerUnit, 0)){
 				pricePerUnit = 1.0;
 			}
-			double margin = pricePerUnit * price * position.getQty();
+			
+			double margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, acc.getCurrency(), 
+					position.getSymbol(), Math.abs(position.getQty()), position.getPrice());
 			double leverage = leverageManager.getLeverage(refData, settings);
 			margin /= leverage;
 			acc.setMarginHeld(acc.getMarginHeld() - position.getMargin() + margin);
 			position.setMargin(margin);
 			position.setPrice(price);
+			
+			double pnl = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
+					(qPrice-price));
+			position.setPnL(pnl);
+			double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, acc.getCurrency(), 
+					quote.getSymbol(), position.getPnL());
+			position.setAcPnL(urPnL);
+							
 			this.notifyUpdateDetailOpenPosition(position);
-			this.notifyOpenPositionUpdate(position);
-		}		
+		}
+		
+		OpenPosition update = getOverallPosition(acc, symbol);
+		this.notifyOpenPositionUpdate(update);
 	}
 	
 	public void lockAccountPosition(ParentOrder order) throws AccountException {
