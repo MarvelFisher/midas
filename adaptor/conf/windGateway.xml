@@ -43,7 +43,9 @@
 		<!-- 這是 DelimiterBased String packet 的 port , 若設為 0 , 則不使用 -->		
     	<property name="serverPort" value="0"/>
 		<!-- 要設為 true , 才會有獨立的 Thread 來處理從 Wind 收到的 Quote / Transaction -->
-		<property name="dedicatedWindThread" value="true"/>		
+		<property name="dedicatedWindThread" value="true"/>
+		<!-- WindGateway 自動結束時間 hhmm , 設為  < 0  則不使用此功能 -->
+		<property name="autoTermination" value="1527"/>		
 				
     	<!-- 若 cacading 或是 mpCascading 設為 true , 就是 cacading mode , 不會直接與 Wind 連線 -->	
     	<!--  DelimiterBased String Gateway and Cascading Configure -->	     			
@@ -52,8 +54,8 @@
     	<property name="upstreamPort" value="10049"/>
     
 		<!--  Msg Pack Lite Cascading Configure -->    	
-    	<property name="mpCascading" value="false"/>
-    	<property name="mpUpstreamIp" value="10.0.0.33"/> <!-- 61.152.93.132 -->
+    	<property name="mpCascading" value="true"/>
+    	<property name="mpUpstreamIp" value="10.0.0.20"/> <!-- 61.152.93.132 -->
     	<property name="mpUpstreamPort" value="10048"/>   
     	
     	 	

@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,6 +28,7 @@ public class MsgPackLiteDataClient implements Runnable {
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.MsgPackLiteDataClient.class);
 	
 	private boolean bAlive = true;
+	private Channel channel = null;
 
 	@Override
 	public void run() {
@@ -54,14 +56,18 @@ public class MsgPackLiteDataClient implements Runnable {
 					f = bootstrap.connect(WindGateway.mpUpstreamIp,WindGateway.mpUpstreamPort);
 					f.awaitUninterruptibly();
 					if(f.isSuccess()) {
-						// Wait until the connection is closed.				
+						// Wait until the connection is closed.
+						channel = f.channel();
 						f.channel().closeFuture().sync();
 					}
 				} catch (Exception e) {
 					log.warn(e.getMessage(),e);
 				}				
-				log.info("Message Pack Lite Data client disconnect with - " + WindGateway.mpUpstreamIp + " : " + WindGateway.mpUpstreamPort + " , will try again after 3 seconds.");
-				Thread.sleep(3000);				
+				log.info("Message Pack Lite Data client disconnect with - " + WindGateway.mpUpstreamIp + " : " + WindGateway.mpUpstreamPort);
+				if(bAlive) {
+					log.info("will try again after 3 seconds.");
+					Thread.sleep(3000);
+				}
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
@@ -73,6 +79,9 @@ public class MsgPackLiteDataClient implements Runnable {
 	
 	public void stop() {
 		bAlive = false;
+		if(channel != null) {
+			channel.close();
+		}
 	}
 }
 

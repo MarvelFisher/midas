@@ -1,10 +1,12 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.InvalidPropertiesFormatException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import com.cyanspring.Network.Transport.FDTFields;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -75,6 +78,7 @@ public class WindGateway implements Runnable {
 	public static MsgPackLiteServer msgPackLiteServer = null;
 	public static boolean dedicatedWindThread = false;
 	Demo demo = null,demoStock = null;
+	public static int autoTermination = 0;
 	
 	
 	public int getServerPort() {
@@ -215,6 +219,13 @@ public class WindGateway implements Runnable {
 	}
 	public void setDedicatedWindThread(boolean b) {
 		dedicatedWindThread = b;
+	}
+	
+	public int getAutoTermination() {
+		return autoTermination;
+	}
+	public void setAutoTermination(int val) {
+		autoTermination = val;
 	}
 		
 	
@@ -1033,12 +1044,14 @@ public class WindGateway implements Runnable {
 	
 	public void run()
 	{	
+		int exitCode = 0;
 		try {
 			//Demo demo = null,demoStock = null;
 			Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null,mpClientThread = null;
 			DataWrite dw = null,dwStock = null;
 			WindDataClient windDataClient = null;
 			MsgPackLiteDataClient mpDataClient = null;
+			DataHandler dh = null,dhStock = null;
 			
 	
 			if(cascading || mpCascading) {
@@ -1057,23 +1070,23 @@ public class WindGateway implements Runnable {
 				if(windMFServerIP != null && windMFServerIP != "")
 				{
 					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread,windMFWholeMarket);
-					DataHandler dh = new DataHandler (demo);
+					dh = new DataHandler (demo);  // 用來做 demo 的 斷線 reconnect
 					t1 = new Thread(dh,"windMerchandise");
 					t1.start();
-					dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
-					t2 = new Thread ( dw , "windMerchandiseConnectionCheck" );
-					t2.start();
+					//dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
+					//t2 = new Thread ( dw , "windMerchandiseConnectionCheck" );
+					//t2.start();
 				}
 				
 				if(windSFServerIP != null && windSFServerIP != "")
 				{
 					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSFWholeMarket);
-					DataHandler dhStock = new DataHandler (demoStock);
+					dhStock = new DataHandler (demoStock);  // 用來做 demo 的 斷線 reconnect
 					t1Stock = new Thread(dhStock,"windFutureAndStock");
 					t1Stock.start();
-					dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
-					t2Stock = new Thread ( dwStock,"windStockConnectionCheck" );
-					t2Stock.start();
+					//dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
+					//t2Stock = new Thread ( dwStock,"windStockConnectionCheck" );
+					//t2Stock.start();
 				}
 			}
 			
@@ -1086,8 +1099,18 @@ public class WindGateway implements Runnable {
 			EventLoopGroup bossGroup = null;
 			EventLoopGroup workerGroup = null;
 			
+			if(autoTermination >= 0) {
+				log.info("will Auto Terminated at : " + autoTermination);
+			}
+			
 			try
-			{
+			{				
+				Calendar cal;
+				cal = Calendar.getInstance();
+				int st = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);
+				int ct = st;
+				
+				
 				if(serverPort != 0) {
 					bossGroup   = new NioEventLoopGroup(2);
 					workerGroup = new NioEventLoopGroup(16);
@@ -1099,11 +1122,47 @@ public class WindGateway implements Runnable {
 					.option(ChannelOption.TCP_NODELAY, true)
 					.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)			
 					.childHandler(windGatewayInitializer);
-				
-					bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+					
+									
+					if(autoTermination < 0) {
+						bootstrap.bind(serverPort).sync().channel().closeFuture().sync();
+					} else {
+						ChannelFuture cf = bootstrap.bind(serverPort);
+						while(st == autoTermination && ct == st) {
+							Thread.sleep(1000);
+							cal = Calendar.getInstance();
+							ct = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);
+						}
+						
+						do {
+							Thread.sleep(1000);
+							cal = Calendar.getInstance();
+							ct = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);
+						} while(ct != autoTermination);
+						exitCode = 1;
+						cf.channel().close();
+					}
 				} else {
-					Thread.sleep(3000);  // sleep 一下,等 MsgPackServer 的 Thread 啟動
-					mpServerThread.join();
+					if(autoTermination < 0) {
+						Thread.sleep(3000);  // sleep 一下,等 MsgPackServer 的 Thread 啟動
+					} else {
+						while(st == autoTermination && ct == st) {
+							Thread.sleep(1000);
+							cal = Calendar.getInstance();
+							ct = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);
+						}
+						
+						do {
+							Thread.sleep(1000);
+							cal = Calendar.getInstance();
+							ct = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);							
+						} while(ct != autoTermination);						
+						exitCode = 1;
+						if(msgPackLiteServer != null) {
+							msgPackLiteServer.stop();
+						}
+					}
+					mpServerThread.join();	
 				}
 					
 			}
@@ -1113,22 +1172,24 @@ public class WindGateway implements Runnable {
 	
 				if(demo != null)
 				{
+					dh.Stop();
 					demo.setQuitFlag(true);
-					dw.setQuitFlag(true);	
+					//dw.setQuitFlag(true);	
 					t1.join();
-					System.out.println("Thread1 Quit!");
-					t2.join();			
-					System.out.println("Thread2 Quit!");
+					log.info(t1.getName() + " Terminated.");
+					//t2.join();			
+					//log.info("Thread2 Quit!");
 				}
 				
 				if(demoStock != null)
 				{
+					dhStock.Stop();
 					demoStock.setQuitFlag(true);
-					dwStock.setQuitFlag(true);	
+					//dwStock.setQuitFlag(true);	
 					t1Stock.join();
-					System.out.println("Thread1 for Stock Quit!");
-					t2Stock.join();			
-					System.out.println("Thread2 for Stock Quit!");			
+					log.info(t1Stock.getName() + " Terminated.");
+					//t2Stock.join();			
+					//log.info("Thread2 for Stock Quit!");			
 				}
 				if(clientThread != null) {
 					windDataClient.stop();
@@ -1155,6 +1216,16 @@ public class WindGateway implements Runnable {
 		{
 			log.error("Exception at WindGateway " + e.getMessage(),e);
 		}
+		if(exitCode == 1) {			
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		log.info("Exit Code : " + exitCode);
+		System.exit(exitCode);		
 	}
 	
 	
@@ -1187,8 +1258,9 @@ public class WindGateway implements Runnable {
         	msgPackLiteServer = (MsgPackLiteServer)context.getBean("MsgPackLiteServer");        	
         }
         instance = (WindGateway)context.getBean("WindGateway");
-        Thread serverThread = new Thread(instance,"windDataServer");
-        serverThread.start();
+        //Thread serverThread = new Thread(instance,"windDataServer");
+        //serverThread.start();
+        instance.run();
 	}
 		
 }

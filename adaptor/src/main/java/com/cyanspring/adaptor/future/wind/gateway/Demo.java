@@ -64,7 +64,6 @@ public class Demo {
 		this.port = port;
 		this.username = username;
 		this.password = password;
-		System.currentTimeMillis();
 		this.windGateway = gateWay;
 		this.openTypeFlags = typeFlags;
 		this.quitFlag = true;
@@ -130,8 +129,7 @@ public class Demo {
 	Demo(String ip, int port, String username, String password,
 			String proxy_ip, int proxy_port, String proxy_user, String proxy_pwd) {
 		
-		this.quitFlag = false;
-		System.currentTimeMillis();
+		this.quitFlag = false;		
 		TDF_OPEN_SETTING setting = new TDF_OPEN_SETTING();
 		setting.setIp(ip);
 		setting.setPort( Integer.toString(port));
@@ -504,6 +502,11 @@ class DataHandler  implements Runnable {
 	public DataHandler ( Demo  d) {
 	    this.demo = d;
 	}
+	
+	public void Stop() {
+		this.quitFlag = true;
+	}
+	
 	public void run ( ) {
 		while(quitFlag == false)
 		{
@@ -513,8 +516,11 @@ class DataHandler  implements Runnable {
 				{
 					demo.run();
 				}
-				log.warn("Disconnect with Wind , try to reconnect after 5 seconds. port : " +  demo.getPort());
-				Thread.sleep(5000);
+				log.info("Disconnect with Wind at port : " +  demo.getPort());
+				if(quitFlag == false) {
+					log.info("will try to reconnect after 5 seconds.");
+					Thread.sleep(5000);
+				} 
 			} catch (InterruptedException e) {
 				log.warn(e.getMessage(),e);
 			}			
@@ -583,10 +589,12 @@ class MsgProcessor implements Runnable {
 					if(msg != null) {					
 						ProcessMessage(msg);
 					}
-					//if(System.currentTimeMillis() >= ticks + 5000) {
-					//	ticks = System.currentTimeMillis();
-					//	log.info("Queue Size : " + queue.size());
-					//}					
+					if(System.currentTimeMillis() >= ticks + 5000) {
+						ticks = System.currentTimeMillis();
+						if(queue.size() > 0) {
+							log.info("Queue Size : " + queue.size());
+						}
+					}					
 				} while(msg != null);
 				Thread.sleep(5);
 			} catch (Exception e) {
