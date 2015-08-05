@@ -153,6 +153,9 @@ public class AccountPositionManager implements IPlugin {
 
 	@Autowired(required=false)
 	RiskOrderController riskOrderController;
+	
+	@Autowired(required = false)
+	CoinManager coinManager;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -1432,6 +1435,9 @@ public class AccountPositionManager implements IPlugin {
 			return false;
 		}
     	
+		if(null != coinManager && !coinManager.canCheckDailyStopLoss(account.getId()))
+        	return false;
+		
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 
 			if(account.getState().equals(AccountState.ACTIVE)) {
@@ -1460,6 +1466,9 @@ public class AccountPositionManager implements IPlugin {
         if(checkDailyStopLoss(account,accountSetting)){
         	return true;
         }
+        
+        if(null != coinManager && !coinManager.canCheckPositionStopLoss(account.getId()))
+        	return false;  
         
         try{
             if (null != accountSetting) {

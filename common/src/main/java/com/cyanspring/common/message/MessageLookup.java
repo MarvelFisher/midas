@@ -109,14 +109,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.TICK_DATA_EXCEPTION,getBean(253, "tick data error"));
 			addAndCheck(ErrorMessage.TICK_DATA_ASK_VOL_OUT_OF_SEQ,getBean(254, "depth ask vol out of sequence"));
 			addAndCheck(ErrorMessage.TICK_DATA_BID_VOL_OUT_OF_SEQ,getBean(255, "depth bid vol out of sequence"));
-
+			addAndCheck(ErrorMessage.COIN_TYPE_NOT_FOUND,getBean(256, "Coin type not found"));
+			addAndCheck(ErrorMessage.COIN_END_DATE_NOT_SETTING,getBean(257, "Coin end date not setting"));
 			
-			
-			
-			
-			
-			
-
 			// api errors start with 300
 			addAndCheck(ErrorMessage.SEVER_NOT_CONNECTED,getBean(300, "Server isn't connected"));
 			addAndCheck(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS,getBean(301, "User must login before send any events"));

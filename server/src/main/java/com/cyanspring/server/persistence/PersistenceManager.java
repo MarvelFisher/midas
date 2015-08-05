@@ -122,7 +122,8 @@ public class PersistenceManager {
 			subscribeToEvent(PmCreateGroupManagementEvent.class, null);
 			subscribeToEvent(PmDeleteGroupManagementEvent.class, null);
 			subscribeToEvent(PmAddCashEvent.class, null);
-
+			subscribeToEvent(PmUpdateCoinControlEvent.class, null);
+			
 			if (persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
 				subscribeToEvent(CancelSignalEvent.class, null);
@@ -1886,6 +1887,50 @@ public class PersistenceManager {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<CoinControl> recoverCoinControl() {
+		List<CoinControl> result = new ArrayList<CoinControl>();
+		Session session = null;
+		try {
+			session = sessionFactory.openSession();
+			result = (List<CoinControl>)session.createCriteria(CoinControl.class)
+				.list();
+		} catch (HibernateException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			if(session!=null)
+				session.close();
+		}
+		return result;
+	}
+    
+    public void processPmUpdateCoinControlEvent(PmUpdateCoinControlEvent event){
+		
+		CoinControl coinControl = event.getCoinControl();
+		if(null == coinControl){
+			log.warn("coin control is null");
+			return;
+		}
+		
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+
+			tx = session.beginTransaction();
+	    	session.saveOrUpdate(coinControl);
+		    tx.commit();
+		}
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+		    if (tx!=null) 
+		    	tx.rollback();
+		}
+		finally {
+			session.close();
+		}
+    }
+
+	
 	// getters and setters
 	public int getTextSize() {
 		return textSize;

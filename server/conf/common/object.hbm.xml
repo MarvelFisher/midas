@@ -285,6 +285,16 @@
       <property name="time" column="ADD_TIME" type="java.util.Date"/>
   </class>
 
+  <class name="com.cyanspring.common.business.CoinControl" table="ANYONE.COIN_CONTROL">
+  		<id name="accountId" column="ACCOUNT_ID"  	type="java.lang.String"/>
+  		<property name="checkPositionStopLossStart" column="CHECK_POSITION_STOP_LOSS_START" type="java.util.Date"/>
+  		<property name="checkPositionStopLossEnd" column="CHECK_POSITION_STOP_LOSS_END" type="java.util.Date"/>	
+  		<property name="checkDailyStopLossStart" column="CHECK_DAILY_STOP_LOSS_START" type="java.util.Date"/>
+  		<property name="checkDailyStopLossEnd" column="CHECK_DAILY_STOP_LOSS_END" type="java.util.Date"/>	
+  		<property name="checkTrailingStopStart" column="CHECK_TRAILING_STOP_START" type="java.util.Date"/>
+  		<property name="checkTrailingStopEnd" column="CHECK_TRAILING_STOP_END" type="java.util.Date"/>	  	
+  </class>
+  
   <sql-query name="rollEndOfDay2">
     <![CDATA[
 	INSERT INTO ANYONE.ACCOUNTS_DAILY(ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, MARGIN_HELD, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, ON_DATE, ON_TIME, TRADE_DATE) SELECT ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, MARGIN_HELD, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS    ]]>
