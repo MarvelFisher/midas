@@ -250,11 +250,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                             "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') AND S_INFO_DELISTDATE IS NULL AND S_INFO_NAME NOT LIKE '%ST%'\n" +
                             "UNION ALL\n" +
                             "SELECT \n" +
-                            "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
+                            "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' WHEN '000001.SH' THEN '999999.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
                             "\t,S_INFO_NAME,'' ENG,'' PINYIN,'I' AS MARKETTYPE\n" +
                             "FROM WindFileSync.AINDEXDESCRIPTION\n" +
                             "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') \n" +
-                            "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ')\n" +
+                            "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ','000001.SH')\n" +
                             ") AS MAIN\n" +
                             "LEFT JOIN\n" +
                             "(\n" +
