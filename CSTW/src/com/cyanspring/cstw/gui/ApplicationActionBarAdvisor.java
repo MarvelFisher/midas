@@ -17,8 +17,6 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.action.Action;
-import org.eclipse.wb.swt.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
