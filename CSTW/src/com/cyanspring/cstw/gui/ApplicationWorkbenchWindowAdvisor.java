@@ -80,13 +80,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
 			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
 			commandStateService.fireAccountChanged();
-						
+
 			// filter already open view 
 			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
 			for(IWorkbenchPage activePage: pages){
 				IViewReference vrs[] = activePage.getViewReferences();
 				for(IViewReference vr : vrs){
-					activePage.hideView(vr);
 					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
 						activePage.hideView(vr);
 					}else{
@@ -95,7 +94,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 					
 				}
 			}
-			
+						
 			ICommandService cmdService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 			Command command = cmdService.getCommand("CSTW.showUserCommand");
 			cmdService.refreshElements("CSTW.showUserCommand", null);
