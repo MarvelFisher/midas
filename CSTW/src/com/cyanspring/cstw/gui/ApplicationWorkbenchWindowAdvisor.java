@@ -50,7 +50,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
-		configurer.setShowCoolBar(false);
+		configurer.setShowCoolBar(true);
 		configurer.setShowStatusLine(true);
 		configurer.setTitle("Cyan Spring Trader Workstation");
 		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
