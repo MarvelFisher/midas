@@ -23,6 +23,7 @@ public enum ErrorMessage {
 	NONE_SET_CONNECTION_CONFIG,
 	SYSTEM_NOT_READY,
 	SERVER_NOT_READY_FOR_LOGIN,
+	SERVER_SUSPEND,
 	
 	
 	// business errors start with 200
