@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -373,9 +375,16 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Recieved null argument"));
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
+		String userEncode;
+		try {
+			userEncode = URLEncoder.encode(user, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.warn("CDP(382): Unsupported Encoding UTF-8");
+			userEncode = user;
+		}
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
-				" AND `GROUP`='%s' AND `MARKET`='%s';", user, group, market) ;
+				" AND `GROUP`='%s' AND `MARKET`='%s';", userEncode, group, market) ;
 		getDbhnd().updateSQL(sqlcmd);
 		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
@@ -390,7 +399,7 @@ public class CentralDbProcessor implements IPlugin
 				sqlcmd += "," ;
 			}
 			retsymbollist.add(syminfo);
-			sqlcmd += String.format("('%s','%s','%s',", user, group, market);
+			sqlcmd += String.format("('%s','%s','%s',", userEncode, group, market);
 			sqlcmd += (syminfo.getExchange() == null) ? "null," : String.format("'%s',", syminfo.getExchange());
 			sqlcmd += (syminfo.getCode() == null) ? "null," : String.format("'%s',", syminfo.getCode());
 			sqlcmd += (syminfo.getHint() == null) ? "null," : String.format("'%s',", syminfo.getHint());

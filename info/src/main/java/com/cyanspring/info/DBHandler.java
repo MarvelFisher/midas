@@ -1,5 +1,7 @@
 package com.cyanspring.info;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -140,8 +142,15 @@ public class DBHandler
     public List<SymbolInfo> getGroupSymbol(String user, String group, String market, IRefSymbolInfo refSymbolInfo, boolean set)
     {
     	ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>(); 
+		String userEncode;
+		try {
+			userEncode = URLEncoder.encode(user, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.warn("CDP(382): Unsupported Encoding UTF-8");
+			userEncode = user;
+		}
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
-				user, group, market) ;
+				userEncode, group, market) ;
 
 		Connection connect = getConnect();
 		if (connect == null)
