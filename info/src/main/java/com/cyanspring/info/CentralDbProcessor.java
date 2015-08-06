@@ -42,6 +42,7 @@ import com.cyanspring.common.event.info.GroupListRequestEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
+import com.cyanspring.common.event.info.RetrieveChartEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
@@ -149,6 +150,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestDateEvent.class, null);
 			subscribeToEvent(GroupListRequestEvent.class, null);
+			subscribeToEvent(RetrieveChartEvent.class, null);
 		}
 
 		@Override
@@ -289,6 +291,10 @@ public class CentralDbProcessor implements IPlugin
 	}
 	
 	public void processRefDataEvent(RefDataEvent event) 
+	{
+		mapCentralDbEventProc.get("Request").onEvent(event);
+	}
+	public void processRetrieveChartEvent(RetrieveChartEvent event)
 	{
 		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
@@ -626,6 +632,71 @@ public class CentralDbProcessor implements IPlugin
 		retrieveThread.setName("CDP_Retrieve_Chart");
 		retrieveThread.start();
 	}
+	public void retrieveAllChart(final RetrieveChartEvent event)
+	{
+		if (isRetrieving)
+		{
+			return;
+		}
+		isRetrieving = true;
+		Thread retrieveThread = new Thread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				log.debug("Retrieve Chart thread start");
+				while (calledRefdata == false)
+				{
+					try 
+					{
+						Thread.sleep(100);
+					} 
+					catch (InterruptedException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				getAllChartPrice();
+				log.debug("Retrieve Chart thread finish");
+				isRetrieving = false;
+				sendRetrieveReady(event);
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.checkAllChartPrice();
+				}
+			}
+		});
+		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.start();
+	}
+	
+	public void retrieveCharts(final RetrieveChartEvent event)
+	{
+		Thread retrieveThread = new Thread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				log.debug("Retrieve Chart thread start");
+				
+				List<String> symbolList = event.getSymbolList();
+				for (String symbol : symbolList)
+				{
+					getChefBySymbol(symbol).retrieveChartPrice(symbol);
+				}
+				
+				log.debug("Retrieve Chart thread finish");
+				isRetrieving = false;
+				sendRetrieveReady(event);
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.checkAllChartPrice();
+				}
+			}
+		});
+		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.start();
+	}
 	
 	public void getAllChartPrice()
 	{
@@ -783,6 +854,17 @@ public class CentralDbProcessor implements IPlugin
 		for (String appserv : appServIDList)
 		{
 			respondCentralReady(appserv);
+		}
+		isStartup = false;
+	}
+	public void sendRetrieveReady(RetrieveChartEvent event)
+	{
+		log.info("SymbolData is ready, send Retrieve Notification to all connected appServer");
+		for (String appserv : appServIDList)
+		{
+			event.setReceiver(appserv);
+			log.info("Sending RetrieveChartEvent to: " + appserv);
+			sendEvent(event);
 		}
 		isStartup = false;
 	}

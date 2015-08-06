@@ -165,6 +165,11 @@ public class SymbolChef implements Runnable{
 		}
 	}
 	
+	public void retrieveChartPrice(String symbol)
+	{
+		mapSymboldata.get(symbol).retrieveChartPrice();
+	}
+	
 	public List<String> getAllMarket()
 	{
 		ArrayList<String> marketList = new ArrayList<String>();
