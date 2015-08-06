@@ -18,6 +18,7 @@ import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
+import com.cyanspring.common.event.info.RetrieveChartEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeType;
@@ -251,6 +252,18 @@ public class CentralDbEventProc implements Runnable
 		centraldb.onCallRefData(event);
 	}
 	
+	public void processRetrieveChartEvent(RetrieveChartEvent event)
+	{
+		if (event.getSymbolList() == null)
+		{
+			centraldb.retrieveAllChart(event);
+		}
+		else
+		{
+			centraldb.retrieveCharts(event);
+		}
+	}
+	
 	public void parseEvent(RemoteAsyncEvent event) throws Exception
 	{
 		if (event instanceof HistoricalPriceRequestEvent)
@@ -276,6 +289,10 @@ public class CentralDbEventProc implements Runnable
 		else if (event instanceof RefDataEvent)
 		{
 			processRefDataEvent((RefDataEvent)event);
+		}
+		else if (event instanceof RetrieveChartEvent)
+		{
+			processRetrieveChartEvent((RetrieveChartEvent)event);
 		}
 	}
 

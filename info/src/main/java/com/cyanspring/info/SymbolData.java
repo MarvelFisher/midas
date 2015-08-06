@@ -452,6 +452,13 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
+	public void retrieveChartPrice()
+	{
+		log.debug("Retrieve chart data [" + strSymbol + "]");
+		mapHistorical.clear();
+		getAllChartPrice();
+	}
+	
 	public void getAllChartPrice()
 	{
 		getChartPrice("1");
