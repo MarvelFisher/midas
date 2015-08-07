@@ -40,6 +40,7 @@ public enum ImageID {
 	ORDER_CLOSE_ICON("icons/orderclose.png"),
 	MANUAL_CLOSE_ICON("icons/manualclose.png"),
 	STOP_PROGRESS_ICON("icons/stopProgress.png"),
+	MANUAL_PRICE_ICON("icons/manualPrice.png")
 	;
 	private String value;
 	ImageID(String value) {

@@ -456,7 +456,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		popModifyPositionPrice.setText("Modify open position price");
 		popModifyPositionPrice.setToolTipText("Modify open position price");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.MANUAL_CLOSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.MANUAL_PRICE_ICON.toString());
 		popModifyPositionPrice.setImageDescriptor(imageDesc);
 		return popModifyPositionPrice;
 	}

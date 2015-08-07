@@ -3,16 +3,21 @@
 
 <product name="CSTW" uid="com.cyanspring.cstw.product" id="com.cyanspring.cstw.product" application="com.cyanspring.cstw.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dfile.encoding=UTF-8</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <vmArgs>-Dfile.encoding=UTF-8
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/CSTW/icons/Leaves16.png" i32="/CSTW/icons/Leaves32.png" i48="/CSTW/icons/Leaves48.png" i64="/CSTW/icons/Leaves64.png" i128="/CSTW/icons/Leaves128.png"/>
+   <windowImages i16="/CSTW/icons/appIcon16.png" i32="/CSTW/icons/appIcon32.png" i48="/CSTW/icons/appIcon48.png" i64="/CSTW/icons/appIcon64.png" i128="/CSTW/icons/appIcon128.png"/>
 
+   <splash
+      location="CSTWjars" />
    <launcher name="CSTW">
       <solaris/>
       <win useIco="false">
@@ -20,8 +25,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="CSTWjars"/>
