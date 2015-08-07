@@ -145,7 +145,7 @@ public class MarketDataManager extends MarketDataReceiver {
                     Quote tempQuote = (Quote)quote.clone();
                     quoteCleaner.clear(tempQuote);
                     tempQuote.setTimeSent(Clock.getInstance().now());
-                    printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, tempQuote, QuoteLogLevel.GENERAL);
+                    printQuoteLog(QuoteSource.CLEAN_SESSION, null, tempQuote, QuoteLogLevel.GENERAL);
                     eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
                 }
             }
