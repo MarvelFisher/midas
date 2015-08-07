@@ -405,7 +405,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
         } else {
             //write last ExtendFile
-            saveDBDataToQuoteExtendFile();
+            try {
+                saveDBDataToQuoteExtendFile();
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
             saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
         }
         //connect WindGW
