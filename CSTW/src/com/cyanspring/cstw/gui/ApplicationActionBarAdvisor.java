@@ -14,6 +14,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -70,6 +71,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		ToolBarManager toolBarManager = new ToolBarManager();
 		coolBar.add(toolBarManager);
 		toolBarManager.add(userInfoItem);
+		toolBarManager.add(new Separator());
 		toolBarManager.add(suspendSystemAction);
 		super.fillCoolBar(coolBar);
 	}
