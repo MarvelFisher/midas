@@ -643,6 +643,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         FutureItem.futureItemBySymbolMap.clear();
         StockItem.stockItemBySymbolMap.clear();
         IndexItem.indexItemBySymbolMap.clear();
+        TransationItem.transationItemBySymbolMap.clear();
         ClientHandler.sendClearSubscribe();
     }
 
