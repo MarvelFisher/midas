@@ -136,11 +136,13 @@ public class MarketDataManager extends MarketDataReceiver {
         Quote quote = quotes.get(symbol);
 
         if (quote != null) {
-            eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
-            DataObject quoteExtend = quoteExtends.get(symbol);
-            if (isQuoteExtendEventIsSend()) {
-                if (quoteExtend != null) {
-                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+            if(event.getReceiver() != null) {
+                eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
+                DataObject quoteExtend = quoteExtends.get(symbol);
+                if (isQuoteExtendEventIsSend()) {
+                    if (quoteExtend != null) {
+                        eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+                    }
                 }
             }
         }
@@ -175,13 +177,14 @@ public class MarketDataManager extends MarketDataReceiver {
                 if (quote != null ) {
 
                     log.debug("PreOpen Send Clear Session quote:" + quote.getSymbol());
-                    quoteCleaner.clear(quote);
+                    Quote tempQuote = (Quote)quote.clone();
+                    quoteCleaner.clear(tempQuote);
                     quote.setTimeSent(Clock.getInstance().now());
-                    printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, quote, MarketDataDef.QUOTE_GENERAL);
-                    eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+                    printQuoteLog(MarketDataDef.QUOTE_CLEAN_SESSION, null, tempQuote, MarketDataDef.QUOTE_GENERAL);
+                    eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
 
                     if(quoteExtendCleaner != null && quoteExtends.containsKey(quote.getSymbol())){
-                        DataObject quoteExtend = quoteExtends.get(quote.getSymbol());
+                        DataObject quoteExtend = (DataObject)quoteExtends.get(quote.getSymbol()).clone();
                         quoteExtendCleaner.clear(quoteExtend);
                         quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                         eventManager.sendRemoteEvent(new QuoteExtEvent(quoteExtend.get(String.class,
