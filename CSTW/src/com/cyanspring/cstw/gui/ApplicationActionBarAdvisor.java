@@ -10,13 +10,16 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.application.ActionBarAdvisor;
-import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.application.ActionBarAdvisor;
+import org.eclipse.ui.application.IActionBarConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,13 @@ import com.cyanspring.cstw.gui.common.StyledAction;
  */
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private final static Logger log = LoggerFactory.getLogger(ApplicationActionBarAdvisor.class);
-	private StyledAction action;
+	
+	private Action suspendSystemAction;
+	
+	private Action userInfoAction;
+	private ActionContributionItem  userInfoItem; 
+	private final String ID_SUSPEND_SYSTEM_ACTION = "SUSPEND_SYSTEM_ACTION";
+	private final String ID_USER_INFO_ACTION = "USER_INFO_ACTION";
 	private ImageRegistry imageRegistry;
 	
 	// Actions - important to allocate these only in makeActions, and then use
@@ -47,8 +56,41 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void makeActions(final IWorkbenchWindow window) {
+		
+		createSuspendSystemAction();
+		createUserInfoAction();
+		
+	}
 
-		action = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX){
+	@Override
+	protected void fillCoolBar(ICoolBarManager coolBar) {
+		ToolBarManager toolBarManager = new ToolBarManager();
+		coolBar.add(toolBarManager);
+		toolBarManager.add(userInfoItem);
+		toolBarManager.add(suspendSystemAction);
+		super.fillCoolBar(coolBar);
+	}
+
+	@Override
+	protected void fillStatusLine(IStatusLineManager statusLine) {
+		ServerStatusDisplay.getInstance().setStatusLineManager(statusLine);
+	}
+	
+	public void createUserInfoAction(){
+		userInfoAction = new StyledAction("",org.eclipse.jface.action.IAction.AS_UNSPECIFIED) {
+		};
+		userInfoAction.setId(ID_USER_INFO_ACTION);
+		userInfoAction.setText(Business.getInstance().getAccount()+" - "+Business.getInstance().getUserGroup().getRole().toString());
+		userInfoAction.setDescription("");
+		userInfoAction.setToolTipText("");
+		userInfoAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.USER_ICON.toString()));
+		userInfoItem = new ActionContributionItem(userInfoAction);
+		userInfoItem.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+		userInfoAction.setEnabled(false);
+	}
+	
+	public void createSuspendSystemAction(){
+		suspendSystemAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX){
 			public void run(){
 				boolean suspend;
 				if(this.isChecked()){
@@ -66,21 +108,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 				}
 			}
 		};
-		action.setImageDescriptor(imageRegistry.getDescriptor(ImageID.ALERT_ICON.toString()));
-	}
-
-	@Override
-	protected void fillCoolBar(ICoolBarManager coolBar) {
-		super.fillCoolBar(coolBar);
-
-		ToolBarManager toolBarManager = new ToolBarManager();
-		coolBar.add(toolBarManager);
-		toolBarManager.add(action);
-	}
-
-	@Override
-	protected void fillStatusLine(IStatusLineManager statusLine) {
-		ServerStatusDisplay.getInstance().setStatusLineManager(statusLine);
+		suspendSystemAction.setId(ID_SUSPEND_SYSTEM_ACTION);
+		suspendSystemAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.ALERT_ICON.toString()));
 	}
 
 }

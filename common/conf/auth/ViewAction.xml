@@ -9,6 +9,7 @@
 >
 
 	<context:annotation-config />
+	<import resource="view/ApplicationView.xml" />
 	<import resource="view/AccountView.xml" />
 	<import resource="view/PositionView.xml" />
 	<import resource="view/SingleOrderStrategyView.xml" />
@@ -16,6 +17,8 @@
 	<bean id="viewActionList" class="java.util.ArrayList">
     	<constructor-arg>
         	<list>
+        		<ref bean="applicationView"/>
+        		<ref bean="applicationViewAction1"/>
         		<ref bean="accountView"/>
             	<ref bean="accountViewAction1"/>
             	<ref bean="accountViewAction2"/>      

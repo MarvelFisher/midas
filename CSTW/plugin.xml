@@ -155,12 +155,6 @@
          point="org.eclipse.ui.menus">
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu">
-         <command
-               commandId="CSTW.showUserCommand"
-               icon="icons/user.png"
-               id="SHOW_USER"
-               label="Default">
-         </command>
          <menu
                label="File">
             <command
@@ -542,11 +536,6 @@
             description="Users"
             id="CSTW.usermanagement.UserView"
             name="Users">
-      </command>
-      <command
-            defaultHandler="com.cyanspring.cstw.gui.command.handler.ElementHandler"
-            id="CSTW.showUserCommand"
-            name="showUserCommand">
       </command>
    </extension>
    <extension
