@@ -113,7 +113,7 @@ public class MarketDataManager extends MarketDataReceiver {
             DataObject quoteExtend = quoteExtends.get(symbol);
             if (isQuoteExtendEventIsSend()) {
                 if (quoteExtend != null) {
-                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, QuoteSource.DEFAULT));
                 }
             }
         }
@@ -149,7 +149,7 @@ public class MarketDataManager extends MarketDataReceiver {
                 if (quote != null ) {
                     quoteCleaner.clear(quote);
                     quote.setTimeSent(Clock.getInstance().now());
-                    printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, quote, QuoteLogLevel.GENERAL);
+                    printQuoteLog(QuoteSource.CLEAN_SESSION, null, quote, QuoteLogLevel.GENERAL);
                     eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
                 }
             }
@@ -171,8 +171,8 @@ public class MarketDataManager extends MarketDataReceiver {
                     quoteExtendCleaner.clear(quoteExtend);
                     quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     try {
-                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION.getValue(), quoteExtend);
-                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION.getValue()));
+                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
+                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }

@@ -134,7 +134,7 @@
 		<constructor-arg>
 			<ref bean="simExchange" />
 		</constructor-arg>
-		<property name="sourceId" value="101"/>
+		<property name="quoteSource" value="WIND_GENERAL"/>
 	</bean>
 
 	<bean id="simExchange" class="webcurve.exchange.Exchange">

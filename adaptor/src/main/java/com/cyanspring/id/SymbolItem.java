@@ -2,6 +2,7 @@ package com.cyanspring.id;
 
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteSource;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.id.Library.Util.*;
 import org.slf4j.Logger;
@@ -252,7 +253,7 @@ public class SymbolItem implements AutoCloseable {
 
         Quote quote = getQuote();
 //        quote.setTimeStamp(new Date());
-        InnerQuote innerQuote = new InnerQuote(2, quote); //Id Adapter soureid = 2
+        InnerQuote innerQuote = new InnerQuote(QuoteSource.ID, quote); //Id Adapter soureid = 2
         innerQuote.setContributor(contributeCode);
         innerQuote.setThrowQuoteTimeInterval(IdMarketDataAdaptor.instance.getThrowQuoteTimeInterval());
         IdMarketDataAdaptor.instance.sendInnerQuote(innerQuote);

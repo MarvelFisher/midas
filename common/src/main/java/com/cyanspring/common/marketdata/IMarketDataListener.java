@@ -15,6 +15,6 @@ import com.cyanspring.common.data.DataObject;
 
 public interface IMarketDataListener {
 	void onQuote(InnerQuote innerQuote);
-	void onQuoteExt(DataObject quoteExt, int sourceId);
+	void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource);
 	void onTrade(Trade trade);
 }

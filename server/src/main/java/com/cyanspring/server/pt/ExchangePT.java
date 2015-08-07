@@ -52,7 +52,7 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 		if(quote == null)
 			mdAdaptor.subscribeMarketData(instrument, this);
 		if(null != quote && null!= mdListener)
-			mdListener.onQuote(new InnerQuote(1, quote));
+			mdListener.onQuote(new InnerQuote(QuoteSource.DEFAULT, quote));
 	}
 	
 	public IMarketDataAdaptor getMdAdaptor() {
@@ -64,7 +64,7 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 	}
 
 	@Override
-	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+	public void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource) {
 		
 	}
 
