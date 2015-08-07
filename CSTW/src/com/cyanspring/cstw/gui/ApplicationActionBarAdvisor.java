@@ -15,8 +15,10 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.common.StyledAction;
 
@@ -95,6 +98,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 				boolean suspend;
 				if(this.isChecked()){
 					suspend = true;
+					boolean isOk = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "", "suspend server?");
+					if(!isOk){
+						suspendSystemAction.setChecked(false);
+						return;					
+					}
 				} else {
 					suspend = false;
 				}
