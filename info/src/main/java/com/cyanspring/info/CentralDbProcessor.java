@@ -55,6 +55,7 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
+import com.cyanspring.common.info.GroupInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.info.RefSubName;
 import com.cyanspring.common.marketdata.HistoricalPrice;
@@ -457,15 +458,20 @@ public class CentralDbProcessor implements IPlugin
 		GroupListEvent retEvent = new GroupListEvent(null, event.getSender());
 		String user = event.getUserID();
 		String market = event.getMarket();
-		ArrayList<String> retList = (ArrayList<String>) this.getDbhnd().getGroupList(user, market);
+		List<GroupInfo> retList = this.getDbhnd().getGroupList(user, market);
+		retEvent.setGroupList(retList);
 		if (retList == null)
 		{
-			retEvent.setGroupList(null);
 			retEvent.setOk(false);
 //				retEvent.setMessage("Can't find requested symbol");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.CONNECTION_BROKEN, "Lost connection to Info Database"));
 			log.debug("Process Request Group Symbol fail: Can't find requested symbol");
 		}
+		else
+		{
+			retEvent.setOk(true);
+		}
+		sendEvent(retEvent);
 	}
 	
 	public void writeToTick(Quote quote)

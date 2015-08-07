@@ -202,7 +202,7 @@ public class ForexClient implements IMarketDataListener,
 	}
 
 	@Override
-	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+	public void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource) {
 		
 	}
 }

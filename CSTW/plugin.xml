@@ -434,8 +434,9 @@
          </property>
          <property
                name="windowImages"
-               value="icons/Leaves16.png,icons/Leaves32.png,icons/Leaves48.png,icons/Leaves64.png,icons/Leaves128.png">
+               value="icons/appIcon16.png,icons/appIcon32.png,icons/appIcon48.png,icons/appIcon64.png,icons/appIcon128.png">
          </property>
+
       </product>
    </extension>
    <extension

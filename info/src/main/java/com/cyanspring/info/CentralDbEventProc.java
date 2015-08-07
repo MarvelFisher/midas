@@ -299,6 +299,10 @@ public class CentralDbEventProc implements Runnable
 		{
 			processRetrieveChartEvent((RetrieveChartEvent)event);
 		}
+		else if (event instanceof GroupListRequestEvent)
+		{
+			processGroupListRequestEvent((GroupListRequestEvent)event);
+		}
 	}
 
 	@Override

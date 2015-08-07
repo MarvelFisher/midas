@@ -28,7 +28,7 @@ import com.cyanspring.common.type.QtyPrice;
 
 public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	private Exchange exchange;
-	private int sourceId;
+	private QuoteSource quoteSource;
 	private volatile boolean isConnected = false;
 	Map<String, List<IMarketDataListener>> subs = 
 		Collections.synchronizedMap(new HashMap<String, List<IMarketDataListener>>());
@@ -68,7 +68,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 			List<IMarketDataListener> list = subs.get(book.getCode());
 			if(null != list)
 				for(IMarketDataListener listener: list)
-					listener.onQuote(new InnerQuote(sourceId, (Quote)quote.clone()));
+					listener.onQuote(new InnerQuote(quoteSource, (Quote)quote.clone()));
 		}
 		
 	};
@@ -126,7 +126,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		if(book != null) {
 			Quote quote = bookToQuote(book);
 			cache.put(instrument, quote);
-			listener.onQuote(new InnerQuote(sourceId, (Quote)quote.clone()));
+			listener.onQuote(new InnerQuote(quoteSource, (Quote)quote.clone()));
 		}
 			
 	}
@@ -202,7 +202,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 
 	}
 
-	public void setSourceId(int sourceId) {
-		this.sourceId = sourceId;
+	public void setQuoteSource(QuoteSource quoteSource) {
+		this.quoteSource = quoteSource;
 	}
 }

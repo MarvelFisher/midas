@@ -9,6 +9,7 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
+import com.cyanspring.common.marketdata.QuoteSource;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
@@ -239,7 +240,7 @@ public class StockItem implements AutoCloseable {
 
             //process send quote
             WindGateWayAdapter.instance.saveLastQuote(quote);
-            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(101, quote));
+            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, quote));
         } else {
             log.debug(WindDef.TITLE_STOCK + " " + WindDef.WARN_PRECLOSE_LESS_THAN_ZERO + "," + stockData.getWindCode());
         }
