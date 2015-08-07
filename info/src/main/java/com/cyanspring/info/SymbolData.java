@@ -838,6 +838,10 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				continue;
 			}
+			if (count != 0)
+			{
+				sqlcmd += ",";
+			}
 			strKeyTime = sdf.format(price.getKeytime()) ;
 			sqlcmd += String.format(insertValues, 
 					price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
@@ -847,6 +851,10 @@ public class SymbolData implements Comparable<SymbolData>
 			count++;
 			if (strSymbol.equals(getStrSymbol()) == false)
 			{
+				if (count != 0)
+				{
+					sqlcmd += ",";
+				}
 				sqlcmd += String.format(insertValues, 
 						price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 						strSymbol, price.getOpen(), price.getClose(), 
