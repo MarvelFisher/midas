@@ -165,7 +165,7 @@ public class MarketDataManager extends MarketDataReceiver {
             if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
                 log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
                 for (String symbol : quoteExtends.keySet()) {
-                    DataObject quoteExtend = (DataObject)quoteExtends.get(quote.getSymbol()).clone();
+                    DataObject quoteExtend = (DataObject)quoteExtends.get(symbol).clone();
                     quoteExtendCleaner.clear(quoteExtend);
                     quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     try {
