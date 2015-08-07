@@ -2,14 +2,9 @@ package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
+import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -147,7 +142,10 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("PreOpen Send Clear Session quote:" + quotes.size());
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
-                    quoteCleaner.clear(quote);
+
+                    log.debug("PreOpen Send Clear Session quote:" + quote.getSymbol());
+                    Quote tempQuote = (Quote)quote.clone();
+                    quoteCleaner.clear(tempQuote);
                     quote.setTimeSent(Clock.getInstance().now());
                     printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, quote, QuoteLogLevel.GENERAL);
                     eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
@@ -167,7 +165,7 @@ public class MarketDataManager extends MarketDataReceiver {
             if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
                 log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
                 for (String symbol : quoteExtends.keySet()) {
-                    DataObject quoteExtend = quoteExtends.get(symbol);
+                    DataObject quoteExtend = (DataObject)quoteExtends.get(quote.getSymbol()).clone();
                     quoteExtendCleaner.clear(quoteExtend);
                     quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     try {
