@@ -35,7 +35,6 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 	private Date tradeDate = null;
 	private String tradeDateFormat = "yyyy-MM-dd";
-	private boolean suspendServer = false;
 
 	@Autowired
 	protected IRemoteEventManager eventManager;
@@ -48,7 +47,6 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(MultiQuoteExtendEvent.class, null);
-			subscribeToEvent(SuspendServerEvent.class, null);
 		}
 
 		@Override
@@ -81,11 +79,6 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	public void requestMarketSession() {
 		eventManager.sendEvent(
 				new MarketSessionRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, true));
-	}
-
-	public void processSuspendServerEvent(SuspendServerEvent event) {
-		log.info("Server suspend: " + event.isSuspendServer());
-		suspendServer = event.isSuspendServer();
 	}
 
 	public void processMarketSessionEvent(MarketSessionEvent event) {
@@ -189,9 +182,5 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		if (null != td && !"".equals(td)) {
 			tradeDate = TimeUtil.parseDate(td, tradeDateFormat);
 		}
-	}
-
-	public boolean isServerSuspend() {
-		return suspendServer;
 	}
 }

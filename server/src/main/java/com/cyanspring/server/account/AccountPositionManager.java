@@ -56,6 +56,7 @@ import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateOpenPositionPriceEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
@@ -82,6 +83,7 @@ import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
 import com.cyanspring.server.order.RiskOrderController;
+import com.cyanspring.server.order.SuspendSystemController;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
 
@@ -156,6 +158,9 @@ public class AccountPositionManager implements IPlugin {
 	
 	@Autowired(required = false)
 	CoinManager coinManager;
+	
+	@Autowired(required = false)
+	SuspendSystemController suspendSystemController;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -1389,6 +1394,9 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingPnL() + ", " +
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
+	                
+	                if (suspendSystemController != null && suspendSystemController.isSuspendSystem())
+	                	continue;
 	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
 	                	if(liveTradingCheckHandler.startCheckChain(account, accountSetting)){
 	                		continue;

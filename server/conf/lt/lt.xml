@@ -378,4 +378,6 @@
     <bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
 
+	<bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/>
+	
 </beans>
