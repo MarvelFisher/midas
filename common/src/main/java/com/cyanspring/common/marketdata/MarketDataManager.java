@@ -136,13 +136,11 @@ public class MarketDataManager extends MarketDataReceiver {
         Quote quote = quotes.get(symbol);
 
         if (quote != null) {
-            if(event.getReceiver() != null) {
-                eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
-                DataObject quoteExtend = quoteExtends.get(symbol);
-                if (isQuoteExtendEventIsSend()) {
-                    if (quoteExtend != null) {
-                        eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
-                    }
+            eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
+            DataObject quoteExtend = quoteExtends.get(symbol);
+            if (isQuoteExtendEventIsSend()) {
+                if (quoteExtend != null) {
+                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
                 }
             }
         }
