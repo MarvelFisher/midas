@@ -55,8 +55,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     public static final int REFDATA_RETRY_COUNT = 2;
     public static final int WINDBASEDB_RETRY_COUNT = 2;
-    private String gatewayIp = "10.0.0.20";
-    private int gatewayPort = 10048;
+    private String gatewayIp;
+    private int gatewayPort;
     private boolean msgPack = true;
     private String refDataFile;
     private String windbaseDataFile;
@@ -132,6 +132,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             if (in_arr == null) return;
         }
         switch (datatype) {
+            case WindDef.MSG_WINDGW_CONNECTED:
+                log.debug("get WindGW connected" + inputMessageHashMap);
             case WindDef.MSG_SYS_CODETABLE_RESULT:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
                 CodeTableData codeTableData = null;
@@ -146,14 +148,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     return;
                 }
                 //filter not index/Stock data
-                if (codeTableData == null || codeTableData.getSecurityType() >= 22) {
+                if (codeTableData == null || codeTableData.getSecurityType() >= 22 || "36".equals(codeTableData.getWindCode().substring(0,2))) {
                     return;
                 }
                 //Check WindBaseDB Data
                 String windCode = codeTableData.getWindCode();
                 if (!windBaseDBDataHashMap.containsKey(windCode)) {
                     //only Stock record log
-                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode);
+                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode + ",T=" + codeTableData.getSecurityType());
                     return;
                 } else {
                     windBaseDBData = windBaseDBDataHashMap.get(windCode);
@@ -248,11 +250,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                             "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') AND S_INFO_DELISTDATE IS NULL AND S_INFO_NAME NOT LIKE '%ST%'\n" +
                             "UNION ALL\n" +
                             "SELECT \n" +
-                            "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
+                            "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' WHEN '000001.SH' THEN '999999.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
                             "\t,S_INFO_NAME,'' ENG,'' PINYIN,'I' AS MARKETTYPE\n" +
                             "FROM WindFileSync.AINDEXDESCRIPTION\n" +
                             "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') \n" +
-                            "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ')\n" +
+                            "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ','000001.SH')\n" +
                             ") AS MAIN\n" +
                             "LEFT JOIN\n" +
                             "(\n" +
@@ -313,9 +315,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             stmt.close();
             conn.close();
         } catch (SQLException se) {
-            log.warn(se.getMessage(),se);
+            log.error(se.getMessage(),se);
         } catch (Exception e) {
-            log.warn(e.getMessage(),e);
+            log.error(e.getMessage(),e);
         } finally {
             try {
                 if (stmt != null) stmt.close();
@@ -324,7 +326,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             try {
                 if (conn != null) conn.close();
             } catch (SQLException se) {
-                log.warn(se.getMessage(),se);
+                log.error(se.getMessage(),se);
             }
         }
         log.debug("wind baseDB process end");
@@ -403,7 +405,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
         } else {
             //write last ExtendFile
-            saveDBDataToQuoteExtendFile();
+            try {
+                saveDBDataToQuoteExtendFile();
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
             saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
         }
         //connect WindGW

@@ -5,20 +5,21 @@ package com.cyanspring.common.marketdata;
  */
 public class InnerQuote {
     private Quote quote;
-    private int sourceId;
+    private QuoteSource quoteSource;
     private String contributor;
+    private long throwQuoteTimeInterval = 0;
 
-    public InnerQuote(int sourceId, Quote quote){
+    public InnerQuote(QuoteSource quoteSource, Quote quote){
         this.quote = quote;
-        this.sourceId = sourceId;
+        this.quoteSource = quoteSource;
     }
 
     public Quote getQuote() {
         return quote;
     }
 
-    public int getSourceId() {
-        return sourceId;
+    public QuoteSource getQuoteSource() {
+        return quoteSource;
     }
 
     public String getSymbol(){
@@ -31,5 +32,13 @@ public class InnerQuote {
 
     public void setContributor(String contributor) {
         this.contributor = contributor;
+    }
+
+    public long getThrowQuoteTimeInterval() {
+        return throwQuoteTimeInterval;
+    }
+
+    public void setThrowQuoteTimeInterval(long throwQuoteTimeInterval) {
+        this.throwQuoteTimeInterval = throwQuoteTimeInterval;
     }
 }

@@ -115,6 +115,12 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 	}
 	
 	private void doLogin() {
+		
+		if(!Business.getInstance().isFirstServerReady()){
+			lblMessage.setText("Server not ready");
+			return;
+		}
+
 		lblMessage.setText("");
 		Business business = Business.getInstance();
 		// need to review which server to get login

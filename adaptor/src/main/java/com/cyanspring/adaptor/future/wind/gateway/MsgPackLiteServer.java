@@ -41,10 +41,10 @@ public class MsgPackLiteServer implements Runnable {
 	}	
 	
 	public void stop() {
+		bAlive = false;
 		if(this.channel != null) {
 			this.channel.close();
 		}
-		bAlive = false;
 	}
 	
 	private void runNetty() {
@@ -84,14 +84,16 @@ public class MsgPackLiteServer implements Runnable {
             			// Wait until the server socket is closed.
             			// In this example, this does not happen, but you can do that to gracefully
             			// shut down your server.
+            			this.channel = f.channel();
             			f.channel().closeFuture().sync();
             		
             		}
             	} catch(Exception e) {
             		log.warn(e.getMessage(),e);
-            	}
-            	log.warn("Wind Message Pack Lite Data server can not bind at port : " + serverPort + " , will try again after 3 seconds.");
+            	}   
+            	log.info("Wind Message Pack Lite Server Closed");
             	if(bAlive) {
+            		log.warn("Wind Message Pack Lite Data server can not bind at port : " + serverPort + " , will try again after 3 seconds.");
             		Thread.sleep(3000);
             	}
             }

@@ -54,7 +54,9 @@ import com.cyanspring.common.event.order.CancelStrategyOrderEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
+import com.cyanspring.common.event.order.UpdateOpenPositionPriceEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
@@ -81,6 +83,7 @@ import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
 import com.cyanspring.server.order.RiskOrderController;
+import com.cyanspring.server.order.SuspendSystemController;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.google.common.base.Strings;
 
@@ -152,6 +155,12 @@ public class AccountPositionManager implements IPlugin {
 
 	@Autowired(required=false)
 	RiskOrderController riskOrderController;
+	
+	@Autowired(required = false)
+	CoinManager coinManager;
+	
+	@Autowired(required = false)
+	SuspendSystemController suspendSystemController;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -194,6 +203,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(AddCashEvent.class, null);
             subscribeToEvent(ChangeAccountStateRequestEvent.class,null);
             subscribeToEvent(ManualClosePositionRequestEvent.class, null);
+            subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);
         }
 
         @Override
@@ -410,6 +420,27 @@ public class AccountPositionManager implements IPlugin {
         scheduleManager.uninit();
         eventProcessor.uninit();
         timerProcessor.uninit();
+    }
+    
+    public void processUpdateOpenPositionPriceEvent(UpdateOpenPositionPriceEvent event) {
+    	String symbol = event.getSymbol();
+    	String account = event.getAccount();
+    	double price = event.getPrice();
+    	log.info("processUpdateOpenPositionPriceEvent, account: " + account + 
+    			", symbol: " + symbol + ", price: " + price);
+    	if(!StringUtils.hasText(symbol) || 
+    			!StringUtils.hasText(account) || PriceUtils.EqualLessThan(price, 0)) {
+    		log.error("processUpdateOpenPositionPriceEvent fail, account: " + account + 
+    				", symbol: " + symbol + ", price: " + price);
+    		return;
+    	}
+    	
+    	try {
+			positionKeeper.updateAccountOpenPosition(account, symbol, price);
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+		}
+    		
     }
     
     public void processManualClosePositionRequestEvent(ManualClosePositionRequestEvent event) {
@@ -1363,6 +1394,9 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingPnL() + ", " +
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
+	                
+	                if (suspendSystemController != null && suspendSystemController.isSuspendSystem())
+	                	continue;
 	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
 	                	if(liveTradingCheckHandler.startCheckChain(account, accountSetting)){
 	                		continue;
@@ -1409,6 +1443,9 @@ public class AccountPositionManager implements IPlugin {
 			return false;
 		}
     	
+		if(null != coinManager && !coinManager.canCheckDailyStopLoss(account.getId()))
+        	return false;
+		
 		if(PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
 
 			if(account.getState().equals(AccountState.ACTIVE)) {
@@ -1437,6 +1474,9 @@ public class AccountPositionManager implements IPlugin {
         if(checkDailyStopLoss(account,accountSetting)){
         	return true;
         }
+        
+        if(null != coinManager && !coinManager.canCheckPositionStopLoss(account.getId()))
+        	return false;  
         
         try{
             if (null != accountSetting) {

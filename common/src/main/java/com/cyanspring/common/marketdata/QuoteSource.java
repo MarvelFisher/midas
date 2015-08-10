@@ -1,6 +1,7 @@
 package com.cyanspring.common.marketdata;
 
 public enum QuoteSource {
+    DEFAULT(-3),
     CLEAN_SESSION(-1),
     RESEND(0),
     IB(1),

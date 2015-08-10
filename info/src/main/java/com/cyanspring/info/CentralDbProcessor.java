@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -35,9 +37,12 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.info.CentralDbReadyEvent;
 import com.cyanspring.common.event.info.CentralDbSubscribeEvent;
+import com.cyanspring.common.event.info.GroupListEvent;
+import com.cyanspring.common.event.info.GroupListRequestEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
+import com.cyanspring.common.event.info.RetrieveChartEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
@@ -50,6 +55,7 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
+import com.cyanspring.common.info.GroupInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.info.RefSubName;
 import com.cyanspring.common.marketdata.HistoricalPrice;
@@ -144,6 +150,8 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(CentralDbSubscribeEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(HistoricalPriceRequestDateEvent.class, null);
+			subscribeToEvent(GroupListRequestEvent.class, null);
+			subscribeToEvent(RetrieveChartEvent.class, null);
 		}
 
 		@Override
@@ -287,6 +295,14 @@ public class CentralDbProcessor implements IPlugin
 	{
 		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
+	public void processRetrieveChartEvent(RetrieveChartEvent event)
+	{
+		mapCentralDbEventProc.get("Request").onEvent(event);
+	}
+	public void processGroupListRequestEvent(GroupListRequestEvent event)
+	{
+		mapCentralDbEventProc.get("Request").onEvent(event);
+	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
 	{
@@ -354,7 +370,6 @@ public class CentralDbProcessor implements IPlugin
 		log.info("Process Request Group Symbol success Symbol: " + symbolinfos.size());
 		sendEvent(retEvent);
 	}
-	
 
 	public void userSetGroupSymbol(SymbolListSubscribeEvent retEvent, 
 			   String user, 
@@ -373,9 +388,16 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Recieved null argument"));
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
+		String userEncode;
+		try {
+			userEncode = URLEncoder.encode(user, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.warn("CDP(382): Unsupported Encoding UTF-8");
+			userEncode = user;
+		}
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
-				" AND `GROUP`='%s' AND `MARKET`='%s';", user, group, market) ;
+				" AND `GROUP`='%s' AND `MARKET`='%s';", userEncode, group, market) ;
 		getDbhnd().updateSQL(sqlcmd);
 		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
@@ -390,7 +412,7 @@ public class CentralDbProcessor implements IPlugin
 				sqlcmd += "," ;
 			}
 			retsymbollist.add(syminfo);
-			sqlcmd += String.format("('%s','%s','%s',", user, group, market);
+			sqlcmd += String.format("('%s','%s','%s',", userEncode, group, market);
 			sqlcmd += (syminfo.getExchange() == null) ? "null," : String.format("'%s',", syminfo.getExchange());
 			sqlcmd += (syminfo.getCode() == null) ? "null," : String.format("'%s',", syminfo.getCode());
 			sqlcmd += (syminfo.getHint() == null) ? "null," : String.format("'%s',", syminfo.getHint());
@@ -427,6 +449,27 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setSymbolList(retsymbollist);
 			retEvent.setOk(true);
 			log.info("Process Request Group Symbol success Symbol: " + symbolinfos.size());
+		}
+		sendEvent(retEvent);
+	}
+	
+	public void userRequestGroupList(GroupListRequestEvent event)
+	{
+		GroupListEvent retEvent = new GroupListEvent(null, event.getSender());
+		String user = event.getUserID();
+		String market = event.getMarket();
+		List<GroupInfo> retList = this.getDbhnd().getGroupList(user, market);
+		retEvent.setGroupList(retList);
+		if (retList == null)
+		{
+			retEvent.setOk(false);
+//				retEvent.setMessage("Can't find requested symbol");
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.CONNECTION_BROKEN, "Lost connection to Info Database"));
+			log.debug("Process Request Group Symbol fail: Can't find requested symbol");
+		}
+		else
+		{
+			retEvent.setOk(true);
 		}
 		sendEvent(retEvent);
 	}
@@ -595,6 +638,71 @@ public class CentralDbProcessor implements IPlugin
 		retrieveThread.setName("CDP_Retrieve_Chart");
 		retrieveThread.start();
 	}
+	public void retrieveAllChart(final RetrieveChartEvent event)
+	{
+		if (isRetrieving)
+		{
+			return;
+		}
+		isRetrieving = true;
+		Thread retrieveThread = new Thread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				log.debug("Retrieve Chart thread start");
+				while (calledRefdata == false)
+				{
+					try 
+					{
+						Thread.sleep(100);
+					} 
+					catch (InterruptedException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				getAllChartPrice();
+				log.debug("Retrieve Chart thread finish");
+				isRetrieving = false;
+				sendRetrieveReady(event);
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.checkAllChartPrice();
+				}
+			}
+		});
+		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.start();
+	}
+	
+	public void retrieveCharts(final RetrieveChartEvent event)
+	{
+		Thread retrieveThread = new Thread(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				log.debug("Retrieve Chart thread start");
+				
+				List<String> symbolList = event.getSymbolList();
+				for (String symbol : symbolList)
+				{
+					getChefBySymbol(symbol).retrieveChartPrice(symbol);
+				}
+				
+				log.debug("Retrieve Chart thread finish");
+				isRetrieving = false;
+				sendRetrieveReady(event);
+				for (SymbolChef chef : SymbolChefList)
+				{
+					chef.checkAllChartPrice();
+				}
+			}
+		});
+		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.start();
+	}
 	
 	public void getAllChartPrice()
 	{
@@ -752,6 +860,17 @@ public class CentralDbProcessor implements IPlugin
 		for (String appserv : appServIDList)
 		{
 			respondCentralReady(appserv);
+		}
+		isStartup = false;
+	}
+	public void sendRetrieveReady(RetrieveChartEvent event)
+	{
+		log.info("SymbolData is ready, send Retrieve Notification to all connected appServer");
+		for (String appserv : appServIDList)
+		{
+			event.setReceiver(appserv);
+			log.info("Sending RetrieveChartEvent to: " + appserv);
+			sendEvent(event);
 		}
 		isStartup = false;
 	}

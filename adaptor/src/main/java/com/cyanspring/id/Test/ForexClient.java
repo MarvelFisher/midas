@@ -24,7 +24,7 @@ import com.cyanspring.id.Library.Util.LogUtil;
 public class ForexClient implements IMarketDataListener,
 		IMarketDataStateListener, IFrameClose, AutoCloseable {
 	
-	public static final String _ClientName = "QuotesFeed 1.20150423.1";
+	public static final String _ClientName = "QuotesFeed 1.20150807.1";
 	private static final Logger log = LoggerFactory.getLogger(ForexClient.class);
 	
 	public static ForexClient instance = null;
@@ -202,7 +202,7 @@ public class ForexClient implements IMarketDataListener,
 	}
 
 	@Override
-	public void onQuoteExt(DataObject quoteExt, int sourceId) {
+	public void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource) {
 		
 	}
 }

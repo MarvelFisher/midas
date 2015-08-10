@@ -63,12 +63,19 @@ public class QuoteChecker implements IQuoteChecker {
         return isCorrect;
     }
 
-    public boolean checkTime(Quote prev, Quote quote){
-        boolean isCorrectQuote = true;
-        if(prev!=null){
-            if(TimeUtil.getTimePass(quote.getTimeStamp(), prev.getTimeStamp()) < 0) isCorrectQuote = false;
+    /**
+     * Check Quote TickTime
+     * @param quote
+     * @param throwQuoteTimeInterval milliseconds
+     * @return
+     */
+    public boolean checkTickTime(Quote quote,long throwQuoteTimeInterval){
+        if(throwQuoteTimeInterval > 0){
+            if(TimeUtil.getTimePass(quote.getTimeStamp()) > throwQuoteTimeInterval){
+                return false;
+            }
         }
-        return isCorrectQuote;
+        return true;
     }
 
     // Check Quote Value

@@ -86,6 +86,7 @@ public class MsgPackRefDataClientHandler extends ChannelInboundHandlerAdapter {
         if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
+        if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
         return dataType;
     }
 

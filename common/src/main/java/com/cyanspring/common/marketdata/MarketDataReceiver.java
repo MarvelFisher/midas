@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +79,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean isUninit = false;
     private String serverInfo = null;
     private boolean nonWait = false;
-
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -188,8 +188,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         Quote prev = quotes.get(quote.getSymbol());
 
         //Calculate Future Quote last Volume
-        if (inEvent.getSourceId() == QuoteSource.WIND_GENERAL.getValue()
-                || inEvent.getSourceId() == QuoteSource.WIND_INDEX.getValue()) {
+        if (inEvent.getQuoteSource() == QuoteSource.WIND_GENERAL
+                || inEvent.getQuoteSource() == QuoteSource.WIND_INDEX) {
             if (prev != null && PriceUtils.GreaterThan(quote.getTotalVolume(), prev.getTotalVolume())) {
                 quote.setLastVol(quote.getTotalVolume() - prev.getTotalVolume());
             } else {
@@ -198,14 +198,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
 
         if (quoteLogIsOpen)
-            printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QuoteLogLevel.GENERAL);
+            printQuoteLog(inEvent.getQuoteSource(), inEvent.getContributor(), quote, QuoteLogLevel.GENERAL);
 
         //Check Forex TimeStamp
-        if (inEvent.getSourceId()==QuoteSource.ID.getValue() || inEvent.getSourceId()==QuoteSource.IB.getValue()) {
+        if (inEvent.getQuoteSource()==QuoteSource.ID || inEvent.getQuoteSource()==QuoteSource.IB) {
             if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
                     || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
                 //get IB close & Open price
-                if(inEvent.getSourceId()==QuoteSource.IB.getValue()){
+                if(inEvent.getQuoteSource()==QuoteSource.IB){
                     if(quotes.containsKey(quote.getSymbol())){
                         Quote tmpQuote = quotes.get(quote.getSymbol());
                         if(PriceUtils.GreaterThan(quote.getClose(), 0)) tmpQuote.setClose(quote.getClose());
@@ -222,7 +222,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
             if (null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
             if (null != quoteChecker && !quoteChecker.checkQuotePrice(quote)) {
-                printQuoteLog(inEvent.getSourceId(), inEvent.getContributor(), quote, QuoteLogLevel.PRICE_ERROR);
+                printQuoteLog(inEvent.getQuoteSource(), inEvent.getContributor(), quote, QuoteLogLevel.PRICE_ERROR);
                 return;
             }
         }
@@ -238,7 +238,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         if (null != aggregator) {
             quote = aggregator.update(symbol, inEvent.getQuote(),
-                    inEvent.getSourceId());
+                    inEvent.getQuoteSource());
         }
 
         QuoteEvent event = new QuoteEvent(inEvent.getKey(), null, quote);
@@ -261,17 +261,18 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         clearAndSendQuoteEvent(event);
     }
 
-    public void printQuoteLog(int sourceId, String contributor, Quote quote, QuoteLogLevel quoteLogLevel) {
+    public void printQuoteLog(QuoteSource quoteSource, String contributor, Quote quote, QuoteLogLevel quoteLogLevel) {
         StringBuffer sb = new StringBuffer();
-        sb.append("Sc=" + sourceId
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HH:mm:ss.SSS");
+        sb.append("Sc=" + quoteSource.getValue()
                         + ",S=" + quote.getSymbol() + ",A=" + quote.getAsk()
                         + ",B=" + quote.getBid() + ",C=" + quote.getClose()
                         + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                         + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                         + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
-                        + ",ts=" + quote.getTimeStamp().toString()
+                        + ",ts=" + sdf.format(quote.getTimeStamp())
                         + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
-                        + (sourceId == QuoteSource.ID.getValue() ? ",Cb=" + contributor : "")
+                        + (quoteSource == QuoteSource.ID ? ",Cb=" + contributor : "")
         );
         if (quoteLogLevel == QuoteLogLevel.GENERAL) quoteLog.debug("Quote Receive : " + sb.toString());
         if (quoteLogLevel == QuoteLogLevel.TIME_ERROR) quoteLog.warn("Quote Time BBBBB!:" + sb.toString());
@@ -279,12 +280,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     }
 
-    public void printQuoteExtendLog(int sourceId, DataObject quoteExtend){
+    public void printQuoteExtendLog(QuoteSource quoteSource, DataObject quoteExtend){
         StringBuffer sbQuoteExtendLog = new StringBuffer();
         for (String key : quoteExtend.getFields().keySet()) {
-            sbQuoteExtendLog.append("," + key + "=" + quoteExtend.getFields().get(key));
+            sbQuoteExtendLog.append("," + (key.length() >= 3 ? key.substring(0,2) + key.substring(key.length()-1,key.length()) : key) + "=" + quoteExtend.getFields().get(key));
         }
-        quoteLog.info("QuoteExtend Receive : " + "Source=" + sourceId + sbQuoteExtendLog.toString());
+        quoteLog.info("QuoteExtend Receive : " + "Sc=" + quoteSource.getValue() + sbQuoteExtendLog.toString());
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
@@ -384,7 +385,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     log.debug("MDR send final stale quote event:" + quote.getSymbol());
                     quote.setStale(true);
                     clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
-                    printQuoteLog(QuoteSource.RESEND.getValue(), null, quote, QuoteLogLevel.GENERAL);
+                    printQuoteLog(QuoteSource.RESEND, null, quote, QuoteLogLevel.GENERAL);
                 }
             }
         }
@@ -419,19 +420,22 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
             log.warn("Quotes receive time large than excepted.");
         }
-
+        if(quoteChecker != null){
+            if(!quoteChecker.checkTickTime(innerQuote.getQuote(), innerQuote.getThrowQuoteTimeInterval()))
+                printQuoteLog(innerQuote.getQuoteSource(), innerQuote.getContributor(), innerQuote.getQuote(), QuoteLogLevel.TIME_ERROR);
+        }
         chkDate = Clock.getInstance().now();
         InnerQuoteEvent event = new InnerQuoteEvent(innerQuote.getSymbol(), null,
-                innerQuote.getQuote(), innerQuote.getSourceId(), innerQuote.getContributor());
+                innerQuote.getQuote(), innerQuote.getQuoteSource(), innerQuote.getContributor());
         eventProcessor.onEvent(event);
     }
 
     @Override
-    public void onQuoteExt(DataObject quoteExt, int sourceId) {
+    public void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource) {
 
         if (quoteExt != null && isQuoteExtendEventIsSend()) {
 
-            printQuoteExtendLog(sourceId, quoteExt);
+            printQuoteExtendLog(quoteSource, quoteExt);
             String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value());
             quoteExt.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
             if(quoteExtends.containsKey(symbol)) {
@@ -441,7 +445,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 quoteExtends.put(symbol, quoteExt);
             }
             QuoteExtEvent event = new QuoteExtEvent(quoteExt.get(String.class,
-                    QuoteExtDataField.SYMBOL.value()), null, quoteExt, sourceId);
+                    QuoteExtDataField.SYMBOL.value()), null, quoteExt, quoteSource);
             sendQuoteEvent(event);
         }
     }

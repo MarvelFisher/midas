@@ -142,6 +142,8 @@ public class IndexMarketSessionManager implements IPlugin {
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
+        if (currentSessionType == null)
+            return;
         try {
             checkIndexMarketSession();
             checkSettlement();

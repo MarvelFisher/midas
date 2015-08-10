@@ -38,9 +38,12 @@ public class SymbolData implements Comparable<SymbolData>
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(SymbolData.class);
-	private static final String insertPrice = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME,TOTALVOLUME,TURNOVER) " + 
-            "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d,%.0f,%.5f) ON DUPLICATE KEY " + 
-            "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d,TOTALVOLUME=%.0f,TURNOVER=%.5f;";
+//	private static final String insertPrice = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME,TOTALVOLUME,TURNOVER) " + 
+//            "values ('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d,%.0f,%.5f) ON DUPLICATE KEY " + 
+//            "Update TRADEDATE='%s',DATATIME='%s',OPEN_PRICE=%.5f,CLOSE_PRICE=%.5f,HIGH_PRICE=%.5f,LOW_PRICE=%.5f,VOLUME=%d,TOTALVOLUME=%.0f,TURNOVER=%.5f;";
+	private static final String insertHead = "insert into %s (TRADEDATE,KEYTIME,DATATIME,SYMBOL,OPEN_PRICE,CLOSE_PRICE,HIGH_PRICE,LOW_PRICE,VOLUME,TOTALVOLUME,TURNOVER) VALUES ";
+	private static final String insertValues = "('%s','%s','%s','%s',%.5f,%.5f,%.5f,%.5f,%d,%.0f,%.5f) ";
+	private static final String insertTail = "ON DUPLICATE KEY UPDATE TRADEDATE=Values(TRADEDATE),DATATIME=values(DATATIME),OPEN_PRICE=Values(OPEN_PRICE),CLOSE_PRICE=Values(CLOSE_PRICE),HIGH_PRICE=Values(HIGH_PRICE),LOW_PRICE=Values(LOW_PRICE),VOLUME=Values(VOLUME),TOTALVOLUME=Values(TOTALVOLUME),TURNOVER=Values(TURNOVER);";
 	private static final String DateFormat = "yyyy-MM-dd";
 	private static final String DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	private Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT")) ;
@@ -380,25 +383,23 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		sqlcmd = String.format(insertPrice, 
-				strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
+		sqlcmd = String.format(insertHead, strTable);
+		sqlcmd += String.format(insertValues, 
+				tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
 				getStrSymbol(), lastPrice.getOpen(), lastPrice.getClose(), 
 				lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
-				lastPrice.getTotalVolume(), lastPrice.getTurnover(), 
-				tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
-				lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
 				lastPrice.getTotalVolume(), lastPrice.getTurnover()) ;
+		sqlcmd += insertTail;
 		centralDB.getDbhnd().updateSQL(sqlcmd);
 		if (strSymbol.equals(getStrSymbol()) == false)
 		{
-			sqlcmd = String.format(insertPrice, 
-					strTable, tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
+			sqlcmd = String.format(insertHead, strTable);
+			sqlcmd += String.format(insertValues, 
+					tradeDate, sdf.format(lastPrice.getKeytime()), sdf.format(lastPrice.getDatatime()), 
 					strSymbol, lastPrice.getOpen(), lastPrice.getClose(), 
 					lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(),  
-					lastPrice.getTotalVolume(), lastPrice.getTurnover(), 
-					tradeDate, sdf.format(lastPrice.getDatatime()), lastPrice.getOpen(), 
-					lastPrice.getClose(), lastPrice.getHigh(), lastPrice.getLow(), lastPrice.getVolume(), 
-					lastPrice.getTotalVolume(), lastPrice.getTurnover()) ;
+					lastPrice.getTotalVolume(), lastPrice.getTurnover());
+			sqlcmd += insertTail;
 			centralDB.getDbhnd().updateSQL(sqlcmd);
 		}
 		logHistoricalPrice(lastPrice);
@@ -450,6 +451,13 @@ public class SymbolData implements Comparable<SymbolData>
 		centralDB.getDbhnd().get52WHighLow(this, market, symbol);
 		log.debug(strSymbol + " get52WHighLow() end");
 		return ;
+	}
+	
+	public void retrieveChartPrice()
+	{
+		log.debug("Retrieve chart data [" + strSymbol + "]");
+		mapHistorical.clear();
+		getAllChartPrice();
 	}
 	
 	public void getAllChartPrice()
@@ -822,35 +830,51 @@ public class SymbolData implements Comparable<SymbolData>
 		String strKeyTime = "" ;
 		SimpleDateFormat sdf = new SimpleDateFormat(DateTimeFormat) ;
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		sqlcmd = String.format(insertHead, strTable);
+		int count = 0;
 		for (HistoricalPrice price : prices)
 		{
 			if (price.getDatatime() == null)
 			{
 				continue;
 			}
+			if (count != 0)
+			{
+				sqlcmd += ",";
+			}
 			strKeyTime = sdf.format(price.getKeytime()) ;
-			sqlcmd = String.format(insertPrice, 
-					strTable, price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
+			sqlcmd += String.format(insertValues, 
+					price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 					getStrSymbol(), price.getOpen(), price.getClose(), 
 					price.getHigh(), price.getLow(), price.getVolume(),  
-					price.getTotalVolume(), price.getTurnover(), 
-					price.getTradedate(), sdf.format(price.getDatatime()), price.getOpen(), 
-					price.getClose(), price.getHigh(), price.getLow(), price.getVolume(),  
 					price.getTotalVolume(), price.getTurnover()) ;
-			centralDB.getDbhnd().addBatch(sqlcmd);
+			count++;
 			if (strSymbol.equals(getStrSymbol()) == false)
 			{
-				sqlcmd = String.format(insertPrice, 
-						strTable, price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
+				if (count != 0)
+				{
+					sqlcmd += ",";
+				}
+				sqlcmd += String.format(insertValues, 
+						price.getTradedate(), strKeyTime, sdf.format(price.getDatatime()), 
 						strSymbol, price.getOpen(), price.getClose(), 
 						price.getHigh(), price.getLow(), price.getVolume(),  
-						price.getTotalVolume(), price.getTurnover(),
-						price.getTradedate(), sdf.format(price.getDatatime()), price.getOpen(), 
-						price.getClose(), price.getHigh(), price.getLow(), price.getVolume(),  
 						price.getTotalVolume(), price.getTurnover()) ;
-				centralDB.getDbhnd().addBatch(sqlcmd);
+				count++;
 			}
 			logHistoricalPrice(price);
+			if (count >= 50)
+			{
+				count = 0;
+				sqlcmd += insertTail;
+				centralDB.getDbhnd().addBatch(sqlcmd);
+				sqlcmd = String.format(insertHead, strTable);
+			}
+		}
+		if (count != 0)
+		{
+			sqlcmd += insertTail;
+			centralDB.getDbhnd().addBatch(sqlcmd);
 		}
 		centralDB.getDbhnd().executeBatch();
 		return ;

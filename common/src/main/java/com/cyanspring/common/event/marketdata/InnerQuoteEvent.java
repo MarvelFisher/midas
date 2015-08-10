@@ -12,16 +12,17 @@ package com.cyanspring.common.event.marketdata;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteSource;
 
 public final class InnerQuoteEvent extends RemoteAsyncEvent {
 	QuoteEvent quoteEvent;
-	private int sourceId;
+	private QuoteSource quoteSource;
 	private String contributor;
 
-	public InnerQuoteEvent(String key, String receiver, Quote quote, int sourceId, String contributor) {
+	public InnerQuoteEvent(String key, String receiver, Quote quote, QuoteSource quoteSource, String contributor) {
 		super(key, receiver);
 		this.quoteEvent = new QuoteEvent(key, receiver, quote);
-		this.sourceId = sourceId;
+		this.quoteSource = quoteSource;
 		this.contributor = contributor;
 	}
 
@@ -33,8 +34,8 @@ public final class InnerQuoteEvent extends RemoteAsyncEvent {
 		return quoteEvent;
 	}
 
-	public int getSourceId() {
-		return sourceId;
+	public QuoteSource getQuoteSource() {
+		return quoteSource;
 	}
 
 	public String getContributor() {

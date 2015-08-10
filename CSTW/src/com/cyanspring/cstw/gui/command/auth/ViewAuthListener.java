@@ -25,6 +25,15 @@ public class ViewAuthListener implements IPartListener2 {
 		filterMenuAction(partName);
 	}
 	
+	public void filterViewAction(String partName,ActionContributionItem actionItem){
+		
+		if(!Business.getInstance().hasAuth(partName, actionItem.getId())){
+			actionItem.getAction().setEnabled(false);
+		}else{
+			actionItem.getAction().setEnabled(true);
+		}
+	}
+	
 	public void filterToolbarAction(String partName,IWorkbenchPart part){
 		IViewSite site= (IViewSite) part.getSite();
 		ToolBarManager bar = (ToolBarManager) site.getActionBars().getToolBarManager();

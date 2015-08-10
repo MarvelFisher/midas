@@ -118,6 +118,7 @@
         <property name="reqPort" value="6086"></property>
         <property name="exch" value="687"></property>
         <property name="sendHeartBeat" value="3"></property>
+        <property name="throwQuoteTimeInterval" value="10000"/>
         <property name="nonFX">
             <map>
                 <entry key="XAUUSD" value="691" />

@@ -3,6 +3,7 @@ package com.cyanspring.adaptor.future.wind;
 import com.cyanspring.adaptor.future.wind.data.IndexData;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteSource;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.type.QtyPrice;
@@ -169,7 +170,7 @@ public class IndexItem implements AutoCloseable {
 
         //process send quote
         WindGateWayAdapter.instance.saveLastQuote(quote);
-        WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(102, quote));
+        WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(QuoteSource.WIND_INDEX, quote));
     }
 
     @Override

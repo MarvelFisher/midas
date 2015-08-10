@@ -1,5 +1,7 @@
 package com.cyanspring.info;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.data.JdbcSQLHandler;
+import com.cyanspring.common.info.GroupInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.SymbolInfo;
@@ -30,7 +33,7 @@ public class DBHandler
 {
 	private static final Logger log = LoggerFactory
 			.getLogger(DBHandler.class);
-	private final String createTable = "CREATE TABLE `%s` (`TRADEDATE`  date NULL DEFAULT NULL ,`KEYTIME`  datetime NOT NULL ,`DATATIME`  datetime NULL DEFAULT NULL ,`SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ,`OPEN_PRICE`  double NULL DEFAULT NULL ,`CLOSE_PRICE`  double NULL DEFAULT NULL ,`HIGH_PRICE`  double NULL DEFAULT NULL ,`LOW_PRICE`  double NULL DEFAULT NULL ,`VOLUME`  int(11) NULL DEFAULT NULL ,`TOTALVOLUME`  bigint(20) NULL DEFAULT NULL ,UNIQUE INDEX `TradeDate_Symbol` USING BTREE (`KEYTIME`, `SYMBOL`)) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0 ;";
+	private final String createTable = "CREATE TABLE `%s` (`TRADEDATE`  date NULL DEFAULT NULL ,`KEYTIME`  datetime NOT NULL ,`DATATIME`  datetime NULL DEFAULT NULL ,`SYMBOL`  varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ,`OPEN_PRICE`  double NULL DEFAULT NULL ,`CLOSE_PRICE`  double NULL DEFAULT NULL ,`HIGH_PRICE`  double NULL DEFAULT NULL ,`LOW_PRICE`  double NULL DEFAULT NULL ,`VOLUME`  bigint(20) NULL DEFAULT NULL ,`TOTALVOLUME`  bigint(20) NULL DEFAULT NULL ,`TURNOVER`  bigint(20) NULL DEFAULT NULL ,UNIQUE INDEX `TradeDate_Symbol` (`KEYTIME`, `SYMBOL`) USING BTREE) ENGINE=MyISAM DEFAULT CHARACTER SET=latin1 COLLATE=latin1_swedish_ci CHECKSUM=0 ROW_FORMAT=Dynamic DELAY_KEY_WRITE=0 ;";
 	private JdbcSQLHandler handler;
 	
 	public DBHandler(ComboPooledDataSource cpds) throws Exception
@@ -140,8 +143,15 @@ public class DBHandler
     public List<SymbolInfo> getGroupSymbol(String user, String group, String market, IRefSymbolInfo refSymbolInfo, boolean set)
     {
     	ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>(); 
+		String userEncode;
+		try {
+			userEncode = URLEncoder.encode(user, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.warn("CDP(382): Unsupported Encoding UTF-8");
+			userEncode = user;
+		}
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
-				user, group, market) ;
+				userEncode, group, market) ;
 
 		Connection connect = getConnect();
 		if (connect == null)
@@ -173,6 +183,42 @@ public class DBHandler
 		}
         catch (SQLException e) 
         {
+			log.error(e.getMessage(), e) ;
+		}
+		finally
+		{
+			closeConnect(connect);
+		}
+		return retsymbollist;
+    }
+    public List<GroupInfo> getGroupList(String user, String market)
+    {
+    	ArrayList<GroupInfo> retsymbollist = new ArrayList<GroupInfo>(); 
+		String sqlcmd = String.format("SELECT `GROUP` FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
+				user, market) ;
+
+		Connection connect = getConnect();
+		if (connect == null)
+		{
+			return null;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
+		try 
+		{
+			int pos;
+			String group, name, strCount;
+			int count;
+			while(rs.next())
+			{
+				group = rs.getString("GROUP_ID").toLowerCase();
+				name = rs.getString("GROUP_NAME").toLowerCase();
+				strCount = rs.getString("SYMBOLCOUNT");
+				count = (strCount == null) ? 0 : Integer.parseInt(strCount);
+				retsymbollist.add(new GroupInfo(group, name, count));
+			}
+		} 
+		catch (SQLException | NumberFormatException e) 
+		{
 			log.error(e.getMessage(), e) ;
 		}
 		finally

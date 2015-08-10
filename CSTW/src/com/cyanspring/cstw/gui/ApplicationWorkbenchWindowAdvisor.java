@@ -11,9 +11,11 @@
 package com.cyanspring.cstw.gui;
 
 import org.eclipse.core.commands.Command;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.ICoolBarManager;
+import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -50,7 +52,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
-		configurer.setShowCoolBar(false);
+		configurer.setShowCoolBar(true);
 		configurer.setShowStatusLine(true);
 		configurer.setTitle("Cyan Spring Trader Workstation");
 		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
@@ -66,7 +68,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			//add listener
 			ViewAuthListener authListener =new  ViewAuthListener();
 			page.addPartListener(authListener);
-
 			if(Business.getInstance().isLoginRequired()) {
 				LoginDialog loginDialog = new LoginDialog(window.getShell());
 				loginDialog.open();
@@ -80,13 +81,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
 			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
 			commandStateService.fireAccountChanged();
-						
+
 			// filter already open view 
 			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
 			for(IWorkbenchPage activePage: pages){
 				IViewReference vrs[] = activePage.getViewReferences();
 				for(IViewReference vr : vrs){
-					activePage.hideView(vr);
 					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
 						activePage.hideView(vr);
 					}else{
@@ -96,10 +96,29 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 				}
 			}
 			
-			ICommandService cmdService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-			Command command = cmdService.getCommand("CSTW.showUserCommand");
-			cmdService.refreshElements("CSTW.showUserCommand", null);
-			
+			IActionBarConfigurer barConfig =  getWindowConfigurer().getActionBarConfigurer();
+			ICoolBarManager coolBarManager = barConfig.getCoolBarManager();
+			IContributionItem[] coolItems = coolBarManager.getItems();
+			for(IContributionItem coolItem : coolItems){
+
+				try {
+					ToolBarContributionItem action = (ToolBarContributionItem)coolItem;
+					IContributionItem[] toolItems = action.getToolBarManager().getItems();
+					for(IContributionItem toolItem : toolItems){
+						if(toolItem instanceof ActionContributionItem){
+							ActionContributionItem actionItem =(ActionContributionItem) toolItem;
+							if(actionItem.getId().equals("USER_INFO_ACTION")){
+								actionItem.getAction().setText(Business.getInstance().getAccount()+" - "+Business.getInstance().getUserGroup().getRole().toString());
+							}
+							authListener.filterViewAction("Application View", actionItem);
+						}
+					}
+				} catch (Exception e) {
+					log.error("e:"+e.getMessage());
+				}
+
+			}
+						
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

@@ -48,6 +48,9 @@ public class TrailingStopManager implements IPlugin {
 	
 	@Autowired
 	IRefDataManager refDataManager;
+	
+	@Autowired(required = false)
+	CoinManager coinManager;
 
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private PerfDurationCounter perfCounter;
@@ -138,6 +141,9 @@ public class TrailingStopManager implements IPlugin {
 			if(PriceUtils.isZero(trailingStop))
 				continue;
 			
+	        if(null != coinManager && !coinManager.canCheckTrailingStop(account.getId()))
+	        	continue;
+			
 			List<OpenPosition> list = positionKeeper.getOverallPosition(account);
 			for(OpenPosition position: list) {
 				Quote quote = quotes.get(position.getSymbol());
@@ -166,10 +172,13 @@ public class TrailingStopManager implements IPlugin {
 				ppp.setPosition(position.getQty());
 				
 				double refPrice = getRefPrice(quote, ppp.getPosition());
+				log.info("ppp.getPrice() :{} refPrice:{}",ppp.getPrice(),refPrice);
+				log.info("position.getPrice():{}",position.getPrice());
 				if(PriceUtils.isZero(refPrice))
 					continue;
 
 				double delta = position.getQty() > 0?(ppp.getPrice() - refPrice) : (refPrice - ppp.getPrice());
+				log.info("delta:{} ,delta/position.getPrice():{}",delta,(delta/position.getPrice()));
 				if(PriceUtils.EqualGreaterThan(delta/position.getPrice(), trailingStop)) {
 					if(positionKeeper.checkAccountPositionLock(position.getAccount(), position.getSymbol())) {
 						log.info("Account locked for trailing stoping: " + refPrice + ", " +
