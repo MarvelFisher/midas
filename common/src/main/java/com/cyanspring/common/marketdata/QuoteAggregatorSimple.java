@@ -2,6 +2,7 @@ package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.marketsession.MarketSessionType;
 
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -95,7 +96,7 @@ class QuoteS {
                 this.quote = quote;
             }
         }
-        this.quote.setTimeStamp(quote.getTimeStamp());
+        this.quote.setTimeStamp(new Date());
         this.sourceId = sourceId;
         return this.quote;
     }
