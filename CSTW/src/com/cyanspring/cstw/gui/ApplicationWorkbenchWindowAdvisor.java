@@ -10,10 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -86,7 +83,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			for(IWorkbenchPage activePage: pages){
 				IViewReference vrs[] = activePage.getViewReferences();
 				for(IViewReference vr : vrs){
-					activePage.hideView(vr);
 					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
 						activePage.hideView(vr);
 					}else{
@@ -97,7 +93,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			}
 			
 			ICommandService cmdService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-			Command command = cmdService.getCommand("CSTW.showUserCommand");
 			cmdService.refreshElements("CSTW.showUserCommand", null);
 			
 		} catch (Exception e) {
