@@ -468,7 +468,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         } else {
             log.debug("get RefData from RefDataFile = " + refDataFile);
             List<RefData> refDataList = getListFromFile(refDataFile);
-            if(refDataList != null) listener.onRefData(refDataList);
+            listener.onRefData(refDataList);
         }
     }
 
