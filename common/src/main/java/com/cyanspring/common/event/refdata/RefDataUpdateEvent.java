@@ -35,4 +35,7 @@ public class RefDataUpdateEvent extends RemoteAsyncEvent {
     public List<RefData> getRefDataList() {
         return refDataList;
     }
+    public Action getAction(){
+        return action;
+    }
 }
