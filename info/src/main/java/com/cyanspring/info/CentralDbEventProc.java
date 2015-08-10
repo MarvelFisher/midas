@@ -3,7 +3,6 @@ package com.cyanspring.info;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,9 +26,9 @@ import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeType;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 
@@ -253,6 +252,11 @@ public class CentralDbEventProc implements Runnable
 	public void processRefDataEvent(RefDataEvent event) 
 	{
 		centraldb.onCallRefData(event);
+	}
+	
+	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
+	{
+		centraldb.onUpdateRefData(event);
 	}
 	
 	public void processGroupListRequestEvent(GroupListRequestEvent event)

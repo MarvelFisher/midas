@@ -8,10 +8,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,12 +43,12 @@ import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
-import com.cyanspring.common.event.marketdata.SymbolEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.GroupInfo;
@@ -169,6 +165,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
+			subscribeToEvent(RefDataUpdateEvent.class, null);
 		}
 
 		@Override
@@ -295,6 +292,12 @@ public class CentralDbProcessor implements IPlugin
 	{
 		mapCentralDbEventProc.get("Request").onEvent(event);
 	}
+	
+	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
+	{
+		mapCentralDbEventProc.get("Request").onEvent(event);
+	}
+	
 	public void processRetrieveChartEvent(RetrieveChartEvent event)
 	{
 		mapCentralDbEventProc.get("Request").onEvent(event);
@@ -628,6 +631,25 @@ public class CentralDbProcessor implements IPlugin
 		for (SymbolChef chef : SymbolChefList)
 		{
 			chef.chefStart();
+		}
+		log.info("Call refData finish");
+	}
+	
+	public void onUpdateRefData(RefDataUpdateEvent event)
+	{
+		log.info("Call refData start");
+		List<RefData> refList = event.getRefDataList();
+		int nCount = getRefSymbolInfo().setByRefData(refList);
+		if (nCount == 0)
+		{
+			return;
+		}
+		for(RefData refdata : refList)
+		{
+			if (refdata.getExchange() == null) continue;
+			int chefNum = getChefNumber(refdata.getSymbol());
+			SymbolChef chef = SymbolChefList.get(chefNum);
+			chef.createSymbol(refdata, this);
 		}
 		log.info("Call refData finish");
 	}
