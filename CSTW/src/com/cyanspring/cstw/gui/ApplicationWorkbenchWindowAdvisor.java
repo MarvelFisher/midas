@@ -95,7 +95,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 					
 				}
 			}
-			
+
 			IActionBarConfigurer barConfig =  getWindowConfigurer().getActionBarConfigurer();
 			ICoolBarManager coolBarManager = barConfig.getCoolBarManager();
 			IContributionItem[] coolItems = coolBarManager.getItems();
@@ -119,6 +119,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 			}
 						
+			ICommandService cmdService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+			cmdService.refreshElements("CSTW.showUserCommand", null);
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

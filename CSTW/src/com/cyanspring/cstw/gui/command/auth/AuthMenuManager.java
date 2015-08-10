@@ -17,7 +17,7 @@ import com.cyanspring.cstw.gui.SingleOrderStrategyView;
 public class AuthMenuManager extends MenuManager{
 	
 	private static final Logger log = LoggerFactory
-			.getLogger(SingleOrderStrategyView.class);
+			.getLogger(AuthMenuManager.class);
 	
 	private static Map<String,List<AuthMenuManager>> menuMap = new HashMap<String,List<AuthMenuManager>>(); 
 	
@@ -43,7 +43,7 @@ public class AuthMenuManager extends MenuManager{
 		
 		List<ActionContributionItem> list = new ArrayList<ActionContributionItem>();
 		
-		if(!StringUtils.hasText(partName)|| null == menuMap.get(partName)){
+		if(!StringUtils.hasText(partName) || null == menuMap.get(partName)){
 			log.warn("this view doesn't maintain any menu actions:{}",partName);
 			return list;
 		}else{
