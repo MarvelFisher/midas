@@ -196,6 +196,14 @@ public class RefData extends DataObject {
     public void setMinimalCommissionFee(double minimalCommissionFee) {
         this.set(minimalCommissionFee, RefDataField.MINIMAL_COMMISSION_FEE.value());
     }
+    
+    public double getLotCommissionFee() {
+        return this.get(double.class, RefDataField.LOT_COMMISSION_FEE.value());
+    }
+
+    public void setLotCommissionFee(double lotCommissionFee) {
+        this.set(lotCommissionFee, RefDataField.LOT_COMMISSION_FEE.value());
+    }
 
     //	public int getMaximumLot(){
 //		return this.get(int.class, RefDataField.MAXIMUM_LOT.value());
@@ -343,4 +351,13 @@ public class RefData extends DataObject {
     public void setSpotTWName(String spotTWName) {
         this.set(spotTWName, RefDataField.SPOT_TWNAME.value());
     }
+
+    public String getCode() {
+        return this.get(String.class, RefDataField.CODE.value());
+    }
+
+    public void setCode(String code) {
+        this.set(code, RefDataField.CODE.value());
+    }
+
 }

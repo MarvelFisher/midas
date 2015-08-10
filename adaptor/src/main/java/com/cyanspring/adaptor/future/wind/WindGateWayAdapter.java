@@ -102,7 +102,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 if (lastQuote != null && !lastQuote.isStale()) {
                     log.debug("Process Symbol Session & Send Stale Final Quote : Symbol=" + symbol);
                     lastQuote.setStale(true);
-                    sendInnerQuote(new InnerQuote(101, lastQuote));
+                    sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, lastQuote));
                 }
             }
         }
@@ -643,6 +643,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         FutureItem.futureItemBySymbolMap.clear();
         StockItem.stockItemBySymbolMap.clear();
         IndexItem.indexItemBySymbolMap.clear();
+        TransationItem.transationItemBySymbolMap.clear();
         ClientHandler.sendClearSubscribe();
     }
 

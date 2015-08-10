@@ -1,5 +1,8 @@
 package com.cyanspring.info;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -20,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.data.JdbcSQLHandler;
+import com.cyanspring.common.info.GroupInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.SymbolInfo;
@@ -140,8 +144,15 @@ public class DBHandler
     public List<SymbolInfo> getGroupSymbol(String user, String group, String market, IRefSymbolInfo refSymbolInfo, boolean set)
     {
     	ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>(); 
+		String userEncode;
+		try {
+			userEncode = URLEncoder.encode(user, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.warn("CDP(382): Unsupported Encoding UTF-8");
+			userEncode = user;
+		}
 		String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `GROUP`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
-				user, group, market) ;
+				userEncode, group, market) ;
 
 		Connection connect = getConnect();
 		if (connect == null)
@@ -181,10 +192,10 @@ public class DBHandler
 		}
 		return retsymbollist;
     }
-    public List<String> getGroupList(String user, String market)
+    public List<GroupInfo> getGroupList(String user, String market)
     {
-    	ArrayList<String> retsymbollist = new ArrayList<String>(); 
-		String sqlcmd = String.format("SELECT `GROUP` FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s';", 
+    	ArrayList<GroupInfo> retsymbollist = new ArrayList<GroupInfo>(); 
+		String sqlcmd = String.format("SELECT * FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, market) ;
 
 		Connection connect = getConnect();
@@ -196,18 +207,18 @@ public class DBHandler
 		try 
 		{
 			int pos;
-			String group;
+			String group, name, strCount;
+			int count;
 			while(rs.next())
 			{
-				group = rs.getString("GROUP").toLowerCase();
-				pos = Collections.binarySearch(retsymbollist, group);
-				if (pos < 0)
-				{
-					retsymbollist.add(~pos, group);
-				}
+				group = DBHandler.utf8Decode(rs.getString("GROUP_ID").toLowerCase());
+				name = DBHandler.utf8Decode(rs.getString("GROUP_NAME").toLowerCase());
+				strCount = rs.getString("SYMBOL_COUNT");
+				count = (strCount == null) ? 0 : Integer.parseInt(strCount);
+				retsymbollist.add(new GroupInfo(group, name, count));
 			}
 		} 
-		catch (SQLException e) 
+		catch (SQLException | NumberFormatException e) 
 		{
 			log.error(e.getMessage(), e) ;
 		}
@@ -693,4 +704,32 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
+	public static String utf8Encode(String org)
+	{
+		String encode;
+		try 
+		{
+			encode = URLEncoder.encode(org, "UTF-8");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			log.warn("CDPutf8Encode: Unsupported Encoding UTF-8, origin: " + org);
+			encode = org;
+		}
+		return encode;
+	}
+	public static String utf8Decode(String org)
+	{
+		String decode;
+		try 
+		{
+			decode = URLDecoder.decode(org, "UTF-8");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			log.warn("CDPutf8Encode: Unsupported Encoding UTF-8, origin: " + org);
+			decode = org;
+		}
+		return decode;
+	}
 }

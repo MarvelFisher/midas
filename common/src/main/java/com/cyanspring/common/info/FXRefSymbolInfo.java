@@ -53,4 +53,16 @@ public class FXRefSymbolInfo extends IRefSymbolInfo
 		}
 		return infoList;
 	}
+	@Override
+	public SymbolInfo getbySymbol(String symbol) 
+	{
+		for (SymbolInfo symbolinfo : refSymbolInfo)
+		{
+			if (symbol.equals(symbolinfo.getCode()))
+			{
+				return symbolinfo;
+			}
+		}
+		return null;
+	}
 }

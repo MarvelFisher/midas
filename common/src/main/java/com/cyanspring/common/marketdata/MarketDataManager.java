@@ -2,14 +2,9 @@ package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
+import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -113,7 +108,7 @@ public class MarketDataManager extends MarketDataReceiver {
             DataObject quoteExtend = quoteExtends.get(symbol);
             if (isQuoteExtendEventIsSend()) {
                 if (quoteExtend != null) {
-                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, 1));
+                    eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, QuoteSource.DEFAULT));
                 }
             }
         }
@@ -147,10 +142,11 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("PreOpen Send Clear Session quote:" + quotes.size());
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
-                    quoteCleaner.clear(quote);
-                    quote.setTimeSent(Clock.getInstance().now());
-                    printQuoteLog(QuoteSource.CLEAN_SESSION.getValue(), null, quote, QuoteLogLevel.GENERAL);
-                    eventManager.sendRemoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
+                    Quote tempQuote = (Quote)quote.clone();
+                    quoteCleaner.clear(tempQuote);
+                    tempQuote.setTimeSent(Clock.getInstance().now());
+                    printQuoteLog(QuoteSource.CLEAN_SESSION, null, tempQuote, QuoteLogLevel.GENERAL);
+                    eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
                 }
             }
         }
@@ -167,12 +163,12 @@ public class MarketDataManager extends MarketDataReceiver {
             if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
                 log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
                 for (String symbol : quoteExtends.keySet()) {
-                    DataObject quoteExtend = quoteExtends.get(symbol);
+                    DataObject quoteExtend = (DataObject)quoteExtends.get(symbol).clone();
                     quoteExtendCleaner.clear(quoteExtend);
                     quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     try {
-                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION.getValue(), quoteExtend);
-                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION.getValue()));
+                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
+                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }

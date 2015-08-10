@@ -19,11 +19,11 @@ public abstract class IRefSymbolInfo {
 	{
 		refSymbolInfo.clear();
 	}
-	public void setByRefData(List<RefData> refdataList)
+	public int setByRefData(List<RefData> refdataList)
 	{
 		SymbolInfo symbolinfo = null;
 		String strTmp = null;
-		int index;
+		int index, nCount = 0;
 		for (RefData refdata : refdataList)
 		{
 			if (refdata.getExchange() == null || refdata.getSymbol() == null) continue;
@@ -68,8 +68,10 @@ public abstract class IRefSymbolInfo {
 			if (index < 0)
 			{
 				refSymbolInfo.add(~index, symbolinfo);
+				nCount++;
 			}
 		}
+		return nCount;
 	}
 	public List<SymbolInfo> getAllSymbolInfo(String market) 
 	{
@@ -98,6 +100,7 @@ public abstract class IRefSymbolInfo {
 			return null;
 		}
 	}
+	public abstract SymbolInfo getbySymbol(String symbol);
 	public abstract List<SymbolInfo> getBySymbolStrings(List<String> symbolList);
 	public abstract List<SymbolInfo> getBySymbolInfos(List<SymbolInfo> inputInfoList);
 }

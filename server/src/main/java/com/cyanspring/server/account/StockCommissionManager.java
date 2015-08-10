@@ -8,19 +8,8 @@ import com.cyanspring.common.type.OrderSide;
 import webcurve.util.PriceUtils;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
- *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class StockCommissionManager implements ICommissionManager {

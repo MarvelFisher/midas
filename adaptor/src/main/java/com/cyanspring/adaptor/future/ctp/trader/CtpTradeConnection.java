@@ -330,7 +330,8 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		// update position holding
 		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 
 				trade.Direction() == TraderLibrary.THOST_FTDC_D_Buy, 
-				trade.OffsetFlag(), trade.Volume());
+				order.get(Byte.class, OrderField.FLAG.value()), 
+				trade.Volume());
 
 		this.listener.onOrder(execType, order.clone(), execution, null);
 	}

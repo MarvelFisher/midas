@@ -22,33 +22,30 @@ import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
+import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 
-public class ValidationDataProvider implements IPlugin,IQuoteExtProvider{
-	
-	private static final Logger log = LoggerFactory
-			.getLogger(ValidationDataProvider.class);
-
-	private static final String ID = "VDP-"+IdGenerator.getInstance().getNextID();
+public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
+	private static final Logger log = LoggerFactory.getLogger(ValidationDataProvider.class);
+	private static final String ID = "VDP-" + IdGenerator.getInstance().getNextID();
 	private static final String SENDER = ValidationDataProvider.class.getSimpleName();
-
-	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap <String, DataObject>();
+	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 	private Date tradeDate = null;
 	private String tradeDateFormat = "yyyy-MM-dd";
-	
+
 	@Autowired
 	protected IRemoteEventManager eventManager;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
-		public void subscribeToEvents() {		
+		public void subscribeToEvents() {
 			subscribeToEvent(QuoteExtEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
-			subscribeToEvent(TradeDateEvent.class,null);
+			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(MultiQuoteExtendEvent.class, null);
 		}
 
@@ -57,13 +54,12 @@ public class ValidationDataProvider implements IPlugin,IQuoteExtProvider{
 			return eventManager;
 		}
 	};
-	
+
 	@Override
 	public void init() throws Exception {
-
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
-		if (eventProcessor.getThread() != null){
+		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("ValidationDataProvider");
 		}
 		requestMarketSession();
@@ -72,124 +68,118 @@ public class ValidationDataProvider implements IPlugin,IQuoteExtProvider{
 	@Override
 	public void uninit() {
 		quoteExtendsMap = null;
-		eventProcessor.uninit();		
+		eventProcessor.uninit();
 	}
-	
+
 	@Override
 	public ConcurrentHashMap<String, DataObject> getQuoteExtMap() {
 		return quoteExtendsMap;
 	}
-	
-	public void requestMarketSession() {
-		eventManager.sendEvent(new MarketSessionRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, true));
-	}
-	
-	public void processMarketSessionEvent(MarketSessionEvent event){
 
-		try{		
+	public void requestMarketSession() {
+		eventManager.sendEvent(
+				new MarketSessionRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, true));
+	}
+
+	public void processMarketSessionEvent(MarketSessionEvent event) {
+		try {
 			Date oldTradeDate = tradeDate;
 			String td = event.getTradeDate();
-			
-			if( null == oldTradeDate
-					|| MarketSessionType.PREOPEN == event.getSession())
-			{
+
+			if (null == oldTradeDate || MarketSessionType.PREOPEN == event.getSession()) {
 				setTradeDate(td);
 				sendQuoteExtSubEvent();
-			}		
-		} catch (ParseException e) {		
-			log.warn("Trade date parse error:"+event.getTradeDate(),e);		
-		}catch(Exception e){		
-			log.warn(e.getMessage(),e);		
+			}
+		} catch (ParseException e) {
+			log.warn("Trade date parse error:" + event.getTradeDate(), e);
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
 		}
 	}
-	
-	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event){
 
-		Map <String,DataObject> receiveDataMap = event.getMutilQuoteExtend();
+	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event) {
+		Map<String, DataObject> receiveDataMap = event.getMutilQuoteExtend();
 
-		if(null == receiveDataMap || 0 == receiveDataMap.size()  ){			
+		if (null == receiveDataMap || 0 == receiveDataMap.size()) {
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
-			return;	
-		}else{
-			log.info("receiveData size:"+receiveDataMap.size());
+			return;
+		} else {
+			log.info("receiveData size:" + receiveDataMap.size());
 		}
-		
-		if(null == quoteExtendsMap ){
+
+		if (null == quoteExtendsMap) {
 			quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		}
-		
-		quoteExtendsMap.putAll(receiveDataMap);	
-	}
-	
-	public void processQuoteExtEvent(QuoteExtEvent event){
 
-		try{			
+		quoteExtendsMap.putAll(receiveDataMap);
+	}
+
+	public void processQuoteExtEvent(QuoteExtEvent event) {
+		try {
 			DataObject updateObj = event.getQuoteExt();
 			String symbol = updateObj.get(String.class, QuoteExtDataField.SYMBOL.value());
-			if(null == quoteExtendsMap){				
+			if (null == quoteExtendsMap) {
 				quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 			}
-			if(null != symbol){
-				
-				Map<String,Object> paramMap = updateObj.getFields();
-				if( null == paramMap || paramMap.isEmpty()){
+			if (null != symbol) {
+
+				Map<String, Object> paramMap = updateObj.getFields();
+				if (null == paramMap || paramMap.isEmpty()) {
 					return;
 				}
-				Iterator <Entry<String,Object>> paramIterator = paramMap.entrySet().iterator();
+				Iterator<Entry<String, Object>> paramIterator = paramMap.entrySet().iterator();
 				DataObject obj = null;
-				if(quoteExtendsMap.containsKey(symbol)){
-					obj = quoteExtendsMap.get(symbol);		
-				}else{
+				if (quoteExtendsMap.containsKey(symbol)) {
+					obj = quoteExtendsMap.get(symbol);
+				} else {
 					obj = updateObj;
 				}
-				
-				while(paramIterator.hasNext()){
+
+				while (paramIterator.hasNext()) {
 					Entry<String, Object> entry = paramIterator.next();
 					String key = entry.getKey();
 					Object value = entry.getValue();
-					if( null == key || null == value){
+					if (null == key || null == value) {
 						continue;
 					}
-					obj.put(entry.getKey(), entry.getValue());	
+					obj.put(entry.getKey(), entry.getValue());
 				}
-				quoteExtendsMap.put(symbol, obj);					
+				quoteExtendsMap.put(symbol, obj);
 			}
-		}catch(Exception e){
-			log.warn(e.getMessage(),e);
-		}	
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+		}
 	}
-	
-	public void sendQuoteExtSubEvent(){	
+
+	public void sendQuoteExtSubEvent() {
 		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		QuoteExtSubEvent event = new QuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER);
 		log.info("send QuoteExtSub event");
 		eventManager.sendEvent(event);
 	}
-	
-	public void processTradeDateEvent(TradeDateEvent event){
-		
-		try{		
+
+	public void processTradeDateEvent(TradeDateEvent event) {
+		try {
 			String eventTradeDate = event.getTradeDate();
-			if(null == eventTradeDate){
+			if (null == eventTradeDate) 
 				return;
-			}
-			if(null == tradeDate
-					|| !isSameTradeDate(eventTradeDate)){	
+			
+			if (null == tradeDate || !isSameTradeDate(eventTradeDate)) {
 				setTradeDate(eventTradeDate);
 				sendQuoteExtSubEvent();
 			}
-		}catch(Exception e){
-			log.warn(e.getMessage(),e);
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
 		}
 	}
-	
-	private boolean isSameTradeDate(String date)throws ParseException{		
+
+	private boolean isSameTradeDate(String date) throws ParseException {
 		Date dateC = TimeUtil.parseDate(date, tradeDateFormat);
 		return TimeUtil.sameDate(tradeDate, dateC);
 	}
 
-	private void setTradeDate(String td) throws ParseException{
-		if(null != td && !"".equals(td)){
+	private void setTradeDate(String td) throws ParseException {
+		if (null != td && !"".equals(td)) {
 			tradeDate = TimeUtil.parseDate(td, tradeDateFormat);
 		}
 	}

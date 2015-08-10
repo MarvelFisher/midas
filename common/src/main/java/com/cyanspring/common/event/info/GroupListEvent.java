@@ -1,25 +1,30 @@
 package com.cyanspring.common.event.info;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.info.GroupInfo;
 
 @SuppressWarnings("serial")
 public class GroupListEvent extends RemoteAsyncEvent 
 {
 	private String userID ;
 	private String market ;
-	private List<String> groupList;
+	private String txId ;
+	private int queryType = -1;
+	private List<GroupInfo> groupList;
 	private boolean ok ;
 	private String message = null;
+	private GroupListType type;
 	public GroupListEvent(String key, String receiver) 
 	{
 		super(key, receiver);
 	}
-	public List<String> getGroupList() {
+	public List<GroupInfo> getGroupList() {
 		return groupList;
 	}
-	public void setGroupList(List<String> groupList) {
+	public void setGroupList(List<GroupInfo> groupList) {
 		this.groupList = groupList;
 	}
 	public String getMarket() {
@@ -45,5 +50,23 @@ public class GroupListEvent extends RemoteAsyncEvent
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	public String getTxId() {
+		return txId;
+	}
+	public void setTxId(String txId) {
+		this.txId = txId;
+	}
+	public int getQueryType() {
+		return queryType;
+	}
+	public void setQueryType(int queryType) {
+		this.queryType = queryType;
+	}
+	public GroupListType getType() {
+		return type;
+	}
+	public void setType(GroupListType type) {
+		this.type = type;
 	}
 }

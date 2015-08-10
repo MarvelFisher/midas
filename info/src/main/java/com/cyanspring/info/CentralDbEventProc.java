@@ -3,7 +3,6 @@ package com.cyanspring.info;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,20 +12,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.info.GroupListEvent;
 import com.cyanspring.common.event.info.GroupListRequestEvent;
+import com.cyanspring.common.event.info.GroupListType;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
 import com.cyanspring.common.event.info.PriceHighLowEvent;
 import com.cyanspring.common.event.info.PriceHighLowRequestEvent;
+import com.cyanspring.common.event.info.RetrieveChartEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeType;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
-import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 
@@ -252,9 +254,38 @@ public class CentralDbEventProc implements Runnable
 		centraldb.onCallRefData(event);
 	}
 	
+	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
+	{
+		centraldb.onUpdateRefData(event);
+	}
+	
 	public void processGroupListRequestEvent(GroupListRequestEvent event)
 	{
-		centraldb.userRequestGroupList(event);
+		GroupListEvent retEvent = new GroupListEvent(null, event.getSender());
+		retEvent.setUserID(event.getUserID());
+		retEvent.setMarket(event.getMarket());
+		retEvent.setTxId(event.getTxId());
+		retEvent.setType(event.getType());
+		retEvent.setQueryType(event.getQueryType());
+		if (event.getType() == GroupListType.GET)
+		{
+			centraldb.userRequestGroupList(retEvent);
+		}
+		else if (event.getType() == GroupListType.SET)
+		{
+			centraldb.userSetGroupList(retEvent, event.getGroupList());
+		}
+	}
+	public void processRetrieveChartEvent(RetrieveChartEvent event)
+	{
+		if (event.getSymbolList() == null)
+		{
+			centraldb.retrieveAllChart(event);
+		}
+		else
+		{
+			centraldb.retrieveCharts(event);
+		}
 	}
 	
 	public void parseEvent(RemoteAsyncEvent event) throws Exception
@@ -282,6 +313,14 @@ public class CentralDbEventProc implements Runnable
 		else if (event instanceof RefDataEvent)
 		{
 			processRefDataEvent((RefDataEvent)event);
+		}
+		else if (event instanceof RetrieveChartEvent)
+		{
+			processRetrieveChartEvent((RetrieveChartEvent)event);
+		}
+		else if (event instanceof GroupListRequestEvent)
+		{
+			processGroupListRequestEvent((GroupListRequestEvent)event);
 		}
 	}
 

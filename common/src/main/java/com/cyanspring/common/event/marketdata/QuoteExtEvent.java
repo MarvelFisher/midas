@@ -5,16 +5,17 @@ import java.util.Map;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
+import com.cyanspring.common.marketdata.QuoteSource;
 
 public class QuoteExtEvent extends RemoteAsyncEvent {
 	
 	private DataObject data;
-	private int sourceId;
+	private QuoteSource quoteSource;
 	
-	public QuoteExtEvent(String key, String receiver, DataObject data, int sourceId) {
+	public QuoteExtEvent(String key, String receiver, DataObject data, QuoteSource quoteSource) {
 		super(key, receiver);
 		this.data = data;
-		this.sourceId = sourceId;
+		this.quoteSource = quoteSource;
 	}
 	
 	public String getSymbol(){
@@ -28,9 +29,8 @@ public class QuoteExtEvent extends RemoteAsyncEvent {
 	public DataObject getQuoteExt(){
 		return data;
 	}
-	
-	public int getSourceId(){
-		return sourceId;
-	}
 
+	public QuoteSource getQuoteSource() {
+		return quoteSource;
+	}
 }

@@ -34,6 +34,7 @@ public enum RefDataField {
 	MARGIN_RATE("Margin Rate"),          // 保證金 %%
 	COMMISSION_FEE("Commission fee"),    // 手續費
 	MINIMAL_COMMISSION_FEE("Minimal CF"),// 最低收續費
+	LOT_COMMISSION_FEE("Lot CF"),
 	//MAXIMUM_LOT("Maximum lot"),     // 最大下單手數
 	LIMIT_MAXIMUM_LOT("Limit maximum lot"),
 	MARKET_MAXIMUM_LOT("Market maximum lot"), 
@@ -51,7 +52,8 @@ public enum RefDataField {
 	DETAIL_CN("Detail CN"),
 	SPOT_ENNAME("Spot ENName"),
 	SPOT_CNNAME("Spot CNName"),
-	SPOT_TWNAME("Spot TWName")
+	SPOT_TWNAME("Spot TWName"),
+	CODE("Code")
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

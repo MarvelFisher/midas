@@ -70,4 +70,17 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 		}
 		return infoList;
 	}
+	@Override
+	public SymbolInfo getbySymbol(String symbol) 
+	{
+		for (SymbolInfo symbolinfo : refSymbolInfo)
+		{
+			if (symbol.equals(symbolinfo.getCode()) 
+					|| symbol.equals(symbolinfo.getHint() + "." + symbolinfo.getExchange()))
+			{
+				return symbolinfo;
+			}
+		}
+		return null;
+	}
 }
