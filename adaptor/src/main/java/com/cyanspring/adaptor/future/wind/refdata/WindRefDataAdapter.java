@@ -443,6 +443,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbol);
                     quoteExtends.put(symbol,quoteExtend);
                 }
+                quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
                 quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
                 quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
                 quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());

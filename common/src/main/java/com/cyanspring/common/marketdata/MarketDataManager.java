@@ -104,10 +104,12 @@ public class MarketDataManager extends MarketDataReceiver {
         Quote quote = quotes.get(symbol);
 
         if (quote != null) {
+            quote.setTimeSent(Clock.getInstance().now());
             eventManager.sendLocalOrRemoteEvent(new QuoteEvent(event.getKey(), event.getSender(), quote));
             DataObject quoteExtend = quoteExtends.get(symbol);
             if (isQuoteExtendEventIsSend()) {
                 if (quoteExtend != null) {
+                    quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     eventManager.sendLocalOrRemoteEvent(new QuoteExtEvent(event.getKey(), event.getSender(), quoteExtend, QuoteSource.DEFAULT));
                 }
             }
@@ -165,9 +167,9 @@ public class MarketDataManager extends MarketDataReceiver {
                 for (String symbol : quoteExtends.keySet()) {
                     DataObject quoteExtend = (DataObject)quoteExtends.get(symbol).clone();
                     quoteExtendCleaner.clear(quoteExtend);
-                    quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                     try {
                         printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
+                        quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
                         eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
