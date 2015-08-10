@@ -94,7 +94,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         Bootstrap bootstrap = new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .handler(new MsgPackRefDataClientInitializer());
 
         try {
@@ -114,6 +114,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     log.warn(e.getMessage(), e);
                 }
                 log.info("RefData Adapter disconnect with - " + gatewayIp + " : " + gatewayPort + " , will try again after 3 seconds.");
+                serverRetryCount++;
                 Thread.sleep(3000);
             }
         } catch (InterruptedException ie) {
@@ -184,7 +185,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                     serverHeartBeatCountAfterCodeTableCome--;
                     if (serverHeartBeatCountAfterCodeTableCome < -3) {
                         MsgPackRefDataClientHandler.context.close();
-                        serverRetryCount++;
                     }
                 }
                 break;
@@ -421,14 +421,20 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     public void saveDBDataToQuoteExtendFile() throws Exception {
         log.debug("write quoteExtend file begin");
         HashMap<String, DataObject> quoteExtends = getHashMapFromFile(lastQuoteExtendFile);
-        if (quoteExtends != null && quoteExtends.size() > 0) {
-            for(String symbol: quoteExtends.keySet()){
-                if(!windBaseDBDataHashMap.containsKey(symbol)) continue;
-                DataObject quoteExtend = quoteExtends.get(symbol);
+        if(windBaseDBDataHashMap != null && windBaseDBDataHashMap.size() > 0){
+            for(String symbol: windBaseDBDataHashMap.keySet()){
                 WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(symbol);
-                if(quoteExtend.fieldExists(QuoteExtDataField.FREESHARES.value())) quoteExtend.put(QuoteExtDataField.FREESHARES.value(),windBaseDBData.getFreeShares());
-                if(quoteExtend.fieldExists(QuoteExtDataField.TOTOALSHARES.value())) quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
-                if(quoteExtend.fieldExists(QuoteExtDataField.PERATIO.value())) quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());
+                DataObject quoteExtend;
+                if(quoteExtends.containsKey(symbol)){
+                    quoteExtend = quoteExtends.get(symbol);
+                }else{
+                    quoteExtend = new DataObject();
+                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbol);
+                    quoteExtends.put(symbol,quoteExtend);
+                }
+                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
+                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
+                quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());
             }
             saveHashMapToFile(lastQuoteExtendFile, quoteExtends);
         }
@@ -457,6 +463,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             }
         } catch (InterruptedException e) {
         }
+        log.debug("wait codetable end");
         //send RefData Listener
         if (serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
             log.debug("get RefData from WindGW");

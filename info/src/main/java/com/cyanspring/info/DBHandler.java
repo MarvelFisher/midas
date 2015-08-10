@@ -1,6 +1,7 @@
 package com.cyanspring.info;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -194,7 +195,7 @@ public class DBHandler
     public List<GroupInfo> getGroupList(String user, String market)
     {
     	ArrayList<GroupInfo> retsymbollist = new ArrayList<GroupInfo>(); 
-		String sqlcmd = String.format("SELECT `GROUP` FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
+		String sqlcmd = String.format("SELECT * FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s' ORDER BY `NO`;", 
 				user, market) ;
 
 		Connection connect = getConnect();
@@ -210,9 +211,9 @@ public class DBHandler
 			int count;
 			while(rs.next())
 			{
-				group = rs.getString("GROUP_ID").toLowerCase();
-				name = rs.getString("GROUP_NAME").toLowerCase();
-				strCount = rs.getString("SYMBOLCOUNT");
+				group = DBHandler.utf8Decode(rs.getString("GROUP_ID").toLowerCase());
+				name = DBHandler.utf8Decode(rs.getString("GROUP_NAME").toLowerCase());
+				strCount = rs.getString("SYMBOL_COUNT");
 				count = (strCount == null) ? 0 : Integer.parseInt(strCount);
 				retsymbollist.add(new GroupInfo(group, name, count));
 			}
@@ -703,4 +704,32 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
+	public static String utf8Encode(String org)
+	{
+		String encode;
+		try 
+		{
+			encode = URLEncoder.encode(org, "UTF-8");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			log.warn("CDPutf8Encode: Unsupported Encoding UTF-8, origin: " + org);
+			encode = org;
+		}
+		return encode;
+	}
+	public static String utf8Decode(String org)
+	{
+		String decode;
+		try 
+		{
+			decode = URLDecoder.decode(org, "UTF-8");
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+			log.warn("CDPutf8Encode: Unsupported Encoding UTF-8, origin: " + org);
+			decode = org;
+		}
+		return decode;
+	}
 }

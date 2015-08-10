@@ -4,6 +4,12 @@ public class GroupInfo implements Comparable<GroupInfo>{
 	private String groupID;
 	private String groupName;
 	private int symbolCount;
+	public GroupInfo()
+	{
+		setGroupID(null);
+		setGroupName(null);
+		setSymbolCount(0);
+	}
 	public GroupInfo(String groupID, String groupName, int symbolCount)
 	{
 		setGroupID(groupID);
