@@ -1111,11 +1111,11 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			dHigh = price.getHigh();
 			dLow = price.getLow();
-			if (getD52WHigh() < dHigh)
+			if (getD52WHigh() < dHigh && PriceUtils.isZero(dHigh) == false)
 			{
 				setD52WHigh(dHigh) ;
 			}
-			if (PriceUtils.isZero(getD52WLow()) || getD52WLow() > dLow)
+			if ((PriceUtils.isZero(getD52WLow()) || getD52WLow() > dLow) && PriceUtils.isZero(dLow) == false)
 			{
 				setD52WLow(dLow) ;
 			}
