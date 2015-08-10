@@ -62,6 +62,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     private String windbaseDataFile;
     private String lastQuoteExtendFile;
     private boolean isAlive = true;
+    private boolean status = false;
     static volatile boolean isConnected = false;
     static volatile boolean codeTableIsProcessEnd = false;
     static volatile int serverHeartBeatCountAfterCodeTableCome = -1;
@@ -315,9 +316,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             stmt.close();
             conn.close();
         } catch (SQLException se) {
-            log.error(se.getMessage(),se);
+            log.error(se.getMessage(), se);
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         } finally {
             try {
                 if (stmt != null) stmt.close();
@@ -326,7 +327,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             try {
                 if (conn != null) conn.close();
             } catch (SQLException se) {
-                log.error(se.getMessage(),se);
+                log.error(se.getMessage(), se);
             }
         }
         log.debug("wind baseDB process end");
@@ -385,6 +386,16 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         }
     }
 
+
+    @Override
+    public boolean getStatus() {
+        return this.status;
+    }
+
+    @Override
+    public void flush() {
+        this.status = false;
+    }
 
     @Override
     public void init() throws Exception {
