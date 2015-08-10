@@ -331,14 +331,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         return windBaseDBDataHashMap;
     }
 
-    public static <T> List<T> getListFromFile(String listPath) throws Exception {
+    public static <T> List<T> getListFromFile(String listPath) {
         XStream xstream = new XStream(new DomDriver());
         File file = new File(listPath);
-        List<T> list;
+        List<T> list = new ArrayList<>();
         if (file.exists()) {
             list = (List<T>) xstream.fromXML(file);
         } else {
-            throw new Exception("Missing file: " + listPath);
+            log.error("Missing file: " + listPath);
         }
         return list;
     }
@@ -357,14 +357,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         }
     }
 
-    public static <K, T> HashMap<K, T> getHashMapFromFile(String hashMapPath) throws Exception {
+    public static <K, T> HashMap<K, T> getHashMapFromFile(String hashMapPath){
         XStream xstream = new XStream(new DomDriver());
         File file = new File(hashMapPath);
-        HashMap<K, T> hashMap;
+        HashMap<K, T> hashMap = new HashMap<>();
         if (file.exists()) {
             hashMap = (HashMap<K, T>) xstream.fromXML(file);
         } else {
-            throw new Exception("Missing file: " + hashMapPath);
+            log.error("Missing file: " + hashMapPath);
         }
         return hashMap;
     }
@@ -403,11 +403,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
             windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
         } else {
             //write last ExtendFile
-            try {
-                saveDBDataToQuoteExtendFile();
-            }catch (Exception e){
-                log.error(e.getMessage(),e);
-            }
+            saveDBDataToQuoteExtendFile();
             saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
         }
         //connect WindGW
@@ -416,7 +412,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         addReqData(new Integer(0));
     }
 
-    public void saveDBDataToQuoteExtendFile() throws Exception {
+    public void saveDBDataToQuoteExtendFile(){
         log.debug("write quoteExtend file begin");
         HashMap<String, DataObject> quoteExtends = getHashMapFromFile(lastQuoteExtendFile);
         if(windBaseDBDataHashMap != null && windBaseDBDataHashMap.size() > 0){
@@ -472,7 +468,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         } else {
             log.debug("get RefData from RefDataFile = " + refDataFile);
             List<RefData> refDataList = getListFromFile(refDataFile);
-            listener.onRefData(refDataList);
+            if(refDataList != null) listener.onRefData(refDataList);
         }
     }
 
@@ -501,7 +497,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         String logConfigFile = "conf/windlog4j.xml";
         String configFile = "conf/windRefData.xml";
         DOMConfigurator.configure(logConfigFile);
