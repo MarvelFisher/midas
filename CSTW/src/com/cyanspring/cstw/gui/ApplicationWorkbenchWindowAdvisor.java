@@ -119,9 +119,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 			}
 						
-			ICommandService cmdService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
-			cmdService.refreshElements("CSTW.showUserCommand", null);
-
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
