@@ -12,6 +12,8 @@
     	<property name="windMFServerPort" value="10050"/>  <!-- 10050 -->	
     	<property name="windMFServerUserId" value="TD1003871001"/> <!-- TD1001888002 -->
     	<property name="windMFServerUserPwd" value="77022324"/>  <!-- 35328058 -->
+    	<property name="windMFWholeMarket" value="true"/>
+    	<property name="windMFMarkets" value=""/>    	
     	<property name="merchandiseTypeFlags" value="17"/>
 
     	<!--
@@ -26,9 +28,19 @@
     	<!-- Wind Stock / Index Future Server , 若 IP 設為空字串,就不會登入 Wind -->
     	<property name="windSFServerIP" value="114.80.154.34"/><!-- "114.80.154.34"/> -->         
     	<property name="windSFServerPort" value="10051"/> 	
-    	<property name="windSFServerUserId" value="TD1003871003"/> <!-- TD1004012003 --> <!-- TD1004012005 --> <!-- TD1004012004 -->
-    	<property name="windSFServerUserPwd" value="52480886"/> <!-- 72221970 --> <!-- 13840269 --> <!-- 70173844 -->
+    	<property name="windSFServerUserId" value="TD1003871004"/> <!-- TD1003871003 --> <!-- TD1004012003 --> <!-- TD1004012005 --> <!-- TD1004012004 -->
+    	<property name="windSFServerUserPwd" value="37814866"/> <!-- 52480886 --> <!-- 72221970 --> <!-- 13840269 --> <!-- 70173844 -->
+    	<property name="windSFWholeMarket" value="true"/>
+    	<property name="windSFMarkets" value="SZ"/>
     	<property name="stockTypeFlags" value="3"/>
+		
+    	<!-- Wind Spare Stock / Index Future Server , 若 IP 設為空字串,就不會登入 Wind -->
+    	<property name="windSSServerIP" value="114.80.154.34"/><!-- "114.80.154.34"/> -->         
+    	<property name="windSSServerPort" value="10051"/> 	
+    	<property name="windSSServerUserId" value="TD1003871003"/> <!-- TD1003871003 --> <!-- TD1004012003 --> <!-- TD1004012005 --> <!-- TD1004012004 -->
+    	<property name="windSSServerUserPwd" value="52480886"/> <!-- 52480886 --> <!-- 72221970 --> <!-- 13840269 --> <!-- 70173844 -->
+    	<property name="windSSWholeMarket" value="true"/>
+    	<property name="windSSMarkets" value="SH;CF"/>		
 
 		<!--
 		DATA_TYPE_ALL = 0,//所有数据    
@@ -54,7 +66,7 @@
     	<property name="upstreamPort" value="10049"/>
     
 		<!--  Msg Pack Lite Cascading Configure -->    	
-    	<property name="mpCascading" value="true"/>
+    	<property name="mpCascading" value="false"/>
     	<property name="mpUpstreamIp" value="10.0.0.20"/> <!-- 61.152.93.132 -->
     	<property name="mpUpstreamPort" value="10048"/>   
     	

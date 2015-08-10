@@ -27,7 +27,7 @@ import cn.com.wind.td.tdf.TDF_PROXY_TYPE;
 public class Demo {
 	private final  boolean outputToScreen = true;  
 	/***********************configuration***************************************/
-	private final String openMarket = ""; 
+	private String openMarket = ""; 
 	private final int openData = 0;
 	private final int openTime = 0;
 	private StringBuilder  subscription = new StringBuilder("600000.SH;000001.SZ");
@@ -54,12 +54,15 @@ public class Demo {
 	ConcurrentLinkedQueue<TDF_MSG> futureQueue = new ConcurrentLinkedQueue<TDF_MSG>();
 	ConcurrentLinkedQueue<TDF_MSG> quotationQueue = new ConcurrentLinkedQueue<TDF_MSG>();
 	Thread trdQuotation,trdTransaction,trdFuture;
+	String[] strMarkets = null;
+	boolean bWindReconnect = false;	
+	protected boolean quitFlag = true;
 	
 	
 	public int getPort() {
 		return this.port;
 	}
-	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d , boolean wm) {
+	Demo(String ip, int port, String username, String password , int typeFlags, WindGateway gateWay , boolean d , boolean wm,String mkts,boolean wr) {
 		this.ip = ip;
 		this.port = port;
 		this.username = username;
@@ -69,6 +72,12 @@ public class Demo {
 		this.quitFlag = true;
 		this.dedicatedWindThread = d;
 		this.bWholeMarket = wm;
+		this.openMarket = mkts;
+		if(mkts.isEmpty() == false) {
+			strMarkets = openMarket.split(";") ;
+		}
+		this.bWindReconnect = wr;
+
 		
 		if(d) {
 			trdQuotation = new Thread( new MsgProcessor(windGateway,quotationQueue),"ProcessQuotation");			
@@ -159,18 +168,31 @@ public class Demo {
 			log.warn("Can't connect to %s:%d. �����˳���\n", ip, port);
 			System.exit(err);
 		}		
-	}
+	}	
 	
-	protected Boolean quitFlag;
+	public boolean hadMarket(String sym) {
+		if(strMarkets == null || strMarkets.length == 0) {
+			return true;
+		}
+		for(String market : strMarkets) {
+			if(sym.contains(market)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public void AddRequest(WindRequest wr)
 	{
-		if(wr.reqId == WindRequest.Subscribe) {
+		if(wr.reqId == WindRequest.Subscribe && bWholeMarket == false) {
 			StringBuilder sb = null;
 			String[] syms = wr.strInfo.split(";");
 			for(String sym : syms) {
 				if(subscription.indexOf(sym) < 0)
 				{
+					if(hadMarket(sym) == false) {
+						continue;
+					}
 					subscription.append(";" + sym);
 					if(sb == null) {
 						sb = new StringBuilder(sym);
@@ -218,18 +240,18 @@ public class Demo {
 				requestQueue.remove(wr);
 				if(wr.reqId == WindRequest.Subscribe)
 				{
-					client.setSubscription(wr.strInfo, SUBSCRIPTION_STYLE.SUBSCRIPTION_ADD);				
-					log.info("Add Subscription : " + wr.strInfo);
+					if(bWholeMarket == false) {
+						client.setSubscription(wr.strInfo, SUBSCRIPTION_STYLE.SUBSCRIPTION_ADD);				
+						log.info("Add Subscription : " + wr.strInfo);
+					}
 				}				
 			}
-
 			return true;
 		}		
 		return false;
 	}
 	
 	void run() {
-		int err;
 		TDF_MSG_DATA data;
 		
 
@@ -253,7 +275,10 @@ public class Demo {
 			case TDF_MSG_ID.MSG_SYS_DISCONNECT_NETWORK:				
 				System.out.println("NETWORK DISCONNECT");
 				log.info("Receive Wind NETWORK DISCONNECT");
-				quitFlag = true;
+				if(bWindReconnect == false) {
+					quitFlag = true;
+				}
+				bServerReady = false;
 				break;
 			case TDF_MSG_ID.MSG_SYS_CONNECT_RESULT:{
 				data = TDFClient.getMessageData(msg, 0);
@@ -275,15 +300,22 @@ public class Demo {
 				data = TDFClient.getMessageData(msg, 0);
 				codeTableResult = data.getCodeTableResult();
 				PrintHelper.printCodeTableResult(data.getCodeTableResult());
-				if(windGateway != null)
-				{		
-					String markets[] = data.getCodeTableResult().getMarket();
-					for(int i= 0; i < data.getCodeTableResult().getMarkets();i++)
-					{
+				if(windGateway != null) {								
+					String[] markets = data.getCodeTableResult().getMarket();  
+					for(int i= 0; i < data.getCodeTableResult().getMarkets();i++) { // 因為 markets 會回超出數量的 array , 所以要用 getMarkets 來判斷有幾個 market					
 						log.info("Receive Code Table - Market : " + markets[i] + " , Symbol Count : " + client.getCodeTable(markets[i]).length );
 						windGateway.receiveCodeTable(markets[i], client.getCodeTable(markets[i]));						
 					}
 					windGateway.connectedWithWind(markets);
+				}				
+				if(subscription.toString().isEmpty() == false) {
+					if(bWholeMarket) {
+						subscription = new StringBuilder("");
+					}
+					client.setSubscription(subscription.toString(), SUBSCRIPTION_STYLE.SUBSCRIPTION_SET);				
+					log.info("Server Ready , set Subscription : " + subscription.toString());
+				} else {
+					log.info("Server Ready , subscribe whole market");
 				}
 				bServerReady = true;
 				//printCodeTable();
@@ -464,7 +496,7 @@ public class Demo {
 		// Proxy Mode
 		//Demo d = new Demo("10.100.7.18", 10001, "dev_test", "dev_test", 
 		//			"10.100.6.125", 3128, "", "");
-		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false,false);
+		Demo demo = new Demo(args[0], Integer.parseInt(args[1]), args[2], args[3], 0,null,false,false,"",true);
 		DataHandler dh = new DataHandler (demo);
 		Thread t1 = new Thread(dh);
 		t1.start();	

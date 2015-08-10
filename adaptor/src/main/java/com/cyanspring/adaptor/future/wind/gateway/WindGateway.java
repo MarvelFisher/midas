@@ -60,12 +60,24 @@ public class WindGateway implements Runnable {
 	private String windMFServerUserId = "TD1001888002";
 	private String windMFServerUserPwd = "35328058";
 	private boolean windMFWholeMarket = false;
+	private boolean windMFWindReconnect = false;
+	private String windMFMarkets = "";
 	
 	private String windSFServerIP = "114.80.154.34";
 	private int windSFServerPort = 10051;
 	private String windSFServerUserId = "TD1001888001";
 	private String windSFServerUserPwd = "62015725";
 	private boolean windSFWholeMarket = false;
+	private boolean windSFWindReconnect = false;	
+	private String windSFMarkets = "";
+	
+	private String windSSServerIP = "114.80.154.34";
+	private int windSSServerPort = 10051;
+	private String windSSServerUserId = "TD1001888001";
+	private String windSSServerUserPwd = "62015725";
+	private boolean windSSWholeMarket = false;
+	private boolean windSSWindReconnect = false;
+	private String windSSMarkets = "";	
 	
 	public static boolean cascading = false;
 	public static String upstreamIp = "202.55.14.140";
@@ -77,7 +89,7 @@ public class WindGateway implements Runnable {
 	
 	public static MsgPackLiteServer msgPackLiteServer = null;
 	public static boolean dedicatedWindThread = false;
-	Demo demo = null,demoStock = null;
+	Demo demo = null,demoStock = null,demoSpare = null;
 	public static int autoTermination = 0;
 	
 	
@@ -115,13 +127,28 @@ public class WindGateway implements Runnable {
 	public void setWindMFServerUserPwd(String pwd) {
 		this.windMFServerUserPwd = pwd;
 	}	
+	
 	public boolean getWindMFWholeMarket() {
 		return this.windMFWholeMarket;
 	}
 	public void setWindMFWholeMarket(boolean b) {
 		this.windMFWholeMarket = b;
 	}	
-
+	
+	public boolean getWindMFWindReconnect() {
+		return this.windMFWindReconnect;
+	}
+	public void setWindMFWindReconnect(boolean b) {
+		this.windMFWindReconnect = b;
+	}
+	
+	public String getWindMFMarkets() {
+		return this.windMFMarkets;
+	}
+	public void setWindMFMarkets(String s) {
+		this.windMFMarkets = s;
+	}
+			
 	public String getWindSFServerIP() {
 		return this.windSFServerIP;
 	}
@@ -156,6 +183,69 @@ public class WindGateway implements Runnable {
 	public void setWindSFWholeMarket(boolean b) {
 		this.windSFWholeMarket = b;
 	}
+	
+	public boolean getWindSFWindReconnect() {
+		return this.windSFWindReconnect;
+	}
+	public void setWindSFWindReconnect(boolean b) {
+		this.windSFWindReconnect = b;
+	}	
+	
+	public String getWindSFMarkets() {
+		return this.windSFMarkets;
+	}
+	public void setWindSFMarkets(String s) {
+		this.windSFMarkets = s;
+	}		
+	
+	public String getWindSSServerIP() {
+		return this.windSSServerIP;
+	}
+	public void setWindSSServerIP(String ip) {
+		this.windSSServerIP = ip;
+	}
+	
+	public int getWindSSServerPort() {
+		return this.windSSServerPort;
+	}
+	public void setWindSSServerPort(int port) {
+		this.windSSServerPort = port;
+	}
+	
+	public String getWindSSServerUserId() {
+		return this.windSSServerUserId;
+	}
+	public void setWindSSServerUserId(String userId) {
+		this.windSSServerUserId = userId;
+	}
+	
+	public String getWindSSServerUserPwd() {
+		return this.windSSServerUserPwd;
+	}
+	public void setWindSSServerUserPwd(String pwd) {
+		this.windSSServerUserPwd = pwd;
+	}		
+	
+	public boolean getWindSSWholeMarket() {
+		return this.windSSWholeMarket;
+	}
+	public void setWindSSWholeMarket(boolean b) {
+		this.windSSWholeMarket = b;
+	}
+	
+	public boolean getWindSSWindReconnect() {
+		return this.windSSWindReconnect;
+	}
+	public void setWindSSWindReconnect(boolean b) {
+		this.windSSWindReconnect = b;
+	}		
+	
+	public String getWindSSMarkets() {
+		return this.windSSMarkets;
+	}
+	public void setWindSSMarkets(String s) {
+		this.windSSMarkets = s;
+	}	
 	
 	public boolean getCascading() {
 		return cascading;
@@ -1021,14 +1111,15 @@ public class WindGateway implements Runnable {
 	}	
 	
 	public void requestSymbol(String sym) {
-		if(demoStock != null && windSFWholeMarket == false)
-		{
+		if(demoStock != null && windSFWholeMarket == false) {		
 			demoStock.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
-		}	
+		}
+		if(demoSpare != null && windSSWholeMarket == false) {		
+			demoSpare.AddRequest(new WindRequest(WindRequest.Subscribe,sym.toUpperCase()));
+		}		
 	}
 	public void requestSymbolMF(String sym) {
-		if(demo != null && windMFWholeMarket == false)
-		{
+		if(demo != null && windMFWholeMarket == false) {	
 			demo.AddRequest(new WindRequest(WindRequest.Subscribe,sym));
 		}	
 	}
@@ -1046,12 +1137,10 @@ public class WindGateway implements Runnable {
 	{	
 		int exitCode = 0;
 		try {
-			//Demo demo = null,demoStock = null;
-			Thread t1 = null,t2 = null,t1Stock = null,t2Stock = null,clientThread = null,mpServerThread = null,mpClientThread = null;
-			DataWrite dw = null,dwStock = null;
+			Thread t1 = null,t1Stock = null, t1Spare = null,clientThread = null,mpServerThread = null,mpClientThread = null;
+			DataHandler dh = null,dhStock = null,dhSpare = null;
 			WindDataClient windDataClient = null;
 			MsgPackLiteDataClient mpDataClient = null;
-			DataHandler dh = null,dhStock = null;
 			
 	
 			if(cascading || mpCascading) {
@@ -1067,27 +1156,26 @@ public class WindGateway implements Runnable {
 					mpClientThread.start();
 				}
 			} else {
-				if(windMFServerIP != null && windMFServerIP != "")
-				{
-					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread,windMFWholeMarket);
+				if(windMFServerIP != null && windMFServerIP != "") {			
+					demo = new Demo(windMFServerIP, windMFServerPort, windMFServerUserId, windMFServerUserPwd , merchandiseTypeFlags, this , dedicatedWindThread,windMFWholeMarket,windMFMarkets,windMFWindReconnect);
 					dh = new DataHandler (demo);  // 用來做 demo 的 斷線 reconnect
 					t1 = new Thread(dh,"windMerchandise");
 					t1.start();
-					//dw = new DataWrite (demo);   // 用來做 demo 的 斷線 reconnect
-					//t2 = new Thread ( dw , "windMerchandiseConnectionCheck" );
-					//t2.start();
 				}
 				
-				if(windSFServerIP != null && windSFServerIP != "")
-				{
-					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSFWholeMarket);
+				if(windSFServerIP != null && windSFServerIP != "") {				
+					demoStock = new Demo(windSFServerIP, windSFServerPort , windSFServerUserId, windSFServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSFWholeMarket,windSFMarkets,windSFWindReconnect);
 					dhStock = new DataHandler (demoStock);  // 用來做 demo 的 斷線 reconnect
 					t1Stock = new Thread(dhStock,"windFutureAndStock");
 					t1Stock.start();
-					//dwStock = new DataWrite (demoStock);   // 用來做 demo 的 斷線 reconnect
-					//t2Stock = new Thread ( dwStock,"windStockConnectionCheck" );
-					//t2Stock.start();
 				}
+				
+				if(windSSServerIP != null && windSSServerIP != "") {				
+					demoSpare = new Demo(windSSServerIP, windSSServerPort , windSSServerUserId, windSSServerUserPwd , stockTypeFlags, this,dedicatedWindThread,windSSWholeMarket,windSSMarkets,windSSWindReconnect);
+					dhSpare = new DataHandler (demoSpare);  // 用來做 demo 的 斷線 reconnect
+					t1Spare = new Thread(dhSpare,"windStockSpare");
+					t1Spare.start();
+				}				
 			}
 			
 			if(msgPackLiteServer != null) {
@@ -1139,9 +1227,14 @@ public class WindGateway implements Runnable {
 							cal = Calendar.getInstance();
 							ct = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);
 						} while(ct != autoTermination);
-						exitCode = 1;
-						cf.channel().close();
+						exitCode = 2;
+						cf.channel().close();					
 					}
+					if(msgPackLiteServer != null) {
+						msgPackLiteServer.stop();
+						msgPackLiteServer = null;
+						mpServerThread.join();
+					}					
 				} else {
 					if(autoTermination < 0) {
 						Thread.sleep(3000);  // sleep 一下,等 MsgPackServer 的 Thread 啟動
@@ -1157,9 +1250,10 @@ public class WindGateway implements Runnable {
 							cal = Calendar.getInstance();
 							ct = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);							
 						} while(ct != autoTermination);						
-						exitCode = 1;
+						exitCode = 2;
 						if(msgPackLiteServer != null) {
 							msgPackLiteServer.stop();
+							msgPackLiteServer = null;
 						}
 					}
 					mpServerThread.join();	
@@ -1170,27 +1264,27 @@ public class WindGateway implements Runnable {
 			{
 	
 	
-				if(demo != null)
-				{
+				if(demo != null) {			
 					dh.Stop();
 					demo.setQuitFlag(true);
-					//dw.setQuitFlag(true);	
 					t1.join();
 					log.info(t1.getName() + " Terminated.");
-					//t2.join();			
-					//log.info("Thread2 Quit!");
 				}
 				
-				if(demoStock != null)
-				{
+				if(demoStock != null) {				
 					dhStock.Stop();
 					demoStock.setQuitFlag(true);
-					//dwStock.setQuitFlag(true);	
 					t1Stock.join();
-					log.info(t1Stock.getName() + " Terminated.");
-					//t2Stock.join();			
-					//log.info("Thread2 for Stock Quit!");			
+					log.info(t1Stock.getName() + " Terminated.");		
 				}
+				
+				if(demoSpare != null) {				
+					dhSpare.Stop();
+					demoSpare.setQuitFlag(true);
+					t1Spare.join();
+					log.info(t1Spare.getName() + " Terminated.");		
+				}				
+				
 				if(clientThread != null) {
 					windDataClient.stop();
 					clientThread.join();				
@@ -1199,12 +1293,6 @@ public class WindGateway implements Runnable {
 					mpDataClient.stop();
 					mpClientThread.join();				
 				}		
-				/*
-				if(mpServerThread != null) {
-					msgPackLiteServer.stop();
-					mpServerThread.join();
-				}
-				*/
 				
 				if(bossGroup != null) {
 					bossGroup.shutdownGracefully();
