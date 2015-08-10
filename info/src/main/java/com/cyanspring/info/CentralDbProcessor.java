@@ -389,18 +389,16 @@ public class CentralDbProcessor implements IPlugin
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
 		String userEncode;
-		try {
-			userEncode = URLEncoder.encode(user, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			log.warn("CDP(382): Unsupported Encoding UTF-8");
-			userEncode = user;
-		}
+		userEncode = DBHandler.utf8Encode(user);
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 				" AND `GROUP`='%s' AND `MARKET`='%s';", userEncode, group, market) ;
 		getDbhnd().updateSQL(sqlcmd);
 		ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(symbols);
 		ArrayList<SymbolInfo> retsymbollist = new ArrayList<SymbolInfo>();
+		sqlcmd = String.format("UPDATE `Subscribe_Group_Info` SET `SYMBOL_COUNT`=%d WHERE `USER_ID`='%s'" + 
+				" AND `MARKET`='%s' AND `GROUP_ID`='%s';", symbolinfos.size(), userEncode, market, group) ;
+		getDbhnd().updateSQL(sqlcmd);
 		sqlcmd = String.format("INSERT INTO Subscribe_Symbol_Info (`USER_ID`,`GROUP`,`MARKET`,`EXCHANGE`,`CODE`,`HINT`,`WINDCODE`,`EN_NAME`,`CN_NAME`,`TW_NAME`,`JP_NAME`,`KR_NAME`,`ES_NAME`,`NO`) VALUES");
 		boolean first = true;
 		int No = 0;
@@ -453,12 +451,9 @@ public class CentralDbProcessor implements IPlugin
 		sendEvent(retEvent);
 	}
 	
-	public void userRequestGroupList(GroupListRequestEvent event)
+	public void userRequestGroupList(GroupListEvent retEvent)
 	{
-		GroupListEvent retEvent = new GroupListEvent(null, event.getSender());
-		String user = event.getUserID();
-		String market = event.getMarket();
-		List<GroupInfo> retList = this.getDbhnd().getGroupList(user, market);
+		List<GroupInfo> retList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
 		retEvent.setGroupList(retList);
 		if (retList == null)
 		{
@@ -472,6 +467,46 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(true);
 		}
 		sendEvent(retEvent);
+	}
+	
+	public void userSetGroupList(GroupListEvent retEvent, List<GroupInfo> groups)
+	{
+		List<GroupInfo> orgList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
+		List<GroupInfo> delList = new ArrayList<GroupInfo>();
+		for (GroupInfo ginfo : orgList)
+		{
+			if (0 > Collections.binarySearch(groups, ginfo))
+			{
+				delList.add(ginfo);
+			}
+		}
+		String userEn, groupIDEn, groupNameEn;
+		String market = retEvent.getMarket();
+		userEn = DBHandler.utf8Encode(retEvent.getUserID());
+		String sqlcmd ;
+		sqlcmd = String.format("DELETE FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s';", 
+				userEn, retEvent.getMarket()) ;
+		getDbhnd().updateSQL(sqlcmd);
+		sqlcmd = String.format("INSERT INTO `Subscribe_Group_Info` (`USER_ID`,`MARKET`,`GROUP_ID`,`GROUP_NAME`,`SYMBOL_COUNT`,`NO`) VALUES ");
+		boolean first = true;
+		for (GroupInfo ginfo : groups)
+		{
+			groupIDEn = DBHandler.utf8Encode(ginfo.getGroupID());
+			groupNameEn = DBHandler.utf8Encode(ginfo.getGroupName());
+			if (first == true)
+			{
+				first = false;
+			}
+			else
+			{
+				sqlcmd += ",";
+			}
+			sqlcmd += String.format("('%s','%s','%s','%s',%d,%d)", 
+					userEn, market, groupIDEn, groupNameEn, ginfo.getSymbolCount(), groups.indexOf(ginfo));
+		}
+		sqlcmd += ";" ;
+		getDbhnd().updateSQL(sqlcmd);
+		userRequestGroupList(retEvent);
 	}
 	
 	public void writeToTick(Quote quote)

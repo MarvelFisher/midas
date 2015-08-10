@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.info.GroupListEvent;
 import com.cyanspring.common.event.info.GroupListRequestEvent;
+import com.cyanspring.common.event.info.GroupListType;
 import com.cyanspring.common.event.info.HistoricalPriceEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestDateEvent;
 import com.cyanspring.common.event.info.HistoricalPriceRequestEvent;
@@ -255,7 +257,20 @@ public class CentralDbEventProc implements Runnable
 	
 	public void processGroupListRequestEvent(GroupListRequestEvent event)
 	{
-		centraldb.userRequestGroupList(event);
+		GroupListEvent retEvent = new GroupListEvent(null, event.getSender());
+		retEvent.setUserID(event.getUserID());
+		retEvent.setMarket(event.getMarket());
+		retEvent.setTxId(event.getTxId());
+		retEvent.setType(event.getType());
+		retEvent.setQueryType(event.getQueryType());
+		if (event.getType() == GroupListType.GET)
+		{
+			centraldb.userRequestGroupList(retEvent);
+		}
+		else if (event.getType() == GroupListType.SET)
+		{
+			centraldb.userSetGroupList(retEvent, event.getGroupList());
+		}
 	}
 	public void processRetrieveChartEvent(RetrieveChartEvent event)
 	{

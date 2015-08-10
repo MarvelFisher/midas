@@ -16,6 +16,7 @@ public class GroupListEvent extends RemoteAsyncEvent
 	private List<GroupInfo> groupList;
 	private boolean ok ;
 	private String message = null;
+	private GroupListType type;
 	public GroupListEvent(String key, String receiver) 
 	{
 		super(key, receiver);
@@ -61,5 +62,11 @@ public class GroupListEvent extends RemoteAsyncEvent
 	}
 	public void setQueryType(int queryType) {
 		this.queryType = queryType;
+	}
+	public GroupListType getType() {
+		return type;
+	}
+	public void setType(GroupListType type) {
+		this.type = type;
 	}
 }
