@@ -343,4 +343,13 @@ public class RefData extends DataObject {
     public void setSpotTWName(String spotTWName) {
         this.set(spotTWName, RefDataField.SPOT_TWNAME.value());
     }
+
+    public String getCode() {
+        return this.get(String.class, RefDataField.CODE.value());
+    }
+
+    public void setCode(String code) {
+        this.set(code, RefDataField.CODE.value());
+    }
+
 }
