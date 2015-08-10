@@ -165,6 +165,11 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
         refDataManager.injectRefDataList(refDataList);
     }
 
+    @Override
+    public void onRefDataUpdate(List<RefData> refDataList) throws Exception {
+
+    }
+
     public void setRefDataAdaptor(IRefDataAdaptor refDataAdaptor) {
         this.refDataAdaptor = refDataAdaptor;
     }
