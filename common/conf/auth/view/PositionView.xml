@@ -17,5 +17,16 @@
 		</array>
 		</constructor-arg>
 	</bean>	
+	
+	<bean id="positionViewPopUpAction1" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Positions"/><!-- part name -->
+		<constructor-arg value="POPUP_CLOSE_POSITION"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>	
 		
 </beans>

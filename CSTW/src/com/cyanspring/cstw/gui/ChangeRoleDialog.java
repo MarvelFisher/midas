@@ -69,7 +69,13 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 		lblUserRole.setText("User Role:");
 		
 		lblUserRoleId = new Label(container, SWT.NONE);
-		lblUserRoleId.setText(user.getRole().name());
+		if( null == user.getRole()){
+			lblUserRoleId.setText("");
+
+		}else{
+			lblUserRoleId.setText(user.getRole().name());
+
+		}
 		Label lblchangeUserRole = new Label(container, SWT.NONE);
 		lblchangeUserRole.setText("Change to:");
 		

@@ -112,6 +112,18 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private Action saveOrderAction;
 	private Action pinAction;
 	private Action countOrderAction;
+	
+	private final String TOOLBAR_ID_ENTERORDER = "TOOLBAR_ENTER_ORDER";
+	private final String TOOLBAR_ID_CANCELORDER = "TOOLBAR_CANCEL_ORDER";
+	private final String TOOLBAR_ID_PAUSEORDER = "TOOLBAR_PAUSE_ORDER";
+	private final String TOOLBAR_ID_STOP_ORDER = "TOOLBAR_STOP_ORDER";
+	private final String TOOLBAR_ID_START_ORDER = "TOOLBAR_START_ORDER";
+	private final String TOOLBAR_ID_SAVE_ORDER = "TOOLBAR_SAVE_ORDER";
+	private final String TOOLBAR_ID_PIN = "TOOLBAR_PIN";
+	private final String TOOLBAR_ID_COUNT_ORDER = "TOOLBAR_COUNT_ORDER";
+	private final String TOOLBAR_ID_ORDER_PAD = "TOOLBAR_ORDER_PAD";
+	private final String TOOLBAR_ID_FILTER = "TOOLBAR_FILTER";
+
 	private OrderDialog orderDialog;
 	private AmendDialog amendDialog;
 	private Menu menu;
@@ -449,6 +461,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			}
 		};
 
+		orderPadAction.setId(TOOLBAR_ID_ORDER_PAD);
 		orderPadAction.setText("order pad");
 		orderPadAction.setToolTipText("show or hide orderpad");
 
@@ -750,6 +763,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				orderDialog.open();
 			}
 		};
+		
+		enterOrderAction.setId(TOOLBAR_ID_ENTERORDER);
 		enterOrderAction.setText("Enter Order");
 		enterOrderAction.setToolTipText("Create an order");
 
@@ -768,6 +783,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				cancelOrders(false);
 			}
 		};
+		
+		cancelOrderAction.setId(TOOLBAR_ID_CANCELORDER);
 		cancelOrderAction.setText("Cancel Order");
 		cancelOrderAction.setToolTipText("Cancel the order");
 
@@ -787,6 +804,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			}
 		};
 
+		saveOrderAction.setId(TOOLBAR_ID_SAVE_ORDER);
 		saveOrderAction.setText("Save order as xml");
 		saveOrderAction.setToolTipText("Save order as xml");
 
@@ -962,6 +980,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			}
 		};
 
+		pinAction.setId(TOOLBAR_ID_PIN);
 		pinAction.setChecked(true);
 		pinned = true;
 		accountFilter = new ParentOrderFilter();
@@ -986,6 +1005,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				strategyAction(StrategyAction.Pause);
 			}
 		};
+		
+		pauseOrderAction.setId(TOOLBAR_ID_PAUSEORDER);
 		pauseOrderAction.setText("Pause Order");
 		pauseOrderAction.setToolTipText("Pause order");
 
@@ -1004,6 +1025,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				strategyAction(StrategyAction.Stop);
 			}
 		};
+		
+		stopOrderAction.setId(TOOLBAR_ID_STOP_ORDER);
 		stopOrderAction.setText("Stop Order");
 		stopOrderAction.setToolTipText("Stop order");
 
@@ -1046,6 +1069,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				messageBox.open();
 			}
 		};
+		
+		countOrderAction.setId(TOOLBAR_ID_COUNT_ORDER);
 		countOrderAction.setText("Check number of orders");
 		countOrderAction.setToolTipText("Check number of orders");
 
@@ -1163,6 +1188,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				parent.layout();
 			}
 		};
+		
+		filterAction.setId(TOOLBAR_ID_FILTER);
 		filterAction.setText("Filter");
 		filterAction.setToolTipText("show or hide filter");
 
