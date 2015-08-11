@@ -122,7 +122,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		for(String str : sym_arr)
 		{
 			if(WindGateway.mpCascading) {
-				map = MsgPackLiteDataClientHandler.mapQuotation.get(str);
+				map = MsgPackLiteDataClientHandler.mapQuotation.get(str.toUpperCase());  // 因為 SHF , DCE 是以小寫註冊,但 Server 回大寫.
 				if(map == null) {
 					if(bTransaction == false) { // 如果是要求逐筆成交,就透過 SubsTrans 來訂閱,就同時會收到 quote 與 transaction
 						if(isMF) {
@@ -210,7 +210,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		for(String str : sym_arr)
 		{
 	    	if(WindGateway.mpCascading) {
-	    		map =  MsgPackLiteDataClientHandler.mapTransaction.get(str);
+	    		map =  MsgPackLiteDataClientHandler.mapTransaction.get(str.toUpperCase());
 	    	} else {			
 	    		map = getTransaction(str);
 	    	}
@@ -667,6 +667,14 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	    	for(Channel channel : channels.keySet()) {    	
 	    		channel.writeAndFlush(map);
 	    	}
+    	}
+    }
+    
+    public static void sendArrayMessagePackToAllClient(HashMap<Integer, Object> map) {
+    	if(map != null) {
+    		for(Registration lst : channels.values()) {
+    			lst.addMsgPack(map);
+    		}
     	}
     }
     

@@ -55,9 +55,11 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	
 	public void channelRead(ChannelHandlerContext arg0, Object arg1)
 			throws Exception {
-
+		
+		/*
 		try {
 			if(arg1 instanceof HashMap<?,?>) {
+				@SuppressWarnings("unchecked")
 				HashMap<Integer,Object> in = (HashMap<Integer,Object>)arg1;
 				if(in != null) {
 					processData(in);
@@ -70,7 +72,13 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			} 
 	    } finally {
 	        ReferenceCountUtil.release(arg1);
-	    }		
+	    }
+	   	*/
+		WindGateway.instance.AddMessage(arg1);
+		if(calculateMessageFlow(FDTFrameDecoder.getPacketLen(),FDTFrameDecoder.getReceivedBytes(),FDTFrameDecoder.getDropBytes()))
+		{
+			FDTFrameDecoder.ResetCounter();
+		}		
 	
 	}
 	
@@ -129,7 +137,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	}
 	
 	
-	private void processData(HashMap<Integer,Object> in) {
+	public static void processData(HashMap<Integer,Object> in , boolean inArray) {
 		
 		try {
 			// 沒有 packet type , 就無法處理.
@@ -139,11 +147,12 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			int iPacketType = (int)in.get(FDTFields.PacketType);
 			switch(iPacketType) {
 			case FDTFields.PacketArray :
+				@SuppressWarnings("unchecked")
 				ArrayList<HashMap<Integer,Object>> lst = (ArrayList<HashMap<Integer,Object>>)in.get(FDTFields.ArrayOfPacket);
 				if(lst != null) {
 					for(HashMap<Integer,Object> map : lst) {
-						processData(map);
-					}
+						processData(map,true);
+					}					
 				}
 				break;
 			case FDTFields.WindMarkets :
@@ -183,16 +192,20 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			case FDTFields.WindCodeTable :
 			case FDTFields.WindMarketClose :
 			case FDTFields.WindQuotationDateChange :
-				MsgPackLiteDataServerHandler.sendMessagePackToAllClient(in);
+				if(inArray) {
+					MsgPackLiteDataServerHandler.sendArrayMessagePackToAllClient(in);
+				} else {
+					MsgPackLiteDataServerHandler.sendMessagePackToAllClient(in);
+				}
 				break;				
 			}
 		}
 		catch(Exception e) {
-			
+			log.warn(e.getMessage(),e);	
 		}
 	}	
 	
-	private void processMarkets(Object obj) throws Exception 
+	public static void processMarkets(Object obj) throws Exception 
 	{
 		if(obj == null) {
 			return;			

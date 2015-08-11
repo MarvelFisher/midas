@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.Network.Transport.FDTFrameDecoder;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -31,6 +33,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.ReferenceCountUtil;
 import cn.com.wind.td.tdf.*;
 
 public class WindGateway implements Runnable {
@@ -42,6 +45,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,BuySellVolume>   mapBuySell = new ConcurrentHashMap<String,BuySellVolume>();
 	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
 	public static ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>>();
+	private ConcurrentLinkedQueue<Object> msgpackQueue = new ConcurrentLinkedQueue<Object>();
 	
 
 	
@@ -1133,14 +1137,19 @@ public class WindGateway implements Runnable {
 	}
 	*/	
 	
+	public void AddMessage(Object obj) {
+		msgpackQueue.add(obj);
+	}
+	
 	public void run()
 	{	
 		int exitCode = 0;
 		try {
-			Thread t1 = null,t1Stock = null, t1Spare = null,clientThread = null,mpServerThread = null,mpClientThread = null;
+			Thread t1 = null,t1Stock = null, t1Spare = null,clientThread = null,mpServerThread = null,mpClientThread = null,mpProcessDataThread = null;
 			DataHandler dh = null,dhStock = null,dhSpare = null;
 			WindDataClient windDataClient = null;
 			MsgPackLiteDataClient mpDataClient = null;
+			ProcessMsgPackLiteData mpProcessData = null;
 			
 	
 			if(cascading || mpCascading) {
@@ -1154,6 +1163,10 @@ public class WindGateway implements Runnable {
 					mpDataClient = new MsgPackLiteDataClient();
 					mpClientThread = new Thread(mpDataClient,"MsgPackLiteDataClient");
 					mpClientThread.start();
+					
+					mpProcessData = new ProcessMsgPackLiteData(msgpackQueue);
+					mpProcessDataThread = new Thread(mpProcessData,"ProcessMsgPack");
+					mpProcessDataThread.start();
 				}
 			} else {
 				if(windMFServerIP != null && windMFServerIP != "") {			
@@ -1293,6 +1306,10 @@ public class WindGateway implements Runnable {
 					mpDataClient.stop();
 					mpClientThread.join();				
 				}		
+				if(mpProcessDataThread != null) {
+					mpProcessData.stop();
+					mpProcessDataThread.join();
+				}
 				
 				if(bossGroup != null) {
 					bossGroup.shutdownGracefully();
@@ -1386,5 +1403,60 @@ class BuySellVolume {
 		lBuyVolume = lSellVolume = lUnclassifiedVolume = 
 		lBuyTurnover = lSellTurnover = lUnclassifiedTurnover = 0;
 		
+	}
+}
+
+class ProcessMsgPackLiteData implements Runnable {
+	private static final Logger log = LoggerFactory
+			.getLogger(com.cyanspring.adaptor.future.wind.gateway.ProcessMsgPackLiteData.class);
+	
+	ConcurrentLinkedQueue<Object> queue = null;
+	boolean quitFlag = false;
+	private long ticks;	
+	
+	public ProcessMsgPackLiteData(ConcurrentLinkedQueue<Object> q) {
+		queue = q;
+	}
+	
+	public void run() {		
+		Object msg;
+		while(!quitFlag) {
+			try {
+				do {
+					msg = queue.poll();
+					if(msg != null) {					
+						ProcessMessage(msg);
+					}
+					if(System.currentTimeMillis() >= ticks + 5000) {
+						ticks = System.currentTimeMillis();
+						if(queue.size() > 0) {
+							log.info("Queue Size : " + queue.size());
+						}
+					}					
+				} while(msg != null);
+				Thread.sleep(5);
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);				
+			}
+		}		
+	}
+	
+	private void ProcessMessage(Object arg1) {
+		try {
+			if(arg1 instanceof HashMap<?,?>) {
+				@SuppressWarnings("unchecked")
+				HashMap<Integer,Object> in = (HashMap<Integer,Object>)arg1;
+				if(in != null) {
+					MsgPackLiteDataClientHandler.processData(in,false);
+					MsgPackLiteDataServerHandler.flushAllClientMsgPack();
+				}
+			} 
+	    } finally {
+	        ReferenceCountUtil.release(arg1);
+	    }
+	}
+	
+	public void stop() {
+		quitFlag = true;
 	}
 }
