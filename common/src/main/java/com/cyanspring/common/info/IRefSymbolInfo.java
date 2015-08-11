@@ -32,6 +32,7 @@ public abstract class IRefSymbolInfo {
 			symbolinfo.setExchange(refdata.getExchange());
 			symbolinfo.setWindCode(null);
 			symbolinfo.setHint(refdata.getRefSymbol());
+			symbolinfo.setCategory(refdata.getCategory());
 			strTmp = (refdata.getENDisplayName() == null) ? refdata.getSymbol() : refdata.getENDisplayName();
 			symbolinfo.setEnName(strTmp);
 			symbolinfo.setCnName((refdata.getCNDisplayName() == null) ? strTmp : refdata.getCNDisplayName());
@@ -39,6 +40,7 @@ public abstract class IRefSymbolInfo {
 			symbolinfo.setJpName(strTmp);
 			symbolinfo.setKrName(strTmp);
 			symbolinfo.setEsName(strTmp);
+			symbolinfo.setupSubNames();
 			symbolinfo.setLotSize(refdata.getLotSize());
 			symbolinfo.setTickTable(refdata.getTickTable());
 			symbolinfo.setCNTradingUnit(refdata.getCNTradingUnit());
@@ -56,7 +58,6 @@ public abstract class IRefSymbolInfo {
 			symbolinfo.setMaximumHold(refdata.getMaximumHold());
 			symbolinfo.setStrategy(refdata.getStrategy());
 			symbolinfo.setMarginRate(refdata.getMarginRate());
-			symbolinfo.setCategory(refdata.getCategory());
 			symbolinfo.setDenominator(refdata.getDenominator());
 			symbolinfo.setTradable(refdata.getTradable());
 			symbolinfo.setSpellName(refdata.getSpellName());

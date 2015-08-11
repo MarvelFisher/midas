@@ -6,7 +6,7 @@ import java.util.Map;
 import com.cyanspring.common.info.RefSubName;
 
 public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
-	private static Map<String, RefSubName> subNameMap = null;
+//	private static Map<String, RefSubName> subNameMap = null;
 	private String market = null;
 	private String exchange = null;
 	private String code = null;
@@ -140,111 +140,111 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setCnName(String cnName) {
 		this.cnName = cnName;
-		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
-		{
-			this.cnSubName = "";
-		}
-		else
-		{
-			if (subNameMap.get(getHint()) != null)
-			{
-				this.cnSubName = subNameMap.get(getHint()).getCNSubName();
-			}
-			else
-			{
-				this.cnSubName = "";
-			}
-		}
+//		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
+//		{
+//			this.cnSubName = "";
+//		}
+//		else
+//		{
+//			if (subNameMap.get(getHint()) != null)
+//			{
+//				this.cnSubName = subNameMap.get(getHint()).getCNSubName();
+//			}
+//			else
+//			{
+//				this.cnSubName = "";
+//			}
+//		}
 	}
 	public void setTwName(String twName) {
 		this.twName = twName;
-		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
-		{
-			this.twSubName = "";
-		}
-		else
-		{
-			if (subNameMap.get(getHint()) != null)
-			{
-				this.twSubName = subNameMap.get(getHint()).getTWSubName();
-			}
-			else
-			{
-				this.twSubName = "";
-			}
-		}
+//		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
+//		{
+//			this.twSubName = "";
+//		}
+//		else
+//		{
+//			if (subNameMap.get(getHint()) != null)
+//			{
+//				this.twSubName = subNameMap.get(getHint()).getTWSubName();
+//			}
+//			else
+//			{
+//				this.twSubName = "";
+//			}
+//		}
 	}
 	public void setEnName(String enName) {
 		this.enName = enName;
-		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
-		{
-			this.enSubName = "";
-		}
-		else
-		{
-			if (subNameMap.get(getHint()) != null)
-			{
-				this.enSubName = subNameMap.get(getHint()).getENSubName();
-			}
-			else
-			{
-				this.enSubName = "";
-			}
-		}
+//		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
+//		{
+//			this.enSubName = "";
+//		}
+//		else
+//		{
+//			if (subNameMap.get(getHint()) != null)
+//			{
+//				this.enSubName = subNameMap.get(getHint()).getENSubName();
+//			}
+//			else
+//			{
+//				this.enSubName = "";
+//			}
+//		}
 	}
 	public void setJpName(String jpName) {
 		this.jpName = jpName;
-		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
-		{
-			this.jpSubName = "";
-		}
-		else
-		{
-			if (subNameMap.get(getHint()) != null)
-			{
-				this.jpSubName = subNameMap.get(getHint()).getENSubName();
-			}
-			else
-			{
-				this.jpSubName = "";
-			}
-		}
+//		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
+//		{
+//			this.jpSubName = "";
+//		}
+//		else
+//		{
+//			if (subNameMap.get(getHint()) != null)
+//			{
+//				this.jpSubName = subNameMap.get(getHint()).getENSubName();
+//			}
+//			else
+//			{
+//				this.jpSubName = "";
+//			}
+//		}
 	}
 	public void setEsName(String esName) {
 		this.esName = esName;
-		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
-		{
-			this.esSubName = "";
-		}
-		else
-		{
-			if (subNameMap.get(getHint()) != null)
-			{
-				this.esSubName = subNameMap.get(getHint()).getENSubName();
-			}
-			else
-			{
-				this.esSubName = "";
-			}
-		}
+//		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
+//		{
+//			this.esSubName = "";
+//		}
+//		else
+//		{
+//			if (subNameMap.get(getHint()) != null)
+//			{
+//				this.esSubName = subNameMap.get(getHint()).getENSubName();
+//			}
+//			else
+//			{
+//				this.esSubName = "";
+//			}
+//		}
 	}
 	public void setKrName(String krName) {
 		this.krName = krName;
-		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
-		{
-			this.krSubName = "";
-		}
-		else
-		{
-			if (subNameMap.get(getHint()) != null)
-			{
-				this.krSubName = subNameMap.get(getHint()).getENSubName();
-			}
-			else
-			{
-				this.krSubName = "";
-			}
-		}
+//		if (getHint() == null || getHint().isEmpty() || subNameMap == null)
+//		{
+//			this.krSubName = "";
+//		}
+//		else
+//		{
+//			if (subNameMap.get(getHint()) != null)
+//			{
+//				this.krSubName = subNameMap.get(getHint()).getENSubName();
+//			}
+//			else
+//			{
+//				this.krSubName = "";
+//			}
+//		}
 	}
 	public void setWindCode(String windCode) {
 		this.windCode = windCode;
@@ -379,11 +379,34 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setTradable(String tradable) {
 		Tradable = tradable;
 	}
-	public static Map<String, RefSubName> getSubNameMap() {
-		return subNameMap;
-	}
-	public static void setSubNameMap(Map<String, RefSubName> subNameMap) {
-		SymbolInfo.subNameMap = subNameMap;
+//	public static Map<String, RefSubName> getSubNameMap() {
+//		return subNameMap;
+//	}
+//	public static void setSubNameMap(Map<String, RefSubName> subNameMap) {
+//		SymbolInfo.subNameMap = subNameMap;
+//	}
+	public void setupSubNames()
+	{
+		if (hint == null || Category == null)
+		{
+			this.enSubName = "";
+			this.cnSubName = "";
+			this.twSubName = "";
+			this.krSubName = "";
+			this.jpSubName = "";
+			this.esSubName = "";
+		}
+		else
+		{
+			String sub = hint.replaceAll(Category, "");
+			if (sub.isEmpty()) sub = "HOT";
+			this.enSubName = sub;
+			this.cnSubName = sub;
+			this.twSubName = sub;
+			this.krSubName = sub;
+			this.jpSubName = sub;
+			this.esSubName = sub;
+		}
 	}
 	public int getMaximumHold() {
 		return MaximumHold;

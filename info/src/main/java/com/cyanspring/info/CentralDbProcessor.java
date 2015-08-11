@@ -75,7 +75,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	private ComboPooledDataSource cpds;	
 	
-	private Map<String, RefSubName> subNameMap = new HashMap<String, RefSubName>();
+//	private Map<String, RefSubName> subNameMap = new HashMap<String, RefSubName>();
 
 	private String driverClass;
 	private String jdbcUrl;
@@ -610,7 +610,7 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void onUpdateRefData(RefDataUpdateEvent event)
 	{
-		log.info("Call refData start");
+		log.info("Update refData start");
 		List<RefData> refList = event.getRefDataList();
 		int nCount = getRefSymbolInfo().setByRefData(refList);
 		if (nCount == 0)
@@ -624,7 +624,7 @@ public class CentralDbProcessor implements IPlugin
 			SymbolChef chef = SymbolChefList.get(chefNum);
 			chef.createSymbol(refdata, this);
 		}
-		log.info("Call refData finish");
+		log.info("Update refData finish");
 	}
 	
 	protected void retrieveChart()
@@ -1004,7 +1004,7 @@ public class CentralDbProcessor implements IPlugin
 			mapCentralDbEventProc.put("Historical" + ii, new CentralDbEventProc(this, "CDP-Event-His" + ii));
 		}
 		mapCentralDbEventProc.put("Request", new CentralDbEventProc(this, "CDP-Event-Req"));
-		SymbolInfo.setSubNameMap(subNameMap);
+//		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;
 
@@ -1124,13 +1124,13 @@ public class CentralDbProcessor implements IPlugin
 		return chartCacheProcessor;
 	}
 
-	public Map<String, RefSubName> getSubNameMap() {
-		return subNameMap;
-	}
-
-	public void setSubNameMap(Map<String, RefSubName> subNameMap) {
-		this.subNameMap = subNameMap;
-	}
+//	public Map<String, RefSubName> getSubNameMap() {
+//		return subNameMap;
+//	}
+//
+//	public void setSubNameMap(Map<String, RefSubName> subNameMap) {
+//		this.subNameMap = subNameMap;
+//	}
 
 	public IRefSymbolInfo getRefSymbolInfo() {
 		return refSymbolInfo;
