@@ -360,4 +360,11 @@ public class RefData extends DataObject {
         this.set(code, RefDataField.CODE.value());
     }
 
+    public String getIType() {
+        return this.get(String.class, RefDataField.ITYPE.value());
+    }
+
+    public void setIType(String IType) {
+        this.set(IType, RefDataField.ITYPE.value());
+    }
 }
