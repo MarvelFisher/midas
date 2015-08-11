@@ -8,22 +8,15 @@ import com.cyanspring.id.Library.Threading.RequestThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-
 public class RequestMgr implements IReqThreadCallback {
 
     private static final Logger log = LoggerFactory
             .getLogger(RequestMgr.class);
 
-//    public static RequestMgr instance = new RequestMgr();
-//
-//    public static RequestMgr instance() {
-//        return instance;
-//    }
     private WindRefDataAdapter windRefDataAdapter;
     RequestThread thread = null;
 
-    RequestMgr(WindRefDataAdapter windRefDataAdapter){
+    RequestMgr(WindRefDataAdapter windRefDataAdapter) {
         this.windRefDataAdapter = windRefDataAdapter;
     }
 

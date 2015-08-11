@@ -59,8 +59,6 @@ public class MsgPackRefDataClientHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
-
-
     /**
      * Send Request HeartBeat Message
      */
