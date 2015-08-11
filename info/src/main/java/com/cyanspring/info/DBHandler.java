@@ -414,10 +414,10 @@ public class DBHandler
 		log.debug("Query: " + sqlcmd);
 		ResultSet rs = querySQL(connect, sqlcmd);
 		log.debug("Query return: " + sqlcmd);
+		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
     	try 
     	{
     		HistoricalPrice price;
-    		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
 				try
@@ -445,18 +445,18 @@ public class DBHandler
 			rs.close();
 			log.debug("Get Historical List size: " + retList.size());
 			Collections.sort(retList);
-			return retList;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-			return null ;
+			retList = null ;
 		} 
     	finally
     	{
     		closeConnect(connect);
     	}
+		return retList;
     }
     
     public Map<String, List<HistoricalPrice>> getTotalValue(String market, String type, String retrieveDate)
