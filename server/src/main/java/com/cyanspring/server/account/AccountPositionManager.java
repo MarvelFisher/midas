@@ -1052,8 +1052,9 @@ public class AccountPositionManager implements IPlugin {
         		throw new UserException("user not exist!");
         	}
         	
-       		UserRole originRole = user.getRole();  		
-    		if(originRole.equals(role)){
+       		UserRole originRole = user.getRole();  	
+       		
+    		if(null != originRole && originRole.equals(role)){
     			throw new UserException("this user role already is "+role);
     		}
     		
