@@ -50,7 +50,7 @@ public class RefDataManager extends RefDataService {
     }
 
     @Override
-    public boolean update(String tradeDate) throws Exception {
+    public boolean updateAll(String tradeDate) throws Exception {
         return changeMode;
     }
 
@@ -80,4 +80,9 @@ public class RefDataManager extends RefDataService {
     public void clearRefData() {
         map.clear();
     }
+
+	@Override
+	public RefData update(RefData refData, String tradeDate) throws Exception {
+		return new RefData();
+	}
 }

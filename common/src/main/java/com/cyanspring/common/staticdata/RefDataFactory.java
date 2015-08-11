@@ -43,7 +43,7 @@ public class RefDataFactory extends RefDataService {
     }
 
     @Override
-    public boolean update(String tradeDate) throws Exception {
+    public boolean updateAll(String tradeDate) throws Exception {
         if (refDataList == null) {
             log.warn(this.getClass().getSimpleName() + "is not initial or initialising.");
             return false;
@@ -51,47 +51,51 @@ public class RefDataFactory extends RefDataService {
         log.info("Updating refData....");
         Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
-        IRefDataStrategy strategy;
         for (RefData refData : refDataList) {
-            if (!strategyMap.containsKey(refData.getStrategy())) {
-                try {
-                    Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>) Class.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
-                    Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
-                    strategy = ctor.newInstance();
-                    List<MappingData> list = strategyMapping.get(refData.getStrategy());
-                    if (list == null)
-                        throw new Exception("No MappingData find!");
-                    strategy.setRequireData(marketSessionUtil, list);
-                } catch (Exception e) {
-                    log.error("Can't find strategy: {}", refData.getStrategy());
-                    strategy = new IRefDataStrategy() {
-                        @Override
-                        public void init(Calendar cal) {
-
-                        }
-
-                        @Override
-                        public void updateRefData(RefData refData) {
-
-                        }
-
-                        @Override
-                        public void setRequireData(Object... objects) {
-
-                        }
-                    };
-                }
-                strategyMap.put(refData.getStrategy(), strategy);
-                updateMarginRate(refData);
-            } else {
-                strategy = strategyMap.get(refData.getStrategy());
-            }
-            strategy.init(cal);
-            strategy.updateRefData(refData);
+            updateRefData(cal, refData);
         }
         saveRefDataToFile(refDataFile, refDataList);
         return true;
     }
+
+	private void updateRefData(Calendar cal, RefData refData) {
+		IRefDataStrategy strategy;
+		if (!strategyMap.containsKey(refData.getStrategy())) {
+		    try {
+		        Class<IRefDataStrategy> tempClz = (Class<IRefDataStrategy>) Class.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
+		        Constructor<IRefDataStrategy> ctor = tempClz.getConstructor();
+		        strategy = ctor.newInstance();
+		        List<MappingData> list = strategyMapping.get(refData.getStrategy());
+		        if (list == null)
+		            throw new Exception("No MappingData find!");
+		        strategy.setRequireData(marketSessionUtil, list);
+		    } catch (Exception e) {
+		        log.error("Can't find strategy: {}", refData.getStrategy());
+		        strategy = new IRefDataStrategy() {
+		            @Override
+		            public void init(Calendar cal) {
+
+		            }
+
+		            @Override
+		            public void updateRefData(RefData refData) {
+
+		            }
+
+		            @Override
+		            public void setRequireData(Object... objects) {
+
+		            }
+		        };
+		    }
+		    strategyMap.put(refData.getStrategy(), strategy);
+		    updateMarginRate(refData);
+		} else {
+		    strategy = strategyMap.get(refData.getStrategy());
+		}
+		strategy.init(cal);
+		strategy.updateRefData(refData);
+	}
 
     @Override
     public void uninit() {
@@ -147,5 +151,14 @@ public class RefDataFactory extends RefDataService {
     public void setStrategyMapping(Map<String, List<MappingData>> strategyMapping) {
         this.strategyMapping = strategyMapping;
     }
+
+	@Override
+	public RefData update(RefData refData, String tradeDate) throws Exception {
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(sdf.parse(tradeDate));
+        updateRefData(cal, refData);
+        refDataList.add(refData);
+		return refData;
+	}
 
 }

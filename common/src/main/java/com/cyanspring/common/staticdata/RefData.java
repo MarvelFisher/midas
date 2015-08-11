@@ -359,5 +359,13 @@ public class RefData extends DataObject {
     public void setCode(String code) {
         this.set(code, RefDataField.CODE.value());
     }
+    
+    @Override
+    public boolean equals(Object object) {
+    	RefData compare = (RefData) object;
+    	if (compare.getSymbol().equals(this.getSymbol()))
+    		return true;
+    	return false;
+    }
 
 }
