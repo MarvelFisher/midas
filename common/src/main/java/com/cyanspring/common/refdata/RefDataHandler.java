@@ -48,9 +48,6 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 	private List<IRefDataAdaptor> refDataAdaptors;
 	private List<RefData> refDataList;
 	private boolean isUpdated = false;
-	private boolean isSent = false;
-	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long timeInterval = 1 * 1000;
 	private String tradeDate;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -86,12 +83,12 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 		if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
 			return;
 
+		isUpdated = false;
 		for (IRefDataAdaptor adaptor : refDataAdaptors) {
-			adaptor.flush();
-			refDataList = null;
-			refDataManager.clearRefData();
-			isUpdated = false;
 			try {
+				adaptor.flush();
+				refDataList = null;
+				refDataManager.clearRefData();
 				adaptor.subscribeRefData(this);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -99,19 +96,9 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 		}
 	}
 	
-	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		if (!isUpdated || isSent)
-			return;
-		try {
-			refDataManager.init();
-			refDataManager.updateAll(tradeDate);
-			eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isUpdated));
-			isSent = true;
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		
-//		isUpdated = false;
+	private void updateAndSend() throws Exception {
+		refDataManager.updateAll(tradeDate);
+		eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isUpdated));
 	}
 
 	@Override
@@ -123,13 +110,11 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("RefDataHandler");
-		
-        if(!eventProcessor.isSync())
-            scheduleManager.scheduleRepeatTimerEvent(timeInterval, eventProcessor, timerEvent);
 
 		for (IRefDataAdaptor adaptor : refDataAdaptors)
 			adaptor.subscribeRefData(this);
 
+		refDataManager.init();
 		requestRequireData();
 	}
 
@@ -158,9 +143,9 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 				return;
 		}
 
-		isUpdated = true;
-		isSent = false;
 		refDataManager.injectRefDataList(this.refDataList);
+		updateAndSend();
+		isUpdated = true;
 	}
 
 	@Override
@@ -170,6 +155,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
 			if(!this.refDataList.contains(refData)){
 				refDataManager.update(refData, tradeDate);
 				send.add(refData);
+				this.refDataList.add(refData);
 			}
 		}
 		
