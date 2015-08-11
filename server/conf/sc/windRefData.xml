@@ -71,8 +71,8 @@
         <property name="msgPack" value="#{windAdaptor.msgPack}"/>
         <property name="refDataFile" value="#{refDataManager.refDataFile}" />
         <property name="windbaseDataFile" value="ticks/windbase.xml"/>
-        <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
-        <property name="basicDataSource" ref="refDataSource"/>
+        <property name="windDBHandler" ref="refDataDBHandler"/>
+        <property name="windFilter" ref="stockFilter"/>
         <property name="marketsList">
             <list>
                 <value>SH</value>
@@ -83,5 +83,12 @@
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
     </bean>
+
+    <bean id="refDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindDBHandler">
+        <property name="basicDataSource" ref="refDataSource"/>
+        <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
+    </bean>
+
+    <bean id="stockFilter" class="com.cyanspring.adaptor.future.wind.filter.StockFilter"/>
 
 </beans>

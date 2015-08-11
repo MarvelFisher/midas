@@ -8,18 +8,24 @@ import com.cyanspring.id.Library.Threading.RequestThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
 public class RequestMgr implements IReqThreadCallback {
 
     private static final Logger log = LoggerFactory
             .getLogger(RequestMgr.class);
 
-    public static RequestMgr instance = new RequestMgr();
-
-    public static RequestMgr instance() {
-        return instance;
-    }
-
+//    public static RequestMgr instance = new RequestMgr();
+//
+//    public static RequestMgr instance() {
+//        return instance;
+//    }
+    private WindRefDataAdapter windRefDataAdapter;
     RequestThread thread = null;
+
+    RequestMgr(WindRefDataAdapter windRefDataAdapter){
+        this.windRefDataAdapter = windRefDataAdapter;
+    }
 
     public void init() {
         if (thread == null) {
@@ -48,12 +54,12 @@ public class RequestMgr implements IReqThreadCallback {
 //                log.debug("Get Request-" + codeTableData.getWindCode() + "," + codeTableData.getCnName());
                 RefData refData = null;
                 if (codeTableData.getSecurityType() < 10) {
-                    refData = RefDataParser.convertCodeTableToRefData(codeTableData, WindRefDataAdapter.instance.getRefDataICHashMap());
+                    refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataICHashMap());
                 } else {
-                    refData = RefDataParser.convertCodeTableToRefData(codeTableData, WindRefDataAdapter.instance.getRefDataSCHashMap());
+                    refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataSCHashMap());
                 }
                 if (refData != null) {
-                    WindRefDataAdapter.refDataHashMap.put(codeTableData.getWindCode(), refData);
+                    windRefDataAdapter.getRefDataHashMap().put(codeTableData.getWindCode(), refData);
                 }
             }
             break;

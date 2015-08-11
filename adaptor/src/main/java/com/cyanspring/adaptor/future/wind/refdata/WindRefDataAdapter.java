@@ -1,30 +1,28 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
+import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
-import com.cyanspring.common.Clock;
+import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
-import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.data.JdbcSQLHandler;
-import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.ChineseConvert;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
+import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,23 +30,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
+public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, IWindGWListener {
 
     private static final Logger log = LoggerFactory
             .getLogger(WindRefDataAdapter.class);
@@ -60,14 +48,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     private boolean msgPack = true;
     private String refDataFile;
     private String windbaseDataFile;
-    private String lastQuoteExtendFile;
     private boolean isAlive = true;
     private boolean status = false;
-    static volatile boolean isConnected = false;
-    static volatile boolean codeTableIsProcessEnd = false;
-    static volatile int serverHeartBeatCountAfterCodeTableCome = -1;
-    static volatile int serverRetryCount = 0;
-    static volatile int dbRetryCount = 0;
+    private volatile boolean connected = false;
+    private volatile boolean codeTableIsProcessEnd = false;
+    private volatile int serverHeartBeatCountAfterCodeTableCome = -1;
+    private volatile int serverRetryCount = 0;
+    private volatile int dbRetryCount = 0;
     private boolean marketDataLog = false; // log control
     private List<String> marketsList = new ArrayList();
     protected
@@ -80,13 +67,15 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     @Resource(name = "refDataFutureChinaHashMap")
     HashMap<RefDataField, Object> refDataFCHashMap = new HashMap<>();
     public static HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
-    static ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, RefData> refDataHashMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, RefData> refDataHashMap = new ConcurrentHashMap<>();
     protected WindDataParser windDataParser = new WindDataParser();
-    protected static WindRefDataAdapter instance = null;
     EventLoopGroup eventLoopGroup = null;
     RequestThread thread = null;
-    private BasicDataSource basicDataSource;
+    private ChannelHandlerContext channelHandlerContext;
+    private RequestMgr requestMgr = new RequestMgr(this);
+    private WindDBHandler windDBHandler;
+    private IWindFilter windFilter;
 
     private void connect() {
         log.debug("Run Netty RefData Adapter");
@@ -96,7 +85,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .handler(new MsgPackRefDataClientInitializer());
+                .handler(new MsgPackRefDataClientInitializer(this));
 
         try {
             while (isAlive) {
@@ -142,29 +131,31 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 WindBaseDBData windBaseDBData = null;
 
                 try {
-                    codeTableData = msgPack
-                            ? windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap)
-                            : windDataParser.convertToCodeTableData(in_arr, codeTableDataBySymbolMap);
+                    codeTableData = windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap);
                 } catch (Exception e) {
                     LogUtil.logException(log, e);
                     return;
                 }
-                //filter not index/Stock data
-                if (codeTableData == null || codeTableData.getSecurityType() >= 22 || "36".equals(codeTableData.getWindCode().substring(0,2))) {
-                    return;
+
+                if(windFilter != null) {
+                    if(!windFilter.codeTableFilter(codeTableData)) return;
                 }
+
                 //Check WindBaseDB Data
-                String windCode = codeTableData.getWindCode();
-                if (!windBaseDBDataHashMap.containsKey(windCode)) {
-                    //only Stock record log
-                    if (codeTableData.getSecurityType() >= 16) log.warn("WindBase DB Not this Symbol," + windCode + ",T=" + codeTableData.getSecurityType());
-                    return;
-                } else {
-                    windBaseDBData = windBaseDBDataHashMap.get(windCode);
+                if(windDBHandler!=null) {
+                    String windCode = codeTableData.getWindCode();
+                    if (!windBaseDBDataHashMap.containsKey(windCode)) {
+                        //only Stock record log
+                        if (codeTableData.getSecurityType() >= 16)
+                            log.warn("WindBase DB Not this Symbol," + windCode + ",T=" + codeTableData.getSecurityType());
+                        return;
+                    } else {
+                        windBaseDBData = windBaseDBDataHashMap.get(windCode);
+                    }
+                    codeTableData.setCnName(windBaseDBData.getCNDisplayName());
+                    codeTableData.setSpellName(windBaseDBData.getSpellName());
+                    codeTableData.setEnglishName(windBaseDBData.getENDisplayName());
                 }
-                codeTableData.setCnName(windBaseDBData.getCNDisplayName());
-                codeTableData.setSpellName(windBaseDBData.getSpellName());
-                codeTableData.setEnglishName(windBaseDBData.getENDisplayName());
                 codeTableDataBySymbolMap.put(codeTableData.getWindCode(), codeTableData);
                 if (marketDataLog) {
                     log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode()
@@ -172,7 +163,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                             + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
                             + ",Sp=" + codeTableData.getSpellName());
                 }
-                RequestMgr.instance().addReqData(new Object[]{datatype, codeTableData});
+                requestMgr.addReqData(new Object[]{datatype, codeTableData});
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
                 //check CodeTable done.
@@ -185,7 +176,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
                 if (serverHeartBeatCountAfterCodeTableCome < 0) {
                     serverHeartBeatCountAfterCodeTableCome--;
                     if (serverHeartBeatCountAfterCodeTableCome < -3) {
-                        MsgPackRefDataClientHandler.context.close();
+                        channelHandlerContext.close();
                     }
                 }
                 break;
@@ -228,165 +219,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         log.info("Wind RefData close client end");
     }
 
-    public HashMap<String, WindBaseDBData> getWindBaseDBData() {
-        log.debug("wind baseDB process start");
-        HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
-        WindBaseDBData windBaseDBData = null;
-        Date timeStamp;
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            JdbcSQLHandler jdbcSQLHandler = new JdbcSQLHandler(basicDataSource);
-            conn = jdbcSQLHandler.getConnect();
-            stmt = conn.createStatement();
-            String sql =
-                    "SELECT \n" +
-                            "\tMAIN.*,IFNULL(SFREE.FREESHARES,0) FREESHARES,IFNULL(STOTAL.TOTALSHARES,0) TOTALSHARES\n" +
-                            "    ,IFNULL(SPE.PERATIO,0) PERATIO\n" +
-                            "FROM\n" +
-                            "(\n" +
-                            "SELECT \n" +
-                            "\tS_INFO_WINDCODE WINDCODE,S_INFO_NAME CNNAME,IFNULL(S_INFO_COMPNAMEENG,'') ENNAME,S_INFO_PINYIN PINYIN,'S' MARKETTYPE\n" +
-                            "FROM WindFileSync.ASHAREDESCRIPTION\n" +
-                            "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') AND S_INFO_DELISTDATE IS NULL AND S_INFO_NAME NOT LIKE '%ST%'\n" +
-                            "UNION ALL\n" +
-                            "SELECT \n" +
-                            "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' WHEN '000001.SH' THEN '999999.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
-                            "\t,S_INFO_NAME,'' ENG,'' PINYIN,'I' AS MARKETTYPE\n" +
-                            "FROM WindFileSync.AINDEXDESCRIPTION\n" +
-                            "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') \n" +
-                            "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ','000001.SH')\n" +
-                            ") AS MAIN\n" +
-                            "LEFT JOIN\n" +
-                            "(\n" +
-                            "\tSELECT SF.S_INFO_WINDCODE WINDCODE, SF.S_SHARE_FREESHARES*10000 FREESHARES\n" +
-                            "\tFROM WindFileSync.ASHAREFREEFLOAT SF\n" +
-                            "\tRIGHT JOIN\n" +
-                            "\t(\n" +
-                            "\tselect MAX(CHANGE_DT1) MAXCDT,S_INFO_WINDCODE WINDCODE\n" +
-                            "\tfrom WindFileSync.ASHAREFREEFLOAT\n" +
-                            "\tgroup by S_INFO_WINDCODE\n" +
-                            "\t) MAXSF ON SF.S_INFO_WINDCODE = MAXSF.WINDCODE AND SF.CHANGE_DT1 = MAXSF.MAXCDT\n" +
-                            ") SFREE ON SFREE.WINDCODE = MAIN.WINDCODE\n" +
-                            "LEFT JOIN\n" +
-                            "(\n" +
-                            "\tSELECT SA.S_INFO_WINDCODE WINDCODE, SA.TOT_SHR*10000 TOTALSHARES\n" +
-                            "\tFROM WindFileSync.ASHARECAPITALIZATION SA\n" +
-                            "\tRIGHT JOIN\n" +
-                            "\t(\n" +
-                            "\tselect MAX(CHANGE_DT1) MAXCDT,S_INFO_WINDCODE WINDCODE\n" +
-                            "\tfrom WindFileSync.ASHARECAPITALIZATION\n" +
-                            "\tgroup by S_INFO_WINDCODE\n" +
-                            "\t) MAXSA ON SA.S_INFO_WINDCODE = MAXSA.WINDCODE AND SA.CHANGE_DT1 = MAXSA.MAXCDT\n" +
-                            ") STOTAL ON STOTAL.WINDCODE = MAIN.WINDCODE\n" +
-                            "LEFT JOIN\n" +
-                            "(\n" +
-                            "\tSELECT SEOD.S_INFO_WINDCODE WINDCODE, SEOD.S_VAL_PE PERATIO\n" +
-                            "\tFROM WindFileSync.ASHAREEODDERIVATIVEINDICATOR SEOD\n" +
-                            "\tRIGHT JOIN\n" +
-                            "\t(\n" +
-                            "\tselect MAX(TRADE_DT) MAXDT,S_INFO_WINDCODE WINDCODE\n" +
-                            "\tfrom WindFileSync.ASHAREEODDERIVATIVEINDICATOR\n" +
-                            "\tgroup by S_INFO_WINDCODE\n" +
-                            "\t) MAXSEOD ON SEOD.S_INFO_WINDCODE = MAXSEOD.WINDCODE AND SEOD.TRADE_DT = MAXSEOD.MAXDT\n" +
-                            ") SPE ON SPE.WINDCODE = MAIN.WINDCODE\n" +
-                            "ORDER BY MAIN.MARKETTYPE,MAIN.WINDCODE;";
-            ResultSet rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                String windcode = rs.getString("WINDCODE");
-                String cnName = rs.getString("CNNAME");
-                String enName = rs.getString("ENNAME");
-                String pinyin = rs.getString("PINYIN");
-                Number freeShares = rs.getBigDecimal("FREESHARES");
-                Number totalShares = rs.getBigDecimal("TOTALSHARES");
-                Number peRatio = rs.getBigDecimal("PERATIO");
-                windBaseDBData = new WindBaseDBData();
-                windBaseDBData.setSymbol(windcode);
-                windBaseDBData.setSpellName(pinyin);
-                windBaseDBData.setCNDisplayName(cnName);
-                windBaseDBData.setENDisplayName(enName);
-                windBaseDBData.setFreeShares(freeShares.longValue());
-                windBaseDBData.setTotalShares(totalShares.longValue());
-                windBaseDBData.setPERatio(peRatio.doubleValue());
-                timeStamp = Clock.getInstance().now();
-                windBaseDBData.setTimeStamp(timeStamp);
-                windBaseDBDataHashMap.put(windcode, windBaseDBData);
-            }
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (SQLException se) {
-            log.error(se.getMessage(), se);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-            } catch (SQLException se2) {
-            }
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException se) {
-                log.error(se.getMessage(), se);
-            }
-        }
-        log.debug("wind baseDB process end");
-        return windBaseDBDataHashMap;
-    }
-
-    public static <T> List<T> getListFromFile(String listPath) {
-        XStream xstream = new XStream(new DomDriver());
-        File file = new File(listPath);
-        List<T> list = new ArrayList<>();
-        if (file.exists()) {
-            list = (List<T>) xstream.fromXML(file);
-        } else {
-            log.error("Missing file: " + listPath);
-        }
-        return list;
-    }
-
-    public static <T> void saveListToFile(String path, List<T> list) {
-        File file = new File(path);
-        XStream xstream = new XStream(new DomDriver("UTF-8"));
-        try {
-            file.createNewFile();
-            FileOutputStream os = new FileOutputStream(file);
-            OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
-            xstream.toXML(list, writer);
-            os.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    public static <K, T> HashMap<K, T> getHashMapFromFile(String hashMapPath){
-        XStream xstream = new XStream(new DomDriver());
-        File file = new File(hashMapPath);
-        HashMap<K, T> hashMap = new HashMap<>();
-        if (file.exists()) {
-            hashMap = (HashMap<K, T>) xstream.fromXML(file);
-        } else {
-            log.error("Missing file: " + hashMapPath);
-        }
-        return hashMap;
-    }
-
-    public static <K, T> void saveHashMapToFile(String path, HashMap<K, T> hashMap) {
-        File file = new File(path);
-        XStream xstream = new XStream(new DomDriver("UTF-8"));
-        try {
-            file.createNewFile();
-            FileOutputStream os = new FileOutputStream(file);
-            OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
-            xstream.toXML(hashMap, writer);
-            os.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-
     @Override
     public boolean getStatus() {
         return this.status;
@@ -402,58 +234,80 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         isAlive = true;
         serverRetryCount = 0;
         dbRetryCount = 0;
-        instance = this;
-        //connect WindSyn DB
-        windBaseDBDataHashMap.clear();
-        windBaseDBDataHashMap = getWindBaseDBData();
-        while ((windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0)
-                && dbRetryCount <= WindRefDataAdapter.WINDBASEDB_RETRY_COUNT) {
-            windBaseDBDataHashMap = getWindBaseDBData();
-            dbRetryCount++;
-        }
-        if (windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0) {
-            //getData from file
-            windBaseDBDataHashMap = getHashMapFromFile(windbaseDataFile);
-        } else {
-            //write last ExtendFile
-            saveDBDataToQuoteExtendFile();
-            saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
+
+        if (windDBHandler != null) {
+            //connect WindSyn DB
+            windBaseDBDataHashMap.clear();
+            windBaseDBDataHashMap = windDBHandler.getWindBaseDBData();
+            while ((windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0)
+                    && dbRetryCount <= WindRefDataAdapter.WINDBASEDB_RETRY_COUNT) {
+                windBaseDBDataHashMap = windDBHandler.getWindBaseDBData();
+                dbRetryCount++;
+            }
+            if (windBaseDBDataHashMap == null || windBaseDBDataHashMap.size() == 0) {
+                //getData from file
+                windBaseDBDataHashMap = RefDataParser.getHashMapFromFile(windbaseDataFile);
+            } else {
+                //write last ExtendFile
+                windDBHandler.saveDBDataToQuoteExtendFile(windBaseDBDataHashMap);
+                RefDataParser.saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
+            }
         }
         //connect WindGW
         initReqThread();
-        RequestMgr.instance().init();
+        requestMgr.init();
         addReqData(new Integer(0));
     }
 
-    public void saveDBDataToQuoteExtendFile(){
-        log.debug("write quoteExtend file begin");
-        HashMap<String, DataObject> quoteExtends = getHashMapFromFile(lastQuoteExtendFile);
-        if(windBaseDBDataHashMap != null && windBaseDBDataHashMap.size() > 0){
-            for(String symbol: windBaseDBDataHashMap.keySet()){
-                WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(symbol);
-                DataObject quoteExtend;
-                if(quoteExtends.containsKey(symbol)){
-                    quoteExtend = quoteExtends.get(symbol);
-                }else{
-                    quoteExtend = new DataObject();
-                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbol);
-                    quoteExtends.put(symbol,quoteExtend);
-                }
-                quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
-                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
-                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
-                quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());
-            }
-            saveHashMapToFile(lastQuoteExtendFile, quoteExtends);
+    public void processMsgPackRead(HashMap hashMap) {
+        StringBuffer sb = new StringBuffer();
+        for (Object key : hashMap.keySet()) {
+            sb.append(key + "=" + hashMap.get(key) + ",");
         }
-        log.debug("write quoteExtend file end");
+        if (marketDataLog) log.debug(sb.toString());
+        int packType = (int) hashMap.get(FDTFields.PacketType);
+        if (packType == FDTFields.PacketArray) {
+            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
+            for (HashMap innerHashMap : arrayList) {
+                process(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
+            }
+        } else {
+            process(parsePackTypeToDataType(packType, hashMap), null, hashMap);
+        }
+    }
+
+    public int parsePackTypeToDataType(int packType, HashMap hashMap) {
+        int dataType = -1;
+        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
+        if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
+        if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
+        if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
+        return dataType;
+    }
+
+    /**
+     * get exchange symbol list
+     *
+     * @param market
+     */
+    public String sendRequestCodeTable(String market) {
+        FixStringBuilder fsb = new FixStringBuilder('=', '|');
+        fsb.append("API");
+        fsb.append("GetCodeTable");
+        fsb.append("Market");
+        fsb.append(market);
+        int fsbhashCode = fsb.toString().hashCode();
+        fsb.append("Hash");
+        fsb.append(String.valueOf(fsbhashCode));
+        log.info("[RequestCodeTable]" + fsb.toString());
+        return fsb.toString();
     }
 
     @Override
     public void uninit() {
         isAlive = false;
         closeNetty();
-        RequestMgr.instance().uninit();
+        requestMgr.uninit();
         closeReqThread();
         codeTableIsProcessEnd = false;
         refDataHashMap.clear();
@@ -476,11 +330,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         if (serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
             log.debug("get RefData from WindGW");
             List<RefData> refDataList = new ArrayList<RefData>(refDataHashMap.values());
-            saveListToFile(refDataFile, refDataList); //Save RefData File
+            RefDataParser.saveListToFile(refDataFile, refDataList); //Save RefData File
             listener.onRefData(refDataList);
         } else {
             log.debug("get RefData from RefDataFile = " + refDataFile);
-            List<RefData> refDataList = getListFromFile(refDataFile);
+            List<RefData> refDataList = RefDataParser.getListFromFile(refDataFile);
             listener.onRefData(refDataList);
         }
     }
@@ -501,7 +355,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
     public void onRequestEvent(RequestThread sender, Object reqObj) {
         if (reqObj instanceof Integer) {
             int signal = (int) reqObj;
-            if (signal == 0 && !isConnected) connect();
+            if (signal == 0 && !connected) connect();
         }
     }
 
@@ -510,7 +364,38 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 
     }
 
-    public static void main(String[] args){
+    @Override
+    public void processChannelActive(ChannelHandlerContext ctx) {
+        connected = true;
+        codeTableIsProcessEnd = false;
+        serverHeartBeatCountAfterCodeTableCome = -1;
+        //Request CodeTable
+        log.debug("request codetable");
+        if (marketsList != null && marketsList.size() > 0) {
+            for (int i = 0; i < marketsList.size(); i++) {
+                ctx.channel().writeAndFlush(sendRequestCodeTable(marketsList.get(i)));
+            }
+        }
+    }
+
+    @Override
+    public void processChannelRead(Object msg) {
+        processMsgPackRead((HashMap) msg);
+    }
+
+    @Override
+    public void processChannelInActive() {
+        connected = false;
+        codeTableIsProcessEnd = false;
+        serverHeartBeatCountAfterCodeTableCome = -1;
+    }
+
+    @Override
+    public void setChannelHandlerContext(ChannelHandlerContext ctx) {
+        this.channelHandlerContext = ctx;
+    }
+
+    public static void main(String[] args) throws Exception {
         String logConfigFile = "conf/windlog4j.xml";
         String configFile = "conf/windRefData.xml";
         DOMConfigurator.configure(logConfigFile);
@@ -521,25 +406,27 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
 //        refDataAdaptor.uninit();
         //RefData補拼音,簡繁體股名 使用
         log.debug("Process RefData Begin");
-        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapter");
-        refDataAdaptor.windBaseDBDataHashMap = refDataAdaptor.getWindBaseDBData();
-        List<RefData> refDataList = refDataAdaptor.getListFromFile(refDataAdaptor.refDataFile);
-        for (RefData refData : refDataList) {
-            WindBaseDBData windBaseDBData = refDataAdaptor.windBaseDBDataHashMap.get(refData.getSymbol());
-            if (windBaseDBData == null) {
-                log.debug("DB Not this symbol:" + refData.getSymbol());
-                continue;
-            }
-            if (windBaseDBData.getCNDisplayName() != null && !"".equals(windBaseDBData.getCNDisplayName())) {
-                refData.setCNDisplayName(windBaseDBData.getCNDisplayName());
-                refData.setTWDisplayName(ChineseConvert.StoT(windBaseDBData.getCNDisplayName()));
-            }
-            if (windBaseDBData.getSpellName() != null && !"".equals(windBaseDBData.getSpellName()))
-                refData.setSpellName(windBaseDBData.getSpellName());
-        }
-        refDataAdaptor.saveListToFile(refDataAdaptor.refDataFile, refDataList);
-        refDataAdaptor.saveHashMapToFile(refDataAdaptor.windbaseDataFile, refDataAdaptor.windBaseDBDataHashMap);
-        log.debug("Process RefData End");
+        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterSC");
+        refDataAdaptor.init();
+
+//        refDataAdaptor.windBaseDBDataHashMap = refDataAdaptor.getWindBaseDBData();
+//        List<RefData> refDataList = refDataAdaptor.getListFromFile(refDataAdaptor.refDataFile);
+//        for (RefData refData : refDataList) {
+//            WindBaseDBData windBaseDBData = refDataAdaptor.windBaseDBDataHashMap.get(refData.getSymbol());
+//            if (windBaseDBData == null) {
+//                log.debug("DB Not this symbol:" + refData.getSymbol());
+//                continue;
+//            }
+//            if (windBaseDBData.getCNDisplayName() != null && !"".equals(windBaseDBData.getCNDisplayName())) {
+//                refData.setCNDisplayName(windBaseDBData.getCNDisplayName());
+//                refData.setTWDisplayName(ChineseConvert.StoT(windBaseDBData.getCNDisplayName()));
+//            }
+//            if (windBaseDBData.getSpellName() != null && !"".equals(windBaseDBData.getSpellName()))
+//                refData.setSpellName(windBaseDBData.getSpellName());
+//        }
+//        refDataAdaptor.saveListToFile(refDataAdaptor.refDataFile, refDataList);
+//        refDataAdaptor.saveHashMapToFile(refDataAdaptor.windbaseDataFile, refDataAdaptor.windBaseDBDataHashMap);
+//        log.debug("Process RefData End");
     }
 
     public String getGatewayIp() {
@@ -606,24 +493,23 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback {
         this.refDataFCHashMap = refDataFCHashMap;
     }
 
-    public void setIsConnected(boolean isConnected) {
-        this.isConnected = isConnected;
-    }
-
     public void setRefDataFile(String refDataFile) {
         this.refDataFile = refDataFile;
-    }
-
-    public void setLastQuoteExtendFile(String lastQuoteExtendFile) {
-        this.lastQuoteExtendFile = lastQuoteExtendFile;
     }
 
     public void setWindbaseDataFile(String windbaseDataFile) {
         this.windbaseDataFile = windbaseDataFile;
     }
 
-    public void setBasicDataSource(BasicDataSource basicDataSource) {
-        this.basicDataSource = basicDataSource;
+    public ConcurrentHashMap<String, RefData> getRefDataHashMap() {
+        return refDataHashMap;
     }
 
+    public void setWindDBHandler(WindDBHandler windDBHandler) {
+        this.windDBHandler = windDBHandler;
+    }
+
+    public void setWindFilter(IWindFilter windFilter) {
+        this.windFilter = windFilter;
+    }
 }

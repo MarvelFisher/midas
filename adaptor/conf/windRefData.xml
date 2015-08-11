@@ -61,13 +61,13 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).DENOMINATOR}" value="0.0"/>
     </util:map>
 
-    <bean id="refDataAdapter"
+    <bean id="refDataAdapterSC"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
-        <property name="gatewayIp" value="101.231.55.6"/>
+        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
+        <property name="gatewayIp" value="10.0.0.32"/>
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
-        <property name="basicDataSource" ref="refDataSource"/>
         <property name="marketsList">
             <list>
                 <value>SH</value>
@@ -79,8 +79,35 @@
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
         <property name="refDataFile" value="refdata/refData_sc.xml"/>
         <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+        <property name="windDBHandler" ref="refDataDBHandler"/>
+        <property name="windFilter" ref="stockFilter"/>
+    </bean>
+
+    <bean id="refDataAdapterFCI"
+          class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
+        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayPort" value="10048"/>
+        <property name="marketDataLog" value="true"/>
+        <property name="msgPack" value="true"></property>
+        <property name="marketsList">
+            <list>
+                <value>CF</value>
+            </list>
+        </property>
+        <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
+        <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
+        <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
+        <property name="refDataFile" value="refdata/refData_sc.xml"/>
+        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+    </bean>
+
+    <bean id="refDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindDBHandler">
+        <property name="basicDataSource" ref="refDataSource"/>
         <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
     </bean>
+
+    <bean id="stockFilter" class="com.cyanspring.adaptor.future.wind.filter.StockFilter"/>
 
     <bean id="refDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
