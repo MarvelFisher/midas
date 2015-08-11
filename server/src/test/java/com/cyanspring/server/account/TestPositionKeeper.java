@@ -293,7 +293,7 @@ public class TestPositionKeeper {
 		}
 
         @Override
-        public boolean update(String tradeDate) throws Exception {
+        public boolean updateAll(String tradeDate) throws Exception {
             return false;
         }
 
@@ -331,6 +331,12 @@ public class TestPositionKeeper {
 		@Override
 		public void clearRefData() {
 
+		}
+
+		@Override
+		public RefData update(RefData refData, String tradeDate) throws Exception {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }
