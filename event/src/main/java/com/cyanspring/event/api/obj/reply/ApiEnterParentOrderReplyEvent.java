@@ -47,6 +47,8 @@ public class ApiEnterParentOrderReplyEvent implements IApiReply {
             order.setStatus(parentOrder.getOrdStatus().toString());
             order.setPrice(parentOrder.getPrice());
             order.setQuantity(new Double(parentOrder.getQuantity()).longValue());
+            order.setCumQty((long)parentOrder.getCumQty());
+            order.setAvgPx(parentOrder.getAvgPx());
             order.setSide(OrderSide.valueOf(parentOrder.getSide().toString()));
             order.setType(OrderType.valueOf(parentOrder.getOrderType().toString()));
             order.setStopLossPrice(parentOrder.get(double.class,

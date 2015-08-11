@@ -12,6 +12,8 @@ public class Order {
 	private long quantity;
 	private double stopLossPrice;
 	private String status;
+	private long cumQty;
+	private double avgPx;
     private Date created;
 
 	public String getStatus() {
@@ -89,8 +91,24 @@ public class Order {
     public Date getCreated() {
         return created;
     }
+    
+    public long getCumQty() {
+		return cumQty;
+	}
 
-    public String toString(){
+	public void setCumQty(long cumQty) {
+		this.cumQty = cumQty;
+	}
+
+	public double getAvgPx() {
+		return avgPx;
+	}
+
+	public void setAvgPx(double avgPx) {
+		this.avgPx = avgPx;
+	}
+
+	public String toString(){
 		double price = this.price != 0 ? this.price : this.stopLossPrice;
 		return id + ", " + symbol + ", " + side.toString() + ", " + type.toString() + ", " + price
 		+ ", " + quantity + ", " + status + ", " + created.toString();
