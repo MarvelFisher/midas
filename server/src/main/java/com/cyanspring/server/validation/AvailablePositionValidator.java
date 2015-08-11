@@ -5,22 +5,31 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.fu.IType;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
 public class AvailablePositionValidator implements IOrderValidator {
-
+	private static final Logger log = LoggerFactory.getLogger(AvailablePositionValidator.class);
     @Autowired
     AccountKeeper accountKeeper;
 
     @Autowired
     PositionKeeper positionKeeper;
+    
+    @Autowired
+    IRefDataManager refDataManager;
 
     @Override
     public void validate(Map<String, Object> map, ParentOrder order) throws OrderValidationException {
@@ -43,6 +52,15 @@ public class AvailablePositionValidator implements IOrderValidator {
                 orderSide = order.getSide();
                 symbol = order.getSymbol();
                 accountId = order.getAccount();
+            }
+            
+            RefData refData = refDataManager.getRefData(symbol);
+            if (refData == null) {
+            	log.warn("Can't find refData");
+            } else {
+            	String type = refData.getIType();
+            	if (type != null && !IType.STOCK.getValue().equals(type))
+            		return;
             }
 
             if (Default.getSettlementDays() > 0 && orderSide.isSell()) {

@@ -5,7 +5,8 @@ public enum IType {
 	FUTURES("113"),
 	FUTURES_EFP("117"),
 	FUTURES_CX_IDX("120"),
-	FUTURES_CX("122")
+	FUTURES_CX("122"),
+	STOCK("23")
 	;
 	private String value;
 	private IType(String value) {
