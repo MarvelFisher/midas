@@ -59,7 +59,9 @@ public class AvailablePositionValidator implements IOrderValidator {
             	log.warn("Can't find refData");
             } else {
             	String type = refData.getIType();
-            	if (type != null && !IType.STOCK.getValue().equals(type))
+            	if (type != null && 
+            			(IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type))
+            			)
             		return;
             }
 
