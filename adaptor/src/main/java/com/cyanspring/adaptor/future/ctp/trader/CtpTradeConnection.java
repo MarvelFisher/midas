@@ -225,12 +225,6 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			return;
 		}
 
-		if(status != OrdStatus.PARTIALLY_FILLED &&
-			order.getOrdStatus() == status &&
-			PriceUtils.Equal(order.getCumQty(), volumeTraded)) {
-			log.debug("Skipping update since ordStatus doesn't change: " + status);
-			return;
-		}
 		// store exchange serial ID				
 		String exchangeId = update.ExchangeID().getCString();
 		String orderSysId =  update.OrderSysID().getCString();
@@ -242,18 +236,28 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			log.info("Store exchange order id:" + exchangeOrderId);
 		}
 
-		if ( status != null ) {
-			order.setOrdStatus(status);
-			if (PriceUtils.GreaterThan(volumeTraded, order.getCumQty())) {
+		OrdStatus oldStatus = order.getOrdStatus();
+		order.setOrdStatus(status);
+		Double tradeRecord = tradePendings.get(clOrderId);
+		if(null != tradeRecord) {
+			if(PriceUtils.GreaterThan(volumeTraded, tradeRecord)) {
+				log.debug("Trade record total update: " + tradeRecord + " -> " + volumeTraded);
 				tradePendings.put(clOrderId, new Double(volumeTraded)); // leave trade to do the update
+			}
+		} else {
+			if(PriceUtils.GreaterThan(volumeTraded, order.getCumQty())) {
+				log.debug("Trade record added: " + volumeTraded);
+				tradePendings.put(clOrderId, new Double(volumeTraded)); // leave trade to do the update
+			} else if (status != OrdStatus.PARTIALLY_FILLED &&
+					oldStatus == status) {
+				log.debug("Skipping update since ordStatus doesn't change: " + status);
+				return;
 			} else {				
 				this.listener.onOrder(execType, order.clone(), null, msg);
+				// return remaining position holding
+				returnRemainingPosition(order, update.CombOffsetFlag().getByte());		
 			}
-			
 		}
-		
-		// return remaining position holding
-		returnRemainingPosition(order, update.CombOffsetFlag().getByte());		
 	} 
 	
 	private boolean isEmptyString(String str) {
@@ -293,16 +297,15 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 		if ( null == order ) {
 			log.info("Order not found: " + clOrderId);
 			return;
-		}		
-		Double volumeTraded = tradePendings.remove(clOrderId);
-		if(null == volumeTraded) {
-			log.error("Received trade without order update");
-		} else if(!PriceUtils.Equal(volumeTraded, order.getCumQty() + trade.Volume())) {
-			log.warn("Volume not match: " + volumeTraded + ", " + (order.getCumQty() + trade.Volume()));
 		}
 		
+		Double tradeRecord = tradePendings.get(clOrderId);
+		if(null == tradeRecord) {
+			log.error("Received trade without order update: " + clOrderId);
+		} 
+		
 		if(trade.Volume() == 0 || PriceUtils.isZero(trade.Price())) {
-			log.error("volume or price is 0");
+			log.error("volume or price is 0: " + clOrderId);
 			return;
 		}
 		
@@ -333,7 +336,19 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 				order.get(Byte.class, OrderField.FLAG.value()), 
 				trade.Volume());
 
-		this.listener.onOrder(execType, order.clone(), execution, null);
+		ChildOrder update = order.clone();
+		
+		if(null != tradeRecord) {
+			if(PriceUtils.GreaterThan(tradeRecord, order.getCumQty())) { // not yet received all trades
+				execType = ExecType.PARTIALLY_FILLED;
+				update.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
+			} else {
+				tradePendings.remove(clOrderId);
+			}
+		}
+		
+		returnRemainingPosition(update, update.get(Byte.class, OrderField.FLAG.value()));
+		this.listener.onOrder(execType, update, execution, null);
 	}
 
 	@Override
