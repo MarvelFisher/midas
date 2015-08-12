@@ -11,6 +11,7 @@
 package com.cyanspring.cstw.gui;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -81,10 +82,18 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			// filter already open view 
 			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
 			for(IWorkbenchPage activePage: pages){
+				
 				IViewReference vrs[] = activePage.getViewReferences();
 				for(IViewReference vr : vrs){
+					log.info("show view :{}",vr.getId());
 					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
+						log.info("hide view :{}",vr.getId());
+						IViewPart part = activePage.findView(vr.getId());
+						log.info("part:{}",part.getViewSite().getId());
+						part.getViewSite().getShell().setVisible(false);						
 						activePage.hideView(vr);
+						log.info("visible:{}",part.getViewSite().getShell().isVisible());
+
 					}else{
 						authListener.filterViewAllAction(vr.getPartName(), vr.getPart(true));
 					}
