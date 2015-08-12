@@ -4,6 +4,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ICommissionManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.fu.IType;
 import com.cyanspring.common.type.OrderSide;
 import webcurve.util.PriceUtils;
 
@@ -12,7 +13,7 @@ import webcurve.util.PriceUtils;
  * @version 1.0
  * @since 1.0
  */
-public class StockCommissionManager implements ICommissionManager {
+public class StockCommissionManager extends CommissionManager {
 
     private double stampTax = 0.001;
     private double brokerage = 0.0000696;
@@ -21,8 +22,13 @@ public class StockCommissionManager implements ICommissionManager {
     private double transferFee = 0.0001;
 
     @Override
-    public double getCommission(RefData refData, AccountSetting settings, double value, OrderSide side) {
-        double accountCom = 1;
+    public double getCommission(RefData refData, AccountSetting settings, double value, OrderSide side) {    	
+    	if (refData != null) {
+        	String type = refData.getIType();
+        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type)))
+        		return super.getCommission(refData, settings, value, side);
+        }
+    	double accountCom = 1;
         if (settings != null && !PriceUtils.isZero(settings.getCommission()))
             accountCom = settings.getCommission();
         if (side == null)
@@ -44,6 +50,11 @@ public class StockCommissionManager implements ICommissionManager {
 
     @Override
     public double getCommission(RefData refData, AccountSetting settings, OrderSide side) {
+    	if (refData != null) {
+        	String type = refData.getIType();
+        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type)))
+        		return super.getCommission(refData, settings, side);
+        }
         double accountCom = 1;
         if (settings != null && !PriceUtils.isZero(settings.getCommission()))
             accountCom = settings.getCommission();
