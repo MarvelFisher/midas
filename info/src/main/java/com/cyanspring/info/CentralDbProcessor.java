@@ -357,13 +357,13 @@ public class CentralDbProcessor implements IPlugin
 		sendEvent(retEvent);
 	}
 	
-	public void userRequestGroupSymbol(SymbolListSubscribeEvent retEvent, String user, String market, String group)
+	public void userRequestGroupSymbol(SymbolListSubscribeEvent retEvent, String user, String market, String group, boolean allowEmpty)
 	{
 		ArrayList<SymbolInfo> symbolinfos = new ArrayList<SymbolInfo>();
 		ArrayList<SymbolInfo> symbolinfoTmp = new ArrayList<SymbolInfo>();
 		symbolinfoTmp.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, false));
 		symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolInfos(symbolinfoTmp);
-		if (symbolinfos.isEmpty())
+		if (allowEmpty == false && symbolinfos.isEmpty())
 		{
 			requestDefaultSymbol(retEvent, market);
 			return;

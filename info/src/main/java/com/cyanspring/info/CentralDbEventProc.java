@@ -229,7 +229,7 @@ public class CentralDbEventProc implements Runnable
 			break;
 		case GROUPSYMBOL:
 			log.info("Process Symbol List Subscribe Type: GROUPSYMBOL User: " + user + " Market: " + market + " Group: " + group);
-			centraldb.userRequestGroupSymbol(retEvent, user, market, group);
+			centraldb.userRequestGroupSymbol(retEvent, user, market, group, event.isAllowEmpty());
 			break;
 		case SET:
 			log.info("Process Symbol List Subscribe Type: SET User: " + user + " Market: " + market + " Group: " + group);
