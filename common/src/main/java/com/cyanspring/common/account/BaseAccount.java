@@ -29,10 +29,6 @@ public abstract class BaseAccount implements Serializable {
 	//jimmy#livetrading
 	private AccountState state;
 	private double startAccountValue;
-	
-	
-	
-
 
 	public synchronized double getStartAccountValue() {
 		return startAccountValue;
@@ -71,6 +67,7 @@ public abstract class BaseAccount implements Serializable {
 		this.margin = Default.getMarginTimes() * this.cash;
 		this.cashAvailable = this.cash;
 		this.marginHeld = 0.0;
+		this.unitPrice = 1;
 		
 		//jimmy#livetrading
 		this.state = ACTIVE;
