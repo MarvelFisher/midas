@@ -80,4 +80,14 @@ public class Position {
     public void setAcPnL(double acPnL) {
         this.acPnL = acPnL;
     }
+
+    protected String formatString() {
+		return this.id + ", " + this.account + ", " + this.symbol  + ", " + 
+				this.qty + ", " + this.PnL;
+	}
+	
+	@Override
+	public synchronized String toString() {
+		return "[" + formatString() + "]";
+	}
 }

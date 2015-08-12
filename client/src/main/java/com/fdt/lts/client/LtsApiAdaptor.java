@@ -166,7 +166,7 @@ public class LtsApiAdaptor {
     }
 
     public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
-        log.debug("Received ParentOrderUpdateEvent: " + ", order: " + event.getOrder());
+        log.debug("Received ParentOrderUpdateEvent: " + event.getOrder());
     }
 
     public void processSystemErrorEvent(SystemErrorEvent event) {

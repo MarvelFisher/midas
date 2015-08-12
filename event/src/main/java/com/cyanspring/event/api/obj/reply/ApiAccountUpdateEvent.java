@@ -39,6 +39,7 @@ public class ApiAccountUpdateEvent implements  IApiReply {
         Account eventAccount = new Account();
         eventAccount.setAllTimePnL(account.getAllTimePnL());
         eventAccount.setCash(account.getCash());
+        eventAccount.setCashDeduct(account.getCashDeduct());
         eventAccount.setCurrency(account.getCurrency());
         eventAccount.setDailyPnL(account.getDailyPnL());
         eventAccount.setCashAvailable(account.getCashAvailable());

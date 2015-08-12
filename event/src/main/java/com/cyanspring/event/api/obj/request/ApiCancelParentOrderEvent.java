@@ -42,6 +42,7 @@ public class ApiCancelParentOrderEvent implements IApiRequest {
             String message = MessageLookup.buildEventMessage(ErrorMessage.CANCEL_ORDER_NOT_FOUND, "Can't find order to cancel");
             ctx.send(new CancelParentOrderReplyEvent(orderEvent.getKey(), null, false,
                     message, orderEvent.getTxId(), null));
+            return;
         }
 
         if (!resourceManager.checkAccount(prev.getAccount(), ctx.getUser())) {
@@ -50,6 +51,7 @@ public class ApiCancelParentOrderEvent implements IApiRequest {
 
             ctx.send(new SystemErrorEvent(null, null, 303,
                     msg));
+            return;
         }
         String txId = IdGenerator.getInstance().getNextID();
         resourceManager.putPendingRecord(txId, orderEvent.getTxId(), ctx);

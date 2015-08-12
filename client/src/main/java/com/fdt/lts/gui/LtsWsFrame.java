@@ -1,26 +1,26 @@
 package com.fdt.lts.gui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.util.Collection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JSlider;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.xml.DOMConfigurator;
@@ -52,7 +52,6 @@ import com.cyanspring.apievent.request.CancelParentOrderEvent;
 import com.cyanspring.apievent.request.QuoteSubEvent;
 import com.cyanspring.apievent.request.StrategySnapshotRequestEvent;
 import com.cyanspring.apievent.request.UserLoginEvent;
-import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -61,13 +60,10 @@ import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.ClientSocketEventManager;
-import com.fdt.lts.client.LtsApiAdaptor;
 import com.fdt.lts.client.OrderUtil;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 public class LtsWsFrame extends JFrame {
     private static Logger log = LoggerFactory.getLogger(LtsWsFrame.class);
@@ -75,14 +71,18 @@ public class LtsWsFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextField edSymbol;
 	private JTextField edPrice;
+	final JComboBox<String> cbSide;
+	final JComboBox<String> cbType;
 	private JTextField edQty;
 	private JTable tblOrder;
+	private static String title = "LTS Trader Workstation";
+	private DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
 
 	/**
 	 * Create the frame.
 	 */
 	public LtsWsFrame() {
-		this.setTitle("LTS Trader Workstation");
+		this.setTitle(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1054, 633);
 		contentPane = new JPanel();
@@ -112,7 +112,7 @@ public class LtsWsFrame extends JFrame {
 				new Object[][] {
 				},
 				new String[] {
-					"Symbol", "Price", "Qty", "Time"
+					"Symbol", "Price", "Qty", "AC P&L", "P&L"
 				}
 			));
 		scrollPane_1.setViewportView(tblPosition);
@@ -133,6 +133,27 @@ public class LtsWsFrame extends JFrame {
 			}
 		));
 		scrollPane.setViewportView(tblOrder);
+		
+		tblOrder.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+	        public void valueChanged(ListSelectionEvent event) {
+	        	if(tblOrder.getRowCount() <= 0)
+	        		return;
+	        	
+	        	if(tblOrder.getSelectedRow() < 0)
+	        		return;
+	        	
+	        	log.debug("Selected: " + tblOrder.getValueAt(tblOrder.getSelectedRow(), 0).toString());
+	            edSymbol.setText(tblOrder.getValueAt(tblOrder.getSelectedRow(), 1).toString());
+	            String side = tblOrder.getValueAt(tblOrder.getSelectedRow(), 2).toString();
+	            cbSide.setSelectedItem(side);
+	            String type = tblOrder.getValueAt(tblOrder.getSelectedRow(), 3).toString();
+	            cbSide.setSelectedItem(type);
+	            String price = tblOrder.getValueAt(tblOrder.getSelectedRow(), 4).toString();
+	            edPrice.setText(price);
+	            String qty = tblOrder.getValueAt(tblOrder.getSelectedRow(), 5).toString();
+	            edQty.setText(qty);
+	        }
+	    });
 		
 		JPanel panel = new JPanel();
 		splitPane.setLeftComponent(panel);
@@ -160,14 +181,14 @@ public class LtsWsFrame extends JFrame {
 		edSymbol = new JTextField();
 		edSymbol.setText("USDJPY");
 		plTrade.add(edSymbol);
-		edSymbol.setColumns(10);
+		edSymbol.setColumns(6);
 		
 		JLabel lblPrice = new JLabel("Price:");
 		plTrade.add(lblPrice);
 		
 		edPrice = new JTextField();
 		plTrade.add(edPrice);
-		edPrice.setColumns(10);
+		edPrice.setColumns(6);
 		
 		JLabel lblQty = new JLabel("Qty:");
 		plTrade.add(lblQty);
@@ -175,13 +196,13 @@ public class LtsWsFrame extends JFrame {
 		edQty = new JTextField();
 		edQty.setText("100000");
 		plTrade.add(edQty);
-		edQty.setColumns(10);
+		edQty.setColumns(6);
 		
-		final JComboBox cbType = new JComboBox();
-		cbType.setModel(new DefaultComboBoxModel(new String[] {"Limit", "Market"}));
+		cbType = new JComboBox();
+		cbType.setModel(new DefaultComboBoxModel(new String[] {"Market", "Limit"}));
 		plTrade.add(cbType);
 		
-		final JComboBox cbSide = new JComboBox();
+		cbSide = new JComboBox();
 		cbSide.setModel(new DefaultComboBoxModel(new String[] {"Buy", "Sell"}));
 		plTrade.add(cbSide);
 		
@@ -211,10 +232,40 @@ public class LtsWsFrame extends JFrame {
 		plTrade.add(btnEnter);
 		
 		JButton btnAmend = new JButton("Amend");
+		btnAmend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+	            String orderId = tblOrder.getValueAt(tblOrder.getSelectedRow(), 0).toString();
+	            log.debug("Amending: " + getId());
+	            AmendParentOrderEvent event = 
+	            		OrderUtil.amendOrder(getId(), orderId, Double.parseDouble(edPrice.getText()),
+	            				Long.parseLong(edQty.getText()));
+	            sendEvent(event);
+			}
+		});
 		plTrade.add(btnAmend);
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+	            String orderId = tblOrder.getValueAt(tblOrder.getSelectedRow(), 0).toString();
+	            CancelParentOrderEvent cancelEvent = new CancelParentOrderEvent(getId(), null,
+	                    orderId, false, IdGenerator.getInstance().getNextID());
+	            sendEvent(cancelEvent);
+			}
+		});
 		plTrade.add(btnCancel);
+		
+		JSeparator separator = new JSeparator();
+		separator.setOrientation(SwingConstants.VERTICAL);
+		plTrade.add(separator);
+		
+		JButton btRefresh = new JButton("Update P&L");
+		btRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
+			}
+		});
+		plTrade.add(btRefresh);
 	}
 	
 	private void updateAllOrder(List<Order> orders) {
@@ -257,12 +308,12 @@ public class LtsWsFrame extends JFrame {
         model.setRowCount(0);
 //		"Account Value", "Account Cash", "Cash Available", "P&L", "Ur P&L", "Daily P&L"
         model.addRow(new Object[] {
-        		account.getValue(), 
-        		account.getCash() + account.getUrPnL(),
-        		account.getCashAvailable(),
-        		account.getPnL(),
-        		account.getUrPnL(),
-        		account.getDailyPnL()
+        		decimalFormat.format(account.getValue()), 
+        		decimalFormat.format(account.getCashDeduct()),
+        		decimalFormat.format(account.getCashAvailable()),
+        		decimalFormat.format(account.getPnL()),
+        		decimalFormat.format(account.getUrPnL()),
+        		decimalFormat.format(account.getDailyPnL())
         });
 	}
 	
@@ -271,7 +322,7 @@ public class LtsWsFrame extends JFrame {
         for (OpenPosition position: positions){
     		this.positions.put(position.getSymbol(), position);
         }   
-		refreshOrders();
+        refreshPositions();
 	}
 	
 	private void updateOpenPosition(OpenPosition position) {
@@ -287,13 +338,14 @@ public class LtsWsFrame extends JFrame {
     	DefaultTableModel model = (DefaultTableModel)tblPosition.getModel();
         model.setRowCount(0);
         for (OpenPosition position: positions.values())
-        {
+        {        	
 //			"Symbol", "Price", "Qty", "Time"
         	model.addRow( new Object[]{
         			position.getSymbol(),
             		position.getPrice(),
             		position.getQty(),
-            		position.getCreated(),
+            		this.decimalFormat.format(position.getAcPnL()),
+            		this.decimalFormat.format(position.getPnL()),
                 });
         }   
 		
@@ -399,6 +451,7 @@ public class LtsWsFrame extends JFrame {
         sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
         sendEvent(new StrategySnapshotRequestEvent(account, null, null));
         sendEvent(new AccountSnapshotRequestEvent(account, null, account, null));
+        this.setTitle(title + " - " + this.user);
      }
 
     public void processStrategySnapshotEvent(StrategySnapshotEvent event) {
@@ -439,7 +492,7 @@ public class LtsWsFrame extends JFrame {
     }
 
     public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
-        log.debug("Received ParentOrderUpdateEvent: " + ", order: " + event.getOrder());
+        log.debug("Received ParentOrderUpdateEvent: " + event.getOrder());
         updateOrder(event.getOrder());
     }
 

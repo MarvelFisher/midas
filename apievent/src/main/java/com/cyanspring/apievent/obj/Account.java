@@ -15,6 +15,7 @@ public class Account {
     private double cash;
     private double cashAvailable;
     private double value;
+	private double cashDeduct;
 
     public double getDailyPnL() {
         return dailyPnL;
@@ -79,4 +80,13 @@ public class Account {
     public void setValue(double value) {
         this.value = value;
     }
+
+	public double getCashDeduct() {
+		return cashDeduct;
+	}
+
+	public void setCashDeduct(double cashDeduct) {
+		this.cashDeduct = cashDeduct;
+	}
+    
 }

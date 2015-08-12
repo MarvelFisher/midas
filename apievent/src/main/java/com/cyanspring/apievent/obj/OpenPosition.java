@@ -24,4 +24,10 @@ public class OpenPosition extends Position {
     public void setMargin(double margin) {
         this.margin = margin;
     }
+
+	@Override
+	protected String formatString() {
+		 return super.formatString() + ", " + this.price + ", ";
+	}
+    
 }

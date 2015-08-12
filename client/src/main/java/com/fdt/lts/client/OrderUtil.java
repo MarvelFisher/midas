@@ -1,7 +1,9 @@
 package com.fdt.lts.client;
 
+import com.cyanspring.apievent.obj.Order;
 import com.cyanspring.apievent.obj.OrderSide;
 import com.cyanspring.apievent.obj.OrderType;
+import com.cyanspring.apievent.request.AmendParentOrderEvent;
 import com.cyanspring.apievent.request.EnterParentOrderEvent;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.util.IdGenerator;
@@ -60,5 +62,14 @@ public class OrderUtil {
         fields.put(OrderField.ACCOUNT.value(), account);
         EnterParentOrderEvent enterOrderEvent = new EnterParentOrderEvent(user, null, fields, IdGenerator.getInstance().getNextID(), false);
         return enterOrderEvent;
+    }
+    
+    public static AmendParentOrderEvent amendOrder(String user, String id, double price, long qty) {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put(OrderField.PRICE.value(), price);
+        fields.put(OrderField.QUANTITY.value(), qty);
+        AmendParentOrderEvent amendEvent = new AmendParentOrderEvent(user, null,
+                id, fields, IdGenerator.getInstance().getNextID());
+        return amendEvent;
     }
 }

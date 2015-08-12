@@ -66,11 +66,11 @@ public class ClientSocketEventManager extends AsyncEventManager implements
 		}
 	}
 	
-	@Override
-	public void finalize() throws Throwable {
-		close();
-		super.finalize();
-	}
+//	@Override
+//	public void finalize() throws Throwable {
+//		close();
+//		super.finalize();
+//	}
 	
 	@Override
 	public void close() throws Exception {

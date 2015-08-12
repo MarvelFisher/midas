@@ -8,6 +8,8 @@ import com.cyanspring.event.api.obj.PendingRecord;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.order.StrategySnapshotEvent;
+import com.cyanspring.common.type.StrategyState;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -57,6 +59,12 @@ public class ApiStrategySnapshotEvent implements IApiReply{
                         OrderField.STOP_LOSS_PRICE.value()));
                 order.setSymbol(parentOrder.getSymbol());
                 orders.add(order);
+                
+                if(parentOrder.getState() == StrategyState.Terminated || parentOrder.getOrdStatus().isCompleted())
+                    resourceManager.removeOrder(parentOrder.getId());
+                else if(resourceManager.hasUser(parentOrder.getAccount())) {
+                    resourceManager.putOrder(parentOrder.getId(), parentOrder);
+                }
             }
 
             record.ctx.send(new com.cyanspring.apievent.reply.StrategySnapshotEvent(

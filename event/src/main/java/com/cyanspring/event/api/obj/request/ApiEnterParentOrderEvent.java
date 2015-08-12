@@ -46,6 +46,7 @@ public class ApiEnterParentOrderEvent implements IApiRequest {
 
             ctx.send(new SystemErrorEvent(null, null, 303,
                     msg));
+            return;
         }
 
         String txId = IdGenerator.getInstance().getNextID();

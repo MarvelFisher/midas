@@ -39,6 +39,7 @@ public class ApiStrategySnapshotRequestEvent implements IApiRequest {
             String msg = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_MATCH, messageBean.getMsg() + ": " + snapshotRequestEvent.getKey() + ", " + ctx.getUser());
 
             ctx.send(new SystemErrorEvent(null, null, 303, msg));
+            return;
         }
         String txId = IdGenerator.getInstance().getNextID();
         resourceManager.putPendingRecord(txId, snapshotRequestEvent.getTxId(), ctx);
