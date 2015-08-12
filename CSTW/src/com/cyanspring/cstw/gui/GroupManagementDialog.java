@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserGroup;
@@ -94,8 +95,9 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		this.accountId = accountId;
 		this.users = users;
 		for(User user:users){
-			if(!UserRole.Admin.equals(user.getRole()))
+			if(null != user.getRole() && !UserRole.Admin.equals(user.getRole())){
 				nonManageeList.add(user.getId());
+			}
 		}
 		log.info("GroupManagementDialog set user:{}",accountId);
 	}
@@ -483,6 +485,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 			for(User user : users){
 				if(!manageeList.contains(user.getId())
 						&& !accountId.equals(user.getId())
+						&& null != user.getRole()
 						&& !UserRole.Admin.equals(user.getRole())){
 					tempList.add(user.getId());
 				}

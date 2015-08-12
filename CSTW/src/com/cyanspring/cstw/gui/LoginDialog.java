@@ -198,8 +198,21 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		if(event instanceof CSTWUserLoginReplyEvent) {
 			final CSTWUserLoginReplyEvent reply = (CSTWUserLoginReplyEvent) event;
 			log.info("loginOk:"+reply.isOk());
-
+			
 			loginOk = reply.isOk();
+			
+			if( null == reply.getUserGroup() || null == reply.getUserGroup().getRole()){
+				loginOk = false;
+				this.getContents().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						lblMessage.setText("invalid user role");
+						
+					}
+				});
+				return ;
+			}
+			
 			if(loginOk) {
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override
