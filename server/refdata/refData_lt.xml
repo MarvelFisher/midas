@@ -620,4 +620,85 @@
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1</double>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>USD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>CNH</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>US Dollar vs Chinese Offshore Yuan</string>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>USDCNH</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>美元 兌 中國離岸人民幣</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>USD.CNH</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>美元/人民币</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>美元/人民幣</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>美元 兑 中国离岸人民币</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>FX</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
 </list>
