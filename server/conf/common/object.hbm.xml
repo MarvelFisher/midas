@@ -292,7 +292,9 @@
   		<property name="checkDailyStopLossStart" column="CHECK_DAILY_STOP_LOSS_START" type="java.util.Date"/>
   		<property name="checkDailyStopLossEnd" column="CHECK_DAILY_STOP_LOSS_END" type="java.util.Date"/>	
   		<property name="checkTrailingStopStart" column="CHECK_TRAILING_STOP_START" type="java.util.Date"/>
-  		<property name="checkTrailingStopEnd" column="CHECK_TRAILING_STOP_END" type="java.util.Date"/>	  	
+  		<property name="checkTrailingStopEnd" column="CHECK_TRAILING_STOP_END" type="java.util.Date"/>	  
+  		<property name="checkDayTradingModeStart" column="CHECK_DAY_TRADING_MODE_START" type="java.util.Date"/>
+  		<property name="checkDayTradingModeEnd" column="CHECK_DAY_TRADING_MODE_END" type="java.util.Date"/>	
   </class>
   
   <sql-query name="rollEndOfDay2">
