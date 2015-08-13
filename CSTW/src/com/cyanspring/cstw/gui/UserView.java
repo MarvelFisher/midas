@@ -246,7 +246,12 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 					return ;
 				
 				User user = (User)item.getData();
-				if(UserRole.Trader.equals(user.getRole())){
+				if(null == user.getRole()){
+					GUIUtils.showMessageBox(""+user.getId()+" role is empty.", parent);
+					return ;
+				}
+				
+				if( UserRole.Trader.equals(user.getRole())){
 					GUIUtils.showMessageBox(""+user.getId()+" is a Trader that can't manage someone else.", parent);
 					return ;
 				}
