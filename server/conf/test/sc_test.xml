@@ -300,6 +300,7 @@
     <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
         <property name="searchBySymbol" value="false"/>
+        <property name="eventManager" ref="eventManager"></property>        
     </bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">

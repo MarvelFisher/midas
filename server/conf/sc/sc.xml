@@ -68,12 +68,12 @@
 		</property>
 	</bean>
 
-	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+	<!-- <bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="globalTransportService" />
 		</constructor-arg>
 		<property name="embedBroker" value="false"/>
-	</bean>
+	</bean> -->
 
 	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager"/>
 
@@ -283,6 +283,7 @@
     <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
 		<property name="searchBySymbol" value="false"></property>
+        <property name="eventManager" ref="eventManager"></property>
     </bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
