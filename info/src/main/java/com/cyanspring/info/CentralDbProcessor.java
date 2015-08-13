@@ -476,11 +476,17 @@ public class CentralDbProcessor implements IPlugin
 	{
 		List<GroupInfo> orgList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
 		List<GroupInfo> delList = new ArrayList<GroupInfo>();
+		int index;
 		for (GroupInfo ginfo : orgList)
 		{
-			if (0 > Collections.binarySearch(groups, ginfo))
+			index = Collections.binarySearch(groups, ginfo);
+			if (0 > index)
 			{
 				delList.add(ginfo);
+			}
+			else
+			{
+				groups.get(index).setSymbolCount(ginfo.getSymbolCount());
 			}
 		}
 		String userEn, groupIDEn, groupNameEn;
