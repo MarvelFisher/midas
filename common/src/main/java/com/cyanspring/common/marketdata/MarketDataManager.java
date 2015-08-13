@@ -145,9 +145,9 @@ public class MarketDataManager extends MarketDataReceiver {
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
                     Quote tempQuote = (Quote)quote.clone();
-                    if(marketTypes.get(tempQuote) != null && "I".equals(marketTypes.get(tempQuote))){
+                    if(marketTypes.get(tempQuote.getSymbol()) != null && "I".equals(marketTypes.get(tempQuote.getSymbol()))){
                         tempQuote.setClose(tempQuote.getLast());
-                        log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last");
+                        log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                     }
                     quoteCleaner.clear(tempQuote);
                     tempQuote.setTimeSent(Clock.getInstance().now());
