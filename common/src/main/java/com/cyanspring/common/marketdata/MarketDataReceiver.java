@@ -49,6 +49,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected HashMap<String, DataObject> quoteExtends = new HashMap<String, DataObject>();
     protected Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
     protected Map<String, DataObject> lastTradeDateQuoteExtends = new HashMap<String, DataObject>();
+    protected HashMap<String, String> marketTypes = new HashMap<>();
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -129,6 +130,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             for (int i = 0; i < refDataList.size(); i++) {
                 RefData refData = (RefData) refDataList.get(i);
                 preSubscriptionList.add(refData.getSymbol());
+                marketTypes.put(refData.getSymbol(), refData.getCommodity());
             }
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) {
