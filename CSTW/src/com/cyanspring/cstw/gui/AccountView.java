@@ -198,6 +198,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						return;
 					}
 					log.info("currentAccount:{}",currentAccount.getId());
+					currentAccount = accounts.get(currentAccount.getId());
 					ChangeAccountStateDialog dialog = new ChangeAccountStateDialog(parent.getShell(), currentAccount);
 					dialog.open();
 					
