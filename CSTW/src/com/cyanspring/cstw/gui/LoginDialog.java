@@ -201,7 +201,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 			
 			loginOk = reply.isOk();
 			
-			if( null == reply.getUserGroup() || null == reply.getUserGroup().getRole()){
+			if(loginOk && ( null == reply.getUserGroup() || null == reply.getUserGroup().getRole())){
 				loginOk = false;
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override

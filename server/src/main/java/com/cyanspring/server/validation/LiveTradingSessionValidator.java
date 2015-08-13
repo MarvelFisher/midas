@@ -15,6 +15,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
+import com.cyanspring.server.account.CoinManager;
 import com.cyanspring.server.livetrading.LiveTradingSession;
 
 public class LiveTradingSessionValidator implements IOrderValidator {
@@ -26,6 +27,8 @@ public class LiveTradingSessionValidator implements IOrderValidator {
 	private LiveTradingSession liveTradingSession;
 	@Autowired
 	public AccountKeeper accountKeeper;
+	@Autowired(required = false)
+	public CoinManager coinManager;
 	
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
@@ -51,6 +54,9 @@ public class LiveTradingSessionValidator implements IOrderValidator {
 			if( null == account ){
 				return;
 			}
+			
+			if( null != coinManager && !coinManager.canCheckDayTradingMode(account.getId()))
+				return;
 
 			AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
 			if( null != account && accountSetting.isLiveTrading()){			

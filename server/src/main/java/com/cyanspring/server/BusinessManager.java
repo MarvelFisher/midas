@@ -97,6 +97,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
+import com.cyanspring.server.account.CoinManager;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.order.MultiOrderCancelTracker;
@@ -156,6 +157,9 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	@Autowired(required = false)
 	SuspendSystemController suspendSystemController;
+	
+	@Autowired(required = false)
+	CoinManager coinManager;
 	
 	ScheduleManager scheduleManager = new ScheduleManager();
 
@@ -915,7 +919,13 @@ public class BusinessManager implements ApplicationContextAware {
 			for (Account account : accounts) {
 				AccountSetting accountSetting = accountKeeper
 						.getAccountSetting(account.getId());
+				
+				if( null != coinManager && !coinManager.canCheckDayTradingMode(account.getId())){
+					continue;
+				}
+				
 				if (accountSetting.isLiveTrading()) {
+					
 					log.info("LiveTradingEndEvent:close position account:"
 							+ account.getId());
 					TradingUtil.closeAllPositoinAndOrder(account,

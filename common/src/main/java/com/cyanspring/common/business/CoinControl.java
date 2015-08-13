@@ -16,7 +16,6 @@ public class CoinControl implements Serializable{
 	private Date checkDayTradingModeStart;
 	private Date checkDayTradingModeEnd;
 	
-	
 	public static CoinControl createDefaultCoinControl(String accountId){
 		CoinControl control = new CoinControl();
 		control.setAccountId(accountId);

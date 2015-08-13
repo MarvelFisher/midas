@@ -22,26 +22,22 @@ import com.cyanspring.common.event.account.CoinSettingRequestEvent;
 import com.cyanspring.common.event.account.PmUpdateCoinControlEvent;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.util.IdGenerator;
 import com.google.common.base.Strings;
 
 public class CoinManager implements IPlugin{
 
-	private static final Logger log = LoggerFactory
-			.getLogger(CoinManager.class);
-	private static final String ID = "CoinMgr-"+IdGenerator.getInstance().getNextID();
-	private static final String SENDER = CoinManager.class.getSimpleName();
+	private static final Logger log = LoggerFactory.getLogger(CoinManager.class);
 	private ConcurrentHashMap<String, CoinControl> accountCoinControlMap = new ConcurrentHashMap<String, CoinControl>();	
-
+	private boolean activePositionCoinControl = true;
+	private boolean activeDailyCoinControl = true;
+	private boolean activeTrailingStopCoinControl = true;
+	private boolean activeDayTradingModeCoinControl = true;
+	
 	@Autowired
 	protected IRemoteEventManager eventManager;
 	
 	@Autowired
     AccountKeeper accountKeeper;
-	
-	private boolean activePositionCoinControl = true;
-	private boolean activeDailyCoinControl = true;
-	private boolean activeTrailingStopCoinControl = true;
 	
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -80,6 +76,7 @@ public class CoinManager implements IPlugin{
 	}
 	
 	public void processCoinSettingRequestEvent(CoinSettingRequestEvent event){
+		
 		String userId = event.getUserId();	
 		log.info("Receive Coin Setting :{}",userId);
 		CoinType coinType = event.getCoinType();
@@ -89,8 +86,7 @@ public class CoinManager implements IPlugin{
 		Date endDate = event.getEndDate();
 		String accountId = "";
 		CoinControl coin = null;
-				
-	
+			
 		check:{
 			
 			if(Strings.isNullOrEmpty(userId)){
@@ -143,6 +139,10 @@ public class CoinManager implements IPlugin{
 				coin.setCheckTrailingStopStart(now);
 				coin.setCheckTrailingStopEnd(endDate);
 				break;
+			case DAY_TRADING_MODE:
+				coin.setCheckDayTradingModeStart(now);
+				coin.setCheckDayTradingModeEnd(endDate);
+				break;
 			}	
 		}
 		
@@ -167,7 +167,10 @@ public class CoinManager implements IPlugin{
 		if(!activePositionCoinControl)
 			return false;
 		
-		CoinControl coin = getCoinControlOrDefault(accountId);			
+		CoinControl coin = getCoinControlOrDefault(accountId);	
+		if(null == coin)
+			return false;
+		
 		return coin.canCheckPositionStopLoss();
 	}
 
@@ -175,7 +178,10 @@ public class CoinManager implements IPlugin{
 		if(!activeDailyCoinControl)
 			return false;
 		
-		CoinControl coin = getCoinControlOrDefault(accountId);			
+		CoinControl coin = getCoinControlOrDefault(accountId);	
+		if(null == coin)
+			return false;
+		
 		return coin.canCheckDailyStopLoss();
 	}
 	
@@ -184,7 +190,21 @@ public class CoinManager implements IPlugin{
 			return false;
 		
 		CoinControl coin = getCoinControlOrDefault(accountId);			
+		if(null == coin)
+			return false;
+		
 		return coin.canCheckTrailingStop();
+	}
+	
+	public boolean canCheckDayTradingMode(String accountId){	
+		if(!activeDayTradingModeCoinControl)
+			return false;
+		
+		CoinControl coin = getCoinControlOrDefault(accountId);		
+		if(null == coin)
+			return false;
+		
+		return coin.canCheckDayTradingMode();
 	}
 	
 	private CoinControl getCoinControlOrDefault(String accountId){
@@ -233,5 +253,14 @@ public class CoinManager implements IPlugin{
 	public void setActiveTrailingStopCoinControl(
 			boolean activeTrailingStopCoinControl) {
 		this.activeTrailingStopCoinControl = activeTrailingStopCoinControl;
+	}
+
+	public boolean isActiveDayTradingModeCoinControl() {
+		return activeDayTradingModeCoinControl;
+	}
+
+	public void setActiveDayTradingModeCoinControl(
+			boolean activeDayTradingModeCoinControl) {
+		this.activeDayTradingModeCoinControl = activeDayTradingModeCoinControl;
 	}
 }
