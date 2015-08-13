@@ -62,6 +62,7 @@ public class ApiUserLoginReplyEvent implements IApiReply {
                         record.ctx.close();
                     }
                 }
+                return;
             }
 
             resourceManager.getSocketService().setUserContext(loginReplyEvent.getUser().getId(), record.ctx);

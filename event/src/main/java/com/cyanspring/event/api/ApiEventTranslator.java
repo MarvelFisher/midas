@@ -10,19 +10,10 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
+ * The translator is used to translate LTS event to client event. 
  *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 

@@ -41,8 +41,6 @@ public class ApiAmendParentOrderEvent implements IApiRequest{
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
         AmendParentOrderEvent orderEvent = (AmendParentOrderEvent) event;
-
-
         ParentOrder prev = resourceManager.getOrder(orderEvent.getId());
 
         if(null == prev) {
