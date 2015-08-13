@@ -234,6 +234,9 @@ public class LtsWsFrame extends JFrame {
 		JButton btnAmend = new JButton("Amend");
 		btnAmend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(tblOrder.getSelectedRow() < 0)
+					return;
+				
 	            String orderId = tblOrder.getValueAt(tblOrder.getSelectedRow(), 0).toString();
 	            log.debug("Amending: " + getId());
 	            AmendParentOrderEvent event = 
@@ -282,38 +285,45 @@ public class LtsWsFrame extends JFrame {
 	}
 
 	private void refreshOrders() {
-    	DefaultTableModel model = (DefaultTableModel)tblOrder.getModel();
-        model.setRowCount(0);
-        for (Order order: orders.values())
-        {
-//			"ID", "Symbol", "Side", "Type", "Price", "Qty", "Status", "CumQty", "AvgPx", "Time"
-        	model.addRow( new Object[]{
-            		order.getId(),
-            		order.getSymbol(),
-            		order.getSide(),
-            		order.getType(),
-            		order.getPrice(),
-            		order.getQuantity(),
-            		order.getStatus(),
-            		order.getCumQty(),
-            		order.getAvgPx(),
-            		order.getCreated()
-                });
-        }   
-		
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+		    	DefaultTableModel model = (DefaultTableModel)tblOrder.getModel();
+		        model.setRowCount(0);
+		        for (Order order: orders.values())
+		        {
+		//			"ID", "Symbol", "Side", "Type", "Price", "Qty", "Status", "CumQty", "AvgPx", "Time"
+		        	model.addRow( new Object[]{
+		            		order.getId(),
+		            		order.getSymbol(),
+		            		order.getSide(),
+		            		order.getType(),
+		            		order.getPrice(),
+		            		order.getQuantity(),
+		            		order.getStatus(),
+		            		order.getCumQty(),
+		            		order.getAvgPx(),
+		            		order.getCreated()
+		                });
+		        }   
+            }
+        });
 	}
 	
-	private void updateAccount(Account account) {
-    	DefaultTableModel model = (DefaultTableModel)tblAccount.getModel();
-        model.setRowCount(0);
-//		"Account Value", "Account Cash", "Cash Available", "P&L", "Ur P&L", "Daily P&L"
-        model.addRow(new Object[] {
-        		decimalFormat.format(account.getValue()), 
-        		decimalFormat.format(account.getCashDeduct()),
-        		decimalFormat.format(account.getCashAvailable()),
-        		decimalFormat.format(account.getPnL()),
-        		decimalFormat.format(account.getUrPnL()),
-        		decimalFormat.format(account.getDailyPnL())
+	private void updateAccount(final Account account) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+		    	DefaultTableModel model = (DefaultTableModel)tblAccount.getModel();
+		        model.setRowCount(0);
+		//		"Account Value", "Account Cash", "Cash Available", "P&L", "Ur P&L", "Daily P&L"
+		        model.addRow(new Object[] {
+		        		decimalFormat.format(account.getValue()), 
+		        		decimalFormat.format(account.getCashDeduct()),
+		        		decimalFormat.format(account.getCashAvailable()),
+		        		decimalFormat.format(account.getPnL()),
+		        		decimalFormat.format(account.getUrPnL()),
+		        		decimalFormat.format(account.getDailyPnL())
+		        });
+            }
         });
 	}
 	
@@ -335,20 +345,23 @@ public class LtsWsFrame extends JFrame {
 	}
 	
 	private void refreshPositions() {
-    	DefaultTableModel model = (DefaultTableModel)tblPosition.getModel();
-        model.setRowCount(0);
-        for (OpenPosition position: positions.values())
-        {        	
-//			"Symbol", "Price", "Qty", "Time"
-        	model.addRow( new Object[]{
-        			position.getSymbol(),
-            		position.getPrice(),
-            		position.getQty(),
-            		this.decimalFormat.format(position.getAcPnL()),
-            		this.decimalFormat.format(position.getPnL()),
-                });
-        }   
-		
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+		    	DefaultTableModel model = (DefaultTableModel)tblPosition.getModel();
+		        model.setRowCount(0);
+		        for (OpenPosition position: positions.values())
+		        {        	
+		//			"Symbol", "Price", "Qty", "Time"
+		        	model.addRow( new Object[]{
+		        			position.getSymbol(),
+		            		position.getPrice(),
+		            		position.getQty(),
+		            		LtsWsFrame.this.decimalFormat.format(position.getAcPnL()),
+		            		LtsWsFrame.this.decimalFormat.format(position.getPnL()),
+		                });
+		        }   
+            }
+        });
 	}
 
 	private String user = "test1";
