@@ -20,10 +20,10 @@
                 <entry key="DEFAULT">
                     <ref bean="defaultSession"/>
                 </entry>
-                <entry key="WORKDAY_AFTER_HOLIDAY">
+                <entry key="FIRST_WORKING_DAY">
                     <ref bean="wahSession"/>
                 </entry>
-                <entry key="HOLIDAY_AFTER_WOERKDAY">
+                <entry key="FIRST_HOLIDAY">
                     <ref bean="hawSession"/>
                 </entry>
                 <entry key="HOLIDAY">

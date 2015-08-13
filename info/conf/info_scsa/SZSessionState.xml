@@ -15,7 +15,7 @@
 				<entry key="DEFAULT">
 					<ref bean="szDefaultSession"/>
 				</entry>
-				<entry key="HOLIDAY_AFTER_WOERKDAY">
+				<entry key="FIRST_HOLIDAY">
 					<ref bean="holidaySession"/>
 				</entry>
 				<entry key="HOLIDAY">

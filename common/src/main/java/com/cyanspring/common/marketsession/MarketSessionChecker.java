@@ -96,9 +96,9 @@ public class MarketSessionChecker implements IMarketSession {
         if (tradeDateManager.isHoliday(date) && tradeDateManager.isHoliday(preDate)) {
             return MarketSessionIndex.HOLIDAY.toString();
         } else if (tradeDateManager.isHoliday(date) && !tradeDateManager.isHoliday(preDate)) {
-            return MarketSessionIndex.HOLIDAY_AFTER_WOERKDAY.toString();
+            return MarketSessionIndex.FIRST_HOLIDAY.toString();
         } else if (!tradeDateManager.isHoliday(date) && tradeDateManager.isHoliday(preDate)) {
-            return MarketSessionIndex.WORKDAY_AFTER_HOLIDAY.toString();
+            return MarketSessionIndex.FIRST_WORKING_DAY.toString();
         } else {
             return MarketSessionIndex.DEFAULT.toString();
         }
