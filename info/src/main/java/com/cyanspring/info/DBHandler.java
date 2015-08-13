@@ -211,8 +211,8 @@ public class DBHandler
 			int count;
 			while(rs.next())
 			{
-				group = DBHandler.utf8Decode(rs.getString("GROUP_ID").toLowerCase());
-				name = DBHandler.utf8Decode(rs.getString("GROUP_NAME").toLowerCase());
+				group = DBHandler.utf8Decode(rs.getString("GROUP_ID"));
+				name = DBHandler.utf8Decode(rs.getString("GROUP_NAME"));
 				strCount = rs.getString("SYMBOL_COUNT");
 				count = (strCount == null) ? 0 : Integer.parseInt(strCount);
 				retsymbollist.add(new GroupInfo(group, name, count));
