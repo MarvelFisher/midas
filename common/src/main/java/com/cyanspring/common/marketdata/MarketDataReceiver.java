@@ -176,9 +176,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
     }
 
-    private void clearAndSendQuoteEvent(QuoteEvent event) {
+    private void clearAndSendQuoteEvent(QuoteSource quoteSource, String contributor, QuoteEvent event) {
+
+        if (quoteLogIsOpen)
+            printQuoteLog(quoteSource, contributor, event.getQuote(), QuoteLogLevel.GENERAL);
+
         event.getQuote().setTimeSent(Clock.getInstance().now());
         quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
+
         if (null != aggregator) {
             aggregator.reset(event.getQuote().getSymbol());
         }
@@ -199,8 +204,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
         }
 
-        if (quoteLogIsOpen)
-            printQuoteLog(inEvent.getQuoteSource(), inEvent.getContributor(), quote, QuoteLogLevel.GENERAL);
+//        if (quoteLogIsOpen)
+//            printQuoteLog(inEvent.getQuoteSource(), inEvent.getContributor(), quote, QuoteLogLevel.GENERAL);
 
         //Check Forex TimeStamp
         if (inEvent.getQuoteSource()==QuoteSource.ID || inEvent.getQuoteSource()==QuoteSource.IB) {
@@ -230,7 +235,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
         if (null == prev) {
             quotes.put(quote.getSymbol(), quote);
-            clearAndSendQuoteEvent(inEvent.getQuoteEvent());
+            clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), inEvent.getQuoteEvent());
             return;
         } else {
             quotes.put(quote.getSymbol(), quote);
@@ -260,7 +265,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
 
         // send the quote now
-        clearAndSendQuoteEvent(event);
+        clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), event);
     }
 
     public void printQuoteLog(QuoteSource quoteSource, String contributor, Quote quote, QuoteLogLevel quoteLogLevel) {
@@ -386,8 +391,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 if (quote != null && !quote.isStale()) {
                     log.debug("MDR send final stale quote event:" + quote.getSymbol());
                     quote.setStale(true);
-                    clearAndSendQuoteEvent(new QuoteEvent(quote.getSymbol(), null, quote));
-                    printQuoteLog(QuoteSource.RESEND, null, quote, QuoteLogLevel.GENERAL);
+                    clearAndSendQuoteEvent(QuoteSource.RESEND, null, new QuoteEvent(quote.getSymbol(), null, quote));
                 }
             }
         }
