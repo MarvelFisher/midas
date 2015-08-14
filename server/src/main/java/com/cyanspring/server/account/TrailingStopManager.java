@@ -172,6 +172,7 @@ public class TrailingStopManager implements IPlugin {
 				ppp.setPosition(position.getQty());
 				
 				double refPrice = getRefPrice(quote, ppp.getPosition());
+				
 				if(PriceUtils.isZero(refPrice))
 					continue;
 
