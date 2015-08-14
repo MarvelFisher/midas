@@ -172,13 +172,10 @@ public class TrailingStopManager implements IPlugin {
 				ppp.setPosition(position.getQty());
 				
 				double refPrice = getRefPrice(quote, ppp.getPosition());
-				log.info("ppp.getPrice() :{} refPrice:{}",ppp.getPrice(),refPrice);
-				log.info("position.getPrice():{}",position.getPrice());
 				if(PriceUtils.isZero(refPrice))
 					continue;
 
 				double delta = position.getQty() > 0?(ppp.getPrice() - refPrice) : (refPrice - ppp.getPrice());
-				log.info("delta:{} ,delta/position.getPrice():{}",delta,(delta/position.getPrice()));
 				if(PriceUtils.EqualGreaterThan(delta/position.getPrice(), trailingStop)) {
 					if(positionKeeper.checkAccountPositionLock(position.getAccount(), position.getSymbol())) {
 						log.info("Account locked for trailing stoping: " + refPrice + ", " +
