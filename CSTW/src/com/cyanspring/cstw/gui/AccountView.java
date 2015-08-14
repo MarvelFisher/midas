@@ -106,6 +106,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private final Color NORMAL_COLOR = new Color(Display.getCurrent(), WHITE);
 	private final String COLUMN_STATE="State";
 	private Composite parentComposite = null;
+	private int currentFindNum = 0;
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		log.info("Creating account view");
@@ -259,13 +261,20 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	
 	private void searchText() {
 		String textValue = searchText.getText();
-		for (int i = 0; i < viewer.getTable().getItemCount(); i++) {
+		boolean found = false;
+		
+		for (int i = currentFindNum; i < viewer.getTable().getItemCount(); i++) {
 			Account account = (Account) viewer.getTable().getItem(i).getData();
-			if (account.getId().toUpperCase().contains(textValue.toUpperCase())) {
+			if (account.getUserId().toUpperCase().startsWith(textValue.toUpperCase())) {
 				viewer.getTable().setSelection(i);
+				found = true;
+				currentFindNum = ++i ;
+				break;
 			}
 		}
 
+		if(false == found)
+			currentFindNum = 0;
 	}
 	
 	private void createManualRefreshToggleAction(final Composite parent) {
@@ -430,6 +439,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			public void run() {
 				searchBarComposite.setVisible(!searchBarComposite.isVisible());
 				if (searchBarComposite.isVisible()) {
+					currentFindNum = 0 ; 
 					gd_searchBar.heightHint = 40;
 				} else {
 					gd_searchBar.heightHint = 0;
