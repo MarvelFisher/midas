@@ -834,11 +834,11 @@ public class CentralDbProcessor implements IPlugin
 		Map<String, List<HistoricalPrice>> historical;
 		if (strType.equals("D") || strType.equals("W") || strType.equals("M"))
 		{
-			historical = getDbhnd().getTotalValue(market, strType, null);
+			historical = getDbhnd().getTotalValue(market, strType, null, historicalDataCount.get(strType));
 		}
 		else
 		{
-			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
+			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()), historicalDataCount.get(strType));
 		}
 		HashMap<String, List<HistoricalPrice>> subMap;
 		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())

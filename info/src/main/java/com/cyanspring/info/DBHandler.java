@@ -497,7 +497,7 @@ public class DBHandler
 		return retList;
     }
     
-    public Map<String, List<HistoricalPrice>> getTotalValue(String market, String type, String retrieveDate)
+    public Map<String, List<HistoricalPrice>> getTotalValue(String market, String type, String retrieveDate, int counts)
     {
     	String prefix = (market.equals("FX")) ? "0040" : market;
     	String strTable = String.format("%s_%s", prefix, type) ;
@@ -554,7 +554,7 @@ public class DBHandler
 					if (nPos < 0)
 					{
 						lst.add(~nPos, price);
-						if (lst.size() > 1440)
+						if (lst.size() > counts)
 						{
 							lst.remove(0);
 						}
