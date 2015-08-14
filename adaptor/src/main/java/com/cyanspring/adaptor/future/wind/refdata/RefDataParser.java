@@ -60,10 +60,14 @@ public class RefDataParser {
         XStream xstream = new XStream(new DomDriver());
         File file = new File(listPath);
         List<T> list = new ArrayList<>();
-        if (file.exists()) {
-            list = (List<T>) xstream.fromXML(file);
-        } else {
-            log.error("Missing file: " + listPath);
+        try {
+            if (file.exists()) {
+                list = (List<T>) xstream.fromXML(file);
+            } else {
+                log.error("Missing file: " + listPath);
+            }
+        }catch (Exception e) {
+            log.error("load file X ", e);
         }
         return list;
     }
@@ -86,10 +90,14 @@ public class RefDataParser {
         XStream xstream = new XStream(new DomDriver());
         File file = new File(hashMapPath);
         HashMap<K, T> hashMap = new HashMap<>();
-        if (file.exists()) {
-            hashMap = (HashMap<K, T>) xstream.fromXML(file);
-        } else {
-            log.error("Missing file: " + hashMapPath);
+        try {
+            if (file.exists()) {
+                hashMap = (HashMap<K, T>) xstream.fromXML(file);
+            } else {
+                log.error("Missing file: " + hashMapPath);
+            }
+        }catch (Exception e) {
+            log.error("load file X ", e);
         }
         return hashMap;
     }
