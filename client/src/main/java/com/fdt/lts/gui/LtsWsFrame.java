@@ -1,6 +1,8 @@
 package com.fdt.lts.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -13,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -60,6 +63,7 @@ import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.event.ClientSocketEventManager;
+import com.cyanspring.transport.socket.ClientSocketService;
 import com.fdt.lts.client.OrderUtil;
 
 import javax.swing.JSeparator;
@@ -77,6 +81,8 @@ public class LtsWsFrame extends JFrame {
 	private JTable tblOrder;
 	private static String title = "LTS Trader Workstation";
 	private DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
+    private JTable tblPosition;
+    private JTable tblAccount;
 
 	/**
 	 * Create the frame.
@@ -85,6 +91,8 @@ public class LtsWsFrame extends JFrame {
 		this.setTitle(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1054, 633);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    	setLocation((dim.width-getWidth())/2, (dim.height-getHeight())/2);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -370,6 +378,8 @@ public class LtsWsFrame extends JFrame {
     
     private TreeMap<String, Order> orders = new TreeMap<String, Order>(Collections.reverseOrder());
     private TreeMap<String, OpenPosition> positions = new TreeMap<String, OpenPosition>(Collections.reverseOrder());
+    private Boolean serverReady;
+    private Boolean login;
     
     @Autowired
     private IRemoteEventManager eventManager = new ClientSocketEventManager();
@@ -399,8 +409,6 @@ public class LtsWsFrame extends JFrame {
         }
 
     };
-    private JTable tblPosition;
-    private JTable tblAccount;
 
     public void init() throws Exception {
         eventProcessor.setHandler(this);
@@ -421,11 +429,12 @@ public class LtsWsFrame extends JFrame {
 
     public void processServerReadyEvent(ServerReadyEvent event) {
         log.debug("Received ServerReadyEvent: " + event.getSender() + ", " + event.isReady());
+        serverReady = event.isReady();
         if (event.isReady()) {
             sendEvent(new UserLoginEvent(getId(), null, user, password, IdGenerator.getInstance().getNextID()));
         }
     }
-
+    
     public void processAccountSnapshotReplyEvent(AccountSnapshotReplyEvent event) {
         log.debug("### Account Snapshot Start ###");
         log.debug("Account: " + event.getKey());
@@ -457,6 +466,7 @@ public class LtsWsFrame extends JFrame {
     public void processUserLoginReplyEvent(UserLoginReplyEvent event) {
         log.debug("User login is " + event.isOk() + ", " + event.getMessage());
 
+        login = event.isOk();
         if (!event.isOk())
             return;
 
@@ -541,6 +551,14 @@ public class LtsWsFrame extends JFrame {
         return user;
     }
 
+	public Boolean isServerReady() {
+		return serverReady;
+	}
+
+	public Boolean isLogin() {
+		return login;
+	}
+
 	/**
 	 * Launch the application.
 	 */
@@ -552,9 +570,60 @@ public class LtsWsFrame extends JFrame {
         ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
 
         // start server
-        LtsWsFrame apiGui = (LtsWsFrame)context.getBean("apiGui");
+        final LtsWsFrame apiGui = (LtsWsFrame)context.getBean("apiGui");
+        ClientSocketService socketService = (ClientSocketService)context.getBean("socketService");
+        LoginDlg dlg = new LoginDlg();
+        
+        dlg.setHost(socketService.getHost());
+        dlg.setPort(""+socketService.getPort());
+        dlg.setUser(apiGui.getUser());
+        dlg.setLogin(false);
+        dlg.setVisible(true);
+        if(!dlg.isLogin())
+        	System.exit(0);
+ 		socketService.setHost(dlg.getHost());
+ 		socketService.setPort(Integer.parseInt(dlg.getPort()));
+ 		apiGui.setUser(dlg.getUser());
+ 		apiGui.setPassword(dlg.getPassword());
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+		 		try {
+	 			apiGui.init();
+		 		} catch (Exception e) {
+		 			log.error(e.getMessage(), e);
+		 		}
+			}
+		});
+		thread.start();
+		
+		// wait for connection successful
+ 		int maxCount = 40;
+ 		int count= 0;
+ 		while(apiGui.isServerReady() == null && count < maxCount) {
+	 		Thread.sleep(100);
+	 		count++;
+ 		}
+
+ 		if(apiGui.isServerReady() == null || !apiGui.isServerReady()) {
+ 			JOptionPane.showMessageDialog(null, "Connection failed");
+			System.exit(-1);
+ 		}
+
+ 		// wait for login successful
+ 		maxCount = 30;
+ 		count= 0;
+ 		while(apiGui.isLogin() == null && count < maxCount) {
+	 		Thread.sleep(100);
+	 		count++;
+ 		}
+ 		if(apiGui.isLogin() == null || !apiGui.isLogin()) {
+ 			JOptionPane.showMessageDialog(null, "Login failed");
+ 			System.exit(-1);
+ 		}
+
  		apiGui.setVisible(true);
-        apiGui.init();
     }
 
 }

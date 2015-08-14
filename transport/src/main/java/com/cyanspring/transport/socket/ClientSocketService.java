@@ -43,7 +43,10 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
 	Channel channel;
 	private List<IClientSocketListener> listeners = 
 			Collections.synchronizedList(new ArrayList<IClientSocketListener>());
+	private int connectionTimeout = 3000;
 	private long retryInterval = 10000;
+	private int maxRetry = 0;
+	private int alreadyRetry = 0;
 
 	private class ClientMessageHandler extends SimpleChannelInboundHandler<String> {
 	    @Override
@@ -132,6 +135,7 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group)
 			.option(ChannelOption.TCP_NODELAY, true)
+			.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeout)
             .channel(NioSocketChannel.class)
              .handler(new ChannelInitializer<SocketChannel>() {
 						@Override
@@ -144,23 +148,31 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
 						}
 					}
 				);
-
+            
             // Start the connection attempt.
             boolean connected = false;
             while(!connected) {
+	            log.info("Trying to connect to: " + host + ", " + port);
 	            try {
 	            	bootstrap.connect(host, port).sync().channel();
 	            	connected = true;
 	            } catch (Exception e) {
 	            	log.debug(e.getMessage());
 	            }
-	            log.info("Trying to connect to: " + host + ", " + port);
-	            if(!connected)
+	            if(!connected) {
+		            if(maxRetry != 0) {
+		            	alreadyRetry++;
+		            	if(alreadyRetry >= maxRetry)
+		            		throw new Exception("Connection time out: " + host + ", " + port);
+		            }
 	            	Thread.sleep(retryInterval);
+	            }
         	}
 			log.info("Connected : " + host + ", " + port);
          } catch(Exception e) {
-            group.shutdownGracefully();
+        	alreadyRetry = 0;
+        	group.shutdownGracefully();
+            throw e;
         }
     }
 
@@ -238,6 +250,22 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
 
 	public void setAutoReconnect(boolean autoReconnect) {
 		this.autoReconnect = autoReconnect;
+	}
+
+	public int getMaxRetry() {
+		return maxRetry;
+	}
+
+	public void setMaxRetry(int maxRetry) {
+		this.maxRetry = maxRetry;
+	}
+
+	public int getConnectionTimeout() {
+		return connectionTimeout;
+	}
+
+	public void setConnectionTimeout(int connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
 	}
 	
 }
