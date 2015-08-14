@@ -76,6 +76,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private RequestMgr requestMgr = new RequestMgr(this);
     private WindDBHandler windDBHandler;
     private IWindFilter windFilter;
+    private IRefDataListener refDataListener;
 
     private void connect() {
         log.debug("Run Netty RefData Adapter");
@@ -125,6 +126,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         switch (datatype) {
             case WindDef.MSG_WINDGW_CONNECTED:
                 log.debug("get WindGW connected" + inputMessageHashMap);
+                if(null != inputMessageHashMap.get(FDTFields.ArrayOfString)){
+                    List<String> marketList = (ArrayList<String>)inputMessageHashMap.get(FDTFields.ArrayOfString);
+                    requestMgr.addReqData(new Object[]{datatype, marketList});
+                }
+                break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
                 CodeTableData codeTableData = null;
@@ -317,6 +323,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void subscribeRefData(IRefDataListener listener) throws Exception {
         init();
+        //record refDataListener
+        this.refDataListener = listener;
         //Wait CodeTable Process
         log.debug("wait codetable process");
         try {

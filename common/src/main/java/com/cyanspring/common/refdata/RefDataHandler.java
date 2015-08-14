@@ -6,6 +6,7 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
@@ -93,6 +94,7 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
                 if(refDataAdaptor!=null){
                     isInit = false;
                     refDataManager.clearRefData();
+                    refDataAdaptor.uninit();
                     refDataAdaptor.subscribeRefData(this);
                 }
                 getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), isInit));
@@ -161,13 +163,17 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             refDataAdaptor.subscribeRefData(this);
             return;
         }
-        refDataAdaptor.uninit();
+//        refDataAdaptor.uninit();
         refDataManager.injectRefDataList(refDataList);
     }
 
     @Override
     public void onRefDataUpdate(List<RefData> refDataList) throws Exception {
-
+        if(refDataList != null && refDataList.size()>0){
+            log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size());
+            RefDataUpdateEvent event = new RefDataUpdateEvent(null,null,refDataList, RefDataUpdateEvent.Action.ADD);
+            eventManager.sendGlobalEvent(event);
+        }
     }
 
     public void setRefDataAdaptor(IRefDataAdaptor refDataAdaptor) {

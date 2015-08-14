@@ -8,6 +8,9 @@ import com.cyanspring.id.Library.Threading.RequestThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RequestMgr implements IReqThreadCallback {
 
     private static final Logger log = LoggerFactory
@@ -53,6 +56,13 @@ public class RequestMgr implements IReqThreadCallback {
                 }
                 if (refData != null) {
                     windRefDataAdapter.getRefDataHashMap().put(codeTableData.getWindCode(), refData);
+                }
+            }
+            break;
+            case WindDef.MSG_WINDGW_CONNECTED: {
+                List<String> stringList = (ArrayList<String>) objMsg;
+                for(String market: stringList){
+                    log.debug("WINDGW Market=" + market);
                 }
             }
             break;
