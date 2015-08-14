@@ -426,9 +426,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
             log.warn("Quotes receive time large than excepted.");
         }
-        if(quoteChecker != null){
-            if(!quoteChecker.checkTickTime(innerQuote.getQuote(), innerQuote.getThrowQuoteTimeInterval()))
+        if(quoteChecker != null) {
+            if (!quoteChecker.checkTickTime(innerQuote.getQuote(), innerQuote.getThrowQuoteTimeInterval())) {
                 printQuoteLog(innerQuote.getQuoteSource(), innerQuote.getContributor(), innerQuote.getQuote(), QuoteLogLevel.TIME_ERROR);
+                return;
+            }
         }
         chkDate = Clock.getInstance().now();
         InnerQuoteEvent event = new InnerQuoteEvent(innerQuote.getSymbol(), null,
