@@ -380,4 +380,6 @@
 
 	<bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/>
 	
+	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner"/>
+
 </beans>
