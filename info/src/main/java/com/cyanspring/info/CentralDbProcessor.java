@@ -476,17 +476,31 @@ public class CentralDbProcessor implements IPlugin
 	{
 		List<GroupInfo> orgList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
 		List<GroupInfo> delList = new ArrayList<GroupInfo>();
+		ArrayList<GroupInfo> sortSource = new ArrayList<GroupInfo>();
+		sortSource.addAll(groups);
 		int index;
+		Collections.sort(sortSource);
 		for (GroupInfo ginfo : orgList)
 		{
-			index = Collections.binarySearch(groups, ginfo);
+			index = Collections.binarySearch(sortSource, ginfo);
 			if (0 > index)
 			{
 				delList.add(ginfo);
 			}
 			else
 			{
-				groups.get(index).setSymbolCount(ginfo.getSymbolCount());
+				sortSource.get(index).setSymbolCount(ginfo.getSymbolCount());
+			}
+		}
+		for (GroupInfo ginfo1 : sortSource)
+		{
+			for (GroupInfo ginfo2 : groups)
+			{
+				if (ginfo1.getGroupID().equals(ginfo2.getGroupID()))
+				{
+					ginfo2.setSymbolCount(ginfo1.getSymbolCount());
+					break;
+				}
 			}
 		}
 		String userEn, groupIDEn, groupNameEn;
@@ -820,11 +834,11 @@ public class CentralDbProcessor implements IPlugin
 		Map<String, List<HistoricalPrice>> historical;
 		if (strType.equals("D") || strType.equals("W") || strType.equals("M"))
 		{
-			historical = getDbhnd().getTotalValue(market, strType, null);
+			historical = getDbhnd().getTotalValue(market, strType, null, historicalDataCount.get(strType));
 		}
 		else
 		{
-			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()));
+			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()), historicalDataCount.get(strType));
 		}
 		HashMap<String, List<HistoricalPrice>> subMap;
 		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())
