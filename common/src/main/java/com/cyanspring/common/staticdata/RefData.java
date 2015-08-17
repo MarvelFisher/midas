@@ -360,12 +360,12 @@ public class RefData extends DataObject {
         this.set(code, RefDataField.CODE.value());
     }
     
-    public String getIndexSession() {
-        return this.get(String.class, RefDataField.INDEX_SESSION.value());
+    public String getIndexSessionType() {
+        return this.get(String.class, RefDataField.INDEX_SESSION_TYPE.value());
     }
 
-    public void setIndexSession(String indexSession) {
-        this.set(indexSession, RefDataField.INDEX_SESSION.value());
+    public void setIndexSessionType(String indexSessionType) {
+        this.set(indexSessionType, RefDataField.INDEX_SESSION_TYPE.value());
     }
     
     @Override
