@@ -501,7 +501,8 @@ public class CentralDbProcessor implements IPlugin
 				boolean isAdded = false;
 				for(RefData refdata : refList)
 				{
-					if (refdata.getExchange() == null) continue;
+					if (refdata.getExchange() == null)
+						continue;
 
 					if (!marketList.contains(refdata.getExchange()))
 					{
@@ -511,21 +512,14 @@ public class CentralDbProcessor implements IPlugin
 					int chefNum = getChefNumber(refdata.getSymbol());
 					SymbolChef chef = SymbolChefList.get(chefNum);
 					isAdded |= chef.createSymbol(refdata, this);
-//					SymbolData symbolData = new SymbolData(refdata.getSymbol(), refdata.getExchange(), this) ;
-					
-//					if (refdata.getExchange() != null && refdata.getExchange().equals("FX"))
-					{
-						outSymbol.println(refdata.getSymbol());
-					}
+
+					outSymbol.println(refdata.getSymbol());
 				}
 				outSymbol.close();
 				if (isAdded)
 				{
-					retrieveChart();
-				}
-				else
-				{
 					sendCentralReady();
+					retrieveChart();
 				}
 				calledRefdata = true;
 			} 
@@ -570,10 +564,10 @@ public class CentralDbProcessor implements IPlugin
 				log.debug("Retrieve Chart thread finish");
 				isRetrieving = false;
 
-				if (isStartup)
-				{
-					sendCentralReady();
-				}
+//				if (isStartup)
+//				{
+//					sendCentralReady();
+//				}
 				for (SymbolChef chef : SymbolChefList)
 				{
 					chef.checkAllChartPrice();
@@ -801,12 +795,15 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public void sendCentralReady()
 	{
-		log.info("SymbolData is ready, send CDPReadyEvent to all connected appServer");
-		for (String appserv : appServIDList)
+		if (isStartup)
 		{
-			respondCentralReady(appserv);
+			log.info("SymbolData is ready, send CDPReadyEvent to all connected appServer");
+			for (String appserv : appServIDList)
+			{
+				respondCentralReady(appserv);
+			}
+			isStartup = false;
 		}
-		isStartup = false;
 	}
 	public void sendRetrieveReady(RetrieveChartEvent event)
 	{
