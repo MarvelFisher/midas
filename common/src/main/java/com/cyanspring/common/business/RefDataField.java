@@ -54,7 +54,8 @@ public enum RefDataField {
 	SPOT_CNNAME("Spot CNName"),
 	SPOT_TWNAME("Spot TWName"),
 	CODE("Code"),
-	ITYPE("IType")
+	ITYPE("IType"),
+	INDEX_SESSION("Index Session")
 	;
 	
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

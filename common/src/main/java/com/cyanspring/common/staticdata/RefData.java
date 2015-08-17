@@ -360,6 +360,14 @@ public class RefData extends DataObject {
         this.set(code, RefDataField.CODE.value());
     }
     
+    public String getIndexSession() {
+        return this.get(String.class, RefDataField.INDEX_SESSION.value());
+    }
+
+    public void setIndexSession(String indexSession) {
+        this.set(indexSession, RefDataField.INDEX_SESSION.value());
+    }
+    
     @Override
     public boolean equals(Object object) {
     	RefData compare = (RefData) object;
@@ -375,4 +383,5 @@ public class RefData extends DataObject {
     public void setIType(String IType) {
         this.set(IType, RefDataField.ITYPE.value());
     }
+    
 }
