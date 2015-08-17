@@ -126,4 +126,7 @@
         <property name= "numTestsPerEvictionRun" ><value>20</value></property>
     </bean>
 
+    <util:list id="refFilterList" value-type="java.lang.String">
+    </util:list>
+
 </beans>

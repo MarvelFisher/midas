@@ -57,6 +57,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private volatile int dbRetryCount = 0;
     private boolean marketDataLog = false; // log control
     private List<String> marketsList = new ArrayList();
+    private List<String> refFilterList;
     protected
     @Resource(name = "refDataStockChinaHashMap")
     HashMap<RefDataField, Object> refDataSCHashMap = new HashMap<>();
@@ -145,6 +146,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
                 if(windFilter != null) {
                     if(!windFilter.codeTableFilter(codeTableData)) return;
+                }
+
+                //filter List process
+                if(refFilterList != null && refFilterList.size() > 0){
+                    if(!refFilterList.contains(codeTableData.getWindCode())) return;
                 }
 
                 //Check WindBaseDB Data
@@ -519,5 +525,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public void setWindFilter(IWindFilter windFilter) {
         this.windFilter = windFilter;
+    }
+    public void setRefFilterList(List<String> refFilterList) {
+        this.refFilterList = refFilterList;
     }
 }

@@ -82,6 +82,7 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
+        <property name="refFilterList" ref="refFilterList"/>
     </bean>
 
     <bean id="refDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindDBHandler">
@@ -90,5 +91,8 @@
     </bean>
 
     <bean id="stockFilter" class="com.cyanspring.adaptor.future.wind.filter.StockFilter"/>
+
+    <util:list id="refFilterList" value-type="java.lang.String">
+    </util:list>
 
 </beans>
