@@ -9,7 +9,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionData {
-	private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private MarketSessionType sessionType;
 	private String start;
 	private String end;
@@ -72,5 +72,15 @@ public class MarketSessionData {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+    
+    public Date getTradeDateByDate() {
+    	return date;
+    }
+    
+    public String getTradeDateByString() {
+    	if (date == null)
+    		return null;
+    	return sdf.format(date);
     }
 }

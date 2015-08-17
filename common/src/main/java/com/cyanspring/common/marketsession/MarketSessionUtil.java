@@ -11,9 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class MarketSessionUtil {
-
-    private Map<String, IMarketSession> cMap;
-    private Map<String, ITradeDate> tMap;
     private Map<String, IMarketSession> sessionMap;
     
     public MarketSessionUtil(List<IMarketSession> sessionList) {
@@ -28,12 +25,21 @@ public class MarketSessionUtil {
     	for(RefData refData : indexList) {
     		SessionPair pair = getSession(refData); 
     		if (pair != null)
-    			ret.put(pair.index, pair.session.getState(date, refData));
+    			ret.put(pair.index, pair.session.getMarketSessionState(date, refData));
     	}
     	return ret;
     }
     
-    private SessionPair getSession(RefData refData) {
+    public Map<String, MarketSessionData> getMarketSession(List<RefData> indexList, Map<String, Date> dateMap) throws Exception {
+    	Map<String, MarketSessionData> ret = new HashMap<>();
+    	for(RefData refData : indexList) {
+    		SessionPair pair = getSession(refData); 
+    		ret.put(pair.index, pair.session.getMarketSessionState(dateMap.get(refData.getSymbol()), refData));
+    	}
+    	return ret;
+    }
+    
+    private SessionPair getSession(RefData refData) throws Exception {
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
     		String key = entry.getKey();
     		if(compareIndex(key, refData.getSymbol()) ||
@@ -41,7 +47,7 @@ public class MarketSessionUtil {
     				compareIndex(key, refData.getSpotENName()))
     			return getPair(refData, entry.getValue());
     	}
-    	return null;
+    	throw new Exception("No session data found");
     }
     
     private boolean compareIndex(String c1, String c2){
@@ -61,52 +67,16 @@ public class MarketSessionUtil {
     	return null;
     }
 
-    public MarketSessionUtil(Map<String, IMarketSession> cMap, Map<String, ITradeDate> tMap) {
-        this.cMap = cMap;
-        this.tMap = tMap;
+    public boolean isHoliday(String symbol, Date date) throws Exception{
+    	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
+    		if (compareIndex(entry.getKey(), symbol)) {
+    			ITradeDate checker = entry.getValue().getTradeDateManager();
+    			return checker.isHoliday(date);
+    		}
+    	}
+    	throw new Exception("Symbol: " + symbol + " not found in the map");
     }
 
-    public MarketSessionData getCurrentMarketSessionType(RefData refData, Date date, boolean searchBySymbol) throws Exception {
-        IMarketSession checker = null;
-        checker = cMap.get(refData.getStrategy());
-        return searchBySymbol ? checker.getState(date, refData) : checker.getState(date, null);
-    }
-
-    public boolean isHoliday(String symbol, Date date) {
-        ITradeDate checker = tMap.get(symbol);
-        return checker.isHoliday(date);
-    }
-
-    public Map<String, MarketSessionData> getSessionDataBySymbol(List<RefData> indexList, Date date) throws Exception {
-        Map<String, MarketSessionData> dataMap = new HashMap<String, MarketSessionData>();
-        for (RefData refData : indexList) {
-            IMarketSession checker = cMap.get(refData.getStrategy());
-            if (checker == null)
-                continue;
-            dataMap.put(refData.getSymbol(), checker.getState(date, refData));
-        }
-        return dataMap;
-    }
-
-    public Map<String, MarketSessionData> getSessionDataByStrategy(List<String> indexList, Date date) throws Exception {
-        Map<String, MarketSessionData> dataMap = new HashMap<String, MarketSessionData>();
-        for (Map.Entry<String, IMarketSession> entry : cMap.entrySet()) {
-            if (indexList == null || indexList.size() == 0)
-                dataMap.put(entry.getKey(), entry.getValue().getState(date, null));
-            else if (indexList.contains(entry.getKey()))
-                dataMap.put(entry.getKey(), entry.getValue().getState(date, null));
-        }
-        return dataMap;
-    }
-
-    public Map<String, Map<String, MarketSession>> getAll() {
-        Map<String, Map<String, MarketSession>> map = new HashMap<String, Map<String, MarketSession>>();
-        for (Map.Entry<String, IMarketSession> entry : cMap.entrySet()){
-            map.put(entry.getKey(), entry.getValue().getStateMap());
-        }
-        return map;
-    }
-    
     private class SessionPair {
     	private String index;
     	private IMarketSession session;
