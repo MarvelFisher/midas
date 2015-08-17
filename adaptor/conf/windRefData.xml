@@ -68,6 +68,10 @@
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
+        <property name="refDataFile" value="refdata/refData_sc.xml"/>
+        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+        <property name="windDBHandler" ref="refDataDBHandler"/>
+        <property name="windFilter" ref="stockFilter"/>
         <property name="marketsList">
             <list>
                 <value>SH</value>
@@ -77,10 +81,7 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refDataFile" value="refdata/refData_sc.xml"/>
-        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
-        <property name="windDBHandler" ref="refDataDBHandler"/>
-        <property name="windFilter" ref="stockFilter"/>
+        <property name="refFilterList" ref="refFilterList"/>
     </bean>
 
     <bean id="refDataAdapterFCI"
@@ -90,6 +91,8 @@
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
+        <property name="refDataFile" value="refdata/refData_sc.xml"/>
+        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
         <property name="marketsList">
             <list>
                 <value>CF</value>
@@ -98,8 +101,7 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refDataFile" value="refdata/refData_sc.xml"/>
-        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+        <property name="refFilterList" ref="refFilterList"/>
     </bean>
 
     <bean id="refDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindDBHandler">
@@ -125,5 +127,8 @@
         <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
         <property name= "numTestsPerEvictionRun" ><value>20</value></property>
     </bean>
+
+    <util:list id="refFilterList" value-type="java.lang.String">
+    </util:list>
 
 </beans>
