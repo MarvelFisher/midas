@@ -118,6 +118,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.EVENT_TYPE_NOT_SUPPORT,getBean(302, "Event type not support"));			
 			addAndCheck(ErrorMessage.ACCOUNT_NOT_MATCH,getBean(303, "Account & user not match"));			
 			addAndCheck(ErrorMessage.LOGIN_BLOCKED,getBean(304, "Can't login, blocked by existing connection"));
+			addAndCheck(ErrorMessage.REACH_MAX_ACCESS_LIMIT,getBean(305, "Reach max access limit"));
 		
 			// order errors start with 400
 			addAndCheck(ErrorMessage.ACTION_CANCELLED,getBean(400, "action is cancelled"));
