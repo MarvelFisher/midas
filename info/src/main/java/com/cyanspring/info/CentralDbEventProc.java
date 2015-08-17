@@ -67,6 +67,11 @@ public class CentralDbEventProc implements Runnable
     
     public void processHistoricalPriceRequestEvent(final HistoricalPriceRequestEvent event, boolean check)
 	{
+    	if (centraldb.isRetrieving)
+    	{
+    		onEvent(event);
+    		return;
+    	}
 		String symbol = event.getSymbol() ;
 		String type   = event.getHistoryType() ;
 		int dataCount = event.getDataCount(); 
