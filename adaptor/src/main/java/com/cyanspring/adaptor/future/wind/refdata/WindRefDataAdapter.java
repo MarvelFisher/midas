@@ -55,6 +55,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private volatile int serverHeartBeatCountAfterCodeTableCome = -1;
     private volatile int serverRetryCount = 0;
     private volatile int dbRetryCount = 0;
+    private volatile boolean channelActiveSend = false;
     private boolean marketDataLog = false; // log control
     private List<String> marketsList = new ArrayList();
     private List<String> refFilterList;
@@ -126,11 +127,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         }
         switch (datatype) {
             case WindDef.MSG_WINDGW_CONNECTED:
-                log.debug("get WindGW connected" + inputMessageHashMap);
-                if(null != inputMessageHashMap.get(FDTFields.ArrayOfString)){
-                    List<String> marketList = (ArrayList<String>)inputMessageHashMap.get(FDTFields.ArrayOfString);
-                    requestMgr.addReqData(new Object[]{datatype, marketList});
-                }
+                log.debug("receive WindGW connected");
+                requestMgr.addReqData(new Object[]{datatype, marketsList});
                 break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
@@ -179,16 +177,18 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
                 //check CodeTable done.
-                if (serverHeartBeatCountAfterCodeTableCome >= 0) {
-                    serverHeartBeatCountAfterCodeTableCome++;
-                }
-                if (serverHeartBeatCountAfterCodeTableCome >= 2) {
-                    codeTableIsProcessEnd = true;
-                }
-                if (serverHeartBeatCountAfterCodeTableCome < 0) {
-                    serverHeartBeatCountAfterCodeTableCome--;
-                    if (serverHeartBeatCountAfterCodeTableCome < -3) {
-                        channelHandlerContext.close();
+                if(channelActiveSend) {
+                    if (serverHeartBeatCountAfterCodeTableCome >= 0) {
+                        serverHeartBeatCountAfterCodeTableCome++;
+                    }
+                    if (serverHeartBeatCountAfterCodeTableCome >= 2) {
+                        codeTableIsProcessEnd = true;
+                    }
+                    if (serverHeartBeatCountAfterCodeTableCome < 0) {
+                        serverHeartBeatCountAfterCodeTableCome--;
+                        if (serverHeartBeatCountAfterCodeTableCome < -3) {
+                            channelHandlerContext.close();
+                        }
                     }
                 }
                 break;
@@ -302,7 +302,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
      *
      * @param market
      */
-    public String sendRequestCodeTable(String market) {
+    public String makeRequestCodeTable(String market) {
         FixStringBuilder fsb = new FixStringBuilder('=', '|');
         fsb.append("API");
         fsb.append("GetCodeTable");
@@ -315,6 +315,24 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         return fsb.toString();
     }
 
+    public void sendRquestCodeTable(boolean channelActiveSend){
+        this.channelActiveSend = channelActiveSend;
+        if (marketsList != null && marketsList.size() > 0) {
+            for (int i = 0; i < marketsList.size(); i++) {
+                this.channelHandlerContext.channel().writeAndFlush(makeRequestCodeTable(marketsList.get(i)));
+            }
+        }
+    }
+
+    public void sendRefDataUpdate(RefData refData){
+        log.info("send RefDataUpdate S=" + refData.getSymbol() + "," + refData.getCNDisplayName());
+        List<RefData> refDataUpdateList = new ArrayList();
+        refDataUpdateList.add(refData);
+        if(refDataListener != null){
+            refDataListener.onRefDataUpdate(refDataUpdateList);
+        }
+    }
+
     @Override
     public void uninit() {
         isAlive = false;
@@ -322,6 +340,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         requestMgr.uninit();
         closeReqThread();
         codeTableIsProcessEnd = false;
+        if(refDataHashMap != null && refDataHashMap.size() > 0){
+            List refDataList = new ArrayList(refDataHashMap.values());
+            RefDataParser.saveListToFile(refDataFile, refDataList);
+        }
         refDataHashMap.clear();
         codeTableDataBySymbolMap.clear();
     }
@@ -385,11 +407,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         serverHeartBeatCountAfterCodeTableCome = -1;
         //Request CodeTable
         log.debug("request codetable");
-        if (marketsList != null && marketsList.size() > 0) {
-            for (int i = 0; i < marketsList.size(); i++) {
-                ctx.channel().writeAndFlush(sendRequestCodeTable(marketsList.get(i)));
-            }
-        }
+        sendRquestCodeTable(true);
     }
 
     @Override
@@ -528,5 +546,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     }
     public void setRefFilterList(List<String> refFilterList) {
         this.refFilterList = refFilterList;
+    }
+
+    public boolean isChannelActiveSend() {
+        return channelActiveSend;
     }
 }
