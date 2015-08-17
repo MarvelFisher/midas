@@ -67,6 +67,9 @@
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
+        <property name="refDataFile" value="refdata/refData_sc.xml"/>
+        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+        <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
         <property name="basicDataSource" ref="refDataSource"/>
         <property name="marketsList">
             <list>
@@ -77,9 +80,7 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refDataFile" value="refdata/refData_sc.xml"/>
-        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
-        <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
+        <property name="refFilterList" ref="refFilterList"/>
     </bean>
 
     <bean id="refDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -98,5 +99,8 @@
         <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
         <property name= "numTestsPerEvictionRun" ><value>20</value></property>
     </bean>
+
+    <util:list id="refFilterList" value-type="java.lang.String">
+    </util:list>
 
 </beans>

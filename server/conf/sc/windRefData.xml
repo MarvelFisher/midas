@@ -82,6 +82,10 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
+        <property name="refFilterList" ref="refFilterList"/>
     </bean>
+
+    <util:list id="refFilterList" value-type="java.lang.String">
+    </util:list>
 
 </beans>
