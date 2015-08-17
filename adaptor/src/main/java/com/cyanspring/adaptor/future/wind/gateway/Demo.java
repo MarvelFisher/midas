@@ -1,6 +1,9 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +53,9 @@ public class Demo {
 	boolean dedicatedWindThread = false;
 	boolean bWholeMarket = false;
 	
-	ConcurrentLinkedQueue<TDF_MSG> transactionQueue = new ConcurrentLinkedQueue<TDF_MSG>();
-	ConcurrentLinkedQueue<TDF_MSG> futureQueue = new ConcurrentLinkedQueue<TDF_MSG>();
-	ConcurrentLinkedQueue<TDF_MSG> quotationQueue = new ConcurrentLinkedQueue<TDF_MSG>();
+	LinkedBlockingQueue<TDF_MSG> transactionQueue = new LinkedBlockingQueue<TDF_MSG>();
+	LinkedBlockingQueue<TDF_MSG> futureQueue = new LinkedBlockingQueue<TDF_MSG>();
+	LinkedBlockingQueue<TDF_MSG> quotationQueue = new LinkedBlockingQueue<TDF_MSG>();
 	Thread trdQuotation,trdTransaction,trdFuture;
 	String[] strMarkets = null;
 	boolean bWindReconnect = false;	
@@ -213,6 +216,10 @@ public class Demo {
 			}
 			*/
 		}
+	}
+	
+	public void Stop() {
+		setQuitFlag(true);
 	}
 	
 	public void setQuitFlag(Boolean para){
@@ -599,36 +606,55 @@ class DataWrite  implements Runnable { //д���������ʱ���
 
 class MsgProcessor implements Runnable {
 	private WindGateway windGateway = null;
-	ConcurrentLinkedQueue<TDF_MSG> queue = null;
+	LinkedBlockingQueue<TDF_MSG> queue = null;
 	boolean quitFlag = false;
+	int maxQueued = 0;
 	private long ticks;
 	
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.MsgProcessor.class);	
 	
-	public MsgProcessor(WindGateway w,ConcurrentLinkedQueue<TDF_MSG> q) {
+	public MsgProcessor(WindGateway w,LinkedBlockingQueue<TDF_MSG> q) {
 		windGateway = w;
 		queue = q;
 		ticks = System.currentTimeMillis();
 	}
 	
 	public void run() {		
-		TDF_MSG msg;
+		//TDF_MSG msg;
+		ArrayList<TDF_MSG> msgList = new ArrayList<TDF_MSG>(); 
+		int cnt;
 		while(!quitFlag) {
 			try {
+				/*
 				do {
-					msg = queue.poll();
+					msg = queue.poll(5,TimeUnit.MILLISECONDS);
 					if(msg != null) {					
 						ProcessMessage(msg);
 					}
 					if(System.currentTimeMillis() >= ticks + 5000) {
 						ticks = System.currentTimeMillis();
-						if(queue.size() > 0) {
-							log.info("Queue Size : " + queue.size());
+						if(queue.size() > maxQueued) {
+							maxQueued = queue.size();
+							log.info("Max Queued : " + maxQueued);
 						}
 					}					
 				} while(msg != null);
-				Thread.sleep(5);
+				*/
+				do {
+					msgList.clear();
+					cnt = queue.drainTo(msgList);
+					if(cnt > 0) {
+						for(TDF_MSG msg : msgList) {
+							ProcessMessage(msg);
+						}
+						if(cnt > maxQueued) {
+							maxQueued = cnt;
+							log.info("Max Queued : " + maxQueued);
+						}						
+					} 					
+				} while(cnt != 0);
+				Thread.sleep(2);				
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);				
 			}

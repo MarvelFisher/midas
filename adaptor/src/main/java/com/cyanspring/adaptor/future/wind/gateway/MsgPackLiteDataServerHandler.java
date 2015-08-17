@@ -228,7 +228,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			registrationGlobal.addTransaction(str);								
 			// 加到 Client 的 Registration
 			if(lst.addTransaction(str) == false) { // 已存在,重複訂閱.								
-				log.info("Re-subscribe transaction , " + ((map == null) ? "Subscribe to server : " : "Send Snapshot : ") + str + " , from : " + channel.remoteAddress().toString());
+				log.info("Re-subscribe transaction , " + ((map == null) ? ( WindGateway.mpCascading ? "Subscribe to server : " : "Wait till market open : ") : "Send Snapshot : ") + str + " , from : " + channel.remoteAddress().toString());
 			}					
 		}   
 		if(lst.MsgPackArrayCount() > 0) {

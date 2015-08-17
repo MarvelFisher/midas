@@ -1279,21 +1279,21 @@ public class WindGateway implements Runnable {
 	
 				if(demo != null) {			
 					dh.Stop();
-					demo.setQuitFlag(true);
+					demo.Stop();
 					t1.join();
 					log.info(t1.getName() + " Terminated.");
 				}
 				
 				if(demoStock != null) {				
 					dhStock.Stop();
-					demoStock.setQuitFlag(true);
+					demoStock.Stop();
 					t1Stock.join();
 					log.info(t1Stock.getName() + " Terminated.");		
 				}
 				
 				if(demoSpare != null) {				
 					dhSpare.Stop();
-					demoSpare.setQuitFlag(true);
+					demoSpare.Stop();
 					t1Spare.join();
 					log.info(t1Spare.getName() + " Terminated.");		
 				}				
