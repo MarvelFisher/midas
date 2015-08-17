@@ -15,12 +15,22 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.cyanspring.common.business.RefDataField;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataUtil {
+	
+	public static String getOnlyChars(String symbol) {
+		Pattern pattern = Pattern.compile("\\D*");
+		Matcher matcher = pattern.matcher(symbol);
+		if (matcher.find())
+			return matcher.group(0);
+		return null;
+	}
 //	private static ArrayList<Double> getVolProfile() {
 //		ArrayList<Double> volProfile;
 //		volProfile = new ArrayList<Double>();

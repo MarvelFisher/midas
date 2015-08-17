@@ -108,6 +108,11 @@ public class MarketSessionChecker implements IMarketSession {
     public Map<String, MarketSession> getStateMap() {
         return stateMap;
     }
+    
+    @Override
+    public String getIndex() {
+        return index;
+    }
 
     private boolean compare(MarketSessionData data, Date compare) throws ParseException {
     	
@@ -137,9 +142,5 @@ public class MarketSessionChecker implements IMarketSession {
 
     public void setIndex(String index) {
         this.index = index;
-    }
-
-    public String getIndex() {
-        return index;
     }
 }
