@@ -70,46 +70,46 @@ public class WindDBHandler {
                             "(\n" +
                             "SELECT \n" +
                             "\tS_INFO_WINDCODE WINDCODE,S_INFO_NAME CNNAME,IFNULL(S_INFO_COMPNAMEENG,'') ENNAME,S_INFO_PINYIN PINYIN,'S' MARKETTYPE\n" +
-                            "FROM WindFileSync.ASHAREDESCRIPTION\n" +
+                            "FROM ASHAREDESCRIPTION\n" +
                             "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') AND S_INFO_DELISTDATE IS NULL AND S_INFO_NAME NOT LIKE '%ST%'\n" +
                             "UNION ALL\n" +
                             "SELECT \n" +
                             "\t(CASE S_INFO_WINDCODE WHEN '000016.SH' THEN '999987.SH' WHEN '000001.SH' THEN '999999.SH' ELSE S_INFO_WINDCODE END) WINDCODE\n" +
                             "\t,S_INFO_NAME,'' ENG,'' PINYIN,'I' AS MARKETTYPE\n" +
-                            "FROM WindFileSync.AINDEXDESCRIPTION\n" +
+                            "FROM AINDEXDESCRIPTION\n" +
                             "WHERE S_INFO_EXCHMARKET IN ('SSE','SZSE') \n" +
                             "AND S_INFO_WINDCODE IN ('399001.SZ','399006.SZ','399905.SZ','000016.SH','399300.SZ','000001.SH')\n" +
                             ") AS MAIN\n" +
                             "LEFT JOIN\n" +
                             "(\n" +
                             "\tSELECT SF.S_INFO_WINDCODE WINDCODE, SF.S_SHARE_FREESHARES*10000 FREESHARES\n" +
-                            "\tFROM WindFileSync.ASHAREFREEFLOAT SF\n" +
+                            "\tFROM ASHAREFREEFLOAT SF\n" +
                             "\tRIGHT JOIN\n" +
                             "\t(\n" +
                             "\tselect MAX(CHANGE_DT1) MAXCDT,S_INFO_WINDCODE WINDCODE\n" +
-                            "\tfrom WindFileSync.ASHAREFREEFLOAT\n" +
+                            "\tfrom ASHAREFREEFLOAT\n" +
                             "\tgroup by S_INFO_WINDCODE\n" +
                             "\t) MAXSF ON SF.S_INFO_WINDCODE = MAXSF.WINDCODE AND SF.CHANGE_DT1 = MAXSF.MAXCDT\n" +
                             ") SFREE ON SFREE.WINDCODE = MAIN.WINDCODE\n" +
                             "LEFT JOIN\n" +
                             "(\n" +
                             "\tSELECT SA.S_INFO_WINDCODE WINDCODE, SA.TOT_SHR*10000 TOTALSHARES\n" +
-                            "\tFROM WindFileSync.ASHARECAPITALIZATION SA\n" +
+                            "\tFROM ASHARECAPITALIZATION SA\n" +
                             "\tRIGHT JOIN\n" +
                             "\t(\n" +
                             "\tselect MAX(CHANGE_DT1) MAXCDT,S_INFO_WINDCODE WINDCODE\n" +
-                            "\tfrom WindFileSync.ASHARECAPITALIZATION\n" +
+                            "\tfrom ASHARECAPITALIZATION\n" +
                             "\tgroup by S_INFO_WINDCODE\n" +
                             "\t) MAXSA ON SA.S_INFO_WINDCODE = MAXSA.WINDCODE AND SA.CHANGE_DT1 = MAXSA.MAXCDT\n" +
                             ") STOTAL ON STOTAL.WINDCODE = MAIN.WINDCODE\n" +
                             "LEFT JOIN\n" +
                             "(\n" +
                             "\tSELECT SEOD.S_INFO_WINDCODE WINDCODE, SEOD.S_VAL_PE PERATIO\n" +
-                            "\tFROM WindFileSync.ASHAREEODDERIVATIVEINDICATOR SEOD\n" +
+                            "\tFROM ASHAREEODDERIVATIVEINDICATOR SEOD\n" +
                             "\tRIGHT JOIN\n" +
                             "\t(\n" +
                             "\tselect MAX(TRADE_DT) MAXDT,S_INFO_WINDCODE WINDCODE\n" +
-                            "\tfrom WindFileSync.ASHAREEODDERIVATIVEINDICATOR\n" +
+                            "\tfrom ASHAREEODDERIVATIVEINDICATOR\n" +
                             "\tgroup by S_INFO_WINDCODE\n" +
                             "\t) MAXSEOD ON SEOD.S_INFO_WINDCODE = MAXSEOD.WINDCODE AND SEOD.TRADE_DT = MAXSEOD.MAXDT\n" +
                             ") SPE ON SPE.WINDCODE = MAIN.WINDCODE\n" +
