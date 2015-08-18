@@ -153,10 +153,10 @@ public class IndexItem implements AutoCloseable {
         quote.setLow((double) indexData.getLowIndex() / 10000);
         quote.setLast((double) indexData.getLastIndex() / 10000);
         quote.setClose((double) indexData.getPrevIndex() / 10000);
-        quote.setTurnover((double) indexData.getTurnover());
+        quote.setTurnover((double) indexData.getTurnover() * 100);
 
         // volume
-        long totalVolume = indexData.getTotalVolume();
+        long totalVolume = indexData.getTotalVolume() * 100;
 
         if (PriceUtils.GreaterThan(totalVolume, item.totalVolume)) {
             item.volume = totalVolume - item.totalVolume;
