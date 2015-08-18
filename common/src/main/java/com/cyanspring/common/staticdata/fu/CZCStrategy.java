@@ -1,0 +1,64 @@
+package com.cyanspring.common.staticdata.fu;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import com.cyanspring.common.staticdata.RefData;
+
+public class CZCStrategy extends AbstractRefDataStrategy {
+	
+	protected static final Logger log = LoggerFactory.getLogger(CZCStrategy.class);
+	
+	@Override
+	public void init(Calendar cal, RefData template) {
+		super.init(cal, template);
+	}
+
+    @Override
+    public void updateRefData(RefData refData) {
+		
+		try {
+			if( null == getTradeDateManager()){
+				log.info("refData:{} - tradeDateManager is null",refData.getCNDisplayName());
+				return;
+			}
+			
+			String combineCnName = refData.getCNDisplayName();
+			setTemplateData(refData);
+			if(refData.getCategory().equals("TC")){//動力煤
+				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),5));
+			}else{
+				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),10));
+			}
+			refData.setIndexSessionType(getIndexSessionType(refData));
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+    }
+
+	private String calSettlementDate(String symbol,Calendar cal,int dayInMonth){
+		
+		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
+		Date date = cal.getTime();
+		if( null == getTradeDateManager()){
+			log.warn("symbol:{} can't find tradeDateManager!",symbol);
+			return "";
+		}
+		
+		date = getTradeDateManager().preTradeDate(date);
+		for(int i=0 ; i < dayInMonth ; i++){
+			date = getTradeDateManager().nextTradeDate(date);
+		}
+		
+		return getSettlementDateFormat().format(date);
+	}
+    
+    @Override
+    public void setRequireData(Object... objects) {
+    	super.setRequireData(objects);
+    }
+}

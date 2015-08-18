@@ -1,11 +1,7 @@
 package com.cyanspring.common.staticdata;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -17,37 +13,37 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.Default;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.staticdata.fu.AbstractRefDataStrategy;
+import com.cyanspring.common.staticdata.fu.IType;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class RefDataFactory extends RefDataService {
-	
+public class StockRefDataManager extends RefDataService {
+
     protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
-    List<RefData> refDataList;
+    private List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
+    
+    //Futures
     private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();
     private MarketSessionUtil marketSessionUtil;
     private String strategyPack = "com.cyanspring.common.staticdata.fu";
     private String refDataTemplatePath;
     private List<RefData> refDataTemplateList;
     private Map<String,RefData> refDataTemplateMap = new HashMap<String,RefData>();
-     
+    
 	@Autowired
 	TradeDateManager tradeDateManager;
     
     @SuppressWarnings("unchecked")
     @Override
     public void init() throws Exception {
-    	
-        log.info("initialising with " + refDataTemplatePath);     
+        log.info("initialising with future template" + refDataTemplatePath);
         if(StringUtils.hasText(refDataTemplatePath)){
         	
-            log.info("read refdata template:{}",refDataTemplatePath);
             File templateFile = new File(refDataTemplatePath);
             if (templateFile.exists()) {
             	refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
@@ -111,9 +107,86 @@ public class RefDataFactory extends RefDataService {
 			return category;
 		}
 	}
-    
+	
 	private void updateRefData(Calendar cal, RefData refData) {
-		
+		String iType = refData.getIType();
+		if(IType.isFuture(iType)){
+			updateFutureRefData(cal,refData);
+		}else if(IType.isStock(iType)){
+			updateStockRefData(cal,refData);
+		}else{
+			log.info("none support type:{} , {}",iType,refData.getRefSymbol());
+		}
+	}
+
+	private void updateStockRefData(Calendar cal, RefData refData) {
+		updateMarginRate(refData);
+	}
+
+	@Override
+    public void uninit() {
+        log.info("uninitialising");
+        strategyMap.clear();
+    }
+
+    @Override
+    public RefData getRefData(String symbol) {
+        for (RefData refData : refDataList) {
+            if (refData.getSymbol().equals(symbol))
+                return refData;
+        }
+        return null;
+    }
+
+    @Override
+    public List<RefData> getRefDataList() {
+        return refDataList;
+    }
+
+    @Override
+    public void injectRefDataList(List<RefData> refDataList) {
+        this.refDataList = refDataList;
+    }
+
+    @Override
+    public void clearRefData() {
+        refDataList.clear();
+    }
+
+    public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
+        this.marketSessionUtil = marketSessionUtil;
+    }
+
+    public void setStrategyPack(String strategyPack) {
+        this.strategyPack = strategyPack;
+    }
+
+	@Override
+	public RefData update(RefData refData, String tradeDate) throws Exception {
+		Calendar cal = Calendar.getInstance();
+        cal.setTime(sdf.parse(tradeDate));
+        updateRefData(cal, refData);
+        refDataList.add(refData);
+		return refData;
+	}
+
+	public String getRefDataTemplatePath() {
+		return refDataTemplatePath;
+	}
+
+	public void setRefDataTemplatePath(String refDataTemplatePath) {
+		this.refDataTemplatePath = refDataTemplatePath;
+	}
+
+	public TradeDateManager getTradeDateManager() {
+		return tradeDateManager;
+	}
+
+	public void setTradeDateManager(TradeDateManager tradeDateManager) {
+		this.tradeDateManager = tradeDateManager;
+	}
+	
+	private void updateFutureRefData(Calendar cal, RefData refData){
 		AbstractRefDataStrategy strategy;
         RefData template = searchRefDataTemplate(refData);
         if( null == template){
@@ -157,81 +230,4 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal,template);
 		strategy.updateRefData(refData);
 	}
-
-    @Override
-    public void uninit() {
-        log.info("uninitialising");
-        strategyMap.clear();
-    }
-
-    @Override
-    public RefData getRefData(String symbol) {
-        for (RefData refData : refDataList) {
-            if (refData.getSymbol().equals(symbol))
-                return refData;
-        }
-        return null;
-    }
-
-    @Override
-    public List<RefData> getRefDataList() {
-        return refDataList;
-    }
-
-    @Override
-    public void injectRefDataList(List<RefData> refDataList) {
-        this.refDataList = refDataList;
-    }
-
-    @Override
-    public void clearRefData() {
-        refDataList.clear();
-    }
-
-    private void saveRefDataToFile(String path, List<RefData> list) {
-        File file = new File(path);
-        try {
-            file.createNewFile();
-            FileOutputStream os = new FileOutputStream(file);
-            OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
-            xstream.toXML(list, writer);
-            os.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
-        this.marketSessionUtil = marketSessionUtil;
-    }
-
-    public void setStrategyPack(String strategyPack) {
-        this.strategyPack = strategyPack;
-    }
-
-	@Override
-	public RefData update(RefData refData, String tradeDate) throws Exception {
-		Calendar cal = Calendar.getInstance();
-        cal.setTime(sdf.parse(tradeDate));
-        updateRefData(cal, refData);
-        refDataList.add(refData);
-		return refData;
-	}
-
-	public String getRefDataTemplatePath() {
-		return refDataTemplatePath;
-	}
-
-	public void setRefDataTemplatePath(String refDataTemplatePath) {
-		this.refDataTemplatePath = refDataTemplatePath;
-	}
-
-	public TradeDateManager getTradeDateManager() {
-		return tradeDateManager;
-	}
-
-	public void setTradeDateManager(TradeDateManager tradeDateManager) {
-		this.tradeDateManager = tradeDateManager;
-	}
-
 }
