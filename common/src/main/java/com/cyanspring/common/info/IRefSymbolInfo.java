@@ -74,6 +74,22 @@ public abstract class IRefSymbolInfo {
 		}
 		return nCount;
 	}
+	public void delByRefData(List<RefData> refdataList)
+	{
+		SymbolInfo symbolinfo = null;
+		int index = 0;
+		for (RefData refdata : refdataList)
+		{
+			if (refdata.getExchange() == null || refdata.getSymbol() == null) continue;
+			
+			symbolinfo = new SymbolInfo(serverMarket, refdata.getSymbol());
+			index = Collections.binarySearch(refSymbolInfo, symbolinfo);
+			if (index >= 0)
+			{
+				refSymbolInfo.remove(symbolinfo);
+			}
+		}
+	}
 	public List<SymbolInfo> getAllSymbolInfo(String market) 
 	{
 		ArrayList<SymbolInfo> infoList = new ArrayList<SymbolInfo>();
