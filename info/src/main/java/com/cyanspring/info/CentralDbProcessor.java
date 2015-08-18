@@ -573,47 +573,46 @@ public class CentralDbProcessor implements IPlugin
 			log.warn("refData is already read");
 			return ;
 		}
-		synchronized(this)
+		PrintWriter outSymbol;
+		ArrayList<String> marketList = new ArrayList<String>();
+		try
 		{
-			PrintWriter outSymbol;
-			ArrayList<String> marketList = new ArrayList<String>();
-			try 
+			outSymbol = new PrintWriter(new BufferedWriter(new FileWriter(
+					serverMarket)));
+			defaultSymbolInfo.clear();
+			getRefSymbolInfo().reset();
+			getRefSymbolInfo().setByRefData(refList);
+			defaultSymbolInfo = (ArrayList<SymbolInfo>) getRefSymbolInfo()
+					.getBySymbolStrings(preSubscriptionList);
+			boolean isAdded = false;
+			for (RefData refdata : refList)
 			{
-				outSymbol = new PrintWriter(new BufferedWriter(new FileWriter(serverMarket)));
-				defaultSymbolInfo.clear();
-				getRefSymbolInfo().reset();
-				getRefSymbolInfo().setByRefData(refList);
-				defaultSymbolInfo = (ArrayList<SymbolInfo>)getRefSymbolInfo().getBySymbolStrings(preSubscriptionList);
-				boolean isAdded = false;
-				for(RefData refdata : refList)
-				{
-					if (refdata.getExchange() == null)
-						continue;
+				if (refdata.getExchange() == null)
+					continue;
 
-					if (!marketList.contains(refdata.getExchange()))
-					{
-						getDbhnd().checkMarketExist(refdata.getExchange());
-						marketList.add(refdata.getExchange());
-					}
-					int chefNum = getChefNumber(refdata.getSymbol());
-					SymbolChef chef = SymbolChefList.get(chefNum);
-					isAdded |= chef.createSymbol(refdata, this);
-
-					outSymbol.println(refdata.getSymbol());
-				}
-				outSymbol.close();
-				if (isAdded)
+				if (!marketList.contains(refdata.getExchange()))
 				{
-					sendCentralReady();
-					retrieveChart();
+					getDbhnd().checkMarketExist(refdata.getExchange());
+					marketList.add(refdata.getExchange());
 				}
-				calledRefdata = true;
-			} 
-			catch (IOException e) 
-			{
-				log.error(e.getMessage(), e);
-				isStartup = false;
+				int chefNum = getChefNumber(refdata.getSymbol());
+				SymbolChef chef = SymbolChefList.get(chefNum);
+				isAdded |= chef.createSymbol(refdata, this);
+
+				outSymbol.println(refdata.getSymbol());
 			}
+			outSymbol.close();
+			if (isAdded)
+			{
+				sendCentralReady();
+				retrieveChart();
+			}
+			calledRefdata = true;
+		}
+		catch (IOException e)
+		{
+			log.error(e.getMessage(), e);
+			isStartup = false;
 		}
 		for (SymbolChef chef : SymbolChefList)
 		{
@@ -854,15 +853,12 @@ public class CentralDbProcessor implements IPlugin
 	public void resetStatement()
 	{
 		isStartup = true;
-		synchronized(this)
-		{
-			this.clearSymbolChefData();
-			this.quoteBuffer.clear();
-			getRefSymbolInfo().reset();
-			chartCacheProcessor.clear();
-			calledRefdata = false;
-			setCurHisThread(0);
-		}
+		this.clearSymbolChefData();
+		this.quoteBuffer.clear();
+		getRefSymbolInfo().reset();
+		chartCacheProcessor.clear();
+		calledRefdata = false;
+		setCurHisThread(0);
 	}
 	
 	public void setSessionType(MarketSessionType sessionType, String market) 
