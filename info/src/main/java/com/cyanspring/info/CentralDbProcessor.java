@@ -49,6 +49,7 @@ import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.GroupInfo;
@@ -624,18 +625,25 @@ public class CentralDbProcessor implements IPlugin
 	public void onUpdateRefData(RefDataUpdateEvent event)
 	{
 		log.info("Update refData start");
-		List<RefData> refList = event.getRefDataList();
-		int nCount = getRefSymbolInfo().setByRefData(refList);
-		if (nCount == 0)
+		if (event.getAction() == Action.ADD)
 		{
-			return;
+			List<RefData> refList = event.getRefDataList();
+			int nCount = getRefSymbolInfo().setByRefData(refList);
+			if (nCount == 0)
+			{
+				return;
+			}
+			for(RefData refdata : refList)
+			{
+				if (refdata.getExchange() == null) continue;
+				int chefNum = getChefNumber(refdata.getSymbol());
+				SymbolChef chef = SymbolChefList.get(chefNum);
+				chef.createSymbol(refdata, this);
+			}
 		}
-		for(RefData refdata : refList)
+		else if (event.getAction() == Action.DEL)
 		{
-			if (refdata.getExchange() == null) continue;
-			int chefNum = getChefNumber(refdata.getSymbol());
-			SymbolChef chef = SymbolChefList.get(chefNum);
-			chef.createSymbol(refdata, this);
+			getRefSymbolInfo().delByRefData(event.getRefDataList());
 		}
 		log.info("Update refData finish");
 	}
