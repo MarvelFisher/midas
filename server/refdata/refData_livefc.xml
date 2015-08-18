@@ -367,7 +367,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>DEFAULT</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -507,7 +507,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>DEFAULT</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -927,7 +927,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>DEFAULT</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1067,7 +1067,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>DEFAULT</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1487,7 +1487,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>DEFAULT</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1627,7 +1627,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>DEFAULT</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
