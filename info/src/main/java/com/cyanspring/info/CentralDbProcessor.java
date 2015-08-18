@@ -603,7 +603,7 @@ public class CentralDbProcessor implements IPlugin
 				outSymbol.println(refdata.getSymbol());
 			}
 			outSymbol.close();
-			if (isAdded)
+			if (isAdded || isStartup)
 			{
 				sendCentralReady();
 				retrieveChart();
