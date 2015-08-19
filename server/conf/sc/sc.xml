@@ -303,4 +303,7 @@
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
+	
+	<bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/>
+	
 </beans>

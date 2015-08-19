@@ -167,10 +167,10 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
     }
 
     @Override
-    public void onRefDataUpdate(List<RefData> refDataList) {
+    public void onRefDataUpdate(List<RefData> refDataList, RefDataUpdateEvent.Action action) {
         if(refDataList != null && refDataList.size()>0){
             log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size());
-            RefDataUpdateEvent event = new RefDataUpdateEvent(null,null,refDataList, RefDataUpdateEvent.Action.ADD);
+            RefDataUpdateEvent event = new RefDataUpdateEvent(null,null,refDataList, action);
             try {
                 eventManager.sendGlobalEvent(event);
             }catch(Exception e){
