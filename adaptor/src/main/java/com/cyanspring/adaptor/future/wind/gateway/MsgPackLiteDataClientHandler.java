@@ -143,8 +143,11 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			// 沒有 packet type , 就無法處理.
 			if(in.containsKey(FDTFields.PacketType) == false) {
 				return;
-			}
-			int iPacketType = (int)in.get(FDTFields.PacketType);
+			}				
+
+			int iPacketType = ((Number)in.get(FDTFields.PacketType)).intValue();
+			
+
 			switch(iPacketType) {
 			case FDTFields.PacketArray :
 				@SuppressWarnings("unchecked")

@@ -1431,6 +1431,7 @@ class ProcessMsgPackLiteData implements Runnable {
 	
 	public void run() {		
 		Object msg;
+		int maxq = 0;
 		while(!quitFlag) {
 			try {
 				do {
@@ -1440,8 +1441,9 @@ class ProcessMsgPackLiteData implements Runnable {
 					}
 					if(System.currentTimeMillis() >= ticks + 5000) {
 						ticks = System.currentTimeMillis();
-						if(queue.size() > 0) {
-							log.info("Queue Size : " + queue.size());
+						if(queue.size() > maxq) {
+							log.info("Max Queue Size : " + queue.size());
+							maxq = queue.size();
 						}
 					}					
 				} while(msg != null);
