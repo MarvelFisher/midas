@@ -417,6 +417,10 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else if (type == PriceHighLowType.W52)
 		{
+			if (getMapHistorical().get("W") == null
+					|| PriceUtils.isZero(this.getD52WHigh())
+					|| PriceUtils.isZero(this.getD52WLow()))
+				get52WHighLow();
 			phl.setHigh(this.getD52WHigh());
 			phl.setLow(this.getD52WLow());
 			phl.setSymbol(this.getStrSymbol());
@@ -449,7 +453,8 @@ public class SymbolData implements Comparable<SymbolData>
     		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
     	}
 		centralDB.getDbhnd().get52WHighLow(this, market, symbol);
-		log.debug(strSymbol + " get52WHighLow() end");
+		log.debug(strSymbol + " get52WHighLow() end" + 
+				String.format(" H:%.5f L:%.5f", getD52WHigh(), getD52WLow()));
 		return ;
 	}
 	
@@ -1097,10 +1102,17 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void set52WHLByMapHistorical()
 	{
+		log.debug(strSymbol + " set52WHLByMapHistorical() start");
 		List<HistoricalPrice> listPrice = getMapHistorical().get("W");
 		if (listPrice == null)
 		{
-			return;
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, (-1) * (centralDB.getHistoricalDataPeriod().get("W") + 30));
+			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
+			listPrice = centralDB.getDbhnd().getCountsValue(
+					market, "W", strSymbol, centralDB.getHistoricalDataCount().get("W"), sdf.format(cal.getTime()), true);
+			if (listPrice == null)
+				return;
 		}
 		Collections.sort(listPrice);
 		int head = (listPrice.size() > 52) ? (listPrice.size() - 52) : 0;
@@ -1120,6 +1132,8 @@ public class SymbolData implements Comparable<SymbolData>
 				setD52WLow(dLow) ;
 			}
 		}
+		log.debug(strSymbol + " set52WHLByMapHistorical() end" + 
+				String.format(" H:%.5f L:%.5f", getD52WHigh(), getD52WLow()));
 	}
 	
 }

@@ -684,6 +684,7 @@ public class CentralDbProcessor implements IPlugin
 				{
 					chef.checkAllChartPrice();
 				}
+				log.debug("Retrieve Chart thread finish");
 			}
 		});
 		retrieveThread.setName("CDP_Retrieve_Chart");
@@ -721,9 +722,10 @@ public class CentralDbProcessor implements IPlugin
 				{
 					chef.checkAllChartPrice();
 				}
+				log.debug("Retrieve Chart thread finish");
 			}
 		});
-		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.setName("CDP_Retrieve_Event");
 		retrieveThread.start();
 	}
 	
@@ -749,9 +751,10 @@ public class CentralDbProcessor implements IPlugin
 				{
 					chef.checkAllChartPrice();
 				}
+				log.debug("Retrieve Chart thread finish");
 			}
 		});
-		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.setName("CDP_Retrieve_Event");
 		retrieveThread.start();
 	}
 	
