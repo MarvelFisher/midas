@@ -65,7 +65,7 @@ public class CommissionManager implements ICommissionManager{
 		
 		double price = commission * value;
 		if (PriceUtils.EqualLessThan(price, minCommission))
-			return refData.getMinimalCommissionFee();
+			return minCommission;
 		else
 			return Math.ceil(price);
 	}

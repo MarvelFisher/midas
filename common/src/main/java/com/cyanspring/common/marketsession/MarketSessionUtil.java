@@ -13,8 +13,10 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class MarketSessionUtil {
+
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
     private Map<String, IMarketSession> sessionMap;
     
@@ -37,6 +39,16 @@ public class MarketSessionUtil {
     public MarketSessionData getMarketSession(RefData refData, Date date) throws Exception {
     	SessionPair pair = getSession(refData);
     	return pair.session.getMarketSessionState(date, refData);
+    }
+    
+    public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
+    	
+    	String category = RefDataUtil.getCategory(symbol);
+    	if(!StringUtils.hasText(category))
+    		return null;
+    	
+    	MarketSessionData data = this.getMarketSession().get(category);
+    	return data;
     }
     
     public Map<String, MarketSessionData> getMarketSession(List<RefData> indexList, Date date) throws Exception {

@@ -7,6 +7,7 @@ import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -561,22 +562,15 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         //RefDataEvent
         if (object instanceof RefDataEvent) {
             log.debug("Wind Adapter Receive RefDataEvent");
-            String mainMarket = "S"; //default main market
             RefDataEvent refDataEvent = (RefDataEvent) object;
-            for (RefData refData : refDataEvent.getRefDataList()) {
-                if ("S".equals(refData.getCommodity())) {
-                    marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
-                    mainMarket = "S";
-                }
-                if ("F".equals(refData.getCommodity())) {
-                    marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
-                    mainMarket = "F";
-                }
-                if ("I".equals(refData.getCommodity())) {
-                    if ("S".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
-                    if ("F".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
-                }
-            }
+            inputRefDataList(refDataEvent.getRefDataList());
+        }
+
+        //RefDataUpdateEvent
+        if(object instanceof RefDataUpdateEvent){
+            log.debug("Wind Adapter Receive RefDataUpdateEvent");
+            RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) object;
+            inputRefDataList(refDataUpdateEvent.getRefDataList());
         }
 
         //IndexSessionEvent
@@ -611,6 +605,24 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 bigSessionIsClose = true;
                 bigSessionCloseDate = marketSessionEvent.getStart();
                 printDataTimeStat();
+            }
+        }
+    }
+
+    public void inputRefDataList(List<RefData> refDataList){
+        String mainMarket = "S"; //default main market
+        for (RefData refData : refDataList) {
+            if ("S".equals(refData.getCommodity())) {
+                marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
+                mainMarket = "S";
+            }
+            if ("F".equals(refData.getCommodity())) {
+                marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
+                mainMarket = "F";
+            }
+            if ("I".equals(refData.getCommodity())) {
+                if ("S".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getStrategy());
+                if ("F".equals(mainMarket)) marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
             }
         }
     }

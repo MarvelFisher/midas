@@ -29,7 +29,7 @@ import cn.com.wind.td.tdf.TDF_PROXY_TYPE;
 
 public class Demo {
 	private final  boolean outputToScreen = true;  
-	/***********************configuration***************************************/
+	/***********************c***************************************/
 	private String openMarket = ""; 
 	private final int openData = 0;
 	private final int openTime = 0;
@@ -61,6 +61,8 @@ public class Demo {
 	boolean bWindReconnect = false;	
 	protected boolean quitFlag = true;
 	
+	MsgProcessor mpQuotation , mpFuture , mpTransaction;
+	
 	
 	public int getPort() {
 		return this.port;
@@ -83,9 +85,14 @@ public class Demo {
 
 		
 		if(d) {
-			trdQuotation = new Thread( new MsgProcessor(windGateway,quotationQueue),"ProcessQuotation");			
-			trdFuture    = new Thread( new MsgProcessor(windGateway,futureQueue),"ProcessFutures");
-			trdTransaction = new Thread( new MsgProcessor(windGateway,transactionQueue),"ProcessTransaction");
+			mpQuotation = new MsgProcessor(windGateway,quotationQueue);
+			mpFuture = new MsgProcessor(windGateway,futureQueue);
+			mpTransaction = new MsgProcessor(windGateway,transactionQueue);
+			
+			trdQuotation = new Thread( mpQuotation,"ProcessQuotation");			
+			trdFuture    = new Thread( mpFuture,"ProcessFutures");
+			trdTransaction = new Thread( mpTransaction,"ProcessTransaction");
+			
 			trdQuotation.start();
 			trdFuture.start();
 			trdTransaction.start();
@@ -220,6 +227,9 @@ public class Demo {
 	
 	public void Stop() {
 		setQuitFlag(true);
+		mpQuotation.Stop();
+		mpFuture.Stop();
+		mpTransaction.Stop();
 	}
 	
 	public void setQuitFlag(Boolean para){
@@ -544,6 +554,7 @@ class DataHandler  implements Runnable {
 	
 	public void Stop() {
 		this.quitFlag = true;
+		demo.quitFlag = true;
 	}
 	
 	public void run ( ) {
@@ -620,6 +631,10 @@ class MsgProcessor implements Runnable {
 		ticks = System.currentTimeMillis();
 	}
 	
+	public void Stop() {
+		quitFlag = true;
+	}
+	
 	public void run() {		
 		//TDF_MSG msg;
 		ArrayList<TDF_MSG> msgList = new ArrayList<TDF_MSG>(); 
@@ -641,9 +656,10 @@ class MsgProcessor implements Runnable {
 					}					
 				} while(msg != null);
 				*/
-				do {
+				//do {
 					msgList.clear();
-					cnt = queue.drainTo(msgList);
+					msgList.add(queue.take());
+					cnt = queue.drainTo(msgList) + 1;
 					if(cnt > 0) {
 						for(TDF_MSG msg : msgList) {
 							ProcessMessage(msg);
@@ -653,8 +669,8 @@ class MsgProcessor implements Runnable {
 							log.info("Max Queued : " + maxQueued);
 						}						
 					} 					
-				} while(cnt != 0);
-				Thread.sleep(2);				
+				//} while(cnt != 0);
+				//Thread.sleep(2);				
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);				
 			}

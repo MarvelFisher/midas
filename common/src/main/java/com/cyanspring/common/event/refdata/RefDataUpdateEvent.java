@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class RefDataUpdateEvent extends RemoteAsyncEvent {
     public enum Action{
-        ADD,DEL
+        ADD,DEL,MOD
     }
     private List<RefData> refDataList;
     private Action action;

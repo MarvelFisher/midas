@@ -13,6 +13,7 @@
 		<property name="eventClass">
 			<value>com.cyanspring.common.server.event.ServerShutdownEvent</value>
 		</property>
+		<property name="globalEvent" value="false"/>
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
