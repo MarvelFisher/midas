@@ -24,7 +24,7 @@ import com.cyanspring.common.event.system.DuplicateSystemIdEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.marketdata.MarketDataReceiver;
-import com.cyanspring.common.refdata.RefDataHandler;
+import com.cyanspring.common.refdata.FileRefDataHandler;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.event.AsyncEventProcessor;
@@ -73,7 +73,7 @@ public class InfoServer
 	
 	private IndexMarketSessionManager indexMarketSessionManager = null;
 	private MarketSessionManager marketSessionManager = null;
-    private RefDataHandler refDataHandler = null;
+    private FileRefDataHandler refDataHandler = null;
 	
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private List<IPlugin> plugins;
@@ -351,10 +351,10 @@ public class InfoServer
 	public void setMarketSessionManager(MarketSessionManager marketSessionManager) {
 		this.marketSessionManager = marketSessionManager;
 	}
-	public RefDataHandler getRefDataHandler() {
+	public FileRefDataHandler getRefDataHandler() {
 		return refDataHandler;
 	}
-	public void setRefDataHandler(RefDataHandler refDataHandler) {
+	public void setRefDataHandler(FileRefDataHandler refDataHandler) {
 		this.refDataHandler = refDataHandler;
 	}
 	public IRemoteEventManager getEventManagerSA() {
