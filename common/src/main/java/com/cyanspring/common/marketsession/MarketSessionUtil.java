@@ -41,7 +41,7 @@ public class MarketSessionUtil {
     	return pair.session.getMarketSessionState(date, refData);
     }
     
-    public MarketSessionData getMarketSession(String symbol,Date date) throws Exception{
+    public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
     	
     	String category = RefDataUtil.getCategory(symbol);
     	if(!StringUtils.hasText(category))
