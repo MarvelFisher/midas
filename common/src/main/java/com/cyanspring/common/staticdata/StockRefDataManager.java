@@ -230,4 +230,16 @@ public class StockRefDataManager extends RefDataService {
 		strategy.init(cal,template);
 		strategy.updateRefData(refData);
 	}
+
+	@Override
+	public List<RefData> update(String index, String tradeDate) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean remove(RefData refData) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
