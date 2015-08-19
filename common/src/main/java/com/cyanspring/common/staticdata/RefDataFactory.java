@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -180,7 +181,9 @@ public class RefDataFactory extends RefDataService {
 
     @Override
     public void injectRefDataList(List<RefData> refDataList) {
-        this.refDataList = refDataList;
+    	if(this.refDataList == null)
+    		this.refDataList = new ArrayList<>();
+        this.refDataList.addAll(refDataList);
     }
 
     @Override
@@ -214,6 +217,8 @@ public class RefDataFactory extends RefDataService {
 		Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
         updateRefData(cal, refData);
+        if (refDataList.contains(refData))
+        	refDataList.remove(refData);
         refDataList.add(refData);
 		return refData;
 	}
@@ -232,6 +237,18 @@ public class RefDataFactory extends RefDataService {
 
 	public void setTradeDateManager(TradeDateManager tradeDateManager) {
 		this.tradeDateManager = tradeDateManager;
+	}
+
+	@Override
+	public List<RefData> update(String index, String tradeDate) throws Exception {
+		List<RefData> ret = new ArrayList<>();
+		for (RefData refData : refDataList) {
+			if (index.equals(refData.getCategory())) {
+				refData = update(refData, tradeDate);
+				ret.add(refData);
+			}
+		}
+		return ret;
 	}
 
 }

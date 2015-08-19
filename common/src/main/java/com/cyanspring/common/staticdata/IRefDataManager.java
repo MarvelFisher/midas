@@ -5,6 +5,7 @@ import java.util.List;
 public interface IRefDataManager {
 	public void init() throws Exception;
     public boolean updateAll(String tradeDate) throws Exception;
+    public List<RefData> update(String index, String tradeDate) throws Exception;
     public RefData update(RefData refData, String tradeDate) throws Exception;
 	public RefData getRefData(String symbol);
 	public String getRefDataFile();

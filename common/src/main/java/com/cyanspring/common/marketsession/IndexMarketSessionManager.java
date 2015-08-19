@@ -10,6 +10,7 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.TimeUtil;
 
 import org.slf4j.Logger;
@@ -69,28 +70,30 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
 		try {
 			if (checkSessionAndRefData()) {
-				eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
+				eventManager
+						.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
 				return;
 			}
 
 			if (event.getIndexList() == null) {
-				eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), sessionDataMap, false));
+				eventManager.sendLocalOrRemoteEvent(
+						new IndexSessionEvent(event.getKey(), event.getSender(), sessionDataMap, false));
 				return;
 			}
-			
+
 			List<RefData> refDataList = new ArrayList<>();
-			for (String index : event.getIndexList()) 
+			for (String index : event.getIndexList())
 				refDataList.add(refDataMap.get(index));
-		
-			Map<String, MarketSessionData> send = new HashMap<>();			
-			for (RefData refData : refDataList){
+
+			Map<String, MarketSessionData> send = new HashMap<>();
+			for (RefData refData : refDataList) {
 				MarketSessionData data = sessionDataMap.get(refData.getSymbol());
 				if (data == null) {
 					log.error("Request data not complete, index: {}", refData.getSymbol());
 				}
 				send.put(refData.getSymbol(), data);
 			}
-			
+
 			eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), send, false));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -99,7 +102,8 @@ public class IndexMarketSessionManager implements IPlugin {
 
 	public void processAllIndexSessionRequestEvent(AllIndexSessionRequestEvent event) {
 		try {
-			eventManager.sendLocalOrRemoteEvent(new AllIndexSessionEvent(event.getKey(), event.getSender(), sessionDataMap));
+			eventManager.sendLocalOrRemoteEvent(
+					new AllIndexSessionEvent(event.getKey(), event.getSender(), sessionDataMap));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -108,9 +112,30 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processRefDataEvent(RefDataEvent event) {
 		if (!event.isOk())
 			return;
-		refDataMap = new HashMap<String, RefData>();
-		for (RefData refData : event.getRefDataList()) {
-			refDataMap.put(refData.getRefSymbol(), refData);
+		if (refDataMap == null)
+			refDataMap = new HashMap<String, RefData>();
+
+		List<RefData> refDataList = event.getRefDataList();
+		Map<String, MarketSessionData> send = new HashMap<>();
+		try {
+			for (RefData refData : refDataList) {
+				refDataMap.put(refData.getSymbol(), refData);
+				if (refData.getIndexSessionType().equals(IndexSessionType.SETTLEMENT.toString())) {
+					MarketSessionData session = marketSessionUtil.getMarketSession(refData, Clock.getInstance().now());
+					send.put(refData.getSymbol(), session);
+				} else {
+					MarketSessionData session = send.get(refData.getCategory());
+					if (session == null) {
+						session = marketSessionUtil.getMarketSession(refData, Clock.getInstance().now());
+						send.put(refData.getCategory(), session);
+					}
+				}
+			}
+
+			if (send.size() > 0) 
+				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, send, true));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 
@@ -129,45 +154,76 @@ public class IndexMarketSessionManager implements IPlugin {
 	}
 
 	private void checkIndexMarketSession() {
-		if (checkSessionAndRefData())
+		if (marketSessionUtil == null)
 			return;
 		try {
-			if (refDataMap == null || refDataMap.size() <= 0)
-				return;
 			if (sessionDataMap == null) {
-					sessionDataMap = marketSessionUtil
-							.getMarketSession(new ArrayList<RefData>(refDataMap.values()), Clock.getInstance().now());
-				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap, true));
+				sessionDataMap = marketSessionUtil.getMarketSession();
+				eventManager.sendEvent(new InternalSessionEvent(null, null, sessionDataMap, true));
 				return;
 			}
 
-			Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
-			Map<String, MarketSessionData> chkMap;
-			chkMap = marketSessionUtil.getMarketSession(new ArrayList<RefData>(refDataMap.values()), Clock.getInstance().now());
+			Map<String, MarketSessionData> cache = marketSessionUtil.getMarketSession();
+			Map<String, MarketSessionData> send = new HashMap<>();
 
-			for (Map.Entry<String, MarketSessionData> entry : chkMap.entrySet()) {
-				MarketSessionData chkData = sessionDataMap.get(entry.getKey());
-				if (chkData == null || !chkData.getSessionType().equals(entry.getValue().getSessionType())) {
-					sessionDataMap.put(entry.getKey(), entry.getValue());
-					sendMap.put(entry.getKey(), entry.getValue());
+			for (Entry<String, MarketSessionData> session : sessionDataMap.entrySet()) {
+				MarketSessionData c = cache.get(session.getKey());
+				if (!c.getSessionType().equals(session.getValue().getSessionType())) {
+					sessionDataMap.put(session.getKey(), c);
+					send.put(session.getKey(), c);
 				}
 			}
 
-			if (sendMap.size() > 0) {
-				log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
-				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
-			}
+			if (send.size() > 0)
+				eventManager.sendEvent(new InternalSessionEvent(null, null, send, true));
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+
 	}
+
+//	private void checkIndexMarketSession() {
+//		if (checkSessionAndRefData())
+//			return;
+//		try {
+//			if (refDataMap == null || refDataMap.size() <= 0)
+//				return;
+//			if (sessionDataMap == null) {
+//				sessionDataMap = marketSessionUtil.getMarketSession(new ArrayList<RefData>(refDataMap.values()),
+//						Clock.getInstance().now());
+//				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap, true));
+//				return;
+//			}
+//
+//			Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
+//			Map<String, MarketSessionData> chkMap;
+//			chkMap = marketSessionUtil.getMarketSession(new ArrayList<RefData>(refDataMap.values()),
+//					Clock.getInstance().now());
+//
+//			for (Map.Entry<String, MarketSessionData> entry : chkMap.entrySet()) {
+//				MarketSessionData chkData = sessionDataMap.get(entry.getKey());
+//				if (chkData == null || !chkData.getSessionType().equals(entry.getValue().getSessionType())) {
+//					sessionDataMap.put(entry.getKey(), entry.getValue());
+//					sendMap.put(entry.getKey(), entry.getValue());
+//				}
+//			}
+//
+//			if (sendMap.size() > 0) {
+//				log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
+//				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
+//			}
+//		} catch (Exception e) {
+//			log.error(e.getMessage(), e);
+//		}
+//	}
 
 	private void checkSettlement() throws ParseException {
 		if (noCheckSettlement)
 			return;
 		if (checkRefData())
 			return;
-		
+
 		List<RefData> refDataList = new ArrayList<RefData>(refDataMap.values());
 		for (RefData refData : refDataList) {
 			String index = refData.getSymbol();
@@ -178,12 +234,13 @@ public class IndexMarketSessionManager implements IPlugin {
 			if (chkDate == null) {
 				chkDate = TimeUtil.getPreviousDay();
 			}
-			
-			if (TimeUtil.sameDate(chkDate, data.getTradeDateByDate()) || data.getSessionType().equals(MarketSessionType.CLOSE)) 
+
+			if (TimeUtil.sameDate(chkDate, data.getTradeDateByDate())
+					|| data.getSessionType().equals(MarketSessionType.CLOSE))
 				continue;
 			chkDate = data.getTradeDateByDate();
 			checkDateMap.put(index, chkDate);
-			
+
 			Date settlementDate = sdf.parse(refData.getSettlementDate());
 			if (TimeUtil.sameDate(settlementDate, chkDate)) {
 				Calendar cal = Calendar.getInstance();

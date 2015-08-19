@@ -486,7 +486,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     protected void requestRequireData() throws Exception {
         MarketSessionRequestEvent msEvent = new MarketSessionRequestEvent(null, null);
-        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now());
+        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null);
         RefDataRequestEvent rdrEvent = new RefDataRequestEvent(null, null);
         msEvent.setReceiver(serverInfo);
         isrEvent.setReceiver(serverInfo);

@@ -85,4 +85,9 @@ public class RefDataManager extends RefDataService {
 	public RefData update(RefData refData, String tradeDate) throws Exception {
 		return new RefData();
 	}
+
+	@Override
+	public List<RefData> update(String index, String tradeDate) throws Exception {
+		return new ArrayList<>();
+	}
 }
