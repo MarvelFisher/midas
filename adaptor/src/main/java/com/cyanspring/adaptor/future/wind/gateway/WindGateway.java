@@ -1141,6 +1141,17 @@ public class WindGateway implements Runnable {
 		msgpackQueue.add(obj);
 	}
 	
+	private void ThreadJoin(Thread trd) {
+		try {
+			trd.join(1000);		
+			if(trd.isAlive()) {
+				trd.interrupt();
+			}
+		} catch (InterruptedException e) {
+			log.info(e.getMessage() + " : " + trd.getName() );
+		}		
+	}
+	
 	public void run()
 	{	
 		int exitCode = 0;
@@ -1246,7 +1257,7 @@ public class WindGateway implements Runnable {
 					if(msgPackLiteServer != null) {
 						msgPackLiteServer.stop();
 						msgPackLiteServer = null;
-						mpServerThread.join();
+						ThreadJoin(mpServerThread);
 					}					
 				} else {
 					if(autoTermination < 0) {
@@ -1269,7 +1280,7 @@ public class WindGateway implements Runnable {
 							msgPackLiteServer = null;
 						}
 					}
-					mpServerThread.join();	
+					ThreadJoin(mpServerThread);	
 				}
 					
 			}
@@ -1280,35 +1291,35 @@ public class WindGateway implements Runnable {
 				if(demo != null) {			
 					dh.Stop();
 					demo.Stop();
-					t1.join();
+					ThreadJoin(t1);
 					log.info(t1.getName() + " Terminated.");
 				}
 				
-				if(demoStock != null) {				
+				if(demoStock != null) {
 					dhStock.Stop();
-					demoStock.Stop();
-					t1Stock.join();
+					demoStock.Stop();					
+					ThreadJoin(t1Stock);
 					log.info(t1Stock.getName() + " Terminated.");		
 				}
 				
 				if(demoSpare != null) {				
 					dhSpare.Stop();
 					demoSpare.Stop();
-					t1Spare.join();
+					ThreadJoin(t1Spare);
 					log.info(t1Spare.getName() + " Terminated.");		
 				}				
 				
 				if(clientThread != null) {
 					windDataClient.stop();
-					clientThread.join();				
+					ThreadJoin(clientThread);
 				}
 				if(mpClientThread != null) {
 					mpDataClient.stop();
-					mpClientThread.join();				
+					ThreadJoin(mpClientThread);
 				}		
 				if(mpProcessDataThread != null) {
 					mpProcessData.stop();
-					mpProcessDataThread.join();
+					ThreadJoin(mpProcessDataThread);
 				}
 				
 				if(bossGroup != null) {
