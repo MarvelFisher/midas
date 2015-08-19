@@ -20,6 +20,7 @@ public final class WindDef {
     public static final int MSG_DATA_ORDER = -87;
     public static final int MSG_WINDGW_SERVERHEARTBEAT = -5;
     public static final int MSG_WINDGW_CONNECTED = 20025;
+    public static final int MSG_REFDATA_CHECKUPDATE = -80;
 
     //Wind Stock Status field
     public static final int STOCK_STATUS_NORMAL = 0;

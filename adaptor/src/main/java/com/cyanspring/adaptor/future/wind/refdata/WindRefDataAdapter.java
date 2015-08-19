@@ -8,6 +8,7 @@ import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
@@ -72,6 +73,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public static HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
     private ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, RefData> refDataHashMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, RefData> refDataUpdateHashMap = new ConcurrentHashMap<>();
     protected WindDataParser windDataParser = new WindDataParser();
     EventLoopGroup eventLoopGroup = null;
     RequestThread thread = null;
@@ -80,6 +82,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private WindDBHandler windDBHandler;
     private IWindFilter windFilter;
     private IRefDataListener refDataListener;
+//    private int testCount = 0;
 
     private void connect() {
         log.debug("Run Netty RefData Adapter");
@@ -178,18 +181,25 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
                 //check CodeTable done.
+                if (serverHeartBeatCountAfterCodeTableCome >= 0) {
+                    serverHeartBeatCountAfterCodeTableCome++;
+                }
                 if(channelActiveSend) {
-                    if (serverHeartBeatCountAfterCodeTableCome >= 0) {
-                        serverHeartBeatCountAfterCodeTableCome++;
-                    }
                     if (serverHeartBeatCountAfterCodeTableCome >= 2) {
                         codeTableIsProcessEnd = true;
                     }
-                    if (serverHeartBeatCountAfterCodeTableCome < 0) {
-                        serverHeartBeatCountAfterCodeTableCome--;
-                        if (serverHeartBeatCountAfterCodeTableCome < -3) {
-                            channelHandlerContext.close();
+                    if(!subscribed) {
+                        if (serverHeartBeatCountAfterCodeTableCome < 0) {
+                            serverHeartBeatCountAfterCodeTableCome--;
+                            if (serverHeartBeatCountAfterCodeTableCome < -3) {
+                                channelHandlerContext.close();
+                            }
                         }
+                    }
+                }else{
+                    if (serverHeartBeatCountAfterCodeTableCome == 2) {
+                        requestMgr.addReqData(new Object[]{WindDef.MSG_REFDATA_CHECKUPDATE, new Integer(0)});
+                        serverHeartBeatCountAfterCodeTableCome = -1;
                     }
                 }
                 break;
@@ -296,6 +306,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
         if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
+//        if (packType == FDTFields.WindHeartBeat){
+//            testCount++;
+//            if(testCount >= 5) {
+//                dataType = WindDef.MSG_WINDGW_CONNECTED;
+//                testCount = 0;
+//            }
+//        }
         return dataType;
     }
 
@@ -326,12 +343,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         }
     }
 
-    public void sendRefDataUpdate(RefData refData){
-        log.info("send RefDataUpdate S=" + refData.getSymbol() + "," + refData.getCNDisplayName());
-        List<RefData> refDataUpdateList = new ArrayList();
-        refDataUpdateList.add(refData);
+    public void sendRefDataUpdate(List<RefData> refDataList, RefDataUpdateEvent.Action action){
+        log.info("send RefDataUpdate Size = " + refDataList.size() + ",Action=" + action.name());
+        for(RefData refData: refDataList){
+            log.debug("S=" + refData.getSymbol() +",CN=" + refData.getCNDisplayName() + ",TW=" + refData.getTWDisplayName());
+        }
         if(refDataListener != null){
-            refDataListener.onRefDataUpdate(refDataUpdateList);
+            refDataListener.onRefDataUpdate(refDataList, action);
         }
     }
 
@@ -534,6 +552,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public ConcurrentHashMap<String, RefData> getRefDataHashMap() {
         return refDataHashMap;
+    }
+
+    public ConcurrentHashMap<String, RefData> getRefDataUpdateHashMap() {
+        return refDataUpdateHashMap;
     }
 
     public void setWindDBHandler(WindDBHandler windDBHandler) {
