@@ -18,6 +18,7 @@ import com.cyanspring.common.event.marketsession.InternalSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
@@ -89,9 +90,9 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		this.refDataList.addAll(refDataList);
 		isInit();
 	}
-
+	
 	@Override
-	public void onRefDataUpdate(List<RefData> refDataList) throws Exception {
+	public void onRefDataUpdate(List<RefData> refDataList, Action action) {
 		if (refDataList != null && refDataList.size() > 0) {
 			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size());
 			RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataList, RefDataUpdateEvent.Action.ADD);

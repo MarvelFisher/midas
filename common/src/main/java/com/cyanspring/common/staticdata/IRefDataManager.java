@@ -8,6 +8,7 @@ public interface IRefDataManager {
     public List<RefData> update(String index, String tradeDate) throws Exception;
     public RefData update(RefData refData, String tradeDate) throws Exception;
 	public RefData getRefData(String symbol);
+	public boolean remove(RefData refData);
 	public String getRefDataFile();
 	public List<RefData> getRefDataList();
 	public String getMarket();

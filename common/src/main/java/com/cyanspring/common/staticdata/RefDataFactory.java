@@ -28,6 +28,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class RefDataFactory extends RefDataService {
 	
     protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
+    
     List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
@@ -249,6 +250,15 @@ public class RefDataFactory extends RefDataService {
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public boolean remove(RefData refData) {
+		if (refDataList.contains(refData)) {
+			refDataList.remove(refData);
+			return true;
+		}
+		return false;
 	}
 
 }

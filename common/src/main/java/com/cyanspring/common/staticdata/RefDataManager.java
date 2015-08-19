@@ -90,4 +90,13 @@ public class RefDataManager extends RefDataService {
 	public List<RefData> update(String index, String tradeDate) throws Exception {
 		return new ArrayList<>();
 	}
+
+	@Override
+	public boolean remove(RefData refData) {
+		if (refDataList.contains(refData)) {
+			refDataList.remove(refData);
+			return true;
+		}
+		return false;
+	}
 }
