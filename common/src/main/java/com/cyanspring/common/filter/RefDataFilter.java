@@ -1,8 +1,8 @@
 package com.cyanspring.common.filter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class RefDataFilter implements IDataObjectFilter {
 	 */
 	@Override
 	public List<? extends DataObject> filter(List<? extends DataObject> lstDataObj) throws Exception {
-		HashMap<String, RefData> mapRefData = new HashMap<String, RefData>();
+		ConcurrentHashMap<String, RefData> mapRefData = new ConcurrentHashMap<String, RefData>();
 
 		ArrayList<String> lstITypes = new ArrayList<String>();
 		for (IType iType : getTypes()) {
@@ -88,8 +88,13 @@ public class RefDataFilter implements IDataObjectFilter {
 				
 				String key = type + symbol;
 				// If DataObject has duplicate IType+Symbol, exclude the later one unless it's 活躍
-				if (mapRefData.containsKey(key) && refSymbol.equals(category + "." + exchange)) { // means current one is 活躍, remove existing one
+				if (mapRefData.containsKey(key)) { 
+					if (refSymbol.equals(category + "." + exchange)) {
+						// Means current one is 活躍, remove existing one
 						mapRefData.remove(key);
+					} else {
+						continue; // Even Map has unique keys...
+					}
 				}
 				
 				mapRefData.put(key, refData);
