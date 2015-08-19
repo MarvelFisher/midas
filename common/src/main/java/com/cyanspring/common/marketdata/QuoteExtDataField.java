@@ -23,7 +23,8 @@ public enum QuoteExtDataField {
 	FREESHARES("FreeShares"),
 	TOTOALSHARES("TotalShares"),
 	PERATIO("PERatio"),
-	CNNAME("CNName")
+	CNNAME("CNName"),
+	TWNAME("TWName")
 	;
 
 	static HashMap<String, QuoteExtDataField> map = new HashMap<String, QuoteExtDataField>();

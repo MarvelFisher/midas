@@ -570,7 +570,19 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         if(object instanceof RefDataUpdateEvent){
             log.debug("Wind Adapter Receive RefDataUpdateEvent");
             RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) object;
-            inputRefDataList(refDataUpdateEvent.getRefDataList());
+            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.ADD)
+                inputRefDataList(refDataUpdateEvent.getRefDataList());
+            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.MOD){
+                for(RefData refData : refDataUpdateEvent.getRefDataList()){
+                    DataObject quoteExtend = new DataObject();
+                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), refData.getSymbol());
+                    quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
+                    quoteExtend.put(QuoteExtDataField.CNNAME.value(), refData.getCNDisplayName());
+                    quoteExtend.put(QuoteExtDataField.TWNAME.value(), refData.getTWDisplayName());
+                    sendQuoteExtend(quoteExtend);
+                }
+            }
+
         }
 
         //IndexSessionEvent

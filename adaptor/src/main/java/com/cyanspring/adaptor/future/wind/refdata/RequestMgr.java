@@ -58,7 +58,7 @@ public class RequestMgr implements IReqThreadCallback {
                     refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataSCHashMap());
                 }
                 if (refData != null) {
-                    if(windRefDataAdapter.isChannelActiveSend()) {
+                    if(!windRefDataAdapter.isSubscribed()) {
                         windRefDataAdapter.getRefDataHashMap().put(codeTableData.getWindCode(), refData);
                     }else{
                         windRefDataAdapter.getRefDataUpdateHashMap().put(codeTableData.getWindCode(), refData);
@@ -113,6 +113,10 @@ public class RequestMgr implements IReqThreadCallback {
                     }
                     windRefDataAdapter.sendRefDataUpdate(refDataDelList, RefDataUpdateEvent.Action.DEL);
                 }
+
+                //override refDataMap
+                windRefDataAdapter.getRefDataHashMap().clear();
+                windRefDataAdapter.getRefDataHashMap().putAll(windRefDataAdapter.getRefDataUpdateHashMap());
 
                 log.debug("RefDataUpdate Check end");
             }
