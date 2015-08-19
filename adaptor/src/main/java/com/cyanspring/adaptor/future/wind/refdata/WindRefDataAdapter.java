@@ -52,6 +52,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private boolean status = false;
     private volatile boolean connected = false;
     private volatile boolean codeTableIsProcessEnd = false;
+    private volatile boolean subscribed = false;
     private volatile int serverHeartBeatCountAfterCodeTableCome = -1;
     private volatile int serverRetryCount = 0;
     private volatile int dbRetryCount = 0;
@@ -244,6 +245,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void init() throws Exception {
         isAlive = true;
+        codeTableIsProcessEnd = false;
         serverRetryCount = 0;
         dbRetryCount = 0;
 
@@ -339,7 +341,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         closeNetty();
         requestMgr.uninit();
         closeReqThread();
-        codeTableIsProcessEnd = false;
         if(refDataHashMap != null && refDataHashMap.size() > 0){
             List refDataList = new ArrayList(refDataHashMap.values());
             RefDataParser.saveListToFile(refDataFile, refDataList);
@@ -350,6 +351,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     @Override
     public void subscribeRefData(IRefDataListener listener) throws Exception {
+        subscribed = false;
         init();
         //record refDataListener
         this.refDataListener = listener;
@@ -373,13 +375,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
             List<RefData> refDataList = RefDataParser.getListFromFile(refDataFile);
             listener.onRefData(refDataList);
         }
+        subscribed = true;
     }
 
     @Override
     public void unsubscribeRefData(IRefDataListener listener) {
-        refDataHashMap.clear();
-        codeTableDataBySymbolMap.clear();
-        uninit();
     }
 
     @Override
@@ -403,11 +403,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void processChannelActive(ChannelHandlerContext ctx) {
         connected = true;
-        codeTableIsProcessEnd = false;
         serverHeartBeatCountAfterCodeTableCome = -1;
-        //Request CodeTable
-        log.debug("request codetable");
-        sendRquestCodeTable(true);
+        if(!subscribed) {
+            log.debug("request codetable,subscribe flag=" + subscribed);
+            sendRquestCodeTable(true);
+        }
     }
 
     @Override
@@ -418,7 +418,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void processChannelInActive() {
         connected = false;
-        codeTableIsProcessEnd = false;
         serverHeartBeatCountAfterCodeTableCome = -1;
     }
 
