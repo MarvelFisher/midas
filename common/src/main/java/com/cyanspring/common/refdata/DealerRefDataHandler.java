@@ -90,13 +90,31 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		this.refDataList.addAll(refDataList);
 		isInit();
 	}
-	
+
 	@Override
 	public void onRefDataUpdate(List<RefData> refDataList, Action action) {
 		if (refDataList != null && refDataList.size() > 0) {
-			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size());
-			RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataList, RefDataUpdateEvent.Action.ADD);
-//			eventManager.sendGlobalEvent(event);
+			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size() + ", action: " + action.toString());
+			try {
+				for (RefData refData : refDataList) {
+					String index = refData.getCategory();
+					if (index == null)
+						index = RefDataUtil.getOnlyChars(refData.getENDisplayName());
+					if (index == null)
+						throw new Exception("RefData index not find");
+					String tradeDate = sessionDataMap.get(index).getTradeDateByString();
+
+					if (action == Action.ADD || action == Action.MOD) {
+						refDataManager.update(refData, tradeDate);
+					} else if (action == Action.DEL) {
+						refDataManager.remove(refData);
+					}
+				}
+				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataList, action);
+				eventManager.sendGlobalEvent(event);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
 	}
 
@@ -112,11 +130,11 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
-	private boolean isInit(){
+
+	private boolean isInit() {
 		if (!isInit) {
-			for (IRefDataAdaptor adaptor : refDataAdaptors){
-				if(!adaptor.getStatus()){
+			for (IRefDataAdaptor adaptor : refDataAdaptors) {
+				if (!adaptor.getStatus()) {
 					return false;
 				}
 			}
@@ -148,7 +166,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		}
 		if (!isInit())
 			return;
-		
+
 		List<RefData> send = new ArrayList<>();
 		for (Entry<String, MarketSessionData> session : sessions.entrySet()) {
 			String index = session.getKey();
@@ -164,7 +182,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				log.error(e.getMessage(), e);
 			}
 		}
-		
+
 		if (send.size() > 0) {
 			try {
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, send, true));

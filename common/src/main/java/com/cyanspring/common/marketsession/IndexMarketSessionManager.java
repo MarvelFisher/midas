@@ -5,6 +5,8 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -59,6 +61,7 @@ public class IndexMarketSessionManager implements IPlugin {
 			subscribeToEvent(IndexSessionRequestEvent.class, null);
 			subscribeToEvent(AllIndexSessionRequestEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
+			subscribeToEvent(RefDataUpdateEvent.class, null);
 		}
 
 		@Override
@@ -70,8 +73,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
 		try {
 			if (checkSessionAndRefData()) {
-				eventManager
-						.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
+				eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
 				return;
 			}
 
@@ -116,6 +118,17 @@ public class IndexMarketSessionManager implements IPlugin {
 			refDataMap = new HashMap<String, RefData>();
 
 		List<RefData> refDataList = event.getRefDataList();
+		sendIndexMarketSession(refDataList);
+	}
+
+	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
+		if (event.getAction() == Action.ADD) {
+			List<RefData> list = event.getRefDataList();
+			sendIndexMarketSession(list);
+		}
+	}
+	
+	private void sendIndexMarketSession(List<RefData> refDataList) {
 		Map<String, MarketSessionData> send = new HashMap<>();
 		try {
 			for (RefData refData : refDataList) {
@@ -182,41 +195,6 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 
 	}
-
-//	private void checkIndexMarketSession() {
-//		if (checkSessionAndRefData())
-//			return;
-//		try {
-//			if (refDataMap == null || refDataMap.size() <= 0)
-//				return;
-//			if (sessionDataMap == null) {
-//				sessionDataMap = marketSessionUtil.getMarketSession(new ArrayList<RefData>(refDataMap.values()),
-//						Clock.getInstance().now());
-//				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sessionDataMap, true));
-//				return;
-//			}
-//
-//			Map<String, MarketSessionData> sendMap = new HashMap<String, MarketSessionData>();
-//			Map<String, MarketSessionData> chkMap;
-//			chkMap = marketSessionUtil.getMarketSession(new ArrayList<RefData>(refDataMap.values()),
-//					Clock.getInstance().now());
-//
-//			for (Map.Entry<String, MarketSessionData> entry : chkMap.entrySet()) {
-//				MarketSessionData chkData = sessionDataMap.get(entry.getKey());
-//				if (chkData == null || !chkData.getSessionType().equals(entry.getValue().getSessionType())) {
-//					sessionDataMap.put(entry.getKey(), entry.getValue());
-//					sendMap.put(entry.getKey(), entry.getValue());
-//				}
-//			}
-//
-//			if (sendMap.size() > 0) {
-//				log.info("Update indexMarketSession size:{}, keys: {}", sendMap.size(), sendMap.keySet());
-//				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, sendMap, true));
-//			}
-//		} catch (Exception e) {
-//			log.error(e.getMessage(), e);
-//		}
-//	}
 
 	private void checkSettlement() throws ParseException {
 		if (noCheckSettlement)
