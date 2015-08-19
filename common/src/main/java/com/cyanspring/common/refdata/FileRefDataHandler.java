@@ -163,16 +163,19 @@ public class RefDataHandler implements IPlugin, IRefDataListener {
             refDataAdaptor.subscribeRefData(this);
             return;
         }
-//        refDataAdaptor.uninit();
         refDataManager.injectRefDataList(refDataList);
     }
 
     @Override
-    public void onRefDataUpdate(List<RefData> refDataList) throws Exception {
+    public void onRefDataUpdate(List<RefData> refDataList, RefDataUpdateEvent.Action action) {
         if(refDataList != null && refDataList.size()>0){
             log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size());
-            RefDataUpdateEvent event = new RefDataUpdateEvent(null,null,refDataList, RefDataUpdateEvent.Action.ADD);
-            eventManager.sendGlobalEvent(event);
+            RefDataUpdateEvent event = new RefDataUpdateEvent(null,null,refDataList, action);
+            try {
+                eventManager.sendGlobalEvent(event);
+            }catch(Exception e){
+                log.error(e.getMessage(),e);
+            }
         }
     }
 

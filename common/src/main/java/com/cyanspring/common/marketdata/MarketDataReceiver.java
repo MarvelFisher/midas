@@ -23,6 +23,7 @@ import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
@@ -88,6 +89,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
+            subscribeToEvent(RefDataUpdateEvent.class, null);
         }
 
         @Override
@@ -145,6 +147,30 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             if (!isInitReqDataEnd) isInitRefDateReceived = true;
         } else {
             log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
+        }
+    }
+
+    public void processRefDataUpdateEvent(RefDataUpdateEvent event){
+        log.debug("Receive RefDataUpdate Event - " + event.getAction().name());
+        List<RefData> refDataUpdateList = event.getRefDataList();
+        if(refDataUpdateList != null && refDataUpdateList.size() > 0) {
+            for(RefData refData: refDataUpdateList) {
+                if(!preSubscriptionList.contains(refData.getSymbol())) {
+                    this.preSubscriptionList.add(refData.getSymbol());
+                    for (IMarketDataAdaptor adaptor : adaptors) {
+                        if (null != adaptor) {
+                            adaptor.processEvent(event);
+                            try {
+                                adaptor.subscribeMarketData(refData.getSymbol(), this);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                        }
+                    }
+                }else{
+                   log.debug("refDataUpdateEvent Symbol=" + refData.getSymbol() +" exist");
+                }
+            }
         }
     }
 

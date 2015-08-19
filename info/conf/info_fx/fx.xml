@@ -47,6 +47,7 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
+	            <value>USDCNH</value>
 	            <value>USDJPY</value>
 	            <value>USDCHF</value>
 	            <value>USDCAD</value>

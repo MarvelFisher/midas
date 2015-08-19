@@ -226,7 +226,39 @@ public class DBHandler
 		{
 			closeConnect(connect);
 		}
+		if (retsymbollist.isEmpty())
+		{
+			int count = getSubscribeSymbolCount(user, market);
+			if (count > 0)
+				retsymbollist.add(new GroupInfo("Mobile", "Mobile", count));
+		}
 		return retsymbollist;
+    }
+    public int getSubscribeSymbolCount(String user, String market)
+    {
+    	int ret = 0;
+    	String sqlcmd = String.format("SELECT * FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s';", 
+				user, market) ;
+    	Connection connect = getConnect();
+		if (connect == null)
+		{
+			return 0;
+		}
+		ResultSet rs = querySQL(connect, sqlcmd);
+		try 
+		{
+			while (rs.next())
+				ret++;
+		}
+		catch (SQLException e) 
+		{
+			log.error(e.getMessage(), e) ;
+		}
+		finally
+		{
+			closeConnect(connect);
+		}
+    	return ret;
     }
     public HistoricalPrice getLastValue(String market, String type, String symbol, boolean dir)
     {
