@@ -239,7 +239,7 @@
         <property name="brokerage" value="0.0000487"/>
     </bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
 
     <bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">

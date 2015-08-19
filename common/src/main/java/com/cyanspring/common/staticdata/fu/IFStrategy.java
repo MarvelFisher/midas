@@ -108,9 +108,13 @@ public class IFStrategy implements IRefDataStrategy  {
                 dayCount++;
         }
 
-        while (marketSessionUtil.isHoliday(symbol, cal.getTime())) {
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-        }
+        try {
+			while (marketSessionUtil.isHoliday(symbol, cal.getTime())) {
+			    cal.add(Calendar.DAY_OF_YEAR, 1);
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 
         return sdf.format(cal.getTime());
     }

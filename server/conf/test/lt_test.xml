@@ -45,7 +45,7 @@
     <bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
     
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
     
     <bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
         <constructor-arg>
