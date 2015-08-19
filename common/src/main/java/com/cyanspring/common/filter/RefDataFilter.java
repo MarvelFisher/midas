@@ -48,7 +48,7 @@ public class RefDataFilter implements IDataObjectFilter {
 	 * @return The filtered DataObject list
 	 */
 	@Override
-	public List<? extends DataObject> filter(List<? extends DataObject> lstDataObj) throws DataObjectFilterException {
+	public List<? extends DataObject> filter(List<? extends DataObject> lstDataObj) throws Exception {
 		HashMap<String, RefData> mapRefData = new HashMap<String, RefData>();
 
 		ArrayList<String> lstITypes = new ArrayList<String>();
@@ -61,7 +61,7 @@ public class RefDataFilter implements IDataObjectFilter {
 			String type = refData.getIType();
 			if (type == null || type.isEmpty()) {
 				log.error("IType cannot be null or empty.");
-				throw new DataObjectFilterException("IType cannot be null or empty.");
+				throw new Exception("IType cannot be null or empty.");
 			}
 			
 			if (lstITypes.contains(type)) {
@@ -70,7 +70,7 @@ public class RefDataFilter implements IDataObjectFilter {
 					symbol = symbol.toLowerCase();
 				} else {
 					log.error("Symbol cannot be null or empty.");
-					throw new DataObjectFilterException("Symbol cannot be null or empty.");
+					throw new Exception("Symbol cannot be null or empty.");
 				}
 				
 				String category = refData.getCategory();
@@ -82,7 +82,7 @@ public class RefDataFilter implements IDataObjectFilter {
 						|| refSymbol == null || refSymbol.isEmpty()) {
 					log.error("Category, Exchange, RefSymbol "
 							+ "cannot be null or empty.");
-					throw new DataObjectFilterException("Category, Exchange, RefSymbol "
+					throw new Exception("Category, Exchange, RefSymbol "
 							+ "cannot be null or empty.");
 				}
 				
