@@ -156,7 +156,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if(refDataUpdateList != null && refDataUpdateList.size() > 0) {
             for(RefData refData: refDataUpdateList) {
                 if(!preSubscriptionList.contains(refData.getSymbol())) {
-                    this.preSubscriptionList.add(refData.getSymbol());
+                    preSubscriptionList.add(refData.getSymbol());
                     for (IMarketDataAdaptor adaptor : adaptors) {
                         if (null != adaptor) {
                             adaptor.processEvent(event);
@@ -168,7 +168,18 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         }
                     }
                 }else{
-                   log.debug("refDataUpdateEvent Symbol=" + refData.getSymbol() +" exist");
+                    log.debug("refDataUpdateEvent Symbol=" + refData.getSymbol() +" exist");
+                    preSubscriptionList.remove(refData.getSymbol());
+                    for (IMarketDataAdaptor adaptor : adaptors) {
+                        if (null != adaptor) {
+                            adaptor.processEvent(event);
+                            try {
+                                adaptor.unsubscribeMarketData(refData.getSymbol(), this);
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -229,9 +240,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 quote.setLastVol(0);
             }
         }
-
-//        if (quoteLogIsOpen)
-//            printQuoteLog(inEvent.getQuoteSource(), inEvent.getContributor(), quote, QuoteLogLevel.GENERAL);
 
         //Check Forex TimeStamp
         if (inEvent.getQuoteSource()==QuoteSource.ID || inEvent.getQuoteSource()==QuoteSource.IB) {

@@ -185,9 +185,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     serverHeartBeatCountAfterCodeTableCome++;
                 }
                 if(channelActiveSend) {
-                    if (serverHeartBeatCountAfterCodeTableCome >= 2) {
-                        codeTableIsProcessEnd = true;
-                    }
                     if(!subscribed) {
                         if (serverHeartBeatCountAfterCodeTableCome < 0) {
                             serverHeartBeatCountAfterCodeTableCome--;
@@ -195,6 +192,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                                 channelHandlerContext.close();
                             }
                         }
+                    }
+                    if (serverHeartBeatCountAfterCodeTableCome >= 2) {
+                        codeTableIsProcessEnd = true;
+                        serverHeartBeatCountAfterCodeTableCome = -1;
                     }
                 }else{
                     if (serverHeartBeatCountAfterCodeTableCome == 2) {
@@ -436,7 +437,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void processChannelInActive() {
         connected = false;
-        serverHeartBeatCountAfterCodeTableCome = -1;
     }
 
     @Override
@@ -571,5 +571,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public boolean isChannelActiveSend() {
         return channelActiveSend;
+    }
+
+    public boolean isSubscribed() {
+        return subscribed;
     }
 }
