@@ -96,7 +96,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (refDataList != null && refDataList.size() > 0) {
 			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size());
 			RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataList, RefDataUpdateEvent.Action.ADD);
-			eventManager.sendGlobalEvent(event);
+//			eventManager.sendGlobalEvent(event);
 		}
 	}
 

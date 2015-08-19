@@ -93,8 +93,8 @@ public class RefDataManager extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-		if (refDataList.contains(refData)) {
-			refDataList.remove(refData);
+		if (map.get(refData.getSymbol()) != null) {
+			map.remove(refData);
 			return true;
 		}
 		return false;
