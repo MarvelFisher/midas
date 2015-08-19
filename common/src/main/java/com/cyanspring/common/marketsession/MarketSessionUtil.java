@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class MarketSessionUtil {
-
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
     private Map<String, IMarketSession> sessionMap;
     

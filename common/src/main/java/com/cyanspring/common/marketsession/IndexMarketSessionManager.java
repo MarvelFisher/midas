@@ -10,7 +10,6 @@ import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
-import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.TimeUtil;
@@ -23,6 +22,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This Manager is used to send detail marketsession to the subscriber and this
@@ -48,7 +49,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private Map<String, MarketSessionData> sessionDataMap;
 	private Map<String, Date> checkDateMap = new HashMap<>();
-	private Map<String, RefData> refDataMap;
+	private ConcurrentMap<String, RefData> refDataMap;
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	protected long timerInterval = 1 * 1000;
@@ -115,16 +116,22 @@ public class IndexMarketSessionManager implements IPlugin {
 		if (!event.isOk())
 			return;
 		if (refDataMap == null)
-			refDataMap = new HashMap<String, RefData>();
+			refDataMap = new ConcurrentHashMap<String, RefData>();
 
 		List<RefData> refDataList = event.getRefDataList();
 		sendIndexMarketSession(refDataList);
 	}
 
 	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
+		List<RefData> list = event.getRefDataList();
 		if (event.getAction() == Action.ADD) {
-			List<RefData> list = event.getRefDataList();
 			sendIndexMarketSession(list);
+		} else if (event.getAction() == Action.MOD) {
+			for (RefData refData : list) 
+				refDataMap.put(refData.getSymbol(), refData);
+		} else if (event.getAction() == Action.DEL) {
+			for (RefData refData : list)
+				refDataMap.remove(refData.getSymbol());
 		}
 	}
 	
