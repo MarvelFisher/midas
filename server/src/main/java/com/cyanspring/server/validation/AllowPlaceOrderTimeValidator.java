@@ -48,7 +48,6 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 			throws OrderValidationException {
 		
 		try {
-			log.info("into AllowPlaceOrderTimeValidator");
 			Date today = new Date();
 			Date saturday = getSaturdayOfWeek(today);		
 			Date firstTradeDate = tradeDateManager.nextTradeDate(saturday);

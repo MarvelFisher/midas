@@ -228,12 +228,11 @@
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
-		<property name="refDataFile">
-			<value>refdata/refData_fc.xml</value>
+		<property name="refDataTemplatePath">
+			<value>conf/fc/FcRefDataTemplate.xml</value>
 		</property>
-        <property name="strategyMapping"><ref bean="strategyMapping"/></property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
-	</bean>
+    </bean>
 
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
 	</bean>
@@ -299,4 +298,14 @@
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
+
+	<!-- For IDataObjectFilter settings, IType value in list will be kept after filtering -->
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<property name="types">
+			<list>
+				<value>FUTURES_CX</value>
+			</list>
+		</property>
+	</bean>
+	
 </beans>

@@ -8,7 +8,8 @@ public enum IType {
 	FUTURES_CX("122"),
 	STOCK("16"),
 	STOCK_SSE("17"),
-	STOCK_GEI("18")
+	STOCK_GEI("18"),
+	EXCHANGE_INDEX("1")
 	;
 	private String value;
 	private IType(String value) {
@@ -21,6 +22,27 @@ public enum IType {
 	
 	public int getIntValue(){
 		return Integer.parseInt(getValue());
+	}
+	
+	public static boolean isStock(String iType){
+		if(iType.equals(STOCK)
+			||iType.equals(STOCK_SSE)
+			||iType.equals(STOCK_GEI)
+			||iType.equals(EXCHANGE_INDEX)){
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isFuture(String iType){
+		if(iType.equals(FUTURES_IDX)
+			||iType.equals(FUTURES)
+			||iType.equals(FUTURES_EFP)
+			||iType.equals(FUTURES_CX_IDX)
+			||iType.equals(FUTURES_CX)){
+			return true;
+		}
+		return false;
 	}
 	
 }
