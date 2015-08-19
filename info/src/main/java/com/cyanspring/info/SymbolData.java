@@ -417,7 +417,9 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else if (type == PriceHighLowType.W52)
 		{
-			if (getMapHistorical().get("W") == null)
+			if (getMapHistorical().get("W") == null
+					|| PriceUtils.isZero(this.getD52WHigh())
+					|| PriceUtils.isZero(this.getD52WLow()))
 				get52WHighLow();
 			phl.setHigh(this.getD52WHigh());
 			phl.setLow(this.getD52WLow());
