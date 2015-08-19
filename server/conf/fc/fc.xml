@@ -298,4 +298,14 @@
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
+
+	<!-- For IDataObjectFilter settings, IType value in list will be kept after filtering -->
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<property name="types">
+			<list>
+				<value>FUTURES_CX</value>
+			</list>
+		</property>
+	</bean>
+	
 </beans>
