@@ -18,18 +18,42 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.util.StringUtils;
+
 import com.cyanspring.common.business.RefDataField;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataUtil {
-	
+	enum Category{
+		STOCK
+	}
 	public static String getOnlyChars(String symbol) {
 		Pattern pattern = Pattern.compile("\\D*");
 		Matcher matcher = pattern.matcher(symbol);
 		if (matcher.find())
 			return matcher.group(0);
 		return null;
+	}
+
+    public static String getCategory(String symbol){
+    	
+    	if(!StringUtils.hasText(symbol))
+    		return null;
+    	
+		String category =  symbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");
+		
+		//Stock Category
+		if(!StringUtils.hasText(category)){
+			return Category.STOCK.name();
+		}
+		
+		//Future Category
+		if(category.length() > 2 ){
+			return category.substring(0, 2);
+		}else{
+			return category;
+		}
 	}
 //	private static ArrayList<Double> getVolProfile() {
 //		ArrayList<Double> volProfile;
