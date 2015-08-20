@@ -882,16 +882,9 @@ public class PositionKeeper {
 			if(!PriceUtils.validPrice(qPrice))
 				continue;
 			
-			
 			RefData refData = refDataManager.getRefData(symbol);
-			double pricePerUnit = refData.getPricePerUnit();
-			
-			if(PriceUtils.Equal(pricePerUnit, 0)){
-				pricePerUnit = 1.0;
-			}
-			
 			double margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, acc.getCurrency(), 
-					position.getSymbol(), Math.abs(position.getQty()), position.getPrice());
+					position.getSymbol(), Math.abs(position.getQty()), price);
 			double leverage = leverageManager.getLeverage(refData, settings);
 			margin /= leverage;
 			acc.setMarginHeld(acc.getMarginHeld() - position.getMargin() + margin);
