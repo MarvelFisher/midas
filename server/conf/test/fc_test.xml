@@ -286,7 +286,7 @@
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
         <property name="checkSingleSide" value="true"/>
-        <property name="reject" value="true"/>
+        <property name="reject" value="false"/>
         <property name="cancel" value="false"/>
     </bean>
 
