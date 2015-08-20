@@ -774,11 +774,7 @@ public class CentralDbProcessor implements IPlugin
 				}
 			}
 		}
-		if (retrieveMap == null)
-		{
-			retrieveMap = new HashMap<String, HashMap<String, List<HistoricalPrice>>>();
-		}
-		retrieveMap.clear();
+		getRetrieveMap().clear();
 		for (String market : marketList)
 		{
 			getChartPrice(market, "1");
@@ -795,7 +791,7 @@ public class CentralDbProcessor implements IPlugin
 		String symbol;
 		SymbolData symboldata;
     	ArrayList<String> symbolarr = new ArrayList<String>();
-		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : retrieveMap.entrySet())
+		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : getRetrieveMap().entrySet())
 		{
 			symbolarr.clear();
 	    	symbolarr.add(entry.getKey());
@@ -825,10 +821,15 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public void clearAllChartPrice()
 	{
-		for (SymbolChef chef : SymbolChefList)
+//		for (SymbolChef chef : SymbolChefList)
+//		{
+//			chef.clearAllChartPrice();
+//		}
+		if (getRetrieveMap() == null)
 		{
-			chef.clearAllChartPrice();
+			setRetrieveMap(new HashMap<String, HashMap<String, List<HistoricalPrice>>>());
 		}
+		getRetrieveMap().clear();
 	}
 	public void getChartPrice(String market, String strType)
 	{
@@ -847,11 +848,11 @@ public class CentralDbProcessor implements IPlugin
 		HashMap<String, List<HistoricalPrice>> subMap;
 		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())
 		{
-			if (retrieveMap.get(entry.getKey()) == null)
+			if (getRetrieveMap().get(entry.getKey()) == null)
 			{
-				retrieveMap.put(entry.getKey(), new HashMap<String, List<HistoricalPrice>>());
+				getRetrieveMap().put(entry.getKey(), new HashMap<String, List<HistoricalPrice>>());
 			}
-			subMap = retrieveMap.get(entry.getKey());
+			subMap = getRetrieveMap().get(entry.getKey());
 			if (subMap.get(strType) == null)
 			{
 				subMap.put(strType, new ArrayList<HistoricalPrice>());
@@ -1257,6 +1258,16 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setRunInsertSQL(boolean runInsertSQL) {
 		this.runInsertSQL = runInsertSQL;
+	}
+
+	public HashMap<String, HashMap<String, List<HistoricalPrice>>> getRetrieveMap()
+	{
+		return retrieveMap;
+	}
+
+	public void setRetrieveMap(HashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap)
+	{
+		this.retrieveMap = retrieveMap;
 	}
 	
 }

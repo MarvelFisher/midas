@@ -64,7 +64,7 @@ public class SymbolData implements Comparable<SymbolData>
 	private double dCurTotalVolume = 0;
 	private double dCurTurnover = 0;
 	private TreeMap<Date, HistoricalPrice> priceData = new TreeMap<Date, HistoricalPrice>() ;
-	private HashMap<String, List<HistoricalPrice>> mapHistorical = new HashMap<String, List<HistoricalPrice>>();
+//	private HashMap<String, List<HistoricalPrice>> mapHistorical = new HashMap<String, List<HistoricalPrice>>();
 	private LinkedBlockingQueue<Quote> quoteTmp = new LinkedBlockingQueue<Quote>() ;
 	
 	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
@@ -461,8 +461,9 @@ public class SymbolData implements Comparable<SymbolData>
 	public void retrieveChartPrice()
 	{
 		log.debug("Retrieve chart data [" + strSymbol + "]");
-		mapHistorical.clear();
+		getMapHistorical().clear();
 		getAllChartPrice();
+		log.debug("Retrieve chart data [" + strSymbol + "] finish");
 	}
 	
 	public void getAllChartPrice()
@@ -477,7 +478,6 @@ public class SymbolData implements Comparable<SymbolData>
 		getChartPrice("D");
 		getChartPrice("W");
 		getChartPrice("M");
-		log.debug("Retrieve chart data [" + strSymbol + "] finish");
 	}
 	
 	public void checkAllChartPrice()
@@ -1069,7 +1069,13 @@ public class SymbolData implements Comparable<SymbolData>
 		getMapHistorical().clear();
 	}
 	public HashMap<String, List<HistoricalPrice>> getMapHistorical() {
-		return mapHistorical;
+//		return mapHistorical;
+
+		if (centralDB.getRetrieveMap().get(getStrSymbol()) == null)
+		{
+			centralDB.getRetrieveMap().put(getStrSymbol(), new  HashMap<String, List<HistoricalPrice>>());
+		}
+		return centralDB.getRetrieveMap().get(getStrSymbol());
 	}
 	public void setMapHistorical(HashMap<String, List<HistoricalPrice>> mapHistorical) 
 	{
@@ -1095,10 +1101,10 @@ public class SymbolData implements Comparable<SymbolData>
 		if (mapHistorical.get("M") != null)
 			msg += "M:" + mapHistorical.get("M").size();
 		log.debug(msg);
-		synchronized (getMapHistorical())
-		{
-			this.mapHistorical = mapHistorical;
-		}
+//		synchronized (getMapHistorical())
+//		{
+//			this.mapHistorical = mapHistorical;
+//		}
 	}
 	public void set52WHLByMapHistorical()
 	{
