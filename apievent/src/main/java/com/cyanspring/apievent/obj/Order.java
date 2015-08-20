@@ -2,6 +2,12 @@ package com.cyanspring.apievent.obj;
 
 import java.util.Date;
 
+/**
+ * @author elviswu
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class Order {
 
 	private String id;

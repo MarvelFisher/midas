@@ -73,6 +73,12 @@ import javax.swing.SwingConstants;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
 
+/**
+ * @author dennischen
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class LtsWsFrame extends JFrame {
     private static Logger log = LoggerFactory.getLogger(LtsWsFrame.class);
 

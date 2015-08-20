@@ -4,9 +4,10 @@ import java.util.Date;
 
 /**
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
+
 public class Position {
     private String id;
     private String account;

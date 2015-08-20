@@ -4,7 +4,7 @@ import java.util.Date;
 
 /**
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class Execution { // need to check the fields

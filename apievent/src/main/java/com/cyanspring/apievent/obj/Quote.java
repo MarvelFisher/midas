@@ -8,9 +8,10 @@ import java.util.Date;
 
 /**
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
+
 public class Quote implements Cloneable, Serializable {
     private static final Logger log = LoggerFactory
             .getLogger(Quote.class);
