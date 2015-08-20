@@ -65,7 +65,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
         if (WindGateWayAdapter.instance.isMarketDataLog()){
             StringBuffer sb = new StringBuffer();
             for (Object key : hashMap.keySet()) {
-                if(key == FDTFields.WindSymbolCode) {
+                if((int)key == FDTFields.WindSymbolCode) {
                     String symbol = "";
                     try {
                         symbol = new String((byte[]) hashMap.get(key), "UTF-8");
