@@ -12,22 +12,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.marketsession.MarketSessionData;
+import com.cyanspring.common.marketsession.MarketSessionManager;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.common.marketsession.MarketSessionManager;
 import com.cyanspring.server.validation.bean.AvailableTimeBean;
 
-public class MarketSessionValidator implements IOrderValidator{
-	
-	private static final Logger log = LoggerFactory
-			.getLogger(MarketSessionValidator.class);
+public class IndexMarketSessionValidator implements IOrderValidator{
+
+	private static final Logger log = LoggerFactory.getLogger(IndexMarketSessionValidator.class);
 	
 	@Autowired
-	MarketSessionManager marketSessionManager;
+	MarketSessionUtil marketSessionUtil;
 	
 	@Autowired(required=false)
 	@Qualifier("availableTimeList")
@@ -36,14 +38,33 @@ public class MarketSessionValidator implements IOrderValidator{
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
+		
 		try{
-
-			MarketSessionType sessionType =  marketSessionManager.getCurrentSessionType();
+			
+			String symbol;
+			if(order == null){				
+				symbol = (String)map.get(OrderField.SYMBOL.value());
+			}else{			
+				symbol = order.getSymbol();
+			}
+			
+			if( null == symbol)
+				return;
+			
+			MarketSessionData data = marketSessionUtil.getCurrentMarketSession(symbol);
+			
+			if( null == data){
+				log.warn("can't get index market session:{}",symbol);
+				return;
+			}
+						
+			MarketSessionType sessionType =  data.getSessionType();
 			if(sessionType.equals(MarketSessionType.CLOSE) || sessionType.equals(MarketSessionType.PRECLOSE)){
 				throw new OrderValidationException("Market closed,order couldn't be placed",ErrorMessage.MARKET_CLOSED);
 			 }
+			
 			if( null != availableTimeList && availableTimeList.size()>0){
-				 checkAvailableTime(availableTimeList);
+				 checkAvailableTime(availableTimeList,sessionType);
 			 }
 			
 		}catch(OrderValidationException e){			
@@ -53,14 +74,13 @@ public class MarketSessionValidator implements IOrderValidator{
 		}
 	}
 
-	private void checkAvailableTime(List<AvailableTimeBean> availableTimeList)throws OrderValidationException {
+	private void checkAvailableTime(List<AvailableTimeBean> availableTimeList,MarketSessionType currentSessionType)throws OrderValidationException {
 		
 		for(AvailableTimeBean bean:availableTimeList){
 			
 			MarketSessionType type = bean.getMarketSession();
 			String startTime = bean.getStartTime();
 			String endTime = bean.getEndTime();
-			MarketSessionType currentSessionType =  marketSessionManager.getCurrentSessionType();
 			
 			if(null == type || !type.equals(currentSessionType)){
 				continue;

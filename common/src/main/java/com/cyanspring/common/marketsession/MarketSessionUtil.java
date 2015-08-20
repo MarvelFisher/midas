@@ -1,10 +1,6 @@
 package com.cyanspring.common.marketsession;
 
-import com.cyanspring.common.Clock;
-import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.RefDataUtil;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
-
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +9,21 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataService;
+import com.cyanspring.common.staticdata.RefDataUtil;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 
 public class MarketSessionUtil {
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
     private Map<String, IMarketSession> sessionMap;
+    
+    @Autowired
+    private RefDataService refDataManager; 
     
     public MarketSessionUtil(List<IMarketSession> sessionList) {
     	sessionMap = new HashMap<>();
@@ -48,6 +54,56 @@ public class MarketSessionUtil {
     	
     	MarketSessionData data = this.getMarketSession().get(category);
     	return data;
+    }
+    
+    public List<String> getSymbolListByIndexSessionKey(String key){
+    	
+    	List <String>symbolList = new ArrayList<String>();
+    	
+    	if( null == refDataManager)
+    		return symbolList;
+    	
+    	List<RefData> refs = refDataManager.getRefDataList();
+    	if(null == refs || refs.isEmpty())
+    		return symbolList;
+    	
+    	boolean isCategory = false;
+    	boolean isExchange = false;
+    	
+    	for(RefData ref : refs){
+    		
+    		String category = ref.getCategory();
+    		String symbol = ref.getSymbol();
+    		String exchange = ref.getExchange();
+    		if(symbol.equals(key)){
+    			symbolList.add(symbol);
+    			break;
+    		}else if( category.equals(key)){
+    			isCategory = true;
+    			break;
+    		}else if( exchange.equals(key)){
+    			isExchange = true;
+    			break;
+    		}
+    	}
+    	
+    	if(isCategory){
+    		for(RefData ref : refs){
+    			if(ref.getCategory().equals(key) && !ref.getIndexSessionType().equals(IndexSessionType.SETTLEMENT)){
+    				symbolList.add(ref.getSymbol());
+    			}
+    		}
+    	}
+    	
+    	if(isExchange){
+    		for(RefData ref : refs){
+    			if(ref.getExchange().equals(key) && !ref.getIndexSessionType().equals(IndexSessionType.SETTLEMENT)){
+    				symbolList.add(ref.getSymbol());
+    			}
+    		}
+    	}
+    	
+    	return symbolList;
     }
     
     public Map<String, MarketSessionData> getMarketSession(List<RefData> indexList, Date date) throws Exception {

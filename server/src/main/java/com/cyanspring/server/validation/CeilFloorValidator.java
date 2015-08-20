@@ -52,7 +52,6 @@ public class CeilFloorValidator implements IOrderValidator{
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
-				
 		if( null == validationDataProvider ){
 			return;
 		}
@@ -80,7 +79,7 @@ public class CeilFloorValidator implements IOrderValidator{
 			}
 			
 			if(OrderType.Market == type){			
-				log.warn("this is market order");
+				log.info("this is market order");
 				return;			
 			}
 				

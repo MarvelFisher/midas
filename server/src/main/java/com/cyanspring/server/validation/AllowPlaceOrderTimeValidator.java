@@ -12,12 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.marketsession.MarketSessionChecker;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
@@ -29,8 +31,7 @@ import com.cyanspring.server.BusinessManager;
  */
 public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 	
-	private static final Logger log = LoggerFactory
-			.getLogger(AllowPlaceOrderTimeValidator.class);
+	private static final Logger log = LoggerFactory.getLogger(AllowPlaceOrderTimeValidator.class);
 	
 	@Autowired
 	TradeDateManager tradeDateManager;
@@ -40,7 +41,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 	
 	@Autowired
 	BusinessManager businessManager;
-	
+		
 	private int howManyMinutes;
 
 	@Override
@@ -48,6 +49,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 			throws OrderValidationException {
 		
 		try {
+			
 			Date today = new Date();
 			Date saturday = getSaturdayOfWeek(today);		
 			Date firstTradeDate = tradeDateManager.nextTradeDate(saturday);
@@ -66,6 +68,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 			log.warn(e.getMessage(),e);
 		}		
 	}
+	
 	private Date getMinutesAgo(Date startDate) {
 		
 		Calendar cal = Calendar.getInstance();
@@ -73,6 +76,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		cal.add(Calendar.MINUTE, -getHowManyMinutes());
 		return cal.getTime();
 	}
+	
 	private MarketSessionData getOpenMarketSession(Date firstTradeDate) throws Exception {
 
 		Date today = TimeUtil.getOnlyDate(firstTradeDate);
@@ -105,6 +109,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		
 		return data;
 	}
+	
 	private  Date getSaturdayOfWeek(Date date) throws ParseException{
 		
 		Calendar cal = Calendar.getInstance();
@@ -136,6 +141,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		
 		return cal.getTime();
 	}
+	
 	private boolean checkInterval(Date now,Date start, Date end) throws ParseException {
 
 		if(TimeUtil.getTimePass(now, start)>=0 && TimeUtil.getTimePass(now, end)<=0){
@@ -144,9 +150,11 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 			return false;
 		}
 	}
+	
 	public int getHowManyMinutes() {
 		return howManyMinutes;
 	}
+	
 	public void setHowManyMinutes(int howManyMinutes) {
 		this.howManyMinutes = howManyMinutes;
 	}
