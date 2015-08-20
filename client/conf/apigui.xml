@@ -22,8 +22,8 @@
 	</bean>
 	
 	<bean id="socketService" class="com.cyanspring.transport.socket.ClientSocketService">
-		<property name="host" value="localhost"></property>
-		<property name="port" value="52368"></property>
+		<property name="host" value="125.227.191.252"></property>
+		<property name="port" value="52323"></property>
 		<property name="retryInterval" value="3000"></property>
 		<property name="maxRetry" value="1"></property>
 	</bean>
