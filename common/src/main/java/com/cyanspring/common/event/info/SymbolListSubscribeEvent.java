@@ -15,6 +15,7 @@ public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 	private String txId = null;
 	private int queryType = -1;
 	private List<SymbolInfo> symbolList = null;
+	private boolean allowEmpty = false;
 
 	public SymbolListSubscribeEvent(String key, String receiver) {
 		super(key, receiver);
@@ -93,6 +94,14 @@ public class SymbolListSubscribeEvent extends RemoteAsyncEvent {
 	}
 	public void setQueryType(int queryType) {
 		this.queryType = queryType;
+	}
+	public boolean isAllowEmpty()
+	{
+		return allowEmpty;
+	}
+	public void setAllowEmpty(boolean allowEmpty)
+	{
+		this.allowEmpty = allowEmpty;
 	}
 
 }

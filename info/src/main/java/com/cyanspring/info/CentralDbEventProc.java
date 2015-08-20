@@ -218,6 +218,7 @@ public class CentralDbEventProc implements Runnable
 		retEvent.setTxId(event.getTxId());
 		retEvent.setType(event.getType());
 		retEvent.setQueryType(event.getQueryType());
+		retEvent.setAllowEmpty(event.isAllowEmpty());
 		String user = event.getUserID();
 		String market = event.getMarket();
 		String group = event.getGroup();

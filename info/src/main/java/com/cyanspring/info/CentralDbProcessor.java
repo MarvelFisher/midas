@@ -443,7 +443,7 @@ public class CentralDbProcessor implements IPlugin
 			getDbhnd().updateSQL(sqlcmd);
 			retsymbollist.clear();
 			retsymbollist.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, true));
-			if (symbolinfos.isEmpty())
+			if (symbolinfos.isEmpty() && retEvent.isAllowEmpty() == false)
 			{
 				requestDefaultSymbol(retEvent, market);
 				return;
