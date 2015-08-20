@@ -457,7 +457,5 @@
 	</bean>
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner"/>
-	
-	<bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/>
 
 </beans>
