@@ -381,7 +381,7 @@ public class CentralDbProcessor implements IPlugin
 			   String group, 
 			   ArrayList<String> symbols)
 	{
-		if (symbols == null || symbols.isEmpty())
+		if (symbols == null || (symbols.isEmpty() && retEvent.isAllowEmpty() == false))
 		{
 			symbols = preSubscriptionList;
 		}
