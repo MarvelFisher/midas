@@ -12,6 +12,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,11 +62,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter implements
     }
 
     public void processMsgPackRead(HashMap hashMap) {
-        StringBuffer sb = new StringBuffer();
-        for (Object key : hashMap.keySet()) {
-            sb.append(key + "=" + hashMap.get(key) + ",");
+        if (WindGateWayAdapter.instance.isMarketDataLog()){
+            StringBuffer sb = new StringBuffer();
+            for (Object key : hashMap.keySet()) {
+                if(key == FDTFields.WindSymbolCode) {
+                    String symbol = "";
+                    try {
+                        symbol = new String((byte[]) hashMap.get(key), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        log.warn("windCode convert X!");
+                    }
+                    sb.append(key + "=" + symbol + ",");
+                }else{
+                    sb.append(key + "=" + hashMap.get(key) + ",");
+                }
+            }
+            log.debug(sb.toString());
         }
-        if (WindGateWayAdapter.instance.isMarketDataLog()) log.debug(sb.toString());
 //        Check packType
         int packType = (int) hashMap.get(FDTFields.PacketType);
         if (packType == FDTFields.PacketArray) {
