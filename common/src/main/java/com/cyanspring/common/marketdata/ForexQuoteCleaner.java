@@ -1,6 +1,7 @@
 package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.type.QtyPrice;
 
 /**
  * Created by Shuwei.kuo on 15/7/28.
@@ -21,8 +22,18 @@ public class ForexQuoteCleaner implements IQuoteCleaner{
         quote.setTurnover(0);
         quote.setTotalVolume(0);
         quote.setTimeStamp(Clock.getInstance().now());
-        if(null != quote.getBids() && quote.getBids().size() > 0) quote.getBids().clear();
-        if(null != quote.getAsks() && quote.getAsks().size() > 0) quote.getAsks().clear();
+        if(null != quote.getBids() && quote.getBids().size() > 0){
+            for(QtyPrice qtyPrice : quote.getBids()){
+                qtyPrice.setPrice(0);
+                qtyPrice.setQuantity(0);
+            }
+        }
+        if(null != quote.getAsks() && quote.getAsks().size() > 0){
+            for(QtyPrice qtyPrice : quote.getAsks()){
+                qtyPrice.setPrice(0);
+                qtyPrice.setQuantity(0);
+            }
+        }
         return quote;
     }
 }
