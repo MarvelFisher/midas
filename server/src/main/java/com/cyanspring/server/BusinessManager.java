@@ -386,18 +386,8 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processAmendParentOrderEvent(AmendParentOrderEvent event)
 			throws Exception {
-        if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-        	String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-        	AmendParentOrderReplyEvent replyEvent = new AmendParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), null);
-			eventManager.sendLocalOrRemoteEvent(replyEvent);
-        	return;
-        }
 		log.debug("processAmendParentOrderEvent received: " + event.getId()
 				+ ", " + event.getTxId() + ", " + event.getFields());
-
 		Map<String, Object> fields = event.getFields();
 
 		boolean failed = false;
@@ -410,7 +400,17 @@ public class BusinessManager implements ApplicationContextAware {
 			if (null == order)
 				throw new OrderException("Cant find this order id: " + id,
 						ErrorMessage.ORDER_ID_NOT_FOUND);
-
+			
+			if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
+	        	String msg = MessageLookup.buildEventMessage(
+						ErrorMessage.SERVER_SUSPEND,"Server is suspend");
+	        	AmendParentOrderReplyEvent replyEvent = new AmendParentOrderReplyEvent(
+						event.getKey(), event.getSender(), false, msg,
+						event.getTxId(), order);
+				eventManager.sendLocalOrRemoteEvent(replyEvent);
+	        	return;
+	        }
+			
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
 
 			String strategyName = order.getStrategy();
@@ -535,18 +535,19 @@ public class BusinessManager implements ApplicationContextAware {
 			throws Exception {
 		log.debug("processCancelParentOrderEvent received: " + event.getTxId()
 					+ ", " + event.getOrderId());
+		
+		ParentOrder order = orders.get(event.getOrderId());
 		if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
         	String msg = MessageLookup.buildEventMessage(
 					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
 
 			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
 					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), null);
+					event.getTxId(), order);
 			eventManager.sendLocalOrRemoteEvent(reply);
         	return;
         }
-
-		ParentOrder order = orders.get(event.getOrderId());
+		
 		if (null == order) {
 			String msg = MessageLookup.buildEventMessage(
 					ErrorMessage.ORDER_ID_NOT_FOUND,
