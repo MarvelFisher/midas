@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,BuySellVolume>   mapBuySell = new ConcurrentHashMap<String,BuySellVolume>();
 	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
 	public static ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>>();
-	private ConcurrentLinkedQueue<Object> msgpackQueue = new ConcurrentLinkedQueue<Object>();
+	private LinkedBlockingQueue<Object> msgpackQueue = new LinkedBlockingQueue<Object>();
 	
 
 	
@@ -1421,19 +1422,22 @@ class ProcessMsgPackLiteData implements Runnable {
 	private static final Logger log = LoggerFactory
 			.getLogger(com.cyanspring.adaptor.future.wind.gateway.ProcessMsgPackLiteData.class);
 	
-	ConcurrentLinkedQueue<Object> queue = null;
+	LinkedBlockingQueue<Object> queue = null;
 	boolean quitFlag = false;
 	private long ticks;	
 	
-	public ProcessMsgPackLiteData(ConcurrentLinkedQueue<Object> q) {
+	public ProcessMsgPackLiteData(LinkedBlockingQueue<Object> q) {
 		queue = q;
 	}
 	
 	public void run() {		
-		Object msg;
+		//Object msg;
 		int maxq = 0;
+		ArrayList<Object> msgList = new ArrayList<Object>();
+		int cnt = 0,maxQueued = 0;
 		while(!quitFlag) {
 			try {
+				/*
 				do {
 					msg = queue.poll();
 					if(msg != null) {					
@@ -1446,8 +1450,21 @@ class ProcessMsgPackLiteData implements Runnable {
 							maxq = queue.size();
 						}
 					}					
+
 				} while(msg != null);
-				Thread.sleep(5);
+				*/
+				msgList.clear();
+				msgList.add(queue.take());
+				cnt = queue.drainTo(msgList) + 1;
+				if(cnt > 0) {
+					for(Object msg : msgList) {
+						ProcessMessage(msg);
+					}
+					if(cnt > maxQueued) {
+						maxQueued = cnt;
+						log.info("Data Client Max Queued : " + maxQueued);
+					}						
+				} 					
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);				
 			}
