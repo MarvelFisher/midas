@@ -59,7 +59,6 @@ public class SimRefDataAdaptor implements IRefDataAdaptor {
 			refData.setCNDisplayName(data.getCnName());
 			refData.setExchange(data.getSecurityExchange());
 			refData.setCode(data.getWindCode());
-			refData.setENDisplayName(data.getEnglishName());
 			refData.setIType(String.valueOf(data.getSecurityType()));
 			refDataList.add(refData);
 		}

@@ -26,6 +26,8 @@
 		<constructor-arg>
 			<list>
 				<ref bean="cfSessionChecker"/>
+				<ref bean="agSessionChecker"/>
+				<ref bean="cuSessionChecker"/>
 			</list>
 		</constructor-arg>
 	</bean>

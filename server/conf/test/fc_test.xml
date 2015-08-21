@@ -19,6 +19,7 @@
 		<property name="plugins">
 			<list>
                 <!-- <ref bean="marketSessionManager" /> -->
+                <ref bean="marketSessionUtil"/>
                 <ref bean="indexMarketSessionManager"/>
                 <ref bean="refDataHandler" />
 				<ref bean="mdManager" />

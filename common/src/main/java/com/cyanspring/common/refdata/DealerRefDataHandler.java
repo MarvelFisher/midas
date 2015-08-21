@@ -98,7 +98,6 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 	private boolean checkRefData(RefData refData) {
 		if (!StringUtils.hasText(refData.getRefSymbol()) 
 				|| !StringUtils.hasText(refData.getCNDisplayName())
-				|| !StringUtils.hasText(refData.getENDisplayName())
 				|| !StringUtils.hasText(refData.getExchange())
 				|| !StringUtils.hasText(refData.getCode())
 				|| !StringUtils.hasText(refData.getIType())){
@@ -119,7 +118,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 						continue;
 					String index = refData.getCategory();
 					if (index == null)
-						index = RefDataUtil.getOnlyChars(refData.getENDisplayName());
+						index = RefDataUtil.getOnlyChars(refData.getRefSymbol());
 					if (index == null)
 						throw new Exception("RefData index not find");
 					String tradeDate = sessionDataMap.get(index).getTradeDateByString();
@@ -165,10 +164,16 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				for (RefData refData : refDataList) {
 					String index = refData.getCategory();
 					if (index == null)
-						index = RefDataUtil.getOnlyChars(refData.getENDisplayName());
+						index = RefDataUtil.getOnlyChars(refData.getRefSymbol());
 					if (index == null)
 						throw new Exception("RefData index not find");
-					String tradeDate = sessionDataMap.get(index).getTradeDateByString();
+					MarketSessionData session = sessionDataMap.get(index);
+					if (session == null) {
+						log.error("Can't find market session data for [" + index + "], remove it from list");
+						refDataManager.remove(refData);
+						continue;
+					}
+					String tradeDate = session.getTradeDateByString();
 					refDataManager.update(refData, tradeDate);
 				}
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));

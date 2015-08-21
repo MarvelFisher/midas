@@ -49,7 +49,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private Map<String, MarketSessionData> sessionDataMap;
 	private Map<String, Date> checkDateMap = new HashMap<>();
-	private ConcurrentMap<String, RefData> refDataMap;
+	private Map<String, RefData> refDataMap;
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	protected long timerInterval = 1 * 1000;
@@ -117,7 +117,7 @@ public class IndexMarketSessionManager implements IPlugin {
 		if (!event.isOk())
 			return;
 		if (refDataMap == null)
-			refDataMap = new ConcurrentHashMap<String, RefData>();
+			refDataMap = new HashMap<String, RefData>();
 
 		List<RefData> refDataList = event.getRefDataList();
 		sendIndexMarketSession(refDataList);
@@ -216,6 +216,14 @@ public class IndexMarketSessionManager implements IPlugin {
 			if (refData.getSettlementDate() == null)
 				continue;
 			MarketSessionData data = sessionDataMap.get(index);
+			if (data == null) 
+				data = sessionDataMap.get(refData.getCategory());
+			if (data == null)
+				data = sessionDataMap.get(refData.getExchange());
+			if (data == null) {
+				log.error(index + ", check settlement day fail");
+				continue;
+			}
 			Date chkDate = checkDateMap.get(index);
 			if (chkDate == null) {
 				chkDate = TimeUtil.getPreviousDay();

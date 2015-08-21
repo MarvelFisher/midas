@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataService;
 import com.cyanspring.common.staticdata.RefDataUtil;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
 
-public class MarketSessionUtil {
+public class MarketSessionUtil implements IPlugin{
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
     private Map<String, IMarketSession> sessionMap;
     
@@ -173,4 +174,17 @@ public class MarketSessionUtil {
     		this.session = session;
     	}
     }
+
+	@Override
+	public void init() throws Exception {
+		Date date = Clock.getInstance().now();
+		for (Entry<String, IMarketSession> e : sessionMap.entrySet()) {
+			e.getValue().init(date, null);
+		}
+	}
+
+	@Override
+	public void uninit() {
+		
+	}
 }

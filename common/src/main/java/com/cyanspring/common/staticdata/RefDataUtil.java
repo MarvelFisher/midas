@@ -29,7 +29,7 @@ public class RefDataUtil {
 		STOCK
 	}
 	public static String getOnlyChars(String symbol) {
-		Pattern pattern = Pattern.compile("\\D*");
+		Pattern pattern = Pattern.compile("[a-zA-Z]*");
 		Matcher matcher = pattern.matcher(symbol);
 		if (matcher.find())
 			return matcher.group(0);
