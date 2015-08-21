@@ -244,13 +244,9 @@ public class BusinessManager implements ApplicationContextAware {
 		String user = (String) fields.get(OrderField.USER.value());
 		String account = (String) fields.get(OrderField.ACCOUNT.value());
 
-		if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-			String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-			EnterParentOrderReplyEvent replyEvent = new EnterParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), order, user, account);
-			eventManager.sendLocalOrRemoteEvent(replyEvent);
+		if (suspendSystemController != null && 
+				suspendSystemController.sendNewOrderRejectEvent(eventManager, event.getKey(), 
+				event.getSender(), event.getTxId(), order, user, account)){
 			return;
         }
 		
@@ -401,13 +397,8 @@ public class BusinessManager implements ApplicationContextAware {
 				throw new OrderException("Cant find this order id: " + id,
 						ErrorMessage.ORDER_ID_NOT_FOUND);
 			
-			if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-	        	String msg = MessageLookup.buildEventMessage(
-						ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-	        	AmendParentOrderReplyEvent replyEvent = new AmendParentOrderReplyEvent(
-						event.getKey(), event.getSender(), false, msg,
-						event.getTxId(), order);
-				eventManager.sendLocalOrRemoteEvent(replyEvent);
+			if (suspendSystemController != null && 
+					suspendSystemController.sendAmendOrderRejectEvent(eventManager, event.getKey(), event.getSender(), event.getTxId(), order)){
 	        	return;
 	        }
 			
@@ -537,14 +528,8 @@ public class BusinessManager implements ApplicationContextAware {
 					+ ", " + event.getOrderId());
 		
 		ParentOrder order = orders.get(event.getOrderId());
-		if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-        	String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-
-			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), order);
-			eventManager.sendLocalOrRemoteEvent(reply);
+		if (suspendSystemController != null && 
+				suspendSystemController.sendCancelOrderRejectEvent(eventManager, event.getKey(), event.getSender(), event.getTxId(), order)){
         	return;
         }
 		
@@ -600,18 +585,16 @@ public class BusinessManager implements ApplicationContextAware {
 	}
 
 	public void processClosePositionRequestEvent(ClosePositionRequestEvent event) {
-        if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-        	String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-        	try {
-				eventManager.sendLocalOrRemoteEvent(new ClosePositionReplyEvent(
-						event.getKey(), event.getSender(), event.getAccount(),
-						event.getSymbol(), event.getTxId(), false, msg));
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}        	
-        	return;
-        }
+		try {
+			if (suspendSystemController != null && 
+        		suspendSystemController.sendClosePositionRejectEvent(eventManager, event.getKey(), event.getSender(), 
+        				event.getAccount(), event.getSymbol(), event.getTxId())){
+				return;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		
 		boolean ok = true;
 		String message = null;
 		ErrorMessage clientMessage = null;
