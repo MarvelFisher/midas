@@ -71,12 +71,16 @@ public class RequestMgr implements IReqThreadCallback {
             }
             break;
             case WindDef.MSG_REFDATA_CHECKUPDATE: {
-                log.debug("RefDataUpdate Check begin");
+                log.info("RefDataUpdate Check begin");
 
-                if(windRefDataAdapter.getRefDataHashMap() == null || windRefDataAdapter.getRefDataUpdateHashMap() == null
-                        || windRefDataAdapter.getRefDataHashMap().size() == 0 || windRefDataAdapter.getRefDataUpdateHashMap().size() == 0)
+                if(windRefDataAdapter.getRefDataHashMap() == null || windRefDataAdapter.getRefDataHashMap().size() == 0){
+                    log.info("refDataHashMap is empty");
                     return;
-
+                }
+                if(windRefDataAdapter.getRefDataUpdateHashMap() == null || windRefDataAdapter.getRefDataUpdateHashMap().size() == 0){
+                    log.info("refDataUpdateHashMap is empty");
+                    return;
+                }
                 Set<String> keysInRefDataMap = new HashSet<String>(windRefDataAdapter.getRefDataHashMap().keySet());
                 Set<String> keysInRefDataUpdateMap = new HashSet<String>(windRefDataAdapter.getRefDataUpdateHashMap().keySet());
                 //Add
