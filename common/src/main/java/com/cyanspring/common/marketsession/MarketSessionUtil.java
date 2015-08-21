@@ -148,10 +148,10 @@ public class MarketSessionUtil {
     	String sessionIndex = refData.getIndexSessionType();
     	if (sessionIndex.equals(IndexSessionType.SETTLEMENT.toString()))
     		return new SessionPair(refData.getSymbol(), session);
+    	else if (sessionIndex.equals(IndexSessionType.SPOT.toString()))
+    		return new SessionPair(refData.getCategory(), session);
     	else if (sessionIndex.equals(IndexSessionType.EXCHANGE.toString()))
     		return new SessionPair(refData.getExchange(), session);
-    	else if (sessionIndex.equals(IndexSessionType.SPOT.toString()))
-    		return new SessionPair(RefDataUtil.getOnlyChars(refData.getSpotENName()), session);
     	return null;
     }
 

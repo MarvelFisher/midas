@@ -74,7 +74,8 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
 		try {
 			if (checkSessionAndRefData()) {
-				eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), null, false));
+				Map<String, MarketSessionData> send = new HashMap<>();
+				eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), send, false));
 				return;
 			}
 

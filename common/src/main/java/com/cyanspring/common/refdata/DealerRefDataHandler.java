@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.AsyncEventProcessor;
@@ -67,8 +68,10 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("DealerRefDataHandler");
 
-		for (IRefDataAdaptor adaptor : refDataAdaptors)
+		for (IRefDataAdaptor adaptor : refDataAdaptors){
+			adaptor.init();
 			adaptor.subscribeRefData(this);
+		}
 	}
 
 	@Override
@@ -85,9 +88,25 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (this.refDataList == null)
 			this.refDataList = new ArrayList<>();
 		log.debug("Receive RefData from Adapter - " + refDataList.size());
-
-		this.refDataList.addAll(refDataList);
+		for (RefData refData : refDataList) {
+			if (checkRefData(refData))
+				this.refDataList.add(refData);
+		}
 		isInit();
+	}
+	
+	private boolean checkRefData(RefData refData) {
+		if (!StringUtils.hasText(refData.getRefSymbol()) 
+				|| !StringUtils.hasText(refData.getCNDisplayName())
+				|| !StringUtils.hasText(refData.getENDisplayName())
+				|| !StringUtils.hasText(refData.getExchange())
+				|| !StringUtils.hasText(refData.getCode())
+				|| !StringUtils.hasText(refData.getIType())){
+			
+			log.error("Incorrect refData from adaptor.");
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -96,6 +115,8 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size() + ", action: " + action.toString());
 			try {
 				for (RefData refData : refDataList) {
+					if (!checkRefData(refData))
+						continue;
 					String index = refData.getCategory();
 					if (index == null)
 						index = RefDataUtil.getOnlyChars(refData.getENDisplayName());
@@ -137,6 +158,8 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 					return false;
 				}
 			}
+			
+			refDataManager.injectRefDataList(refDataList);
 			try {
 				refDataManager.init();
 				for (RefData refData : refDataList) {
@@ -151,6 +174,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
+				return false;
 			}
 			isInit = true;
 			return false;

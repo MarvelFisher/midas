@@ -18,9 +18,9 @@
 		</property>
 		<property name="plugins">
 			<list>
-                <ref bean="marketSessionManager" />
-                <ref bean="refDataHandler" />
+                <!-- <ref bean="marketSessionManager" /> -->
                 <ref bean="indexMarketSessionManager"/>
+                <ref bean="refDataHandler" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="upStreamManager" />
@@ -238,7 +238,17 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
+		<constructor-arg>
+			<list>
+				<ref bean="refDataAdaptor"/>
+			</list>
+		</constructor-arg>    
+    </bean>
+    
+    <bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
+    	<property name="filePath" value="./conf/sim/codetable_f2.xml"></property>
+    </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
@@ -293,26 +303,6 @@
 		<constructor-arg>
 			<list>
 			</list>
-		</constructor-arg>
-	</bean>
-
-    <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
-        <property name="settlementDelay"><value>45</value></property>
-        <property name="eventManager" ref="eventManager"></property>        
-    </bean>
-
-	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-		<constructor-arg>
-			<map>
-				<entry key="IF">
-					<ref bean="IFsessionChecker" />
-				</entry>
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
-			</map>
 		</constructor-arg>
 	</bean>
 
