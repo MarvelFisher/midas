@@ -1,4 +1,4 @@
-package com.cyanspring.info;
+package com.cyanspring.info.cdp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,6 +67,10 @@ public class SymbolData implements Comparable<SymbolData>
 	private TreeMap<Date, HistoricalPrice> priceData = new TreeMap<Date, HistoricalPrice>() ;
 //	private HashMap<String, List<HistoricalPrice>> mapHistorical = new HashMap<String, List<HistoricalPrice>>();
 	private LinkedBlockingQueue<Quote> quoteTmp = new LinkedBlockingQueue<Quote>() ;
+
+	private MarketSessionType sessionType = null ;
+	private Date sessionEnd;
+	private String tradedate ;
 	
 	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
 	{
@@ -1115,6 +1119,30 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		log.debug(strSymbol + " set52WHLByMapHistorical() end" + 
 				String.format(" H:%.5f L:%.5f", getD52WHigh(), getD52WLow()));
+	}
+	public MarketSessionType getSessionType()
+	{
+		return sessionType;
+	}
+	public void setSessionType(MarketSessionType sessionType)
+	{
+		this.sessionType = sessionType;
+	}
+	public Date getSessionEnd()
+	{
+		return sessionEnd;
+	}
+	public void setSessionEnd(Date sessionEnd)
+	{
+		this.sessionEnd = sessionEnd;
+	}
+	public String getTradedate()
+	{
+		return tradedate;
+	}
+	public void setTradedate(String tradedate)
+	{
+		this.tradedate = tradedate;
 	}
 	
 }

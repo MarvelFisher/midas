@@ -1,4 +1,4 @@
-package com.cyanspring.info;
+package com.cyanspring.info.cdp;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
