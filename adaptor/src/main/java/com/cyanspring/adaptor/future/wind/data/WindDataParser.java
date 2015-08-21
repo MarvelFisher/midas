@@ -673,6 +673,9 @@ public class WindDataParser extends AbstractWindDataParser {
                         case "ShortName":
                             codeTableData.setShortName(value);
                             break;
+                        case "EnglishName":
+                            codeTableData.setEnglishName(value);
+                            break;
                         case "SecurityExchange":
                             codeTableData.setSecurityExchange(value);
                             break;
@@ -712,6 +715,8 @@ public class WindDataParser extends AbstractWindDataParser {
             }
             if (null != inputHashMap.get(FDTFields.ShortName))
                 codeTableData.setShortName(new String((byte[]) inputHashMap.get(FDTFields.ShortName), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.EnglishName))
+                codeTableData.setEnglishName(new String((byte[]) inputHashMap.get(FDTFields.EnglishName), "UTF-8"));
             if (null != inputHashMap.get(FDTFields.SecurityExchange))
                 codeTableData.setSecurityExchange(new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8"));
             if (null != inputHashMap.get(FDTFields.SecurityType))

@@ -52,18 +52,18 @@ public class TransationItem implements AutoCloseable {
         }
     }
 
-    public static void processTransationData(TransationData transationData) {
+    public static void processTransationData(TransationData transationData, WindGateWayAdapter windGateWayAdapter, QuoteMgr quoteMgr) {
 
         String symbolId = transationData.getWindCode();
         TransationItem item = getItem(symbolId, true);
 
         //Get MarketSession
-        String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        String index = windGateWayAdapter.getMarketRuleBySymbolMap().get(symbolId);
         MarketSessionData marketSessionData = null;
         Date endDate;
         Date startDate;
         try {
-            marketSessionData = WindGateWayAdapter.marketSessionByIndexMap.get(index);
+            marketSessionData = windGateWayAdapter.getMarketSessionByIndexMap().get(index);
             endDate = marketSessionData.getEndDate();
             startDate = marketSessionData.getStartDate();
         } catch (Exception e) {
@@ -98,7 +98,7 @@ public class TransationItem implements AutoCloseable {
         }
 
         //modify tick Time
-        if (QuoteMgr.isModifyTickTime()) {
+        if (quoteMgr.isModifyTickTime()) {
             if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
                     && DateUtil.compareDate(tickTime, endDate) < 0) {
                 tickTime = endDate;
@@ -124,7 +124,7 @@ public class TransationItem implements AutoCloseable {
         trade.setQuantity(transationData.getVolume());
         trade.setBuySellFlag(transationData.getBuySellFlag());
         trade.setId(String.valueOf(transationData.getIndexNumber()));
-        WindGateWayAdapter.instance.sendTrade(trade);
+        windGateWayAdapter.sendTrade(trade);
     }
 
     @Override

@@ -89,13 +89,13 @@ public class FutureItem implements AutoCloseable {
         }
     }
 
-    public static void processFutureData(FutureData futureData) {
+    public static void processFutureData(FutureData futureData, WindGateWayAdapter windGateWayAdapter, QuoteMgr quoteMgr) {
 
         String symbolId = futureData.getWindCode();
         FutureItem item = getItem(symbolId, true);
 
         //Get MarketSession
-        String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        String index = windGateWayAdapter.getMarketRuleBySymbolMap().get(symbolId);
         if(index == null) {
             if(!item.isLogNoRefDataMessage) {
                 log.debug(WindDef.TITLE_FUTURE + " " + WindDef.ERROR_NO_REFDATA + "," + futureData.getWindCode());
@@ -107,7 +107,7 @@ public class FutureItem implements AutoCloseable {
         Date endDate;
         Date startDate;
         try {
-            marketSessionData = WindGateWayAdapter.marketSessionByIndexMap.get(index);
+            marketSessionData = windGateWayAdapter.getMarketSessionByIndexMap().get(index);
             endDate = marketSessionData.getEndDate();
             startDate = marketSessionData.getStartDate();
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public class FutureItem implements AutoCloseable {
         if (futureData.getPreClose() > 0) {
 
             //modify tick Time
-        	if (QuoteMgr.isModifyTickTime()) {
+        	if (quoteMgr.isModifyTickTime()) {
 	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
 	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
 	                tickTime = endDate;
@@ -200,8 +200,8 @@ public class FutureItem implements AutoCloseable {
             quote.setLastVol(item.volume);
 
             //process send quote
-            WindGateWayAdapter.instance.saveLastQuote(quote);
-            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, quote));
+            windGateWayAdapter.saveLastQuote(quote);
+            windGateWayAdapter.sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, quote));
         }else{
             log.debug(WindDef.TITLE_FUTURE + " " + WindDef.WARN_PRECLOSE_LESS_THAN_ZERO + "," + futureData.getWindCode());
         }
@@ -271,8 +271,8 @@ public class FutureItem implements AutoCloseable {
         if (quoteExtendIsChange && quoteExtend.getFields().size() > 0) {
             quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbolId);
             quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
-            WindGateWayAdapter.instance.saveLastQuoteExtend(quoteExtend);
-            WindGateWayAdapter.instance.sendQuoteExtend(quoteExtend);
+            windGateWayAdapter.saveLastQuoteExtend(quoteExtend);
+            windGateWayAdapter.sendQuoteExtend(quoteExtend);
         }
 
     }

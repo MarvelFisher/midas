@@ -58,13 +58,13 @@ public class IndexItem implements AutoCloseable {
         }
     }
 
-    public static void processIndexData(IndexData indexData) {
+    public static void processIndexData(IndexData indexData, WindGateWayAdapter windGateWayAdapter, QuoteMgr quoteMgr) {
 
         String symbolId = indexData.getWindCode();
         IndexItem item = getItem(symbolId, true);
 
         //Get MarketSession
-        String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        String index = windGateWayAdapter.getMarketRuleBySymbolMap().get(symbolId);
         if(index == null) {
             if(!item.isLogNoRefDataMessage) {
                 log.debug(WindDef.TITLE_INDEX + " " + WindDef.ERROR_NO_REFDATA + "," + indexData.getWindCode());
@@ -76,7 +76,7 @@ public class IndexItem implements AutoCloseable {
         Date endDate;
         Date startDate;
         try {
-            marketSessionData = WindGateWayAdapter.marketSessionByIndexMap.get(index);
+            marketSessionData = windGateWayAdapter.getMarketSessionByIndexMap().get(index);
             endDate = marketSessionData.getEndDate();
             startDate = marketSessionData.getStartDate();
         } catch (Exception e) {
@@ -111,7 +111,7 @@ public class IndexItem implements AutoCloseable {
         }
 
         //modify tick Time
-        if (QuoteMgr.isModifyTickTime()) {
+        if (quoteMgr.isModifyTickTime()) {
             if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
                     && DateUtil.compareDate(tickTime, endDate) < 0) {
                 tickTime = endDate;
@@ -169,8 +169,8 @@ public class IndexItem implements AutoCloseable {
         quote.setLastVol(item.volume);
 
         //process send quote
-        WindGateWayAdapter.instance.saveLastQuote(quote);
-        WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(QuoteSource.WIND_INDEX, quote));
+        windGateWayAdapter.saveLastQuote(quote);
+        windGateWayAdapter.sendInnerQuote(new InnerQuote(QuoteSource.WIND_INDEX, quote));
     }
 
     @Override
