@@ -6,9 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataTplLoader;
 import com.cyanspring.common.staticdata.fu.IType;
 
 /**
@@ -17,6 +19,9 @@ import com.cyanspring.common.staticdata.fu.IType;
  * 
  */
 public class RefDataFilter implements IDataObjectFilter {
+	
+	@Autowired
+	RefDataTplLoader refDataTplLoader;
 
 	private static final Logger log = LoggerFactory.getLogger(RefDataFilter.class);
 
@@ -101,7 +106,27 @@ public class RefDataFilter implements IDataObjectFilter {
 			}
 		}
 
-		return new ArrayList<RefData>(mapRefData.values());
+		List<RefData> lstRefData = new ArrayList<RefData>(mapRefData.values());
+		
+		lstRefData = excludeNonExistingProducts(lstRefData);
+		
+		return lstRefData;
+	}
+	
+	private List<RefData> excludeNonExistingProducts(List<RefData> lstRefData) throws Exception {
+		if (lstRefData != null && lstRefData.size() > 0) {
+			List<RefData> lstRefDataTpl = refDataTplLoader.getRefDataList();
+			
+			// equals() and hashCode() of RefData have been "override" based on "Symbol"
+			if (lstRefDataTpl != null && lstRefDataTpl.size() > 0) {
+				lstRefData.retainAll(lstRefDataTpl);				
+			}
+		} else {
+			log.error("The given RefData list cannot be null or empty");
+			throw new Exception("The given RefData list cannot be null or empty");
+		}
+		
+		return lstRefData;
 	}
 
 }

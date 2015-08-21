@@ -39,11 +39,12 @@ public class TestRefDataFilter {
 	public void testRefDataFilter() throws Exception {
 		refData1 = new RefData();
 		refData1.setIType(IType.FUTURES_CX.getValue());
-		refData1.setSymbol("ag1512.SHF");
+		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
 
+		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
 		refData2.setIType(IType.FUTURES.getValue());
 		refData2.setSymbol("ag1511.SHF");
@@ -54,7 +55,7 @@ public class TestRefDataFilter {
 		// AG 活躍
 		refData3 = new RefData();
 		refData3.setIType(IType.FUTURES_CX.getValue());
-		refData3.setSymbol("ag1512.SHF");
+		refData3.setSymbol("IF1502");
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
@@ -66,7 +67,7 @@ public class TestRefDataFilter {
 
 		@SuppressWarnings("unchecked")
 		List<RefData> lstFilteredRefData = (List<RefData>) iDataFilter.filter(lstRefData);
-		assertEquals(2, lstFilteredRefData.size());
+		assertEquals(1, lstFilteredRefData.size());
 		
 		boolean flagAG = false;
 		boolean flagAG11 = false;
@@ -83,7 +84,7 @@ public class TestRefDataFilter {
 		}
 		
 		assertTrue(flagAG);
-		assertTrue(flagAG11);
+		assertFalse(flagAG11); // since symbol doesn't exist in FcRefDataTemplate and were excluded.
 		assertFalse(flagAG12); // since it should have been replaced by the 活躍 one
 	}
 	
@@ -91,14 +92,14 @@ public class TestRefDataFilter {
 	public void testDuplicateItemHandling() throws Exception {
 		refData1 = new RefData();
 		refData1.setIType(IType.FUTURES_CX.getValue());
-		refData1.setSymbol("ag1512.SHF");
+		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
 
 		refData2 = new RefData();
 		refData2.setIType(IType.FUTURES_CX.getValue());
-		refData2.setSymbol("ag1512.SHF");
+		refData2.setSymbol("IF1502");
 		refData2.setCategory("AG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG12.SHF");
@@ -164,5 +165,5 @@ public class TestRefDataFilter {
 			fail("DataObjectException was thrown unexpectedly");
 		}
 	}
-
+	
 }
