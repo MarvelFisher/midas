@@ -33,6 +33,7 @@ import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.info.util.IPriceSetter;
+import com.cyanspring.info.util.InfoUtils;
 
 public class SymbolData implements Comparable<SymbolData>
 {
@@ -330,7 +331,7 @@ public class SymbolData implements Comparable<SymbolData>
 				cal_.setTime(lastPrice.getKeytime());
 				if (strType.equals("W"))
 				{
-					if (getWeek(sdf.format(cal_.getTime())) == getWeek(sdf.format(cal.getTime())))
+					if (InfoUtils.getWeek(sdf.format(cal_.getTime())) == InfoUtils.getWeek(sdf.format(cal.getTime())))
 						listBase = centralDB.getDbhnd().getPeriodValue(market, "W", getStrSymbol(), lastPrice.getKeytime());
 				}
 				else
@@ -748,7 +749,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else if (strType.equals("W") && lastPrice != null)
 		{
-			if (getWeek(sdf.format(emptytime.getTime())) == getWeek(sdf.format(pricetime.getTime())))
+			if (InfoUtils.getWeek(sdf.format(emptytime.getTime())) == InfoUtils.getWeek(sdf.format(pricetime.getTime())))
 			{
 				pricelist.remove(lastPrice);
 				emptytime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -952,32 +953,6 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		Collections.sort(listPrice);
 		return listPrice ;
-	}
-	
-	public static int getWeek(String strDate) 
-	{
-		// strDate: yyyy-MM-dd
-		int year,month,day,total_day;
-		int  monthday[] = {0,31,59,90,120,151,181,212,243,273,304,334,365};
-		int smonthday[] = {0,31,60,91,121,152,182,213,244,274,305,335,366};
-
-	 	try 
-	 	{
-	 		year  = Integer.parseInt(strDate.substring(0,4));
-	 		month = Integer.parseInt(strDate.substring(5,7));
-			day   = Integer.parseInt(strDate.substring(8,10));
-		} 
-	 	catch (Exception e) 
-	 	{
-	 		return 0;
-		}
-	        
-		if (year%4==0)
-			total_day = (year-1)*365+(year-1)/4+smonthday[month-1]+(day-1);
-		else
-			total_day = (year-1)*365+(year-1)/4+ monthday[month-1]+(day-1);
-
-		return total_day / 7;
 	}
 	
 	public void logHistoricalPrice(HistoricalPrice hp)

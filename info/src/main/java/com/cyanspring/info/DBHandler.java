@@ -28,6 +28,7 @@ import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.info.util.InfoUtils;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class DBHandler 
@@ -211,8 +212,8 @@ public class DBHandler
 			int count;
 			while(rs.next())
 			{
-				group = DBHandler.utf8Decode(rs.getString("GROUP_ID"));
-				name = DBHandler.utf8Decode(rs.getString("GROUP_NAME"));
+				group = InfoUtils.utf8Decode(rs.getString("GROUP_ID"));
+				name = InfoUtils.utf8Decode(rs.getString("GROUP_NAME"));
 				strCount = rs.getString("SYMBOL_COUNT");
 				count = (strCount == null) ? 0 : Integer.parseInt(strCount);
 				retsymbollist.add(new GroupInfo(group, name, count));
@@ -736,32 +737,4 @@ public class DBHandler
     		closeConnect(connect);
     	}
     }
-	public static String utf8Encode(String org)
-	{
-		String encode;
-		try 
-		{
-			encode = URLEncoder.encode(org, "UTF-8");
-		} 
-		catch (UnsupportedEncodingException e) 
-		{
-			log.warn("CDPutf8Encode: Unsupported Encoding UTF-8, origin: " + org);
-			encode = org;
-		}
-		return encode;
-	}
-	public static String utf8Decode(String org)
-	{
-		String decode;
-		try 
-		{
-			decode = URLDecoder.decode(org, "UTF-8");
-		} 
-		catch (UnsupportedEncodingException e) 
-		{
-			log.warn("CDPutf8Encode: Unsupported Encoding UTF-8, origin: " + org);
-			decode = org;
-		}
-		return decode;
-	}
 }

@@ -66,6 +66,7 @@ import com.cyanspring.common.staticdata.TickTableManager;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.util.DefPriceSetter;
 import com.cyanspring.info.util.FXPriceSetter;
+import com.cyanspring.info.util.InfoUtils;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 
@@ -393,7 +394,7 @@ public class CentralDbProcessor implements IPlugin
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
 		String userEncode;
-		userEncode = DBHandler.utf8Encode(user);
+		userEncode = InfoUtils.utf8Encode(user);
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 				" AND `GROUP`='%s' AND `MARKET`='%s';", userEncode, group, market) ;
@@ -506,7 +507,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		String userEn, groupIDEn, groupNameEn;
 		String market = retEvent.getMarket();
-		userEn = DBHandler.utf8Encode(retEvent.getUserID());
+		userEn = InfoUtils.utf8Encode(retEvent.getUserID());
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s';", 
 				userEn, retEvent.getMarket()) ;
@@ -515,8 +516,8 @@ public class CentralDbProcessor implements IPlugin
 		boolean first = true;
 		for (GroupInfo ginfo : groups)
 		{
-			groupIDEn = DBHandler.utf8Encode(ginfo.getGroupID());
-			groupNameEn = DBHandler.utf8Encode(ginfo.getGroupName());
+			groupIDEn = InfoUtils.utf8Encode(ginfo.getGroupID());
+			groupNameEn = InfoUtils.utf8Encode(ginfo.getGroupName());
 			if (first == true)
 			{
 				first = false;
