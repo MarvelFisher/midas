@@ -19,7 +19,8 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataFilterTest.xml" })
+@ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataFilterTest.xml",
+		"classpath:META-INFO/spring/RefDataTplLoaderTest.xml"})
 public class TestRefDataFilter {
 
 	@Autowired

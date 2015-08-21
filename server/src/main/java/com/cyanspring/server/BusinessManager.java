@@ -24,6 +24,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.ui.context.Theme;
 
 import webcurve.util.PriceUtils;
 
@@ -1084,7 +1085,13 @@ public class BusinessManager implements ApplicationContextAware {
 	 * @param event
 	 */
 	public void processIndexSessionEvent(IndexSessionEvent event) {
-		log.info("Received MarketSessionEvent: " + event);
+		log.info("Received IndexSessionEvent: " + event);
+		
+		if (event == null || !event.isOk()) {
+			log.info("Received IndexSessionEvent is null or not OK");
+			return;
+		}
+		
 		Map<String, MarketSessionData> sessionDataMap = event.getDataMap();
 		
 		for (Entry<String, MarketSessionData> sessionDataMapEntry : sessionDataMap.entrySet()) {

@@ -18,10 +18,4 @@
 		</property>
 	</bean>
 	
-	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
-		<property name="tplPath">
-			<value>src/test/resources/META-INFO/spring/FcRefDataTemplate.xml</value>
-		</property>
-	</bean>
-	
 </beans>
