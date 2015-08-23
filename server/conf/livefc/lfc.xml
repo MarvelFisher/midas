@@ -39,6 +39,7 @@
 				<ref bean="validationDataProvider"/>
                 <ref bean="liveTradingSession" />
                 <ref bean="statisticManager" />
+            	<ref bean="systemSuspendValidator"/>
             </list>
         </property>
         <property name="readyMap">
@@ -307,8 +308,16 @@
             </map>
         </constructor-arg>
     </bean>
-    
-    <bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/> 
+
+    <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
+        <property name="validators">
+            <list>
+            	<ref bean="systemSuspendValidator"/>
+            </list>
+        </property>
+    </bean>
+        
+    <bean id="systemSuspendValidator" class="com.cyanspring.server.validation.transaction.SystemSuspendValidator"/>
 
     <bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
     <bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
