@@ -51,6 +51,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.SYSTEM_NOT_READY,getBean(115, "System not yet Ready"));
 			addAndCheck(ErrorMessage.SERVER_NOT_READY_FOR_LOGIN,getBean(116, "Server is not set up for login"));
 			addAndCheck(ErrorMessage.SERVER_SUSPEND,getBean(117, "System is suspended from trading"));
+			addAndCheck(ErrorMessage.FAST_REJECT,getBean(118, "Transaction sent too fast one after another"));
 			
 			// business errors start with 200
 			addAndCheck(ErrorMessage.PREMIUM_FOLLOW_INFO_INCOMPLETE,getBean(200, "Premium follow info incomplete"));

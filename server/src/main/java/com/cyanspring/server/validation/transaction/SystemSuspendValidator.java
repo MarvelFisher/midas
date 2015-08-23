@@ -24,31 +24,30 @@ public class SystemSuspendValidator implements ITransactionValidator, IPlugin, I
 
     private void check() throws TransactionValidationException {
     	if(this.suspended) {
-			String msg = MessageLookup.buildEventMessage(ErrorMessage.SERVER_SUSPEND, "System is suspended from trading");
-			throw new TransactionValidationException(msg);
+			throw new TransactionValidationException("System is suspended from trading", ErrorMessage.SERVER_SUSPEND);
     	}
     }
     
 	@Override
-	public void checkEnterOrder(EnterParentOrderEvent event)
+	public void checkEnterOrder(EnterParentOrderEvent event, String account)
 			throws TransactionValidationException {
 		check();
 	}
 
 	@Override
-	public void checkAmendOrder(AmendParentOrderEvent event)
+	public void checkAmendOrder(AmendParentOrderEvent event, String account)
 			throws TransactionValidationException {
 		check();
 	}
 
 	@Override
-	public void checkCancelOrder(CancelParentOrderEvent event)
+	public void checkCancelOrder(CancelParentOrderEvent event, String account)
 			throws TransactionValidationException {
 		check();
 	}
 
 	@Override
-	public void checkClosePosition(ClosePositionRequestEvent event)
+	public void checkClosePosition(ClosePositionRequestEvent event, String account)
 			throws TransactionValidationException {
 		check();
 	}
