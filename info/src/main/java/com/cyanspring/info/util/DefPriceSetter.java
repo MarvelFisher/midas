@@ -6,7 +6,7 @@ import java.util.TimeZone;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.PriceUtils;
-import com.cyanspring.info.SymbolData;
+import com.cyanspring.info.cdp.SymbolData;
 
 public class DefPriceSetter implements IPriceSetter
 {

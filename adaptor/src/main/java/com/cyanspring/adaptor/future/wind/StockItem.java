@@ -99,14 +99,14 @@ public class StockItem implements AutoCloseable {
         }
     }
 
-    public static void processMarketData(StockData stockData) {
+    public static void processMarketData(StockData stockData, WindGateWayAdapter windGateWayAdapter, QuoteMgr quoteMgr) {
 
         String symbolId = stockData.getWindCode();
         StockItem item = getItem(symbolId, true);
         WindBaseDBData windBaseDBData = WindRefDataAdapter.windBaseDBDataHashMap.get(symbolId);
 
         //Get MarketSession
-        String index = WindGateWayAdapter.marketRuleBySymbolMap.get(symbolId);
+        String index = windGateWayAdapter.getMarketRuleBySymbolMap().get(symbolId);
         if (index == null) {
             if (!item.isLogNoRefDataMessage) {
                 log.debug(WindDef.TITLE_STOCK + " " + WindDef.ERROR_NO_REFDATA + "," + stockData.getWindCode());
@@ -118,7 +118,7 @@ public class StockItem implements AutoCloseable {
         Date endDate;
         Date startDate;
         try {
-            marketSessionData = WindGateWayAdapter.marketSessionByIndexMap.get(index);
+            marketSessionData = windGateWayAdapter.getMarketSessionByIndexMap().get(index);
             endDate = marketSessionData.getEndDate();
             startDate = marketSessionData.getStartDate();
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class StockItem implements AutoCloseable {
                 ) {
 
             //modify tick Time
-            if (QuoteMgr.isModifyTickTime()) {
+            if (quoteMgr.isModifyTickTime()) {
                 if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
                         && DateUtil.compareDate(tickTime, endDate) < 0) {
                     tickTime = endDate;
@@ -200,13 +200,13 @@ public class StockItem implements AutoCloseable {
                     default:
                         quote.setStale(false);
                         //record time stat
-                        if (WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.containsKey(symbolId)) {
-                            DataTimeStat dataTimeStat = WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.get(symbolId);
+                        if (windGateWayAdapter.recordReceiveQuoteInfoBySymbolMap.containsKey(symbolId)) {
+                            DataTimeStat dataTimeStat = windGateWayAdapter.recordReceiveQuoteInfoBySymbolMap.get(symbolId);
                             dataTimeStat.processReceiveQuoteTime(tickTime);
                         } else {
                             DataTimeStat dataTimeStat = new DataTimeStat(symbolId);
                             dataTimeStat.processReceiveQuoteTime(tickTime);
-                            WindGateWayAdapter.instance.recordReceiveQuoteInfoBySymbolMap.put(symbolId, dataTimeStat);
+                            windGateWayAdapter.recordReceiveQuoteInfoBySymbolMap.put(symbolId, dataTimeStat);
                         }
                         break;
                 }
@@ -239,8 +239,8 @@ public class StockItem implements AutoCloseable {
             quote.setLastVol(item.volume);
 
             //process send quote
-            WindGateWayAdapter.instance.saveLastQuote(quote);
-            WindGateWayAdapter.instance.sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, quote));
+            windGateWayAdapter.saveLastQuote(quote);
+            windGateWayAdapter.sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, quote));
         } else {
             log.debug(WindDef.TITLE_STOCK + " " + WindDef.WARN_PRECLOSE_LESS_THAN_ZERO + "," + stockData.getWindCode());
         }
@@ -367,8 +367,8 @@ public class StockItem implements AutoCloseable {
         if (quoteExtendIsChange && quoteExtend.getFields().size() > 0) {
             quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbolId);
             quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), tickTime);
-            WindGateWayAdapter.instance.saveLastQuoteExtend(quoteExtend);
-            WindGateWayAdapter.instance.sendQuoteExtend(quoteExtend);
+            windGateWayAdapter.saveLastQuoteExtend(quoteExtend);
+            windGateWayAdapter.sendQuoteExtend(quoteExtend);
         }
     }
 

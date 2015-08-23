@@ -14,23 +14,14 @@ public class QuoteMgr implements IReqThreadCallback {
     private static final Logger log = LoggerFactory
             .getLogger(QuoteMgr.class);
 
-    public static QuoteMgr instance = new QuoteMgr();
-    private static boolean isModifyTickTime = true;
-    Object m_lock = new Object();
+    private boolean isModifyTickTime = true;
 
-    public static QuoteMgr instance() {
-        return instance;
-    }
-
-    public static boolean isModifyTickTime() {
-        return isModifyTickTime;
-    }
-
-    public static void setModifyTickTime(boolean isModifyTickTime) {
-        QuoteMgr.isModifyTickTime = isModifyTickTime;
-    }
-
+    private WindGateWayAdapter windGateWayAdapter;
     RequestThread thread = null;
+
+    QuoteMgr(WindGateWayAdapter windGateWayAdapter){
+        this.windGateWayAdapter = windGateWayAdapter;
+    }
 
     public void init() {
         if (thread == null) {
@@ -95,22 +86,22 @@ public class QuoteMgr implements IReqThreadCallback {
         switch (type) {
             case WindDef.MSG_DATA_INDEX: {
                 IndexData indexData = (IndexData) objMsg;
-                IndexItem.processIndexData(indexData);
+                IndexItem.processIndexData(indexData, windGateWayAdapter, this);
             }
             break;
             case WindDef.MSG_DATA_FUTURE: {
                 FutureData futureData = (FutureData) objMsg;
-                FutureItem.processFutureData(futureData);
+                FutureItem.processFutureData(futureData, windGateWayAdapter, this);
             }
             break;
             case WindDef.MSG_DATA_MARKET: {
                 StockData stockData = (StockData) objMsg;
-                StockItem.processMarketData(stockData);
+                StockItem.processMarketData(stockData, windGateWayAdapter, this);
             }
             break;
             case WindDef.MSG_DATA_TRANSACTION:{
                 TransationData transationData = (TransationData) objMsg;
-                TransationItem.processTransationData(transationData);
+                TransationItem.processTransationData(transationData, windGateWayAdapter, this);
             }
             break;
             default:
@@ -138,4 +129,11 @@ public class QuoteMgr implements IReqThreadCallback {
 
     }
 
+    public boolean isModifyTickTime() {
+        return isModifyTickTime;
+    }
+
+    public void setModifyTickTime(boolean isModifyTickTime) {
+        this.isModifyTickTime = isModifyTickTime;
+    }
 }
