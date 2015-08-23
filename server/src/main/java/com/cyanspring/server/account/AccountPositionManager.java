@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cyanspring.common.business.*;
-import com.cyanspring.common.event.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +36,75 @@ import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.account.UserType;
+import com.cyanspring.common.business.AuditType;
+import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.GroupManagement;
+import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEventMultiProcessor;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
+import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AccountStateReplyEvent;
+import com.cyanspring.common.event.account.AccountStateRequestEvent;
+import com.cyanspring.common.event.account.AccountUpdateEvent;
+import com.cyanspring.common.event.account.AddCashEvent;
+import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AllUserSnapshotRequestEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginEvent;
+import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
+import com.cyanspring.common.event.account.ChangeAccountSettingReplyEvent;
+import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
+import com.cyanspring.common.event.account.ChangeAccountStateReplyEvent;
+import com.cyanspring.common.event.account.ChangeAccountStateRequestEvent;
+import com.cyanspring.common.event.account.ChangeUserRoleEvent;
+import com.cyanspring.common.event.account.ChangeUserRoleReplyEvent;
+import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
+import com.cyanspring.common.event.account.CreateAccountEvent;
+import com.cyanspring.common.event.account.CreateAccountReplyEvent;
+import com.cyanspring.common.event.account.CreateGroupManagementEvent;
+import com.cyanspring.common.event.account.CreateGroupManagementReplyEvent;
+import com.cyanspring.common.event.account.CreateUserEvent;
+import com.cyanspring.common.event.account.CreateUserReplyEvent;
+import com.cyanspring.common.event.account.DeleteGroupManagementEvent;
+import com.cyanspring.common.event.account.DeleteGroupManagementReplyEvent;
+import com.cyanspring.common.event.account.ExecutionUpdateEvent;
+import com.cyanspring.common.event.account.GroupManageeReplyEvent;
+import com.cyanspring.common.event.account.GroupManageeRequestEvent;
+import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.OnUserCreatedEvent;
+import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
+import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
+import com.cyanspring.common.event.account.PmAddCashEvent;
+import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
+import com.cyanspring.common.event.account.PmCreateAccountEvent;
+import com.cyanspring.common.event.account.PmCreateGroupManagementEvent;
+import com.cyanspring.common.event.account.PmCreateUserEvent;
+import com.cyanspring.common.event.account.PmDeleteGroupManagementEvent;
+import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
+import com.cyanspring.common.event.account.PmRemoveDetailOpenPositionEvent;
+import com.cyanspring.common.event.account.PmUpdateAccountEvent;
+import com.cyanspring.common.event.account.PmUpdateDetailOpenPositionEvent;
+import com.cyanspring.common.event.account.PmUpdateUserEvent;
+import com.cyanspring.common.event.account.PmUserCreateAndLoginEvent;
+import com.cyanspring.common.event.account.PmUserLoginEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyType;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.account.UserCreateAndLoginEvent;
+import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
+import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
@@ -56,7 +117,6 @@ import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateOpenPositionPriceEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
-import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
@@ -83,8 +143,8 @@ import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
 import com.cyanspring.server.order.RiskOrderController;
-import com.cyanspring.server.order.SuspendSystemController;
 import com.cyanspring.server.persistence.PersistenceManager;
+import com.cyanspring.server.validation.transaction.SystemSuspendValidator;
 import com.google.common.base.Strings;
 
 public class AccountPositionManager implements IPlugin {
@@ -160,7 +220,7 @@ public class AccountPositionManager implements IPlugin {
 	CoinManager coinManager;
 	
 	@Autowired(required = false)
-	SuspendSystemController suspendSystemController;
+	SystemSuspendValidator systemSuspendValidator;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -1396,7 +1456,7 @@ public class AccountPositionManager implements IPlugin {
 	                			totalPnLCalculator.getLiveTradingAccountValue());
 	                }
 	                
-	                if (suspendSystemController != null && suspendSystemController.isSuspendSystem())
+	                if (systemSuspendValidator != null && systemSuspendValidator.isSuspended())
 	                	continue;
 	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
 	                	if(liveTradingCheckHandler.startCheckChain(account, accountSetting)){

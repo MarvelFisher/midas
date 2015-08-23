@@ -50,7 +50,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.NONE_SET_CONNECTION_CONFIG,getBean(114, "doesn't set connection configuration"));
 			addAndCheck(ErrorMessage.SYSTEM_NOT_READY,getBean(115, "System not yet Ready"));
 			addAndCheck(ErrorMessage.SERVER_NOT_READY_FOR_LOGIN,getBean(116, "Server is not set up for login"));
-			addAndCheck(ErrorMessage.SERVER_SUSPEND,getBean(117, "Server is suspend"));
+			addAndCheck(ErrorMessage.SERVER_SUSPEND,getBean(117, "System is suspended from trading"));
 			
 			// business errors start with 200
 			addAndCheck(ErrorMessage.PREMIUM_FOLLOW_INFO_INCOMPLETE,getBean(200, "Premium follow info incomplete"));
