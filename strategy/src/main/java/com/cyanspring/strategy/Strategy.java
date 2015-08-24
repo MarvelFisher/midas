@@ -301,6 +301,12 @@ public abstract class Strategy implements IStrategy, IAsyncExecuteEventListener 
 			logWarn("Strategy can not be started since there is pending child order");
 			return;
 		}
+		
+		if(getState().equals(StrategyState.Terminated) ||
+		   getState().equals(StrategyState.Stopping)) {
+			log.warn("Strategy can not be started since state is: " + getState());
+			return;
+		}
 		pendingExecInstrEvent = null;
 		setExecFailCount(0);
 		executionManager.init();
