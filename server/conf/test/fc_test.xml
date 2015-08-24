@@ -62,9 +62,6 @@
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 	
-	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
-	</bean>
-	
 	<bean id="validationDataProvider" class="com.cyanspring.server.validation.data.ValidationDataProvider">
 	</bean>
 	
