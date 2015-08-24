@@ -14,31 +14,31 @@ public class TransactionValidator implements ITransactionValidator {
 	private List<ITransactionValidator> validators = new ArrayList<ITransactionValidator>();
 
 	@Override
-	public void checkEnterOrder(EnterParentOrderEvent event)
+	public void checkEnterOrder(EnterParentOrderEvent event, String account)
 			throws TransactionValidationException {
 		for(ITransactionValidator validator: validators)
-			validator.checkEnterOrder(event);
+			validator.checkEnterOrder(event, account);
 	}
 
 	@Override
-	public void checkAmendOrder(AmendParentOrderEvent event)
+	public void checkAmendOrder(AmendParentOrderEvent event, String account)
 			throws TransactionValidationException {
 		for(ITransactionValidator validator: validators)
-			validator.checkAmendOrder(event);
+			validator.checkAmendOrder(event, account);
 	}
 
 	@Override
-	public void checkCancelOrder(CancelParentOrderEvent event)
+	public void checkCancelOrder(CancelParentOrderEvent event, String account)
 			throws TransactionValidationException {
 		for(ITransactionValidator validator: validators)
-			validator.checkCancelOrder(event);
+			validator.checkCancelOrder(event, account);
 	}
 
 	@Override
-	public void checkClosePosition(ClosePositionRequestEvent event)
+	public void checkClosePosition(ClosePositionRequestEvent event, String account)
 			throws TransactionValidationException {
 		for(ITransactionValidator validator: validators)
-			validator.checkClosePosition(event);
+			validator.checkClosePosition(event, account);
 	}
 
 	public List<ITransactionValidator> getValidators() {
