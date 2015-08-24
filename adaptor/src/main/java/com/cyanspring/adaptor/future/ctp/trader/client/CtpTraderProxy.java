@@ -145,7 +145,7 @@ public class CtpTraderProxy implements ILtsLoginListener {
 		req.VolumeTotalOriginal((int) order.getQuantity());
 		req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
 		TimeInForce tif = order.get(TimeInForce.class, OrderField.TIF.value());
-		if(null != tif && tif.equals(TimeInForce.FILL_OR_KILL)) {
+		if(null != tif && tif.equals(TimeInForce.IMMEDIATE_OR_CANCEL)) {
 			req.TimeCondition(TraderLibrary.THOST_FTDC_TC_IOC);
 			req.VolumeCondition(TraderLibrary.THOST_FTDC_VC_AV);
 		} else {	
