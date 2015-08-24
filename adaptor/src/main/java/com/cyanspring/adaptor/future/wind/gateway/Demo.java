@@ -321,7 +321,7 @@ public class Demo {
 					String[] markets = data.getCodeTableResult().getMarket();  
 					for(int i= 0; i < data.getCodeTableResult().getMarkets();i++) { // 因為 markets 會回超出數量的 array , 所以要用 getMarkets 來判斷有幾個 market					
 						log.info("Receive Code Table - Market : " + markets[i] + " , Symbol Count : " + client.getCodeTable(markets[i]).length );
-						windGateway.receiveCodeTable(markets[i], client.getCodeTable(markets[i]));						
+						windGateway.receiveCodeTable(markets[i], client.getCodeTable(markets[i]),codeTableResult.getCodeDate()[i]);						
 					}
 					windGateway.connectedWithWind(markets);
 				}				

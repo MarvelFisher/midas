@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cn.com.wind.td.tdf.TDF_CODE;
 
 import com.cyanspring.Network.Transport.FDTFields;
 import com.cyanspring.Network.Transport.FDTFrameDecoder;
@@ -25,8 +28,9 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 	private int bufLenMin = 0,bufLenMax = 0,blockCount = 0;
 	private long throughput = 0,msLastTime = 0,msDiff = 0;
 	
-	public static HashMap<String,HashMap<Integer,Object>> mapQuotation = new HashMap<String,HashMap<Integer,Object>>();
-	public static HashMap<String,HashMap<Integer,Object>> mapTransaction = new HashMap<String,HashMap<Integer,Object>>();
+	public static ConcurrentHashMap<String,HashMap<Integer,Object>> mapQuotation = new ConcurrentHashMap<String,HashMap<Integer,Object>>();
+	public static ConcurrentHashMap<String,HashMap<Integer,Object>> mapTransaction = new ConcurrentHashMap<String,HashMap<Integer,Object>>();
+	public static ConcurrentHashMap<String,CascadingCodeTable> mapCascadingCodeTable = new ConcurrentHashMap<String,CascadingCodeTable>();
 	
 	public void channelActive(ChannelHandlerContext arg0) throws Exception {
 		
@@ -192,7 +196,6 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				break;
 			case FDTFields.WindConnected :
 			case FDTFields.WindHeartBeat :
-			case FDTFields.WindCodeTable :
 			case FDTFields.WindMarketClose :
 			case FDTFields.WindQuotationDateChange :
 				if(inArray) {
@@ -200,7 +203,13 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				} else {
 					MsgPackLiteDataServerHandler.sendMessagePackToAllClient(in);
 				}
+				break;
+			case FDTFields.WindCodeTable :
+				processCodeTable(in);
 				break;				
+			case FDTFields.WindCodeTableResult :
+				processCodeTableResult(in);
+				break;
 			}
 		}
 		catch(Exception e) {
@@ -221,4 +230,69 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		}		
 		WindGateway.instance.convertMarketsMP(markets);
 	}
+	
+	public static void processCodeTable(HashMap<Integer,Object> in) {
+		try {			
+			String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
+			String market = new String((byte[])in.get(FDTFields.SecurityExchange),"UTF-8");
+			int ser = ((Number)in.get(FDTFields.SerialNumber)).intValue();
+			CascadingCodeTable cct = mapCascadingCodeTable.get(market);
+			if(cct != null) {
+				cct.mapMPCode.put(symbol,in);
+			}
+			if(ser < 0 && cct.mpCodeTableResult != null) {
+				log.info("Received Code Table : " + market + " , count " + cct.mapMPCode.size() + " , last serial : " + ser);
+				MsgPackLiteDataServerHandler.sendMessagePackToAllClient(cct.mpCodeTableResult);
+			}
+			
+		} catch (Exception e) {
+			log.warn("Exception : " + e.getMessage(),e);
+		}
+	}
+	public static void processCodeTableResult(HashMap<Integer,Object> in) {
+		String market = null;
+		CascadingCodeTable cct =  null;
+		long codesHashCode = 0;
+		try {
+			market = new String((byte[])in.get(FDTFields.SecurityExchange),"UTF-8");
+			codesHashCode = ((Number)in.get(FDTFields.HashCode)).longValue();	
+			cct = mapCascadingCodeTable.get(market);					
+			if(cct != null) {				
+				int dataCount = ((Number)in.get(FDTFields.DataCount)).intValue();
+				if(cct.codesHashCode == codesHashCode && cct.mapMPCode.size() == dataCount) {
+					log.info("Code Table No Change , Market : " + market);
+					return;
+				}
+			}
+			if(cct == null) {
+				cct = new CascadingCodeTable();				
+			}
+			cct.mapMPCode.clear();
+			cct.codesHashCode = codesHashCode;
+			cct.mpCodeTableResult = in;
+			mapCascadingCodeTable.put(market, cct);
+			
+			if(ctx != null && market != null) {
+				ctx.writeAndFlush(MsgPackLiteDataServerHandler.addHashTail("API=GetCodeTable|Market=" + market,true));
+			}			
+		} catch (Exception e) {
+			log.warn("Exception : " + e.getMessage(),e);
+		}	
+	}
+	public static ConcurrentHashMap<String, HashMap<Integer,Object>>getMPCodeByMarket(String market) {
+		CascadingCodeTable cct = mapCascadingCodeTable.get(market);
+		if(cct != null) {
+			return cct.mapMPCode;
+		}
+		return null;
+	}
+}
+
+class CascadingCodeTable {
+	String strMarket = "";
+	int CodeDate = 0;
+	long codesHashCode = 0;
+	public HashMap<Integer,Object> mpCodeTableResult = null;
+	public ConcurrentHashMap<String, HashMap<Integer,Object>> mapMPCode = new ConcurrentHashMap<String,HashMap<Integer,Object>>();
+
 }
