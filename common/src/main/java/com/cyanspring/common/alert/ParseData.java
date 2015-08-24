@@ -6,16 +6,18 @@ public class ParseData {
 	private String strMsgId = "";
 	private String strMsgType = "";
 	private String strLocalTime = "";
-	private String strKeyValue = "";		
+	private String strKeyValue = "";
+    private String strDeepLink = "";
     
-    public ParseData(String UserId, String PushMessage, String MsgId, String MsgType, String LocalTime, String KeyValue)
+    public ParseData(String UserId, String PushMessage, String MsgId, String MsgType, String LocalTime, String KeyValue, String DeepLink)
     {
     	setStrUserId(UserId);
         setStrpushMessage(PushMessage);
         setStrMsgId(MsgId);
         setStrMsgType(MsgType);
         setStrLocalTime(LocalTime);
-        setStrKeyValue(KeyValue);	        
+        setStrKeyValue(KeyValue);
+        setStrDeepLink(DeepLink);
     }
 
 	public String getStrpushMessage() {
@@ -65,4 +67,12 @@ public class ParseData {
 	public void setStrKeyValue(String strKeyValue) {
 		this.strKeyValue = strKeyValue;
 	}
+
+    public String getStrDeepLink() {
+        return strDeepLink;
+    }
+
+    public void setStrDeepLink(String strDeepLink) {
+        this.strDeepLink = strDeepLink;
+    }
 }

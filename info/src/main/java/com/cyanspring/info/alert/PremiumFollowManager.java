@@ -112,16 +112,16 @@ public class PremiumFollowManager extends Compute {
 				htmlFormat = htmlFormat.replace("%Price%", strPrice);
 				
 				String SendtoSocial = "action=31&comment=" + htmlFormat + "&userid=";
-				for (PremiumUser user : lstPU) {
-					// Send Notification to PremiumUser
-					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
-							null, null, "txId", new ParseData(user.getUserId(),
-									Msg, "", AlertMsgType.MSG_TYPE_PREMIUMORDER.getType(),
-									Datetime, keyValue));
-					SendEvent(sendNotificationRequestEvent);
-					// Send RemoteEvent
-					SendtoSocial = SendtoSocial + user.getUserId() + ",";
-				}
+//				for (PremiumUser user : lstPU) {
+//					// Send Notification to PremiumUser
+//					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+//							null, null, "txId", new ParseData(user.getUserId(),
+//									Msg, "", AlertMsgType.MSG_TYPE_PREMIUMORDER.getType(),
+//									Datetime, keyValue));
+//					SendEvent(sendNotificationRequestEvent);
+//					// Send RemoteEvent
+//					SendtoSocial = SendtoSocial + user.getUserId() + ",";
+//				}
 				// Send to Social
 				SendtoSocial = SendtoSocial.substring(0,
 						SendtoSocial.length() - 1);
