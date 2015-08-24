@@ -155,7 +155,7 @@ public class CoinManager implements IPlugin{
 			log.info("Coin Setting success:{},{},{}",new Object[]{accountId,coinType,endDate});
 		}
 
-		CoinSettingReplyEvent reply = new CoinSettingReplyEvent(event.getKey(),event.getSender(),event.getTxId(),isOk,message);
+		CoinSettingReplyEvent reply = new CoinSettingReplyEvent(event.getKey(), event.getSender(), event.getUserId(), event.getTxId(), isOk, message);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
