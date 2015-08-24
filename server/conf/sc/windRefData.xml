@@ -16,7 +16,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MARKET_MAXIMUM_LOT}" value="1000000" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MAXIMUM_HOLD}" value="0" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MARGIN_RATE}" value="1.0" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="A" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="STOCK" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="1" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="STOCK" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="S"/>

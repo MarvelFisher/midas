@@ -30,12 +30,12 @@ public class RefDataParser {
         refData.setCNDisplayName(codeTableData.getCnName());
         refData.setTWDisplayName(ChineseConvert.StoT(codeTableData.getCnName()));
         refData.setENDisplayName(codeTableData.getEnglishName());
-        refData.setSpellName(codeTableData.getSpellName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
         refData.setCommodity((String) defaultHashMap.get(RefDataField.COMMODITY));
         switch ((String)defaultHashMap.get(RefDataField.COMMODITY)) {
             case "S":
             case "I":
+                refData.setSpellName(codeTableData.getSpellName());
                 refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
                 refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
                 refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));
