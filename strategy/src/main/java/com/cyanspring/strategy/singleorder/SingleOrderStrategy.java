@@ -279,8 +279,8 @@ public abstract class SingleOrderStrategy extends Strategy {
 		//ignore id, symbol & side specification for single order strategy. They should be the same as parent orders.
 		ChildOrder order = parentOrder.createChild(quantity, price, type);
 		if(this.isSimMarketOrder() && this.parentOrder.getOrderType().equals(OrderType.Market)) {
-			log.debug("Setting order KOF: " + order.getId());
-			order.put(OrderField.TIF.value(), TimeInForce.FILL_OR_KILL);
+			log.debug("Setting order IOC: " + order.getId());
+			order.put(OrderField.TIF.value(), TimeInForce.IMMEDIATE_OR_CANCEL);
 		}
 		
 		return order;

@@ -39,6 +39,7 @@ public class SDMAStrategy extends SingleOrderStrategy {
 	protected void processQuoteEvent(QuoteEvent event) {
 		// reject market order if there is no marketable price
 		if(parentOrder.getOrderType().equals(OrderType.Market) &&
+			this.isSimMarketOrder() &&
 			null ==	this.pendingExecInstrEvent &&	
 			!parentOrder.getState().equals(StrategyState.Terminated)) {
 			double marketablePrice = QuoteUtils.getMarketablePrice(event.getQuote(), parentOrder.getSide());

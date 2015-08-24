@@ -109,14 +109,14 @@ public abstract class AbstractPriceAnalyzer implements IPriceAnalyzer {
 			if(!PriceUtils.validPrice(price)) { //if no ask get on top of depth
 				price = quote.getBid();
 			} else {
-				price = strategy.getTickTable().tickUp(price, (Math.min(factor, strategy.getMaxCancelRetry()) + 1)* aggressiveTicks, false);
+				price = strategy.getTickTable().tickUp(price, Math.min(factor, strategy.getMaxCancelRetry()) * aggressiveTicks, false);
 			}
 		} else {
 			price = quote.getBid();
 			if(!PriceUtils.validPrice(price)) { //if no bid get on top of depth
 				price = quote.getAsk();
 			} else {
-				price = strategy.getTickTable().tickDown(price, (Math.min(factor, strategy.getMaxCancelRetry())+1) * aggressiveTicks, false);
+				price = strategy.getTickTable().tickDown(price, Math.min(factor, strategy.getMaxCancelRetry()) * aggressiveTicks, false);
 			}
 		}
 		retryCount++;

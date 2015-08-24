@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.type.TimeInForce;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.event.AsyncEventProcessor;
@@ -285,8 +287,9 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 			if (isMarketable(quote, order)) {
 				fillOrder(quote, order);
 			} else {
-				if(order.getType() == ExchangeOrderType.FOK ||
-				   order.getType() == ExchangeOrderType.IOC) {
+				TimeInForce tif = order.get(TimeInForce.class, OrderField.TIF.value());
+				if(null != tif && 
+				 (tif.equals(TimeInForce.FILL_OR_KILL) || tif.equals(TimeInForce.IMMEDIATE_OR_CANCEL))) {
 					deleteOrder(order);
 				} else {
 					acceptOrder(order);
