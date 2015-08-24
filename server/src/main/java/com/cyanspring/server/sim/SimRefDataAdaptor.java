@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class SimRefDataAdaptor implements IRefDataAdaptor {
 
-	private String filePath = "./conf/sim/codetable_f2.xml";
+	private String filePath = "./conf/sim/codetable_fcc.xml";
 	private XStream xstream;
 	private Map<String, CodeTableData> map;
 	private List<IRefDataListener> listeners;
