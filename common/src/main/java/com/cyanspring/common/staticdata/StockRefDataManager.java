@@ -3,6 +3,7 @@ package com.cyanspring.common.staticdata;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -233,13 +234,30 @@ public class StockRefDataManager extends RefDataService {
 
 	@Override
 	public List<RefData> update(String index, String tradeDate) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<RefData> ret = new ArrayList<>();
+		for (RefData refData : refDataList) {
+			if (index.equals(refData.getCategory())) {
+				refData = update(refData, tradeDate);
+				ret.add(refData);
+			}
+		}
+		return ret;
 	}
 
 	@Override
 	public boolean remove(RefData refData) {
-		// TODO Auto-generated method stub
+		if (refDataList.contains(refData)) {
+			refDataList.remove(refData);
+			return true;
+		}
 		return false;
+	}
+	
+	public Map<String, RefData> getRefDataTemplateMap() {
+		return refDataTemplateMap;
+	}
+
+	public void setRefDataTemplateMap(Map<String, RefData> refDataTemplateMap) {
+		this.refDataTemplateMap = refDataTemplateMap;
 	}
 }

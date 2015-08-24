@@ -76,7 +76,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 	protected void setTemplateData(RefData refData){
 		if(null == template){
-			log.warn("refData is null");
+			log.warn("template is null");
 			return;
 		}
 		refData.setMaximumHold(template.getMaximumHold());
@@ -145,7 +145,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return getSpotName(combineTwName,Locale.TW).replaceAll("\\d", "")+combineTwName.replaceAll("\\W", "").replaceAll("\\D", "");
 	}
 	
-	private String getSpotName(String combineCnName,Locale locale){
+	protected String getSpotName(String combineCnName,Locale locale){
 		
 		if(locale.equals(Locale.CN) && StringUtils.hasText(spotCnName)){
 			return spotCnName;
@@ -159,7 +159,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	protected String getCNDetailName(String combineCnName){
 		
 		String cnName = getSpotName(combineCnName,Locale.CN);
-		log.info("combineCnName:{}",combineCnName);
 		String contractDate = combineCnName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
 		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
