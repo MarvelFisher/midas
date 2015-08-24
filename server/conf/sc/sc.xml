@@ -233,7 +233,7 @@
 		<property name="refDataAdaptor" ref="refDataAdapter"/>
 	</bean>
 
-	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.StockRefDataManager">
 		<property name="refDataFile">
 			<value>refdata/refData_sc.xml</value>
 		</property>
