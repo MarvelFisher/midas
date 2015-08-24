@@ -13,6 +13,8 @@
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
+        <property name="deepLink" value="futuresmasterlivecn://fdt/portfolio/portfoliodetail?symbolid=" />
+        <property name="market"   value="FC"/>
 	</bean>	
 	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
 		<property name="getPremiumTableInterval" value="300000" />
