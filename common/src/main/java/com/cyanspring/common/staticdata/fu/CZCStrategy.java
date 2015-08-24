@@ -26,9 +26,8 @@ public class CZCStrategy extends AbstractRefDataStrategy {
 				log.info("refData:{} - tradeDateManager is null",refData.getCNDisplayName());
 				return;
 			}
-			
-			String combineCnName = refData.getCNDisplayName();
 			setTemplateData(refData);
+			String combineCnName = refData.getCNDisplayName();		
 			if(refData.getCategory().equals("TC")){//動力煤
 				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),5));
 			}else{

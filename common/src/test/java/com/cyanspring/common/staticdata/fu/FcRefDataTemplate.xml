@@ -1,0 +1,120 @@
+<list>
+	  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+
+      <entry>
+        <string>Commodity</string>
+        <string>F</string>
+      </entry>
+      <entry>
+        <string>Type</string>
+        <string>MERCHANDISE_FU</string>
+      </entry>
+      <entry>
+        <string>TWTrading unit</string>
+        <string>元(人民幣)/噸</string>
+      </entry>
+      <entry>
+        <string>Price limit</string>
+        <double>5</double>
+      </entry>
+      <entry>
+        <string>Spot ENName</string>
+        <string>沪铜</string>
+      </entry>
+      <entry>
+        <string>Commission fee</string>
+        <double>0.000055</double>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>5</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>SHF</string>
+      </entry>
+
+      <entry>
+        <string>ENName</string>
+        <string>cu1503</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>沪铜1503</string>
+      </entry>
+      <entry>
+        <string>Numerator DP</string>
+        <double>0</double>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>IF</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Minimal CF</string>
+        <double>1</double>
+      </entry>
+      <entry>
+        <string>CNTrading unit</string>
+        <string>元(人民币)/吨</string>
+      </entry>
+      <entry>
+        <string>Spot TWName</string>
+        <string>滬銅</string>
+      </entry>
+      <entry>
+        <string>Spot CNName</string>
+        <string>沪铜</string>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1</double>
+      </entry>
+      <entry>
+        <string>Strategy</string>
+        <string>SHF</string>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>500</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.07</double>
+      </entry>
+      <entry>
+        <string>Category</string>
+        <string>CU</string>
+      </entry>
+      <entry>
+        <string>Denominator</string>
+        <double>0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>cu1503</string>
+      </entry>
+      <entry>
+        <string>ENTrading unit</string>
+        <string>RMB/Tonne</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>沪铜1503</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>cu1503</string>
+      </entry>
+      <entry>
+        <string>Tradable</string>
+        <string>1</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+</list>

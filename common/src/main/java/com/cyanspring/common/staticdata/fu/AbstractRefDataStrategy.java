@@ -74,11 +74,22 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		}
 	}
 
-	protected void setTemplateData(RefData refData){
+	protected void setTemplateData(RefData refData) throws Exception{
 		if(null == template){
 			log.warn("template is null");
 			return;
 		}
+		if(!StringUtils.hasText(refData.getRefSymbol())
+				||!StringUtils.hasText(refData.getCNDisplayName())
+				||!StringUtils.hasText(refData.getExchange())
+				||!StringUtils.hasText(refData.getCode())
+				||!StringUtils.hasText(refData.getENDisplayName())
+				||!StringUtils.hasText(refData.getIType())
+				){
+			throw new Exception("refData required info missing:"+refData.getRefSymbol());
+		}
+		
+		
 		refData.setMaximumHold(template.getMaximumHold());
 		refData.setCommodity(template.getCommodity());
 		refData.setType(template.getType());

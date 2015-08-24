@@ -33,9 +33,8 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 				log.info("refData:{}- tradeDateManager or marketsessoinutil is null",refData.getCNDisplayName());
 				return;
 			}
-				
-			String combineCnName = refData.getCNDisplayName();
-			setTemplateData(refData);			
+			setTemplateData(refData);
+			String combineCnName = refData.getCNDisplayName();			
 			if(refData.getCategory().equals("FU")){
 				refData.setSettlementDate(calFUSettlementDate(refData.getSymbol(),getContractDate(combineCnName)));
 			}else{

@@ -24,8 +24,8 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 				log.info("refData:{}- marketsessoinutil is null",refData.getCNDisplayName());
 				return;
 			}
-			String combineCnName = refData.getCNDisplayName();
 			setTemplateData(refData);
+			String combineCnName = refData.getCNDisplayName();		
 			refData.setSettlementDate(calSettlementDay(refData.getSymbol(),getContractDate(combineCnName)));
 			refData.setIndexSessionType(getIndexSessionType(refData));
 		} catch (Exception e) {
