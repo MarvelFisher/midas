@@ -3,6 +3,8 @@ package com.cyanspring.adaptor.future.wind.data;
 
 import com.cyanspring.Network.Transport.FDTFields;
 import com.cyanspring.adaptor.future.wind.WindDef;
+import com.cyanspring.common.staticdata.CodeTableData;
+
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;

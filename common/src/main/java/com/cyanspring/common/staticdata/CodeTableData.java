@@ -1,4 +1,4 @@
-package com.cyanspring.adaptor.future.wind.data;
+package com.cyanspring.common.staticdata;
 
 public class CodeTableData {
     private String windCode;

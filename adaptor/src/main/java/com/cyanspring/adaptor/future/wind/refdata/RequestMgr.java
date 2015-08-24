@@ -1,8 +1,8 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
 import com.cyanspring.adaptor.future.wind.WindDef;
-import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;

@@ -1,7 +1,7 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.ChineseConvert;
 import com.thoughtworks.xstream.XStream;
