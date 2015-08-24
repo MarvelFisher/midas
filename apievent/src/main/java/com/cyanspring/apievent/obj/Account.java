@@ -2,8 +2,9 @@ package com.cyanspring.apievent.obj;
 
 
 /**
+ * Basic account information
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class Account {

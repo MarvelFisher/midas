@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -185,9 +186,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     serverHeartBeatCountAfterCodeTableCome++;
                 }
                 if(channelActiveSend) {
-                    if (serverHeartBeatCountAfterCodeTableCome >= 2) {
-                        codeTableIsProcessEnd = true;
-                    }
                     if(!subscribed) {
                         if (serverHeartBeatCountAfterCodeTableCome < 0) {
                             serverHeartBeatCountAfterCodeTableCome--;
@@ -195,6 +193,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                                 channelHandlerContext.close();
                             }
                         }
+                    }
+                    if (serverHeartBeatCountAfterCodeTableCome >= 2) {
+//                        RefDataParser.saveHashMapToFile("ticks/codetable_fcc.xml", new HashMap<>(codeTableDataBySymbolMap));
+                        codeTableIsProcessEnd = true;
+                        serverHeartBeatCountAfterCodeTableCome = -1;
                     }
                 }else{
                     if (serverHeartBeatCountAfterCodeTableCome == 2) {
@@ -284,11 +287,23 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     }
 
     public void processMsgPackRead(HashMap hashMap) {
-        StringBuffer sb = new StringBuffer();
-        for (Object key : hashMap.keySet()) {
-            sb.append(key + "=" + hashMap.get(key) + ",");
+        if (marketDataLog){
+            StringBuffer sb = new StringBuffer();
+            for (Object key : hashMap.keySet()) {
+                if((int)key == FDTFields.WindSymbolCode) {
+                    String symbol = "";
+                    try {
+                        symbol = new String((byte[]) hashMap.get(key), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        log.warn("windCode convert X!");
+                    }
+                    sb.append(key + "=" + symbol + ",");
+                }else{
+                    sb.append(key + "=" + hashMap.get(key) + ",");
+                }
+            }
+            log.debug(sb.toString());
         }
-        if (marketDataLog) log.debug(sb.toString());
         int packType = (int) hashMap.get(FDTFields.PacketType);
         if (packType == FDTFields.PacketArray) {
             ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
@@ -436,7 +451,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void processChannelInActive() {
         connected = false;
-        serverHeartBeatCountAfterCodeTableCome = -1;
     }
 
     @Override
@@ -455,7 +469,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 //        refDataAdaptor.uninit();
         //RefData補拼音,簡繁體股名 使用
         log.debug("Process RefData Begin");
-        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterSC");
+        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterFCC");
         refDataAdaptor.init();
 
 //        refDataAdaptor.windBaseDBDataHashMap = refDataAdaptor.getWindBaseDBData();
@@ -571,5 +585,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public boolean isChannelActiveSend() {
         return channelActiveSend;
+    }
+
+    public boolean isSubscribed() {
+        return subscribed;
     }
 }

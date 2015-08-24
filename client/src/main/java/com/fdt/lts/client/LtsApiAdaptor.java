@@ -1,6 +1,5 @@
 package com.fdt.lts.client;
 
-
 import com.cyanspring.apievent.obj.Order;
 import com.cyanspring.apievent.obj.OrderSide;
 import com.cyanspring.apievent.reply.*;
@@ -23,6 +22,12 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * @author dennischen, elviswu
+ * @version 1.0
+ * @since 1.0
+ */
 
 public class LtsApiAdaptor {
     private static Logger log = LoggerFactory.getLogger(LtsApiAdaptor.class);

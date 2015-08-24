@@ -99,14 +99,15 @@ import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.common.validation.ITransactionValidator;
 import com.cyanspring.common.validation.OrderValidationException;
+import com.cyanspring.common.validation.TransactionValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.CoinManager;
 import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.order.MultiOrderCancelTracker;
 import com.cyanspring.server.order.RiskOrderController;
-import com.cyanspring.server.order.SuspendSystemController;
 import com.cyanspring.server.validation.ParentOrderDefaultValueFiller;
 import com.cyanspring.server.validation.ParentOrderPreCheck;
 import com.cyanspring.server.validation.ParentOrderValidator;
@@ -160,10 +161,10 @@ public class BusinessManager implements ApplicationContextAware {
 	RiskOrderController riskOrderController;
 	
 	@Autowired(required = false)
-	SuspendSystemController suspendSystemController;
-	
-	@Autowired(required = false)
 	CoinManager coinManager;
+	
+	@Autowired
+	ITransactionValidator transactionValidator;
 	
 	ScheduleManager scheduleManager = new ScheduleManager();
 
@@ -203,7 +204,6 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(LiveTradingEndEvent.class, null);
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
-			subscribeToEvent(SuspendServerEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 		}
 
@@ -231,13 +231,6 @@ public class BusinessManager implements ApplicationContextAware {
 
 	};
 
-	public void processSuspendServerEvent(SuspendServerEvent event) {
-		if(suspendSystemController != null){
-	    	log.info("Server suspend: " + event.isSuspendServer());
-			suspendSystemController.setSuspendSystem(event.isSuspendServer());
-		}
-	}
-	
 	public void processEnterParentOrderEvent(EnterParentOrderEvent event)
 			throws Exception {
 		Map<String, Object> fields = event.getFields();
@@ -249,18 +242,9 @@ public class BusinessManager implements ApplicationContextAware {
 		String user = (String) fields.get(OrderField.USER.value());
 		String account = (String) fields.get(OrderField.ACCOUNT.value());
 
-		if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-			String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-			EnterParentOrderReplyEvent replyEvent = new EnterParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), order, user, account);
-			eventManager.sendLocalOrRemoteEvent(replyEvent);
-			return;
-        }
-		
 		try {
-
+			transactionValidator.checkEnterOrder(event);
+			
 			String strategyName = (String) fields.get(OrderField.STRATEGY
 					.value());
 			if (null == strategyName)
@@ -367,6 +351,13 @@ public class BusinessManager implements ApplicationContextAware {
 					e.getMessage());
 			log.warn(message);
 			// log.warn(e.getMessage(), e);
+		} catch (TransactionValidationException e) {
+			failed = true;
+			// message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),
+					e.getMessage());
+			log.warn(message);
+			// log.warn(e.getMessage(), e);
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
@@ -391,31 +382,23 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processAmendParentOrderEvent(AmendParentOrderEvent event)
 			throws Exception {
-        if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-        	String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-        	AmendParentOrderReplyEvent replyEvent = new AmendParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), null);
-			eventManager.sendLocalOrRemoteEvent(replyEvent);
-        	return;
-        }
 		log.debug("processAmendParentOrderEvent received: " + event.getId()
 				+ ", " + event.getTxId() + ", " + event.getFields());
-
 		Map<String, Object> fields = event.getFields();
 
 		boolean failed = false;
 		String message = "";
 		ParentOrder order = null;
 		try {
+			transactionValidator.checkAmendOrder(event);
+
 			// check whether order is there
 			String id = event.getId();
 			order = orders.get(id);
 			if (null == order)
 				throw new OrderException("Cant find this order id: " + id,
 						ErrorMessage.ORDER_ID_NOT_FOUND);
-
+			
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
 
 			String strategyName = order.getStrategy();
@@ -515,6 +498,13 @@ public class BusinessManager implements ApplicationContextAware {
 			message = MessageLookup.buildEventMessage(e.getClientMessage(),
 					"DataConvertException: " + e.getMessage());
 
+		} catch (TransactionValidationException e) {
+			failed = true;
+			// message = e.getMessage();
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),
+					e.getMessage());
+			log.warn(message);
+			// log.warn(e.getMessage(), e);
 		} catch (Exception e) {
 			failed = true;
 			log.error(e.getMessage(), e);
@@ -540,41 +530,47 @@ public class BusinessManager implements ApplicationContextAware {
 			throws Exception {
 		log.debug("processCancelParentOrderEvent received: " + event.getTxId()
 					+ ", " + event.getOrderId());
-		if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-        	String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-
-			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), null);
-			eventManager.sendLocalOrRemoteEvent(reply);
-        	return;
-        }
-
+		
 		ParentOrder order = orders.get(event.getOrderId());
-		if (null == order) {
-			String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.ORDER_ID_NOT_FOUND,
-					"Cant find this order id: " + event.getOrderId());
+		String message = "";
+		boolean failed = false;
+		try {
+			transactionValidator.checkCancelOrder(event);
+			
+			if(null == order)
+				throw new OrderException("Cant find this order id: " + event.getOrderId(),
+						ErrorMessage.ORDER_ID_NOT_FOUND);
+			
+			if (order.getOrdStatus().isCompleted())
+				throw new OrderException("Order already completed: " + order.getId(),
+						ErrorMessage.ORDER_ALREADY_COMPLETED);
+			
+		} catch (OrderException e) {
+			failed = true;
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),
+					e.getMessage());
+
+		} catch (TransactionValidationException e) {
+			failed = true;
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),
+					e.getMessage());
+		} catch (Exception e) {
+			failed = true;
+			log.error(e.getMessage(), e);
+			message = MessageLookup.buildEventMessage(
+					ErrorMessage.CANCEL_ORDER_ERROR,
+					"Cancel order failed, please check server log");
+
+		}
+		
+		if(failed) {
 			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
+					event.getKey(), event.getSender(), false, message,
 					event.getTxId(), order);
 			eventManager.sendLocalOrRemoteEvent(reply);
 			return;
 		}
-
-		if (order.getOrdStatus().isCompleted()) {
-			String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.ORDER_ALREADY_COMPLETED,
-					"Order already completed: " + order.getId());
-
-			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
-					event.getKey(), event.getSender(), false, msg,
-					event.getTxId(), order);
-			eventManager.sendLocalOrRemoteEvent(reply);
-			return;
-		}
-
+			
 		if (order.getState().equals(StrategyState.Terminated)) {
 			order.setOrdStatus(OrdStatus.CANCELED);
 			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
@@ -604,22 +600,12 @@ public class BusinessManager implements ApplicationContextAware {
 	}
 
 	public void processClosePositionRequestEvent(ClosePositionRequestEvent event) {
-        if (suspendSystemController != null && suspendSystemController.isSuspendSystem()){
-        	String msg = MessageLookup.buildEventMessage(
-					ErrorMessage.SERVER_SUSPEND,"Server is suspend");
-        	try {
-				eventManager.sendLocalOrRemoteEvent(new ClosePositionReplyEvent(
-						event.getKey(), event.getSender(), event.getAccount(),
-						event.getSymbol(), event.getTxId(), false, msg));
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}        	
-        	return;
-        }
 		boolean ok = true;
 		String message = null;
 		ErrorMessage clientMessage = null;
 		try {
+			transactionValidator.checkClosePosition(event);
+			
 			Account account = accountKeeper.getAccount(event.getAccount());
 			if (null == account) {
 				clientMessage = ErrorMessage.ACCOUNT_NOT_EXIST;
@@ -656,6 +642,10 @@ public class BusinessManager implements ApplicationContextAware {
 			message = MessageLookup.buildEventMessage(clientMessage,
 					ae.getMessage());
 			log.warn(ae.getMessage());
+		} catch (TransactionValidationException e) {
+			ok = false;
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),
+					e.getMessage());
 		} catch (Exception e) {
 			ok = false;
 			// message = e.getMessage();

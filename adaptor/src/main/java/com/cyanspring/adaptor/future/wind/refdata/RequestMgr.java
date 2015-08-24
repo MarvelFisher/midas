@@ -58,7 +58,7 @@ public class RequestMgr implements IReqThreadCallback {
                     refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataSCHashMap());
                 }
                 if (refData != null) {
-                    if(windRefDataAdapter.isChannelActiveSend()) {
+                    if(!windRefDataAdapter.isSubscribed()) {
                         windRefDataAdapter.getRefDataHashMap().put(codeTableData.getWindCode(), refData);
                     }else{
                         windRefDataAdapter.getRefDataUpdateHashMap().put(codeTableData.getWindCode(), refData);
@@ -71,12 +71,16 @@ public class RequestMgr implements IReqThreadCallback {
             }
             break;
             case WindDef.MSG_REFDATA_CHECKUPDATE: {
-                log.debug("RefDataUpdate Check begin");
+                log.info("RefDataUpdate Check begin");
 
-                if(windRefDataAdapter.getRefDataHashMap() == null || windRefDataAdapter.getRefDataUpdateHashMap() == null
-                        || windRefDataAdapter.getRefDataHashMap().size() == 0 || windRefDataAdapter.getRefDataUpdateHashMap().size() == 0)
+                if(windRefDataAdapter.getRefDataHashMap() == null || windRefDataAdapter.getRefDataHashMap().size() == 0){
+                    log.info("refDataHashMap is empty");
                     return;
-
+                }
+                if(windRefDataAdapter.getRefDataUpdateHashMap() == null || windRefDataAdapter.getRefDataUpdateHashMap().size() == 0){
+                    log.info("refDataUpdateHashMap is empty");
+                    return;
+                }
                 Set<String> keysInRefDataMap = new HashSet<String>(windRefDataAdapter.getRefDataHashMap().keySet());
                 Set<String> keysInRefDataUpdateMap = new HashSet<String>(windRefDataAdapter.getRefDataUpdateHashMap().keySet());
                 //Add
@@ -113,6 +117,10 @@ public class RequestMgr implements IReqThreadCallback {
                     }
                     windRefDataAdapter.sendRefDataUpdate(refDataDelList, RefDataUpdateEvent.Action.DEL);
                 }
+
+                //override refDataMap
+                windRefDataAdapter.getRefDataHashMap().clear();
+                windRefDataAdapter.getRefDataHashMap().putAll(windRefDataAdapter.getRefDataUpdateHashMap());
 
                 log.debug("RefDataUpdate Check end");
             }

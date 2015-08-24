@@ -314,6 +314,4 @@
 		</property>
 	</bean>
 	
-	<bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/>
-
 </beans>

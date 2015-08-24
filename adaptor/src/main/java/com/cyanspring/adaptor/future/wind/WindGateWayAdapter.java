@@ -1,5 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
+import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.Network.Transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
@@ -19,20 +21,23 @@ import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback {
+public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback, IWindGWListener {
 
     private static final Logger log = LoggerFactory
             .getLogger(WindGateWayAdapter.class);
@@ -42,17 +47,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private boolean showGui = false;
     private boolean marketDataLog = false; // log control
     protected long timerInterval = 5000;
-    static volatile boolean bigSessionIsClose = false;
-    static volatile int tradeDateForWindFormat = 0;
-    static volatile Date bigSessionCloseDate = Clock.getInstance().now();
+    private volatile boolean bigSessionIsClose = false;
+    private volatile int tradeDateForWindFormat = 0;
+    private volatile Date bigSessionCloseDate = Clock.getInstance().now();
     private boolean closeOverTimeControlIsOpen = true;
     private boolean tradeDateCheckIsOpen = true;
     private boolean msgPack = false;
     private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
 
-    boolean isClose = false;
-    static NioEventLoopGroup nioEventLoopGroup = null;
+    private boolean isAlive = false;
+    EventLoopGroup eventLoopGroup = null;
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -60,22 +65,27 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected ScheduleManager scheduleManager = new ScheduleManager();
     protected WindDataParser windDataParser = new WindDataParser();
-    protected static WindGateWayAdapter instance = null;
 
-    static ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, TransationData> transationDataBySymbolMap = new ConcurrentHashMap<>();
-    static ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteData
-    static ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteExt
-    static ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<>(); //SaveIndexMarketSession
-    static ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<>(); // SaveSymbolRule
+    private ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, TransationData> transationDataBySymbolMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Quote> lastQuoteBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteData
+    private ConcurrentHashMap<String, DataObject> lastQuoteExtendBySymbolMap = new ConcurrentHashMap<>(); // LastQuoteExt
+    private ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<>(); //SaveIndexMarketSession
+    private ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<>(); // SaveSymbolRule
     HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<>(); //calculate dataTimeStat
 
     RequestThread thread = null;
-    private static final int doConnect = 0;
-    static volatile boolean isConnected = false;
-    static volatile boolean isConnecting = false;
+    private QuoteMgr quoteMgr = new QuoteMgr(this);
+    private ChannelHandlerContext channelHandlerContext;
+    private final int doConnect = 0;
+    private volatile boolean isConnected = false;
+    private volatile boolean isConnecting = false;
+
+    //Calculate packet use
+    private int bufLenMin = 0, bufLenMax = 0, dataReceived = 0, blockCount = 0;
+    private long msDiff = 0, msLastTime = 0, throughput = 0;
 
     List<IMarketDataStateListener> stateList = new ArrayList<IMarketDataStateListener>();
     List<UserClient> clientsList = new ArrayList<UserClient>();
@@ -93,7 +103,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     };
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
-
         // process symbol Market Session
         for (String symbol : marketRuleBySymbolMap.keySet()) {
             MarketSessionData marketSessionData = marketSessionByIndexMap.get(marketRuleBySymbolMap.get(symbol));
@@ -174,7 +183,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     stockData.setTradingDay(stockData.getActionDay());
                 if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
                     return;
-                QuoteMgr.instance.AddRequest(new Object[]{
+                quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_MARKET, stockData});
                 break;
             case WindDef.MSG_DATA_INDEX:
@@ -191,7 +200,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     indexData.setTradingDay(indexData.getActionDay());
                 if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
                     return;
-                QuoteMgr.instance.AddRequest(new Object[]{
+                quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_INDEX, indexData});
                 break;
             case WindDef.MSG_DATA_FUTURE:
@@ -206,7 +215,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 }
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
                     return;
-                QuoteMgr.instance.AddRequest(new Object[]{
+                quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_FUTURE, futureData});
                 break;
             case WindDef.MSG_DATA_TRANSACTION:
@@ -221,7 +230,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 }
                 if (!dataCheck("T", transationData.getWindCode(), transationData.getTime(), transationData.getActionDay(), -1))
                     return;
-                QuoteMgr.instance.AddRequest(new Object[]{
+                quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_TRANSACTION, transationData});
                 break;
             case WindDef.MSG_DATA_ORDERQUEUE:
@@ -270,59 +279,46 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         return isCorrect;
     }
 
-    /**
-     * Wind Client link Gateway Server
-     *
-     * @param ip
-     * @param port
-     */
-    public void connectGateWay(String ip, int port) {
+    public void connect(){
+        log.debug("Run Netty WindGW Adapter");
+        eventLoopGroup = new NioEventLoopGroup(2);
+        ChannelFuture f;
+        Bootstrap bootstrap = new Bootstrap()
+                .group(eventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+                .handler(msgPack ? new MsgPackClientInitializer(this) : new ClientInitializer(this));
 
-        isConnecting = true;
-        WindGateWayAdapter.instance.closeClient();
-        LogUtil.logInfo(log, "Wind initClient enter %s:%d", ip, port);
-
-        // Configure the client.
-        nioEventLoopGroup = new NioEventLoopGroup();
         try {
-            Bootstrap bootstrap = new Bootstrap().group(nioEventLoopGroup)
-                    .channel(NioSocketChannel.class)
-                    .handler(msgPack ? new MsgPackClientInitializer() : new ClientInitializer());
-
-            ChannelFuture fClient = bootstrap.connect(ip, port).sync();
-
-            if (fClient.isSuccess()) {
-                LogUtil.logInfo(log, "client socket connected : %s:%d", ip,
-                        port);
-            } else {
-                LogUtil.logInfo(log, "Connect to %s:%d fail.", ip, port);
-                isConnecting = true;
-                io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
-                        .shutdownGracefully();
-                f.await();
-                nioEventLoopGroup = null;
-
-                fClient.channel().eventLoop().schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            LogUtil.logDebug(log, "Channel EventLoop Schedule!");
-                            WindGateWayAdapter.instance.doConnect();
-                        } catch (Exception e) {
-                            LogUtil.logException(log, e);
-                        }
+            while (isAlive) {
+                try {
+                    f = bootstrap.connect(gatewayIp, gatewayPort);
+                    f.awaitUninterruptibly();
+                    if (f.isCancelled()) {
+                        log.info("Connection attempt cancelled by user");
+                    } else if (!f.isSuccess()) {
+                        log.warn(f.cause().getMessage());
+                    } else {
+                        f.channel().closeFuture().sync();
                     }
-                }, 10, TimeUnit.SECONDS);
+                    if (!isAlive) return;
+                } catch (Exception e) {
+                    log.warn(e.getMessage(), e);
+                }
+                log.info("WindGW Adapter disconnect with - " + gatewayIp + " : " + gatewayPort + " , will try again after 3 seconds.");
+                Thread.sleep(3000);
             }
+        } catch (InterruptedException ie) {
+            log.warn(ie.getMessage(), ie);
         } catch (Exception e) {
-            isConnecting = false;
-            WindGateWayAdapter.instance.closeClient();
-            LogUtil.logException(log, e);
+            log.error(e.getMessage(), e);
+        } finally {
+            if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully();
         }
     }
 
     public void updateState(boolean connected) {
-        if (!isClose) sendState(connected);
+        if (isAlive) sendState(connected);
     }
 
     /**
@@ -339,15 +335,15 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     public void closeClient() {
         log.info("Wind close client begin");
-        if (nioEventLoopGroup != null) {
-            io.netty.util.concurrent.Future<?> f = nioEventLoopGroup
+        if (eventLoopGroup != null) {
+            io.netty.util.concurrent.Future<?> f = eventLoopGroup
                     .shutdownGracefully();
             try {
                 f.await();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            nioEventLoopGroup = null;
+            eventLoopGroup = null;
         }
         log.info("Wind close client end");
     }
@@ -356,35 +352,21 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         return isConnected;
     }
 
-    public void reconClient() {
-        if (isClose || isConnecting)
-            return;
-        try {
-            Thread.sleep(1000);
-            doConnect();
-        } catch (Exception e) {
-            LogUtil.logException(log, e);
-        }
-
-    }
-
     public void doConnect() {
         this.addReqData(doConnect);
     }
 
     @Override
     public void init() throws Exception {
-        isClose = false;
+        isAlive = true;
         // subscribe to events
         eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("WFDA eventProcessor");
 
-        WindGateWayAdapter.instance = this;
-
-        QuoteMgr.instance.init();
-        QuoteMgr.setModifyTickTime(modifyTickTime);
+        quoteMgr.init();
+        quoteMgr.setModifyTickTime(modifyTickTime);
         initReqThread();
         doConnect();
 
@@ -396,10 +378,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     @Override
     public void uninit() {
         log.info("Wind uninit begin");
-        isClose = true;
+        isAlive = false;
         printDataTimeStat();
         closeClient();
-        QuoteMgr.instance.uninit();
+        quoteMgr.uninit();
         closeReqThread();
         if (!eventProcessor.isSync())
             scheduleManager.uninit();
@@ -432,8 +414,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         if (symbol.isEmpty())
             return;
         log.info("subscribeMarketData Symbol: " + symbol);
-        if (!QuoteMgr.instance().checkSymbol(symbol)) {
-            ClientHandler.subscribe(symbol);
+        if (!quoteMgr.checkSymbol(symbol)) {
+            subscribe(symbol);
         }
         checkUserClient(symbol, listener, true);
     }
@@ -481,7 +463,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         StringBuffer sb = new StringBuffer();
         for(String symbol : subscribeList){
             if(sb.length()+symbol.length() >= WindDef.SUBSCRIBE_MAX_LENGTH){
-                ClientHandler.subscribe(sb.toString());
+                subscribe(sb.toString());
                 sb = new StringBuffer();
             }
             if(sb.toString().equals("")){
@@ -492,7 +474,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             checkUserClient(symbol, listener, true);
         }
         if(sb.length() > 0){
-            ClientHandler.subscribe(sb.toString());
+            subscribe(sb.toString());
         }
     }
 
@@ -570,7 +552,19 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         if(object instanceof RefDataUpdateEvent){
             log.debug("Wind Adapter Receive RefDataUpdateEvent");
             RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) object;
-            inputRefDataList(refDataUpdateEvent.getRefDataList());
+            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.ADD)
+                inputRefDataList(refDataUpdateEvent.getRefDataList());
+            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.MOD){
+                for(RefData refData : refDataUpdateEvent.getRefDataList()){
+                    DataObject quoteExtend = new DataObject();
+                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), refData.getSymbol());
+                    quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
+                    quoteExtend.put(QuoteExtDataField.CNNAME.value(), refData.getCNDisplayName());
+                    quoteExtend.put(QuoteExtDataField.TWNAME.value(), refData.getTWDisplayName());
+                    sendQuoteExtend(quoteExtend);
+                }
+            }
+
         }
 
         //IndexSessionEvent
@@ -656,7 +650,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         StockItem.stockItemBySymbolMap.clear();
         IndexItem.indexItemBySymbolMap.clear();
         TransationItem.transationItemBySymbolMap.clear();
-        ClientHandler.sendClearSubscribe();
+        sendClearSubscribe();
     }
 
     @Override
@@ -666,20 +660,281 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     @Override
     public void onRequestEvent(RequestThread sender, Object reqObj) {
-
         int type = (int) reqObj;
         if (type == doConnect) {
             if (isConnected)
                 return;
-            log.info(String.format("connect to Wind GW %s:%d",
+            log.info(String.format("connect to WindGW %s:%d",
                     gatewayIp, gatewayPort));
-            connectGateWay(gatewayIp, gatewayPort);
+            connect();
         }
     }
 
     @Override
     public void onStopEvent(RequestThread sender) {
 
+    }
+
+    @Override
+    public void processChannelActive(ChannelHandlerContext ctx) {
+        sendReqHeartbeat(); // send request heartbeat message
+        msLastTime = System.currentTimeMillis();
+        isConnected = true;
+        updateState(isConnected);
+    }
+
+    @Override
+    public void processChannelRead(Object msg) {
+        if (msgPack) {
+            if (msg instanceof HashMap) {
+                processMsgPackRead((HashMap) msg);
+                if (calculateMessageFlow(FDTFrameDecoder.getPacketLen(), FDTFrameDecoder.getReceivedBytes()))
+                    FDTFrameDecoder.ResetCounter();
+            }
+        } else {
+            if (msg instanceof String) {
+                String msgStr = (String) msg;
+                processNoMsgPackRead(msgStr);
+                if (calculateMessageFlow(msgStr.length(), dataReceived)) dataReceived = 0;
+            }
+        }
+    }
+
+    /* netty process method*/
+
+    public void sendData(String data) {
+        if (!msgPack) data = data + "\r\n";
+        this.channelHandlerContext.channel().writeAndFlush(data);
+    }
+
+    public void sendClearSubscribe() {
+        FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
+
+        sbSymbol.append("API");
+        sbSymbol.append("ClearSubscribe");
+
+        String subscribeStr = sbSymbol.toString();
+
+        subscribeStr = subscribeStr + "|Hash="
+                + String.valueOf(subscribeStr.hashCode());
+        LogUtil.logInfo(log, "[sendClearSubscribe]%s", subscribeStr);
+
+        sendData(subscribeStr);
+    }
+
+    public void subscribe(String symbol) {
+        FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
+        sbSymbol.append("API");
+        sbSymbol.append("SUBSCRIBE");
+        sbSymbol.append("Symbol");
+        sbSymbol.append(symbol);
+        String subscribeStr = sbSymbol.toString();
+        subscribeStr = subscribeStr + "|Hash="
+                + String.valueOf(subscribeStr.hashCode());
+        LogUtil.logInfo(log, "[Subscribe]%s", subscribeStr);
+        sendData(subscribeStr);
+
+        if (isSubTrans) {
+            sbSymbol = new FixStringBuilder('=', '|');
+            sbSymbol.append("API");
+            sbSymbol.append("SubsTrans");
+            sbSymbol.append("Symbol");
+            sbSymbol.append(symbol);
+            subscribeStr = sbSymbol.toString();
+            subscribeStr = subscribeStr + "|Hash="
+                    + String.valueOf(subscribeStr.hashCode());
+            LogUtil.logInfo(log, "[Subscribe]%s", subscribeStr);
+            sendData(subscribeStr);
+        }
+
+    }
+
+    public void unSubscribe(String symbol) {
+        FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
+        sbSymbol.append("API");
+        sbSymbol.append("UNSUBSCRIBE");
+        sbSymbol.append("Symbol");
+        sbSymbol.append(symbol);
+
+        String unsubscribeStr = sbSymbol.toString();
+        unsubscribeStr = unsubscribeStr + "|Hash="
+                + String.valueOf(unsubscribeStr.hashCode());
+        LogUtil.logInfo(log, "[UnSubscribe]%s", unsubscribeStr);
+        sendData(unsubscribeStr);
+    }
+    public void sendRequestCodeTable(String market) {
+        FixStringBuilder fsb = new FixStringBuilder('=', '|');
+
+        fsb.append("API");
+        fsb.append("GetCodeTable");
+        fsb.append("Market");
+        fsb.append(market);
+        int fsbhashCode = fsb.toString().hashCode();
+        fsb.append("Hash");
+        fsb.append(String.valueOf(fsbhashCode));
+
+        LogUtil.logInfo(log, "[RequestCodeTable]%s", fsb.toString());
+        sendData(fsb.toString());
+    }
+
+    public void sendRequestMarket() {
+        FixStringBuilder fsb = new FixStringBuilder('=', '|');
+
+        fsb.append("API");
+        fsb.append("GetMarkets");
+        int fsbhashCode = fsb.toString().hashCode();
+        fsb.append("Hash");
+        fsb.append(String.valueOf(fsbhashCode));
+
+        LogUtil.logInfo(log, "[RequestMarket]%s", fsb.toString());
+        sendData(fsb.toString());
+    }
+
+    public void sendReqHeartbeat() {
+        FixStringBuilder fsb = new FixStringBuilder('=', '|');
+        fsb.append("API");
+        fsb.append("ReqHeartBeat");
+        int fsbhashCode = fsb.toString().hashCode();
+        fsb.append("Hash");
+        fsb.append(String.valueOf(fsbhashCode));
+
+        LogUtil.logInfo(log, "[ReqHeartBeat]%s", fsb.toString());
+        sendData(fsb.toString());
+    }
+
+    public void processMsgPackRead(HashMap hashMap) {
+        if (marketDataLog){
+            StringBuffer sb = new StringBuffer();
+            for (Object key : hashMap.keySet()) {
+                if((int)key == FDTFields.WindSymbolCode) {
+                    String symbol = "";
+                    try {
+                        symbol = new String((byte[]) hashMap.get(key), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        log.warn("windCode convert X!");
+                    }
+                    sb.append(key + "=" + symbol + ",");
+                }else{
+                    sb.append(key + "=" + hashMap.get(key) + ",");
+                }
+            }
+            log.debug(sb.toString());
+        }
+        int packType = (int) hashMap.get(FDTFields.PacketType);
+        if (packType == FDTFields.PacketArray) {
+            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
+            for (HashMap innerHashMap : arrayList) {
+                processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
+            }
+        } else {
+            processGateWayMessage(parsePackTypeToDataType(packType, hashMap), null, hashMap);
+        }
+    }
+
+    public int parsePackTypeToDataType(int packType, HashMap hashMap) {
+        int dataType = -1;
+        if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
+        if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
+        if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
+        if (packType == FDTFields.WindTransaction) dataType = WindDef.MSG_DATA_TRANSACTION;
+        if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
+        return dataType;
+    }
+
+    public void processNoMsgPackRead(String in) {
+        String strHash = null;
+        String strDataType = null;
+        int dataType = -1;
+        if (in != null) {
+            String[] in_arr = in.split("\\|");
+            for (String str : in_arr) {
+                if (str.contains("API=")) {
+                    strDataType = str.substring(4);
+                }
+                if (str.contains("Hash=")) {
+                    strHash = str.substring(5);
+                }
+            }
+            int endindex = in.indexOf("|Hash=");
+            if (endindex > 0) {
+                String tempStr = in.substring(0, endindex);
+                int hascode = tempStr.hashCode();
+
+                // Compare hash code
+                if (hascode == Integer.parseInt(strHash)) {
+                    if (marketDataLog) {
+                        LogUtil.logDebug(log, in);
+                    }
+                    if (strDataType.equals("DATA_FUTURE")) {
+                        dataType = WindDef.MSG_DATA_FUTURE;
+                    }
+                    if (strDataType.equals("DATA_MARKET")) {
+                        dataType = WindDef.MSG_DATA_MARKET;
+                    }
+                    if (strDataType.equals("DATA_INDEX")) {
+                        dataType = WindDef.MSG_DATA_INDEX;
+                    }
+                    if (strDataType.equals("Heart Beat")) {
+                        dataType = WindDef.MSG_SYS_HEART_BEAT;
+                    }
+                    if (strDataType.equals("QDateChange")) {
+                        dataType = WindDef.MSG_SYS_QUOTATIONDATE_CHANGE;
+                        LogUtil.logDebug(log, in);
+                    }
+                    if (strDataType.equals("MarketClose")) {
+                        dataType = WindDef.MSG_SYS_MARKET_CLOSE;
+                        LogUtil.logDebug(log, in);
+                    }
+                    processGateWayMessage(
+                            dataType, in_arr, null);
+                }
+            }
+        }
+    }
+
+    private boolean calculateMessageFlow(int rBytes, int dataReceived) {
+        if (bufLenMin > rBytes) {
+            bufLenMin = rBytes;
+            log.info("WindC-minimal recv len from wind gateway : " + bufLenMin);
+        } else {
+            if (bufLenMin == 0) {
+                bufLenMin = rBytes;
+                log.info("WindC-first time recv len from wind gateway : " + bufLenMin);
+            }
+        }
+        if (bufLenMax < rBytes) {
+            bufLenMax = rBytes;
+            log.info("WindC-maximal recv len from gateway : " + bufLenMax);
+        }
+
+        blockCount += 1;
+        msDiff = System.currentTimeMillis() - msLastTime;
+        if (msDiff > 1000) {
+            msLastTime = System.currentTimeMillis();
+            if (throughput < dataReceived * 1000 / msDiff) {
+                throughput = dataReceived * 1000 / msDiff;
+                if (throughput > 1024) {
+                    log.info("WindC-maximal throughput : " + throughput / 1024 + " KB/Sec , " + blockCount + " blocks/Sec");
+                } else {
+                    log.info("WindC-maximal throughput : " + throughput + " Bytes/Sec , " + blockCount + " blocks/Sec");
+                }
+            }
+            blockCount = 0;
+            return true;
+        }
+        return false;
+    }
+    /***********************/
+
+    @Override
+    public void processChannelInActive() {
+        isConnected = false;
+        updateState(isConnected);
+    }
+
+    @Override
+    public void setChannelHandlerContext(ChannelHandlerContext ctx) {
+        this.channelHandlerContext = ctx;
     }
 
     public boolean isModifyTickTime() {
@@ -744,6 +999,38 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     public boolean isSubTrans() {
         return isSubTrans;
+    }
+
+    public ConcurrentHashMap<String, String> getMarketRuleBySymbolMap() {
+        return marketRuleBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, FutureData> getFutureDataBySymbolMap() {
+        return futureDataBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, StockData> getStockDataBySymbolMap() {
+        return stockDataBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, IndexData> getIndexDataBySymbolMap() {
+        return indexDataBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, TransationData> getTransationDataBySymbolMap() {
+        return transationDataBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, DataObject> getLastQuoteExtendBySymbolMap() {
+        return lastQuoteExtendBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, Quote> getLastQuoteBySymbolMap() {
+        return lastQuoteBySymbolMap;
+    }
+
+    public ConcurrentHashMap<String, MarketSessionData> getMarketSessionByIndexMap() {
+        return marketSessionByIndexMap;
     }
 }
 

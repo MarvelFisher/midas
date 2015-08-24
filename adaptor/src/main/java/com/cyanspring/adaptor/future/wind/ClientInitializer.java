@@ -11,6 +11,12 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 
+	IWindGWListener windGWListener;
+
+	ClientInitializer(IWindGWListener windGWListener){
+		this.windGWListener = windGWListener;
+	}
+
 	@Override
 	protected void initChannel(SocketChannel arg0) throws Exception {
 		ChannelPipeline  pipeline = arg0.pipeline();
@@ -19,6 +25,6 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 		pipeline.addLast("encoder", new StringEncoder());
 		pipeline.addLast("IdleStateHandler", new IdleStateHandler(25, 10, 0));
 		pipeline.addLast("ClientIdleHandler", new ClientIdleHandler(false));
-		pipeline.addLast("ClientHandler", new ClientHandler());
+		pipeline.addLast("ClientHandler", new ClientHandler(windGWListener));
 	}
 }

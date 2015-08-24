@@ -36,6 +36,7 @@
 				<ref bean="trailingStopManager"/>
 				<ref bean="liveTradingSession" />	
 				<ref bean="statisticManager" />	
+            	<ref bean="systemSuspendValidator"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -378,8 +379,16 @@
     <bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
 
-	<bean id="suspendSystemController" class="com.cyanspring.server.order.SuspendSystemController"/>
-	
+    <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
+        <property name="validators">
+            <list>
+            	<ref bean="systemSuspendValidator"/>
+            </list>
+        </property>
+    </bean>
+        
+    <bean id="systemSuspendValidator" class="com.cyanspring.server.validation.transaction.SystemSuspendValidator"/>
+
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner"/>
 
 </beans>

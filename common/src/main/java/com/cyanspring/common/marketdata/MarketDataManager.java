@@ -8,6 +8,7 @@ import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,9 +146,23 @@ public class MarketDataManager extends MarketDataReceiver {
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
                     Quote tempQuote = (Quote)quote.clone();
-                    if(marketTypes.get(tempQuote.getSymbol()) != null && "I".equals(marketTypes.get(tempQuote.getSymbol()))){
-                        tempQuote.setClose(tempQuote.getLast());
-                        log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
+                    if(marketTypes.get(tempQuote.getSymbol()) != null ){
+                        if("I".equals(marketTypes.get(tempQuote.getSymbol())) || "S".equals(marketTypes.get(tempQuote.getSymbol()))) {
+                            tempQuote.setClose(tempQuote.getLast());
+                            log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
+                        }
+                        if("F".equals(marketTypes.get(tempQuote.getSymbol()))){
+                            if(quoteExtends.containsKey(tempQuote.getSymbol())){
+                                DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
+                                double settlePrice = tempQuote.getLast();
+                                if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value()))
+                                    settlePrice = quoteExtend.get(Double.class,QuoteExtDataField.SETTLEPRICE.value());
+                                tempQuote.setClose(settlePrice);
+                                log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = SettlePrice = " +settlePrice);
+                            }else{
+                                log.debug("Symbol=" + tempQuote.getSymbol() + " not in quoteExtends");
+                            }
+                        }
                     }
                     quoteCleaner.clear(tempQuote);
                     tempQuote.setTimeSent(Clock.getInstance().now());
@@ -170,6 +185,26 @@ public class MarketDataManager extends MarketDataReceiver {
                 log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
                 for (String symbol : quoteExtends.keySet()) {
                     DataObject quoteExtend = (DataObject)quoteExtends.get(symbol).clone();
+                    if(marketTypes.get(symbol) != null){
+                        double preClose = 0;
+                        double ceil = 0;
+                        double floor = 0;
+                        if(quotes.containsKey(symbol)){
+                            preClose = quotes.get(symbol).getLast();
+                        }
+                        if("F".equals(marketTypes.get(symbol))){
+                            if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())){
+                                preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                            }
+                        }
+                        ceil = preClose * 1.1;
+                        floor = preClose * 0.9;
+                        if(PriceUtils.GreaterThan(preClose, 0)) {
+                            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
+                            quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
+                            quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
+                        }
+                    }
                     quoteExtendCleaner.clear(quoteExtend);
                     try {
                         printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);

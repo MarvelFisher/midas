@@ -24,6 +24,12 @@ import javax.swing.event.ChangeEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ * @author dennischen
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class LoginDlg extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();

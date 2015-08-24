@@ -63,8 +63,9 @@
 
     <bean id="refDataAdapterSC"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
-        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayIp" value="101.231.55.6"/>
+        <!--<property name="gatewayIp" value="10.1.1.153"/>-->
+        <!--<property name="gatewayIp" value="10.0.0.32"/>-->
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
@@ -86,16 +87,36 @@
 
     <bean id="refDataAdapterFCI"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
-        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayIp" value="101.231.55.6"/>
+        <!--<property name="gatewayIp" value="10.0.0.32"/>-->
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
-        <property name="refDataFile" value="refdata/refData_sc.xml"/>
-        <property name="windbaseDataFile" value="ticks/windbase.xml"/>
+        <property name="refDataFile" value="refdata/refData_fci.xml"/>
         <property name="marketsList">
             <list>
                 <value>CF</value>
+            </list>
+        </property>
+        <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
+        <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
+        <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
+        <property name="refFilterList" ref="refFilterList"/>
+    </bean>
+
+    <bean id="refDataAdapterFCC"
+          class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
+        <property name="gatewayIp" value="10.0.0.20"/>
+        <property name="gatewayPort" value="10046"/>
+        <property name="marketDataLog" value="true"/>
+        <property name="msgPack" value="true"></property>
+        <property name="refDataFile" value="refdata/refData_fcc.xml"/>
+        <property name="marketsList">
+            <list>
+                <value>SHF</value>
+                <value>DCE</value>
+                <value>CZC</value>
             </list>
         </property>
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />

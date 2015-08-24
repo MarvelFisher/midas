@@ -1,4 +1,4 @@
-package com.cyanspring.info;
+package com.cyanspring.info.cdp;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -66,6 +66,7 @@ import com.cyanspring.common.staticdata.TickTableManager;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.util.DefPriceSetter;
 import com.cyanspring.info.util.FXPriceSetter;
+import com.cyanspring.info.util.InfoUtils;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 
@@ -90,8 +91,9 @@ public class CentralDbProcessor implements IPlugin
 	private HashMap<String, Integer> historicalDataPeriod;
 	
 	private MarketSessionType sessionType = null ;
+	private Date sessionEnd;
 	private String tradedate ;
-	static boolean isStartup = true;
+	public static boolean isStartup = true;
 	boolean isRetrieving = false;
 	private boolean calledRefdata = false;
 	private boolean isProcessQuote = false;
@@ -110,10 +112,7 @@ public class CentralDbProcessor implements IPlugin
 	private int numOfHisThreads = 5;
 	private int curHisThread = 0;
 	
-	private Date sessionEnd;
 	
-//	private HashMap<String, ArrayList<String>> mapDefaultSymbol = new HashMap<String, ArrayList<String>>();
-//	private ArrayList<SymbolData> listSymbolData = new ArrayList<SymbolData>();
 	private ArrayList<SymbolInfo> defaultSymbolInfo = new ArrayList<SymbolInfo>();
 	private IRefSymbolInfo refSymbolInfo;
 	private ArrayList<String> appServIDList = new ArrayList<String>();
@@ -204,7 +203,6 @@ public class CentralDbProcessor implements IPlugin
 		{
 			log.info("Get insertEvent, start insertSQL");
 			insertSQL();
-//			System.out.println("insert");
 		}
 		else if (event == retrieveEvent)
 		{
@@ -310,11 +308,10 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
 	{
-		ArrayList<String> defaultSymbol = /*mapDefaultSymbol.get(market)*/preSubscriptionList;
+		ArrayList<String> defaultSymbol = preSubscriptionList;
 		if (defaultSymbol == null || defaultSymbol.isEmpty())
 		{
 			retEvent.setOk(false);
-//			retEvent.setMessage("Can't find requested Market in default map");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.REF_SYMBOL_NOT_FOUND, "Can't find requested Market in default map"));
 			log.debug("Process Request Default Symbol fail: Can't find requested Market in default map");
 			sendEvent(retEvent);
@@ -324,7 +321,6 @@ public class CentralDbProcessor implements IPlugin
 		if (defaultSymbolInfo == null || defaultSymbolInfo.isEmpty())
 		{
 			retEvent.setOk(false);
-//			retEvent.setMessage("Default SymbolInfo is empty");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.REF_SYMBOL_NOT_FOUND, "Default SymbolInfo is empty"));
 			log.debug("Process Request Default Symbol fail: Default SymbolInfo is empty");
 			sendEvent(retEvent);
@@ -337,7 +333,6 @@ public class CentralDbProcessor implements IPlugin
 		if (retsymbollist.isEmpty())
 		{
 			retEvent.setOk(false);
-//			retEvent.setMessage("Can't find requested symbol");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SEARCH_SYMBOL_ERROR, "Can't find requested symbol"));
 		}
 		else
@@ -388,12 +383,11 @@ public class CentralDbProcessor implements IPlugin
 		if (user == null || market == null || group == null)
 		{
 			retEvent.setOk(false);
-//			retEvent.setMessage("Recieved null argument");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Recieved null argument"));
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
 		}
 		String userEncode;
-		userEncode = DBHandler.utf8Encode(user);
+		userEncode = InfoUtils.utf8Encode(user);
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Symbol_Info` WHERE `USER_ID`='%s'" + 
 				" AND `GROUP`='%s' AND `MARKET`='%s';", userEncode, group, market) ;
@@ -434,7 +428,6 @@ public class CentralDbProcessor implements IPlugin
 		{
 			retEvent.setSymbolList(null);
 			retEvent.setOk(false);
-//				retEvent.setMessage("Can't find requested symbol");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Can't find requested symbol"));
 			log.debug("Process Request Group Symbol fail: Can't find requested symbol");
 		}
@@ -462,7 +455,6 @@ public class CentralDbProcessor implements IPlugin
 		if (retList == null)
 		{
 			retEvent.setOk(false);
-//				retEvent.setMessage("Can't find requested symbol");
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.CONNECTION_BROKEN, "Lost connection to Info Database"));
 			log.debug("Process Request Group Symbol fail: Can't find requested symbol");
 		}
@@ -506,7 +498,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		String userEn, groupIDEn, groupNameEn;
 		String market = retEvent.getMarket();
-		userEn = DBHandler.utf8Encode(retEvent.getUserID());
+		userEn = InfoUtils.utf8Encode(retEvent.getUserID());
 		String sqlcmd ;
 		sqlcmd = String.format("DELETE FROM `Subscribe_Group_Info` WHERE `USER_ID`='%s' AND `MARKET`='%s';", 
 				userEn, retEvent.getMarket()) ;
@@ -515,8 +507,8 @@ public class CentralDbProcessor implements IPlugin
 		boolean first = true;
 		for (GroupInfo ginfo : groups)
 		{
-			groupIDEn = DBHandler.utf8Encode(ginfo.getGroupID());
-			groupNameEn = DBHandler.utf8Encode(ginfo.getGroupName());
+			groupIDEn = InfoUtils.utf8Encode(ginfo.getGroupID());
+			groupNameEn = InfoUtils.utf8Encode(ginfo.getGroupName());
 			if (first == true)
 			{
 				first = false;
@@ -531,33 +523,6 @@ public class CentralDbProcessor implements IPlugin
 		sqlcmd += ";" ;
 		getDbhnd().updateSQL(sqlcmd);
 		userRequestGroupList(retEvent);
-	}
-	
-	public void writeToTick(Quote quote)
-	{
-		if (this.tradedate == null)
-		{
-			return;
-		}
-		
-		String strFile = String.format("./DAT/%s/%s.TCK", 
-				getTradedate(), quote.getSymbol()) ;
-		File file = new File(strFile) ;
-        file.getParentFile().mkdirs();
-        boolean fileExist = file.exists();
-        try
-        {
-            FileOutputStream fos = new FileOutputStream(file, true);
-            ObjectOutputStream oos = (!fileExist) ? new ObjectOutputStream(fos) : new AppendingObjectOutputStream(fos); 
-        	oos.writeObject(quote);
-            oos.flush();
-            oos.close();
-            fos.close();
-        }
-        catch (IOException e)
-        {
-            log.error(e.getMessage(), e);
-        }
 	}
 	
 	public void onCallRefData(RefDataEvent event)
@@ -774,11 +739,7 @@ public class CentralDbProcessor implements IPlugin
 				}
 			}
 		}
-		if (retrieveMap == null)
-		{
-			retrieveMap = new HashMap<String, HashMap<String, List<HistoricalPrice>>>();
-		}
-		retrieveMap.clear();
+		getRetrieveMap().clear();
 		for (String market : marketList)
 		{
 			getChartPrice(market, "1");
@@ -795,7 +756,7 @@ public class CentralDbProcessor implements IPlugin
 		String symbol;
 		SymbolData symboldata;
     	ArrayList<String> symbolarr = new ArrayList<String>();
-		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : retrieveMap.entrySet())
+		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : getRetrieveMap().entrySet())
 		{
 			symbolarr.clear();
 	    	symbolarr.add(entry.getKey());
@@ -825,10 +786,11 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public void clearAllChartPrice()
 	{
-		for (SymbolChef chef : SymbolChefList)
+		if (getRetrieveMap() == null)
 		{
-			chef.clearAllChartPrice();
+			setRetrieveMap(new HashMap<String, HashMap<String, List<HistoricalPrice>>>());
 		}
+		getRetrieveMap().clear();
 	}
 	public void getChartPrice(String market, String strType)
 	{
@@ -847,11 +809,11 @@ public class CentralDbProcessor implements IPlugin
 		HashMap<String, List<HistoricalPrice>> subMap;
 		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())
 		{
-			if (retrieveMap.get(entry.getKey()) == null)
+			if (getRetrieveMap().get(entry.getKey()) == null)
 			{
-				retrieveMap.put(entry.getKey(), new HashMap<String, List<HistoricalPrice>>());
+				getRetrieveMap().put(entry.getKey(), new HashMap<String, List<HistoricalPrice>>());
 			}
-			subMap = retrieveMap.get(entry.getKey());
+			subMap = getRetrieveMap().get(entry.getKey());
 			if (subMap.get(strType) == null)
 			{
 				subMap.put(strType, new ArrayList<HistoricalPrice>());
@@ -903,7 +865,6 @@ public class CentralDbProcessor implements IPlugin
 		}
 		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
 			isProcessQuote = true;
-		//this.sessionType = sessionType;
 	}
 	public void sendCentralReady()
 	{
@@ -1028,7 +989,6 @@ public class CentralDbProcessor implements IPlugin
 			mapCentralDbEventProc.put("Historical" + ii, new CentralDbEventProc(this, "CDP-Event-His" + ii));
 		}
 		mapCentralDbEventProc.put("Request", new CentralDbEventProc(this, "CDP-Event-Req"));
-//		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;
 
@@ -1148,14 +1108,6 @@ public class CentralDbProcessor implements IPlugin
 		return chartCacheProcessor;
 	}
 
-//	public Map<String, RefSubName> getSubNameMap() {
-//		return subNameMap;
-//	}
-//
-//	public void setSubNameMap(Map<String, RefSubName> subNameMap) {
-//		this.subNameMap = subNameMap;
-//	}
-
 	public IRefSymbolInfo getRefSymbolInfo() {
 		return refSymbolInfo;
 	}
@@ -1257,6 +1209,16 @@ public class CentralDbProcessor implements IPlugin
 
 	public void setRunInsertSQL(boolean runInsertSQL) {
 		this.runInsertSQL = runInsertSQL;
+	}
+
+	public HashMap<String, HashMap<String, List<HistoricalPrice>>> getRetrieveMap()
+	{
+		return retrieveMap;
+	}
+
+	public void setRetrieveMap(HashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap)
+	{
+		this.retrieveMap = retrieveMap;
 	}
 	
 }

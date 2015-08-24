@@ -32,7 +32,7 @@ events
 Based on the communication of direction, there are two type of events:
 
 From Event - event sent from LTS
-To Event - event sendt by API
+To Event - event send by API
 
 Some events must be handled before the program can go into a standard trading
 mode. They are listed as following:

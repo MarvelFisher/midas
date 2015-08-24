@@ -28,6 +28,7 @@
 				<ref bean="autoRunner" />
 				<ref bean="liveTradingSession" />
 				<ref bean="statisticManager" />
+            	<ref bean="systemSuspendValidator"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -37,6 +38,16 @@
 			</map>
 		</property>
 	</bean>
+
+    <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
+        <property name="validators">
+            <list>
+            	<ref bean="systemSuspendValidator"/>
+            </list>
+        </property>
+    </bean>
+        
+    <bean id="systemSuspendValidator" class="com.cyanspring.server.validation.transaction.SystemSuspendValidator"/>
 
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>

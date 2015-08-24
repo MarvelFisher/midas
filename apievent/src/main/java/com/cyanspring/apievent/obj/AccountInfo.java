@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author elviswu
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class AccountInfo {
 	private Account account;
 	// private List<ClosePosition> closePositions;
