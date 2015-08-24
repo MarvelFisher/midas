@@ -54,6 +54,8 @@ public class AlertManager extends Compute {
 	ScheduleManager scheduleManager;
 	
 	private int maxNoOfAlerts;
+    private String deepLink;
+    private String market ;
 	private boolean checkAlertstart = true;
 
 	private Map<String, ArrayList<BasePriceAlert>> symbolPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
@@ -160,7 +162,7 @@ public class AlertManager extends Compute {
 			SendRemoteEvent(resetAccountReplyEvent) ;
 			log.info("Reset User Success : " + UserId);
 		} catch (Exception e) {
-			log.error("[ResetUser]:[" + strCmd +"] :"+ e.getMessage());
+			log.error("[ResetUser]:[" + strCmd + "] :" + e.getMessage());
 		}
 	}
 
@@ -196,7 +198,7 @@ public class AlertManager extends Compute {
 			SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 					null, null, "txId", new ParseData(execution.getUser(),
 							tradeMessage, TA.getId(), AlertMsgType.MSG_TYPE_ORDER.getType(), Datetime,
-							keyValue));
+							keyValue, deepLink + execution.getSymbol() + (market.compareTo("FX") == 0 ? "": ("." + market))));
 			// eventManagerMD.sendEvent(sendNotificationRequestEvent);
 			SendEvent(sendNotificationRequestEvent) ;
 			// save to Array
@@ -1012,7 +1014,8 @@ public class AlertManager extends Compute {
 		priceAlert.setContent(PriceAlertMessage);
 		priceAlert.setDateTime(strDate);
 		return new ParseData(priceAlert.getUserId(), PriceAlertMessage,
-				priceAlert.getId(), AlertMsgType.MSG_TYPE_PRICE.getType(), strDate, keyValue);
+				priceAlert.getId(), AlertMsgType.MSG_TYPE_PRICE.getType(), strDate, keyValue,
+                deepLink + priceAlert.getSymbol() + (market.compareTo("FX") == 0 ? "": ("." + market)));
 	}
 
 	@Override
@@ -1085,5 +1088,21 @@ public class AlertManager extends Compute {
 	public void setMaxNoOfAlerts(int maxNoOfAlerts) {
 		this.maxNoOfAlerts = maxNoOfAlerts;
 	}
+
+    public String getDeepLink() {
+        return deepLink;
+    }
+
+    public void setDeepLink(String deepLink) {
+        this.deepLink = deepLink;
+    }
+
+    public String getMarket() {
+        return market;
+    }
+
+    public void setMarket(String market) {
+        this.market = market;
+    }
 
 }
