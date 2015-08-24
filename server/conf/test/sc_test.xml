@@ -28,6 +28,7 @@
 				<ref bean="autoRunner" />
 				<ref bean="validationDataProvider"/>
 				<ref bean="statisticManager"/>
+				<ref bean="systemSuspendValidator"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -38,6 +39,23 @@
 		</property>
 	</bean>
 	
+    <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
+        <property name="validators">
+            <list>
+            	<ref bean="systemSuspendValidator"/>
+            	<ref bean="transactionThrottleValidator"/>
+            </list>
+        </property>
+    </bean>
+        
+    <bean id="systemSuspendValidator" class="com.cyanspring.server.validation.transaction.SystemSuspendValidator"/>
+
+    <bean id="transactionThrottleValidator" class="com.cyanspring.server.validation.transaction.TransactionThrottleValidator">
+		<property name="interval">
+			<value>300</value>
+		</property>
+    </bean>
+
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 	

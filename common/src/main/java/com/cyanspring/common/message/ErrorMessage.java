@@ -24,7 +24,7 @@ public enum ErrorMessage {
 	SYSTEM_NOT_READY,
 	SERVER_NOT_READY_FOR_LOGIN,
 	SERVER_SUSPEND,
-	
+	FAST_REJECT,
 	
 	// business errors start with 200
 	PREMIUM_FOLLOW_INFO_INCOMPLETE,
