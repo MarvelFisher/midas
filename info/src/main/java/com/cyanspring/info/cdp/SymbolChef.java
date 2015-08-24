@@ -34,6 +34,7 @@ public class SymbolChef implements Runnable
 	{
 		this.strChefName = strChefName;
 		setSuspended(true);
+		m_Thread.setName(strChefName);
 		m_Thread.start();
 	}
 
@@ -78,6 +79,7 @@ public class SymbolChef implements Runnable
 		{
 			if (entry.getValue().getMarket().equals("CF"))
 			{
+				log.info("remove " + entry.getKey());
 				mapSymboldata.remove(entry.getKey(), entry.getValue());
 			}
 			else
@@ -234,7 +236,7 @@ public class SymbolChef implements Runnable
 				quote = null;
 				log.error(strChefName, e);
 			}
-			// 記錄queue的最高個數
+			// 記�?queue?��?高個數
 			if (m_queueMaxSize < m_q.size())
 			{
 				m_queueMaxSize = m_q.size();
@@ -254,6 +256,14 @@ public class SymbolChef implements Runnable
 		{
 			symboldata = entry.getValue();
 			symboldata.setWriteMin(true);
+		}
+	}
+	
+	public void insertSymbol()
+	{
+		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		{
+			entry.getValue().putInsert();
 		}
 	}
 
