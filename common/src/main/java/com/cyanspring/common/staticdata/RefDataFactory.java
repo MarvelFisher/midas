@@ -28,7 +28,6 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class RefDataFactory extends RefDataService {
 	
     protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
-    
     List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
@@ -217,6 +216,7 @@ public class RefDataFactory extends RefDataService {
 	public RefData update(RefData refData, String tradeDate) throws Exception {
 		Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
+		log.info("combineCnName:{}",refData.getCNDisplayName());
         updateRefData(cal, refData);
         if (refDataList.contains(refData))
         	refDataList.remove(refData);
@@ -250,6 +250,14 @@ public class RefDataFactory extends RefDataService {
 			}
 		}
 		return ret;
+	}
+
+	public Map<String, RefData> getRefDataTemplateMap() {
+		return refDataTemplateMap;
+	}
+
+	public void setRefDataTemplateMap(Map<String, RefData> refDataTemplateMap) {
+		this.refDataTemplateMap = refDataTemplateMap;
 	}
 
 	@Override
