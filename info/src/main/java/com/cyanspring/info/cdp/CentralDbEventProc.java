@@ -24,6 +24,8 @@ import com.cyanspring.common.event.info.RetrieveChartEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeType;
+import com.cyanspring.common.event.marketsession.AllIndexSessionEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
@@ -292,6 +294,14 @@ public class CentralDbEventProc implements Runnable
 			centraldb.retrieveCharts(event);
 		}
 	}
+	public void processIndexSessionEvent(IndexSessionEvent event)
+	{
+		centraldb.setSessionIndex(event.getDataMap());
+	}
+	public void processAllIndexSessionEvent(AllIndexSessionEvent event)
+	{
+		centraldb.setSessionIndex(event.getMap());
+	}
 	
 	public void parseEvent(RemoteAsyncEvent event) throws Exception
 	{
@@ -326,6 +336,14 @@ public class CentralDbEventProc implements Runnable
 		else if (event instanceof GroupListRequestEvent)
 		{
 			processGroupListRequestEvent((GroupListRequestEvent)event);
+		}
+		else if (event instanceof IndexSessionEvent)
+		{
+			processIndexSessionEvent((IndexSessionEvent)event);
+		}
+		else if (event instanceof AllIndexSessionEvent)
+		{
+			processAllIndexSessionEvent((AllIndexSessionEvent)event);
 		}
 	}
 

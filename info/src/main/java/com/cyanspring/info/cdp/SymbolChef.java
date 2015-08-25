@@ -61,13 +61,14 @@ public class SymbolChef implements Runnable
 	public boolean createSymbol(RefData refdata, CentralDbProcessor centraldb)
 	{
 		boolean isAdded = false;
-		SymbolData symbolData = mapSymboldata.get(refdata.getSymbol());
+		SymbolData symbolData = getMapSymboldata().get(refdata.getSymbol());
 		if (symbolData == null)
 		{
 			symbolData = new SymbolData(refdata.getSymbol(),
 					refdata.getExchange(), centraldb);
+			symbolData.setSessionIndex(refdata.getIndexSessionType());
 			isAdded = true;
-			mapSymboldata.put(refdata.getSymbol(), symbolData);
+			getMapSymboldata().put(refdata.getSymbol(), symbolData);
 		}
 		return isAdded;
 	}
@@ -75,12 +76,12 @@ public class SymbolChef implements Runnable
 	public void clearSymbol()
 	{
 		// mapSymboldata.clear();
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			if (entry.getValue().getMarket().equals("CF"))
 			{
 				log.info("remove " + entry.getKey());
-				mapSymboldata.remove(entry.getKey(), entry.getValue());
+				getMapSymboldata().remove(entry.getKey(), entry.getValue());
 			}
 			else
 			{
@@ -92,7 +93,7 @@ public class SymbolChef implements Runnable
 	public List<HistoricalPrice> retrieveHistoricalPrice(String type,
 			String symbol, int dataCount)
 	{
-		SymbolData symboldata = mapSymboldata.get(symbol);
+		SymbolData symboldata = getMapSymboldata().get(symbol);
 		if (symboldata == null)
 		{
 			return null;
@@ -103,7 +104,7 @@ public class SymbolChef implements Runnable
 	public PriceHighLow retrievePriceHighLow(String symbol,
 			PriceHighLowType type)
 	{
-		SymbolData symboldata = mapSymboldata.get(symbol);
+		SymbolData symboldata = getMapSymboldata().get(symbol);
 		if (symboldata == null)
 		{
 			return null;
@@ -133,7 +134,7 @@ public class SymbolChef implements Runnable
 		{
 			return;
 		}
-		SymbolData symboldata = mapSymboldata.get(quote.getSymbol());
+		SymbolData symboldata = getMapSymboldata().get(quote.getSymbol());
 		if (symboldata == null)
 		{
 			return;
@@ -154,7 +155,7 @@ public class SymbolChef implements Runnable
 
 	public void getAllChartPrice()
 	{
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			entry.getValue().resetMapHistorical();
 			entry.getValue().getAllChartPrice();
@@ -163,7 +164,7 @@ public class SymbolChef implements Runnable
 
 	public void checkAllChartPrice()
 	{
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			entry.getValue().checkAllChartPrice();
 		}
@@ -171,7 +172,7 @@ public class SymbolChef implements Runnable
 
 	public void clearAllChartPrice()
 	{
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			entry.getValue().clearMapHistorical();
 		}
@@ -179,13 +180,13 @@ public class SymbolChef implements Runnable
 
 	public void retrieveChartPrice(String symbol)
 	{
-		mapSymboldata.get(symbol).retrieveChartPrice();
+		getMapSymboldata().get(symbol).retrieveChartPrice();
 	}
 
 	public List<String> getAllMarket()
 	{
 		ArrayList<String> marketList = new ArrayList<String>();
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			if (marketList.contains(entry.getValue().getMarket()) == false)
 			{
@@ -197,7 +198,7 @@ public class SymbolChef implements Runnable
 
 	public void resetAllChartPrice()
 	{
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			entry.getValue().resetMapHistorical();
 		}
@@ -205,7 +206,7 @@ public class SymbolChef implements Runnable
 
 	public SymbolData getSymbolData(String symbol)
 	{
-		return mapSymboldata.get(symbol);
+		return getMapSymboldata().get(symbol);
 	}
 
 	@Override
@@ -236,7 +237,7 @@ public class SymbolChef implements Runnable
 				quote = null;
 				log.error(strChefName, e);
 			}
-			// 記�?queue?��?高個數
+			// 記�?queue?��?高個數
 			if (m_queueMaxSize < m_q.size())
 			{
 				m_queueMaxSize = m_q.size();
@@ -252,7 +253,7 @@ public class SymbolChef implements Runnable
 	public void resetSymbolDataStat()
 	{
 		SymbolData symboldata;
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			symboldata = entry.getValue();
 			symboldata.setWriteMin(true);
@@ -261,7 +262,7 @@ public class SymbolChef implements Runnable
 	
 	public void insertSymbol()
 	{
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			entry.getValue().putInsert();
 		}
@@ -269,7 +270,7 @@ public class SymbolChef implements Runnable
 
 	public void insertSQL()
 	{
-		for (Entry<String, SymbolData> entry : mapSymboldata.entrySet())
+		for (Entry<String, SymbolData> entry : getMapSymboldata().entrySet())
 		{
 			insertSQL(entry.getKey());
 		}
@@ -293,6 +294,11 @@ public class SymbolChef implements Runnable
 		symboldata.insertSQLTick("H");
 		symboldata.insertSQLTick("6");
 		symboldata.insertSQLTick("T");
+	}
+
+	public ConcurrentHashMap<String, SymbolData> getMapSymboldata()
+	{
+		return mapSymboldata;
 	}
 
 }
