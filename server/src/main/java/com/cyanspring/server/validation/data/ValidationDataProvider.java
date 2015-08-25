@@ -61,7 +61,6 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(MultiQuoteExtendEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class,null);
-			subscribeToEvent(AllIndexSessionEvent.class,null);
 		}
 
 		@Override
