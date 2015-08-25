@@ -6,12 +6,13 @@ import java.util.Calendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataException;
+import com.cyanspring.common.staticdata.RefDataUtil;
 
 public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	enum Type {
@@ -84,6 +85,9 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			throw new Exception("refData required info missing:"+refData.getRefSymbol());
 		}
 		
+		if(!checkAcceptableRefData(refData)){
+			throw new RefDataException("Not acceptable refData:"+refData.getRefSymbol());
+		}
 		
 		refData.setMaximumHold(template.getMaximumHold());
 		refData.setCommodity(template.getCommodity());
@@ -130,6 +134,16 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setRefSymbol(getRefSymbol(refSymbol));
 	}
 	
+	private boolean checkAcceptableRefData(RefData refData) {
+		String contractDate = refData.getCNDisplayName().replaceAll("\\D", "");
+		if(!StringUtils.hasText(contractDate)){
+			log.info("this CNDisplayName name doesn't hava date:{}",refData.getCNDisplayName());
+			return false;
+		}		
+		
+		return true;
+	}
+
 	protected String getEnName(RefData data){		
 		return getCategory(data.getRefSymbol())+data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
 	}
@@ -139,13 +153,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 	
 	protected String getCategory(String refSymbol){
-		
-		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");
-		if(category.length() > 2 ){
-			return category.substring(0, 2);
-		}else{
-			return category;
-		}
+		return RefDataUtil.getCategory(refSymbol);
 	}
 	
 	protected String getCNName(String combineCnName){

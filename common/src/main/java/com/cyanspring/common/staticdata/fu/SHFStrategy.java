@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataException;
 
 /**
  * This strategy is used for Futures Master to change refData settings
@@ -41,6 +42,8 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),15));
 			}
 			refData.setIndexSessionType(getIndexSessionType(refData));
+		} catch (RefDataException e){
+			log.warn(e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}

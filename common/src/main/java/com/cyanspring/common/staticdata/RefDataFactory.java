@@ -111,12 +111,7 @@ public class RefDataFactory extends RefDataService {
     }
     
 	protected String getCategory(String refSymbol){
-		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");
-		if(category.length() > 2 ){
-			return category.substring(0, 2);
-		}else{
-			return category;
-		}
+		return RefDataUtil.getCategory(refSymbol);
 	}
     
 	private void updateRefData(Calendar cal, RefData refData) {
@@ -163,8 +158,7 @@ public class RefDataFactory extends RefDataService {
 		}
 		strategy.init(cal,template);
 		strategy.updateRefData(refData);
-		log.info("XML:"+xstream.toXML(refData));
-		
+//		log.debug("XML:"+xstream.toXML(refData));
 	}
 
     @Override

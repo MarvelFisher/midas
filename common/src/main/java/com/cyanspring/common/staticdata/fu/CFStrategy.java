@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataException;
 
 public class CFStrategy extends AbstractRefDataStrategy  {
 	
@@ -28,6 +29,8 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 			String combineCnName = refData.getCNDisplayName();		
 			refData.setSettlementDate(calSettlementDay(refData,getContractDate(combineCnName)));
 			refData.setIndexSessionType(getIndexSessionType(refData));
+		} catch (RefDataException e){
+			log.warn(e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataException;
 
 public class CZCStrategy extends AbstractRefDataStrategy {
 	
@@ -34,6 +35,8 @@ public class CZCStrategy extends AbstractRefDataStrategy {
 				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),10));
 			}
 			refData.setIndexSessionType(getIndexSessionType(refData));
+		} catch (RefDataException e){
+			log.warn(e.getMessage());
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}
