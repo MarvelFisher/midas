@@ -266,12 +266,12 @@
     </bean>
     
     <bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
-    	<property name="filePath" value="./conf/sim/codetable_fcc.xml"></property>
+    	<property name="filePath" value="./conf/sim/codetable_fci.xml"></property>
     </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
-			<value>conf/fc/FcRefDataTemplate.xml</value>
+			<value>refData/template/template_FC.xml</value>
 		</property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>
