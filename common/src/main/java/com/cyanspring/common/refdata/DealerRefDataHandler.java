@@ -95,19 +95,6 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		isInit();
 	}
 	
-	private boolean checkRefData(RefData refData) {
-		if (!StringUtils.hasText(refData.getRefSymbol()) 
-				|| !StringUtils.hasText(refData.getCNDisplayName())
-				|| !StringUtils.hasText(refData.getExchange())
-				|| !StringUtils.hasText(refData.getCode())
-				|| !StringUtils.hasText(refData.getIType())){
-			
-			log.error("Incorrect refData from adaptor.");
-			return false;
-		}
-		return true;
-	}
-
 	@Override
 	public void onRefDataUpdate(List<RefData> refDataList, Action action) {
 		if (refDataList != null && refDataList.size() > 0) {
@@ -129,12 +116,25 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 						refDataManager.remove(refData);
 					}
 				}
-				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataList, action);
+				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataManager.getRefDataList(), action);
 				eventManager.sendGlobalEvent(event);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
+	}
+	
+	private boolean checkRefData(RefData refData) {
+		if (!StringUtils.hasText(refData.getRefSymbol()) 
+				|| !StringUtils.hasText(refData.getCNDisplayName())
+				|| !StringUtils.hasText(refData.getExchange())
+				|| !StringUtils.hasText(refData.getCode())
+				|| !StringUtils.hasText(refData.getIType())){
+			
+			log.error("Incorrect refData from adaptor.");
+			return false;
+		}
+		return true;
 	}
 
 	public void processRefDataRequestEvent(RefDataRequestEvent event) {
@@ -151,6 +151,8 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 	}
 
 	private boolean isInit() {
+		if (sessionDataMap == null)
+			return false;
 		if (!isInit) {
 			for (IRefDataAdaptor adaptor : refDataAdaptors) {
 				if (!adaptor.getStatus()) {

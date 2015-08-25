@@ -133,7 +133,7 @@ public class MarketSessionUtil implements IPlugin{
     		String key = entry.getKey();
     		if(compareIndex(key, refData.getSymbol()) ||
     				compareIndex(key, refData.getExchange()) ||
-    				compareIndex(key, refData.getSpotENName()))
+    				compareIndex(key, refData.getCategory()))
     			return getPair(refData, entry.getValue());
     	}
     	throw new Exception("No session data found");

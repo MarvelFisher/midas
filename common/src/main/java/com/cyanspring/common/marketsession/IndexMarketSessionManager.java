@@ -22,8 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This Manager is used to send detail marketsession to the subscriber and this
@@ -47,9 +46,12 @@ public class IndexMarketSessionManager implements IPlugin {
 
 	private boolean noCheckSettlement = false;
 	private ScheduleManager scheduleManager = new ScheduleManager();
-	private Map<String, MarketSessionData> sessionDataMap;
+	private Map<String, MarketSessionData> rawMap;
+	private Map<String, MarketSessionData> currentSessionMap = new HashMap<>();
+	private Queue<RefData> addQueue = new LinkedBlockingQueue<>();
+	private Queue<RefData> delQueue = new LinkedBlockingQueue<>();
 	private Map<String, Date> checkDateMap = new HashMap<>();
-	private Map<String, RefData> refDataMap;
+	private Map<String, RefData> refDataMap = new HashMap<String, RefData>();;
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	protected long timerInterval = 1 * 1000;
@@ -73,15 +75,16 @@ public class IndexMarketSessionManager implements IPlugin {
 
 	public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
 		try {
-			if (checkSessionAndRefData()) {
+			if (!checkUtilAndRefData() && !checkCurrentSession()) {
 				Map<String, MarketSessionData> send = new HashMap<>();
-				eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), send, false));
+				eventManager
+						.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), send, false));
 				return;
 			}
 
 			if (event.getIndexList() == null) {
 				eventManager.sendLocalOrRemoteEvent(
-						new IndexSessionEvent(event.getKey(), event.getSender(), sessionDataMap, false));
+						new IndexSessionEvent(event.getKey(), event.getSender(), currentSessionMap, true));
 				return;
 			}
 
@@ -91,14 +94,14 @@ public class IndexMarketSessionManager implements IPlugin {
 
 			Map<String, MarketSessionData> send = new HashMap<>();
 			for (RefData refData : refDataList) {
-				MarketSessionData data = sessionDataMap.get(refData.getSymbol());
+				MarketSessionData data = currentSessionMap.get(refData.getSymbol());
 				if (data == null) {
 					log.error("Request data not complete, index: {}", refData.getSymbol());
 				}
 				send.put(refData.getSymbol(), data);
 			}
 
-			eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), send, false));
+			eventManager.sendLocalOrRemoteEvent(new IndexSessionEvent(event.getKey(), event.getSender(), send, true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -107,7 +110,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processAllIndexSessionRequestEvent(AllIndexSessionRequestEvent event) {
 		try {
 			eventManager.sendLocalOrRemoteEvent(
-					new AllIndexSessionEvent(event.getKey(), event.getSender(), sessionDataMap));
+					new AllIndexSessionEvent(event.getKey(), event.getSender(), currentSessionMap));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -116,48 +119,34 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processRefDataEvent(RefDataEvent event) {
 		if (!event.isOk())
 			return;
-		if (refDataMap == null)
-			refDataMap = new HashMap<String, RefData>();
 
-		List<RefData> refDataList = event.getRefDataList();
-		sendIndexMarketSession(refDataList);
+		for (RefData refData : event.getRefDataList()) 
+			addQueue.offer(refData);
 	}
 
 	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
 		List<RefData> list = event.getRefDataList();
 		if (event.getAction() == Action.ADD) {
-			sendIndexMarketSession(list);
+			for (RefData refData : list) 
+				addQueue.offer(refData);
 		} else if (event.getAction() == Action.MOD) {
 			for (RefData refData : list) 
-				refDataMap.put(refData.getSymbol(), refData);
+				addQueue.offer(refData);
 		} else if (event.getAction() == Action.DEL) {
-			for (RefData refData : list)
-				refDataMap.remove(refData.getSymbol());
+			for (RefData refData : list) 
+				delQueue.offer(refData);
 		}
 	}
-	
-	private void sendIndexMarketSession(List<RefData> refDataList) {
-		Map<String, MarketSessionData> send = new HashMap<>();
-		try {
-			for (RefData refData : refDataList) {
-				refDataMap.put(refData.getSymbol(), refData);
-				if (refData.getIndexSessionType().equals(IndexSessionType.SETTLEMENT.toString())) {
-					MarketSessionData session = marketSessionUtil.getMarketSession(refData, Clock.getInstance().now());
-					send.put(refData.getSymbol(), session);
-				} else {
-					MarketSessionData session = send.get(refData.getCategory());
-					if (session == null) {
-						session = marketSessionUtil.getMarketSession(refData, Clock.getInstance().now());
-						send.put(refData.getCategory(), session);
-					}
-				}
-			}
 
-			if (send.size() > 0) 
-				eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, send, true));
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+	private String getIndex(RefData refData) {
+		String index = null;
+		if (refData.getIndexSessionType().equals(IndexSessionType.SETTLEMENT.toString()))
+			index = refData.getSymbol();
+		else if (refData.getIndexSessionType().equals(IndexSessionType.SPOT.toString()))
+			index = refData.getCategory();
+		else if (refData.getIndexSessionType().equals(IndexSessionType.EXCHANGE.toString()))
+			index = refData.getExchange();
+		return index;
 	}
 
 	public void processPmSettlementEvent(PmSettlementEvent event) {
@@ -167,6 +156,9 @@ public class IndexMarketSessionManager implements IPlugin {
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		try {
+			checkInteralIndexMarketSession();
+			delRefData();
+			addRefData();
 			checkIndexMarketSession();
 			checkSettlement();
 		} catch (Exception e) {
@@ -174,40 +166,72 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 	}
 
-	private void checkIndexMarketSession() {
+	private void checkInteralIndexMarketSession() throws Exception {
 		if (marketSessionUtil == null)
 			return;
-		try {
-			if (sessionDataMap == null) {
-				sessionDataMap = marketSessionUtil.getMarketSession();
-				eventManager.sendEvent(new InternalSessionEvent(null, null, sessionDataMap, true));
-				return;
-			}
-
-			Map<String, MarketSessionData> cache = marketSessionUtil.getMarketSession();
-			Map<String, MarketSessionData> send = new HashMap<>();
-
-			for (Entry<String, MarketSessionData> session : sessionDataMap.entrySet()) {
-				MarketSessionData c = cache.get(session.getKey());
-				if (!c.getSessionType().equals(session.getValue().getSessionType())) {
-					sessionDataMap.put(session.getKey(), c);
-					send.put(session.getKey(), c);
-				}
-			}
-
-			if (send.size() > 0)
-				eventManager.sendEvent(new InternalSessionEvent(null, null, send, true));
-
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+		if (rawMap == null) {
+			rawMap = marketSessionUtil.getMarketSession();
+			eventManager.sendEvent(new InternalSessionEvent(null, null, rawMap, true));
+			return;
 		}
 
+		Map<String, MarketSessionData> cache = marketSessionUtil.getMarketSession();
+		Map<String, MarketSessionData> send = new HashMap<>();
+
+		for (Entry<String, MarketSessionData> session : rawMap.entrySet()) {
+			MarketSessionData c = cache.get(session.getKey());
+			if (!c.getSessionType().equals(session.getValue().getSessionType())) {
+				rawMap.put(session.getKey(), c);
+				send.put(session.getKey(), c);
+			}
+		}
+
+		if (send.size() > 0)
+			eventManager.sendEvent(new InternalSessionEvent(null, null, send, true));
+	}
+
+	private void checkIndexMarketSession() throws Exception {
+		if (!checkUtilAndRefData())
+			return;
+
+		Map<String, MarketSessionData> send = new HashMap<>();
+		for (RefData refData : refDataMap.values()) {
+			MarketSessionData session = marketSessionUtil.getMarketSession(refData, Clock.getInstance().now());
+			String index = getIndex(refData);
+			MarketSessionData current = currentSessionMap.get(index);			
+			if (current == null) {
+				send.put(index, session);
+				currentSessionMap.put(index, session);
+				continue;
+			}
+			if (!current.getSessionType().equals(session.getSessionType())) {
+				send.put(index, session);
+				currentSessionMap.put(index, session);
+			}
+		}
+
+		if (send.size() > 0)
+			eventManager.sendGlobalEvent(new IndexSessionEvent(null, null, send, true));
+	}
+	
+	private void addRefData(){
+		RefData refData;
+		while((refData = addQueue.poll()) != null) {
+			refDataMap.put(refData.getSymbol(), refData);
+		}
+	}
+	
+	private void delRefData(){
+		RefData refData;
+		while((refData = delQueue.poll()) != null) {
+			refDataMap.remove(refData.getSymbol(), refData);
+		}
 	}
 
 	private void checkSettlement() throws ParseException {
 		if (noCheckSettlement)
 			return;
-		if (checkRefData())
+		if (!checkRefData())
 			return;
 
 		List<RefData> refDataList = new ArrayList<RefData>(refDataMap.values());
@@ -215,11 +239,11 @@ public class IndexMarketSessionManager implements IPlugin {
 			String index = refData.getSymbol();
 			if (refData.getSettlementDate() == null)
 				continue;
-			MarketSessionData data = sessionDataMap.get(index);
-			if (data == null) 
-				data = sessionDataMap.get(refData.getCategory());
+			MarketSessionData data = rawMap.get(index);
 			if (data == null)
-				data = sessionDataMap.get(refData.getExchange());
+				data = rawMap.get(refData.getCategory());
+			if (data == null)
+				data = rawMap.get(refData.getExchange());
 			if (data == null) {
 				log.error(index + ", check settlement day fail");
 				continue;
@@ -243,6 +267,7 @@ public class IndexMarketSessionManager implements IPlugin {
 				PmSettlementEvent pmSDEvent = new PmSettlementEvent(null, null, sdEvent);
 				scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
 				log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
+				currentSessionMap.remove(refData.getSymbol());
 			}
 		}
 	}
@@ -276,12 +301,16 @@ public class IndexMarketSessionManager implements IPlugin {
 		this.settlementDelay = settlementDelay;
 	}
 
-	private boolean checkSessionAndRefData() {
-		return marketSessionUtil == null || checkRefData();
+	private boolean checkUtilAndRefData() {
+		return marketSessionUtil != null && checkRefData();
 	}
 
 	private boolean checkRefData() {
-		return refDataMap == null || refDataMap.size() <= 0;
+		return refDataMap != null && refDataMap.size() > 0;
+	}
+	
+	private boolean checkCurrentSession() {
+		return currentSessionMap != null && currentSessionMap.size() > 0; 
 	}
 
 	public IRemoteEventManager getEventManager() {

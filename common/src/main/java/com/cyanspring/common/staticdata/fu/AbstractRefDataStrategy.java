@@ -83,7 +83,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				||!StringUtils.hasText(refData.getCNDisplayName())
 				||!StringUtils.hasText(refData.getExchange())
 				||!StringUtils.hasText(refData.getCode())
-				||!StringUtils.hasText(refData.getENDisplayName())
 				||!StringUtils.hasText(refData.getIType())
 				){
 			throw new Exception("refData required info missing:"+refData.getRefSymbol());
