@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.Default;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.staticdata.fu.AbstractRefDataStrategy;
@@ -59,6 +58,14 @@ public class RefDataFactory extends RefDataService {
                 throw new Exception("Missing refdata template: " + refDataTemplatePath);
             }
         }
+        
+        //init category
+        if(null != refDataList && !refDataList.isEmpty()){
+        	for(RefData refData : refDataList){	        		
+        		refData.setCategory(getCategory(refData.getRefSymbol()));
+        	}
+        }
+        
     }
 
     private void buildTemplateMap(List<RefData> refDataTemplateList) {
@@ -68,7 +75,7 @@ public class RefDataFactory extends RefDataService {
 				log.info("duplicate refData template :{}",spotName);
 				continue;
 			}else{
-				log.info("spotName:{},strategy:{}",spotName,ref.getStrategy());
+				log.info("build template category:{},strategy:{}",spotName,ref.getStrategy());
 				refDataTemplateMap.put(spotName, ref);
 			}
 		}
@@ -86,17 +93,16 @@ public class RefDataFactory extends RefDataService {
         for (RefData refData : refDataList) {
             updateRefData(cal, refData);
         }
+    
         return true;
     }
 
     private RefData searchRefDataTemplate(RefData refData){
 
     	String spotName = getCategory(refData.getRefSymbol());
-    	log.info("ready find template :{}",spotName);
     	RefData templateRefData = null;
     	if(refDataTemplateMap.containsKey(spotName) && null != refDataTemplateMap.get(spotName)){
     		templateRefData = refDataTemplateMap.get(spotName);
-    		log.info("find template :{}",templateRefData.getCategory());
     		return (RefData)templateRefData.clone();
     	}
     	
@@ -122,7 +128,7 @@ public class RefDataFactory extends RefDataService {
         }else{
         	refData.setStrategy(template.getStrategy());
         }
-		log.info("refData:{}, strategy:{}",refData.getRefSymbol(),refData.getStrategy());
+		log.info("update refData:{}, strategy:{}",refData.getRefSymbol(),refData.getStrategy());
 
 		if (!strategyMap.containsKey(refData.getStrategy())) {
 		    try {
@@ -157,6 +163,8 @@ public class RefDataFactory extends RefDataService {
 		}
 		strategy.init(cal,template);
 		strategy.updateRefData(refData);
+		log.info("XML:"+xstream.toXML(refData));
+		
 	}
 
     @Override
@@ -183,25 +191,13 @@ public class RefDataFactory extends RefDataService {
     public void injectRefDataList(List<RefData> refDataList) {
     	if(this.refDataList == null)
     		this.refDataList = new ArrayList<>();
+    	
         this.refDataList.addAll(refDataList);
     }
 
     @Override
     public void clearRefData() {
         refDataList.clear();
-    }
-
-    private void saveRefDataToFile(String path, List<RefData> list) {
-        File file = new File(path);
-        try {
-            file.createNewFile();
-            FileOutputStream os = new FileOutputStream(file);
-            OutputStreamWriter writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
-            xstream.toXML(list, writer);
-            os.close();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
     }
 
     public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
@@ -216,10 +212,10 @@ public class RefDataFactory extends RefDataService {
 	public RefData update(RefData refData, String tradeDate) throws Exception {
 		Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
-		log.info("combineCnName:{}",refData.getCNDisplayName());
         updateRefData(cal, refData);
         if (refDataList.contains(refData))
         	refDataList.remove(refData);
+        
         refDataList.add(refData);
 		return refData;
 	}
@@ -249,6 +245,7 @@ public class RefDataFactory extends RefDataService {
 				ret.add(refData);
 			}
 		}
+		
 		return ret;
 	}
 

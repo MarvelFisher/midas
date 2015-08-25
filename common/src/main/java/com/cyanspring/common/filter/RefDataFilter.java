@@ -73,8 +73,6 @@ public class RefDataFilter implements IDataObjectFilter {
 				throw new Exception("IType cannot be null or empty.");
 			}
 			
-			
-			
 			if (lstITypes.contains(type)) {
 				String symbol = refData.getSymbol();
 				if (symbol != null && !symbol.isEmpty()) {

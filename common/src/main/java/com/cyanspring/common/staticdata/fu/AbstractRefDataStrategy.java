@@ -42,11 +42,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		if(this.cal == null) {
 			this.cal = cal;
 		}
-
-		if (cal.compareTo(this.cal) < 0)
-			return;
-
-		this.cal.add(Calendar.MONTH, 1);        
+   
 	}
 
 	@Override
@@ -67,6 +63,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			return data.getCNDisplayName().replaceAll("\\W", "")+"."+data.getExchange();
 		}else if(IType.FUTURES_IDX.getValue().equals(data.getIType())){
 			return data.getRefSymbol();
+		}else if(IType.FUTURES_CX_IDX.getValue().equals(data.getIType())){			
+			return data.getCategory()+data.getCNDisplayName().replaceAll("\\D", "")+"."+data.getExchange();
 		}else{
 			return "";
 		}
@@ -129,10 +127,15 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setDetailCN(getCNDetailName(combineCnName));
 		refData.setDetailTW(getTWDetailName(combineTwName));
 		refData.setDetailEN(getCNDetailName(combineCnName));	
+		refData.setRefSymbol(getRefSymbol(refSymbol));
 	}
 	
 	protected String getEnName(RefData data){		
 		return getCategory(data.getRefSymbol())+data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
+	}
+	
+	protected String getRefSymbol(String refSymbol){
+		return refSymbol.replaceAll(".[A-Z]+$", "");
 	}
 	
 	protected String getCategory(String refSymbol){
