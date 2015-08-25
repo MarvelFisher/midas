@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -169,10 +170,24 @@ public class RefDataFilter implements IDataObjectFilter {
 	private List<RefData> excludeNonExistingProducts(List<RefData> lstRefData) throws Exception {
 		if (lstRefData != null && lstRefData.size() > 0) {
 			List<RefData> lstRefDataTpl = refDataTplLoader.getRefDataList();
-			
+
 			// equals() and hashCode() of RefData have been "override" based on "Symbol"
 			if (lstRefDataTpl != null && lstRefDataTpl.size() > 0) {
-				lstRefData.retainAll(lstRefDataTpl);				
+//				lstRefData.retainAll(lstRefDataTpl);
+				ArrayList<String> lstCategory = new ArrayList<String>();
+				for (RefData data : lstRefDataTpl) {
+					lstCategory.add(data.getCategory());
+				}
+				
+				Iterator<RefData> itRefData = lstRefData.iterator();
+				while (itRefData.hasNext()) {
+					RefData data = itRefData.next();
+					if (!lstCategory.contains(data.getCategory())) {
+						itRefData.remove();
+					}
+				}
+				
+				
 			}
 		} else {
 			log.error("The given RefData list cannot be null or empty");
