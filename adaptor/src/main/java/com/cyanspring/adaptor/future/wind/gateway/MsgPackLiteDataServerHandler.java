@@ -34,6 +34,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	
 	static public void resubscribe(Channel channel) {
 		synchronized(channels) {
+			rearrangeRegistration();
 			String strSubscribe = registrationGlobal.getSubscribeMarket();		
 			if(strSubscribe != null) {
 				channel.write(addHashTail(strSubscribe,true));
@@ -80,9 +81,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();
 		channels.remove(ctx.channel());
-		log.info("[MsgPack Server] - " + incoming.remoteAddress().toString() + " has removed , Current Count : " + channels.size());
-		rearrangeRegistration();
-	
+		log.info("[MsgPack Server] - " + incoming.remoteAddress().toString() + " has removed , Current Count : " + channels.size());			
 	}	
 	
 
@@ -749,11 +748,12 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	}
     }
     
-    public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol) {
+    public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol,boolean bQueued) {
     	if(map == null) {
     		return;
     	}
-		Iterator<?> it = channels.entrySet().iterator();
+    	    	
+		Iterator<?> it = channels.entrySet().iterator();		
 		int cnt;
 		while (it.hasNext()) {
 			@SuppressWarnings("rawtypes")
@@ -763,9 +763,13 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				continue;
 			}
 			if(lst.hadSymbol(symbol)) {
-				cnt = lst.addMsgPack(map);
-				if(cnt >= maxMsgPackCount) {
-					((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+				if(bQueued) {
+					cnt = lst.addMsgPack(map);
+					if(cnt >= maxMsgPackCount) {
+						((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+					}					
+				} else {
+					((Channel)pairs.getKey()).writeAndFlush(map);
 				}
 			}
 		}		    

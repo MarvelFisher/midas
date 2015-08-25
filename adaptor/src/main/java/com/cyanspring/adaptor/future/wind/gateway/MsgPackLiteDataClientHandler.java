@@ -183,9 +183,9 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			case FDTFields.WindIndexData :
 			case FDTFields.WindMarketData :			
 			case FDTFields.WindFutureData :
-				if(in.containsKey(FDTFields.WindSymbolCode)) {
-					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");
-					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(in, symbol);
+				if(in.containsKey(FDTFields.WindSymbolCode)) {					
+					String symbol = new String((byte[])in.get(FDTFields.WindSymbolCode),"UTF-8");					
+					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(in, symbol,inArray);					
 					HashMap<Integer,Object> mp = mapQuotation.get(symbol);
 					if(mp == null) {
 						mapQuotation.put(symbol, in);

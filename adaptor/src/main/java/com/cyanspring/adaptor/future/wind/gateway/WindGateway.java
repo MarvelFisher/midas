@@ -977,7 +977,7 @@ public class WindGateway implements Runnable {
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol,true);
 		}		
 		if(data != null) {		
 			data = null;
@@ -1004,7 +1004,7 @@ public class WindGateway implements Runnable {
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishMarketDataChangesToMap(data,marketData), symbol);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishMarketDataChangesToMap(data,marketData), symbol,true);
 		}		
 		if(data != null) {		
 			data = null;
@@ -1024,7 +1024,7 @@ public class WindGateway implements Runnable {
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol,true);
 		}
 		if(data != null) {		
 			data = null;
@@ -1482,8 +1482,8 @@ class ProcessMsgPackLiteData implements Runnable {
 				} while(msg != null);
 				*/
 				msgList.clear();
-				msgList.add(queue.take());
-				cnt = queue.drainTo(msgList) + 1;
+				//msgList.add(queue.take());  // 如果 Blocking 住的話,會有來不及傳送資料給 Client 的狀況.  所以改成 non-blocking
+				cnt = queue.drainTo(msgList);
 				if(cnt > 0) {
 					for(Object msg : msgList) {
 						ProcessMessage(msg);
@@ -1492,7 +1492,9 @@ class ProcessMsgPackLiteData implements Runnable {
 						maxQueued = cnt;
 						log.info("Data Client Max Queued : " + maxQueued);
 					}						
-				} 					
+				} else {
+					Thread.sleep(5);
+				}
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);				
 			}
