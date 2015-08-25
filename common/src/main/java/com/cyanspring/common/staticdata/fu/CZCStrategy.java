@@ -23,16 +23,19 @@ public class CZCStrategy extends AbstractRefDataStrategy {
     public void updateRefData(RefData refData) {
 		
 		try {
-			if( null == getTradeDateManager()){
+		
+			if( null == getTradeDateManager(refData.getCategory())){
 				log.info("refData:{} - tradeDateManager is null",refData.getCNDisplayName());
 				return;
 			}
+			
 			setTemplateData(refData);
 			String combineCnName = refData.getCNDisplayName();		
+			
 			if(refData.getCategory().equals("TC")){//動力煤
-				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),5));
+				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),refData.getCategory(),getContractDate(combineCnName),5));
 			}else{
-				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),10));
+				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),refData.getCategory(),getContractDate(combineCnName),10));
 			}
 			refData.setIndexSessionType(getIndexSessionType(refData));
 		} catch (RefDataException e){
@@ -42,18 +45,18 @@ public class CZCStrategy extends AbstractRefDataStrategy {
 		}
     }
 
-	private String calSettlementDate(String symbol,Calendar cal,int dayInMonth){
+	private String calSettlementDate(String symbol,String category,Calendar cal,int dayInMonth){
 		
 		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
 		Date date = cal.getTime();
-		if( null == getTradeDateManager()){
+		if( null == getTradeDateManager(category)){
 			log.warn("symbol:{} can't find tradeDateManager!",symbol);
 			return "";
 		}
 		
-		date = getTradeDateManager().preTradeDate(date);
+		date = getTradeDateManager(category).preTradeDate(date);
 		for(int i=0 ; i < dayInMonth ; i++){
-			date = getTradeDateManager().nextTradeDate(date);
+			date = getTradeDateManager(category).nextTradeDate(date);
 		}
 		
 		return getSettlementDateFormat().format(date);

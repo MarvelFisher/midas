@@ -21,7 +21,7 @@ public class CFStrategy extends AbstractRefDataStrategy  {
     @Override
     public void updateRefData(RefData refData) {
 		try {
-			if( null == getMarketSessionUtil() || null == getTradeDateManager()){
+			if( null == getMarketSessionUtil()){
 				log.info("refData:{}- marketsessoinutil is null",refData.getCNDisplayName());
 				return;
 			}
@@ -55,6 +55,7 @@ public class CFStrategy extends AbstractRefDataStrategy  {
         }
 
         while (getMarketSessionUtil().isHoliday(refData.getSymbol(), cal.getTime())) {
+        	
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
         

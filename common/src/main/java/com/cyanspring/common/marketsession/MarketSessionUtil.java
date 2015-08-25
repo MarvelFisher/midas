@@ -133,6 +133,13 @@ public class MarketSessionUtil implements IPlugin{
     	return session.getMarketSession(date, refData);
     }
     
+    public ITradeDate getTradeDateManager(String category){
+    	if(sessionMap.containsKey(category) && null != sessionMap.get(category)){
+    		return sessionMap.get(category).getTradeDateManager();
+    	}
+    	return null;
+    }
+    
     private SessionPair getSession(RefData refData) throws Exception {
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
     		String key = entry.getKey();

@@ -36,9 +36,6 @@ public class RefDataFactory extends RefDataService {
     private String refDataTemplatePath;
     private List<RefData> refDataTemplateList;
     private Map<String,RefData> refDataTemplateMap = new HashMap<String,RefData>();
-     
-	@Autowired
-	TradeDateManager tradeDateManager;
     
     @SuppressWarnings("unchecked")
     @Override
@@ -130,7 +127,7 @@ public class RefDataFactory extends RefDataService {
 		        Class<AbstractRefDataStrategy> tempClz = (Class<AbstractRefDataStrategy>) Class.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
 		        Constructor<AbstractRefDataStrategy> ctor = tempClz.getConstructor();
 		        strategy = ctor.newInstance();
-		        strategy.setRequireData(marketSessionUtil,tradeDateManager);
+		        strategy.setRequireData(marketSessionUtil);
 		    } catch (Exception e) {
 		    	log.info(e.getMessage(),e);
 		        log.error("Can't find strategy: {}", refData.getStrategy());
@@ -220,14 +217,6 @@ public class RefDataFactory extends RefDataService {
 
 	public void setRefDataTemplatePath(String refDataTemplatePath) {
 		this.refDataTemplatePath = refDataTemplatePath;
-	}
-
-	public TradeDateManager getTradeDateManager() {
-		return tradeDateManager;
-	}
-
-	public void setTradeDateManager(TradeDateManager tradeDateManager) {
-		this.tradeDateManager = tradeDateManager;
 	}
 
 	@Override

@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.cyanspring.common.marketsession.ITradeDate;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
-import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
 import com.cyanspring.common.staticdata.RefDataUtil;
@@ -27,7 +27,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private String spotCnName;
     private String spotTwName;
     private MarketSessionUtil marketSessionUtil;
-	private TradeDateManager tradeDateManager;
     private String detailDisplayPttern = "%s%s年%s月合约";
     private Calendar cal;
     private String INDEX_FU_CN = "指数";
@@ -54,7 +53,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	@Override
 	public void setRequireData(Object... objects) {
         this.marketSessionUtil = (MarketSessionUtil) objects[0];
-        this.tradeDateManager = (TradeDateManager)  objects[1];
 	}
 	
 	protected String getSymbol(RefData data){
@@ -251,7 +249,11 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return new SimpleDateFormat("yyyy-MM-dd") ;
 	}
 	
-	protected TradeDateManager getTradeDateManager(){
-		return tradeDateManager;
+	protected ITradeDate getTradeDateManager(String category){
+		if( null == getMarketSessionUtil())
+			return null;
+		else{
+			return getMarketSessionUtil().getTradeDateManager(category);
+		}
 	}
 }
