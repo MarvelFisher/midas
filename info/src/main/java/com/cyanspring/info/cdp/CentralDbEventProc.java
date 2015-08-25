@@ -298,10 +298,6 @@ public class CentralDbEventProc implements Runnable
 	{
 		centraldb.setSessionIndex(event.getDataMap());
 	}
-	public void processAllIndexSessionEvent(AllIndexSessionEvent event)
-	{
-		centraldb.setSessionIndex(event.getMap());
-	}
 	
 	public void parseEvent(RemoteAsyncEvent event) throws Exception
 	{
@@ -340,10 +336,6 @@ public class CentralDbEventProc implements Runnable
 		else if (event instanceof IndexSessionEvent)
 		{
 			processIndexSessionEvent((IndexSessionEvent)event);
-		}
-		else if (event instanceof AllIndexSessionEvent)
-		{
-			processAllIndexSessionEvent((AllIndexSessionEvent)event);
 		}
 	}
 
