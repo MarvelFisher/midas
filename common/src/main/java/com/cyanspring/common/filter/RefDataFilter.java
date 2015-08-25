@@ -1,12 +1,16 @@
 package com.cyanspring.common.filter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.staticdata.RefData;
@@ -24,7 +28,7 @@ public class RefDataFilter implements IDataObjectFilter {
 	RefDataTplLoader refDataTplLoader;
 
 	private static final Logger log = LoggerFactory.getLogger(RefDataFilter.class);
-
+	private boolean checkValidContractDate = true;
 	private IType[] types;
 
 	public IType[] getTypes() {
@@ -69,6 +73,8 @@ public class RefDataFilter implements IDataObjectFilter {
 				throw new Exception("IType cannot be null or empty.");
 			}
 			
+			
+			
 			if (lstITypes.contains(type)) {
 				String symbol = refData.getSymbol();
 				if (symbol != null && !symbol.isEmpty()) {
@@ -110,7 +116,56 @@ public class RefDataFilter implements IDataObjectFilter {
 		
 		lstRefData = excludeNonExistingProducts(lstRefData);
 		
+		if(isCheckValidContractDate())
+			lstRefData = excludeInvalidContractDate(lstRefData);
+		
 		return lstRefData;
+	}
+	
+	public List<RefData> excludeInvalidContractDate(List<RefData> lstRefData){
+		
+		List<RefData> newList = new ArrayList<RefData>();
+		if(null == lstRefData || lstRefData.isEmpty())
+			return newList;
+		
+		for(RefData data : lstRefData){
+			if(isValidContractDate(data)){
+				newList.add(data);
+			}
+		}
+		return newList;
+	}
+	
+	private boolean isValidContractDate(RefData refData){		
+		if( null == refData)
+			return false;
+		
+		String contractDate	= null;	
+		try {
+			contractDate = refData.getDetailCN().replaceAll("\\D", "");
+			if(!StringUtils.hasText(contractDate))
+				return false;
+			
+			SimpleDateFormat contractFormat = new SimpleDateFormat("yyyyMM");
+			Calendar now = Calendar.getInstance();
+			int thisYear = now.get(Calendar.YEAR);			
+			Calendar contractCal = Calendar.getInstance();
+			contractCal.setTime(contractFormat.parse(contractDate));
+			int contractYear = contractCal.get(Calendar.YEAR);
+
+			if((contractYear-thisYear)>=5 || (contractYear-thisYear)<0){
+				return false;
+			}else{
+				return true;
+			}
+					
+		} catch (ParseException e) {
+			log.warn("not valid contract date:{},{}",contractDate,e.getMessage());
+		} catch (Exception e){
+			log.warn("can't find DetailCN :{},{}",refData.getSymbol(),e.getMessage());
+		}
+
+		return false;
 	}
 	
 	private List<RefData> excludeNonExistingProducts(List<RefData> lstRefData) throws Exception {
@@ -129,4 +184,11 @@ public class RefDataFilter implements IDataObjectFilter {
 		return lstRefData;
 	}
 
+	public boolean isCheckValidContractDate() {
+		return checkValidContractDate;
+	}
+
+	public void setCheckValidContractDate(boolean checkValidContractDate) {
+		this.checkValidContractDate = checkValidContractDate;
+	}
 }
