@@ -39,16 +39,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		spotCnName = template.getSpotENName();
 		spotTwName = template.getSpotTWName();
 			
-		log.info("spotCnName:{}",spotCnName);
-		log.info("spotTwName:{}",spotTwName);
 		if(this.cal == null) {
 			this.cal = cal;
 		}
-
-		if (cal.compareTo(this.cal) < 0)
-			return;
-
-		this.cal.add(Calendar.MONTH, 1);        
+   
 	}
 
 	@Override
@@ -69,6 +63,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			return data.getCNDisplayName().replaceAll("\\W", "")+"."+data.getExchange();
 		}else if(IType.FUTURES_IDX.getValue().equals(data.getIType())){
 			return data.getRefSymbol();
+		}else if(IType.FUTURES_CX_IDX.getValue().equals(data.getIType())){			
+			return data.getCategory()+data.getCNDisplayName().replaceAll("\\D", "")+"."+data.getExchange();
 		}else{
 			return "";
 		}
@@ -83,7 +79,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				||!StringUtils.hasText(refData.getCNDisplayName())
 				||!StringUtils.hasText(refData.getExchange())
 				||!StringUtils.hasText(refData.getCode())
-				||!StringUtils.hasText(refData.getENDisplayName())
 				||!StringUtils.hasText(refData.getIType())
 				){
 			throw new Exception("refData required info missing:"+refData.getRefSymbol());
@@ -132,10 +127,15 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setDetailCN(getCNDetailName(combineCnName));
 		refData.setDetailTW(getTWDetailName(combineTwName));
 		refData.setDetailEN(getCNDetailName(combineCnName));	
+		refData.setRefSymbol(getRefSymbol(refSymbol));
 	}
 	
 	protected String getEnName(RefData data){		
 		return getCategory(data.getRefSymbol())+data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
+	}
+	
+	protected String getRefSymbol(String refSymbol){
+		return refSymbol.replaceAll(".[A-Z]+$", "");
 	}
 	
 	protected String getCategory(String refSymbol){
@@ -172,7 +172,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		String cnName = getSpotName(combineCnName,Locale.CN);
 		String contractDate = combineCnName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
-		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
+		String month = contractDate.substring(contractDate.length()-2, contractDate.length());	
 		return String.format(detailDisplayPttern,cnName, year, month);
 	}
 	
@@ -181,7 +181,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		String cnName = getSpotName(combineTwName,Locale.TW);
 		String contractDate = combineTwName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
-		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
+		String month = contractDate.substring(contractDate.length()-2, contractDate.length());	
 		return String.format(detailDisplayPttern,cnName, year, month);
 	}
 	
@@ -201,7 +201,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		SimpleDateFormat contractSdf = new SimpleDateFormat("yyyyMM");
 		String contractDate = combineCnName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
-		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
+		String month = contractDate.substring(contractDate.length()-2, contractDate.length());	
 		Calendar contractCal = Calendar.getInstance();
 		contractCal.setTime(contractSdf.parse(year+month));
 		return contractCal;  

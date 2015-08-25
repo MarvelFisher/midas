@@ -26,6 +26,7 @@ import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
 import com.cyanspring.common.event.marketsession.AllIndexSessionEvent;
 import com.cyanspring.common.event.marketsession.AllIndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
@@ -142,15 +143,15 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		return quoteExtendsMap;
 	}
 
-	public void processAllIndexSessionEvent(AllIndexSessionEvent event){
-		
-		Map<String,MarketSessionData> sessionMap =  event.getMap();
-		symbolSessionMap = getSymbolMapFromIndexSessionMap(sessionMap,null);
-		sendQuoteExtSubEvent();
-	}
+//	public void processAllIndexSessionEvent(AllIndexSessionEvent event){
+//		
+//		Map<String,MarketSessionData> sessionMap =  event.getMap();
+//		symbolSessionMap = getSymbolMapFromIndexSessionMap(sessionMap,null);
+//		sendQuoteExtSubEvent();
+//	}
 
-	private void requestAllIndexSession(){
-		AllIndexSessionRequestEvent event = new AllIndexSessionRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER);
+	private void requestIndexSession(){
+		IndexSessionRequestEvent event = new IndexSessionRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, null);
 		eventManager.sendEvent(event);
 	}
 	
@@ -263,7 +264,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			
 			if (null == tradeDate || !isSameTradeDate(eventTradeDate)) {
 				setTradeDate(eventTradeDate);
-				requestAllIndexSession();
+				requestIndexSession();
 			}
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);

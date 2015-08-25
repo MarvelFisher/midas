@@ -37,7 +37,7 @@ public class MarketSessionChecker implements IMarketSession {
     }
 
     @Override
-    public MarketSessionData getMarketSessionState(Date date, RefData refData) throws Exception {
+    public MarketSessionData getState(Date date, RefData refData) throws Exception {
         MarketSessionData sessionData = null;
         String currentIndex = getCurrentIndex(date, refData);
         MarketSession session = stateMap.get(currentIndex);
@@ -77,6 +77,15 @@ public class MarketSessionChecker implements IMarketSession {
         return sessionData;
     }
 
+    @Override
+	public MarketSession getMarketSession(Date date, RefData refData) throws Exception {
+		String currentIndex = getCurrentIndex(date, refData);
+		MarketSession session = stateMap.get(currentIndex);
+        if (session == null)
+            session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+        return session;
+	}
+    
     @Override
     public String getTradeDate() {
         return sdf.format(this.tradeDate);

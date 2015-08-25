@@ -37,14 +37,14 @@ public class MarketSessionUtil implements IPlugin{
     	Map<String, MarketSessionData> ret = new HashMap<>();
     	Date now = Clock.getInstance().now();
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
-    		ret.put(entry.getKey(), entry.getValue().getMarketSessionState(now, null));
+    		ret.put(entry.getKey(), entry.getValue().getState(now, null));
     	}
     	return ret;
     }
     
     public MarketSessionData getMarketSession(RefData refData, Date date) throws Exception {
     	SessionPair pair = getSession(refData);
-    	return pair.session.getMarketSessionState(date, refData);
+    	return pair.session.getState(date, refData);
     }
     
     public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
@@ -112,7 +112,7 @@ public class MarketSessionUtil implements IPlugin{
     	for(RefData refData : indexList) {
     		SessionPair pair = getSession(refData); 
     		if (pair != null)
-    			ret.put(pair.index, pair.session.getMarketSessionState(date, refData));
+    			ret.put(pair.index, pair.session.getState(date, refData));
     		else
     			log.error("Can't find market session symbol: {}", refData.getSymbol());
     	}
@@ -123,9 +123,14 @@ public class MarketSessionUtil implements IPlugin{
     	Map<String, MarketSessionData> ret = new HashMap<>();
     	for(RefData refData : indexList) {
     		SessionPair pair = getSession(refData);
-    		ret.put(pair.index, pair.session.getMarketSessionState(dateMap.get(refData.getSymbol()), refData));
+    		ret.put(pair.index, pair.session.getState(dateMap.get(refData.getSymbol()), refData));
     	}
     	return ret;
+    }
+    
+    public MarketSession getMarketSessions(Date date, RefData refData) throws Exception{
+    	IMarketSession session = sessionMap.get(refData.getCategory());
+    	return session.getMarketSession(date, refData);
     }
     
     private SessionPair getSession(RefData refData) throws Exception {
@@ -133,7 +138,7 @@ public class MarketSessionUtil implements IPlugin{
     		String key = entry.getKey();
     		if(compareIndex(key, refData.getSymbol()) ||
     				compareIndex(key, refData.getExchange()) ||
-    				compareIndex(key, refData.getSpotENName()))
+    				compareIndex(key, refData.getCategory()))
     			return getPair(refData, entry.getValue());
     	}
     	throw new Exception("No session data found");

@@ -26,6 +26,8 @@ public class RefDataParser {
     public static RefData convertCodeTableToRefData(CodeTableData codeTableData, HashMap<RefDataField,Object> defaultHashMap){
         RefData refData = new RefData();
         refData.setSymbol(codeTableData.getWindCode());
+        refData.setRefSymbol(codeTableData.getWindCode());
+        refData.setCode(codeTableData.getShortName());
         refData.setExchange(codeTableData.getSecurityExchange());
         refData.setCNDisplayName(codeTableData.getCnName());
         refData.setTWDisplayName(ChineseConvert.StoT(codeTableData.getCnName()));

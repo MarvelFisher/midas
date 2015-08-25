@@ -26,7 +26,7 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 			}
 			setTemplateData(refData);
 			String combineCnName = refData.getCNDisplayName();		
-			refData.setSettlementDate(calSettlementDay(refData.getSymbol(),getContractDate(combineCnName)));
+			refData.setSettlementDate(calSettlementDay(refData,getContractDate(combineCnName)));
 			refData.setIndexSessionType(getIndexSessionType(refData));
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
@@ -38,7 +38,12 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 		super.setRequireData(objects);
     }
       
-    private String calSettlementDay(String symbol,Calendar cal) throws Exception {
+    private String calSettlementDay(RefData refData,Calendar cal) throws Exception {
+    	if(!StringUtils.hasText(refData.getSymbol())){
+    		log.warn("missing symbol:{}",refData.getRefSymbol());
+    		return "";
+    	}
+    	
         int dayCount = 0;
         while (dayCount != 3) {
             cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -46,10 +51,10 @@ public class CFStrategy extends AbstractRefDataStrategy  {
                 dayCount++;
         }
 
-        while (getMarketSessionUtil().isHoliday(symbol, cal.getTime())) {
+        while (getMarketSessionUtil().isHoliday(refData.getSymbol(), cal.getTime())) {
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
-
+        
         return getSettlementDateFormat().format(cal.getTime());
     }
     
