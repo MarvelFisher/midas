@@ -198,7 +198,7 @@ public class AlertManager extends Compute {
 			SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 					null, null, "txId", new ParseData(execution.getUser(),
 							tradeMessage, TA.getId(), AlertMsgType.MSG_TYPE_ORDER.getType(), Datetime,
-							keyValue, deepLink + execution.getSymbol() + (market.compareTo("FX") == 0 ? "": ("." + market))));
+							keyValue, deepLink + execution.getSymbol() + "." + market));
 			// eventManagerMD.sendEvent(sendNotificationRequestEvent);
 			SendEvent(sendNotificationRequestEvent) ;
 			// save to Array
@@ -1015,7 +1015,7 @@ public class AlertManager extends Compute {
 		priceAlert.setDateTime(strDate);
 		return new ParseData(priceAlert.getUserId(), PriceAlertMessage,
 				priceAlert.getId(), AlertMsgType.MSG_TYPE_PRICE.getType(), strDate, keyValue,
-                deepLink + priceAlert.getSymbol() + (market.compareTo("FX") == 0 ? "": ("." + market)));
+                deepLink + priceAlert.getSymbol() + "." + market);
 	}
 
 	@Override
