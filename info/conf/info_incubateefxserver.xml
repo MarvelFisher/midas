@@ -8,14 +8,12 @@
 >
 
 	<context:annotation-config />
-	<import resource="info_lt/*"/>
-	<import resource="info_common/ticktable_lt.xml"/>
+	<import resource="info_incubateefx/*"/>
+	<import resource="info_common/ticktable_incubateefx.xml"/>
 
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />
-        <property name="deepLink" value="forexmasterlive://fdt/portfolio/portfoliodetail?symbolid=" />
-        <property name="market"   value="FX"/>
 	</bean>	
 	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
 		<property name="getPremiumTableInterval" value="300000" />

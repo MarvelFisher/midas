@@ -1,8 +1,6 @@
 package com.cyanspring.info.cdp;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -54,7 +52,6 @@ import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.GroupInfo;
 import com.cyanspring.common.info.IRefSymbolInfo;
-import com.cyanspring.common.info.RefSubName;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
@@ -99,6 +96,7 @@ public class CentralDbProcessor implements IPlugin
 	private boolean isProcessQuote = false;
 	private Queue<QuoteEvent> quoteBuffer;
 	
+	private DBInsertProc insertProc;
 	private boolean runInsertSQL = true;
 
 	// for checking SQL connect 
@@ -739,42 +737,48 @@ public class CentralDbProcessor implements IPlugin
 				}
 			}
 		}
-		getRetrieveMap().clear();
 		for (String market : marketList)
 		{
-			getChartPrice(market, "1");
-			getChartPrice(market, "R");
-			getChartPrice(market, "A");
-			getChartPrice(market, "Q");
-			getChartPrice(market, "H");
-			getChartPrice(market, "6");
-			getChartPrice(market, "T");
-			getChartPrice(market, "D");
-			getChartPrice(market, "W");
-			getChartPrice(market, "M");
+			getChartPriceByMarket(market);
 		}
+			
+	}
+	public void getChartPriceByMarket(String market)
+	{
+		getChartPrice(market, "1");
+		getChartPrice(market, "R");
+		getChartPrice(market, "A");
+		getChartPrice(market, "Q");
+		getChartPrice(market, "H");
+		getChartPrice(market, "6");
+		getChartPrice(market, "T");
+		getChartPrice(market, "D");
+		getChartPrice(market, "W");
+		getChartPrice(market, "M");
 		String symbol;
 		SymbolData symboldata;
-    	ArrayList<String> symbolarr = new ArrayList<String>();
-		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : getRetrieveMap().entrySet())
+		ArrayList<String> symbolarr = new ArrayList<String>();
+		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : getRetrieveMap()
+				.entrySet())
 		{
 			symbolarr.clear();
-	    	symbolarr.add(entry.getKey());
-	    	ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo().getBySymbolStrings(symbolarr);
-	    	if (symbolinfos.size() < 1)
-	    	{
-	    		continue;
-	    	}
-	    	if (symbolinfos.get(0).getHint() == null 
-	    			|| entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
-	    	{
-	    		symbol = symbolinfos.get(0).getCode(); 
-	    	}
-	    	else
-	    	{
-	    		continue;
-	    	}
-//			symbol = entry.getKey();
+			symbolarr.add(entry.getKey());
+			ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo()
+					.getBySymbolStrings(symbolarr);
+			if (symbolinfos.size() < 1)
+			{
+				continue;
+			}
+			if (symbolinfos.get(0).getHint() == null
+					|| entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
+			{
+				symbol = symbolinfos.get(0).getCode();
+			}
+			else
+			{
+				continue;
+			}
+			// symbol = entry.getKey();
 			symboldata = getChefBySymbol(symbol).getSymbolData(symbol);
 			if (symboldata != null)
 			{
@@ -782,8 +786,8 @@ public class CentralDbProcessor implements IPlugin
 				symboldata.set52WHLByMapHistorical();
 			}
 		}
-			
 	}
+	
 	public void clearAllChartPrice()
 	{
 		if (getRetrieveMap() == null)
@@ -856,7 +860,8 @@ public class CentralDbProcessor implements IPlugin
 		this.sessionType = sessionType;
 		if (insert)
 		{
-			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
+//			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
+			insertSQL();
 		}
 		if (reset)
 		{
@@ -983,6 +988,7 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		chartCacheProcessor = new ChartCacheProc();
+		setInsertProc(new DBInsertProc(this));
 		mapCentralDbEventProc = new HashMap<String, CentralDbEventProc>();
 		for (int ii = 0; ii < numOfHisThreads; ii++)
 		{
@@ -1073,22 +1079,26 @@ public class CentralDbProcessor implements IPlugin
 	public void insertSQL()
 	{
 		isProcessQuote = false;
-		Thread insertThread = new Thread(new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
-				for (SymbolChef chef : SymbolChefList)
-				{
-					chef.insertSQL();
-				}
-				retrieveChart();
-			}
-		});
-		insertThread.setName("CDP_Insert_SQL");
+//		Thread insertThread = new Thread(new Runnable() 
+//		{
+//			@Override
+//			public void run() 
+//			{
+//				for (SymbolChef chef : SymbolChefList)
+//				{
+//					chef.insertSQL();
+//				}
+//				retrieveChart();
+//			}
+//		});
+//		insertThread.setName("CDP_Insert_SQL");
 		if (isRunInsertSQL())
 		{
-			insertThread.start();
+//			insertThread.start();
+			for (SymbolChef chef : SymbolChefList)
+			{
+				chef.insertSymbol();
+			}
 		}
 		else
 		{
@@ -1219,6 +1229,16 @@ public class CentralDbProcessor implements IPlugin
 	public void setRetrieveMap(HashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap)
 	{
 		this.retrieveMap = retrieveMap;
+	}
+
+	public DBInsertProc getInsertProc()
+	{
+		return insertProc;
+	}
+
+	public void setInsertProc(DBInsertProc insertProc)
+	{
+		this.insertProc = insertProc;
 	}
 	
 }

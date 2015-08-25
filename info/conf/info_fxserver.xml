@@ -11,9 +11,11 @@
 	<import resource="info_fx/*"/>
 	<import resource="info_common/ticktable_fx.xml"/>
 	
-	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
 		<property name="maxNoOfAlerts" value="20" />
-	</bean>	
+        <property name="deepLink" value="forexmaster://fdt/portfolio/portfoliodetail?symbolid=" />
+        <property name="market"   value="FX"/>
+    </bean>
 	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
 		<property name="getPremiumTableInterval" value="300000" />
 <!-- 	##b$$ = <b> -->
@@ -108,8 +110,8 @@
 	</bean>
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<!-- 	Solve channel is inactive problem -->
-<!-- 		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
-		<property name="url" value="failover:(nio://localhost:61616?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
+ 		<!--<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property>-->
+		<property name="url" value="failover:(nio://10.0.0.51:61616?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
 	</bean>
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">

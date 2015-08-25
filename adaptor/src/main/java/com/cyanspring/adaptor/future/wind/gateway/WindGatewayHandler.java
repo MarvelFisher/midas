@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 
 
+
 import cn.com.wind.td.tdf.TDF_CODE;
 import cn.com.wind.td.tdf.TDF_FUTURE_DATA;
 import cn.com.wind.td.tdf.TDF_INDEX_DATA;
@@ -42,9 +43,11 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 		if(strSubscribe != null) {
 			channel.write(addHashTail(strSubscribe,true));
 		}
-		strSubscribe = registrationGlobal.getSubscribeSymbol();
-		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe,true));
+		ArrayList<String> lst = registrationGlobal.getSubscribeSymbol(); 
+		if(lst != null) {
+			for(String str : lst) {
+				channel.write(addHashTail(str,true));
+			}
 		}
 		strSubscribe = registrationGlobal.getSubscribeTransaction();
 		if(strSubscribe != null) {
@@ -381,7 +384,7 @@ public class WindGatewayHandler extends ChannelInboundHandlerAdapter {
 			System.out.println(logstr);
 			log.warn(logstr);    		
     	}
-    	ConcurrentHashMap<String,TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
+    	ConcurrentHashMap<String,TDF_CODE> lst = WindGateway.getCodeTableByMarket(market);
     	if(lst == null || lst.size() == 0) {    	
 			String logstr = "No symbol at market : " + market + " , request from : " + channel.remoteAddress();
 			System.out.println(logstr);

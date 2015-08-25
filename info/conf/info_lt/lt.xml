@@ -22,7 +22,7 @@
 		<property name="Computes">
 			<list>
 				<!-- <ref bean="newsManager"/> -->
-				<ref bean="premiumFollowManager" />
+				<!--<ref bean="premiumFollowManager" />-->
 				<ref bean="alertManager" />
 			</list>
 		</property>
