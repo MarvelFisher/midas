@@ -109,8 +109,18 @@ public class IndexMarketSessionManager implements IPlugin {
 
 	public void processAllIndexSessionRequestEvent(AllIndexSessionRequestEvent event) {
 		try {
+			Map<String, MarketSession> send = new HashMap<>();
+			for (Entry<String, RefData> e : refDataMap.entrySet()) {
+				RefData refData = e.getValue();
+				String index = getIndex(refData);
+				if (send.get(index) != null)
+					continue;
+				MarketSessionData current = currentSessionMap.get(index);
+				MarketSession session = marketSessionUtil.getMarketSessions(current.getTradeDateByDate(), refData);
+				send.put(index, session);
+			}
 			eventManager.sendLocalOrRemoteEvent(
-					new AllIndexSessionEvent(event.getKey(), event.getSender(), currentSessionMap));
+					new AllIndexSessionEvent(event.getKey(), event.getSender(), send));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -224,7 +234,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	private void delRefData(){
 		RefData refData;
 		while((refData = delQueue.poll()) != null) {
-			refDataMap.remove(refData.getSymbol(), refData);
+			refDataMap.remove(refData.getSymbol());
 		}
 	}
 

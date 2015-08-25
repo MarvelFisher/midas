@@ -100,23 +100,26 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (refDataList != null && refDataList.size() > 0) {
 			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size() + ", action: " + action.toString());
 			try {
+				List<RefData> send = new ArrayList<>();
 				for (RefData refData : refDataList) {
 					if (!checkRefData(refData))
 						continue;
-					String index = refData.getCategory();
-					if (index == null)
-						index = RefDataUtil.getOnlyChars(refData.getRefSymbol());
+					String index = RefDataUtil.getCategory(refData.getRefSymbol());
 					if (index == null)
 						throw new Exception("RefData index not find");
 					String tradeDate = sessionDataMap.get(index).getTradeDateByString();
 
 					if (action == Action.ADD || action == Action.MOD) {
 						refDataManager.update(refData, tradeDate);
+						send.add(refData);
 					} else if (action == Action.DEL) {
 						refDataManager.remove(refData);
+						send.add(refData);
+					} else {
+						log.error("Unknow action for RefData update");
 					}
 				}
-				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, refDataManager.getRefDataList(), action);
+				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, send, action);
 				eventManager.sendGlobalEvent(event);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -165,8 +168,6 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				refDataManager.init();
 				for (RefData refData : refDataList) {
 					String index = refData.getCategory();
-					if (index == null)
-						index = RefDataUtil.getOnlyChars(refData.getRefSymbol());
 					if (index == null)
 						throw new Exception("RefData index not find");
 					MarketSessionData session = sessionDataMap.get(index);
