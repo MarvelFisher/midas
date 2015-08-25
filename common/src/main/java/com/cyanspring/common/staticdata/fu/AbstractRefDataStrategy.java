@@ -39,8 +39,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		spotCnName = template.getSpotENName();
 		spotTwName = template.getSpotTWName();
 			
-		log.info("spotCnName:{}",spotCnName);
-		log.info("spotTwName:{}",spotTwName);
 		if(this.cal == null) {
 			this.cal = cal;
 		}
@@ -171,7 +169,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		String cnName = getSpotName(combineCnName,Locale.CN);
 		String contractDate = combineCnName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
-		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
+		String month = contractDate.substring(contractDate.length()-2, contractDate.length());	
 		return String.format(detailDisplayPttern,cnName, year, month);
 	}
 	
@@ -180,7 +178,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		String cnName = getSpotName(combineTwName,Locale.TW);
 		String contractDate = combineTwName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
-		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
+		String month = contractDate.substring(contractDate.length()-2, contractDate.length());	
 		return String.format(detailDisplayPttern,cnName, year, month);
 	}
 	
@@ -200,7 +198,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		SimpleDateFormat contractSdf = new SimpleDateFormat("yyyyMM");
 		String contractDate = combineCnName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);
-		String month = contractDate.substring(contractDate.length()-1, contractDate.length());	
+		String month = contractDate.substring(contractDate.length()-2, contractDate.length());	
 		Calendar contractCal = Calendar.getInstance();
 		contractCal.setTime(contractSdf.parse(year+month));
 		return contractCal;  
