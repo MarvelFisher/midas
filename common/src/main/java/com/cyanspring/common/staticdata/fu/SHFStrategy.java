@@ -30,14 +30,14 @@ public class SHFStrategy extends AbstractRefDataStrategy {
     public void updateRefData(RefData refData) {
 		try {
 			
-			if( null == getMarketSessionUtil() || null == getTradeDateManager()){
+			if( null == getMarketSessionUtil() || null == getTradeDateManager(refData.getCategory())){
 				log.info("refData:{}- tradeDateManager or marketsessoinutil is null",refData.getCNDisplayName());
 				return;
 			}
 			setTemplateData(refData);
 			String combineCnName = refData.getCNDisplayName();			
 			if(refData.getCategory().equals("FU")){
-				refData.setSettlementDate(calFUSettlementDate(refData.getSymbol(),getContractDate(combineCnName)));
+				refData.setSettlementDate(calFUSettlementDate(refData.getSymbol(),refData.getCategory(),getContractDate(combineCnName)));
 			}else{
 				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),15));
 			}
@@ -49,16 +49,16 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 		}
 	}
 
-	private String calFUSettlementDate(String symbol, Calendar contractDate) {
+	private String calFUSettlementDate(String symbol,String category, Calendar contractDate) {
 		
 		contractDate.set(Calendar.DATE, contractDate.getMinimum(Calendar.DATE));
 		Date date = contractDate.getTime();
 
-		if( null == getTradeDateManager()){
+		if( null == getTradeDateManager(category)){
 			log.warn("symbol:{} can't find TradeDateManager!",symbol);
 			return "";
 		}
-		date = getTradeDateManager().preTradeDate(date);	
+		date = getTradeDateManager(category).preTradeDate(date);	
 		return getSettlementDateFormat().format(date);
 	}
 
