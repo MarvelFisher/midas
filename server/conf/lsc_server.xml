@@ -8,7 +8,8 @@
 	<context:annotation-config />
 
 	<import resource="test/sc_test.xml" />
-	<import resource="sc/MarketSession.xml" />
+	<import resource="test/sc_MarketSession.xml" />
+	<!-- <import resource="sc/MarketSession.xml" /> -->
 	<import resource="sc/SHSessionState.xml" />
 	<import resource="sc/SZSessionState.xml" />
 	<import resource="sc/business.xml" />
