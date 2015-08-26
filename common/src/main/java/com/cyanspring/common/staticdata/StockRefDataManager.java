@@ -11,11 +11,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.marketsession.MarketSessionUtil;
-import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.staticdata.fu.AbstractRefDataStrategy;
 import com.cyanspring.common.staticdata.fu.IType;
 import com.thoughtworks.xstream.XStream;
@@ -56,8 +54,11 @@ public class StockRefDataManager extends RefDataService {
 
         //init category
         if(null != refDataList && !refDataList.isEmpty()){
-        	for(RefData refData : refDataList){	        		
-        		refData.setCategory(getCategory(refData));
+        	for(RefData refData : refDataList){	 
+        		String commodity = refData.getCommodity();
+        		if(!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity) && commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))){
+        			refData.setCategory(getCategory(refData));
+        		}
         	}
         }
     }

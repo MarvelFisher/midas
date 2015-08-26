@@ -29,6 +29,19 @@ public class RefDataUtil {
 	enum Category{
 		STOCK,INDEX
 	}
+	
+	enum Commodity{
+		STOCK("S"),INDEX("I"),FUTURE("F");
+		
+		private String value;
+		private Commodity(String value) {
+			this.value = value;
+		}
+		public String getValue() {
+			return value;
+		}
+	}
+	
 	public static String getOnlyChars(String symbol) {
 		Pattern pattern = Pattern.compile("[a-zA-Z]*");
 		Matcher matcher = pattern.matcher(symbol);
@@ -36,7 +49,7 @@ public class RefDataUtil {
 			return matcher.group(0);
 		return null;
 	}
-
+	
     public static String getCategory(RefData refData){
     	
     	String refSymbol = refData.getRefSymbol();
@@ -44,19 +57,23 @@ public class RefDataUtil {
     	if(!StringUtils.hasText(refSymbol))
     		return null;
     	
-		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");		
-		if(!StringUtils.hasText(category)){
-			System.out.println("refData.getIType():"+refData.getIType());
-			if(IType.EXCHANGE_INDEX.getValue().equals(refData.getIType())){
-				//Index Category
+		String commodity = refData.getCommodity();
+		if(StringUtils.hasText(commodity)){
+			
+			if(Commodity.INDEX.getValue().equals(commodity)){
 				return Category.INDEX.name();
-			}else{
-				//Stock Category
+			}else if(Commodity.STOCK.getValue().equals(commodity)){
 				return Category.STOCK.name();
+			}else{
+				return getFutureCategory(refSymbol);
 			}
+		}else{
+			return getFutureCategory(refSymbol);
 		}
-		
-		//Future Category
+	}
+    
+	private static String getFutureCategory(String refSymbol){
+		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");		
 		if(category.length() > 2 ){
 			return category.substring(0, 2);
 		}else{

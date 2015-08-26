@@ -58,11 +58,13 @@ public class RefDataFactory extends RefDataService {
         
         //init category
         if(null != refDataList && !refDataList.isEmpty()){
-        	for(RefData refData : refDataList){	        		
-        		refData.setCategory(getCategory(refData));
+        	for(RefData refData : refDataList){	 
+        		String commodity = refData.getCommodity();
+        		if(!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity) && commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))){
+        			refData.setCategory(getCategory(refData));
+        		}
         	}
         }
-        
     }
 
     private void buildTemplateMap(List<RefData> refDataTemplateList) {
