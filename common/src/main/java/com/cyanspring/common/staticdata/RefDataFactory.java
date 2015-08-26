@@ -211,8 +211,7 @@ public class RefDataFactory extends RefDataService {
         cal.setTime(sdf.parse(tradeDate));
         updateRefData(cal, refData);
         if (refDataList.contains(refData))
-        	refDataList.remove(refData);
-        
+        	refDataList.remove(refData);        
         refDataList.add(refData);
 		return refData;
 	}
@@ -230,7 +229,9 @@ public class RefDataFactory extends RefDataService {
 		List<RefData> ret = new ArrayList<>();
 		for (RefData refData : refDataList) {
 			if (index.equals(refData.getCategory())) {
-				refData = update(refData, tradeDate);
+				Calendar cal = Calendar.getInstance();
+		        cal.setTime(sdf.parse(tradeDate));
+		        updateRefData(cal, refData);
 				ret.add(refData);
 			}
 		}

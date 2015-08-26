@@ -58,7 +58,6 @@ public class IndexMarketSessionManager implements IPlugin {
 	private Map<String, RefData> refDataMap = new HashMap<String, RefData>();;
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	protected long timerInterval = 1 * 1000;
 	private int settlementDelay = 10;
 
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -196,6 +195,7 @@ public class IndexMarketSessionManager implements IPlugin {
 			addRefData();
 			checkIndexMarketSession();
 			checkSettlement();
+			scheduleNextCheck();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -306,6 +306,12 @@ public class IndexMarketSessionManager implements IPlugin {
 			}
 		}
 	}
+	
+	private void scheduleNextCheck(){
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.SECOND, 1);
+		scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, timerEvent);
+	}
 
 	@Override
 	public void init() throws Exception {
@@ -317,8 +323,9 @@ public class IndexMarketSessionManager implements IPlugin {
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("IndexMarketSessionManager");
 
-		if (!eventProcessor.isSync())
-			scheduleManager.scheduleRepeatTimerEvent(timerInterval, eventProcessor, timerEvent);
+		if (!eventProcessor.isSync()){
+			scheduleNextCheck();
+		}
 	}
 
 	@Override
