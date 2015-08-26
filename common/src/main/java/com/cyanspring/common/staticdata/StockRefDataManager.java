@@ -35,25 +35,30 @@ public class StockRefDataManager extends RefDataService {
     private String refDataTemplatePath;
     private List<RefData> refDataTemplateList;
     private Map<String,RefData> refDataTemplateMap = new HashMap<String,RefData>();
-    
-	@Autowired
-	TradeDateManager tradeDateManager;
-    
+   
     @SuppressWarnings("unchecked")
     @Override
     public void init() throws Exception {
         log.info("initialising with future template" + refDataTemplatePath);
         if(StringUtils.hasText(refDataTemplatePath)){
-        	
-            File templateFile = new File(refDataTemplatePath);
-            if (templateFile.exists()) {
-            	refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
-            	if(null != refDataTemplateList && !refDataTemplateList.isEmpty()){
-            		buildTemplateMap(refDataTemplateList);
-            	}
-            } else {
-                throw new Exception("Missing refdata template: " + refDataTemplatePath);
-            }
+
+        	log.info("read refdata template:{}",refDataTemplatePath);
+        	File templateFile = new File(refDataTemplatePath);
+        	if (templateFile.exists()) {
+        		refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
+        		if(null != refDataTemplateList && !refDataTemplateList.isEmpty()){
+        			buildTemplateMap(refDataTemplateList);
+        		}
+        	} else {
+        		throw new Exception("Missing refdata template: " + refDataTemplatePath);
+        	}
+        }
+
+        //init category
+        if(null != refDataList && !refDataList.isEmpty()){
+        	for(RefData refData : refDataList){	        		
+        		refData.setCategory(getCategory(refData.getRefSymbol()));
+        	}
         }
     }
 
@@ -64,8 +69,8 @@ public class StockRefDataManager extends RefDataService {
 				log.info("duplicate refData template :{}",spotName);
 				continue;
 			}else{
-				log.info("spotName:{},strategy:{}",spotName,ref.getStrategy());
-				refDataTemplateMap.put(spotName, ref);
+				log.info("build template category:{},strategy:{}",spotName,ref.getStrategy());
+				refDataTemplateMap.put(spotName, ref);			
 			}
 		}
 	}
@@ -88,32 +93,26 @@ public class StockRefDataManager extends RefDataService {
     private RefData searchRefDataTemplate(RefData refData){
 
     	String spotName = getCategory(refData.getRefSymbol());
-    	log.info("ready find template :{}",spotName);
     	RefData templateRefData = null;
     	if(refDataTemplateMap.containsKey(spotName) && null != refDataTemplateMap.get(spotName)){
     		templateRefData = refDataTemplateMap.get(spotName);
-    		log.info("find template :{}",templateRefData.getCategory());
     		return (RefData)templateRefData.clone();
-    	}
-    	
+    	}	
     	log.info("can't find template:{}",spotName);
     	return  null;
     }
     
 	protected String getCategory(String refSymbol){
-		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");
-		if(category.length() > 2 ){
-			return category.substring(0, 2);
-		}else{
-			return category;
-		}
+		return RefDataUtil.getCategory(refSymbol);
 	}
 	
 	private void updateRefData(Calendar cal, RefData refData) {
 		String iType = refData.getIType();
 		if(IType.isFuture(iType)){
+			log.info("update future refdata:{},",refData.getRefSymbol());
 			updateFutureRefData(cal,refData);
 		}else if(IType.isStock(iType)){
+			log.info("update stock refdata:{},",refData.getRefSymbol());
 			updateStockRefData(cal,refData);
 		}else{
 			log.info("none support type:{} , {}",iType,refData.getRefSymbol());
@@ -167,6 +166,9 @@ public class StockRefDataManager extends RefDataService {
 		Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
         updateRefData(cal, refData);
+        if (refDataList.contains(refData))
+        	refDataList.remove(refData);
+        
         refDataList.add(refData);
 		return refData;
 	}
@@ -179,15 +181,8 @@ public class StockRefDataManager extends RefDataService {
 		this.refDataTemplatePath = refDataTemplatePath;
 	}
 
-	public TradeDateManager getTradeDateManager() {
-		return tradeDateManager;
-	}
-
-	public void setTradeDateManager(TradeDateManager tradeDateManager) {
-		this.tradeDateManager = tradeDateManager;
-	}
-	
 	private void updateFutureRefData(Calendar cal, RefData refData){
+		
 		AbstractRefDataStrategy strategy;
         RefData template = searchRefDataTemplate(refData);
         if( null == template){
@@ -195,14 +190,14 @@ public class StockRefDataManager extends RefDataService {
         }else{
         	refData.setStrategy(template.getStrategy());
         }
-		log.info("refData:{}, strategy:{}",refData.getRefSymbol(),refData.getStrategy());
+		log.info("update refData:{}, strategy:{}",refData.getRefSymbol(),refData.getStrategy());
 
 		if (!strategyMap.containsKey(refData.getStrategy())) {
 		    try {
 		        Class<AbstractRefDataStrategy> tempClz = (Class<AbstractRefDataStrategy>) Class.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
 		        Constructor<AbstractRefDataStrategy> ctor = tempClz.getConstructor();
 		        strategy = ctor.newInstance();
-		        strategy.setRequireData(marketSessionUtil,tradeDateManager);
+		        strategy.setRequireData(marketSessionUtil);
 		    } catch (Exception e) {
 		    	log.info(e.getMessage(),e);
 		        log.error("Can't find strategy: {}", refData.getStrategy());
@@ -230,6 +225,8 @@ public class StockRefDataManager extends RefDataService {
 		}
 		strategy.init(cal,template);
 		strategy.updateRefData(refData);
+		log.info("settlement date:{}, index type:{}",refData.getSettlementDate(),refData.getIndexSessionType());
+//		log.info("XML:"+xstream.toXML(refData));
 	}
 
 	@Override
