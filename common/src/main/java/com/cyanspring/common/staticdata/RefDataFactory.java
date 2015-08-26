@@ -1,11 +1,7 @@
 package com.cyanspring.common.staticdata;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,11 +11,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.marketsession.MarketSessionUtil;
-import com.cyanspring.common.marketsession.TradeDateManager;
 import com.cyanspring.common.staticdata.fu.AbstractRefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -210,8 +204,7 @@ public class RefDataFactory extends RefDataService {
 		Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
         updateRefData(cal, refData);
-        if (refDataList.contains(refData))
-        	refDataList.remove(refData);        
+        remove(refData);     
         refDataList.add(refData);
 		return refData;
 	}
@@ -249,11 +242,23 @@ public class RefDataFactory extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-		if (refDataList.contains(refData)) {
-			refDataList.remove(refData);
-			return true;
+		
+		List<RefData> delList = new ArrayList<RefData>();
+		boolean remove = false;
+		
+		for(RefData ref : refDataList){
+			if(ref.getRefSymbol().equals(refData.getRefSymbol()))
+				delList.add(ref);
 		}
-		return false;
+		
+		if(!delList.isEmpty())
+			remove = true;
+		
+		for(RefData ref:delList){
+			refDataList.remove(ref);
+		}
+
+		return remove;
 	}
 
 }
