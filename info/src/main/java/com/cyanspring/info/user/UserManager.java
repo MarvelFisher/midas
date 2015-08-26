@@ -155,13 +155,6 @@ public class UserManager implements IPlugin {
 					+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
 					+ "' where ACCOUNT='" + AccountId + "'";
 			UpdateQuery(strCmd, session);
-            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "');";
-            try {
-                UpdateQuery(strCmd, session);
-            }
-            catch(Exception e)
-            {
-            }
 			// Central MYSQL
 			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
 					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
@@ -196,6 +189,13 @@ public class UserManager implements IPlugin {
 						+ "' and DATE='0'";
 				UpdateQuery(strCmd, sessionCentral);
 			}
+            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "');";
+            try {
+                UpdateQuery(strCmd, session);
+            }
+            catch(Exception e)
+            {
+            }
 			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(
 					event.getKey(), event.getSender(), event.getAccount(),
 					event.getTxId(), event.getUserId(), event.getMarket(),
