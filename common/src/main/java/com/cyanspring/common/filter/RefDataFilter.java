@@ -138,17 +138,17 @@ public class RefDataFilter implements IDataObjectFilter {
 		if( null == refData)
 			return false;
 		
-		String contractDate	= null;	
+		String settlementDate	= null;	
 		try {
-			contractDate = refData.getDetailCN().replaceAll("\\D", "");
-			if(!StringUtils.hasText(contractDate))
+			settlementDate = refData.getSettlementDate();
+			if(!StringUtils.hasText(settlementDate))
 				return false;
 			
-			SimpleDateFormat contractFormat = new SimpleDateFormat("yyyyMM");
+			SimpleDateFormat contractFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar now = Calendar.getInstance();
 			int thisYear = now.get(Calendar.YEAR);			
 			Calendar contractCal = Calendar.getInstance();
-			contractCal.setTime(contractFormat.parse(contractDate));
+			contractCal.setTime(contractFormat.parse(settlementDate));
 			int contractYear = contractCal.get(Calendar.YEAR);
 
 			if((contractYear-thisYear)>=5 || (contractYear-thisYear)<0){
@@ -158,9 +158,9 @@ public class RefDataFilter implements IDataObjectFilter {
 			}
 					
 		} catch (ParseException e) {
-			log.warn("not valid contract date:{},{}",contractDate,e.getMessage());
+			log.warn("not valid contract date:{},{}",settlementDate,e.getMessage());
 		} catch (Exception e){
-			log.warn("can't find DetailCN :{},{}",refData.getSymbol(),e.getMessage());
+			log.warn("can't find settlementDate :{},{}",refData.getSymbol(),e.getMessage());
 		}
 
 		return false;
