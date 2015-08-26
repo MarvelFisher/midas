@@ -1077,7 +1077,7 @@ public class BusinessManager implements ApplicationContextAware {
 		log.info("Received IndexSessionEvent: " + event);
 		
 		if (event == null || !event.isOk()) {
-			log.info("Received IndexSessionEvent is null or not OK");
+			log.warn("Received IndexSessionEvent is " + (event == null ? "null" : "not OK"));
 			return;
 		}
 		

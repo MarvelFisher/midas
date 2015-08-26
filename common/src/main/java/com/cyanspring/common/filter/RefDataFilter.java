@@ -27,10 +27,20 @@ public class RefDataFilter implements IDataObjectFilter {
 	
 	@Autowired
 	RefDataTplLoader refDataTplLoader;
-
+	
 	private static final Logger log = LoggerFactory.getLogger(RefDataFilter.class);
 	private boolean checkValidContractDate = true;
 	private IType[] types;
+	private List<RefData> lstRefDataTpl;
+
+	public RefDataFilter() {
+		try {
+			lstRefDataTpl = refDataTplLoader.getRefDataList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			log.warn(e.getMessage());
+		}
+	}
 
 	public IType[] getTypes() {
 		return types;
@@ -43,15 +53,14 @@ public class RefDataFilter implements IDataObjectFilter {
 	/**
 	 * Change the value of property "types" of bean "refDataFilter" to filter.
 	 * 
-	 * TheDataObject with matching "iType" and non-duplicate Symbol will be 
-	 * added into a new DataObject list then return. 
+	 * DataObjects with matching "iType" and non-duplicate Category will be 
+	 * returned as a new DataObject list. 
 	 * 
 	 * Reference path:
-	 * /cyanspring-server/conf/fc/fc.xml
+	 * server/conf/fc/fc.xml
 	 * 
 	 * Key: iType + Symbol
-	 * 
-	 * {category}.{exchange} = {refSymbol} -> 活躍 (若同類別存在同年月, 活躍優先保存)
+	 * {category}.{exchange} = {refSymbol} means 活躍 (若同類別存在同年月, 活躍優先保存)
 	 * 
 	 * @param lstDataObj
 	 *            The DataObject list to be filtered
@@ -169,11 +178,10 @@ public class RefDataFilter implements IDataObjectFilter {
 	
 	private List<RefData> excludeNonExistingProducts(List<RefData> lstRefData) throws Exception {
 		if (lstRefData != null && lstRefData.size() > 0) {
-			List<RefData> lstRefDataTpl = refDataTplLoader.getRefDataList();
-
-			// equals() and hashCode() of RefData have been "override" based on "Symbol"
+			// Compare RefData list from template with the input lstRefData
+			// If Category of RefData in the input lstRefData doesn't exist in template, exclude it
+			// After filtering, only Category in template will be kept in the returned lstRefData
 			if (lstRefDataTpl != null && lstRefDataTpl.size() > 0) {
-//				lstRefData.retainAll(lstRefDataTpl);
 				ArrayList<String> lstCategory = new ArrayList<String>();
 				for (RefData data : lstRefDataTpl) {
 					lstCategory.add(data.getCategory());
@@ -186,8 +194,6 @@ public class RefDataFilter implements IDataObjectFilter {
 						itRefData.remove();
 					}
 				}
-				
-				
 			}
 		} else {
 			log.error("The given RefData list cannot be null or empty");
