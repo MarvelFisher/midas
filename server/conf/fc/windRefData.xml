@@ -22,6 +22,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="S"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="SC"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).INDEX_SESSION_TYPE}" value="SPOT"/>
     </util:map>
 
     <util:map id="refDataIndexChinaHashMap" map-class="java.util.HashMap">
@@ -37,6 +38,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="I"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="SC"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).INDEX_SESSION_TYPE}" value="SPOT"/>
     </util:map>
 
     <util:map id="refDataFutureChinaHashMap" map-class="java.util.HashMap">
@@ -66,8 +68,8 @@
     <bean id="refDataAdapterFCI"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="FCI"/>
-        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayIp" value="101.231.55.6"/>
+        <!--<property name="gatewayIp" value="10.0.0.33"/>-->
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="false"/>
         <property name="msgPack" value="true"></property>
@@ -90,9 +92,10 @@
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="FCC"/>
         <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="10.0.0.20"/>
+        <property name="gatewayIp" value="202.55.14.140"/>
+        <!--<property name="gatewayIp" value="10.0.0.20"/>-->
         <property name="gatewayPort" value="10046"/>
-        <property name="marketDataLog" value="false"/>
+        <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
         <property name="refDataFile" value="refdata/refData_fcc.xml"/>
         <property name="windFilter" ref="fccFilter"/>

@@ -49,6 +49,7 @@ public class RefDataParser {
                 refData.setStrategy((String) defaultHashMap.get(RefDataField.STRATEGY));
                 refData.setTickTable((String) defaultHashMap.get(RefDataField.TICK_TABLE));
                 refData.setPricePerUnit(Double.parseDouble((String) defaultHashMap.get(RefDataField.MARGIN_RATE)));
+                refData.setIndexSessionType((String) defaultHashMap.get(RefDataField.INDEX_SESSION_TYPE));
                 break;
             case "F":
                 break;
