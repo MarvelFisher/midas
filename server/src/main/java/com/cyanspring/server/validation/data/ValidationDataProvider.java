@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.event.marketdata.AllQuoteExtSubEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
@@ -35,9 +37,12 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 
 public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
-	private static final Logger log = LoggerFactory.getLogger(ValidationDataProvider.class);
-	private static final String ID = "VDP-" + IdGenerator.getInstance().getNextID();
-	private static final String SENDER = ValidationDataProvider.class.getSimpleName();
+	private static final Logger log = LoggerFactory
+			.getLogger(ValidationDataProvider.class);
+	private static final String ID = "VDP-"
+			+ IdGenerator.getInstance().getNextID();
+	private static final String SENDER = ValidationDataProvider.class
+			.getSimpleName();
 	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 	private ConcurrentHashMap<String, MarketSessionData> symbolSessionMap = new ConcurrentHashMap<String, MarketSessionData>();
 	private Date tradeDate = null;
@@ -45,7 +50,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 
 	@Autowired
 	protected IRemoteEventManager eventManager;
-	
+
 	@Autowired
 	protected MarketSessionUtil marketSessionUtil;
 
@@ -56,7 +61,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			subscribeToEvent(QuoteExtEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(MultiQuoteExtendEvent.class, null);
-			subscribeToEvent(IndexSessionEvent.class,null);
+			subscribeToEvent(IndexSessionEvent.class, null);
 		}
 
 		@Override
@@ -84,47 +89,48 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			}
 		}
 		if(!symbolList.isEmpty()){
-			//TODO:Send quoteExt
+			QuoteExtSubEvent requestQuoteExtEvent = new QuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, symbolList);
+			eventManager.sendEvent(requestQuoteExtEvent);
 		}
 	}
-	
+
 	private List<String> getSymbolList(String key) {
 		return marketSessionUtil.getSymbolListByIndexSessionKey(key);
 	}
 
-	private ConcurrentHashMap<String, MarketSessionData> getSymbolMapFromIndexSessionMap(Map<String,MarketSessionData> map,MarketSessionType type){
-		//type == null --> get all
-		Set <Entry<String,MarketSessionData>>entrys = map.entrySet();
-		ConcurrentHashMap<String, MarketSessionData> symbolMap  = new ConcurrentHashMap<String, MarketSessionData>();
-		
-		for(Entry<String,MarketSessionData> entry:entrys){
+	private ConcurrentHashMap<String, MarketSessionData> getSymbolMapFromIndexSessionMap(
+			Map<String, MarketSessionData> map, MarketSessionType type) {
+		// type == null --> get all
+		Set<Entry<String, MarketSessionData>> entrys = map.entrySet();
+		ConcurrentHashMap<String, MarketSessionData> symbolMap = new ConcurrentHashMap<String, MarketSessionData>();
+
+		for (Entry<String, MarketSessionData> entry : entrys) {
 			String key = entry.getKey();
 			MarketSessionData session = entry.getValue();
 			MarketSessionType sessionType = session.getSessionType();
 			List<String> symbols = getSymbolList(key);
-			if(null != symbols && !symbols.isEmpty())
+			if (null != symbols && !symbols.isEmpty())
 				continue;
-						
-			if(null == type || type.equals(sessionType)){	
-				for(String symbol : symbols){
+
+			if (null == type || type.equals(sessionType)) {
+				for (String symbol : symbols) {
 					symbolMap.put(symbol, session);
 				}
 			}
 		}
-		
+
 		return symbolMap;
 	}
-	
-	
+
 	@Override
 	public void init() throws Exception {
-				
+
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("ValidationDataProvider");
 		}
-		requestTradeDate();		
+		requestTradeDate();
 	}
 
 	@Override
@@ -138,23 +144,18 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		return quoteExtendsMap;
 	}
 
-//	public void processAllIndexSessionEvent(AllIndexSessionEvent event){
-//		
-//		Map<String,MarketSessionData> sessionMap =  event.getMap();
-//		symbolSessionMap = getSymbolMapFromIndexSessionMap(sessionMap,null);
-//		sendQuoteExtSubEvent();
-//	}
-
-	private void requestIndexSession(){
-		IndexSessionRequestEvent event = new IndexSessionRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, null);
+	private void requestIndexSession() {
+		IndexSessionRequestEvent event = new IndexSessionRequestEvent(
+				ValidationDataProvider.ID, ValidationDataProvider.SENDER, null);
 		eventManager.sendEvent(event);
 	}
-	
+
 	private void requestTradeDate() {
-		TradeDateRequestEvent request = new TradeDateRequestEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER);
+		TradeDateRequestEvent request = new TradeDateRequestEvent(
+				ValidationDataProvider.ID, ValidationDataProvider.SENDER);
 		eventManager.sendEvent(request);
 	}
-	
+
 	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event) {
 		Map<String, DataObject> receiveDataMap = event.getMutilQuoteExtend();
 
@@ -169,39 +170,43 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		}
 
-		Set <Entry<String,DataObject>> entrys = receiveDataMap.entrySet();
-		for(Entry <String,DataObject>entry : entrys){
+		Set<Entry<String, DataObject>> entrys = receiveDataMap.entrySet();
+		for (Entry<String, DataObject> entry : entrys) {
 			String key = entry.getKey();
 			DataObject data = entry.getValue();
-			String symbol = data.get(String.class, QuoteExtDataField.SYMBOL.value());
-            Date lastTradeDate = data.get(Date.class, QuoteExtDataField.TIMESTAMP.value());
-			if(!StringUtils.hasText(symbol))
+			String symbol = data.get(String.class,
+					QuoteExtDataField.SYMBOL.value());
+			Date lastTradeDate = data.get(Date.class,
+					QuoteExtDataField.TIMESTAMP.value());
+			if (!StringUtils.hasText(symbol))
 				continue;
-			
-            if( null == lastTradeDate){
-            	log.info("this symbol doesn't have trade date:{}",symbol);
-            	continue;
-            }
-            
-            String symbolTradeDate = TimeUtil.formatDate(lastTradeDate, "yyyy-MM-dd");           
-			try {
-				if(symbolSessionMap.contains(symbol)){
-					MarketSessionData session = symbolSessionMap.get(symbol);				
-				    if (!session.getTradeDateByString().equals(symbolTradeDate)) {
-				        continue;
-				    }
-				    quoteExtendsMap.put(key, data);
-				}else{
-					log.info("symbolsessionMap doesn't have:{}",symbol);
 
-					if(null != tradeDate && !isSameTradeDate(symbolTradeDate)){
-						log.info("quote trade date:{} not match validation trade date:{}",symbolTradeDate,tradeDate);
+			if (null == lastTradeDate) {
+				log.info("this symbol doesn't have trade date:{}", symbol);
+				continue;
+			}
+
+			String symbolTradeDate = TimeUtil.formatDate(lastTradeDate,"yyyy-MM-dd");
+			try {
+				if (symbolSessionMap.contains(symbol)) {
+					MarketSessionData session = symbolSessionMap.get(symbol);
+					if (!session.getTradeDateByString().equals(symbolTradeDate)) {
+						continue;
+					}
+					quoteExtendsMap.put(key, data);
+				} else {
+					log.info("symbolsessionMap doesn't have:{}", symbol);
+
+					if (null != tradeDate && !isSameTradeDate(symbolTradeDate)) {
+						log.info(
+								"quote trade date:{} not match validation trade date:{}",
+								symbolTradeDate, tradeDate);
 						continue;
 					}
 					quoteExtendsMap.put(key, data);
 				}
 			} catch (Exception e) {
-				log.warn(e.getMessage(),e);
+				log.warn(e.getMessage(), e);
 			}
 		}
 	}
@@ -209,7 +214,8 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	public void processQuoteExtEvent(QuoteExtEvent event) {
 		try {
 			DataObject updateObj = event.getQuoteExt();
-			String symbol = updateObj.get(String.class, QuoteExtDataField.SYMBOL.value());
+			String symbol = updateObj.get(String.class,
+					QuoteExtDataField.SYMBOL.value());
 			if (null == quoteExtendsMap) {
 				quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 			}
@@ -219,7 +225,8 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 				if (null == paramMap || paramMap.isEmpty()) {
 					return;
 				}
-				Iterator<Entry<String, Object>> paramIterator = paramMap.entrySet().iterator();
+				Iterator<Entry<String, Object>> paramIterator = paramMap
+						.entrySet().iterator();
 				DataObject obj = null;
 				if (quoteExtendsMap.containsKey(symbol)) {
 					obj = quoteExtendsMap.get(symbol);
@@ -245,18 +252,18 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 
 	public void sendQuoteExtSubEvent() {
 		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
-		AllQuoteExtSubEvent event = new AllQuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER);
+		AllQuoteExtSubEvent event = new AllQuoteExtSubEvent(
+				ValidationDataProvider.ID, ValidationDataProvider.SENDER);
 		log.info("send QuoteExtSub event");
 		eventManager.sendEvent(event);
 	}
 
-	
 	public void processTradeDateEvent(TradeDateEvent event) {
 		try {
 			String eventTradeDate = event.getTradeDate();
-			if (null == eventTradeDate) 
+			if (null == eventTradeDate)
 				return;
-			
+
 			if (null == tradeDate || !isSameTradeDate(eventTradeDate)) {
 				setTradeDate(eventTradeDate);
 				requestIndexSession();

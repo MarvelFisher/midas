@@ -76,6 +76,12 @@ public class MarketSessionUtil implements IPlugin{
     		String category = ref.getCategory();
     		String symbol = ref.getSymbol();
     		String exchange = ref.getExchange();
+    		if(!StringUtils.hasText(category) 
+    				|| !StringUtils.hasText(symbol)
+    				|| !StringUtils.hasText(exchange)){
+    			continue;
+    		}
+    		
     		if(symbol.equals(key)){
     			symbolList.add(symbol);
     			break;
