@@ -80,6 +80,12 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			adaptor.init();
 			adaptor.subscribeRefData(this);
 		}
+		
+		if (!eventProcessor.isSync()) {
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.SECOND, 1);
+			scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, timerEvent);
+		}
 	}
 
 	@Override
@@ -100,7 +106,6 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			if (checkRefData(refData))
 				this.refDataList.add(refData);
 		}
-		processAsyncTimerEvent(null);
 	}
 
 	@Override
