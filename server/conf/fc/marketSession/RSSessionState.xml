@@ -9,11 +9,11 @@
 
 	<context:annotation-config />
 	
-	<bean id="cfSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+	<bean id="rsSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>
 				<entry key="DEFAULT">
-					<ref bean="cfDefaultSession"/>
+					<ref bean="rsDefaultSession"/>
 				</entry>
 				<entry key="FIRST_HOLIDAY">
 					<ref bean="holidaySession"/>
@@ -22,15 +22,15 @@
 					<ref bean="holidaySession"/>
 				</entry>
 				<entry key="SETTLEMENT_DAY">
-					<ref bean="cfSettlementSession"/>
+					<ref bean="rsSettlementSession"/>
 				</entry>
 			</map>
 		</property>
-        <property name="tradeDateManager"><ref bean="cfTradeDateManager"/></property>
-        <property name="index" value="CF"/>
+        <property name="tradeDateManager"><ref bean="rsTradeDateManager"/></property>
+        <property name="index" value="RS"/>
 	</bean>
 	
-	<bean id="cfDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="rsDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
@@ -79,7 +79,7 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="cfTradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
+	<bean id="rsTradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
 			<list>
 			</list>
@@ -105,7 +105,7 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="cfSettlementSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="rsSettlementSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
