@@ -372,6 +372,7 @@
 				<ref bean="lrSessionChecker"/>
 				<ref bean="smSessionChecker"/>
 				<ref bean="jrSessionChecker"/>
+				<ref bean="indexSessionChecker"/>
 			</list>
 		</constructor-arg>
 	</bean>
