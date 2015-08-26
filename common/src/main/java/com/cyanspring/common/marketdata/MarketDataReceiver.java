@@ -134,8 +134,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 preSubscriptionList.add(refData.getSymbol());
                 marketTypes.put(refData.getSymbol(), refData.getCommodity());
             }
-            Collections.sort(preSubscriptionList);
-            log.debug("RefData PreSubScribe=" + preSubscriptionList);
+//            Collections.sort(preSubscriptionList);
+//            log.debug("RefData PreSubScribe=" + preSubscriptionList);
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) {
                     adaptor.processEvent(event);
