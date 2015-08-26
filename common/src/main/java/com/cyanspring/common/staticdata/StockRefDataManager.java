@@ -132,6 +132,9 @@ public class StockRefDataManager extends RefDataService {
     @Override
     public RefData getRefData(String symbol) {
         for (RefData refData : refDataList) {
+        	if(!StringUtils.hasText(refData.getSymbol())){
+        		continue;
+        	}
             if (refData.getSymbol().equals(symbol))
                 return refData;
         }
