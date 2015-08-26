@@ -18,14 +18,18 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.business.RefDataField;
-import com.cyanspring.common.staticdata.fu.IType;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataUtil {
+	private static final Logger log = LoggerFactory.getLogger(RefDataUtil.class);
+
+	
 	enum Category{
 		STOCK,INDEX
 	}
@@ -53,7 +57,6 @@ public class RefDataUtil {
     public static String getCategory(RefData refData){
     	
     	String refSymbol = refData.getRefSymbol();
-    	
     	if(!StringUtils.hasText(refSymbol))
     		return null;
     	
@@ -64,16 +67,21 @@ public class RefDataUtil {
 				return Category.INDEX.name();
 			}else if(Commodity.STOCK.getValue().equals(commodity)){
 				return Category.STOCK.name();
-			}else{
-				return getFutureCategory(refSymbol);
+			}else{				
+				return getFutureCategory(refData);
 			}
 		}else{
-			return getFutureCategory(refSymbol);
+			return getFutureCategory(refData);
 		}
 	}
     
-	private static String getFutureCategory(String refSymbol){
-		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");		
+	private static String getFutureCategory(RefData refData){
+		
+		String category =  refData.getRefSymbol().replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");	
+		if(!StringUtils.hasText(category) && StringUtils.hasText(refData.getCategory())){
+			return refData.getCategory();
+		}
+		
 		if(category.length() > 2 ){
 			return category.substring(0, 2).toUpperCase();
 		}else{
