@@ -68,8 +68,8 @@
     <bean id="refDataAdapterFCI"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="FCI"/>
-        <property name="gatewayIp" value="101.231.55.6"/>
-        <!--<property name="gatewayIp" value="10.0.0.33"/>-->
+        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
+        <property name="gatewayIp" value="10.0.0.32"/>
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="false"/>
         <property name="msgPack" value="true"></property>
@@ -92,8 +92,8 @@
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="FCC"/>
         <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="202.55.14.140"/>
-        <!--<property name="gatewayIp" value="10.0.0.20"/>-->
+        <!--<property name="gatewayIp" value="202.55.14.140"/>-->
+        <property name="gatewayIp" value="10.0.0.20"/>
         <property name="gatewayPort" value="10046"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
