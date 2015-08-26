@@ -46,7 +46,8 @@ public class RefDataUtil {
     	
 		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");		
 		if(!StringUtils.hasText(category)){
-			if(IType.EXCHANGE_INDEX.equals(refData.getIType())){
+			System.out.println("refData.getIType():"+refData.getIType());
+			if(IType.EXCHANGE_INDEX.getValue().equals(refData.getIType())){
 				//Index Category
 				return Category.INDEX.name();
 			}else{
