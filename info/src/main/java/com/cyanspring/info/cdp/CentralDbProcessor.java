@@ -44,6 +44,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
 import com.cyanspring.common.event.marketsession.AllIndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
@@ -169,7 +170,6 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(RefDataEvent.class, null);
 			subscribeToEvent(RefDataUpdateEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
-			subscribeToEvent(AllIndexSessionEvent.class, null);
 		}
 
 		@Override
@@ -310,10 +310,6 @@ public class CentralDbProcessor implements IPlugin
 		mapCentralDbEventProc.get(procRequest).onEvent(event);
 	}
 	public void processIndexSessionEvent(IndexSessionEvent event)
-	{
-		mapCentralDbEventProc.get(procSession).onEvent(event);
-	}
-	public void processAllIndexSessionEvent(AllIndexSessionEvent event)
 	{
 		mapCentralDbEventProc.get(procSession).onEvent(event);
 	}
@@ -896,6 +892,7 @@ public class CentralDbProcessor implements IPlugin
 		MarketSessionType sessionType, newSessionType;
 		List<String> indexList = new ArrayList<String>();
 		ArrayList<String> marketList = new ArrayList<String>();
+		int index;
 		for (Entry<String, MarketSessionData> entry : sessions.entrySet())
 		{
 			if (getSessionMap().get(entry.getKey()) != null)
@@ -916,22 +913,53 @@ public class CentralDbProcessor implements IPlugin
 				}
 				if (sessionType == null)
 				{
-					// reset = true;
-//					retrieveChart();
+					indexList.add(entry.getKey());
+					for (SymbolData data : symboldatas)
+					{
+						index = Collections.binarySearch(marketList, data.getMarket());
+						if (index < 0)
+						{
+							marketList.add(~index, data.getMarket());
+						}
+					}
 				}
 				else if (sessionType != newSessionType)
 				{
 					if (newSessionType == MarketSessionType.CLOSE)
 					{
-						// insert = true;
+						for (SymbolData data : symboldatas)
+						{
+							data.putInsert();
+						}
 					}
 					if (sessionType == MarketSessionType.CLOSE)
 					{
 						indexList.add(entry.getKey());
+						for (SymbolData data : symboldatas)
+						{
+							index = Collections.binarySearch(marketList, data.getMarket());
+							if (index < 0)
+							{
+								marketList.add(~index, data.getMarket());
+							}
+						}
 					}
 				}
 			}
 			getSessionMap().put(entry.getKey(), entry.getValue());
+		}
+		if (indexList.isEmpty() == false)
+		{
+			log.info("IndexSession Send Ready to AppServer");
+			CentralDbReadyEvent event = new CentralDbReadyEvent(null, null);
+			event.setTickTableList(tickTableManager.getTickTables());
+			event.setIndexList(indexList);
+			for (String appserv : appServIDList)
+			{
+				event.setReceiver(appserv);
+				log.info("Sending ReadyEvent to: " + appserv);
+				sendEvent(event);
+			}
 		}
 	}
 	
@@ -996,13 +1024,19 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public void setEventProcessorMD(AsyncEventProcessor eventProcessor) {
 		this.eventProcessorMD = eventProcessor;
-	}	
+	}
 	public void requestMarketSession()
 	{
 		log.info("Send MarketSessionRequest");
 		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
 		sendMDEvent(new MarketSessionRequestEvent(null, receiver)) ;
-	}	
+	}
+	public void requestIndexMarketSession()
+	{
+		log.info("Send IndexSessionRequest");
+		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
+		sendMDEvent(new IndexSessionRequestEvent(null, receiver, null)) ;
+	}
 	public void requestSymbolList()
 	{
 		String receiver = String.format("%s.%s.%s", systemInfoMD.getEnv(), systemInfoMD.getCategory(), systemInfoMD.getId()) ;
