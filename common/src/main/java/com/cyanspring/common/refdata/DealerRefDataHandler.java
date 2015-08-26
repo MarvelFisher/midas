@@ -104,7 +104,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				for (RefData refData : refDataList) {
 					if (!checkRefData(refData))
 						continue;
-					String index = RefDataUtil.getCategory(refData.getRefSymbol());
+					String index = RefDataUtil.getCategory(refData);
 					if (index == null)
 						throw new Exception("RefData index not find");
 					String tradeDate = sessionDataMap.get(index).getTradeDateByString();

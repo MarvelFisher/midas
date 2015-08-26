@@ -115,7 +115,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		
 		refData.setSymbol(getSymbol(refData));
 		refData.setStrategy(refData.getExchange());
-		refData.setCategory(getCategory(refSymbol));
+		refData.setCategory(getCategory(refData));
 		refData.setCNDisplayName(getCNName(combineCnName));
 		refData.setTWDisplayName(getTWName(combineTwName));
 		refData.setENDisplayName(getEnName(refData));
@@ -143,15 +143,15 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	protected String getEnName(RefData data){		
-		return getCategory(data.getRefSymbol())+data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
+		return getCategory(data)+data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
 	}
 	
 	protected String getRefSymbol(String refSymbol){
 		return refSymbol.replaceAll(".[A-Z]+$", "");
 	}
 	
-	protected String getCategory(String refSymbol){
-		return RefDataUtil.getCategory(refSymbol);
+	protected String getCategory(RefData refData){
+		return RefDataUtil.getCategory(refData);
 	}
 	
 	protected String getCNName(String combineCnName){

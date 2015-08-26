@@ -21,12 +21,13 @@ import java.util.regex.Pattern;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.staticdata.fu.IType;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataUtil {
 	enum Category{
-		STOCK
+		STOCK,INDEX
 	}
 	public static String getOnlyChars(String symbol) {
 		Pattern pattern = Pattern.compile("[a-zA-Z]*");
@@ -36,16 +37,22 @@ public class RefDataUtil {
 		return null;
 	}
 
-    public static String getCategory(String symbol){
+    public static String getCategory(RefData refData){
     	
-    	if(!StringUtils.hasText(symbol))
+    	String refSymbol = refData.getRefSymbol();
+    	
+    	if(!StringUtils.hasText(refSymbol))
     		return null;
     	
-		String category =  symbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");
-		
-		//Stock Category
+		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");		
 		if(!StringUtils.hasText(category)){
-			return Category.STOCK.name();
+			if(IType.EXCHANGE_INDEX.equals(refData.getIType())){
+				//Index Category
+				return Category.INDEX.name();
+			}else{
+				//Stock Category
+				return Category.STOCK.name();
+			}
 		}
 		
 		//Future Category

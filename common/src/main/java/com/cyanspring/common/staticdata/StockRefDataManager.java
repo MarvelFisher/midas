@@ -57,7 +57,7 @@ public class StockRefDataManager extends RefDataService {
         //init category
         if(null != refDataList && !refDataList.isEmpty()){
         	for(RefData refData : refDataList){	        		
-        		refData.setCategory(getCategory(refData.getRefSymbol()));
+        		refData.setCategory(getCategory(refData));
         	}
         }
     }
@@ -92,7 +92,7 @@ public class StockRefDataManager extends RefDataService {
 
     private RefData searchRefDataTemplate(RefData refData){
 
-    	String spotName = getCategory(refData.getRefSymbol());
+    	String spotName = getCategory(refData);
     	RefData templateRefData = null;
     	if(refDataTemplateMap.containsKey(spotName) && null != refDataTemplateMap.get(spotName)){
     		templateRefData = refDataTemplateMap.get(spotName);
@@ -102,8 +102,8 @@ public class StockRefDataManager extends RefDataService {
     	return  null;
     }
     
-	protected String getCategory(String refSymbol){
-		return RefDataUtil.getCategory(refSymbol);
+	protected String getCategory(RefData refData){
+		return RefDataUtil.getCategory(refData);
 	}
 	
 	private void updateRefData(Calendar cal, RefData refData) {
