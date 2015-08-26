@@ -203,7 +203,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		if(calDate.equals(refData.getSettlementDate())){
 			return IndexSessionType.SETTLEMENT.name();
 		}else{
-			return IndexSessionType.EXCHANGE.name();
+			return IndexSessionType.SPOT.name();
 		}
 	}
 	
