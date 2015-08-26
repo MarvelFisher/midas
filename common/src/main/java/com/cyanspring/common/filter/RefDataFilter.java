@@ -31,16 +31,6 @@ public class RefDataFilter implements IDataObjectFilter {
 	private static final Logger log = LoggerFactory.getLogger(RefDataFilter.class);
 	private boolean checkValidContractDate = true;
 	private IType[] types;
-	private List<RefData> lstRefDataTpl;
-
-	public RefDataFilter() {
-		try {
-			lstRefDataTpl = refDataTplLoader.getRefDataList();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			log.warn(e.getMessage());
-		}
-	}
 
 	public IType[] getTypes() {
 		return types;
@@ -181,6 +171,7 @@ public class RefDataFilter implements IDataObjectFilter {
 			// Compare RefData list from template with the input lstRefData
 			// If Category of RefData in the input lstRefData doesn't exist in template, exclude it
 			// After filtering, only Category in template will be kept in the returned lstRefData
+			List<RefData> lstRefDataTpl = refDataTplLoader.getRefDataList();
 			if (lstRefDataTpl != null && lstRefDataTpl.size() > 0) {
 				ArrayList<String> lstCategory = new ArrayList<String>();
 				for (RefData data : lstRefDataTpl) {
