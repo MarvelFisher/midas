@@ -237,7 +237,7 @@ public class SymbolChef implements Runnable
 				quote = null;
 				log.error(strChefName, e);
 			}
-			// 記�?queue?��?高個數
+			// log max queue size
 			if (m_queueMaxSize < m_q.size())
 			{
 				m_queueMaxSize = m_q.size();

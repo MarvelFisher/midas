@@ -277,10 +277,13 @@ public class Registration {
 	public HashMap<Integer,Object> flushMsgPack() {
 		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
 		map.put(FDTFields.PacketType,FDTFields.PacketArray);
-		synchronized(mpList) {
+		synchronized(mpList) {			
 			if(mpList.size() == 1) {
 				map = mpList.get(0);
 			} else {
+				if(mpList.size() == 0) {
+					return null;
+				}
 				map.put(FDTFields.ArrayOfPacket,  new ArrayList<HashMap<Integer,Object>>(mpList));
 			}
 			mpList.clear();
