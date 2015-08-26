@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.sql.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,7 +155,13 @@ public class UserManager implements IPlugin {
 					+ ddateFormat + "'" + ",TRADER='" + UserId + ddateFormat
 					+ "' where ACCOUNT='" + AccountId + "'";
 			UpdateQuery(strCmd, session);
-
+            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "');";
+            try {
+                UpdateQuery(strCmd, session);
+            }
+            catch(Exception e)
+            {
+            }
 			// Central MYSQL
 			strCmd = "update ACCOUNTS_DAILY set ACCOUNT_ID='" + AccountId
 					+ ddateFormat + "'" + ",USER_ID='" + UserId + ddateFormat
