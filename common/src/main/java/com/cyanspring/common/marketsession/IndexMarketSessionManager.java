@@ -69,6 +69,7 @@ public class IndexMarketSessionManager implements IPlugin {
 			subscribeToEvent(AllIndexSessionRequestEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
 			subscribeToEvent(RefDataUpdateEvent.class, null);
+			subscribeToEvent(InternalSessionRequestEvent.class, null);
 		}
 
 		@Override
@@ -77,6 +78,13 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 	};
 
+	public void processInternalSessionRequestEvent(InternalSessionRequestEvent event) {
+		if (rawMap != null && rawMap.size() > 0)
+			eventManager.sendEvent(new InternalSessionEvent(null, null, rawMap, true));
+		else
+			log.warn("Get InternalSessionRequestEvent but manager is't finish initial yet");
+	}
+	
 	public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
 		try {
 			if (!checkUtilAndRefData() && !checkCurrentSession()) {
@@ -134,7 +142,6 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processRefDataEvent(RefDataEvent event) {
 		if (!event.isOk())
 			return;
-
 		List<RefData> list = event.getRefDataList();
 		try {
 			list = (List<RefData>) refDataFilter.filter(list);

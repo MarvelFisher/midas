@@ -1,6 +1,7 @@
 package com.cyanspring.common.refdata;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,9 +13,12 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.AsyncEventProcessor;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketsession.InternalSessionEvent;
+import com.cyanspring.common.event.marketsession.InternalSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
@@ -36,9 +40,13 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 	@Autowired
 	private IRemoteEventManager eventManager;
 
+	@Autowired
+	private ScheduleManager scheduleManager;
+
 	private List<IRefDataAdaptor> refDataAdaptors;
 	private List<RefData> refDataList;
 	private Map<String, MarketSessionData> sessionDataMap;
+	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private boolean isInit;
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -68,7 +76,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (eventProcessor.getThread() != null)
 			eventProcessor.getThread().setName("DealerRefDataHandler");
 
-		for (IRefDataAdaptor adaptor : refDataAdaptors){
+		for (IRefDataAdaptor adaptor : refDataAdaptors) {
 			adaptor.init();
 			adaptor.subscribeRefData(this);
 		}
@@ -92,9 +100,9 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			if (checkRefData(refData))
 				this.refDataList.add(refData);
 		}
-		isInit();
+		processAsyncTimerEvent(null);
 	}
-	
+
 	@Override
 	public void onRefDataUpdate(List<RefData> refDataList, Action action) {
 		if (refDataList != null && refDataList.size() > 0) {
@@ -126,18 +134,61 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			}
 		}
 	}
-	
+
 	private boolean checkRefData(RefData refData) {
-		if (!StringUtils.hasText(refData.getRefSymbol()) 
-				|| !StringUtils.hasText(refData.getCNDisplayName())
-				|| !StringUtils.hasText(refData.getExchange())
-				|| !StringUtils.hasText(refData.getCode())
-				|| !StringUtils.hasText(refData.getIType())){
-			
+		if (!StringUtils.hasText(refData.getRefSymbol()) || !StringUtils.hasText(refData.getCNDisplayName())
+				|| !StringUtils.hasText(refData.getExchange()) || !StringUtils.hasText(refData.getCode())
+				|| !StringUtils.hasText(refData.getIType())) {
+
 			log.error("Incorrect refData from adaptor.");
 			return false;
 		}
 		return true;
+	}
+
+	public void processAsyncTimerEvent(AsyncTimerEvent event) {
+		if (sessionDataMap == null) {
+			eventManager.sendEvent(new InternalSessionRequestEvent(null, null));
+			scheduleNextCheck();
+			return;
+		}
+
+		for (IRefDataAdaptor adaptor : refDataAdaptors) {
+			if (!adaptor.getStatus()) {
+				scheduleNextCheck();
+				return;
+			}
+		}
+
+		refDataManager.injectRefDataList(refDataList);
+		try {
+			refDataManager.init();
+			for (RefData refData : refDataList) {
+				String index = refData.getCategory();
+				if (index == null)
+					throw new Exception("RefData index not find");
+				MarketSessionData session = sessionDataMap.get(index);
+				if (session == null) {
+					log.error("Can't find market session data for [" + index + "], remove it from list");
+					refDataManager.remove(refData);
+					continue;
+				}
+				String tradeDate = session.getTradeDateByString();
+				refDataManager.update(refData, tradeDate);
+			}
+			eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			scheduleNextCheck();
+			return;
+		}
+		isInit = true;
+	}
+
+	private void scheduleNextCheck() {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.SECOND, 1);
+		scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, timerEvent);
 	}
 
 	public void processRefDataRequestEvent(RefDataRequestEvent event) {
@@ -153,50 +204,13 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		}
 	}
 
-	private boolean isInit() {
-		if (sessionDataMap == null)
-			return false;
-		if (!isInit) {
-			for (IRefDataAdaptor adaptor : refDataAdaptors) {
-				if (!adaptor.getStatus()) {
-					return false;
-				}
-			}
-			
-			refDataManager.injectRefDataList(refDataList);
-			try {
-				refDataManager.init();
-				for (RefData refData : refDataList) {
-					String index = refData.getCategory();
-					if (index == null)
-						throw new Exception("RefData index not find");
-					MarketSessionData session = sessionDataMap.get(index);
-					if (session == null) {
-						log.error("Can't find market session data for [" + index + "], remove it from list");
-						refDataManager.remove(refData);
-						continue;
-					}
-					String tradeDate = session.getTradeDateByString();
-					refDataManager.update(refData, tradeDate);
-				}
-				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-				return false;
-			}
-			isInit = true;
-			return false;
-		}
-		return isInit;
-	}
-
 	public void processInternalSessionEvent(InternalSessionEvent event) {
 		Map<String, MarketSessionData> sessions = event.getDataMap();
 		if (sessionDataMap == null) {
 			sessionDataMap = sessions;
 			return;
 		}
-		if (!isInit())
+		if (!isInit)
 			return;
 
 		List<RefData> send = new ArrayList<>();
