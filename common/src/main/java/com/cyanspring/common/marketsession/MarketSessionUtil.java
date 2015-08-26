@@ -49,7 +49,11 @@ public class MarketSessionUtil implements IPlugin{
     
     public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
     	
-    	String category = RefDataUtil.getCategory(refDataManager.getRefData(symbol));
+    	RefData refData = refDataManager.getRefData(symbol);
+    	if(null == refData)
+    		return null;
+    	
+    	String category = RefDataUtil.getCategory(refData);
     	if(!StringUtils.hasText(category))
     		return null;
     	

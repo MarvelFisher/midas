@@ -75,9 +75,9 @@ public class RefDataUtil {
 	private static String getFutureCategory(String refSymbol){
 		String category =  refSymbol.replaceAll(".[A-Z]+$", "").replaceAll("\\d", "");		
 		if(category.length() > 2 ){
-			return category.substring(0, 2);
+			return category.substring(0, 2).toUpperCase();
 		}else{
-			return category;
+			return category.toUpperCase();
 		}
 	}
 //	private static ArrayList<Double> getVolProfile() {
