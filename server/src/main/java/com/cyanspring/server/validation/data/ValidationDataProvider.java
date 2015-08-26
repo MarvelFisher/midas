@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.event.marketdata.AllQuoteExtSubEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,8 @@ import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
-import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
-import com.cyanspring.common.event.marketsession.AllIndexSessionEvent;
-import com.cyanspring.common.event.marketsession.AllIndexSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
@@ -249,7 +245,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 
 	public void sendQuoteExtSubEvent() {
 		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
-		QuoteExtSubEvent event = new QuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER);
+		AllQuoteExtSubEvent event = new AllQuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER);
 		log.info("send QuoteExtSub event");
 		eventManager.sendEvent(event);
 	}

@@ -44,7 +44,7 @@ public class MarketDataManager extends MarketDataReceiver {
     private List<Class<? extends AsyncEvent>> subscribeEvent() {
         ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
         clzList.add(TradeSubEvent.class);
-        clzList.add(QuoteExtSubEvent.class);
+        clzList.add(AllQuoteExtSubEvent.class);
         clzList.add(QuoteSubEvent.class);
         clzList.add(LastTradeDateQuotesRequestEvent.class);
         return clzList;
@@ -261,8 +261,8 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
-    public void processQuoteExtSubEvent(QuoteExtSubEvent event) throws Exception {
-        log.debug("QuoteExtSubEvent:" + event.getKey() + ", "
+    public void processAllQuoteExtSubEvent(AllQuoteExtSubEvent event) throws Exception {
+        log.debug("AllQuoteExtSubEvent:" + event.getKey() + ", "
                 + event.getReceiver() + ",tradeDate=" + tradeDate);
 
         int dataSegmentSize = getQuoteExtendSegmentSize();
