@@ -87,6 +87,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			throw new RefDataException("Not acceptable refData:"+refData.getRefSymbol());
 		}
 		
+		if(StringUtils.hasText(refData.getSettlementDate())){
+			return;
+		}
+		
 		refData.setMaximumHold(template.getMaximumHold());
 		refData.setCommodity(template.getCommodity());
 		refData.setType(template.getType());
@@ -130,6 +134,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setDetailTW(getTWDetailName(combineTwName));
 		refData.setDetailEN(getCNDetailName(combineCnName));	
 		refData.setRefSymbol(getRefSymbol(refSymbol));
+		log.info("refSymbol:{}",refData.getRefSymbol());
 	}
 	
 	private boolean checkAcceptableRefData(RefData refData) {
