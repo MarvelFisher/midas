@@ -49,7 +49,7 @@ public class RequestMgr implements IReqThreadCallback {
 
     void process(int type, Object objMsg) {
         switch (type) {
-            case WindDef.MSG_SYS_CODETABLE_RESULT: {
+            case WindDef.MSG_SYS_CODETABLE: {
                 CodeTableData codeTableData = (CodeTableData) objMsg;
 //                log.debug("Get Request-" + codeTableData.getWindCode() + "," + codeTableData.getCnName());
                 RefData refData = null;

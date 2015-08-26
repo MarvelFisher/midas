@@ -28,7 +28,6 @@
 		<property name="plugins">
 			<list>
 				<ref bean="apiBridgeManager" />
-                <ref bean="marketSessionManager" />
                 <ref bean="indexMarketSessionManager"/>
                 <ref bean="refDataHandler" />
 				<ref bean="mdManager" />
@@ -246,18 +245,15 @@
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
 		<constructor-arg>
 			<list>
-				<ref bean="refDataAdaptor"/>
+				<ref bean="refDataAdapterFCI"/>
+				<ref bean="refDataAdapterFCC"/>
 			</list>
 		</constructor-arg>    
-    </bean>
-    
-    <bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
-    	<property name="filePath" value="./conf/sim/codetable_fcc.xml"></property>
     </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
-			<value>conf/fc/FcRefDataTemplate.xml</value>
+			<value>refData/template/template_FC.xml</value>
 		</property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>

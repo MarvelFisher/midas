@@ -8,6 +8,7 @@ public final class WindDef {
     public static final int MSG_SYS_DISCONNECT_NETWORK = -99;
     public static final int MSG_SYS_CONNECT_RESULT = -98;
     public static final int MSG_SYS_LOGIN_RESULT = -97;
+    public static final int MSG_SYS_CODETABLE = -79;
     public static final int MSG_SYS_CODETABLE_RESULT = -96;
     public static final int MSG_SYS_QUOTATIONDATE_CHANGE = -95;
     public static final int MSG_SYS_MARKET_CLOSE = -94;

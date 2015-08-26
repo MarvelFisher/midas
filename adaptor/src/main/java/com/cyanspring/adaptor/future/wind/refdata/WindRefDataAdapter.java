@@ -137,6 +137,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 requestMgr.addReqData(new Object[]{datatype, marketsList});
                 break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
+                log.debug("receive WindGW codetable result");
+                break;
+            case WindDef.MSG_SYS_CODETABLE:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
                 CodeTableData codeTableData = null;
                 WindBaseDBData windBaseDBData = null;
@@ -321,10 +324,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public int parsePackTypeToDataType(int packType, HashMap hashMap) {
         int dataType = -1;
-        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
+        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
         if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
+        if (packType == FDTFields.WindCodeTableResult) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
 //        if (packType == FDTFields.WindHeartBeat){
 //            testCount++;
 //            if(testCount >= 5) {
