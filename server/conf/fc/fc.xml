@@ -303,9 +303,21 @@
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
-
-	<!-- For IDataObjectFilter settings, IType value in list will be kept after filtering -->
-	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+	
+	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
+		<property name="tplPath">
+			<value>refData/template/template_FC.xml</value>
+		</property>
+	</bean>
+	
+    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
+    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
+	</bean>
+	
+	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
+	</bean>
+	
+	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
 				<value>FUTURES_IDX</value>
@@ -315,10 +327,21 @@
 		</property>
 	</bean>
 	
-	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
-		<property name="tplPath">
-			<value>refData/template/template_FC.xml</value>
+	<bean id="contractDataFilter" class="com.cyanspring.common.filter.ContractDataFilter">
+		<property name="checkValidContractDate">
+			<value>true</value>
 		</property>
+	</bean>
+	
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<constructor-arg>
+			<list>
+				<ref bean="categoryFilter"/>
+				<ref bean="refSymbolFilter"/>
+				<ref bean="itypeFilter"/>
+				<ref bean="contractDataFilter"/>
+			</list>
+		</constructor-arg>
 	</bean>
 	
 	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">

@@ -1,6 +1,7 @@
 package com.cyanspring.common.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,10 +19,11 @@ import com.cyanspring.common.staticdata.fu.IType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataFilterTest.xml" })
-public class TestRefDataFilter {
+public class TestITypeFilter {
 	
 	@Autowired
-	RefDataFilter refDataFilter;
+	@Qualifier("itypeFilter")
+	IRefDataFilter iDataFilter;
 	
 	RefData refData1;
 	RefData refData2;
@@ -31,11 +34,11 @@ public class TestRefDataFilter {
 	public void before() {
 		lstRefData = new ArrayList<RefData>();
 	}
-
+	
 	@Test
-	public void test() throws Exception {
+	public void testRefDataFilter() throws Exception {
 		refData1 = new RefData();
-		refData1.setIType(IType.FUTURES_CX.getValue());
+		refData1.setIType(IType.FUTURES_IDX.getValue());
 		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
@@ -49,9 +52,8 @@ public class TestRefDataFilter {
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
 
-		// AG 活躍
 		refData3 = new RefData();
-		refData3.setIType(IType.FUTURES_CX.getValue());
+		refData3.setIType(IType.FUTURES_IDX.getValue());
 		refData3.setSymbol("IF1502");
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
@@ -61,11 +63,29 @@ public class TestRefDataFilter {
 		lstRefData.add(refData2);
 		lstRefData.add(refData3);
 		assertEquals(3, lstRefData.size());
-		
-		lstRefData = refDataFilter.filter(lstRefData);
-		
-		assertEquals(1, lstRefData.size());
-		assertEquals("AG.SHF", lstRefData.get(0).getRefSymbol());
+
+		List<RefData> lstFilteredRefData = (List<RefData>) iDataFilter.filter(lstRefData);
+		assertEquals(2, lstFilteredRefData.size());
 	}
 	
+	@Test
+	public void testRefDataFilterErrorHandling() {
+		refData1 = new RefData();
+		lstRefData.add(refData1);
+		
+		try {
+			iDataFilter.filter(lstRefData);
+			fail("DataObjectException was not thrown expectedly while IType is null");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		refData1.setIType(IType.FUTURES_CX.getValue());
+		try {
+			iDataFilter.filter(lstRefData);
+		} catch (Exception e) {
+			fail("DataObjectException was thrown unexpectedly while IType is not null");
+		}
+	}
+
 }
