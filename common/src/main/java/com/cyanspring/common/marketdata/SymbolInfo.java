@@ -50,6 +50,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private String Tradable = null;
 	private String SpellName = null;
 	private String Commodity = null;
+	private String indexSessionType = null;
 	
 	public SymbolInfo(String market, String code) 
 	{
@@ -443,6 +444,14 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	}
 	public void setDetailTW(String detailTW) {
 		this.detailTW = detailTW;
+	}
+	public String getIndexSessionType()
+	{
+		return indexSessionType;
+	}
+	public void setIndexSessionType(String indexSessionType)
+	{
+		this.indexSessionType = indexSessionType;
 	}
 	
 }
