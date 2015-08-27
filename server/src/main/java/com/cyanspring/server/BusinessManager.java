@@ -1093,7 +1093,9 @@ public class BusinessManager implements ApplicationContextAware {
 						String orderKey = order.getSymbol();
 						RefData orderRefData = refDataManager.getRefData(orderKey);
 						String orderIdxSessionType = orderRefData.getIndexSessionType();
-						if (orderIdxSessionType.equals(IndexSessionType.SPOT.toString())) {
+						if (orderIdxSessionType.equals(IndexSessionType.SETTLEMENT.toString())) {
+							orderKey = orderRefData.getSymbol();
+						} else if (orderIdxSessionType.equals(IndexSessionType.SPOT.toString())) {
 							orderKey = orderRefData.getCategory();
 						} else if (orderIdxSessionType.equals(IndexSessionType.EXCHANGE.toString())) {
 							orderKey = orderRefData.getExchange();
@@ -1114,7 +1116,9 @@ public class BusinessManager implements ApplicationContextAware {
 							String positionKey = position.getSymbol();
 							RefData positionRefData = refDataManager.getRefData(positionKey);
 							String positionIdxSessionType = positionRefData.getIndexSessionType();
-							if (positionIdxSessionType.equals(IndexSessionType.SPOT.toString())) {
+							if (positionIdxSessionType.equals(IndexSessionType.SETTLEMENT.toString())) {
+								positionKey = positionRefData.getSymbol();
+							} else if (positionIdxSessionType.equals(IndexSessionType.SPOT.toString())) {
 								positionKey = positionRefData.getCategory();
 							} else if (positionIdxSessionType.equals(IndexSessionType.EXCHANGE.toString())) {
 								positionKey = positionRefData.getExchange();
