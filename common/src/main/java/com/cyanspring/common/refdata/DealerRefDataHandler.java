@@ -31,6 +31,14 @@ import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataUtil;
 
+/**
+ * This Manager is used will receive InternalMarketSessionEvent and get trade date from it,
+ * also it will broadcast refDataEvent to it's subscribers. When market session is PREOPEN,
+ * it will update refdatas and broadcast out.
+ *
+ * @author elviswu
+ */
+
 public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 	private static final Logger log = LoggerFactory.getLogger(DealerRefDataHandler.class);
 

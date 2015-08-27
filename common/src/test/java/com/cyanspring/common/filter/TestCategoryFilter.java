@@ -1,6 +1,7 @@
 package com.cyanspring.common.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -16,41 +18,39 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataFilterTest.xml" })
-public class TestRefDataFilter {
-	
+@ContextConfiguration(locations = { "classpath:META-INFO/spring/CategoryFilterTest.xml" })
+public class TestCategoryFilter {
+
 	@Autowired
-	RefDataFilter refDataFilter;
+	@Qualifier("categoryFilter")
+	IRefDataFilter iDataFilter;
 	
 	RefData refData1;
 	RefData refData2;
 	RefData refData3;
-	RefData refData4;
 	List<RefData> lstRefData;
 	
 	@Before
 	public void before() {
 		lstRefData = new ArrayList<RefData>();
 	}
-
+	
 	@Test
-	public void test() throws Exception {
+	public void testRefDataFilter() throws Exception {
 		refData1 = new RefData();
 		refData1.setIType(IType.FUTURES_CX.getValue());
 		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
-		refData1.setSettlementDate("2017-08-21");
 
 		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
-		refData2.setIType(IType.FUTURES_CX.getValue());
+		refData2.setIType(IType.FUTURES.getValue());
 		refData2.setSymbol("ag1511.SHF");
-		refData2.setCategory("AG");
+		refData2.setCategory("BG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
-		refData2.setSettlementDate("2017-08-21");
 
 		// AG 活躍
 		refData3 = new RefData();
@@ -59,25 +59,34 @@ public class TestRefDataFilter {
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
-		refData3.setSettlementDate("2017-08-21");
-		
-		refData4 = new RefData();
-		refData4.setIType(IType.FUTURES_CX.getValue());
-		refData4.setSymbol("IF1502");
-		refData4.setCategory("BG");
-		refData4.setExchange("SHF");
-		refData4.setRefSymbol("AG.SHF");
-		refData4.setSettlementDate("2017-08-21");
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);
 		lstRefData.add(refData3);
 		assertEquals(3, lstRefData.size());
+
+		List<RefData> lstFilteredRefData = (List<RefData>) iDataFilter.filter(lstRefData);
+		assertEquals(2, lstFilteredRefData.size());
+	}
+	
+	@Test
+	public void testRefDataFilterErrorHandling() {
+		refData1 = new RefData();
+		lstRefData.add(refData1);
 		
-		lstRefData = refDataFilter.filter(lstRefData);
+		try {
+			iDataFilter.filter(lstRefData);
+			fail("DataObjectException was not thrown expectedly while Category is null");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
-		assertEquals(2, lstRefData.size());
-		assertEquals("AG.SHF", lstRefData.get(1).getRefSymbol());
+		refData1.setCategory("AG");
+		try {
+			iDataFilter.filter(lstRefData);
+		} catch (Exception e) {
+			fail("DataObjectException was thrown unexpectedly while Category is not null");
+		}
 	}
 	
 }

@@ -276,8 +276,20 @@
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>
 
-	<!-- For IDataObjectFilter settings, IType value in list will be kept after filtering -->
-	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
+		<property name="tplPath">
+			<value>refData/template/template_FC.xml</value>
+		</property>
+	</bean>
+	
+    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
+    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
+	</bean>
+	
+	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
+	</bean>
+	
+	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
 				<value>FUTURES_CX</value>
@@ -285,10 +297,21 @@
 		</property>
 	</bean>
 	
-	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
-		<property name="tplPath">
-			<value>refData/template/template_FC.xml</value>
+	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
+		<property name="checkValidContractDate">
+			<value>true</value>
 		</property>
+	</bean>
+	
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<constructor-arg>
+			<list>
+				<ref bean="categoryFilter"/>
+				<ref bean="refSymbolFilter"/>
+				<ref bean="itypeFilter"/>
+				<ref bean="contractDateFilter"/>
+			</list>
+		</constructor-arg>
 	</bean>
 
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">

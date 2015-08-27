@@ -9,10 +9,22 @@
 
 	<context:annotation-config />
 	
-    <bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
+	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
 		<property name="tplPath">
-			<value>src/test/resources/META-INFO/spring/FcRefDataTemplate.xml</value>
+			<value>src/test/resources/META-INFO/spring/template_FC.xml</value>
 		</property>
+	</bean>
+	
+    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
+    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
+	</bean>
+	
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<constructor-arg>
+			<list>
+				<ref bean="categoryFilter"/>
+			</list>
+		</constructor-arg>
 	</bean>
 	
 </beans>

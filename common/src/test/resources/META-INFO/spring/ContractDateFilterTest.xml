@@ -9,27 +9,6 @@
 
 	<context:annotation-config />
 	
-	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
-		<property name="tplPath">
-			<value>src/test/resources/META-INFO/spring/template_FC.xml</value>
-		</property>
-	</bean>
-	
-    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
-    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
-	</bean>
-	
-	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
-	</bean>
-	
-	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
-		<property name="types">
-			<list>
-				<value>FUTURES_CX</value>
-			</list>
-		</property>
-	</bean>
-	
 	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
 		<property name="checkValidContractDate">
 			<value>true</value>
@@ -39,10 +18,7 @@
 	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
 		<constructor-arg>
 			<list>
-				<ref bean="categoryFilter"/>
-				<ref bean="refSymbolFilter"/>
-				<ref bean="itypeFilter"/>
-				<!-- <ref bean="contractDateFilter"/> -->
+				<ref bean="contractDateFilter"/>
 			</list>
 		</constructor-arg>
 	</bean>
