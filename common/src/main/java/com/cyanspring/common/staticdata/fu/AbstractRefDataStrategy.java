@@ -244,20 +244,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	protected Calendar getCalendar() {
 		return (Calendar) this.cal.clone();
 	}
-
-	protected MarketSessionUtil getMarketSessionUtil(){
-		return marketSessionUtil;
-	}
 	
 	protected SimpleDateFormat getSettlementDateFormat(){
 		return new SimpleDateFormat("yyyy-MM-dd") ;
-	}
-	
-	protected ITradeDate getTradeDateManager(String category){
-		if( null == getMarketSessionUtil()){
-			return null;
-		}else{
-			return getMarketSessionUtil().getTradeDateManager(category);
-		}
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
+import com.cyanspring.common.staticdata.RefDataUtil;
 
 public class CZCStrategy extends AbstractRefDataStrategy {
 	
@@ -24,18 +25,13 @@ public class CZCStrategy extends AbstractRefDataStrategy {
 		
 		try {
 		
-			if( null == getTradeDateManager(refData.getCategory())){
-				log.info("refData:{} - tradeDateManager is null",refData.getCNDisplayName());
-				return;
-			}
-			
 			setTemplateData(refData);
 			String combineCnName = refData.getCNDisplayName();		
-			
+			Calendar cal = getContractDate(combineCnName);
 			if(refData.getCategory().equals("TC")){//動力煤
-				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),refData.getCategory(),getContractDate(combineCnName),5));
+				refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,5));
 			}else{
-				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),refData.getCategory(),getContractDate(combineCnName),10));
+				refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,10));
 			}
 			refData.setIndexSessionType(getIndexSessionType(refData));
 		} catch (RefDataException e){
@@ -45,22 +41,22 @@ public class CZCStrategy extends AbstractRefDataStrategy {
 		}
     }
 
-	private String calSettlementDate(String symbol,String category,Calendar cal,int dayInMonth){
-		
-		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
-		Date date = cal.getTime();
-		if( null == getTradeDateManager(category)){
-			log.warn("symbol:{} can't find tradeDateManager!",symbol);
-			return "";
-		}
-		
-		date = getTradeDateManager(category).preTradeDate(date);
-		for(int i=0 ; i < dayInMonth ; i++){
-			date = getTradeDateManager(category).nextTradeDate(date);
-		}
-		
-		return getSettlementDateFormat().format(date);
-	}
+//	private String calSettlementDate(String symbol,String category,Calendar cal,int dayInMonth){
+//		
+//		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
+//		Date date = cal.getTime();
+//		if( null == getTradeDateManager(category)){
+//			log.warn("symbol:{} can't find tradeDateManager!",symbol);
+//			return "";
+//		}
+//		
+//		date = getTradeDateManager(category).preTradeDate(date);
+//		for(int i=0 ; i < dayInMonth ; i++){
+//			date = getTradeDateManager(category).nextTradeDate(date);
+//		}
+//		
+//		return getSettlementDateFormat().format(date);
+//	}
     
     @Override
     public void setRequireData(Object... objects) {

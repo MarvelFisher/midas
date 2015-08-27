@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
+import com.cyanspring.common.staticdata.RefDataUtil;
 
 /**
  * This strategy is used for Futures Master to change refData settings
@@ -29,17 +30,14 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 	@Override
     public void updateRefData(RefData refData) {
 		try {
-			
-			if( null == getMarketSessionUtil() || null == getTradeDateManager(refData.getCategory())){
-				log.info("refData:{}- tradeDateManager or marketsessoinutil is null",refData.getCNDisplayName());
-				return;
-			}
+
 			setTemplateData(refData);
-			String combineCnName = refData.getCNDisplayName();			
+			String combineCnName = refData.getCNDisplayName();		
+			Calendar cal = getContractDate(combineCnName);
 			if(refData.getCategory().equals("FU")){
-				refData.setSettlementDate(calFUSettlementDate(refData.getSymbol(),refData.getCategory(),getContractDate(combineCnName)));
+				refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,-1));
 			}else{
-				refData.setSettlementDate(calSettlementDate(refData.getSymbol(),getContractDate(combineCnName),15));
+				refData.setSettlementDate(RefDataUtil.calSettlementDateByDay(refData, cal, 15));
 			}
 			refData.setIndexSessionType(getIndexSessionType(refData));
 		} catch (RefDataException e){
@@ -49,32 +47,32 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 		}
 	}
 
-	private String calFUSettlementDate(String symbol,String category, Calendar contractDate) {
-		
-		contractDate.set(Calendar.DATE, contractDate.getMinimum(Calendar.DATE));
-		Date date = contractDate.getTime();
-
-		if( null == getTradeDateManager(category)){
-			log.warn("symbol:{} can't find TradeDateManager!",symbol);
-			return "";
-		}
-		date = getTradeDateManager(category).preTradeDate(date);	
-		return getSettlementDateFormat().format(date);
-	}
-
-	private String calSettlementDate(String symbol,Calendar cal,int dayInMonth) throws Exception{
-		
-		if( null == getMarketSessionUtil()){
-			log.warn("symbol:{} can't find marketsessionutil!",symbol);
-			return "";
-		}
-		
-		cal.set(Calendar.DAY_OF_MONTH, dayInMonth);
-		while(getMarketSessionUtil().isHoliday(symbol, cal.getTime())){
-			cal.add(Calendar.DAY_OF_MONTH, 1);
-		}
-		return getSettlementDateFormat().format(cal.getTime());
-	}
+//	private String calFUSettlementDate(String symbol,String category, Calendar contractDate) {
+//		
+//		contractDate.set(Calendar.DATE, contractDate.getMinimum(Calendar.DATE));
+//		Date date = contractDate.getTime();
+//
+//		if( null == getTradeDateManager(category)){
+//			log.warn("symbol:{} can't find TradeDateManager!",symbol);
+//			return "";
+//		}
+//		date = getTradeDateManager(category).preTradeDate(date);	
+//		return getSettlementDateFormat().format(date);
+//	}
+//
+//	private String calSettlementDate(String symbol,Calendar cal,int dayInMonth) throws Exception{
+//		
+//		if( null == getMarketSessionUtil()){
+//			log.warn("symbol:{} can't find marketsessionutil!",symbol);
+//			return "";
+//		}
+//		
+//		cal.set(Calendar.DAY_OF_MONTH, dayInMonth);
+//		while(getMarketSessionUtil().isHoliday(symbol, cal.getTime())){
+//			cal.add(Calendar.DAY_OF_MONTH, 1);
+//		}
+//		return getSettlementDateFormat().format(cal.getTime());
+//	}
 	
 	@Override
 	public void setRequireData(Object... objects) {

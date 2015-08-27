@@ -25,7 +25,6 @@ public class RefDataFactory extends RefDataService {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();
-	private MarketSessionUtil marketSessionUtil;
 	private String strategyPack = "com.cyanspring.common.staticdata.fu";
 	private String refDataTemplatePath;
 	private List<RefData> refDataTemplateList;
@@ -115,7 +114,6 @@ public class RefDataFactory extends RefDataService {
 						.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
 				Constructor<AbstractRefDataStrategy> ctor = tempClz.getConstructor();
 				strategy = ctor.newInstance();
-				strategy.setRequireData(marketSessionUtil);
 			} catch (Exception e) {
 				log.info(e.getMessage(), e);
 				log.error("Can't find strategy: {}", refData.getStrategy());
@@ -189,10 +187,6 @@ public class RefDataFactory extends RefDataService {
 	@Override
 	public void clearRefData() {
 		refDataList.clear();
-	}
-
-	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
-		this.marketSessionUtil = marketSessionUtil;
 	}
 
 	public void setStrategyPack(String strategyPack) {

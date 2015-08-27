@@ -14,21 +14,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.marketsession.ITradeDate;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
+import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataUtil {
 	private static final Logger log = LoggerFactory.getLogger(RefDataUtil.class);
-
 	
 	enum Category{
 		STOCK,INDEX
@@ -46,6 +52,148 @@ public class RefDataUtil {
 		}
 	}
 	
+	
+	public static MarketSessionUtil marketSessionUtil;
+	
+	private static Calendar truncateDate(Calendar cal){
+		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
+		return cal;
+	}
+	
+	public static ITradeDate getTradeManager(String category){
+		if(!StringUtils.hasText(category))
+			return null;
+		
+		if(marketSessionUtil == null){
+			log.info("marketSessionUtil is null");
+		}
+		
+		return marketSessionUtil.getTradeDateManager(category);
+	}
+	
+	public static Date parseSettlementDate(String date) throws ParseException{
+		return TimeUtil.parseDate(date, "yyyy-MM-dd");
+	}
+	
+	public static String formatSettlementDate(Date date) throws ParseException{
+		return TimeUtil.formatDate(date, "yyyy-MM-dd");
+	}
+	
+	public static String calSettlementDateByDay(RefData refData,Calendar cal,int dayInMonth){
+		
+		String category = RefDataUtil.getCategory(refData);
+		log.info("calSettlementDateByDay :{} ,",category);
+		if(!StringUtils.hasText(category))
+			return null;
+		
+		Calendar calDate = Calendar.getInstance();
+		calDate.setTime(cal.getTime());
+		truncateDate(calDate);
+		
+        ITradeDate tradeDateManager = getTradeManager(category);
+        
+		if( null == tradeDateManager){
+			log.warn("category:{} can't find tradeDateManager!",category);
+			return null;
+		}
+		
+		calDate.set(Calendar.DAY_OF_MONTH, dayInMonth);
+		while(tradeDateManager.isHoliday(cal.getTime())){
+			calDate.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		
+		String settlementDate = null;
+		
+        try {
+			settlementDate = formatSettlementDate(calDate.getTime());
+		} catch (ParseException e) {
+			log.warn(e.getMessage(),e);
+		}
+        
+		return settlementDate;
+	}
+	
+	public static String calSettlementDateByTradeDate(RefData refData,Calendar cal,int tradeDateInMonth){
+		
+		String category = RefDataUtil.getCategory(refData);
+		
+		if(!StringUtils.hasText(category))
+			return null;
+		
+		Calendar calDate = Calendar.getInstance();
+		calDate.setTime(cal.getTime());
+		truncateDate(calDate);
+		
+        ITradeDate tradeDateManager = getTradeManager(category);
+		Date date = calDate.getTime();
+		if( null == tradeDateManager){
+			log.warn("category:{} can't find tradeDateManager!",category);
+			return null;
+		}
+		
+		if(tradeDateInMonth > 0 ){
+			date = tradeDateManager.preTradeDate(date);
+			for(int i=0 ; i < tradeDateInMonth ; i++){
+				date = tradeDateManager.nextTradeDate(date);
+			}
+		}else{
+			int count = Math.abs(tradeDateInMonth);
+			for(int i=0 ; i < count ; i++){
+				date = tradeDateManager.preTradeDate(date);
+			}
+		}
+		
+		String settlementDate = null;
+		
+        try {
+			settlementDate = formatSettlementDate(calDate.getTime());
+		} catch (ParseException e) {
+			log.warn(e.getMessage(),e);
+		}
+        
+		return settlementDate;
+	}
+	
+	public static String calSettlementDateByWeekDay(RefData refData,Calendar cal,int weeks,int daysInWeek){
+		
+		String category = RefDataUtil.getCategory(refData);
+		
+		if(!StringUtils.hasText(category))
+			return null;
+		
+		Calendar calDate = Calendar.getInstance();
+		calDate.setTime(cal.getTime());
+		truncateDate(calDate);
+		
+        int dayCount = 0;      
+        while (dayCount != weeks) {
+        	calDate.add(Calendar.DAY_OF_MONTH, 1);
+            if (calDate.get(Calendar.DAY_OF_WEEK) == daysInWeek)
+                dayCount++;
+        }
+        
+        ITradeDate tradeDateManager = getTradeManager(category);
+        
+		if( null == tradeDateManager){
+			log.warn("category:{} can't find tradeDateManager!",category);
+			return null;
+		}
+        
+        while (tradeDateManager.isHoliday(calDate.getTime())){      	
+        	calDate.add(Calendar.DAY_OF_YEAR, 1);
+        }
+		
+        String settlementDate = null;
+        
+        try {
+			settlementDate = formatSettlementDate(calDate.getTime());
+		} catch (ParseException e) {
+			log.warn(e.getMessage(),e);
+		}
+        
+		return settlementDate;
+	}
+	
 	public static String getOnlyChars(String symbol) {
 		Pattern pattern = Pattern.compile("[a-zA-Z]*");
 		Matcher matcher = pattern.matcher(symbol);
@@ -55,6 +203,9 @@ public class RefDataUtil {
 	}
 	
     public static String getCategory(RefData refData){
+    	
+    	if(null == refData)
+    		return null;
     	
     	String refSymbol = refData.getRefSymbol();
     	if(!StringUtils.hasText(refSymbol))
@@ -88,6 +239,8 @@ public class RefDataUtil {
 			return category.toUpperCase();
 		}
 	}
+	
+	
 //	private static ArrayList<Double> getVolProfile() {
 //		ArrayList<Double> volProfile;
 //		volProfile = new ArrayList<Double>();
@@ -116,6 +269,15 @@ public class RefDataUtil {
 //		return volProfile;
 //	}
 	
+	public MarketSessionUtil getMarketSessionUtil() {
+		return marketSessionUtil;
+	}
+
+	@Autowired(required = true)
+	public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
+		RefDataUtil.marketSessionUtil = marketSessionUtil;
+	}
+
 	public static void main(String args[]) {
 		XStream xstream = new XStream(new DomDriver());
 		ArrayList<RefData> list;

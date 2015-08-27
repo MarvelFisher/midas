@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
+import com.cyanspring.common.staticdata.RefDataUtil;
 
 public class CFStrategy extends AbstractRefDataStrategy  {
 	
@@ -21,14 +22,13 @@ public class CFStrategy extends AbstractRefDataStrategy  {
     @Override
     public void updateRefData(RefData refData) {
 		try {
-			if( null == getMarketSessionUtil()){
-				log.info("refData:{}- marketsessoinutil is null",refData.getCNDisplayName());
-				return;
-			}
+			
 			setTemplateData(refData);
-			String combineCnName = refData.getCNDisplayName();		
-			refData.setSettlementDate(calSettlementDay(refData,getContractDate(combineCnName)));
+			String combineCnName = refData.getCNDisplayName();	
+			Calendar cal = getContractDate(combineCnName);
+			refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(refData, cal, 3, Calendar.FRIDAY));
 			refData.setIndexSessionType(getIndexSessionType(refData));
+			
 		} catch (RefDataException e){
 			log.warn(e.getMessage());
 		} catch (Exception e) {
@@ -41,25 +41,25 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 		super.setRequireData(objects);
     }
       
-    private String calSettlementDay(RefData refData,Calendar cal) throws Exception {
-    	if(!StringUtils.hasText(refData.getSymbol())){
-    		log.warn("missing symbol:{}",refData.getRefSymbol());
-    		return "";
-    	}
-    	
-        int dayCount = 0;
-        while (dayCount != 3) {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
-                dayCount++;
-        }
-
-        while (getMarketSessionUtil().isHoliday(refData.getSymbol(), cal.getTime())) {
-        	
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        
-        return getSettlementDateFormat().format(cal.getTime());
-    }
+//    private String calSettlementDay(RefData refData,Calendar cal) throws Exception {
+//    	if(!StringUtils.hasText(refData.getSymbol())){
+//    		log.warn("missing symbol:{}",refData.getRefSymbol());
+//    		return "";
+//    	}
+//    	
+//        int dayCount = 0;
+//        while (dayCount != 3) {
+//            cal.add(Calendar.DAY_OF_MONTH, 1);
+//            if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
+//                dayCount++;
+//        }
+//
+//        while (getMarketSessionUtil().isHoliday(refData.getSymbol(), cal.getTime())) {
+//        	
+//            cal.add(Calendar.DAY_OF_YEAR, 1);
+//        }
+//        
+//        return getSettlementDateFormat().format(cal.getTime());
+//    }
     
 }
