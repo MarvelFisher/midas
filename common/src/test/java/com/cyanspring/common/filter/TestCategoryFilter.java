@@ -30,16 +30,6 @@ public class TestCategoryFilter {
 	RefData refData3;
 	List<RefData> lstRefData;
 	
-//	@BeforeClass
-//	public static void beforeClass() {
-//		new MockUp<FuturesRefDataFilter>() {
-//			@Mock
-//			private boolean isValidContractDate(RefData refData) {
-//				return true;
-//			}
-//		};
-//	}
-	
 	@Before
 	public void before() {
 		lstRefData = new ArrayList<RefData>();

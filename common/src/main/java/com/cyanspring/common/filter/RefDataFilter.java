@@ -1,6 +1,5 @@
 package com.cyanspring.common.filter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,18 +11,14 @@ public class RefDataFilter {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(RefDataFilter.class);
 	
-	private List<IRefDataFilter> lstRefDataFilter;
+	private IRefDataFilter[] refDataFilters;
 	
 	public RefDataFilter(IRefDataFilter... refDataFilters) {
-		lstRefDataFilter = new ArrayList<IRefDataFilter>();
-		
-		for (IRefDataFilter filter : refDataFilters) {
-			lstRefDataFilter.add(filter);
-		}
+		this.refDataFilters = refDataFilters;
 	}
 
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
-		for (IRefDataFilter filter : lstRefDataFilter) {
+		for (IRefDataFilter filter : refDataFilters) {
 			lstRefData = filter.filter(lstRefData);
 		}
 		
