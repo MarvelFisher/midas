@@ -31,7 +31,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -171,7 +171,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -311,7 +311,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -451,7 +451,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -591,7 +591,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -731,7 +731,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -871,7 +871,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -1011,7 +1011,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -1151,7 +1151,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -1291,7 +1291,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -1431,7 +1431,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -1571,7 +1571,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.0E-5</double>
+        <double>0.00008</double>
       </entry>
       <entry>
         <string>Lot size</string>

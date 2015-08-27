@@ -161,7 +161,7 @@
                 <value>1000000.0</value>        <!-- accountCash -->
                 <value>10</value>         <!-- marginTimes -->
                 <value>1.0</value>              <!-- marginCut -->
-                <value>0.00004</value>          <!-- commission -->
+                <value>0.00008</value>          <!-- commission -->
                 <value>2</value>                <!-- commissionMin -->
                 <null/>                         <!-- timeZone -->
                 <value>1.0</value>              <!-- orderQuantity -->
