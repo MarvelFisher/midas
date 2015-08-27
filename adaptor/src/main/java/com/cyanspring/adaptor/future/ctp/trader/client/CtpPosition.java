@@ -13,12 +13,14 @@ public class CtpPosition implements Serializable{
 	private double tdQty;
 	private double ydQty;
 	private boolean isBuy;
+	private double totalOpenPosition;
 	
-	public CtpPosition(String symbol, boolean isBuy, double tdQty, double ydQty) {
+	public CtpPosition(String symbol, boolean isBuy, double tdQty, double ydQty, double totalOpenPosition) {
 		this.symbol = symbol;
 		this.tdQty = tdQty;
 		this.ydQty = ydQty;
 		this.isBuy = isBuy;
+		this.totalOpenPosition = totalOpenPosition;
 	}
 	
 	public void add(CtpPosition position) {
@@ -29,10 +31,6 @@ public class CtpPosition implements Serializable{
 	////getters and setters ////
 	public String getSymbol() {
 		return symbol;
-	}
-
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
 	}
 
 	public double getTdQty() {
@@ -55,10 +53,10 @@ public class CtpPosition implements Serializable{
 		return isBuy;
 	}
 
-	public void setBuy(boolean isBuy) {
-		this.isBuy = isBuy;
+	public double getTotalOpenPosition() {
+		return totalOpenPosition;
 	}
-	
+
 	@Override
 	public String toString() {
 		return symbol + "," + isBuy + "," + ydQty + "," + tdQty;
