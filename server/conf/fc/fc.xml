@@ -327,7 +327,7 @@
 		</property>
 	</bean>
 	
-	<bean id="contractDataFilter" class="com.cyanspring.common.filter.ContractDataFilter">
+	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
 		<property name="checkValidContractDate">
 			<value>true</value>
 		</property>
@@ -339,7 +339,7 @@
 				<ref bean="categoryFilter"/>
 				<ref bean="refSymbolFilter"/>
 				<ref bean="itypeFilter"/>
-				<ref bean="contractDataFilter"/>
+				<ref bean="contractDateFilter"/>
 			</list>
 		</constructor-arg>
 	</bean>
