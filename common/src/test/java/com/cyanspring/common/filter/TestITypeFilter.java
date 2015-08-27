@@ -44,7 +44,7 @@ public class TestITypeFilter {
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
 
-		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
+		// This record doesn't have configured IType, will be filtered out.
 		refData2 = new RefData();
 		refData2.setIType(IType.FUTURES.getValue());
 		refData2.setSymbol("ag1511.SHF");

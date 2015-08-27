@@ -52,7 +52,6 @@ public class TestCategoryFilter {
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
 
-		// AG 活躍
 		refData3 = new RefData();
 		refData3.setIType(IType.FUTURES_CX.getValue());
 		refData3.setSymbol("IF1502");

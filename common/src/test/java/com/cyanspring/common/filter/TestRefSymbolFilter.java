@@ -40,6 +40,7 @@ public class TestRefSymbolFilter {
 	
 	@Test
 	public void testRefDataFilter() throws Exception {
+		// Will be replaced by 活躍 one later
 		refData1 = new RefData();
 		refData1.setIType(IType.FUTURES_CX.getValue());
 		refData1.setSymbol("IF1502");

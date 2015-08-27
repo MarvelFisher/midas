@@ -35,6 +35,7 @@ public class TestRefDataFilter {
 
 	@Test
 	public void test() throws Exception {
+		// Will be replaced by 活躍 one later
 		refData1 = new RefData();
 		refData1.setIType(IType.FUTURES_CX.getValue());
 		refData1.setSymbol("IF1502");
@@ -43,7 +44,6 @@ public class TestRefDataFilter {
 		refData1.setRefSymbol("AG12.SHF");
 		refData1.setSettlementDate("2017-08-21");
 
-		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
 		refData2.setIType(IType.FUTURES_CX.getValue());
 		refData2.setSymbol("ag1511.SHF");
@@ -61,6 +61,7 @@ public class TestRefDataFilter {
 		refData3.setRefSymbol("AG.SHF");
 		refData3.setSettlementDate("2017-08-21");
 		
+		// Non-existing Category
 		refData4 = new RefData();
 		refData4.setIType(IType.FUTURES_CX.getValue());
 		refData4.setSymbol("IF1502");
@@ -72,7 +73,8 @@ public class TestRefDataFilter {
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);
 		lstRefData.add(refData3);
-		assertEquals(3, lstRefData.size());
+		lstRefData.add(refData4);
+		assertEquals(4, lstRefData.size());
 		
 		lstRefData = refDataFilter.filter(lstRefData);
 		
