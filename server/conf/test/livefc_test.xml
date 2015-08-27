@@ -72,7 +72,7 @@
     <bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
     
-    <bean id="validationDataProvider" class="com.cyanspring.server.validation.data.ValidationDataProvider">
+    <bean id="validationDataProvider" class="com.cyanspring.server.validation.data.MarketValidationDataProvider">
 	</bean>
     
     <bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">

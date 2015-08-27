@@ -32,11 +32,11 @@ import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 
-public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
+public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	
-	private static final Logger log = LoggerFactory.getLogger(ValidationDataProvider.class);
+	private static final Logger log = LoggerFactory.getLogger(IndexValidationDataProvider.class);
 	private static final String ID = "VDP-"+ IdGenerator.getInstance().getNextID();
-	private static final String SENDER = ValidationDataProvider.class.getSimpleName();
+	private static final String SENDER = IndexValidationDataProvider.class.getSimpleName();
 	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 	private ConcurrentHashMap<String, MarketSessionData> symbolSessionMap = new ConcurrentHashMap<String, MarketSessionData>();
 	
@@ -106,7 +106,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		if( null == quoteExtendsMap || quoteExtendsMap.size()<=0){			
 			sendQuoteExtSubEvent();
 		}else if(!symbolList.isEmpty()){		
-			QuoteExtSubEvent requestQuoteExtEvent = new QuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, symbolList);
+			QuoteExtSubEvent requestQuoteExtEvent = new QuoteExtSubEvent(IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER, symbolList);
 			eventManager.sendEvent(requestQuoteExtEvent);
 		}
 		
@@ -173,7 +173,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	private void requestIndexSession() {
 		log.info("send requestIndexSession ");
 		IndexSessionRequestEvent event = new IndexSessionRequestEvent(
-				ValidationDataProvider.ID, ValidationDataProvider.SENDER, null);
+				IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER, null);
 		eventManager.sendEvent(event);
 	}
 
@@ -275,7 +275,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	public void sendQuoteExtSubEvent() {
 		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		AllQuoteExtSubEvent event = new AllQuoteExtSubEvent(
-				ValidationDataProvider.ID, ValidationDataProvider.SENDER);
+				IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER);
 		log.info("send QuoteExtSub event");
 		eventManager.sendEvent(event);
 	}
