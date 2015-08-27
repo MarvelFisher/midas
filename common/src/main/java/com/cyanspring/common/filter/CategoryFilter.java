@@ -46,6 +46,15 @@ public class CategoryFilter implements IRefDataFilter {
 				}
 				
 				for (RefData refData : lstRefData) {
+					// Only filter RefData whose commodity is "F", or add directly without filtering
+					String commodity = refData.getCommodity();
+					if (commodity == null 
+							|| commodity.isEmpty()
+							|| !commodity.equalsIgnoreCase(RefDataFilter.FUTURES_COMMODITY)) {
+						fLstRefData.add(refData);
+						continue;
+					}
+					
 					String category = refData.getCategory();
 					if (category == null || category.isEmpty()) {
 						continue;
