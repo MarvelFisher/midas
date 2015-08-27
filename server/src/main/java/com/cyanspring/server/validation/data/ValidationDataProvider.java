@@ -1,6 +1,5 @@
 package com.cyanspring.server.validation.data;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -9,8 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.cyanspring.common.event.marketdata.AllQuoteExtSubEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +19,12 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.marketdata.AllQuoteExtSubEvent;
 import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateEvent;
-import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -37,17 +33,13 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 
 public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
-	private static final Logger log = LoggerFactory
-			.getLogger(ValidationDataProvider.class);
-	private static final String ID = "VDP-"
-			+ IdGenerator.getInstance().getNextID();
-	private static final String SENDER = ValidationDataProvider.class
-			.getSimpleName();
+	
+	private static final Logger log = LoggerFactory.getLogger(ValidationDataProvider.class);
+	private static final String ID = "VDP-"+ IdGenerator.getInstance().getNextID();
+	private static final String SENDER = ValidationDataProvider.class.getSimpleName();
 	private ConcurrentHashMap<String, DataObject> quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 	private ConcurrentHashMap<String, MarketSessionData> symbolSessionMap = new ConcurrentHashMap<String, MarketSessionData>();
-	private Date tradeDate = null;
-	private String tradeDateFormat = "yyyy-MM-dd";
-
+	
 	@Autowired
 	protected IRemoteEventManager eventManager;
 
@@ -59,7 +51,6 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(QuoteExtEvent.class, null);
-			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(MultiQuoteExtendEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 		}
@@ -71,27 +62,59 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	};
 
 	public void processIndexSessionEvent(IndexSessionEvent event){
-
+		log.info("get processIndexSessionEvent");
+		log.info("event.getDataMap():{}",event.getDataMap().size());
+		if(!event.isOk()){
+			log.warn("index session event request fail");
+			return;
+		}
+		
 		ConcurrentHashMap<String, MarketSessionData> updateMap = getSymbolMapFromIndexSessionMap(event.getDataMap(),null);
+		
 		if( null == updateMap)
 			return;
+		
+		if( null == quoteExtendsMap)
+			quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
+		
+		log.info("updateMap:{}",updateMap.size());
 		Set <Entry<String,MarketSessionData>>entrys = updateMap.entrySet();
 		List<String>symbolList = new ArrayList<String>();
 		for(Entry<String,MarketSessionData> entry : entrys){
 			String symbol = entry.getKey();
+			
 			MarketSessionData session = entry.getValue();
 			symbolSessionMap.put(symbol, session);
 			if(MarketSessionType.PREOPEN.equals(session.getSessionType())){
+				log.info("get PREOPEN type:{}",symbol);
 				symbolList.add(symbol);
 				if(quoteExtendsMap.containsKey(symbol)){
 					quoteExtendsMap.remove(symbol);
+				}else{
+					log.info("doesn't exist quoteExtendMap:{}",symbol);
 				}
+				continue;
+			}
+			
+			if(!quoteExtendsMap.containsKey(symbol)){
+				symbolList.add(symbol);
+				continue;
 			}
 		}
-		if(!symbolList.isEmpty()){
+		
+		log.info("symbol list:{}",symbolList.size());
+		if( null == quoteExtendsMap || quoteExtendsMap.size()<=0){			
+			sendQuoteExtSubEvent();
+		}else if(!symbolList.isEmpty()){		
 			QuoteExtSubEvent requestQuoteExtEvent = new QuoteExtSubEvent(ValidationDataProvider.ID, ValidationDataProvider.SENDER, symbolList);
 			eventManager.sendEvent(requestQuoteExtEvent);
 		}
+		
+//		Set<Entry<String, MarketSessionData>> entrySet =  symbolSessionMap.entrySet();
+//		for(Entry <String,MarketSessionData> data : entrySet){
+//			log.info("print key:{} value:{} trade date:{}",new Object[]{data.getKey(),data.getValue().getSessionType(),data.getValue().getTradeDateByString()});
+//		}
+		
 	}
 
 	private List<String> getSymbolList(String key) {
@@ -109,7 +132,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			MarketSessionData session = entry.getValue();
 			MarketSessionType sessionType = session.getSessionType();
 			List<String> symbols = getSymbolList(key);
-			if (null != symbols && !symbols.isEmpty())
+			if (null == symbols || symbols.isEmpty())
 				continue;
 
 			if (null == type || type.equals(sessionType)) {
@@ -130,7 +153,10 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("ValidationDataProvider");
 		}
-		requestTradeDate();
+		log.info("request requestIndexSession");
+		requestIndexSession();
+		log.info("request sendQuoteExtSubEvent");
+		sendQuoteExtSubEvent();
 	}
 
 	@Override
@@ -145,20 +171,16 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	}
 
 	private void requestIndexSession() {
+		log.info("send requestIndexSession ");
 		IndexSessionRequestEvent event = new IndexSessionRequestEvent(
 				ValidationDataProvider.ID, ValidationDataProvider.SENDER, null);
 		eventManager.sendEvent(event);
 	}
 
-	private void requestTradeDate() {
-		TradeDateRequestEvent request = new TradeDateRequestEvent(
-				ValidationDataProvider.ID, ValidationDataProvider.SENDER);
-		eventManager.sendEvent(request);
-	}
-
 	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event) {
+		
 		Map<String, DataObject> receiveDataMap = event.getMutilQuoteExtend();
-
+		log.info("get processMultiQuoteExtendEvent:{}",receiveDataMap.size());
 		if (null == receiveDataMap || 0 == receiveDataMap.size()) {
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
 			return;
@@ -171,6 +193,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		}
 
 		Set<Entry<String, DataObject>> entrys = receiveDataMap.entrySet();
+		boolean missingIndexSession = false;
 		for (Entry<String, DataObject> entry : entrys) {
 			String key = entry.getKey();
 			DataObject data = entry.getValue();
@@ -178,6 +201,7 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 					QuoteExtDataField.SYMBOL.value());
 			Date lastTradeDate = data.get(Date.class,
 					QuoteExtDataField.TIMESTAMP.value());
+			log.info("MuliteQuote:{},{}",symbol,lastTradeDate);
 			if (!StringUtils.hasText(symbol))
 				continue;
 
@@ -185,30 +209,28 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 				log.info("this symbol doesn't have trade date:{}", symbol);
 				continue;
 			}
-
+			
 			String symbolTradeDate = TimeUtil.formatDate(lastTradeDate,"yyyy-MM-dd");
 			try {
-				if (symbolSessionMap.contains(symbol)) {
+				
+				if (symbolSessionMap.containsKey(symbol)) {
 					MarketSessionData session = symbolSessionMap.get(symbol);
 					if (!session.getTradeDateByString().equals(symbolTradeDate)) {
+						log.info("not same trade date compare session:{}",symbol);
 						continue;
 					}
 					quoteExtendsMap.put(key, data);
-				} else {
-					log.info("symbolsessionMap doesn't have:{}", symbol);
-
-					if (null != tradeDate && !isSameTradeDate(symbolTradeDate)) {
-						log.info(
-								"quote trade date:{} not match validation trade date:{}",
-								symbolTradeDate, tradeDate);
-						continue;
-					}
-					quoteExtendsMap.put(key, data);
+				}else{
+					log.info("missing index session :{}",symbol);
+					missingIndexSession = true;
 				}
 			} catch (Exception e) {
 				log.warn(e.getMessage(), e);
 			}
 		}
+		
+		if(missingIndexSession)		
+			requestIndexSession();	
 	}
 
 	public void processQuoteExtEvent(QuoteExtEvent event) {
@@ -258,29 +280,4 @@ public class ValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		eventManager.sendEvent(event);
 	}
 
-	public void processTradeDateEvent(TradeDateEvent event) {
-		try {
-			String eventTradeDate = event.getTradeDate();
-			if (null == eventTradeDate)
-				return;
-
-			if (null == tradeDate || !isSameTradeDate(eventTradeDate)) {
-				setTradeDate(eventTradeDate);
-				requestIndexSession();
-			}
-		} catch (Exception e) {
-			log.warn(e.getMessage(), e);
-		}
-	}
-
-	private boolean isSameTradeDate(String date) throws ParseException {
-		Date dateC = TimeUtil.parseDate(date, tradeDateFormat);
-		return TimeUtil.sameDate(tradeDate, dateC);
-	}
-
-	private void setTradeDate(String td) throws ParseException {
-		if (null != td && !"".equals(td)) {
-			tradeDate = TimeUtil.parseDate(td, tradeDateFormat);
-		}
-	}
 }

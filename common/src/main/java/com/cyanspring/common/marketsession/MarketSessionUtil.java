@@ -49,15 +49,21 @@ public class MarketSessionUtil implements IPlugin{
     
     public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
     	
+    	
+    	
     	RefData refData = refDataManager.getRefData(symbol);
+    	
     	if(null == refData)
     		return null;
     	
+    	log.info("get regfdata:{}",refData.getSymbol());
     	String category = RefDataUtil.getCategory(refData);
+    	log.info("get category:{}",category);
     	if(!StringUtils.hasText(category))
     		return null;
     	
     	MarketSessionData data = this.getMarketSession().get(category);
+    	log.info("get data:{}",data);
     	return data;
     }
     
@@ -69,6 +75,7 @@ public class MarketSessionUtil implements IPlugin{
     		return symbolList;
     	
     	List<RefData> refs = refDataManager.getRefDataList();
+    	
     	if(null == refs || refs.isEmpty())
     		return symbolList;
     	
@@ -89,7 +96,7 @@ public class MarketSessionUtil implements IPlugin{
     		if(symbol.equals(key)){
     			symbolList.add(symbol);
     			break;
-    		}else if( category.equals(key)){
+    		}else if(category.equals(key)){
     			isCategory = true;
     			break;
     		}else if( exchange.equals(key)){
@@ -97,10 +104,12 @@ public class MarketSessionUtil implements IPlugin{
     			break;
     		}
     	}
-    	
+    	    	
     	if(isCategory){
     		for(RefData ref : refs){
-    			if(ref.getCategory().equals(key) && !ref.getIndexSessionType().equals(IndexSessionType.SETTLEMENT)){
+    			if(ref.getCategory().equals(key)
+    					&& StringUtils.hasText(ref.getIndexSessionType())
+    					&& !ref.getIndexSessionType().equals(IndexSessionType.SETTLEMENT)){
     				symbolList.add(ref.getSymbol());
     			}
     		}
@@ -108,7 +117,9 @@ public class MarketSessionUtil implements IPlugin{
     	
     	if(isExchange){
     		for(RefData ref : refs){
-    			if(ref.getExchange().equals(key) && !ref.getIndexSessionType().equals(IndexSessionType.SETTLEMENT)){
+    			if(ref.getExchange().equals(key)
+    					&& StringUtils.hasText(ref.getIndexSessionType())
+    					&& !ref.getIndexSessionType().equals(IndexSessionType.SETTLEMENT)){
     				symbolList.add(ref.getSymbol());
     			}
     		}
