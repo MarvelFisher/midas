@@ -45,6 +45,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private String id;
 	private String broker;
 	private int maxOrderCount;
+	private int maxOpenPosition;
 	private boolean state; 
 	private IDownStreamListener listener;
 	private DownStreamSender downStreamSender = new DownStreamSender();
@@ -66,14 +67,15 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 	private CtpTraderProxy proxy;
 	
 	public CtpTradeConnection(String id, String url, String broker, String conLog, 
-			String user, String password, ISymbolConverter symbolConverter, int maxOrderCount) {
+			String user, String password, ISymbolConverter symbolConverter, int maxOrderCount, int maxOpenPosition) {
 		this.id = id;
 		this.url = url;
 		this.broker = broker;
 		this.conLog = conLog;
 		this.symbolConverter = symbolConverter;
 		this.maxOrderCount = maxOrderCount;
-		this.positionRecord = new CtpPositionRecord(0);
+		this.maxOpenPosition = maxOpenPosition;
+		this.positionRecord = new CtpPositionRecord(0, maxOpenPosition);
 		proxy = new CtpTraderProxy(id, url, broker, conLog, user, password, symbolConverter);
 	}
 	
@@ -125,7 +127,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			if(!dailyKeyCounter.check(order.getSymbol())) {
 				order = order.clone();
 				order.setOrdStatus(OrdStatus.REJECTED);
-				String msg = "Max order count reach: " + CtpTradeConnection.this.maxOrderCount;
+				String msg = "Max order count reached: " + CtpTradeConnection.this.maxOrderCount;
 				log.error(msg);
 				CtpTradeConnection.this.listener.onOrder(ExecType.REJECTED, order, null, msg);
 				return;
@@ -136,6 +138,16 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			order.setClOrderId(ordRef);
 			String symbol = convertDownSymbol(order.getSymbol());
 			byte flag = positionRecord.holdQuantity(symbol, order.getSide().isBuy(), order.getQuantity());
+			if(TraderLibrary.THOST_FTDC_OF_Open == flag &&
+					!positionRecord.checkMaxOpenPosition(symbol)) {
+				order = order.clone();
+				order.setOrdStatus(OrdStatus.REJECTED);
+				String msg = "Max open position reach: " + CtpTradeConnection.this.maxOpenPosition;
+				log.error(msg);
+				CtpTradeConnection.this.listener.onOrder(ExecType.REJECTED, order, null, msg);
+				return;
+			}
+			
 			order.put(OrderField.FLAG.value(), flag);
 			proxy.newOrder(ordRef, order);
 			log.info("Send Order: " + order.getId() + ", " + ordRef + ", " + TraderHelper.readCombOffsetFlag(flag));
@@ -400,7 +412,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			return;
 		}
 		
-		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday);
+		CtpPosition pos = new CtpPosition(symbol, isBuy, today, yesterday, field.OpenVolume());
 		positionRecord.inject(pos, isLast);
 	}
 
