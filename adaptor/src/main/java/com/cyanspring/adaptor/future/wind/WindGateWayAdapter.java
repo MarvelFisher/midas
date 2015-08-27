@@ -618,7 +618,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                             "-", ""));
                     LogUtil.logInfo(
                             log,
-                            "ProcessIndexMarketSession:" + marketSessionData.getTradeDateByString() + ","
+                            "ProcessIndexMarketSession:" + index + "," + marketSessionData.getTradeDateByString() + ","
                                     + marketSessionData.getSessionType()+ ",Windformat="
                                     + tradeDateForWindFormat + "," + marketSessionData.getStart() + ","
                                     + marketSessionData.getEnd());

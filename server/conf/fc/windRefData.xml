@@ -69,10 +69,10 @@
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="FCI"/>
         <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="10.0.0.32"/>
-        <property name="gatewayPort" value="10048"/>
-        <property name="marketDataLog" value="false"/>
-        <property name="msgPack" value="true"></property>
+        <property name="gatewayIp" value="#{windAdaptorFCI.gatewayIp}"/>
+        <property name="gatewayPort" value="#{windAdaptorFCI.gatewayPort}"/>
+        <property name="marketDataLog" value="#{windAdaptorFCI.marketDataLog}"/>
+        <property name="msgPack" value="#{windAdaptorFCI.msgPack}"></property>
         <property name="refDataFile" value="refdata/refData_fci.xml"/>
         <property name="windFilter" ref="fciFilter"/>
         <property name="marketsList">
@@ -85,7 +85,7 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refFilterList" ref="refFilterList"/>
+        <property name="refFilterList" ref="refFilterListFCI"/>
     </bean>
 
     <bean id="refDataAdapterFCC"
@@ -93,10 +93,10 @@
         <property name="refDataAdapterName" value="FCC"/>
         <!--<property name="gatewayIp" value="101.231.55.6"/>-->
         <!--<property name="gatewayIp" value="202.55.14.140"/>-->
-        <property name="gatewayIp" value="10.0.0.20"/>
-        <property name="gatewayPort" value="10046"/>
-        <property name="marketDataLog" value="true"/>
-        <property name="msgPack" value="true"></property>
+        <property name="gatewayIp" value="#{windAdaptorFCC.gatewayIp}"/>
+        <property name="gatewayPort" value="#{windAdaptorFCC.gatewayPort}"/>
+        <property name="marketDataLog" value="#{windAdaptorFCC.marketDataLog}"/>
+        <property name="msgPack" value="#{windAdaptorFCC.msgPack}"></property>
         <property name="refDataFile" value="refdata/refData_fcc.xml"/>
         <property name="windFilter" ref="fccFilter"/>
         <property name="marketsList">
@@ -109,13 +109,12 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refFilterList" ref="refFilterList"/>
     </bean>
 
     <bean id="fciFilter" class="com.cyanspring.adaptor.future.wind.filter.FCIFilter"/>
     <bean id="fccFilter" class="com.cyanspring.adaptor.future.wind.filter.FCCFilter"/>
 
-    <util:list id="refFilterList" value-type="java.lang.String">
+    <util:list id="refFilterListFCI" value-type="java.lang.String">
     </util:list>
 
 </beans>

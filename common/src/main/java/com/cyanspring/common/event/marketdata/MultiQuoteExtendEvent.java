@@ -8,18 +8,12 @@ import java.util.HashMap;
 public class MultiQuoteExtendEvent extends RemoteAsyncEvent {
 
 	private HashMap<String,DataObject> data;
-	private Date tradeDate;
 	private int offSet = -1;
 	private int totalDataCount = -1;
 
-	public MultiQuoteExtendEvent(String key, String receiver, HashMap data, Date tradeDate) {
+	public MultiQuoteExtendEvent(String key, String receiver, HashMap data) {
 		super(key, receiver);
 		this.data = data;
-		this.tradeDate = tradeDate;
-	}
-
-	public Date getTradeDate() {
-		return tradeDate;
 	}
 
 	public HashMap<String,DataObject> getMutilQuoteExtend(){
