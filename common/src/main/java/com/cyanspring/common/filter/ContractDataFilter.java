@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -27,16 +28,19 @@ public class ContractDataFilter implements IRefDataFilter {
 
 	@Override
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
-		List<RefData> newList = new ArrayList<RefData>();
-		if(null == lstRefData || lstRefData.isEmpty())
-			return newList;
-		
-		for(RefData data : lstRefData){
-			if(isValidContractDate(data)){
-				newList.add(data);
+		if (lstRefData != null && lstRefData.size() > 0) {
+			Iterator<RefData> itRefData = lstRefData.iterator();
+			while (itRefData.hasNext()) {
+				RefData data = itRefData.next();
+				if (!isValidContractDate(data))
+					itRefData.remove();
 			}
+		} else {
+			LOGGER.error("The given RefData list cannot be null or empty");
+			throw new Exception("The given RefData list cannot be null or empty");
 		}
-		return newList;
+		
+		return lstRefData;
 	}
 	
 	private boolean isValidContractDate(RefData refData){		
