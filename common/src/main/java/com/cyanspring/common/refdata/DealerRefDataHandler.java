@@ -131,7 +131,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 					String tradeDate = sessionDataMap.get(index).getTradeDateByString();
 
 					if (action == Action.ADD || action == Action.MOD) {
-						refDataManager.update(refData, tradeDate);
+						refDataManager.add(refData, tradeDate);
 						send.add(refData);
 					} else if (action == Action.DEL) {
 						refDataManager.remove(refData);
@@ -173,21 +173,19 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			}
 		}
 
-		refDataManager.injectRefDataList(refDataList);
 		try {
 			refDataManager.init();
 			for (RefData refData : refDataList) {
-				String index = refData.getCategory();
+				String index = RefDataUtil.getCategory(refData);
 				if (index == null)
 					throw new Exception("RefData index not find");
 				MarketSessionData session = sessionDataMap.get(index);
 				if (session == null) {
 					log.warn("Can't find market session data for [" + index + "], remove it from list");
-					refDataManager.remove(refData);
 					continue;
 				}
 				String tradeDate = session.getTradeDateByString();
-				refDataManager.update(refData, tradeDate);
+				refDataManager.add(refData, tradeDate);
 			}
 			eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 		} catch (Exception e) {

@@ -166,7 +166,7 @@ public class StockRefDataManager extends RefDataService {
     }
 
 	@Override
-	public RefData update(RefData refData, String tradeDate) throws Exception {
+	public RefData add(RefData refData, String tradeDate) throws Exception {
 		Calendar cal = Calendar.getInstance();
         cal.setTime(sdf.parse(tradeDate));
         updateRefData(cal, refData);
@@ -238,7 +238,7 @@ public class StockRefDataManager extends RefDataService {
 		List<RefData> ret = new ArrayList<>();
 		for (RefData refData : refDataList) {
 			if (index.equals(refData.getCategory())) {
-				refData = update(refData, tradeDate);
+				refData = add(refData, tradeDate);
 				ret.add(refData);
 			}
 		}

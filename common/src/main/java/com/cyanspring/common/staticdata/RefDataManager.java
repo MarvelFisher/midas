@@ -82,7 +82,7 @@ public class RefDataManager extends RefDataService {
     }
 
 	@Override
-	public RefData update(RefData refData, String tradeDate) throws Exception {
+	public RefData add(RefData refData, String tradeDate) throws Exception {
 		return new RefData();
 	}
 
