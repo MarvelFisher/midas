@@ -6,16 +6,15 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<context:annotation-config />
-
-	<import resource="livefc/refDataStrategy.xml" />
+	
+	<import resource="test/fc_test.xml" />
 	<import resource="test/fc_MarketSession.xml" />
-	<import resource="fc/IFSessionState.xml" />
+	<import resource="fc/marketSession/CFSessionState.xml" />
 	<import resource="fc/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
 	<import resource="common/persistence.xml" />
 	<import resource="classpath*:conf/common.xml" />
-	<import resource="test/livefc_test.xml" />
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
 		<property name="env">
