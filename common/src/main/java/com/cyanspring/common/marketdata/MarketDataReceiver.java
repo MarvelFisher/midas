@@ -217,10 +217,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     private void clearAndSendQuoteEvent(QuoteSource quoteSource, String contributor, QuoteEvent event) {
 
+        event.getQuote().setTimeSent(Clock.getInstance().now());
         if (quoteLogIsOpen)
             printQuoteLog(quoteSource, contributor, event.getQuote(), QuoteLogLevel.GENERAL);
 
-        event.getQuote().setTimeSent(Clock.getInstance().now());
         quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
 
         if (null != aggregator) {
@@ -314,6 +314,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                         + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
                         + ",ts=" + sdf.format(quote.getTimeStamp())
+                        + ",tt=" + sdf.format(quote.getTimeSent())
                         + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
                         + (quoteSource == QuoteSource.ID ? ",Cb=" + contributor : "")
         );
@@ -357,6 +358,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     @Override
     public void init() throws Exception {
         log.info("initialising");
+        log.info("quoteThrottle=" + quoteThrottle);
         isUninit = false;
         isInitReqDataEnd = false;
         isInitMarketSessionReceived = false;
