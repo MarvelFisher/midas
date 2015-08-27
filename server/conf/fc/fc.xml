@@ -320,9 +320,7 @@
 	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
-				<value>FUTURES_IDX</value>
 				<value>FUTURES_CX</value>
-				<value>EXCHANGE_INDEX</value>
 			</list>
 		</property>
 	</bean>

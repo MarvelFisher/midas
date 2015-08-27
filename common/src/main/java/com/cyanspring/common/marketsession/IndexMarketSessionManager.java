@@ -7,7 +7,7 @@ import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
-import com.cyanspring.common.filter.IDataObjectFilter;
+import com.cyanspring.common.filter.RefDataFilter;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -46,7 +46,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	private MarketSessionUtil marketSessionUtil;
 	
 	@Autowired
-	private IDataObjectFilter refDataFilter;
+	private RefDataFilter refDataFilter;
 
 	private boolean noCheckSettlement = false;
 	private ScheduleManager scheduleManager = new ScheduleManager();
