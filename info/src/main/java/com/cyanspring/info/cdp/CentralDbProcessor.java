@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -87,8 +88,8 @@ public class CentralDbProcessor implements IPlugin
 	private final String procSession = "Session";
 	//Session
 	private MarketSessionType sessionType = null ;
-	private Date sessionEnd;
-	private String tradedate ;
+	private Date sessionEnd = null;
+	private String tradedate = null;
 	private Map<String, MarketSessionData> sessionMap = new HashMap<String, MarketSessionData>();
 	//Flags
 	public static boolean isStartup = true;
@@ -243,13 +244,21 @@ public class CentralDbProcessor implements IPlugin
 	public void processQuote(Quote quote)
 	{
 		if (SymbolChefList.size() != nChefCount)
-		{
 			return;
-		}
 		if (isProcessQuote == false)
-		{
 			return;
+		SymbolData data = null;
+		for (SymbolChef chef : SymbolChefList)
+		{
+			data = chef.getSymbolData(quote.getSymbol());
+			if (data != null)
+				break;
 		}
+		if (data == null)
+			return;
+		
+		MarketSessionType sessionType = data.getSessionType();
+		Date sessionEnd = data.getSessionEnd();
 		if (sessionType == MarketSessionType.OPEN 
 				&& quote.getTimeStamp().getTime() >= sessionEnd.getTime())
 		{
@@ -262,6 +271,8 @@ public class CentralDbProcessor implements IPlugin
 		{
 			quote.setTimeStamp(sessionEnd);
 		}
+		else 
+			return;
 		getChefBySymbol(quote.getSymbol()).onQuote(quote);
 	}
 	
@@ -572,6 +583,11 @@ public class CentralDbProcessor implements IPlugin
 				int chefNum = getChefNumber(refdata.getSymbol());
 				SymbolChef chef = SymbolChefList.get(chefNum);
 				isAdded |= chef.createSymbol(refdata, this);
+				SymbolData data = chef.getSymbolData(refdata.getSymbol());
+				data.setSessionIndex(refdata.getIndexSessionType());
+				data.setSessionType(this.sessionType);
+				data.setSessionEnd(this.sessionEnd);
+				data.setTradedate(this.tradedate);
 
 				outSymbol.println(refdata.getSymbol());
 			}
@@ -598,9 +614,9 @@ public class CentralDbProcessor implements IPlugin
 	public void onUpdateRefData(RefDataUpdateEvent event)
 	{
 		log.info("Update refData start");
-		if (event.getAction() == Action.ADD)
+		List<RefData> refList = event.getRefDataList();
+		if (event.getAction() == Action.ADD || event.getAction() == Action.MOD)
 		{
-			List<RefData> refList = event.getRefDataList();
 			int nCount = getRefSymbolInfo().setByRefData(refList);
 			if (nCount == 0)
 			{
@@ -608,15 +624,26 @@ public class CentralDbProcessor implements IPlugin
 			}
 			for(RefData refdata : refList)
 			{
-				if (refdata.getExchange() == null) continue;
+				if (refdata.getExchange() == null) 
+					continue;
+				SymbolInfo info = getRefSymbolInfo().getbySymbol(refdata.getSymbol());
+				if (info != null)
+					info.updateByRefData(refdata);
 				int chefNum = getChefNumber(refdata.getSymbol());
 				SymbolChef chef = SymbolChefList.get(chefNum);
 				chef.createSymbol(refdata, this);
+				SymbolData data = chef.getSymbolData(refdata.getSymbol());
+				data.setSessionIndex(refdata.getIndexSessionType());
 			}
 		}
 		else if (event.getAction() == Action.DEL)
 		{
-			getRefSymbolInfo().delByRefData(event.getRefDataList());
+			getRefSymbolInfo().delByRefData(refList);
+			for(RefData refdata : refList)
+			{
+				int chefNum = getChefNumber(refdata.getSymbol());
+				SymbolChefList.get(chefNum).removeSymbol(refdata.getSymbol());
+			}
 		}
 		log.info("Update refData finish");
 	}
@@ -873,6 +900,13 @@ public class CentralDbProcessor implements IPlugin
 			}
 		}
 		this.sessionType = sessionType;
+		for (SymbolChef chef : SymbolChefList)
+		{
+			for (Entry<String, SymbolData> entry : chef.getMapSymboldata().entrySet())
+			{
+				entry.getValue().setSessionType(sessionType);
+			}
+		}
 		if (insert)
 		{
 //			scheduleManager.scheduleTimerEvent(getSQLDelayInterval(), eventProcessor, insertEvent);
@@ -891,61 +925,37 @@ public class CentralDbProcessor implements IPlugin
 	{
 		MarketSessionType sessionType, newSessionType;
 		List<String> indexList = new ArrayList<String>();
-		ArrayList<String> marketList = new ArrayList<String>();
-		int index;
 		for (Entry<String, MarketSessionData> entry : sessions.entrySet())
 		{
-			if (getSessionMap().get(entry.getKey()) != null)
+			ArrayList<SymbolData> symboldatas = new ArrayList<SymbolData>();
+			sessionType = getSessionMap().get(entry.getKey()).getSessionType();
+			newSessionType = entry.getValue().getSessionType();
+			for (SymbolChef chef : SymbolChefList)
 			{
-				ArrayList<SymbolData> symboldatas = new ArrayList<SymbolData>();
-				sessionType = getSessionMap().get(entry.getKey())
-						.getSessionType();
-				newSessionType = entry.getValue().getSessionType();
-				for (SymbolChef chef : SymbolChefList)
+				for (Entry<String, SymbolData> symentry : chef.getMapSymboldata().entrySet())
 				{
-					for (Entry<String, SymbolData> symentry : chef.getMapSymboldata().entrySet())
+					if (symentry.getValue().getSessionIndex().equals(entry.getKey()))
 					{
-						if (symentry.getValue().getSessionIndex().equals(entry.getKey()))
-						{
-							symboldatas.add(symentry.getValue());
-						}
-					}
-				}
-				if (sessionType == null)
-				{
-					indexList.add(entry.getKey());
-					for (SymbolData data : symboldatas)
-					{
-						index = Collections.binarySearch(marketList, data.getMarket());
-						if (index < 0)
-						{
-							marketList.add(~index, data.getMarket());
-						}
-					}
-				}
-				else if (sessionType != newSessionType)
-				{
-					if (newSessionType == MarketSessionType.CLOSE)
-					{
-						for (SymbolData data : symboldatas)
-						{
-							data.putInsert();
-						}
-					}
-					if (sessionType == MarketSessionType.CLOSE)
-					{
-						indexList.add(entry.getKey());
-						for (SymbolData data : symboldatas)
-						{
-							index = Collections.binarySearch(marketList, data.getMarket());
-							if (index < 0)
-							{
-								marketList.add(~index, data.getMarket());
-							}
-						}
+						symentry.getValue().setSessionType(entry.getValue().getSessionType());
+						symboldatas.add(symentry.getValue());
 					}
 				}
 			}
+			try
+			{
+				for (SymbolData data : symboldatas)
+				{
+					data.setSessionType(newSessionType);
+					data.setSessionEnd(entry.getValue().getEndDate());
+					data.setTradedate(entry.getValue().getTradeDateByString());
+				}
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+			if (sessionType != newSessionType && sessionType == MarketSessionType.CLOSE)
+				indexList.add(entry.getKey());
 			getSessionMap().put(entry.getKey(), entry.getValue());
 		}
 		if (indexList.isEmpty() == false)
@@ -1059,19 +1069,6 @@ public class CentralDbProcessor implements IPlugin
 		eventProcessorMD.init();
 		if(eventProcessorMD.getThread() != null)
 			eventProcessorMD.getThread().setName("CentralDBProcessor-MD");
-		switch (serverMarket)
-		{
-		case "FX":
-			this.refSymbolInfo = new FXRefSymbolInfo(serverMarket);
-			SymbolData.setSetter(new FXPriceSetter());
-			break;
-		case "FC":
-		case "SC":
-		default:
-			this.refSymbolInfo = new FCRefSymbolInfo(serverMarket);
-			SymbolData.setSetter(new DefPriceSetter());
-			break;
-		}
 		if (getnChefCount() <= 1)
 		{
 			numOfHisThreads = 1;
@@ -1095,7 +1092,21 @@ public class CentralDbProcessor implements IPlugin
 		mapCentralDbEventProc.put(procRequest, new CentralDbEventProc(this, "CDP-Event-Req"));
 		mapCentralDbEventProc.put(procSession, new CentralDbEventProc(this, "CDP-Event-Ses"));
 		resetStatement() ;
-		requestMarketSession() ;
+		switch (serverMarket)
+		{
+		case "FX":
+			this.refSymbolInfo = new FXRefSymbolInfo(serverMarket);
+			SymbolData.setSetter(new FXPriceSetter());
+			requestMarketSession() ;
+			break;
+		case "FC":
+		case "SC":
+		default:
+			this.refSymbolInfo = new FCRefSymbolInfo(serverMarket);
+			SymbolData.setSetter(new DefPriceSetter());
+			requestIndexMarketSession();
+			break;
+		}
 
 		scheduleManager.scheduleRepeatTimerEvent(getTimeInterval(), eventProcessor, timerEvent);
 		scheduleManager.scheduleRepeatTimerEvent(getCheckSQLInterval(), eventProcessor, checkEvent);
@@ -1250,6 +1261,14 @@ public class CentralDbProcessor implements IPlugin
 	}
 
 	public void setSessionEnd(Date sessionEnd) {
+
+		for (SymbolChef chef : SymbolChefList)
+		{
+			for (Entry<String, SymbolData> entry : chef.getMapSymboldata().entrySet())
+			{
+				entry.getValue().setSessionEnd(sessionEnd);
+			}
+		}
 		this.sessionEnd = sessionEnd;
 	}
 

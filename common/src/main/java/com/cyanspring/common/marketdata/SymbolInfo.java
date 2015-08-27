@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.cyanspring.common.info.RefSubName;
+import com.cyanspring.common.staticdata.RefData;
 
 public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
 //	private static Map<String, RefSubName> subNameMap = null;
@@ -75,6 +76,47 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		this.krSubName = symbolinfo.getKrSubName();
 		this.esName = symbolinfo.getEsName();
 		this.esSubName = symbolinfo.getEsSubName();
+	}
+	
+	public void updateByRefData(RefData refdata)
+	{
+		setExchange(refdata.getExchange());
+		setWindCode(null);
+		setHint(refdata.getRefSymbol());
+		setCategory(refdata.getCategory());
+		String strTmp = (refdata.getENDisplayName() == null) ? refdata.getSymbol() : refdata.getENDisplayName();
+		setEnName(strTmp);
+		setCnName((refdata.getCNDisplayName() == null) ? strTmp : refdata.getCNDisplayName());
+		setTwName((refdata.getTWDisplayName() == null) ? strTmp : refdata.getTWDisplayName());
+		setJpName(strTmp);
+		setKrName(strTmp);
+		setEsName(strTmp);
+		setupSubNames();
+		setLotSize(refdata.getLotSize());
+		setTickTable(refdata.getTickTable());
+		setCNTradingUnit(refdata.getCNTradingUnit());
+		setENTradingUnit(refdata.getENTradingUnit());
+		setTWTradingUnit(refdata.getTWTradingUnit());
+		setSettlementDate(refdata.getSettlementDate());
+		setCommissionFee(refdata.getCommissionFee());
+		setNumeratorDP(refdata.getNumberatorDp());
+		setDecimalPoint(refdata.getDeciamlPoint());
+		setMinimalCF(refdata.getMinimalCommissionFee());
+		setPricePerUnit(refdata.getPricePerUnit());
+		setLimitMaximumLot(refdata.getLimitMaximumLot());
+		setMarketMaximumLot(refdata.getMarketMaximumLot());
+//		symbolinfo.setMaximumLot(refdata.getMaximumLot());
+		setMaximumHold(refdata.getMaximumHold());
+		setStrategy(refdata.getStrategy());
+		setMarginRate(refdata.getMarginRate());
+		setDenominator(refdata.getDenominator());
+		setTradable(refdata.getTradable());
+		setSpellName(refdata.getSpellName());
+		setCommodity(refdata.getCommodity());
+		setDetailCN(refdata.getDetailCN());
+		setDetailEN(refdata.getDetailEN());
+		setDetailTW(refdata.getDetailTW());
+		setIndexSessionType(refdata.getIndexSessionType());
 	}
 
 	public String getMarket() {
