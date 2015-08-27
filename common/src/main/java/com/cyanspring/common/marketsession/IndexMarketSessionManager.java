@@ -26,17 +26,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * This Manager is used to send detail marketsession to the subscriber and this
+ * This Manager is used to send detail market session to the subscriber and this
  * manager will check settlement day to monitor every refdatas.
  *
- * BoardCastEvent: 1) IndexSessionEvent Event can be request: 1)
- * IndexSessionRequestEvent Subscribed Event: 1) MarketSessionEvent, 2)
- * RefDataEvent
- *
  * @author elviswu
- * @version 1.0, modify by elviswu
- * @since 1.0
  */
+
 public class IndexMarketSessionManager implements IPlugin {
 	private static final Logger log = LoggerFactory.getLogger(IndexMarketSessionManager.class);
 
@@ -137,13 +132,12 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 	}
 
-	@SuppressWarnings(value="unchecked")
 	public void processRefDataEvent(RefDataEvent event) {
 		if (!event.isOk())
 			return;
 		List<RefData> list = event.getRefDataList();
 		try {
-			list = (List<RefData>) refDataFilter.filter(list);
+			list = refDataFilter.filter(list);
 			for (RefData refData : list) 
 				addQueue.offer(refData);
 		} catch (Exception e) {
@@ -151,11 +145,10 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 	}
 
-	@SuppressWarnings(value="unchecked")
 	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
 		List<RefData> list = event.getRefDataList();
 		try {
-			list = (List<RefData>) refDataFilter.filter(list);
+			list = refDataFilter.filter(list);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
