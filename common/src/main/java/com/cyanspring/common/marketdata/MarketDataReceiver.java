@@ -134,6 +134,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 preSubscriptionList.add(refData.getSymbol());
                 marketTypes.put(refData.getSymbol(), refData.getCommodity());
             }
+//            Collections.sort(preSubscriptionList);
+//            log.debug("RefData PreSubScribe=" + preSubscriptionList);
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) {
                     adaptor.processEvent(event);
@@ -520,7 +522,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     protected void requestRequireData() throws Exception {
         MarketSessionRequestEvent msEvent = new MarketSessionRequestEvent(null, null);
-        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now());
+        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null);
         RefDataRequestEvent rdrEvent = new RefDataRequestEvent(null, null);
         msEvent.setReceiver(serverInfo);
         isrEvent.setReceiver(serverInfo);

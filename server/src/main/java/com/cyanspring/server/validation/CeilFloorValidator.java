@@ -1,36 +1,20 @@
 package com.cyanspring.server.validation;
 
-import java.text.ParseException;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import webcurve.util.PriceUtils;
 
-import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEventProcessor;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.IRemoteEventManager;
-import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
-import com.cyanspring.common.event.marketdata.QuoteExtEvent;
-import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
-import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrderType;
-import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.validation.data.IQuoteExtProvider;
@@ -52,7 +36,6 @@ public class CeilFloorValidator implements IOrderValidator{
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
-				
 		if( null == validationDataProvider ){
 			return;
 		}
@@ -80,7 +63,7 @@ public class CeilFloorValidator implements IOrderValidator{
 			}
 			
 			if(OrderType.Market == type){			
-				log.warn("this is market order");
+				log.info("this is market order");
 				return;			
 			}
 				

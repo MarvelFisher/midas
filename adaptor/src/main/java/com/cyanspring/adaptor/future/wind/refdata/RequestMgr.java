@@ -1,8 +1,9 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
 import com.cyanspring.adaptor.future.wind.WindDef;
-import com.cyanspring.adaptor.future.wind.data.CodeTableData;
+import com.cyanspring.adaptor.future.wind.WindType;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
@@ -48,14 +49,27 @@ public class RequestMgr implements IReqThreadCallback {
 
     void process(int type, Object objMsg) {
         switch (type) {
-            case WindDef.MSG_SYS_CODETABLE_RESULT: {
+            case WindDef.MSG_SYS_CODETABLE: {
                 CodeTableData codeTableData = (CodeTableData) objMsg;
 //                log.debug("Get Request-" + codeTableData.getWindCode() + "," + codeTableData.getCnName());
                 RefData refData = null;
-                if (codeTableData.getSecurityType() < 10) {
-                    refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataICHashMap());
-                } else {
-                    refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataSCHashMap());
+                switch (codeTableData.getSecurityType()) {
+                    case WindType.IC_INDEX:
+                        refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataICHashMap());
+                        break;
+                    case WindType.SC_SHARES_A:
+                    case WindType.SC_SHARES_G:
+                    case WindType.SC_SHARES_S:
+                        refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataSCHashMap());
+                        break;
+                    case WindType.FC_INDEX:
+                    case WindType.FC_COMMODITY:
+                    case WindType.FC_INDEX_CX:
+                    case WindType.FC_COMMODITY_CX:
+                        refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataFCHashMap());
+                        break;
+                    default:
+                        break;
                 }
                 if (refData != null) {
                     if(!windRefDataAdapter.isSubscribed()) {
@@ -63,6 +77,8 @@ public class RequestMgr implements IReqThreadCallback {
                     }else{
                         windRefDataAdapter.getRefDataUpdateHashMap().put(codeTableData.getWindCode(), refData);
                     }
+                }else{
+                    return;
                 }
             }
             break;

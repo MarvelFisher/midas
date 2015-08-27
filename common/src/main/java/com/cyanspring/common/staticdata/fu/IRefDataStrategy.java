@@ -7,7 +7,7 @@ import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 
 public interface IRefDataStrategy {
-	public void init(Calendar cal);
+	public void init(Calendar cal,RefData template);
     public void updateRefData(RefData refData);
     public void setRequireData(Object... objects);
 }

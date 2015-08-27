@@ -68,6 +68,7 @@ public class SymbolData implements Comparable<SymbolData>
 //	private HashMap<String, List<HistoricalPrice>> mapHistorical = new HashMap<String, List<HistoricalPrice>>();
 	private LinkedBlockingQueue<Quote> quoteTmp = new LinkedBlockingQueue<Quote>() ;
 
+	private String sessionIndex;
 	private MarketSessionType sessionType = null ;
 	private Date sessionEnd;
 	private String tradedate ;
@@ -1148,6 +1149,14 @@ public class SymbolData implements Comparable<SymbolData>
 	public void setTradedate(String tradedate)
 	{
 		this.tradedate = tradedate;
+	}
+	public String getSessionIndex()
+	{
+		return sessionIndex;
+	}
+	public void setSessionIndex(String sessionIndex)
+	{
+		this.sessionIndex = sessionIndex;
 	}
 	
 }

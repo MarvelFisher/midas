@@ -82,7 +82,21 @@ public class RefDataManager extends RefDataService {
     }
 
 	@Override
-	public RefData update(RefData refData, String tradeDate) throws Exception {
+	public RefData add(RefData refData, String tradeDate) throws Exception {
 		return new RefData();
+	}
+
+	@Override
+	public List<RefData> update(String index, String tradeDate) throws Exception {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public boolean remove(RefData refData) {
+		if (map.get(refData.getSymbol()) != null) {
+			map.remove(refData);
+			return true;
+		}
+		return false;
 	}
 }

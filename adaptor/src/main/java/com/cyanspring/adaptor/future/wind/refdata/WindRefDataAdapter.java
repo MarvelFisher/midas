@@ -3,12 +3,12 @@ package com.cyanspring.adaptor.future.wind.refdata;
 import com.cyanspring.Network.Transport.FDTFields;
 import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
-import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
@@ -77,16 +77,17 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private ConcurrentHashMap<String, RefData> refDataUpdateHashMap = new ConcurrentHashMap<>();
     protected WindDataParser windDataParser = new WindDataParser();
     EventLoopGroup eventLoopGroup = null;
-    RequestThread thread = null;
+    private RequestThread thread = null;
     private ChannelHandlerContext channelHandlerContext;
     private RequestMgr requestMgr = new RequestMgr(this);
     private WindDBHandler windDBHandler;
     private IWindFilter windFilter;
     private IRefDataListener refDataListener;
+    private String refDataAdapterName = "NoName";
 //    private int testCount = 0;
 
     private void connect() {
-        log.debug("Run Netty RefData Adapter");
+        log.debug("Run Netty RefData Adapter-" + Thread.currentThread().getName());
         eventLoopGroup = new NioEventLoopGroup(2);
         ChannelFuture f;
         Bootstrap bootstrap = new Bootstrap()
@@ -136,6 +137,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 requestMgr.addReqData(new Object[]{datatype, marketsList});
                 break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
+                log.debug("receive WindGW codetable result");
+                break;
+            case WindDef.MSG_SYS_CODETABLE:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
                 CodeTableData codeTableData = null;
                 WindBaseDBData windBaseDBData = null;
@@ -146,6 +150,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     LogUtil.logException(log, e);
                     return;
                 }
+
+                if(codeTableData == null) return;
 
                 if(windFilter != null) {
                     if(!windFilter.codeTableFilter(codeTableData)) return;
@@ -211,9 +217,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         }
     }
 
-    void initReqThread() {
+    void initReqThread(String refDataAdapterName) {
         if (thread == null) {
-            thread = new RequestThread(this, "Wind RefData Adapter");
+            thread = new RequestThread(this, "WindRefDataAdapter-" + refDataAdapterName);
         }
         thread.start();
     }
@@ -258,6 +264,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     @Override
     public void init() throws Exception {
         isAlive = true;
+        subscribed = false;
         codeTableIsProcessEnd = false;
         serverRetryCount = 0;
         dbRetryCount = 0;
@@ -281,7 +288,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
             }
         }
         //connect WindGW
-        initReqThread();
+        initReqThread(refDataAdapterName);
         requestMgr.init();
         addReqData(new Integer(0));
     }
@@ -317,10 +324,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public int parsePackTypeToDataType(int packType, HashMap hashMap) {
         int dataType = -1;
-        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
+        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
         if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
+        if (packType == FDTFields.WindCodeTableResult) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
 //        if (packType == FDTFields.WindHeartBeat){
 //            testCount++;
 //            if(testCount >= 5) {
@@ -370,6 +378,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     @Override
     public void uninit() {
+        status = false;
         isAlive = false;
         closeNetty();
         requestMgr.uninit();
@@ -384,8 +393,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     @Override
     public void subscribeRefData(IRefDataListener listener) throws Exception {
-        subscribed = false;
-        init();
         //record refDataListener
         this.refDataListener = listener;
         //Wait CodeTable Process
@@ -398,6 +405,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         }
         log.debug("wait codetable end");
         //send RefData Listener
+        status = true;
         if (serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
             log.debug("get RefData from WindGW");
             List<RefData> refDataList = new ArrayList<RefData>(refDataHashMap.values());
@@ -589,5 +597,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public boolean isSubscribed() {
         return subscribed;
+    }
+
+    public void setRefDataAdapterName(String refDataAdapterName) {
+        this.refDataAdapterName = refDataAdapterName;
     }
 }

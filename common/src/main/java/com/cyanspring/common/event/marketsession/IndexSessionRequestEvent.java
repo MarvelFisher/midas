@@ -15,18 +15,13 @@ import java.util.List;
  */
 public class IndexSessionRequestEvent extends RemoteAsyncEvent {
     private List<String> indexList;
-    private Date date;
-    public IndexSessionRequestEvent(String key, String receiver, List<String> indexList, Date date) {
+    public IndexSessionRequestEvent(String key, String receiver, List<String> indexList) {
         super(key, receiver);
         this.indexList = indexList;
-        this.date = date;
     }
 
     public List<String> getIndexList() {
         return indexList;
     }
 
-    public Date getDate() {
-        return date;
-    }
 }

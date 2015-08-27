@@ -44,8 +44,9 @@ public class MarketDataManager extends MarketDataReceiver {
     private List<Class<? extends AsyncEvent>> subscribeEvent() {
         ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
         clzList.add(TradeSubEvent.class);
-        clzList.add(QuoteExtSubEvent.class);
         clzList.add(QuoteSubEvent.class);
+        clzList.add(QuoteExtSubEvent.class);
+        clzList.add(AllQuoteExtSubEvent.class);
         clzList.add(LastTradeDateQuotesRequestEvent.class);
         return clzList;
     }
@@ -261,8 +262,12 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
-    public void processQuoteExtSubEvent(QuoteExtSubEvent event) throws Exception {
-        log.debug("QuoteExtSubEvent:" + event.getKey() + ", "
+    public void processQuoteExtSubEvent(QuoteExtSubEvent event){
+        log.debug("QuoteExtSubEvent:" + event.getKey() + "," + event.getReceiver());
+    }
+
+    public void processAllQuoteExtSubEvent(AllQuoteExtSubEvent event) throws Exception {
+        log.debug("AllQuoteExtSubEvent:" + event.getKey() + ", "
                 + event.getReceiver() + ",tradeDate=" + tradeDate);
 
         int dataSegmentSize = getQuoteExtendSegmentSize();
@@ -328,7 +333,7 @@ public class MarketDataManager extends MarketDataReceiver {
     @Override
     protected void requestRequireData() {
         eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
-        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now()));
+        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null));
         eventManager.sendEvent(new RefDataRequestEvent(null, null));
     }
 

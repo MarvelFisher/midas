@@ -46,8 +46,7 @@ public class MarketSessionChecker implements IMarketSession {
         for (MarketSessionData data : session.getSessionDatas()) {
             if (!compare(data, date))
                 continue;
-            sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
-            sessionData.setDate(date);
+            
             if (data.getSessionType().equals(MarketSessionType.PREOPEN) && tradeDateManager != null) {
                 if (currentType != null && !currentType.equals(data.getSessionType())){
                 	if( tradeDate == null)
@@ -55,6 +54,8 @@ public class MarketSessionChecker implements IMarketSession {
                 	tradeDate = tradeDateManager.nextTradeDate(tradeDate);                	
                 }
             }
+            sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
+            sessionData.setDate(tradeDate);
             currentType = data.getSessionType();
         }
         return sessionData;
@@ -76,6 +77,15 @@ public class MarketSessionChecker implements IMarketSession {
         return sessionData;
     }
 
+    @Override
+	public MarketSession getMarketSession(Date date, RefData refData) throws Exception {
+		String currentIndex = getCurrentIndex(date, refData);
+		MarketSession session = stateMap.get(currentIndex);
+        if (session == null)
+            session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+        return session;
+	}
+    
     @Override
     public String getTradeDate() {
         return sdf.format(this.tradeDate);
@@ -114,6 +124,11 @@ public class MarketSessionChecker implements IMarketSession {
         return index;
     }
 
+    @Override
+    public ITradeDate getTradeDateManager() {
+        return tradeDateManager;
+    }
+    
     private boolean compare(MarketSessionData data, Date compare) throws ParseException {
     	
     	data.setDate(compare);   	
@@ -126,10 +141,6 @@ public class MarketSessionChecker implements IMarketSession {
 
     public void setTradeDate(Date tradeDate) {
         this.tradeDate = tradeDate;
-    }
-
-    public ITradeDate getTradeDateManager() {
-        return tradeDateManager;
     }
 
     public void setTradeDateManager(ITradeDate tradeDateManager) {

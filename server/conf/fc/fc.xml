@@ -27,8 +27,8 @@
 		</property>
 		<property name="plugins">
 			<list>
+				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
-                <ref bean="marketSessionManager" />
                 <ref bean="indexMarketSessionManager"/>
                 <ref bean="refDataHandler" />
 				<ref bean="mdManager" />
@@ -243,15 +243,21 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
+		<constructor-arg>
+			<list>
+				<ref bean="refDataAdapterFCI"/>
+				<ref bean="refDataAdapterFCC"/>
+			</list>
+		</constructor-arg>    
+    </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
-		<property name="refDataFile">
-			<value>refdata/refData_fc.xml</value>
+		<property name="refDataTemplatePath">
+			<value>refData/template/template_FC.xml</value>
 		</property>
-        <property name="strategyMapping"><ref bean="strategyMapping"/></property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
-	</bean>
+    </bean>
 
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
 	</bean>
@@ -295,27 +301,103 @@
         <property name="checkSingleSide" value="true"/>
     </bean>
 
-    <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
-        <property name="settlementDelay"><value>45</value></property>
-        <property name="eventManager" ref="eventManager"></property>
-    </bean>
-
-	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-		<constructor-arg>
-			<map>
-				<entry key="IF"><ref bean="IFsessionChecker"/></entry>
-				<entry key="INDEX"><ref bean="shSessionChecker"/></entry>
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
-				<entry key="INDEX"><ref bean="shTradeDateManager"/></entry>
-			</map>
-		</constructor-arg>
-	</bean>
-
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
-
+	
+	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
+		<property name="tplPath">
+			<value>refData/template/template_FC.xml</value>
+		</property>
+	</bean>
+	
+    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
+    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
+	</bean>
+	
+	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
+	</bean>
+	
+	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
+		<property name="types">
+			<list>
+				<value>FUTURES_CX</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
+		<property name="checkValidContractDate">
+			<value>true</value>
+		</property>
+	</bean>
+	
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<constructor-arg>
+			<list>
+				<ref bean="categoryFilter"/>
+				<ref bean="refSymbolFilter"/>
+				<ref bean="itypeFilter"/>
+				<ref bean="contractDateFilter"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
+        <property name="settlementDelay"><value>45</value></property>
+        <property name="eventManager" ref="eventManager"></property>        
+    </bean>
+	
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<list>
+				<ref bean="ifSessionChecker"/>
+				<ref bean="ihSessionChecker"/>
+				<ref bean="icSessionChecker"/>
+				<ref bean="agSessionChecker"/>
+				<ref bean="cuSessionChecker"/>
+				<ref bean="auSessionChecker"/>
+				<ref bean="rbSessionChecker"/>
+				<ref bean="ruSessionChecker"/>
+				<ref bean="znSessionChecker"/>
+				<ref bean="mSessionChecker"/>
+				<ref bean="iSessionChecker"/>
+				<ref bean="lSessionChecker"/>
+				<ref bean="ySessionChecker"/>
+				<ref bean="ppSessionChecker"/>
+				<ref bean="pSessionChecker"/>
+				<ref bean="jSessionChecker"/>
+				<ref bean="jdSessionChecker"/>
+				<ref bean="fgSessionChecker"/>
+				<ref bean="rmSessionChecker"/>
+				<ref bean="taSessionChecker"/>
+				<ref bean="srSessionChecker"/>
+				<ref bean="maSessionChecker"/>
+				<ref bean="cfSessionChecker"/>
+				<ref bean="niSessionChecker"/>
+				<ref bean="alSessionChecker"/>
+				<ref bean="buSessionChecker"/>
+				<ref bean="pbSessionChecker"/>
+				<ref bean="hcSessionChecker"/>
+				<ref bean="snSessionChecker"/>
+				<ref bean="fuSessionChecker"/>
+				<ref bean="wrSessionChecker"/>
+				<ref bean="jmSessionChecker"/>
+				<ref bean="cSessionChecker"/>
+				<ref bean="csSessionChecker"/>
+				<ref bean="vSessionChecker"/>
+				<ref bean="bbSessionChecker"/>
+				<ref bean="bSessionChecker"/>
+				<ref bean="fbSessionChecker"/>
+				<ref bean="tcSessionChecker"/>
+				<ref bean="rsSessionChecker"/>
+				<ref bean="riSessionChecker"/>
+				<ref bean="sfSessionChecker"/>
+				<ref bean="lrSessionChecker"/>
+				<ref bean="smSessionChecker"/>
+				<ref bean="jrSessionChecker"/>
+				<ref bean="indexSessionChecker"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
 </beans>

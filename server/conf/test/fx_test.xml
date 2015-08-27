@@ -328,7 +328,7 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">

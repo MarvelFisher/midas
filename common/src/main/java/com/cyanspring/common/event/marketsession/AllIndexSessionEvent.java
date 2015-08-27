@@ -14,13 +14,13 @@ import java.util.Map;
  */
 public class AllIndexSessionEvent extends RemoteAsyncEvent {
 
-    private Map<String, Map<String, MarketSession>> map;
-    public AllIndexSessionEvent(String key, String receiver, Map<String, Map<String, MarketSession>> map) {
+    private Map<String, MarketSession> map; // index/MarketSessionDatas
+    public AllIndexSessionEvent(String key, String receiver, Map<String, MarketSession> map) {
         super(key, receiver);
         this.map = map;
     }
 
-    public Map<String, Map<String, MarketSession>> getMap() {
+    public Map<String, MarketSession> getMap() {
         return map;
     }
 }

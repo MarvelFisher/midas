@@ -24,6 +24,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.ui.context.Theme;
 
 import webcurve.util.PriceUtils;
 
@@ -53,6 +54,7 @@ import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
@@ -74,6 +76,7 @@ import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.WeekDay;
 import com.cyanspring.common.message.ErrorMessage;
@@ -81,6 +84,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.TickTableManager;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.strategy.GlobalStrategySettings;
 import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyContainer;
@@ -199,6 +203,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(LiveTradingEndEvent.class, null);
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
+			subscribeToEvent(IndexSessionEvent.class, null);
 		}
 
 		@Override
@@ -1043,15 +1048,7 @@ public class BusinessManager implements ApplicationContextAware {
 			if (this.cancelAllOrdersAtClose) {
 				for (ParentOrder order : orders.values()) {
 					if (!order.getOrdStatus().isCompleted()) {
-						log.debug("Market close cancel: " + order);
-						String source = order.get(String.class,
-								OrderField.SOURCE.value());
-						String txId = order.get(String.class,
-								OrderField.CLORDERID.value());
-						CancelStrategyOrderEvent cancel = new CancelStrategyOrderEvent(
-								order.getId(), order.getSender(), txId, source,
-								null, false);
-						eventManager.sendEvent(cancel);
+						cancelOrder(order);
 					}
 				}
 			}
@@ -1061,22 +1058,107 @@ public class BusinessManager implements ApplicationContextAware {
 					List<OpenPosition> list = positionKeeper
 							.getOverallPosition(account);
 					for (OpenPosition position : list) {
-						log.info("Day end position close: "
-								+ position.getAccount() + ", "
-								+ position.getQty() + ", "
-								+ position.getSymbol() + ", "
-								+ position.getAcPnL());
-						ClosePositionRequestEvent closeEvent = new ClosePositionRequestEvent(
-								position.getAccount(), null,
-								position.getAccount(), position.getSymbol(),
-								0.0, OrderReason.DayEnd, IdGenerator
-										.getInstance().getNextID());
-
-						eventManager.sendEvent(closeEvent);
+						closePosition(position);
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * Based on processMarketSessionEvent
+	 * Compare the "key" value of MarketSessionData in incoming IndexSessionEvent
+	 * with the "key" of the orders/positions to determine if cancel/close or not
+	 * 
+	 * @param event
+	 */
+	public void processIndexSessionEvent(IndexSessionEvent event) {
+		log.info("Received IndexSessionEvent: " + event);
+		
+		if (event == null || !event.isOk()) {
+			log.warn("Received IndexSessionEvent is " + (event == null ? "null" : "not OK"));
+			return;
+		}
+		
+		Map<String, MarketSessionData> sessionDataMap = event.getDataMap();
+		
+		for (Entry<String, MarketSessionData> sessionDataMapEntry : sessionDataMap.entrySet()) {
+			String entryKey = sessionDataMapEntry.getKey();
+			MarketSessionData entrySessionData = sessionDataMapEntry.getValue();
+			
+			if (entrySessionData.getSessionType().equals(MarketSessionType.CLOSE)) {
+				if (this.cancelAllOrdersAtClose) {
+					for (ParentOrder order : orders.values()) {
+						String orderKey = order.getSymbol();
+						RefData orderRefData = refDataManager.getRefData(orderKey);
+						String orderIdxSessionType = orderRefData.getIndexSessionType();
+						if (orderIdxSessionType.equals(IndexSessionType.SETTLEMENT.toString())) {
+							orderKey = orderRefData.getSymbol();
+						} else if (orderIdxSessionType.equals(IndexSessionType.SPOT.toString())) {
+							orderKey = orderRefData.getCategory();
+						} else if (orderIdxSessionType.equals(IndexSessionType.EXCHANGE.toString())) {
+							orderKey = orderRefData.getExchange();
+						}
+						
+						if (orderKey.equals(entryKey) && !order.getOrdStatus().isCompleted()) {
+							cancelOrder(order);
+						}
+					}
+				}
+				
+				if (this.closeAllPositionsAtClose) {
+					List<Account> accounts = accountKeeper.getAllAccounts();
+					for (Account account : accounts) {
+						List<OpenPosition> list = positionKeeper
+								.getOverallPosition(account);
+						for (OpenPosition position : list) {
+							String positionKey = position.getSymbol();
+							RefData positionRefData = refDataManager.getRefData(positionKey);
+							String positionIdxSessionType = positionRefData.getIndexSessionType();
+							if (positionIdxSessionType.equals(IndexSessionType.SETTLEMENT.toString())) {
+								positionKey = positionRefData.getSymbol();
+							} else if (positionIdxSessionType.equals(IndexSessionType.SPOT.toString())) {
+								positionKey = positionRefData.getCategory();
+							} else if (positionIdxSessionType.equals(IndexSessionType.EXCHANGE.toString())) {
+								positionKey = positionRefData.getExchange();
+							}
+							
+							if (positionKey.equals(entryKey)) {
+								closePosition(position);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private void cancelOrder(ParentOrder order) {
+		log.debug("Market close cancel: " + order);
+		String source = order.get(String.class,
+				OrderField.SOURCE.value());
+		String txId = order.get(String.class,
+				OrderField.CLORDERID.value());
+		CancelStrategyOrderEvent cancel = new CancelStrategyOrderEvent(
+				order.getId(), order.getSender(), txId, source,
+				null, false);
+		eventManager.sendEvent(cancel);
+	}
+	
+	private void closePosition(OpenPosition position) {
+		log.info("Day end position close: "
+				+ position.getAccount() + ", "
+				+ position.getQty() + ", "
+				+ position.getSymbol() + ", "
+				+ position.getAcPnL());
+		ClosePositionRequestEvent closeEvent = new ClosePositionRequestEvent(
+				position.getAccount(), null,
+				position.getAccount(), position.getSymbol(),
+				0.0, OrderReason.DayEnd, IdGenerator
+						.getInstance().getNextID());
+
+		eventManager.sendEvent(closeEvent);
 	}
 
 	public void processCancelPendingOrderEvent(CancelPendingOrderEvent event) {

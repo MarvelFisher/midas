@@ -16,7 +16,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MARKET_MAXIMUM_LOT}" value="1000000" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MAXIMUM_HOLD}" value="0" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MARGIN_RATE}" value="1.0" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="A" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="STOCK" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="1" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="STOCK" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="S"/>
@@ -65,6 +65,7 @@
 
     <bean id="refDataAdapter"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <property name="refDataAdapterName" value="SC"/>
         <property name="gatewayIp" value="#{windAdaptor.gatewayIp}" />
         <property name="gatewayPort" value="#{windAdaptor.gatewayPort}"/>
         <property name="marketDataLog" value="#{windAdaptor.marketDataLog}"/>
@@ -72,7 +73,7 @@
         <property name="refDataFile" value="#{refDataManager.refDataFile}" />
         <property name="windbaseDataFile" value="ticks/windbase.xml"/>
         <property name="windDBHandler" ref="refDataDBHandler"/>
-        <property name="windFilter" ref="stockFilter"/>
+        <property name="windFilter" ref="scFilter"/>
         <property name="marketsList">
             <list>
                 <value>SH</value>
@@ -90,7 +91,7 @@
         <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
     </bean>
 
-    <bean id="stockFilter" class="com.cyanspring.adaptor.future.wind.filter.StockFilter"/>
+    <bean id="scFilter" class="com.cyanspring.adaptor.future.wind.filter.SCFilter"/>
 
     <util:list id="refFilterList" value-type="java.lang.String">
     </util:list>

@@ -1,7 +1,7 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.adaptor.future.wind.data.CodeTableData;
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.ChineseConvert;
 import com.thoughtworks.xstream.XStream;
@@ -26,16 +26,18 @@ public class RefDataParser {
     public static RefData convertCodeTableToRefData(CodeTableData codeTableData, HashMap<RefDataField,Object> defaultHashMap){
         RefData refData = new RefData();
         refData.setSymbol(codeTableData.getWindCode());
+        refData.setRefSymbol(codeTableData.getWindCode());
+        refData.setCode(codeTableData.getShortName());
         refData.setExchange(codeTableData.getSecurityExchange());
         refData.setCNDisplayName(codeTableData.getCnName());
         refData.setTWDisplayName(ChineseConvert.StoT(codeTableData.getCnName()));
         refData.setENDisplayName(codeTableData.getEnglishName());
-        refData.setSpellName(codeTableData.getSpellName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
         refData.setCommodity((String) defaultHashMap.get(RefDataField.COMMODITY));
         switch ((String)defaultHashMap.get(RefDataField.COMMODITY)) {
             case "S":
             case "I":
+                refData.setSpellName(codeTableData.getSpellName());
                 refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
                 refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
                 refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));
@@ -47,6 +49,7 @@ public class RefDataParser {
                 refData.setStrategy((String) defaultHashMap.get(RefDataField.STRATEGY));
                 refData.setTickTable((String) defaultHashMap.get(RefDataField.TICK_TABLE));
                 refData.setPricePerUnit(Double.parseDouble((String) defaultHashMap.get(RefDataField.MARGIN_RATE)));
+                refData.setIndexSessionType((String) defaultHashMap.get(RefDataField.INDEX_SESSION_TYPE));
                 break;
             case "F":
                 break;

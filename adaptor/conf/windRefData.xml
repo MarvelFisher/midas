@@ -14,7 +14,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MARKET_MAXIMUM_LOT}" value="1000000" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MAXIMUM_HOLD}" value="0" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).MARGIN_RATE}" value="1.0" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="A" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="STOCK" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="1" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="STOCK" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="S"/>
@@ -63,6 +63,7 @@
 
     <bean id="refDataAdapterSC"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <property name="refDataAdapterName" value="SC"/>
         <property name="gatewayIp" value="101.231.55.6"/>
         <!--<property name="gatewayIp" value="10.1.1.153"/>-->
         <!--<property name="gatewayIp" value="10.0.0.32"/>-->
@@ -72,7 +73,7 @@
         <property name="refDataFile" value="refdata/refData_sc.xml"/>
         <property name="windbaseDataFile" value="ticks/windbase.xml"/>
         <property name="windDBHandler" ref="refDataDBHandler"/>
-        <property name="windFilter" ref="stockFilter"/>
+        <property name="windFilter" ref="scFilter"/>
         <property name="marketsList">
             <list>
                 <value>SH</value>
@@ -87,14 +88,18 @@
 
     <bean id="refDataAdapterFCI"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <property name="refDataAdapterName" value="FCI"/>
         <property name="gatewayIp" value="101.231.55.6"/>
         <!--<property name="gatewayIp" value="10.0.0.32"/>-->
         <property name="gatewayPort" value="10048"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
         <property name="refDataFile" value="refdata/refData_fci.xml"/>
+        <property name="windFilter" ref="fciFilter"/>
         <property name="marketsList">
             <list>
+                <value>SH</value>
+                <value>SZ</value>
                 <value>CF</value>
             </list>
         </property>
@@ -106,12 +111,14 @@
 
     <bean id="refDataAdapterFCC"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <property name="refDataAdapterName" value="FCC"/>
         <!--<property name="gatewayIp" value="101.231.55.6"/>-->
         <property name="gatewayIp" value="10.0.0.20"/>
         <property name="gatewayPort" value="10046"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
         <property name="refDataFile" value="refdata/refData_fcc.xml"/>
+        <property name="windFilter" ref="fccFilter"/>
         <property name="marketsList">
             <list>
                 <value>SHF</value>
@@ -130,7 +137,9 @@
         <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
     </bean>
 
-    <bean id="stockFilter" class="com.cyanspring.adaptor.future.wind.filter.StockFilter"/>
+    <bean id="scFilter" class="com.cyanspring.adaptor.future.wind.filter.SCFilter"/>
+    <bean id="fciFilter" class="com.cyanspring.adaptor.future.wind.filter.FCIFilter"/>
+    <bean id="fccFilter" class="com.cyanspring.adaptor.future.wind.filter.FCCFilter"/>
 
     <bean id="refDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>

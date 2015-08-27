@@ -45,7 +45,7 @@
 		<constructor-arg value="true"/>
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.cdp.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />

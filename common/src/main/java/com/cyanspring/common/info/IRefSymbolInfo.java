@@ -65,6 +65,7 @@ public abstract class IRefSymbolInfo {
 			symbolinfo.setDetailCN(refdata.getDetailCN());
 			symbolinfo.setDetailEN(refdata.getDetailEN());
 			symbolinfo.setDetailTW(refdata.getDetailTW());
+			symbolinfo.setIndexSessionType(refdata.getIndexSessionType());
 			index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 			if (index < 0)
 			{

@@ -371,11 +371,20 @@ public class RefData extends DataObject {
     @Override
     public boolean equals(Object object) {
     	RefData compare = (RefData) object;
+    	
+    	if (compare.getSymbol() == null || this.getSymbol() == null) 
+    		return super.equals(object);
     	if (compare.getSymbol().equals(this.getSymbol()))
     		return true;
+    	
     	return false;
     }
-
+    
+    @Override
+    public int hashCode() {
+    	return (this.getSymbol().hashCode() * 17);
+    }
+    
     public String getIType() {
         return this.get(String.class, RefDataField.ITYPE.value());
     }

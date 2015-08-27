@@ -129,7 +129,7 @@
 	</bean>	
 	
 	<bean id="maxLotValidator" class="com.cyanspring.server.validation.MaxLotValidator"></bean>
-	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.MarketSessionValidator"></bean>
+	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.IndexMarketSessionValidator"></bean>
 
 	<bean id="availablePositionValidator" class="com.cyanspring.server.validation.AvailablePositionValidator" />
 	

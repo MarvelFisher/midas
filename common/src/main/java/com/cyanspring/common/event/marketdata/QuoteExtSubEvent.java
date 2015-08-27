@@ -2,10 +2,18 @@ package com.cyanspring.common.event.marketdata;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
-public class QuoteExtSubEvent  extends RemoteAsyncEvent{
+import java.util.List;
 
-	public QuoteExtSubEvent(String key, String receiver) {
-		super(key, receiver);
-	}
+public class QuoteExtSubEvent extends RemoteAsyncEvent{
 
+    private List<String> requestSymbolList;
+
+    public QuoteExtSubEvent(String key, String receiver,List<String> requestSymbolList) {
+        super(key, receiver);
+        this.requestSymbolList = requestSymbolList;
+    }
+
+    public List<String> getRequestSymbolList() {
+        return requestSymbolList;
+    }
 }

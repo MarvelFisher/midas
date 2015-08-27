@@ -18,9 +18,10 @@
 		</property>
 		<property name="plugins">
 			<list>
-                <ref bean="marketSessionManager" />
-                <ref bean="refDataHandler" />
+                <!-- <ref bean="marketSessionManager" /> -->
+                <ref bean="marketSessionUtil"/>
                 <ref bean="indexMarketSessionManager"/>
+                <ref bean="refDataHandler" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="upStreamManager" />
@@ -58,9 +59,6 @@
 		</property>
     </bean>
 
-	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
-	</bean>
-	
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 	
@@ -259,15 +257,62 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler"/>
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
+		<constructor-arg>
+			<list>
+				<ref bean="refDataAdaptor"/>
+			</list>
+		</constructor-arg>    
+    </bean>
+    
+    <bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
+    	<property name="filePath" value="./conf/sim/codetable_fcc.xml"></property>
+    </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
-		<property name="refDataFile">
-			<value>refdata/refData_fc.xml</value>
+		<property name="refDataTemplatePath">
+			<value>refData/template/template_FC.xml</value>
 		</property>
-		<property name="strategyMapping"><ref bean="strategyMapping"/></property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>
+
+	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
+		<property name="tplPath">
+			<value>refData/template/template_FC.xml</value>
+		</property>
+	</bean>
+	
+    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
+    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
+	</bean>
+	
+	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
+	</bean>
+	
+	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
+		<property name="types">
+			<list>
+				<value>FUTURES_CX</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
+		<property name="checkValidContractDate">
+			<value>true</value>
+		</property>
+	</bean>
+	
+	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
+		<constructor-arg>
+			<list>
+				<ref bean="categoryFilter"/>
+				<ref bean="refSymbolFilter"/>
+				<ref bean="itypeFilter"/>
+				<ref bean="contractDateFilter"/>
+			</list>
+		</constructor-arg>
+	</bean>
 
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
 	</bean>
@@ -315,26 +360,6 @@
 		<constructor-arg>
 			<list>
 			</list>
-		</constructor-arg>
-	</bean>
-
-    <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
-        <property name="settlementDelay"><value>45</value></property>
-        <property name="eventManager" ref="eventManager"></property>        
-    </bean>
-
-	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-		<constructor-arg>
-			<map>
-				<entry key="IF">
-					<ref bean="IFsessionChecker" />
-				</entry>
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<entry key="IF"><ref bean="IFtradeDateManager"/></entry>
-			</map>
 		</constructor-arg>
 	</bean>
 

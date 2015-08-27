@@ -37,7 +37,7 @@ public class MarketSessionValidator implements IOrderValidator{
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
 		try{
-			
+
 			MarketSessionType sessionType =  marketSessionManager.getCurrentSessionType();
 			if(sessionType.equals(MarketSessionType.CLOSE) || sessionType.equals(MarketSessionType.PRECLOSE)){
 				throw new OrderValidationException("Market closed,order couldn't be placed",ErrorMessage.MARKET_CLOSED);
