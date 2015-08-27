@@ -43,6 +43,7 @@ public class TestRefDataFilter {
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
 		refData1.setSettlementDate("2017-08-21");
+		refData1.setCommodity("F");
 
 		refData2 = new RefData();
 		refData2.setIType(IType.FUTURES_CX.getValue());
@@ -51,6 +52,7 @@ public class TestRefDataFilter {
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
 		refData2.setSettlementDate("2017-08-21");
+		refData2.setCommodity("F");
 
 		// AG 活躍
 		refData3 = new RefData();
@@ -60,6 +62,7 @@ public class TestRefDataFilter {
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
 		refData3.setSettlementDate("2017-08-21");
+		refData3.setCommodity("F");
 		
 		// Non-existing Category
 		refData4 = new RefData();
@@ -69,6 +72,7 @@ public class TestRefDataFilter {
 		refData4.setExchange("SHF");
 		refData4.setRefSymbol("AG.SHF");
 		refData4.setSettlementDate("2017-08-21");
+		refData4.setCommodity("F");
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);

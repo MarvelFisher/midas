@@ -30,6 +30,15 @@ public class RefSymbolFilter implements IRefDataFilter {
 		if (lstRefData != null) {
 			ConcurrentHashMap<String, RefData> mapRefData = new ConcurrentHashMap<String, RefData>();
 			for (RefData refData : lstRefData) {
+				// Only filter RefData whose commodity is "F", or add directly without filtering
+				String commodity = refData.getCommodity();
+				if (commodity == null 
+						|| commodity.isEmpty()
+						|| !commodity.equalsIgnoreCase(RefDataFilter.FUTURES_COMMODITY)) {
+					fLstRefData.add(refData);
+					continue;
+				}
+				
 				String type = refData.getIType();
 				if (type == null || type.isEmpty()) {
 					continue;
@@ -67,7 +76,7 @@ public class RefSymbolFilter implements IRefDataFilter {
 				mapRefData.put(key, refData);
 			}
 			
-			fLstRefData = new ArrayList<RefData>(mapRefData.values());
+			fLstRefData.addAll(mapRefData.values());
 		}
 		
 		return fLstRefData;
