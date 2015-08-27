@@ -73,7 +73,6 @@ import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
-import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.WeekDay;
@@ -238,7 +237,7 @@ public class BusinessManager implements ApplicationContextAware {
 		String account = (String) fields.get(OrderField.ACCOUNT.value());
 
 		try {
-			transactionValidator.checkEnterOrder(event);
+			transactionValidator.checkEnterOrder(event, account);
 			
 			String strategyName = (String) fields.get(OrderField.STRATEGY
 					.value());
@@ -385,8 +384,6 @@ public class BusinessManager implements ApplicationContextAware {
 		String message = "";
 		ParentOrder order = null;
 		try {
-			transactionValidator.checkAmendOrder(event);
-
 			// check whether order is there
 			String id = event.getId();
 			order = orders.get(id);
@@ -394,6 +391,8 @@ public class BusinessManager implements ApplicationContextAware {
 				throw new OrderException("Cant find this order id: " + id,
 						ErrorMessage.ORDER_ID_NOT_FOUND);
 			
+			transactionValidator.checkAmendOrder(event, order.getAccount());
+
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
 
 			String strategyName = order.getStrategy();
@@ -530,11 +529,11 @@ public class BusinessManager implements ApplicationContextAware {
 		String message = "";
 		boolean failed = false;
 		try {
-			transactionValidator.checkCancelOrder(event);
-			
 			if(null == order)
 				throw new OrderException("Cant find this order id: " + event.getOrderId(),
 						ErrorMessage.ORDER_ID_NOT_FOUND);
+			
+			transactionValidator.checkCancelOrder(event, order.getAccount());
 			
 			if (order.getOrdStatus().isCompleted())
 				throw new OrderException("Order already completed: " + order.getId(),
@@ -599,7 +598,7 @@ public class BusinessManager implements ApplicationContextAware {
 		String message = null;
 		ErrorMessage clientMessage = null;
 		try {
-			transactionValidator.checkClosePosition(event);
+			transactionValidator.checkClosePosition(event, event.getAccount());
 			
 			Account account = accountKeeper.getAccount(event.getAccount());
 			if (null == account) {

@@ -127,8 +127,9 @@ public class ParseThread extends Thread{
 		String strPoststring = "{ \"where\": {\"userId\": \"" + PD.getStrUserId() + "\" , \"deviceType\": { \"$in\": [ \"ios\", \"android\", \"winphone\", \"js\" ] }}, " +
                 "\"data\": {\"alert\": \"" + PD.getStrpushMessage() + "\",\"msgid\":\"" + PD.getStrMsgId() + "\",\"msgType\":\"" + PD.getStrMsgType() +
                 "\",\"action\":\"" + ParseAction + ((PD.getStrLocalTime().length() > 0) ? ("\",\"datetime\":\"" + PD.getStrLocalTime()) : "") + 
-                (((PD.getStrKeyValue()).length() > 0) ? ("\",\"KeyValue\":\"" + PD.getStrKeyValue()) : "") + "\"" +
-                ", \"badge\": \"Increment\"}}";
+                (((PD.getStrKeyValue()).length() > 0) ? ("\",\"KeyValue\":\"" + PD.getStrKeyValue()) : "") +
+                ((PD.getStrDeepLink().length() > 0) ? ("\",\"deeplink\":\"" + PD.getStrDeepLink()) :"") +
+                "\"" + ", \"badge\": \"Increment\"}}";
  
 		log.info("Parse message: " + strPoststring);
 		//add reuqest header

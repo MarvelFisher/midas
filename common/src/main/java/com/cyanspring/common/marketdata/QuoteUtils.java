@@ -1,10 +1,15 @@
 package com.cyanspring.common.marketdata;
 
+import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.PriceUtils;
 
 public class QuoteUtils {
 	public static double getMarketablePrice(Quote quote, double qty) {
 		return PriceUtils.GreaterThan(qty, 0)?quote.getBid():quote.getAsk();
+	}
+
+	public static double getMarketablePrice(Quote quote, OrderSide side) {
+		return side.isBuy()?quote.getAsk():quote.getBid();
 	}
 
 	public static double getMidPrice(Quote quote) {
