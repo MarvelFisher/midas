@@ -67,6 +67,7 @@ public class FDTFields {
 	public final static int SellTurnover = 83;
 	public final static int UnclassifiedVolume = 84;
 	public final static int UnclassifiedTurnover = 85;
+	public final static int FTurnover = 86;
 	public final static int WgtAvgAskPrice = 91;
 	public final static int WgtAvgBidPrice = 92;
 	public final static int YieldToMaturity = 93;

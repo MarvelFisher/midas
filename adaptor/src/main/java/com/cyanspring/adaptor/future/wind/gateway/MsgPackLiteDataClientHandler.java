@@ -208,8 +208,8 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 				processCodeTable(in);
 				break;				
 			case FDTFields.WindCodeTableResult :
-				processCodeTableResult(in);
-				break;
+				processCodeTableResult(in);				
+				break;			
 			}
 		}
 		catch(Exception e) {
@@ -239,6 +239,9 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			CascadingCodeTable cct = mapCascadingCodeTable.get(market);
 			if(cct != null) {
 				cct.mapMPCode.put(symbol,in);
+			} else {
+				log.warn("Missing Cascading Code Table , Market : " + market);
+				return;
 			}
 			if(ser < 0 && cct.mpCodeTableResult != null) {
 				log.info("Received Code Table : " + market + " , count " + cct.mapMPCode.size() + " , last serial : " + ser);
@@ -253,12 +256,13 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 		String market = null;
 		CascadingCodeTable cct =  null;
 		long codesHashCode = 0;
+		int dataCount = 0;
 		try {
 			market = new String((byte[])in.get(FDTFields.SecurityExchange),"UTF-8");
-			codesHashCode = ((Number)in.get(FDTFields.HashCode)).longValue();	
+			codesHashCode = ((Number)in.get(FDTFields.HashCode)).longValue();			
 			cct = mapCascadingCodeTable.get(market);					
 			if(cct != null) {				
-				int dataCount = ((Number)in.get(FDTFields.DataCount)).intValue();
+				dataCount = ((Number)in.get(FDTFields.DataCount)).intValue();
 				if(cct.codesHashCode == codesHashCode && cct.mapMPCode.size() == dataCount) {
 					log.info("Code Table No Change , Market : " + market);
 					return;
@@ -270,10 +274,13 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 			cct.mapMPCode.clear();
 			cct.codesHashCode = codesHashCode;
 			cct.mpCodeTableResult = in;
+			cct.strMarket = market;
+			cct.DataCount = dataCount;
 			mapCascadingCodeTable.put(market, cct);
 			
 			if(ctx != null && market != null) {
 				ctx.writeAndFlush(MsgPackLiteDataServerHandler.addHashTail("API=GetCodeTable|Market=" + market,true));
+				log.info("Request Code Table , Market : " + market);
 			}			
 		} catch (Exception e) {
 			log.warn("Exception : " + e.getMessage(),e);
@@ -291,6 +298,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 class CascadingCodeTable {
 	String strMarket = "";
 	int CodeDate = 0;
+	int DataCount = 0;
 	long codesHashCode = 0;
 	public HashMap<Integer,Object> mpCodeTableResult = null;
 	public ConcurrentHashMap<String, HashMap<Integer,Object>> mapMPCode = new ConcurrentHashMap<String,HashMap<Integer,Object>>();

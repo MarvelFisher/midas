@@ -47,6 +47,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,BuySellVolume>   mapBuySell = new ConcurrentHashMap<String,BuySellVolume>();
 	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
 	public static ConcurrentHashMap<String,CodeTable> mapCodeTable = new ConcurrentHashMap<String,CodeTable>();
+	public static ConcurrentHashMap<String,FutureTurnover> mapFutureTurnover = new ConcurrentHashMap<String,FutureTurnover>();
 	private LinkedBlockingQueue<Object> msgpackQueue = new LinkedBlockingQueue<Object>();
 	
 
@@ -517,10 +518,10 @@ public class WindGateway implements Runnable {
 		return sb.toString();
 
 	}
-	static public HashMap<Integer,Object> publishFutureChangesToMap(TDF_FUTURE_DATA dirty,TDF_FUTURE_DATA data) {	
+	static public HashMap<Integer,Object> publishFutureChangesToMap(TDF_FUTURE_DATA dirty,TDF_FUTURE_DATA data,FutureTurnover ft) {	
 		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
 		map.put(FDTFields.PacketType,FDTFields.WindFutureData);
-		map.put(FDTFields.WindSymbolCode, data.getWindCode());		
+		map.put(FDTFields.WindSymbolCode, data.getWindCode());			
 		
 		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
 			map.put(FDTFields.ActionDay, data.getActionDay());
@@ -583,7 +584,13 @@ public class WindGateway implements Runnable {
 			map.put(FDTFields.Turnover,data.getTurnover());			
 		}
 		if(dirty == null || dirty.getVolume() != data.getVolume()) {		
-			map.put(FDTFields.Volume,data.getVolume());
+			map.put(FDTFields.Volume,data.getVolume());			
+			if(ft == null) {
+				ft = mapFutureTurnover.get(data.getWindCode());
+			}			
+			if(ft != null) {
+				map.put(FDTFields.FTurnover, ft.lFTurnover);
+			}
 		}		
 		return map;
 	}
@@ -972,12 +979,20 @@ public class WindGateway implements Runnable {
 		String symbol = futureData.getWindCode();
 		TDF_FUTURE_DATA data = mapFutureData.get(symbol);
 		mapFutureData.put(symbol,futureData);
+		
+		FutureTurnover ft = mapFutureTurnover.get(symbol);
+		if(ft == null) {
+			ft = new FutureTurnover();
+			mapFutureTurnover.put(symbol, ft);
+		}
+		ft.Calculate(futureData);
+		
 		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredByClient(symbol)) {		
 			String str = publishFutureChanges(data,futureData);
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol,true);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData,ft), symbol,true);
 		}		
 		if(data != null) {		
 			data = null;
@@ -1538,4 +1553,25 @@ class CodeTable {
 	public int CodeCount(){
 		return mapCode.size();
 	}
+}
+
+class FutureTurnover
+{
+    long TotalVolume = 0;
+    public long lFTurnover = 0;
+
+    public void Calculate(TDF_FUTURE_DATA f) 
+    {
+        if (f.getVolume() == 0)
+        {
+            TotalVolume = 0; 
+            lFTurnover = 0;
+            return;
+        }
+        else if (f.getVolume() > TotalVolume)
+        {
+            lFTurnover += f.getMatch() * (f.getVolume() - TotalVolume);
+            TotalVolume = f.getVolume();
+        }
+    }
 }

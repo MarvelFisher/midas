@@ -432,25 +432,51 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     public static void sendMarkets(Channel channel)
     {
     	ArrayList<String>lst = new ArrayList<String>();
-    	synchronized(WindGateway.mapCodeTable) {    	
-    		if(WindGateway.mapCodeTable.size() == 0) {    		
-    			return;
+
+    	if(WindGateway.mpCascading) {
+    		
+    		StringBuilder sb = new StringBuilder("Send Cascading Code Table Results : ");
+    		Object[] ccts = MsgPackLiteDataClientHandler.mapCascadingCodeTable.values().toArray();    		
+    		if(ccts != null && ccts.length > 0){
+    			sb = new StringBuilder("Send Cascading Code Table Results : ");
+	    		for(Object obj : ccts) {
+	    			CascadingCodeTable cct = (CascadingCodeTable)obj;
+	    			if(cct != null && cct.mpCodeTableResult != null && cct.mapMPCode.size() > 0) {
+	    				int dataCount = ((Number)cct.mpCodeTableResult.get(FDTFields.DataCount)).intValue();
+	    				if(cct.mapMPCode.size() == dataCount) {
+	    					channel.writeAndFlush(cct.mpCodeTableResult);
+	    					sb.append(cct.strMarket + ";");
+	    				}
+	    			}
+	    		}    			    		
+    		} else {
+    			sb = new StringBuilder("No Cascading Code Table Results at this Gateway.");
     		}
-    		    		
-    		Iterator<?> it = WindGateway.mapCodeTable.entrySet().iterator();			
-    		while (it.hasNext()) {
-    			@SuppressWarnings("rawtypes")
-    			Map.Entry pairs = (Map.Entry)it.next();
-    			String market = (String)pairs.getKey();    			
-    			if(market == null || market == "") {    			
-    				continue;
-    			}
-    			lst.add(market);
-    			CodeTable ct = (CodeTable)pairs.getValue();
-    			if(ct != null && ct.mpCodeTableResult != null) {
-    				channel.writeAndFlush(ct.mpCodeTableResult);
-    			}
-    		}
+    		log.info(sb.toString());
+    		
+    	}  else
+
+    	{
+	    	synchronized(WindGateway.mapCodeTable) {    	
+	    		if(WindGateway.mapCodeTable.size() == 0) {    		
+	    			return;
+	    		}
+	    		    		
+	    		Iterator<?> it = WindGateway.mapCodeTable.entrySet().iterator();			
+	    		while (it.hasNext()) {
+	    			@SuppressWarnings("rawtypes")
+	    			Map.Entry pairs = (Map.Entry)it.next();
+	    			String market = (String)pairs.getKey();    			
+	    			if(market == null || market == "") {    			
+	    				continue;
+	    			}
+	    			lst.add(market);
+	    			CodeTable ct = (CodeTable)pairs.getValue();
+	    			if(ct != null && ct.mpCodeTableResult != null) {
+	    				channel.writeAndFlush(ct.mpCodeTableResult);
+	    			}
+	    		}
+	    	}
     	}
     	if(lst.size() == 0) {
     		lst = null;
@@ -616,7 +642,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	if(data == null) {    	
     		return null;
     	}
-    	return WindGateway.publishFutureChangesToMap(null, data);
+    	return WindGateway.publishFutureChangesToMap(null, data,null);
     }
     public static boolean sendFutureData(Channel channel,String symbol) {    
     	HashMap<Integer, Object> map = getFutureData(symbol);
@@ -669,7 +695,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				TDF_FUTURE_DATA data = (TDF_FUTURE_DATA)pairs.getValue();
 				if(data != null) {
 					if(data.getWindCode().contains(market)) {
-						channel.write(WindGateway.publishFutureChangesToMap(null, data));
+						channel.write(WindGateway.publishFutureChangesToMap(null, data,null));
 					}
 				}		
 			}
@@ -766,7 +792,10 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				if(bQueued) {
 					cnt = lst.addMsgPack(map);
 					if(cnt >= maxMsgPackCount) {
-						((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+						map = lst.flushMsgPack();
+						if(map != null) {
+							((Channel)pairs.getKey()).writeAndFlush(map);
+						}	
 					}					
 				} else {
 					((Channel)pairs.getKey()).writeAndFlush(map);
@@ -791,7 +820,10 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 			if(lst.hadTransaction(symbol)) {
 				cnt = lst.addMsgPack(map);
 				if(cnt >= maxMsgPackCount) {
-					((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+					map = lst.flushMsgPack();
+					if(map != null) {
+						((Channel)pairs.getKey()).writeAndFlush(map);
+					}
 				}
 			}
 		}		    
@@ -807,7 +839,10 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				continue;
 			}
 			if(lst.MsgPackArrayCount() > 0) {
-				((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+				HashMap<Integer,Object> map = lst.flushMsgPack();
+				if(map != null) {
+					((Channel)pairs.getKey()).writeAndFlush(map);
+				}
 			}
 		}		      	
     }
