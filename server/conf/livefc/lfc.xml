@@ -221,12 +221,13 @@
 
     <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
 
-    <bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
-        <property name="refDataFile">
-            <value>refdata/refData_livefc.xml</value>
-        </property>
-        <property name="strategyMapping"><ref bean="strategyMapping"/></property>
-        <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
+		<property name="refDataTemplatePath">
+			<value>refData/template/template_FC.xml</value>
+		</property>
+    </bean>
+    
+	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
     </bean>
 
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
