@@ -8,8 +8,8 @@
 >
 
 	<context:annotation-config />
-	<import resource="info_incubateefx/*"/>
-	<import resource="info_common/ticktable_incubateefx.xml"/>
+	<import resource="info_ifx/*"/>
+	<import resource="info_common/ticktable_ifx.xml"/>
 
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
