@@ -334,7 +334,7 @@ public class TestPositionKeeper {
 		}
 
 		@Override
-		public RefData update(RefData refData, String tradeDate) throws Exception {
+		public RefData add(RefData refData, String tradeDate) throws Exception {
 			// TODO Auto-generated method stub
 			return null;
 		}
