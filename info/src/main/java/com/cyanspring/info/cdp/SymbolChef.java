@@ -72,6 +72,15 @@ public class SymbolChef implements Runnable
 		}
 		return isAdded;
 	}
+	
+	public void removeSymbol(String symbol)
+	{
+		SymbolData data = getMapSymboldata().get(symbol);
+		if (data != null)
+		{
+			getMapSymboldata().remove(symbol);
+		}
+	}
 
 	public void clearSymbol()
 	{
@@ -80,6 +89,7 @@ public class SymbolChef implements Runnable
 		{
 			if (entry.getValue().getMarket().equals("CF"))
 			{
+				entry.getValue().clearMapHistorical();
 				log.info("remove " + entry.getKey());
 				getMapSymboldata().remove(entry.getKey(), entry.getValue());
 			}

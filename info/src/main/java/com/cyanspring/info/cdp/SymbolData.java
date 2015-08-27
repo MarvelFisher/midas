@@ -1132,6 +1132,21 @@ public class SymbolData implements Comparable<SymbolData>
 	}
 	public void setSessionType(MarketSessionType sessionType)
 	{
+		if (this.sessionType == null)
+		{
+			this.resetStatement();
+		}
+		else if (this.sessionType != sessionType)
+		{
+			if (sessionType == MarketSessionType.CLOSE)
+			{
+				putInsert();
+			}
+			if (this.sessionType == MarketSessionType.CLOSE)
+			{
+				this.resetStatement();
+			}
+		}
 		this.sessionType = sessionType;
 	}
 	public Date getSessionEnd()
