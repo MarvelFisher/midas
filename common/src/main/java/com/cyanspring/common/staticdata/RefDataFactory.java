@@ -49,17 +49,6 @@ public class RefDataFactory extends RefDataService {
 				throw new Exception("Missing refdata template: " + refDataTemplatePath);
 			}
 		}
-
-		// init category
-		if (null != refDataList && !refDataList.isEmpty()) {
-			for (RefData refData : refDataList) {
-				String commodity = refData.getCommodity();
-				if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
-						&& commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))) {
-					refData.setCategory(getCategory(refData));
-				}
-			}
-		}
 	}
 
 	private void buildTemplateMap(List<RefData> refDataTemplateList) {
@@ -110,7 +99,7 @@ public class RefDataFactory extends RefDataService {
 
 	@SuppressWarnings("unchecked")
 	private void updateRefData(Calendar cal, RefData refData) {
-
+		initCategory(refData);
 		AbstractRefDataStrategy strategy;
 		RefData template = searchRefDataTemplate(refData);
 		if (null == template) {
@@ -155,6 +144,18 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
+	}
+
+	private void initCategory(RefData refData) {
+		
+		if(StringUtils.hasText(refData.getCategory()))
+			return;
+		
+		String commodity = refData.getCommodity();
+		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
+				&& commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))) {
+			refData.setCategory(getCategory(refData));
+		}	
 	}
 
 	@Override

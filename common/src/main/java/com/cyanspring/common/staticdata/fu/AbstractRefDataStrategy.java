@@ -116,10 +116,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			combineTwName = combineCnName;
 		
 		String refSymbol = refData.getRefSymbol();
-		
-		refData.setSymbol(getSymbol(refData));
+			
 		refData.setStrategy(refData.getExchange());
 		refData.setCategory(getCategory(refData));
+		refData.setSymbol(getSymbol(refData));
 		refData.setCNDisplayName(getCNName(combineCnName));
 		refData.setTWDisplayName(getTWName(combineTwName));
 		refData.setENDisplayName(getEnName(refData));
@@ -134,7 +134,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setDetailTW(getTWDetailName(combineTwName));
 		refData.setDetailEN(getCNDetailName(combineCnName));	
 		refData.setRefSymbol(getRefSymbol(refSymbol));
-		log.info("refSymbol:{}",refData.getRefSymbol());
 	}
 	
 	private boolean checkAcceptableRefData(RefData refData) {
@@ -255,9 +254,9 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 	
 	protected ITradeDate getTradeDateManager(String category){
-		if( null == getMarketSessionUtil())
+		if( null == getMarketSessionUtil()){
 			return null;
-		else{
+		}else{
 			return getMarketSessionUtil().getTradeDateManager(category);
 		}
 	}
