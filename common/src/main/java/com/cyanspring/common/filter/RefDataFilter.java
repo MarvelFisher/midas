@@ -18,6 +18,11 @@ public class RefDataFilter {
 	}
 
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
+		if (lstRefData == null) {
+			LOGGER.error("The given RefData list cannot be null");
+			throw new Exception("The given RefData list cannot be null");
+		}
+		
 		for (IRefDataFilter filter : refDataFilters) {
 			lstRefData = filter.filter(lstRefData);
 		}

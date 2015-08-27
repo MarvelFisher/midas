@@ -2,8 +2,8 @@ package com.cyanspring.common.filter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -30,29 +30,26 @@ public class ContractDateFilter implements IRefDataFilter {
 	 * Check if the configured SettlementDate is valid
 	 * If SettlementDate is past time or more than 5 year to the future, filter it
 	 * 
-	 * Reference path:
-	 * server/conf/fc/fc.xml
-	 * 
 	 * @param lstRefData
 	 *            The RefData list to be filtered
 	 * @return The filtered RefData list
 	 */
 	@Override
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
-		if (lstRefData != null && lstRefData.size() > 0) {
-			Iterator<RefData> itRefData = lstRefData.iterator();
-			while (itRefData.hasNext()) {
-				RefData data = itRefData.next();
-				if (!isValidContractDate(data))
-					itRefData.remove();
+		ArrayList<RefData> fLstRefData = new ArrayList<RefData>();
+		if (lstRefData != null) {
+			for (RefData refData : lstRefData) {
+				if (isValidContractDate(refData)) {
+					fLstRefData.add(refData);
+				}
 			}
 		} else {
-			LOGGER.error("The given RefData list cannot be null or empty");
+			LOGGER.error("The given RefData list cannot be null");
 			throw new Exception(
-					"The given RefData list cannot be null or empty");
+					"The given RefData list cannot be null");
 		}
 
-		return lstRefData;
+		return fLstRefData;
 	}
 
 	private boolean isValidContractDate(RefData refData) {
@@ -62,8 +59,9 @@ public class ContractDateFilter implements IRefDataFilter {
 		String settlementDate = null;
 		try {
 			settlementDate = refData.getSettlementDate();
+			// INDEX doesn't have settlement date, do not filter out
 			if (!StringUtils.hasText(settlementDate))
-				return false;
+				return true;
 
 			SimpleDateFormat contractFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar now = Calendar.getInstance();

@@ -1,7 +1,6 @@
 package com.cyanspring.common.filter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -28,17 +27,14 @@ public class CategoryFilter implements IRefDataFilter {
 	 * Compare Category of RefData between template_FC and lstRefData
 	 * RefData with Category in FC template will be returned as a RefData list. 
 	 * 
-	 * Reference path:
-	 * server/conf/fc/fc.xml
-	 * server/refdata/template/template_FC.xml
-	 * 
 	 * @param lstRefData
 	 *            The RefData list to be filtered
 	 * @return The filtered RefData list
 	 */
 	@Override
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
-		if (lstRefData != null && lstRefData.size() > 0) {
+		ArrayList<RefData> fLstRefData = new ArrayList<RefData>();
+		if (lstRefData != null) {
 			// Compare RefData list from template with the input lstRefData
 			// If Category of RefData in the input lstRefData doesn't exist in template, exclude it
 			// After filtering, only Category in template will be kept in the returned lstRefData
@@ -49,24 +45,23 @@ public class CategoryFilter implements IRefDataFilter {
 					lstCategory.add(data.getCategory());
 				}
 				
-				Iterator<RefData> itRefData = lstRefData.iterator();
-				while (itRefData.hasNext()) {
-					RefData data = itRefData.next();
-					if (data.getCategory() == null || data.getCategory().isEmpty()) {
-						throw new Exception("Category of RefData cannot be null or empty");
+				for (RefData refData : lstRefData) {
+					if (refData.getCategory() == null || refData.getCategory().isEmpty()) {
+						LOGGER.error("Category cannot be null or empty.");
+						throw new Exception("Category cannot be null or empty.");
 					}
 					
-					if (!lstCategory.contains(data.getCategory())) {
-						itRefData.remove();
+					if (lstCategory.contains(refData.getCategory())) {
+						fLstRefData.add(refData);
 					}
 				}
 			}
 		} else {
-			LOGGER.error("The given RefData list cannot be null or empty");
-			throw new Exception("The given RefData list cannot be null or empty");
+			LOGGER.error("The given RefData list cannot be null");
+			throw new Exception("The given RefData list cannot be null");
 		}
 		
-		return lstRefData;
+		return fLstRefData;
 	}
 
 }

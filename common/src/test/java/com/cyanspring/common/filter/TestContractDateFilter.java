@@ -1,7 +1,6 @@
 package com.cyanspring.common.filter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +17,11 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:META-INFO/spring/ITypeFilterTest.xml" })
-public class TestITypeFilter {
-	
+@ContextConfiguration(locations = { "classpath:META-INFO/spring/ContractDateFilterTest.xml" })
+public class TestContractDateFilter {
+
 	@Autowired
-	@Qualifier("itypeFilter")
+	@Qualifier("contractDateFilter")
 	IRefDataFilter iDataFilter;
 	
 	RefData refData1;
@@ -38,11 +37,12 @@ public class TestITypeFilter {
 	@Test
 	public void testRefDataFilter() throws Exception {
 		refData1 = new RefData();
-		refData1.setIType(IType.FUTURES_IDX.getValue());
+		refData1.setIType(IType.FUTURES_CX.getValue());
 		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
+		refData1.setSettlementDate("2017-08-21");
 
 		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
@@ -50,14 +50,16 @@ public class TestITypeFilter {
 		refData2.setSymbol("ag1511.SHF");
 		refData2.setCategory("BG");
 		refData2.setExchange("SHF");
-		refData2.setRefSymbol("AG11.SHF");
+		refData2.setSettlementDate("2014-08-21");
 
+		// AG 活躍
 		refData3 = new RefData();
-		refData3.setIType(IType.FUTURES_IDX.getValue());
+		refData3.setIType(IType.FUTURES_CX.getValue());
 		refData3.setSymbol("IF1502");
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
+		refData3.setSettlementDate("2095-08-21");
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);
@@ -65,27 +67,7 @@ public class TestITypeFilter {
 		assertEquals(3, lstRefData.size());
 
 		List<RefData> lstFilteredRefData = (List<RefData>) iDataFilter.filter(lstRefData);
-		assertEquals(2, lstFilteredRefData.size());
+		assertEquals(1, lstFilteredRefData.size());
 	}
 	
-	@Test
-	public void testRefDataFilterErrorHandling() {
-		refData1 = new RefData();
-		lstRefData.add(refData1);
-		
-		try {
-			iDataFilter.filter(lstRefData);
-			fail("DataObjectException was not thrown expectedly while IType is null");
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		refData1.setIType(IType.FUTURES_CX.getValue());
-		try {
-			iDataFilter.filter(lstRefData);
-		} catch (Exception e) {
-			fail("DataObjectException was thrown unexpectedly while IType is not null");
-		}
-	}
-
 }

@@ -25,6 +25,7 @@ public class TestRefDataFilter {
 	RefData refData1;
 	RefData refData2;
 	RefData refData3;
+	RefData refData4;
 	List<RefData> lstRefData;
 	
 	@Before
@@ -40,14 +41,16 @@ public class TestRefDataFilter {
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
+		refData1.setSettlementDate("2017-08-21");
 
 		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
-		refData2.setIType(IType.FUTURES.getValue());
+		refData2.setIType(IType.FUTURES_CX.getValue());
 		refData2.setSymbol("ag1511.SHF");
-		refData2.setCategory("BG");
+		refData2.setCategory("AG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
+		refData2.setSettlementDate("2017-08-21");
 
 		// AG 活躍
 		refData3 = new RefData();
@@ -56,6 +59,15 @@ public class TestRefDataFilter {
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
+		refData3.setSettlementDate("2017-08-21");
+		
+		refData4 = new RefData();
+		refData4.setIType(IType.FUTURES_CX.getValue());
+		refData4.setSymbol("IF1502");
+		refData4.setCategory("BG");
+		refData4.setExchange("SHF");
+		refData4.setRefSymbol("AG.SHF");
+		refData4.setSettlementDate("2017-08-21");
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);
@@ -64,8 +76,8 @@ public class TestRefDataFilter {
 		
 		lstRefData = refDataFilter.filter(lstRefData);
 		
-		assertEquals(1, lstRefData.size());
-		assertEquals("AG.SHF", lstRefData.get(0).getRefSymbol());
+		assertEquals(2, lstRefData.size());
+		assertEquals("AG.SHF", lstRefData.get(1).getRefSymbol());
 	}
 	
 }
