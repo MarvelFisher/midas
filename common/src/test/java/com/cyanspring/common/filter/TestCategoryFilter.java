@@ -68,24 +68,4 @@ public class TestCategoryFilter {
 		assertEquals(2, lstFilteredRefData.size());
 	}
 	
-	@Test
-	public void testRefDataFilterErrorHandling() {
-		refData1 = new RefData();
-		lstRefData.add(refData1);
-		
-		try {
-			iDataFilter.filter(lstRefData);
-			fail("DataObjectException was not thrown expectedly while Category is null");
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		refData1.setCategory("AG");
-		try {
-			iDataFilter.filter(lstRefData);
-		} catch (Exception e) {
-			fail("DataObjectException was thrown unexpectedly while Category is not null");
-		}
-	}
-	
 }

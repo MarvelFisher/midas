@@ -54,17 +54,13 @@ private static final Logger LOGGER = LoggerFactory.getLogger(ITypeFilter.class);
 			for (RefData refData : lstRefData) {
 				String type = refData.getIType();
 				if (type == null || type.isEmpty()) {
-					LOGGER.error("IType cannot be null or empty.");
-					throw new Exception("IType cannot be null or empty.");
+					continue;
 				}
 				
 				if (lstITypes.contains(type)) {
 					fLstRefData.add(refData);
 				}
 			}
-		} else {
-			LOGGER.error("The given RefData list cannot be null");
-			throw new Exception("The given RefData list cannot be null");
 		}
 
 		return fLstRefData;

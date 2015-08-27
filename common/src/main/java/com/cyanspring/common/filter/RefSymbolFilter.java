@@ -26,22 +26,20 @@ public class RefSymbolFilter implements IRefDataFilter {
 	 */
 	@Override
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
-		ArrayList<RefData> fLstRefData;
+		ArrayList<RefData> fLstRefData = new ArrayList<RefData>();
 		if (lstRefData != null) {
 			ConcurrentHashMap<String, RefData> mapRefData = new ConcurrentHashMap<String, RefData>();
 			for (RefData refData : lstRefData) {
 				String type = refData.getIType();
 				if (type == null || type.isEmpty()) {
-					LOGGER.error("IType cannot be null or empty.");
-					throw new Exception("IType cannot be null or empty.");
+					continue;
 				}
 				
 				String symbol = refData.getSymbol();
-				if (symbol != null && !symbol.isEmpty()) {
-					symbol = symbol.toLowerCase();
+				if (symbol == null || symbol.isEmpty()) {
+					symbol = "";
 				} else {
-					LOGGER.error("Symbol cannot be null or empty.");
-					throw new Exception("Symbol cannot be null or empty.");
+					symbol = symbol.toLowerCase();
 				}
 				
 				String category = refData.getCategory();
@@ -51,11 +49,9 @@ public class RefSymbolFilter implements IRefDataFilter {
 				if (category == null || category.isEmpty()
 						|| exchange == null || exchange.isEmpty()
 						|| refSymbol == null || refSymbol.isEmpty()) {
-					LOGGER.error("Category, Exchange, RefSymbol "
-							+ "cannot be null or empty.");
-					throw new Exception("Category, Exchange, RefSymbol "
-							+ "cannot be null or empty.");
+					continue;
 				}
+				
 				
 				String key = type + symbol;
 				// If DataObject has duplicate IType+Symbol, exclude the later one unless it's 活躍
@@ -72,9 +68,6 @@ public class RefSymbolFilter implements IRefDataFilter {
 			}
 			
 			fLstRefData = new ArrayList<RefData>(mapRefData.values());
-		} else {
-			LOGGER.error("The given RefData list cannot be null");
-			throw new Exception("The given RefData list cannot be null");
 		}
 		
 		return fLstRefData;

@@ -43,10 +43,6 @@ public class ContractDateFilter implements IRefDataFilter {
 					fLstRefData.add(refData);
 				}
 			}
-		} else {
-			LOGGER.error("The given RefData list cannot be null");
-			throw new Exception(
-					"The given RefData list cannot be null");
 		}
 
 		return fLstRefData;

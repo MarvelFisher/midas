@@ -67,25 +67,5 @@ public class TestITypeFilter {
 		List<RefData> lstFilteredRefData = (List<RefData>) iDataFilter.filter(lstRefData);
 		assertEquals(2, lstFilteredRefData.size());
 	}
-	
-	@Test
-	public void testRefDataFilterErrorHandling() {
-		refData1 = new RefData();
-		lstRefData.add(refData1);
-		
-		try {
-			iDataFilter.filter(lstRefData);
-			fail("DataObjectException was not thrown expectedly while IType is null");
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		refData1.setIType(IType.FUTURES_CX.getValue());
-		try {
-			iDataFilter.filter(lstRefData);
-		} catch (Exception e) {
-			fail("DataObjectException was thrown unexpectedly while IType is not null");
-		}
-	}
 
 }

@@ -46,19 +46,16 @@ public class CategoryFilter implements IRefDataFilter {
 				}
 				
 				for (RefData refData : lstRefData) {
-					if (refData.getCategory() == null || refData.getCategory().isEmpty()) {
-						LOGGER.error("Category cannot be null or empty.");
-						throw new Exception("Category cannot be null or empty.");
+					String category = refData.getCategory();
+					if (category == null || category.isEmpty()) {
+						continue;
 					}
 					
-					if (lstCategory.contains(refData.getCategory())) {
+					if (lstCategory.contains(category)) {
 						fLstRefData.add(refData);
 					}
 				}
 			}
-		} else {
-			LOGGER.error("The given RefData list cannot be null");
-			throw new Exception("The given RefData list cannot be null");
 		}
 		
 		return fLstRefData;
