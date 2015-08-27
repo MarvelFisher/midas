@@ -98,7 +98,7 @@ public class RefDataUtil {
 		}
 		
 		calDate.set(Calendar.DAY_OF_MONTH, dayInMonth);
-		while(tradeDateManager.isHoliday(cal.getTime())){
+		while(tradeDateManager.isHoliday(calDate.getTime())){
 			calDate.add(Calendar.DAY_OF_MONTH, 1);
 		}
 		
@@ -109,7 +109,8 @@ public class RefDataUtil {
 		} catch (ParseException e) {
 			log.warn(e.getMessage(),e);
 		}
-        
+		log.info("settlementDate :{} ,",settlementDate);
+
 		return settlementDate;
 	}
 	
@@ -146,7 +147,7 @@ public class RefDataUtil {
 		String settlementDate = null;
 		
         try {
-			settlementDate = formatSettlementDate(calDate.getTime());
+			settlementDate = formatSettlementDate(date);
 		} catch (ParseException e) {
 			log.warn(e.getMessage(),e);
 		}
