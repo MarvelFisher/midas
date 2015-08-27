@@ -86,34 +86,47 @@ public class Registration {
         return str;
     }
 	
-	public String getSubscribeSymbol() {
+    // 避免一個 Subscribe 太長,所以用 ArrayList 回
+	public ArrayList<String> getSubscribeSymbol() {
 		if(symbolList.size() <= 0) {
 			return null;
 		}
 		StringBuilder strb = new StringBuilder("API=SUBSCRIBE|Symbol=");
+		ArrayList<String>lst = new ArrayList<String>();
 		int iCount = 0;
-		for(String symbol : symbolList) {
-			if(iCount != 0) {
-				strb.append(";");
+		synchronized(symbolList) {
+			for(String symbol : symbolList) {
+				if(iCount != 0) {
+					strb.append(";");
+				}
+				if(IsMFSymbol(symbol))
+				{
+					continue;
+				}
+				strb.append(symbol);
+				iCount += 1;
+				if(iCount >= 512) {
+					lst.add(strb.toString());
+					strb = new StringBuilder("API=SUBSCRIBE|Symbol=");
+					iCount = 0;
+				}
 			}
-			if(IsMFSymbol(symbol))
-			{
-				continue;
-			}
-			strb.append(symbol);
-			iCount += 1;
 		}
-		if(iCount == 0) {
+		if(iCount > 0) {
+			lst.add(strb.toString());
+		}
+		if(lst.size() == 0) {
 			return null;
 		}
-		return strb.toString();		
+		return lst;	
 	}
 	
-	public String getSubscribeSymbolMF() {
+	public ArrayList<String> getSubscribeSymbolMF() {
 		if(symbolList.size() <= 0) {
 			return null;
 		}
 		StringBuilder strb = new StringBuilder("API=SUBSCRIBEMF|Symbol=");
+		ArrayList<String> lst = new ArrayList<String>();
 		int iCount = 0;
 		for(String symbol : symbolList) {
 			if(iCount != 0) {
@@ -125,11 +138,19 @@ public class Registration {
 			}								
 			strb.append(ConvertMFSymbol(symbol)); // 因為 SHF , DCE 註冊時,商品代碼要用小寫,但是傳回來的商品代碼是大寫 !!!	
 			iCount += 1;
+			if(iCount >= 512) {
+				lst.add(strb.toString());
+				strb = new StringBuilder("API=SUBSCRIBEMF|Symbol=");
+				iCount = 0;
+			}			
 		}
-		if(iCount == 0) {
+		if(iCount > 0) {
+			lst.add(strb.toString());
+		}		
+		if(lst.size() == 0) {
 			return null;
 		}
-		return strb.toString();		
+		return lst;	
 	}	
 	
 	public String getSubscribeTransaction() {
@@ -215,12 +236,16 @@ public class Registration {
 	}
 	
 	public void clear() {
-		symbolList.clear();
+		synchronized(symbolList) {
+			symbolList.clear();
+		}
 		marketList.clear();
 		transactionList.clear();
 	}
 	public void addRegistration(Registration o) {
-		this.addSymbols(o.symbolList);
+		synchronized(symbolList) {
+			this.addSymbols(o.symbolList);
+		}
 		this.addMarkets(o.marketList);
 		this.addTransaction(o.transactionList);
 	}	
@@ -252,10 +277,13 @@ public class Registration {
 	public HashMap<Integer,Object> flushMsgPack() {
 		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
 		map.put(FDTFields.PacketType,FDTFields.PacketArray);
-		synchronized(mpList) {
+		synchronized(mpList) {			
 			if(mpList.size() == 1) {
 				map = mpList.get(0);
 			} else {
+				if(mpList.size() == 0) {
+					return null;
+				}
 				map.put(FDTFields.ArrayOfPacket,  new ArrayList<HashMap<Integer,Object>>(mpList));
 			}
 			mpList.clear();

@@ -890,6 +890,11 @@ public class SymbolData implements Comparable<SymbolData>
 		return ;
 	}
 	
+	public void putInsert()
+	{
+		centralDB.getInsertProc().put(getStrSymbol());
+	}
+	
 	public List<HistoricalPrice> getHistoricalPrice(String type, String symbol, int dataCount)
 	{
     	if (market == null)

@@ -33,22 +33,33 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	private static final Logger log = LoggerFactory.getLogger(MsgPackLiteDataServerHandler.class);
 	
 	static public void resubscribe(Channel channel) {
-		String strSubscribe = registrationGlobal.getSubscribeMarket();
-		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe,true));
+		synchronized(channels) {
+			rearrangeRegistration();
+			String strSubscribe = registrationGlobal.getSubscribeMarket();		
+			if(strSubscribe != null) {
+				channel.write(addHashTail(strSubscribe,true));
+			}
+			
+			ArrayList<String> lst = registrationGlobal.getSubscribeSymbol(); 
+			if(lst != null) {
+				for(String str : lst) {
+					channel.write(addHashTail(str,true));
+				}
+			}
+			
+			strSubscribe = registrationGlobal.getSubscribeTransaction();
+			if(strSubscribe != null) {
+				channel.write(addHashTail(strSubscribe,true));
+			}
+			
+			lst = registrationGlobal.getSubscribeSymbolMF();
+			if(lst != null) {
+				for(String str : lst) {
+					channel.write(addHashTail(str,true));
+				}
+			}
 		}
-		strSubscribe = registrationGlobal.getSubscribeSymbol();
-		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe,true));
-		}
-		strSubscribe = registrationGlobal.getSubscribeTransaction();
-		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe,true));
-		}
-		strSubscribe = registrationGlobal.getSubscribeSymbolMF();
-		if(strSubscribe != null) {
-			channel.write(addHashTail(strSubscribe,true));
-		}			
+		
 	}
 
 	public static String addHashTail(String str,boolean bAddHash)
@@ -70,8 +81,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		Channel incoming = ctx.channel();
 		channels.remove(ctx.channel());
-		log.info("[MsgPack Server] - " + incoming.remoteAddress().toString() + " has removed , Current Count : " + channels.size());
-	
+		log.info("[MsgPack Server] - " + incoming.remoteAddress().toString() + " has removed , Current Count : " + channels.size());			
 	}	
 	
 
@@ -380,7 +390,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 							}
 						}	else if(strDataType.equals("GetCodeTable")) {						
 							if(WindGateway.mpCascading) {
-								MsgPackLiteDataClientHandler.sendRequest(msg);
+								sendCascadingCodeTable(channel,strMarket);
 							} else {
 								sendCodeTable(channel,strMarket);
 							}															
@@ -431,11 +441,15 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     		while (it.hasNext()) {
     			@SuppressWarnings("rawtypes")
     			Map.Entry pairs = (Map.Entry)it.next();
-    			String market = (String)pairs.getKey();
+    			String market = (String)pairs.getKey();    			
     			if(market == null || market == "") {    			
     				continue;
     			}
     			lst.add(market);
+    			CodeTable ct = (CodeTable)pairs.getValue();
+    			if(ct != null && ct.mpCodeTableResult != null) {
+    				channel.writeAndFlush(ct.mpCodeTableResult);
+    			}
     		}
     	}
     	if(lst.size() == 0) {
@@ -476,34 +490,40 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	return map;
     }
     
-    public static void sendCodeTable(Channel channel,String market)
+    @SuppressWarnings("unchecked")
+	public static void sendCascadingCodeTable(Channel channel,String markets)
     {
-    	if(market == null) {    	
+    	if(markets == null) {    	
 			String logstr = "Missing Market while request Code Table : from " + channel.remoteAddress();
 			System.out.println(logstr);
 			log.warn(logstr); 
 			return;
     	}
-    	ConcurrentHashMap<String,TDF_CODE> lst = WindGateway.mapCodeTable.get(market);
+    	ConcurrentHashMap<String,HashMap<Integer,Object>> lst = new ConcurrentHashMap<String,HashMap<Integer,Object>>();
+    	String[] arrMarkets = markets.split(";");
+    	for(String market : arrMarkets) {    		
+    		ConcurrentHashMap<String,HashMap<Integer,Object>> l = MsgPackLiteDataClientHandler.getMPCodeByMarket(market);    	
+    		if(l != null && l.size() > 0) {
+    			lst.putAll(l);
+    		}
+    	}
     	if(lst == null || lst.size() == 0) {    	
-			String logstr = "No symbol at market : " + market + " , request from : " + channel.remoteAddress();
+			String logstr = "No symbol at market : " + markets + " , request from : " + channel.remoteAddress();
 			System.out.println(logstr);
 			log.warn(logstr);  
 			return;
     	}
 
-    		ArrayList<HashMap<Integer,Object>>packetArray = new ArrayList<HashMap<Integer,Object>>();
-    		int i = 0;
-    		TDF_CODE code;		
+    		int i = 0;	    		
     		HashMap<Integer,Object> map;
+    		ArrayList<HashMap<Integer,Object>>packetArray = new ArrayList<HashMap<Integer,Object>>();
     	    @SuppressWarnings("rawtypes")
 			Iterator it = lst.entrySet().iterator();
     	    while (it.hasNext()) {
     			i += 1;
     	        @SuppressWarnings("rawtypes")
 				Map.Entry pair = (Map.Entry)it.next();
-    	        code = (TDF_CODE) pair.getValue();
-    	        map = codeToMap(code);
+    	        map = (HashMap<Integer, Object>) pair.getValue();
     	        map.put(FDTFields.SerialNumber, it.hasNext() ? i : -i);
     			packetArray.add(map);
     			if(i % maxMsgPackCount == 0) {
@@ -517,6 +537,55 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     		}
   	
     }
+    
+    public static void sendCodeTable(Channel channel,String markets)
+    {
+    	if(markets == null) {    	
+			String logstr = "Missing Market while request Code Table : from " + channel.remoteAddress();
+			System.out.println(logstr);
+			log.warn(logstr); 
+			return;
+    	}
+    	ConcurrentHashMap<String,TDF_CODE> lst = new ConcurrentHashMap<String,TDF_CODE>();
+    	String[] arrMarkets = markets.split(";");
+    	for(String market : arrMarkets) {
+    		ConcurrentHashMap<String,TDF_CODE> l = WindGateway.getCodeTableByMarket(market);
+    		if(l != null && l.size() > 0) {
+    			lst.putAll(l);
+    		}
+    	}
+    	if(lst == null || lst.size() == 0) {    	
+			String logstr = "No symbol at market : " + markets + " , request from : " + channel.remoteAddress();
+			System.out.println(logstr);
+			log.warn(logstr);  
+			return;
+    	}
+
+		ArrayList<HashMap<Integer,Object>>packetArray = new ArrayList<HashMap<Integer,Object>>();
+		int i = 0;
+		TDF_CODE code;		
+		HashMap<Integer,Object> map;
+	    @SuppressWarnings("rawtypes")
+		Iterator it = lst.entrySet().iterator();
+	    while (it.hasNext()) {
+			i += 1;
+	        @SuppressWarnings("rawtypes")
+			Map.Entry pair = (Map.Entry)it.next();
+	        code = (TDF_CODE) pair.getValue();
+	        map = codeToMap(code);
+	        map.put(FDTFields.SerialNumber, it.hasNext() ? i : -i);
+			packetArray.add(map);
+			if(i % maxMsgPackCount == 0) {
+				sendPacketArray(channel,packetArray);
+				packetArray.clear();
+			}    	   
+		}
+		if(packetArray.size() > 0) {
+			sendPacketArray(channel,packetArray);
+			packetArray.clear();
+		}
+  	
+    }    
     
     public static HashMap<Integer,Object> getTransaction(String symbol) {
     	TDF_TRANSACTION data = WindGateway.mapTransaction.get(symbol);
@@ -657,6 +726,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	map.put(FDTFields.SerialNumber,heartbeatCounter);
     	return map;
     }
+           
     
     public static void sendHeartbeat(Channel channel,int heartbeatCounter) {
     	channel.writeAndFlush(heartbeatMessagePack(heartbeatCounter));
@@ -678,11 +748,12 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
     	}
     }
     
-    public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol) {
+    public static void sendMssagePackToAllClientByRegistration(HashMap<Integer, Object> map,String symbol,boolean bQueued) {
     	if(map == null) {
     		return;
     	}
-		Iterator<?> it = channels.entrySet().iterator();
+    	    	
+		Iterator<?> it = channels.entrySet().iterator();		
 		int cnt;
 		while (it.hasNext()) {
 			@SuppressWarnings("rawtypes")
@@ -692,9 +763,13 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 				continue;
 			}
 			if(lst.hadSymbol(symbol)) {
-				cnt = lst.addMsgPack(map);
-				if(cnt >= maxMsgPackCount) {
-					((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+				if(bQueued) {
+					cnt = lst.addMsgPack(map);
+					if(cnt >= maxMsgPackCount) {
+						((Channel)pairs.getKey()).writeAndFlush(lst.flushMsgPack());
+					}					
+				} else {
+					((Channel)pairs.getKey()).writeAndFlush(map);
 				}
 			}
 		}		    

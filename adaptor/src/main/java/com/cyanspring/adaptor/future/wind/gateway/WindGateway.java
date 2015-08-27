@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.InvalidPropertiesFormatException;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class WindGateway implements Runnable {
 	public static ConcurrentHashMap<String,TDF_INDEX_DATA>  mapIndexData  = new ConcurrentHashMap<String,TDF_INDEX_DATA>();
 	public static ConcurrentHashMap<String,BuySellVolume>   mapBuySell = new ConcurrentHashMap<String,BuySellVolume>();
 	public static ConcurrentHashMap<String,TDF_TRANSACTION> mapTransaction = new ConcurrentHashMap<String,TDF_TRANSACTION>();
-	public static ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>> mapCodeTable = new ConcurrentHashMap<String,ConcurrentHashMap<String,TDF_CODE>>();
+	public static ConcurrentHashMap<String,CodeTable> mapCodeTable = new ConcurrentHashMap<String,CodeTable>();
 	private LinkedBlockingQueue<Object> msgpackQueue = new LinkedBlockingQueue<Object>();
 	
 
@@ -976,7 +977,7 @@ public class WindGateway implements Runnable {
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishFutureChangesToMap(data,futureData), symbol,true);
 		}		
 		if(data != null) {		
 			data = null;
@@ -1003,7 +1004,7 @@ public class WindGateway implements Runnable {
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishMarketDataChangesToMap(data,marketData), symbol);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishMarketDataChangesToMap(data,marketData), symbol,true);
 		}		
 		if(data != null) {		
 			data = null;
@@ -1023,7 +1024,7 @@ public class WindGateway implements Runnable {
 			publishWindData(str,symbol);
 		}
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
-			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol);
+			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol,true);
 		}
 		if(data != null) {		
 			data = null;
@@ -1051,39 +1052,66 @@ public class WindGateway implements Runnable {
 		MsgPackLiteDataServerHandler.sendQuotationDateChange(dateChange.getMarket(),dateChange.getOldDate(),dateChange.getNewDate());
 	}
 	
-	public void receiveCodeTable(String strMarket,TDF_CODE[] codes) {	
-		ConcurrentHashMap<String,TDF_CODE> mapCode;
-		if(mapCodeTable.containsKey(strMarket))
-		{
-			mapCode = mapCodeTable.get(strMarket);
-		}	else	{
-			mapCode = new ConcurrentHashMap<String,TDF_CODE>();
-			mapCodeTable.put(strMarket, mapCode);
-		}
-		try {
-			if(codes != null) {
-					mapCode.clear();
-					for(TDF_CODE code : codes) {			
-						String wc = code.getWindCode();
-						mapCode.put(wc,code);
-						/*
-						String cnName = code.getCNName();
-						byte[] cn = code.getCNName().getBytes("UTF8");
-						String result = new String(cnName.getBytes(),"GB2312");
-						if(result != null) {
-							result = null;
-						}
-						if(cn != null) {
-							cn = null;
-						}
-						*/						
-					}			
-			}
-		} catch(Exception e)  {
-			
+	public void resetCodeTable(String strMarket) {
+		mapCodeTable.put(strMarket, new CodeTable(strMarket,0,0,null));
+	}
+	
+    public static HashMap<Integer, Object> publishCodeTableResult(String market,int codeDate,int dataCount,long hc) {
+    	HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+    	map.put(FDTFields.PacketType, FDTFields.WindCodeTableResult);
+    	map.put(FDTFields.SecurityExchange, market);
+    	map.put(FDTFields.ActionDay,codeDate);
+    	map.put(FDTFields.DataCount,dataCount);
+    	map.put(FDTFields.HashCode, hc);  
+    	return map;
+    }	
+	
+	public void receiveCodeTable(String strMarket,TDF_CODE[] codes,int codeDate) {	
+		CodeTable ct = null;
+		long codesHashCode = 0;
+		
+		if(codes == null || codes.length == 0) {
+			return;
 		}
 		
+		for(TDF_CODE code : codes) {						
+			codesHashCode += ((long)code.getWindCode().hashCode() + (long)code.getCNName().hashCode());
+		}
+		
+		if(mapCodeTable.containsKey(strMarket)) {		
+			ct = mapCodeTable.get(strMarket);
+			if(ct != null) {
+				if(ct.CodeDate == codeDate) {
+					log.info("Code Table Same Date , Market : " + strMarket + " , Date : " + codeDate);									
+					if(codesHashCode == ct.codesHashCode) {
+						log.info("Code Table No Change , Market : " + strMarket);
+						return;
+					}
+				}
+			}
+			mapCodeTable.remove(strMarket);
+			ct = null;
+		}	
+		
+		HashMap<Integer, Object> map = publishCodeTableResult(strMarket,codeDate,codes.length,codesHashCode);
+		ct = new CodeTable(strMarket,codeDate,codesHashCode,map);
+
+		for(TDF_CODE code : codes) {						
+			ct.mapCode.put(code.getWindCode(),code);					
+		}				
+		
+		mapCodeTable.put(strMarket, ct);
+		MsgPackLiteDataServerHandler.sendMessagePackToAllClient(map);
+
 	}
+	
+	public static ConcurrentHashMap<String,TDF_CODE> getCodeTableByMarket(String market) {
+		if(mapCodeTable.containsKey(market)) {
+			return mapCodeTable.get(market).mapCode;
+		}
+		return null;
+	}
+	
 	
 	public void connectedWithWind(String[] markets) {
 		MsgPackLiteDataServerHandler.connectedWithWind(markets);
@@ -1099,7 +1127,7 @@ public class WindGateway implements Runnable {
 				String[] markets = str.substring(8).split(",");
 				for(String market : markets) {
 					if(market != null && market.isEmpty() == false) {
-						receiveCodeTable(market,null);
+						resetCodeTable(market);
 					}
 				}
 			}
@@ -1110,7 +1138,7 @@ public class WindGateway implements Runnable {
 
 		for(String market : markets) {
 			if(market != null && market.isEmpty() == false) {
-				receiveCodeTable(market,null);
+				resetCodeTable(market);
 			}
 		}
 	}	
@@ -1454,8 +1482,8 @@ class ProcessMsgPackLiteData implements Runnable {
 				} while(msg != null);
 				*/
 				msgList.clear();
-				msgList.add(queue.take());
-				cnt = queue.drainTo(msgList) + 1;
+				//msgList.add(queue.take());  // 如果 Blocking 住的話,會有來不及傳送資料給 Client 的狀況.  所以改成 non-blocking
+				cnt = queue.drainTo(msgList);
 				if(cnt > 0) {
 					for(Object msg : msgList) {
 						ProcessMessage(msg);
@@ -1464,7 +1492,9 @@ class ProcessMsgPackLiteData implements Runnable {
 						maxQueued = cnt;
 						log.info("Data Client Max Queued : " + maxQueued);
 					}						
-				} 					
+				} else {
+					Thread.sleep(5);
+				}
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);				
 			}
@@ -1488,5 +1518,24 @@ class ProcessMsgPackLiteData implements Runnable {
 	
 	public void stop() {
 		quitFlag = true;
+	}	
+}
+
+class CodeTable {
+	String strMarket = "";
+	int CodeDate;
+	long codesHashCode;
+	public ConcurrentHashMap<String, TDF_CODE> mapCode = new ConcurrentHashMap<String,TDF_CODE>();
+	public HashMap<Integer, Object> mpCodeTableResult = null;
+	
+	public CodeTable(String m,int d,long h,HashMap<Integer, Object> p) {
+		strMarket = m;
+		CodeDate = d;
+		codesHashCode = h;
+		mpCodeTableResult = p;
+	}
+	
+	public int CodeCount(){
+		return mapCode.size();
 	}
 }
