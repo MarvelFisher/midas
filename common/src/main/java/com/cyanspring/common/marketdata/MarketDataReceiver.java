@@ -69,6 +69,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private long chkTime;
     private boolean quoteExtendEventIsSend = true;
     private boolean quoteLogIsOpen = false;
+    private boolean useMarketSession = true;
     private int quoteExtendSegmentSize = 300;
     private IQuoteAggregator aggregator;
     private volatile boolean isInitRefDateReceived = false;
@@ -327,7 +328,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void printQuoteExtendLog(QuoteSource quoteSource, DataObject quoteExtend){
         StringBuffer sbQuoteExtendLog = new StringBuffer();
         for (String key : quoteExtend.getFields().keySet()) {
-            sbQuoteExtendLog.append("," + (key.length() >= 3 ? key.substring(0,2) + key.substring(key.length()-1,key.length()) : key) + "=" + quoteExtend.getFields().get(key));
+            sbQuoteExtendLog.append("," + (key.length() >= 3 ? key.substring(0, 2) + key.substring(key.length() - 1, key.length()) : key) + "=" + quoteExtend.getFields().get(key));
         }
         quoteLog.info("QuoteExtend Receive : " + "Sc=" + quoteSource.getValue() + sbQuoteExtendLog.toString());
     }
@@ -367,6 +368,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         for (IMarketDataAdaptor adaptor : adaptors) {
             if ("WindGateWayAdapter".equals(adaptor.getClass().getSimpleName())) {
                 isInitIndexSessionReceived = false;
+                if(!useMarketSession) isInitMarketSessionReceived = true;
                 break;
             }
         }
@@ -654,5 +656,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void setServerInfo(String serverInfo) {
         this.serverInfo = serverInfo;
+    }
+
+    public void setUseMarketSession(boolean useMarketSession) {
+        this.useMarketSession = useMarketSession;
     }
 }
