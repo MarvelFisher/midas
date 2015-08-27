@@ -10,9 +10,11 @@
     <import resource="test/livefc_test.xml" />
     <import resource="livefc/MarketSession.xml" />
     <import resource="livefc/IFSessionState.xml" />
+    <import resource="livefc/ICSessionState.xml" />
+    <import resource="livefc/IHSessionState.xml" />
+    <import resource="livefc/INDEXSessionState.xml" />
     <import resource="livefc/business.xml" />
     <import resource="livefc/LiveTrading.xml" />
-    <import resource="livefc/refDataStrategy.xml" />
     <import resource="common/strategy.xml" />
     <import resource="common/centralDb.xml" />
     <import resource="common/persistence.xml" />

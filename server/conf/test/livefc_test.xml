@@ -28,6 +28,7 @@
         </property>
         <property name="plugins">
             <list>
+            	<ref bean="marketSessionUtil"/>
                 <ref bean="marketSessionManager" />
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager"/>
@@ -164,7 +165,7 @@
         <constructor-arg>
             <ref bean="simExchange" />
         </constructor-arg>
-        <property name="sourceId" value="101"/>
+        <property name="quoteSource" value="WIND_GENERAL"/>
     </bean>
 
     <bean id="simExchange" class="webcurve.exchange.Exchange">
@@ -266,10 +267,9 @@
     <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
 
     <bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
-        <property name="refDataFile">
-            <value>refdata/refData_livefc.xml</value>
-        </property>
-        <property name="strategyMapping"><ref bean="strategyMapping"/></property>
+		<property name="refDataTemplatePath">
+			<value>refData/template/template_FC.xml</value>
+		</property>
         <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
     </bean>
 
@@ -332,18 +332,14 @@
     </bean>
 
     <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-        <constructor-arg>
-            <map>
-                <entry key="IF">
-                    <ref bean="IFsessionChecker" />
-                </entry>
-            </map>
-        </constructor-arg>
-        <constructor-arg>
-            <map>
-                <entry key="IF"><ref bean="IFtradeDateManager"/></entry>
-            </map>
-        </constructor-arg>
-    </bean>
+		<constructor-arg>
+			<list>
+				<ref bean="ifSessionChecker"/>
+				<ref bean="ihSessionChecker"/>
+				<ref bean="icSessionChecker"/>
+				<ref bean="indexSessionChecker"/>
+			</list>
+		</constructor-arg>
+	</bean>
 
 </beans>

@@ -40,7 +40,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	@Autowired
 	private MarketSessionUtil marketSessionUtil;
 	
-	@Autowired
+	@Autowired(required=false)
 	private RefDataFilter refDataFilter;
 
 	private boolean noCheckSettlement = false;
@@ -137,7 +137,8 @@ public class IndexMarketSessionManager implements IPlugin {
 			return;
 		List<RefData> list = event.getRefDataList();
 		try {
-			list = refDataFilter.filter(list);
+			if (refDataFilter != null)
+				list = refDataFilter.filter(list);
 			for (RefData refData : list) 
 				addQueue.offer(refData);
 		} catch (Exception e) {
