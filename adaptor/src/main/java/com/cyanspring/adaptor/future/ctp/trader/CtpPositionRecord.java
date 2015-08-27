@@ -16,10 +16,12 @@ public class CtpPositionRecord {
 	private Map<String, CtpPosition> positions = new HashMap<String, CtpPosition>();
 	private Map<String, HoldPosition> holds = new HashMap<String, HoldPosition>();
 	private final int margin;
+	private final double maxOpenPosition;
 	private boolean injecting;
 
-	public CtpPositionRecord(int margin) {
+	public CtpPositionRecord(int margin, double maxOpenPosition) {
 		this.margin = margin;
+		this.maxOpenPosition = maxOpenPosition;
 	}
 	
 	private class HoldPosition {
@@ -137,6 +139,23 @@ public class CtpPositionRecord {
 			existing.add(position);
 		}
 		log.debug("After inject: " + toString());
+	}
+	
+	synchronized boolean checkMaxOpenPosition(String symbol) {
+		double totalOpenPosition = 0;
+		CtpPosition record = positions.get(getKey(symbol, true));
+		if(null != record)
+			totalOpenPosition += record.getTotalOpenPosition();
+		
+		record = positions.get(getKey(symbol, false));
+		if(null != record)
+			totalOpenPosition += record.getTotalOpenPosition();
+		
+		log.debug("TotalOpenPosition: " + symbol + ", " + totalOpenPosition);
+		if(PriceUtils.EqualGreaterThan(totalOpenPosition, maxOpenPosition))
+			return false;
+		
+		return true;
 	}
 	
 	synchronized void clear() {
