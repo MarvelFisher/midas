@@ -6,7 +6,6 @@ target
 log
 .idea
 **/*.iml
-
 .DS_Store
 .metadata/**
 info/DAT/**
