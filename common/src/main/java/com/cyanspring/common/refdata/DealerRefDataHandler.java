@@ -177,8 +177,10 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			refDataManager.init();
 			for (RefData refData : refDataList) {
 				String index = RefDataUtil.getCategory(refData);
-				if (index == null)
-					throw new Exception("RefData index not find");
+				if (index == null) {
+					log.warn("RefData index not find");
+					continue;
+				}
 				MarketSessionData session = sessionDataMap.get(index);
 				if (session == null) {
 					log.warn("Can't find market session data for [" + index + "], remove it from list");
