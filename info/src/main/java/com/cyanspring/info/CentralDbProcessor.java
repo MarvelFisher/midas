@@ -77,7 +77,9 @@ public class CentralDbProcessor implements IPlugin
 	private ComboPooledDataSource cpds;	
 	
 //	private Map<String, RefSubName> subNameMap = new HashMap<String, RefSubName>();
-
+	public static final String ProcHistory = "History";
+	public static final String ProcRequest = "Request";
+	public static final String ProcSession = "Session";
 	private String driverClass;
 	private String jdbcUrl;
 	private String serverMarket;
@@ -265,47 +267,49 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcSession).onEvent(event);
 	}
 	
 	public void processPriceHighLowRequestEvent(PriceHighLowRequestEvent event)
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcHistory + curHisThread).onEvent(event);
+		curHisThread = (curHisThread + 1) % numOfHisThreads;  
 	}
 	
 	public void processHistoricalPriceRequestEvent(HistoricalPriceRequestEvent event)
 	{
-		mapCentralDbEventProc.get("Historical" + curHisThread).onEvent(event);
+		mapCentralDbEventProc.get(ProcHistory + curHisThread).onEvent(event);
 		curHisThread = (curHisThread + 1) % numOfHisThreads;  
 	}
 	
 	public void processHistoricalPriceRequestDateEvent(HistoricalPriceRequestDateEvent event)
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcHistory + curHisThread).onEvent(event);
+		curHisThread = (curHisThread + 1) % numOfHisThreads;  
 	}
 	
 	public void processSymbolListSubscribeRequestEvent(SymbolListSubscribeRequestEvent event)
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcRequest).onEvent(event);
 	}
 	
 	public void processRefDataEvent(RefDataEvent event) 
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcSession).onEvent(event);
 	}
 	
 	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcSession).onEvent(event);
 	}
 	
 	public void processRetrieveChartEvent(RetrieveChartEvent event)
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcRequest).onEvent(event);
 	}
 	public void processGroupListRequestEvent(GroupListRequestEvent event)
 	{
-		mapCentralDbEventProc.get("Request").onEvent(event);
+		mapCentralDbEventProc.get(ProcRequest).onEvent(event);
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -1025,9 +1029,10 @@ public class CentralDbProcessor implements IPlugin
 		mapCentralDbEventProc = new HashMap<String, CentralDbEventProc>();
 		for (int ii = 0; ii < numOfHisThreads; ii++)
 		{
-			mapCentralDbEventProc.put("Historical" + ii, new CentralDbEventProc(this, "CDP-Event-His" + ii));
+			mapCentralDbEventProc.put(ProcHistory + ii, new CentralDbEventProc(this, "CDP-Event-His" + ii, true));
 		}
-		mapCentralDbEventProc.put("Request", new CentralDbEventProc(this, "CDP-Event-Req"));
+		mapCentralDbEventProc.put(ProcRequest, new CentralDbEventProc(this, "CDP-Event-Req", false));
+		mapCentralDbEventProc.put(ProcSession, new CentralDbEventProc(this, "CDP-Event-Ses", false));
 //		SymbolInfo.setSubNameMap(subNameMap);
 		resetStatement() ;
 		requestMarketSession() ;

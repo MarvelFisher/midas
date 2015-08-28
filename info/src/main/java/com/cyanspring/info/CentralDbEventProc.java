@@ -37,17 +37,22 @@ public class CentralDbEventProc implements Runnable
 	private static final Logger log = LoggerFactory
 			.getLogger(CentralDbProcessor.class);
     private Thread m_Thread;
+    private HistoricalProc subProc = null;
     private CentralDbProcessor centraldb = null;
     private LinkedBlockingQueue<RemoteAsyncEvent> m_q = new LinkedBlockingQueue<RemoteAsyncEvent>();
     private String strName = "";
     
-    public CentralDbEventProc(CentralDbProcessor centraldb, String strName)
+    public CentralDbEventProc(CentralDbProcessor centraldb, String strName, boolean isHis)
     {
     	this.strName = strName;
     	this.centraldb = centraldb;
     	m_Thread = new Thread(this);
     	m_Thread.setName(strName);
     	m_Thread.start();
+    	if (isHis)
+    	{
+    		subProc = new HistoricalProc(this, strName + "_Sub");
+    	}
     }
     public void onEvent(RemoteAsyncEvent event)
     {
@@ -80,17 +85,7 @@ public class CentralDbEventProc implements Runnable
 		{
 			if (symboldata.getMapHistorical().get(type) == null)
 			{
-				Thread retThread = new Thread(new Runnable() 
-				{
-					@Override
-					public void run() 
-					{
-						processHistoricalPriceRequestEvent(event, false);
-					}
-				});
-				retThread.setName("Ret_" + symbol + "_" + type);
-				retThread.start();
-				return;
+				subProc.onEvent(event);
 			}
 		}
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
@@ -360,4 +355,64 @@ public class CentralDbEventProc implements Runnable
 		}
 	}
 
+}
+class HistoricalProc implements Runnable
+{
+	private static final Logger log = LoggerFactory
+			.getLogger(HistoricalProc.class);
+    private LinkedBlockingQueue<RemoteAsyncEvent> m_q = new LinkedBlockingQueue<RemoteAsyncEvent>();
+    private String strName = "";
+    private CentralDbEventProc cdproc = null;
+    private Thread m_Thread;
+    
+    public HistoricalProc(CentralDbEventProc cdproc, String strName)
+    {
+    	this.strName = strName;
+    	this.cdproc = cdproc;
+    	m_Thread = new Thread(this);
+    	m_Thread.setName(strName);
+    	m_Thread.start();
+    }
+    public void onEvent(RemoteAsyncEvent event)
+    {
+    	try 
+    	{
+    		if (event == null)
+    		{
+    			return;
+    		}
+			m_q.put(event);
+		} 
+    	catch (InterruptedException e) 
+    	{
+            log.error(strName, e);
+		}
+    }
+	@Override
+	public void run()
+	{
+		long lTimeOut = 5000;
+		RemoteAsyncEvent event;
+		while (true)
+		{
+			event = m_q.poll();
+			try
+			{
+				if (event != null)
+				{
+					cdproc.processHistoricalPriceRequestEvent((HistoricalPriceRequestEvent) event,
+							false);
+				}
+				else
+				{
+					Thread.sleep(lTimeOut);
+				}
+			}
+			catch (Exception e)
+			{
+				log.error(strName, e);
+			}
+		}
+	}
+	
 }
