@@ -226,7 +226,6 @@ public class RefDataUtil {
 		}else{
 			
 			String iType = refData.getIType();
-			log.info("itype:{}",iType);
 			if(StringUtils.hasText(iType)){
 				
 				if(IType.isFuture(iType)){
