@@ -1,812 +1,852 @@
 <list>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>AUDUSD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>AUD.USD</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>Australian Dollar vs US Dollar</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>澳元/美元</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>澳洲元 兌 美元</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>澳元/美元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>澳大利亚元 兑 美元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>AUDUSD</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>AUD</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>USD</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>USDJPY</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>USD.JPY</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>US Dollar vs Japanese Yen</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>美元/日圓</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>美元 兌 日本圓</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>美元/日元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>美元 兑 日本元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>USDJPY</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>USD</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>JPY</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>USDCHF</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>USD.CHF</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>US Dollar vs Swiss Franc</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>美元/瑞郎</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>美元 兌 瑞士法郎</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>美元/瑞郎</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>美元 兑 瑞士法郎</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>USDCHF</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>USD</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>CHF</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>USDCAD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>USD.CAD</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>US Dollar vs Canadian Dollar</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>美元/加元</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>美元 兌 加拿大元</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>美元/加元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>美元 兑 加拿大元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>USDCAD</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>USD</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>CAD</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>EURUSD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>EUR.USD</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>Euro vs US Dollar</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>歐元/美元</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>歐元 兌 美元</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>欧元/美元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>欧元 兑 美元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>EURUSD</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>EUR</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>USD</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>EURJPY</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>EUR.JPY</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>Euro vs Japanese Yen</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>歐元/日圓</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>歐元 兌 日本圓</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>欧元/日元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>欧元 兑 日本元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>EURJPY</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>EUR</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>JPY</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>GBPUSD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>GBP.USD</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>Great Britain Pound vs US Dollar</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>英鎊/美元</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>英國鎊 兌 美元</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>英镑/美元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>英国镑 兑 美元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>GBPUSD</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>GBP</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>USD</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>NZDUSD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>NZD.USD</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>New Zealand Dollar vs US Dollar</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>紐元/美元</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>紐西蘭元 兌 美元</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>纽元/美元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>新西兰元 兑 美元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>NZDUSD</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>NZD</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>USD</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>GBPJPY</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>GBP.JPY</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>Great Britain Pound vs Japanese Yen</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>英鎊/日圓</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>英國鎊 兌 日本圓</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>英镑/日元</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>英国镑 兑 日本元</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>GBPJPY</string>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>GBP</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>JPY</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>1.0</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>1</double>
-			</entry>
-			<entry>
-				<string>Contract</string>
-				<com.ib.client.Contract>
-					<m__conId>0</m__conId>
-					<m__symbol>USD</m__symbol>
-					<m__secType>CASH</m__secType>
-					<m__strike>0.0</m__strike>
-					<m__exchange>IDEALPRO</m__exchange>
-					<m__currency>CNH</m__currency>
-					<m__includeExpired>false</m__includeExpired>
-					<m__comboLegs />
-				</com.ib.client.Contract>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1000</int>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>FX</string>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>USDCNH</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>USD.CNH</string>
-			</entry>
-			<entry>
-				<string>Detail EN</string>
-				<string>US Dollar vs Chinese Offshore Yuan</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>美元/人民币</string>
-			</entry>
-			<entry>
-				<string>Detail CN</string>
-				<string>美元 兑 中国离岸人民币</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>美元/人民幣</string>
-			</entry>
-			<entry>
-				<string>Detail TW</string>
-				<string>美元 兌 中國離岸人民幣</string>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>-1</int>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>FX</string>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>澳洲元 兌 美元</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>AUDUSD</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>澳元/美元</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>澳大利亚元 兑 美元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>Australian Dollar vs US Dollar</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>AUDUSD</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>澳元/美元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>AUD.USD</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>AUD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>USD</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>美元 兌 日本圓</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>USDJPY</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>美元/日圓</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>美元 兑 日本元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>US Dollar vs Japanese Yen</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>USDJPY</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>美元/日元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>USD.JPY</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>USD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>JPY</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>美元 兌 瑞士法郎</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>USDCHF</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>美元/瑞郎</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>美元 兑 瑞士法郎</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>US Dollar vs Swiss Franc</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>USDCHF</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>美元/瑞郎</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>USD.CHF</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>USD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>CHF</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>美元 兌 加拿大元</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>USDCAD</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>美元/加元</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>美元 兑 加拿大元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>US Dollar vs Canadian Dollar</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>USDCAD</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>美元/加元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>USD.CAD</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>USD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>CAD</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>歐元 兌 美元</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>EURUSD</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>歐元/美元</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>欧元 兑 美元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>Euro vs US Dollar</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>EURUSD</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>欧元/美元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>EUR.USD</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>EUR</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>USD</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>歐元 兌 日本圓</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>EURJPY</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>歐元/日圓</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>欧元 兑 日本元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>Euro vs Japanese Yen</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>EURJPY</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>欧元/日元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>EUR.JPY</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>EUR</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>JPY</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>英國鎊 兌 美元</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>GBPUSD</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>英鎊/美元</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>英国镑 兑 美元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>Great Britain Pound vs US Dollar</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>GBPUSD</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>英镑/美元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>GBP.USD</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>GBP</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>USD</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>紐西蘭元 兌 美元</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>NZDUSD</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>紐元/美元</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>新西兰元 兑 美元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>New Zealand Dollar vs US Dollar</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>NZDUSD</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>纽元/美元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>NZD.USD</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>NZD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>USD</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>英國鎊 兌 日本圓</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>GBPJPY</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>英鎊/日圓</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>英国镑 兑 日本元</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>Great Britain Pound vs Japanese Yen</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>GBPJPY</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>英镑/日元</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>GBP.JPY</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>GBP</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>JPY</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>美元 兌 中國離岸人民幣</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>USDCNH</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>美元/人民幣</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>美元 兑 中国离岸人民币</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>US Dollar vs Chinese Offshore Yuan</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>美元/人民币</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>USD.CNH</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>USD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>CNH</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
 </list>
