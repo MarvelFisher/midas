@@ -71,8 +71,11 @@ public class RefDataUtil {
 		return marketSessionUtil.getTradeDateManager(category);
 	}
 	
-	public static Date parseSettlementDate(String date) throws ParseException{
-		return TimeUtil.parseDate(date, "yyyy-MM-dd");
+	public static Calendar parseSettlementDate(String date) throws ParseException{
+		Date nowDate = TimeUtil.parseDate(date, "yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(nowDate);
+		return cal;
 	}
 	
 	public static String formatSettlementDate(Date date) throws ParseException{
