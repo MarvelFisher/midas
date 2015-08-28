@@ -149,7 +149,8 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
 		List<RefData> list = event.getRefDataList();
 		try {
-			list = refDataFilter.filter(list);
+			if (refDataFilter != null)
+				list = refDataFilter.filter(list);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

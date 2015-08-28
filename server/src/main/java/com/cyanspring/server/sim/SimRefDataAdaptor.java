@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,37 +21,19 @@ import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class SimRefDataAdaptor implements IRefDataAdaptor {
 	private static final Logger log = LoggerFactory.getLogger(SimRefDataAdaptor.class);
 
-	@Autowired
-	private ScheduleManager scheduleManager;
-
-	@Autowired
-	private IRemoteEventManager eventManager;
-
-	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private String filePath = "./conf/sim/codetable_fcc.xml";
 	private XStream xstream;
 	private Map<String, CodeTableData> map;
 	private List<IRefDataListener> listeners;
-	private boolean status;
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {
-
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
-
-	};
+	private Boolean status = false;
+	private Timer timer;
 
 	@Override
 	public boolean getStatus() {
@@ -67,20 +50,29 @@ public class SimRefDataAdaptor implements IRefDataAdaptor {
 	public void init() throws Exception {
 		log.info("Initializing");
 		xstream = new XStream(new DomDriver("UTF-8"));
+		listeners = new ArrayList<>();
 		File file = new File(filePath);
 		map = (Map<String, CodeTableData>) xstream.fromXML(file);
-
-		listeners = new ArrayList<>();
-		// subscribe to events
-		eventProcessor.setHandler(this);
-		eventProcessor.init();
-		if (eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("SimRefDataAdaptor");
-
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.SECOND, 5);
-		if (!eventProcessor.isSync())
-			scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, timerEvent);
+		
+		log.info("Setting raw refData...");
+		List<RefData> refDataList = new ArrayList<>();
+		for (Entry<String, CodeTableData> e : map.entrySet()) {
+			CodeTableData data = e.getValue();
+			if (data.getSecurityType() == 1)
+				continue;
+			RefData refData = new RefData();
+			refData.setRefSymbol(data.getWindCode());
+			refData.setCNDisplayName(data.getCnName());
+			refData.setExchange(data.getSecurityExchange());
+			refData.setCode(data.getWindCode());
+			refData.setIType(String.valueOf(data.getSecurityType()));
+			refData.setCategory(RefDataUtil.getCategory(refData));
+			refDataList.add(refData);
+		}
+		
+		timer = new Timer("SimRefDataAdaptor");
+		RefDataUpdateTask updateTask = new RefDataUpdateTask(listeners, refDataList, this);
+		timer.schedule(updateTask, 5000);
 	}
 
 	@Override
@@ -106,27 +98,9 @@ public class SimRefDataAdaptor implements IRefDataAdaptor {
 		this.filePath = filePath;
 	}
 
-	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		log.info("Setting raw refData...");
-		status = true;
-		List<RefData> refDataList = new ArrayList<>();
-		for (Entry<String, CodeTableData> e : map.entrySet()) {
-			CodeTableData data = e.getValue();
-			RefData refData = new RefData();
-			refData.setRefSymbol(data.getWindCode());
-			refData.setCNDisplayName(data.getCnName());
-			refData.setExchange(data.getSecurityExchange());
-			refData.setCode(data.getWindCode());
-			refData.setIType(String.valueOf(data.getSecurityType()));
-			refDataList.add(refData);
-		}
-		for (IRefDataListener listener : listeners) {
-			try {
-				listener.onRefData(refDataList);
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}
+	@Override
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 
 }

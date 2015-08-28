@@ -602,4 +602,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public void setRefDataAdapterName(String refDataAdapterName) {
         this.refDataAdapterName = refDataAdapterName;
     }
+
+	@Override
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
 }

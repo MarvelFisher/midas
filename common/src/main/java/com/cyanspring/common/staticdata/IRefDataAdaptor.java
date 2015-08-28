@@ -2,6 +2,7 @@ package com.cyanspring.common.staticdata;
 
 public interface IRefDataAdaptor {
     public boolean getStatus();
+    public void setStatus(boolean status);
     public void flush();
     public void init() throws Exception;
     public void uninit();
