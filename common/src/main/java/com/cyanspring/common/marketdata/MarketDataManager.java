@@ -9,7 +9,6 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
-import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,14 +263,28 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void processQuoteExtSubEvent(QuoteExtSubEvent event){
         log.debug("QuoteExtSubEvent:" + event.getKey() + "," + event.getReceiver());
-        if(event.getRequestSymbolList() != null){
+        if(event.getRequestSymbolList() != null && event.getRequestSymbolList().size()>0){
             log.debug("Request Symbol List:" + event.getRequestSymbolList());
+            HashMap<String, DataObject> quoteExtendRequest = new HashMap<>();
+            for(String symbol : event.getRequestSymbolList()){
+                if(quoteExtends.containsKey(symbol)){
+                    quoteExtendRequest.put(symbol, (DataObject)quoteExtends.get(symbol).clone());
+                }
+            }
+            if(quoteExtendRequest.size() > 0){
+                sendMultiQuoteExtEvent(event, quoteExtendRequest);
+            }
+
         }
     }
 
     public void processAllQuoteExtSubEvent(AllQuoteExtSubEvent event) throws Exception {
         log.debug("AllQuoteExtSubEvent:" + event.getKey() + ", "
                 + event.getReceiver());
+        sendMultiQuoteExtEvent(event, quoteExtends);
+    }
+
+    public void sendMultiQuoteExtEvent(RemoteAsyncEvent event, HashMap<String, DataObject> quoteExtends){
 
         int dataSegmentSize = getQuoteExtendSegmentSize();
         if (dataSegmentSize <= 1) return;
@@ -281,7 +294,6 @@ public class MarketDataManager extends MarketDataReceiver {
 
         if (quoteExtends != null && quoteExtends.size() > 0) {
             HashMap<String, DataObject> quoteExtendSegmentMap = null;
-
             for (String symbol : quoteExtends.keySet()) {
                 transQuoteExtendOffset = transQuoteExtendOffset + 1;
                 if (transQuoteExtendOffset % dataSegmentSize == 1) {

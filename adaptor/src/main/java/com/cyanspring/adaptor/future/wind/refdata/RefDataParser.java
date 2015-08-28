@@ -34,12 +34,13 @@ public class RefDataParser {
         refData.setENDisplayName(codeTableData.getEnglishName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
         refData.setCommodity((String) defaultHashMap.get(RefDataField.COMMODITY));
-        switch ((String)defaultHashMap.get(RefDataField.COMMODITY)) {
+        if("S".equals(refData.getCommodity())) refData.setCategory(refData.getExchange());
+        if("I".equals(refData.getCommodity())) refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
+        switch (refData.getCommodity()) {
             case "S":
             case "I":
                 refData.setSpellName(codeTableData.getSpellName());
                 refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
-                refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
                 refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));
                 refData.setLimitMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.LIMIT_MAXIMUM_LOT)));
                 refData.setMarketMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.MARKET_MAXIMUM_LOT)));
