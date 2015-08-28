@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class MarketDataReceiver implements IPlugin, IMarketDataListener,
@@ -51,6 +52,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
     protected Map<String, DataObject> lastTradeDateQuoteExtends = new HashMap<String, DataObject>();
     protected HashMap<String, String> marketTypes = new HashMap<>();
+    protected ConcurrentHashMap<String, MarketSessionData> indexSessions = new ConcurrentHashMap<>();
+    protected HashMap<String, String> indexSessionTypes = new HashMap<>();
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -134,15 +137,16 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 RefData refData = (RefData) refDataList.get(i);
                 preSubscriptionList.add(refData.getSymbol());
                 marketTypes.put(refData.getSymbol(), refData.getCommodity());
+                indexSessionTypes.put(refData.getSymbol(), refData.getIndexSessionType());
             }
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) {
                     adaptor.processEvent(event);
-                    if (adaptor.getClass().getSimpleName().equals("WindGateWayAdapter")
-                            && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN && isInitReqDataEnd) {
-                        adaptor.clean();
-                        preSubscribe();
-                    }
+//                    if (adaptor.getClass().getSimpleName().equals("WindGateWayAdapter")
+//                            && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN && isInitReqDataEnd) {
+//                        adaptor.clean();
+//                        preSubscribe();
+//                    }
                 }
             }
             if (!isInitReqDataEnd) isInitRefDateReceived = true;
@@ -190,10 +194,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         log.debug("Process IndexSession Event");
         if (event.isOk() && event.getDataMap().size() > 0) {
             for (String index : event.getDataMap().keySet()) {
-                MarketSessionData marketSessionDate = event.getDataMap().get(index);
-                log.debug("Index=" + index + ",SessionType=" + marketSessionDate.getSessionType()
-                                + ",Start=" + marketSessionDate.getStart() + ",End=" + marketSessionDate.getEnd()
+                MarketSessionData marketSessionData = event.getDataMap().get(index);
+                log.info("Index=" + index + ",tradeDate=" + marketSessionData.getTradeDateByString()
+                                + ",SessionType=" + marketSessionData.getSessionType()
+                                + ",Start=" + marketSessionData.getStart() + ",End=" + marketSessionData.getEnd()
                 );
+                indexSessions.put(index, marketSessionData);
             }
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) adaptor.processEvent(event);
