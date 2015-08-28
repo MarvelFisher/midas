@@ -86,6 +86,7 @@ public class CentralDbEventProc implements Runnable
 			if (symboldata.getMapHistorical().get(type) == null)
 			{
 				subProc.onEvent(event);
+				return;
 			}
 		}
 		HistoricalPriceEvent retEvent = new HistoricalPriceEvent(null, event.getSender());
