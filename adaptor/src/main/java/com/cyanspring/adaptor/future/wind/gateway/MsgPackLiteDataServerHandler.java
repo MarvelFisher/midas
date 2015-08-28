@@ -435,7 +435,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 
     	if(WindGateway.mpCascading) {
     		
-    		StringBuilder sb = new StringBuilder("Send Cascading Code Table Results : ");
+    		StringBuilder sb = null;
     		Object[] ccts = MsgPackLiteDataClientHandler.mapCascadingCodeTable.values().toArray();    		
     		if(ccts != null && ccts.length > 0){
     			sb = new StringBuilder("Send Cascading Code Table Results : ");
@@ -446,19 +446,23 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	    				if(cct.mapMPCode.size() == dataCount) {
 	    					channel.writeAndFlush(cct.mpCodeTableResult);
 	    					sb.append(cct.strMarket + ";");
+	    					lst.add(cct.strMarket);
 	    				}
 	    			}
 	    		}    			    		
-    		} else {
-    			sb = new StringBuilder("No Cascading Code Table Results at this Gateway.");
+    		}
+    		if(lst.size() == 0 || sb == null) {
+    			log.warn("No Cascading Code Table Results at this Gateway.");
+    			return;
     		}
     		log.info(sb.toString());
     		
-    	}  else
-
+    	}  
+    	else
     	{
 	    	synchronized(WindGateway.mapCodeTable) {    	
-	    		if(WindGateway.mapCodeTable.size() == 0) {    		
+	    		if(WindGateway.mapCodeTable.size() == 0) {    	
+	    			log.warn("No code table at this Server.");
 	    			return;
 	    		}
 	    		    		
@@ -479,7 +483,8 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 	    	}
     	}
     	if(lst.size() == 0) {
-    		lst = null;
+    		lst = null;   
+    		log.warn("No code table at this Server.");
     		return;
     	}
     	HashMap<Integer,Object> map = new HashMap<Integer,Object>();
