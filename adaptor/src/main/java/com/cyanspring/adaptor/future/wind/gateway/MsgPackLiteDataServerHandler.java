@@ -218,7 +218,7 @@ public class MsgPackLiteDataServerHandler extends ChannelInboundHandlerAdapter {
 		String[] sym_arr = symbols.split(";");
 		HashMap<Integer, Object> map;
 		for(String str : sym_arr)
-		{
+		{		
 	    	if(WindGateway.mpCascading) {
 	    		map =  MsgPackLiteDataClientHandler.mapTransaction.get(str.toUpperCase());
 	    	} else {			

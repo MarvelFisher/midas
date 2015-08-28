@@ -96,13 +96,13 @@ public class Registration {
 		int iCount = 0;
 		synchronized(symbolList) {
 			for(String symbol : symbolList) {
-				if(iCount != 0) {
-					strb.append(";");
-				}
 				if(IsMFSymbol(symbol))
 				{
 					continue;
 				}
+				if(iCount != 0) {
+					strb.append(";");
+				}				
 				strb.append(symbol);
 				iCount += 1;
 				if(iCount >= 512) {
@@ -129,13 +129,13 @@ public class Registration {
 		ArrayList<String> lst = new ArrayList<String>();
 		int iCount = 0;
 		for(String symbol : symbolList) {
-			if(iCount != 0) {
-				strb.append(";");
-			}
 			if(IsMFSymbol(symbol) == false)
 			{
 				continue;
-			}								
+			}
+			if(iCount != 0) {
+				strb.append(";");
+			}			
 			strb.append(ConvertMFSymbol(symbol)); // 因為 SHF , DCE 註冊時,商品代碼要用小寫,但是傳回來的商品代碼是大寫 !!!	
 			iCount += 1;
 			if(iCount >= 512) {

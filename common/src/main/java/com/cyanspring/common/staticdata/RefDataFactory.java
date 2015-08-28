@@ -29,7 +29,8 @@ public class RefDataFactory extends RefDataService {
 	private String refDataTemplatePath;
 	private List<RefData> refDataTemplateList;
 	private Map<String, RefData> refDataTemplateMap = new HashMap<String, RefData>();
-
+	private boolean templateListAsRefDataList = false;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
@@ -42,7 +43,12 @@ public class RefDataFactory extends RefDataService {
 			if (templateFile.exists()) {
 				refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
 				if (null != refDataTemplateList && !refDataTemplateList.isEmpty()) {
+					
 					buildTemplateMap(refDataTemplateList);
+					
+					if(templateListAsRefDataList)
+						refDataList = refDataTemplateList;
+					
 				}
 			} else {
 				throw new Exception("Missing refdata template: " + refDataTemplatePath);
