@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -322,7 +323,8 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public void processIndexSessionEvent(IndexSessionEvent event)
 	{
-		mapCentralDbEventProc.get(procSession).onEvent(event);
+		if (isUsingIndex())
+			mapCentralDbEventProc.get(procSession).onEvent(event);
 	}
 	
 	public void requestDefaultSymbol(SymbolListSubscribeEvent retEvent, String market)
@@ -572,7 +574,7 @@ public class CentralDbProcessor implements IPlugin
 			boolean isAdded = false;
 			for (RefData refdata : refList)
 			{
-				if (refdata.getExchange() == null)
+				if (refdata.getExchange() == null || refdata.getSymbol() == null)
 					continue;
 
 				if (!marketList.contains(refdata.getExchange()))
@@ -609,6 +611,7 @@ public class CentralDbProcessor implements IPlugin
 			chef.chefStart();
 		}
 		log.info("Call refData finish");
+		sendSessionRequest();
 	}
 	
 	public void onUpdateRefData(RefDataUpdateEvent event)
@@ -800,9 +803,15 @@ public class CentralDbProcessor implements IPlugin
 		String symbol;
 		SymbolData symboldata;
 		ArrayList<String> symbolarr = new ArrayList<String>();
-		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : getRetrieveMap()
-				.entrySet())
+		Iterator<Entry<String, HashMap<String, List<HistoricalPrice>>>> itr
+			= getRetrieveMap().entrySet().iterator();
+//		for (Entry<String, HashMap<String, List<HistoricalPrice>>> entry : getRetrieveMap()
+//				.entrySet())
+		Entry<String, HashMap<String, List<HistoricalPrice>>> entry;
+		while(itr.hasNext())
 		{
+			entry = itr.next();
+			System.out.println(entry.getKey());
 			symbolarr.clear();
 			symbolarr.add(entry.getKey());
 			ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo()
@@ -1035,6 +1044,21 @@ public class CentralDbProcessor implements IPlugin
 	public void setEventProcessorMD(AsyncEventProcessor eventProcessor) {
 		this.eventProcessorMD = eventProcessor;
 	}
+	
+	public void sendSessionRequest()
+	{
+		if (isUsingIndex())
+		{
+			log.info("Send IndexMarketSession request");
+			requestIndexMarketSession();
+		}
+		else
+		{
+			requestMarketSession();
+			log.info("Send MarketSession request");
+		}
+	}
+	
 	public void requestMarketSession()
 	{
 		log.info("Send MarketSessionRequest");
@@ -1091,22 +1115,18 @@ public class CentralDbProcessor implements IPlugin
 		}
 		mapCentralDbEventProc.put(procRequest, new CentralDbEventProc(this, "CDP-Event-Req"));
 		mapCentralDbEventProc.put(procSession, new CentralDbEventProc(this, "CDP-Event-Ses"));
-		resetStatement() ;
-		switch (serverMarket)
+		if (isUsingIndex())
 		{
-		case "FX":
-			this.refSymbolInfo = new FXRefSymbolInfo(serverMarket);
-			SymbolData.setSetter(new FXPriceSetter());
-			requestMarketSession() ;
-			break;
-		case "FC":
-		case "SC":
-		default:
 			this.refSymbolInfo = new FCRefSymbolInfo(serverMarket);
 			SymbolData.setSetter(new DefPriceSetter());
-			requestIndexMarketSession();
-			break;
 		}
+		else
+		{
+			this.refSymbolInfo = new FXRefSymbolInfo(serverMarket);
+			SymbolData.setSetter(new FXPriceSetter());
+		}
+		resetStatement() ;
+		sendRefDataRequest();
 
 		scheduleManager.scheduleRepeatTimerEvent(getTimeInterval(), eventProcessor, timerEvent);
 		scheduleManager.scheduleRepeatTimerEvent(getCheckSQLInterval(), eventProcessor, checkEvent);
@@ -1116,6 +1136,18 @@ public class CentralDbProcessor implements IPlugin
 		log.info("Uninitialising...");
 		eventProcessorMD.uninit();
 		eventProcessor.uninit();
+	}
+	
+	public boolean isUsingIndex()
+	{
+		switch (serverMarket)
+		{
+		case "FC":
+		case "SC":
+			return true;
+		default:
+			return false;
+		}
 	}
 	
 	public String getTradedate() {
