@@ -242,7 +242,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 		if (send.size() > 0) {
 			try {
-				eventManager.sendGlobalEvent(new RefDataEvent(null, null, send, true));
+				eventManager.sendGlobalEvent(new RefDataUpdateEvent(null, null, send, Action.MOD));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
