@@ -44,12 +44,8 @@ public class FileRefDataHandler implements IPlugin {
 	@Autowired
 	private IRemoteEventManager eventManager;
 
-	@Autowired
-	private ScheduleManager scheduleManager;
-
 	private MarketSessionType currentType;
 	private Map<String, MarketSessionData> rawMap;
-	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -117,6 +113,7 @@ public class FileRefDataHandler implements IPlugin {
 					rawMap.put(e.getKey(), data);
 					if (!data.getSessionType().equals(MarketSessionType.PREOPEN))
 						continue;
+					log.info("Update refData index: {}", e.getKey());
 					refDataManager.update(e.getKey(), data.getTradeDateByString());
 					for (RefData refData : refDataManager.getRefDataList()) {
 						if (e.getKey().equals(refData.getCategory()))
@@ -132,12 +129,6 @@ public class FileRefDataHandler implements IPlugin {
 			log.error(err.getMessage(), err);
 		}
 	}
-
-//	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-//    	if () {
-//    		
-//    	}
-//    }
 
 	@Override
 	public void init() throws Exception {

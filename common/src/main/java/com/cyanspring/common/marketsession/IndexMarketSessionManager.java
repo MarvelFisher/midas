@@ -168,13 +168,12 @@ public class IndexMarketSessionManager implements IPlugin {
 	}
 
 	private String getIndex(RefData refData) {
-		String indexType = refData.getIndexSessionType();
 		String index = null;
-		if (indexType == null || indexType.equals(IndexSessionType.SPOT.toString()))
-			index = refData.getCategory();
-		else if (indexType.equals(IndexSessionType.SETTLEMENT.toString()))
+		if (refData.getIndexSessionType().equals(IndexSessionType.SETTLEMENT.toString()))
 			index = refData.getSymbol();
-		else if (indexType.equals(IndexSessionType.EXCHANGE.toString()))
+		else if (refData.getIndexSessionType().equals(IndexSessionType.SPOT.toString()))
+			index = refData.getCategory();
+		else if (refData.getIndexSessionType().equals(IndexSessionType.EXCHANGE.toString()))
 			index = refData.getExchange();
 		return index;
 	}

@@ -178,15 +178,15 @@ public class MarketSessionUtil implements IPlugin{
     	return comp2.toLowerCase().equals(comp1.toLowerCase());
     }
     
-    private SessionPair getPair(RefData refData, IMarketSession session) throws Exception {
+    private SessionPair getPair(RefData refData, IMarketSession session) {
     	String sessionIndex = refData.getIndexSessionType();
-    	if (sessionIndex == null || sessionIndex.equals(IndexSessionType.SPOT.toString()))
-    		return new SessionPair(refData.getCategory(), session);
-    	else if (sessionIndex.equals(IndexSessionType.SETTLEMENT.toString()))
+    	if (sessionIndex.equals(IndexSessionType.SETTLEMENT.toString()))
     		return new SessionPair(refData.getSymbol(), session);
+    	else if (sessionIndex.equals(IndexSessionType.SPOT.toString()))
+    		return new SessionPair(refData.getCategory(), session);
     	else if (sessionIndex.equals(IndexSessionType.EXCHANGE.toString()))
     		return new SessionPair(refData.getExchange(), session);
-    	throw new Exception("Data not found");
+    	return null;
     }
 
     public boolean isHoliday(String symbol, Date date) throws Exception{
