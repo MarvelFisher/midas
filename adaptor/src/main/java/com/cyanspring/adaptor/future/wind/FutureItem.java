@@ -36,6 +36,7 @@ public class FutureItem implements AutoCloseable {
     private int sessionStatus = -1;
     private long totalVolume = 0;
     private long volume = 0;
+    private long fTurnover = 0;
     private double settlePrice = 0;
     private long openInterest = 0;
     private double highLimit = 0;
@@ -221,6 +222,13 @@ public class FutureItem implements AutoCloseable {
         if (PriceUtils.Compare(item.openInterest, openInterest) != 0) {
             item.openInterest = openInterest;
             quoteExtend.put(QuoteExtDataField.OPENINTEREST.value(), openInterest);
+            quoteExtendIsChange = true;
+        }
+
+        long fTurnover = futureData.getfTurnover();
+        if (item.fTurnover != fTurnover) {
+            item.fTurnover = fTurnover;
+            quoteExtend.put(QuoteExtDataField.FTURNOVER.value(), fTurnover);
             quoteExtendIsChange = true;
         }
 

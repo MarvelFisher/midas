@@ -232,6 +232,9 @@ public class WindDataParser extends AbstractWindDataParser {
                         case "Volume":
                             futureData.setVolume(Long.parseLong(value));
                             break;
+                        case "FTurnover":
+                            futureData.setfTurnover(Long.parseLong(value));
+                            break;
                         default:
                             break;
                     }
@@ -301,6 +304,8 @@ public class WindDataParser extends AbstractWindDataParser {
                 futureData.setVolume(((Number) inputHashMap.get(FDTFields.Volume)).longValue());
             if (null != inputHashMap.get(FDTFields.Turnover))
                 futureData.setTurnover(((Number) inputHashMap.get(FDTFields.Turnover)).longValue());
+            if (null != inputHashMap.get(FDTFields.FTurnover))
+                futureData.setfTurnover(((Number) inputHashMap.get(FDTFields.FTurnover)).longValue());
         }
         return futureData;
     }

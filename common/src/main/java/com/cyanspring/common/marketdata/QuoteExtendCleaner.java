@@ -27,6 +27,9 @@ public class QuoteExtendCleaner implements IQuoteExtendCleaner{
         if(quoteExtend.fieldExists(QuoteExtDataField.UNCLASSIFIEDTURNOVER.value())){
             quoteExtend.put(QuoteExtDataField.UNCLASSIFIEDTURNOVER.value(),(long)0);
         }
+        if(quoteExtend.fieldExists(QuoteExtDataField.FTURNOVER.value())){
+            quoteExtend.put(QuoteExtDataField.FTURNOVER.value(),(long)0);
+        }
         if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())){
             quoteExtend.put(QuoteExtDataField.SETTLEPRICE.value(),(double)0);
         }

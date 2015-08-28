@@ -26,6 +26,7 @@ public class FutureData {
     private int tradingDay;
     private long turnover;
     private long volume;
+    private long fTurnover;
 
     public int getActionDay() {
         return actionDay;
@@ -201,5 +202,13 @@ public class FutureData {
 
     public void setMatch(long match) {
         this.match = match;
+    }
+
+    public long getfTurnover() {
+        return fTurnover;
+    }
+
+    public void setfTurnover(long fTurnover) {
+        this.fTurnover = fTurnover;
     }
 }
