@@ -51,7 +51,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(QuoteExtEvent.class, null);
-			subscribeToEvent(MultiQuoteExtendEvent.class, null);
+//			subscribeToEvent(MultiQuoteExtendEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 		}
 
