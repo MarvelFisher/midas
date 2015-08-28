@@ -23,23 +23,29 @@ public enum IType {
 	public int getIntValue(){
 		return Integer.parseInt(getValue());
 	}
+	public static boolean isIndex(String iType){
+		
+		if(iType.equals(EXCHANGE_INDEX.getValue()))
+			return true;
+		
+		return false;
+	}
 	
 	public static boolean isStock(String iType){
-		if(iType.equals(STOCK)
-			||iType.equals(STOCK_SSE)
-			||iType.equals(STOCK_GEI)
-			||iType.equals(EXCHANGE_INDEX)){
+		if(iType.equals(STOCK.getValue())
+			||iType.equals(STOCK_SSE.getValue())
+			||iType.equals(STOCK_GEI.getValue())){
 			return true;
 		}
 		return false;
 	}
 	
 	public static boolean isFuture(String iType){
-		if(iType.equals(FUTURES_IDX)
-			||iType.equals(FUTURES)
-			||iType.equals(FUTURES_EFP)
-			||iType.equals(FUTURES_CX_IDX)
-			||iType.equals(FUTURES_CX)){
+		if(iType.equals(FUTURES_IDX.getValue())
+			||iType.equals(FUTURES.getValue())
+			||iType.equals(FUTURES_EFP.getValue())
+			||iType.equals(FUTURES_CX_IDX.getValue())
+			||iType.equals(FUTURES_CX.getValue())){
 			return true;
 		}
 		return false;

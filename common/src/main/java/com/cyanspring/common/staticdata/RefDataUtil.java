@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.marketsession.ITradeDate;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
+import com.cyanspring.common.staticdata.fu.IType;
 import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -223,8 +224,23 @@ public class RefDataUtil {
 				return getFutureCategory(refData);
 			}
 		}else{
-			return getFutureCategory(refData);
+			
+			String iType = refData.getIType();
+			log.info("itype:{}",iType);
+			if(StringUtils.hasText(iType)){
+				
+				if(IType.isFuture(iType)){
+					return getFutureCategory(refData);
+				}else if(IType.isStock(iType)){
+					return refData.getExchange();
+				}else if(IType.isIndex(iType)){
+					return Category.INDEX.name();
+				}
+			}
 		}
+		
+		log.warn("can't get category:{}",refData.getRefSymbol());
+		return null;
 	}
     
 	private static String getFutureCategory(RefData refData){

@@ -102,7 +102,7 @@ public class StockRefDataManager extends RefDataService {
 		if(IType.isFuture(iType)){
 			log.info("update future refdata:{},",refData.getRefSymbol());
 			updateFutureRefData(cal,refData);
-		}else if(IType.isStock(iType)){
+		}else if(IType.isStock(iType) || IType.isIndex(iType)){
 			log.info("update stock refdata:{},",refData.getRefSymbol());
 			updateStockRefData(cal,refData);
 		}else{
