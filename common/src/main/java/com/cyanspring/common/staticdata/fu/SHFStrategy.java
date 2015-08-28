@@ -47,33 +47,6 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 		}
 	}
 
-//	private String calFUSettlementDate(String symbol,String category, Calendar contractDate) {
-//		
-//		contractDate.set(Calendar.DATE, contractDate.getMinimum(Calendar.DATE));
-//		Date date = contractDate.getTime();
-//
-//		if( null == getTradeDateManager(category)){
-//			log.warn("symbol:{} can't find TradeDateManager!",symbol);
-//			return "";
-//		}
-//		date = getTradeDateManager(category).preTradeDate(date);	
-//		return getSettlementDateFormat().format(date);
-//	}
-//
-//	private String calSettlementDate(String symbol,Calendar cal,int dayInMonth) throws Exception{
-//		
-//		if( null == getMarketSessionUtil()){
-//			log.warn("symbol:{} can't find marketsessionutil!",symbol);
-//			return "";
-//		}
-//		
-//		cal.set(Calendar.DAY_OF_MONTH, dayInMonth);
-//		while(getMarketSessionUtil().isHoliday(symbol, cal.getTime())){
-//			cal.add(Calendar.DAY_OF_MONTH, 1);
-//		}
-//		return getSettlementDateFormat().format(cal.getTime());
-//	}
-	
 	@Override
 	public void setRequireData(Object... objects) {
 		super.setRequireData(objects);

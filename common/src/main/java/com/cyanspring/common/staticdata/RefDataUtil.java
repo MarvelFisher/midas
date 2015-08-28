@@ -82,7 +82,6 @@ public class RefDataUtil {
 	public static String calSettlementDateByDay(RefData refData,Calendar cal,int dayInMonth){
 		
 		String category = RefDataUtil.getCategory(refData);
-		log.info("calSettlementDateByDay :{} ,",category);
 		if(!StringUtils.hasText(category))
 			return null;
 		
@@ -109,8 +108,6 @@ public class RefDataUtil {
 		} catch (ParseException e) {
 			log.warn(e.getMessage(),e);
 		}
-		log.info("settlementDate :{} ,",settlementDate);
-
 		return settlementDate;
 	}
 	

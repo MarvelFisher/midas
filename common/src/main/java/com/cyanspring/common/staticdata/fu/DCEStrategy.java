@@ -38,23 +38,6 @@ public class DCEStrategy extends AbstractRefDataStrategy {
 		}
     }
 
-//	private String calSettlementDate(String symbol,String category,Calendar cal,int dayInMonth){
-//		
-//		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
-//		Date date = cal.getTime();
-//		if( null == getTradeDateManager(category)){
-//			log.warn("symbol:{} can't find tradeDateManager!",symbol);
-//			return "";
-//		}
-//		
-//		date = getTradeDateManager(category).preTradeDate(date);
-//		for(int i=0 ; i < dayInMonth ; i++){
-//			date = getTradeDateManager(category).nextTradeDate(date);
-//		}
-//		
-//		return getSettlementDateFormat().format(date);
-//	}
-    
     @Override
     public void setRequireData(Object... objects) {
     	super.setRequireData(objects);

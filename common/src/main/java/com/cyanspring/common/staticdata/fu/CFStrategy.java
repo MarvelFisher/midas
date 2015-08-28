@@ -40,26 +40,5 @@ public class CFStrategy extends AbstractRefDataStrategy  {
     public void setRequireData(Object... objects) {
 		super.setRequireData(objects);
     }
-      
-//    private String calSettlementDay(RefData refData,Calendar cal) throws Exception {
-//    	if(!StringUtils.hasText(refData.getSymbol())){
-//    		log.warn("missing symbol:{}",refData.getRefSymbol());
-//    		return "";
-//    	}
-//    	
-//        int dayCount = 0;
-//        while (dayCount != 3) {
-//            cal.add(Calendar.DAY_OF_MONTH, 1);
-//            if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
-//                dayCount++;
-//        }
-//
-//        while (getMarketSessionUtil().isHoliday(refData.getSymbol(), cal.getTime())) {
-//        	
-//            cal.add(Calendar.DAY_OF_YEAR, 1);
-//        }
-//        
-//        return getSettlementDateFormat().format(cal.getTime());
-//    }
     
 }
