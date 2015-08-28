@@ -49,7 +49,7 @@
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <ref bean="windAdaptor" />
+                <ref bean="windAdaptorFCI" />
             </list>
         </constructor-arg>
         <property name="quoteLogIsOpen" value="true"/>
@@ -74,7 +74,7 @@
 
     <!-- WindAdaptor setting (Setting can be marked if not used) -->
 
-    <bean id="windAdaptor"
+    <bean id="windAdaptorFCI"
           class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
         <property name="showGui" value="true"></property>
         <property name="gatewayIp" value="10.0.0.32"></property>
@@ -84,6 +84,12 @@
         <property name="closeOverTimeControlIsOpen" value="true"></property>
         <property name="msgPack" value="true"></property>
         <property name="isSubTrans" value="false"></property>
+        <property name="useMarketSession" ref="useMarketSession"/>
+    </bean>
+
+    <!-- useMarketSession setting -->
+    <bean id="useMarketSession" class="java.lang.Boolean">
+        <constructor-arg value="false" />
     </bean>
 
     <!-- Derby setting -->
