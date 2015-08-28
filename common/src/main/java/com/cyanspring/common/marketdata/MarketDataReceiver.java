@@ -294,6 +294,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (null == prev) {
             quotes.put(quote.getSymbol(), quote);
             clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), inEvent.getQuoteEvent());
+            log.debug("Prev is null,S=" + quote.getSymbol());
             return;
         } else {
             quotes.put(quote.getSymbol(), quote);
