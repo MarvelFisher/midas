@@ -108,19 +108,19 @@ public class RequestMgr implements IReqThreadCallback {
                     }
                 }
                 //Del
-                Set<String> refDataDel = new HashSet<>(keysInRefDataMap);
-                refDataDel.removeAll(refDataBoth);
-                if(refDataDel.size() > 0){
-                    List<RefData> refDataDelList = new ArrayList<>();
-                    for(String key: refDataDel){
-                        refDataDelList.add(windRefDataAdapter.getRefDataHashMap().get(key));
-                    }
-                    windRefDataAdapter.sendRefDataUpdate(refDataDelList, RefDataUpdateEvent.Action.DEL);
-                }
-
-                //override refDataMap
-                windRefDataAdapter.getRefDataHashMap().clear();
-                windRefDataAdapter.getRefDataHashMap().putAll(windRefDataAdapter.getRefDataUpdateHashMap());
+//                Set<String> refDataDel = new HashSet<>(keysInRefDataMap);
+//                refDataDel.removeAll(refDataBoth);
+//                if(refDataDel.size() > 0){
+//                    List<RefData> refDataDelList = new ArrayList<>();
+//                    for(String key: refDataDel){
+//                        refDataDelList.add(windRefDataAdapter.getRefDataHashMap().get(key));
+//                    }
+//                    windRefDataAdapter.sendRefDataUpdate(refDataDelList, RefDataUpdateEvent.Action.DEL);
+//                }
+//
+//                //override refDataMap
+//                windRefDataAdapter.getRefDataHashMap().clear();
+//                windRefDataAdapter.getRefDataHashMap().putAll(windRefDataAdapter.getRefDataUpdateHashMap());
 
                 log.debug("RefDataUpdate Check end");
             }
