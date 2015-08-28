@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 
@@ -32,20 +33,19 @@ public class RefSymbolFilter implements IRefDataFilter {
 			for (RefData refData : lstRefData) {
 				// Only filter RefData whose commodity is "F", or add directly without filtering
 				String commodity = refData.getCommodity();
-				if (commodity == null 
-						|| commodity.isEmpty()
+				if (!StringUtils.hasText(commodity)
 						|| !commodity.equalsIgnoreCase(RefDataFilter.FUTURES_COMMODITY)) {
 					fLstRefData.add(refData);
 					continue;
 				}
 				
 				String type = refData.getIType();
-				if (type == null || type.isEmpty()) {
+				if (!StringUtils.hasText(type)) {
 					continue;
 				}
 				
 				String symbol = refData.getSymbol();
-				if (symbol == null || symbol.isEmpty()) {
+				if (!StringUtils.hasText(symbol)) {
 					symbol = "";
 				} else {
 					symbol = symbol.toLowerCase();
@@ -55,9 +55,9 @@ public class RefSymbolFilter implements IRefDataFilter {
 				String exchange = refData.getExchange();
 				String refSymbol = refData.getRefSymbol();
 				
-				if (category == null || category.isEmpty()
-						|| exchange == null || exchange.isEmpty()
-						|| refSymbol == null || refSymbol.isEmpty()) {
+				if (!StringUtils.hasText(category)
+						|| !StringUtils.hasText(exchange)
+						|| !StringUtils.hasText(refSymbol)) {
 					continue;
 				}
 				

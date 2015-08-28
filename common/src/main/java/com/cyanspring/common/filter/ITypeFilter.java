@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IType;
@@ -53,7 +54,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(ITypeFilter.class);
 	
 			for (RefData refData : lstRefData) {
 				String type = refData.getIType();
-				if (type == null || type.isEmpty()) {
+				if (!StringUtils.hasText(type)) {
 					continue;
 				}
 				

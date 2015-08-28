@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataTplLoader;
@@ -48,15 +49,14 @@ public class CategoryFilter implements IRefDataFilter {
 				for (RefData refData : lstRefData) {
 					// Only filter RefData whose commodity is "F", or add directly without filtering
 					String commodity = refData.getCommodity();
-					if (commodity == null 
-							|| commodity.isEmpty()
+					if (!StringUtils.hasText(commodity)
 							|| !commodity.equalsIgnoreCase(RefDataFilter.FUTURES_COMMODITY)) {
 						fLstRefData.add(refData);
 						continue;
 					}
 					
 					String category = refData.getCategory();
-					if (category == null || category.isEmpty()) {
+					if (!StringUtils.hasText(category)) {
 						continue;
 					}
 					
