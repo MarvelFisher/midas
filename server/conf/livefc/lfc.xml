@@ -28,8 +28,9 @@
         </property>
         <property name="plugins">
             <list>
+            	<ref bean="marketSessionUtil" />
                 <ref bean="apiBridgeManager" />
-                <ref bean="marketSessionManager" />
+                <!-- <ref bean="marketSessionManager" /> -->
                 <ref bean="indexMarketSessionManager"/>
                 <ref bean="refDataHandler" />
                 <ref bean="mdManager" />
@@ -219,11 +220,19 @@
     <bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
     </bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
-
+    <!-- <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/> -->
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
+		<constructor-arg>
+			<list>
+				<ref bean="refDataAdapterFCI"/>
+			</list>
+		</constructor-arg>    
+    </bean>
+    
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
 			<value>refData/template/template_FC.xml</value>
+			<!-- <value>refData/refData_FC.xml</value> -->
 		</property>
     </bean>
     
@@ -294,21 +303,15 @@
     </bean>
 
     <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-        <constructor-arg>
-            <map>
-                <entry key="IF"><ref bean="IFsessionChecker"/></entry>
-                <entry key="DEFAULT"><ref bean="IFsessionChecker"/></entry>
-                <entry key="INDEX"><ref bean="shSessionChecker"/></entry>
-            </map>
-        </constructor-arg>
-        <constructor-arg>
-            <map>
-                <entry key="IF"><ref bean="IFtradeDateManager"/></entry>
-                <entry key="DEFAULT"><ref bean="IFtradeDateManager"/></entry>
-                <entry key="INDEX"><ref bean="shTradeDateManager"/></entry>
-            </map>
-        </constructor-arg>
-    </bean>
+		<constructor-arg>
+			<list>
+				<ref bean="ifSessionChecker"/>
+				<ref bean="ihSessionChecker"/>
+				<ref bean="icSessionChecker"/>
+				<ref bean="indexSessionChecker"/>
+			</list>
+		</constructor-arg>
+	</bean>
 
     <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
         <property name="validators">
