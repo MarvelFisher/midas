@@ -46,18 +46,18 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
     	ifData.symbol = "IF";
     	
     	MappingData icData = new MappingData();
-    	ifData.near1 = "ICC1";
-    	ifData.near2 = "ICC2";
-    	ifData.season1 = "ICC3";
-    	ifData.season2 = "ICC4";
-    	ifData.symbol = "IC";
+    	icData.near1 = "ICC1";
+    	icData.near2 = "ICC2";
+    	icData.season1 = "ICC3";
+    	icData.season2 = "ICC4";
+    	icData.symbol = "IC";
     	
     	MappingData ihData = new MappingData();
-    	ifData.near1 = "IHC1";
-    	ifData.near2 = "IHC2";
-    	ifData.season1 = "IHC3";
-    	ifData.season2 = "IHC4";
-    	ifData.symbol = "IH";
+    	ihData.near1 = "IHC1";
+    	ihData.near2 = "IHC2";
+    	ihData.season1 = "IHC3";
+    	ihData.season2 = "IHC4";
+    	ihData.symbol = "IH";
     	
     	List<MappingData> list = new ArrayList<>();
     	list.add(ifData);
