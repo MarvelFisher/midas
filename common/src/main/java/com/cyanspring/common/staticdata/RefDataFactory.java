@@ -148,6 +148,8 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
+		log.info("XML:"+xstream.toXML(refData));
+
 	}
 
 	private void initCategory(RefData refData) {
@@ -259,6 +261,14 @@ public class RefDataFactory extends RefDataService {
 		}
 
 		return remove;
+	}
+
+	public boolean isTemplateListAsRefDataList() {
+		return templateListAsRefDataList;
+	}
+
+	public void setTemplateListAsRefDataList(boolean templateListAsRefDataList) {
+		this.templateListAsRefDataList = templateListAsRefDataList;
 	}
 
 }

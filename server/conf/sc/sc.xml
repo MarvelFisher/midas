@@ -29,7 +29,7 @@
 			<list>
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
-                <ref bean="marketSessionManager" />
+                <!-- <ref bean="marketSessionManager" />  -->
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
