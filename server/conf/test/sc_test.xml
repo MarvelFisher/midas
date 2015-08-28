@@ -273,7 +273,9 @@
 		<property name="refDataTemplatePath">
 			<value>refData/template/template_FC.xml</value>
 		</property>
-        <property name="marketSessionUtil"><ref bean="marketSessionUtil"/></property>
+    </bean>
+	
+	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
     </bean>
 	
 	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
@@ -363,20 +365,19 @@
 
     <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
-        <property name="searchBySymbol" value="false"/>
         <property name="eventManager" ref="eventManager"></property>        
     </bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
-			<map>
-				<entry key="STOCK"><ref bean="shSessionChecker"/></entry>
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<entry key="STOCK"><ref bean="shTradeDateManager"/></entry>
-			</map>
+			<list>
+				<ref bean="ifSessionChecker"/>
+				<ref bean="ihSessionChecker"/>
+				<ref bean="icSessionChecker"/>
+				<ref bean="indexSessionChecker"/>
+				<ref bean="shSessionChecker"/>
+				<ref bean="szSessionChecker"/>
+			</list>
 		</constructor-arg>
 	</bean>
 </beans>

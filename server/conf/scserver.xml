@@ -7,7 +7,8 @@
 
 	<context:annotation-config />
 
-	<import resource="sc/*" />
+	<import resource="sc/*.xml" />
+	<import resource="sc/marketSession/*.xml" />
 <!-- 	<import resource="common/business.xml" /> -->
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />

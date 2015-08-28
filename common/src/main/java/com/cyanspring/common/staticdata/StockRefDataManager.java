@@ -37,30 +37,20 @@ public class StockRefDataManager extends RefDataService {
     @SuppressWarnings("unchecked")
     @Override
     public void init() throws Exception {
-        log.info("initialising with future template" + refDataTemplatePath);
-        if(StringUtils.hasText(refDataTemplatePath)){
+		log.info("initialising with " + refDataTemplatePath);
+		if (StringUtils.hasText(refDataTemplatePath)) {
 
-        	log.info("read refdata template:{}",refDataTemplatePath);
-        	File templateFile = new File(refDataTemplatePath);
-        	if (templateFile.exists()) {
-        		refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
-        		if(null != refDataTemplateList && !refDataTemplateList.isEmpty()){
-        			buildTemplateMap(refDataTemplateList);
-        		}
-        	} else {
-        		throw new Exception("Missing refdata template: " + refDataTemplatePath);
-        	}
-        }
-
-        //init category
-        if(null != refDataList && !refDataList.isEmpty()){
-        	for(RefData refData : refDataList){	 
-        		String commodity = refData.getCommodity();
-        		if(!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity) && commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))){
-        			refData.setCategory(getCategory(refData));
-        		}
-        	}
-        }
+			log.info("read refdata template:{}", refDataTemplatePath);
+			File templateFile = new File(refDataTemplatePath);
+			if (templateFile.exists()) {
+				refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
+				if (null != refDataTemplateList && !refDataTemplateList.isEmpty()) {
+					buildTemplateMap(refDataTemplateList);
+				}
+			} else {
+				throw new Exception("Missing refdata template: " + refDataTemplatePath);
+			}
+		}
     }
 
     private void buildTemplateMap(List<RefData> refDataTemplateList) {
@@ -168,12 +158,10 @@ public class StockRefDataManager extends RefDataService {
 	@Override
 	public RefData add(RefData refData, String tradeDate) throws Exception {
 		Calendar cal = Calendar.getInstance();
-        cal.setTime(sdf.parse(tradeDate));
-        updateRefData(cal, refData);
-        if (refDataList.contains(refData))
-        	refDataList.remove(refData);
-        
-        refDataList.add(refData);
+		cal.setTime(sdf.parse(tradeDate));
+		updateRefData(cal, refData);
+		remove(refData);
+		refDataList.add(refData);
 		return refData;
 	}
 
@@ -187,52 +175,65 @@ public class StockRefDataManager extends RefDataService {
 
 	private void updateFutureRefData(Calendar cal, RefData refData){
 		
+		initCategory(refData);
 		AbstractRefDataStrategy strategy;
-        RefData template = searchRefDataTemplate(refData);
-        if( null == template){
-        	return;
-        }else{
-        	refData.setStrategy(template.getStrategy());
-        }
-		log.info("update refData:{}, strategy:{}",refData.getRefSymbol(),refData.getStrategy());
+		RefData template = searchRefDataTemplate(refData);
+		if (null == template) {
+			return;
+		} else {
+			refData.setStrategy(template.getStrategy());
+		}
+		log.info("update refData:{}, strategy:{}", refData.getRefSymbol(), refData.getStrategy());
 
 		if (!strategyMap.containsKey(refData.getStrategy())) {
-		    try {
-		        Class<AbstractRefDataStrategy> tempClz = (Class<AbstractRefDataStrategy>) Class.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
-		        Constructor<AbstractRefDataStrategy> ctor = tempClz.getConstructor();
-		        strategy = ctor.newInstance();
-		        strategy.setRequireData(marketSessionUtil);
-		    } catch (Exception e) {
-		    	log.info(e.getMessage(),e);
-		        log.error("Can't find strategy: {}", refData.getStrategy());
-		        strategy = new AbstractRefDataStrategy() {
-		            @Override
-		            public void init(Calendar cal,RefData template) {
+			try {
+				Class<AbstractRefDataStrategy> tempClz = (Class<AbstractRefDataStrategy>) Class
+						.forName(strategyPack + "." + refData.getStrategy() + "Strategy");
+				Constructor<AbstractRefDataStrategy> ctor = tempClz.getConstructor();
+				strategy = ctor.newInstance();
+			} catch (Exception e) {
+				log.info(e.getMessage(), e);
+				log.error("Can't find strategy: {}", refData.getStrategy());
+				strategy = new AbstractRefDataStrategy() {
+					@Override
+					public void init(Calendar cal, RefData template) {
 
-		            }
+					}
 
-		            @Override
-		            public void updateRefData(RefData refData) {
+					@Override
+					public void updateRefData(RefData refData) {
 
-		            }
+					}
 
-		            @Override
-		            public void setRequireData(Object... objects) {
+					@Override
+					public void setRequireData(Object... objects) {
 
-		            }
-		        };
-		    }
-		    strategyMap.put(refData.getStrategy(), strategy);
-		    updateMarginRate(refData);
+					}
+				};
+			}
+			strategyMap.put(refData.getStrategy(), strategy);
+			updateMarginRate(refData);
 		} else {
-		    strategy = strategyMap.get(refData.getStrategy());
+			strategy = strategyMap.get(refData.getStrategy());
 		}
-		strategy.init(cal,template);
+		strategy.init(cal, template);
 		strategy.updateRefData(refData);
-		log.info("settlement date:{}, index type:{}",refData.getSettlementDate(),refData.getIndexSessionType());
+		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
 //		log.info("XML:"+xstream.toXML(refData));
 	}
 
+	private void initCategory(RefData refData) {
+		
+		if(StringUtils.hasText(refData.getCategory()))
+			return;
+		
+		String commodity = refData.getCommodity();
+		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
+				&& commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))) {
+			refData.setCategory(getCategory(refData));
+		}	
+	}
+	
 	@Override
 	public List<RefData> update(String index, String tradeDate) throws Exception {
 		List<RefData> ret = new ArrayList<>();
@@ -247,11 +248,22 @@ public class StockRefDataManager extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-		if (refDataList.contains(refData)) {
-			refDataList.remove(refData);
-			return true;
+		List<RefData> delList = new ArrayList<RefData>();
+		boolean remove = false;
+
+		for (RefData ref : refDataList) {
+			if (ref.getRefSymbol().equals(refData.getRefSymbol()))
+				delList.add(ref);
 		}
-		return false;
+
+		if (!delList.isEmpty())
+			remove = true;
+
+		for (RefData ref : delList) {
+			refDataList.remove(ref);
+		}
+
+		return remove;
 	}
 	
 	public Map<String, RefData> getRefDataTemplateMap() {

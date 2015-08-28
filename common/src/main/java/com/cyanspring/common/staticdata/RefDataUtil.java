@@ -218,7 +218,7 @@ public class RefDataUtil {
 			if(Commodity.INDEX.getValue().equals(commodity)){
 				return Category.INDEX.name();
 			}else if(Commodity.STOCK.getValue().equals(commodity)){
-				return Category.STOCK.name();
+				return refData.getExchange() ;
 			}else{				
 				return getFutureCategory(refData);
 			}
