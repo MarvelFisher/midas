@@ -1726,6 +1726,10 @@
         <string>399001.SZ</string>
       </entry>
       <entry>
+        <string>Ref symbol</string>
+        <string>399001.SZ</string>
+      </entry>
+      <entry>
         <string>ENName</string>
         <string></string>
       </entry>
@@ -1802,6 +1806,10 @@
         <string>399006.SZ</string>
       </entry>
       <entry>
+        <string>Ref symbol</string>
+        <string>399006.SZ</string>
+      </entry>
+      <entry>
         <string>ENName</string>
         <string></string>
       </entry>
@@ -1866,6 +1874,10 @@
         <string>INDEX</string>
       </entry>
       <entry>
+        <string>Ref symbol</string>
+        <string>399300.SZ</string>
+      </entry>
+      <entry>
         <string>Exchange</string>
         <string>SZ</string>
       </entry>
@@ -1924,6 +1936,10 @@
       <entry>
         <string>Strategy</string>
         <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>999987.SH</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -2027,6 +2043,10 @@
       </entry>
       <entry>
         <string>Symbol</string>
+        <string>399905.SZ</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
         <string>399905.SZ</string>
       </entry>
       <entry>
