@@ -159,33 +159,50 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         log.debug("Receive RefDataUpdate Event - " + event.getAction().name());
         List<RefData> refDataUpdateList = event.getRefDataList();
         if(refDataUpdateList != null && refDataUpdateList.size() > 0) {
-            for(RefData refData: refDataUpdateList) {
-                if(!preSubscriptionList.contains(refData.getSymbol())) {
-                    preSubscriptionList.add(refData.getSymbol());
-                    for (IMarketDataAdaptor adaptor : adaptors) {
-                        if (null != adaptor) {
-                            adaptor.processEvent(event);
-                            try {
-                                adaptor.subscribeMarketData(refData.getSymbol(), this);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                            }
-                        }
-                    }
-                }else{
-                    log.debug("refDataUpdateEvent Symbol=" + refData.getSymbol() +" exist");
-                    preSubscriptionList.remove(refData.getSymbol());
-                    for (IMarketDataAdaptor adaptor : adaptors) {
-                        if (null != adaptor) {
-                            adaptor.processEvent(event);
-                            try {
-                                adaptor.unsubscribeMarketData(refData.getSymbol(), this);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                            }
-                        }
-                    }
+            for (IMarketDataAdaptor adaptor : adaptors) {
+                if (null != adaptor) {
+                    adaptor.processEvent(event);
                 }
+            }
+            //Check Action
+            switch (event.getAction()) {
+                case ADD:
+                    for (RefData refData : refDataUpdateList) {
+                        if (!preSubscriptionList.contains(refData.getSymbol())) {
+                            preSubscriptionList.add(refData.getSymbol());
+                            for (IMarketDataAdaptor adaptor : adaptors) {
+                                if (null != adaptor) {
+                                    try {
+                                        adaptor.subscribeMarketData(refData.getSymbol(), this);
+                                    } catch (Exception e) {
+                                        log.error(e.getMessage(), e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case MOD:
+                    break;
+                case DEL:
+                    for (RefData refData : refDataUpdateList) {
+                        if (preSubscriptionList.contains(refData.getSymbol())) {
+                            log.debug("refDataUpdateEvent Symbol=" + refData.getSymbol() + " exist");
+                            preSubscriptionList.remove(refData.getSymbol());
+                            for (IMarketDataAdaptor adaptor : adaptors) {
+                                if (null != adaptor) {
+                                    try {
+                                        adaptor.unsubscribeMarketData(refData.getSymbol(), this);
+                                    } catch (Exception e) {
+                                        log.error(e.getMessage(), e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
