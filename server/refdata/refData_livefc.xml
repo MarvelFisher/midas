@@ -87,7 +87,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -227,7 +227,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -367,7 +367,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -507,7 +507,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -647,7 +647,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -787,7 +787,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -927,7 +927,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1067,7 +1067,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1207,7 +1207,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1347,7 +1347,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1487,7 +1487,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
@@ -1627,7 +1627,7 @@
       </entry>
       <entry>
         <string>Strategy</string>
-        <string>IF</string>
+        <string>LIVECF</string>
       </entry>
       <entry>
         <string>Limit maximum lot</string>
