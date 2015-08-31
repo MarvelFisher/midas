@@ -47,17 +47,17 @@ public class IndexMarketSessionValidator implements IOrderValidator{
 			}else{			
 				symbol = order.getSymbol();
 			}
-			
+			log.info("symbol:{}",symbol);
 			if( null == symbol)
 				return;
 			
 			MarketSessionData data = marketSessionUtil.getCurrentMarketSession(symbol);
-			
 			if( null == data){
 				log.warn("can't get index market session:{}",symbol);
 				return;
 			}
-						
+			log.info("data:{}",data.getSessionType());
+		
 			MarketSessionType sessionType =  data.getSessionType();
 			if(sessionType.equals(MarketSessionType.CLOSE) || sessionType.equals(MarketSessionType.PRECLOSE)){
 				throw new OrderValidationException("Market closed,order couldn't be placed",ErrorMessage.MARKET_CLOSED);
