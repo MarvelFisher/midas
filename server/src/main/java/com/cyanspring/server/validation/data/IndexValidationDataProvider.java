@@ -51,7 +51,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		@Override
 		public void subscribeToEvents() {
 			subscribeToEvent(QuoteExtEvent.class, null);
-//			subscribeToEvent(MultiQuoteExtendEvent.class, null);
+			subscribeToEvent(MultiQuoteExtendEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 		}
 
@@ -62,10 +62,8 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	};
 
 	public void processIndexSessionEvent(IndexSessionEvent event){
-		log.info("get processIndexSessionEvent");
-		log.info("event.getDataMap():{}",event.getDataMap().size());
 		if(!event.isOk()){
-			log.warn("index session event request fail");
+			log.warn("index session event request is not ok");
 			return;
 		}
 		
@@ -77,7 +75,6 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		if( null == quoteExtendsMap)
 			quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		
-		log.info("updateMap:{}",updateMap.size());
 		Set <Entry<String,MarketSessionData>>entrys = updateMap.entrySet();
 		List<String>symbolList = new ArrayList<String>();
 		for(Entry<String,MarketSessionData> entry : entrys){
@@ -86,7 +83,6 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			MarketSessionData session = entry.getValue();
 			symbolSessionMap.put(symbol, session);
 			if(MarketSessionType.PREOPEN.equals(session.getSessionType())){
-				log.info("get PREOPEN type:{}",symbol);
 				symbolList.add(symbol);
 				if(quoteExtendsMap.containsKey(symbol)){
 					quoteExtendsMap.remove(symbol);
@@ -96,25 +92,40 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 				continue;
 			}
 			
+			if(!checkTradeDate(symbol,session) && quoteExtendsMap.containsKey(symbol)){
+				quoteExtendsMap.remove(symbol);
+				symbolList.add(symbol);
+			}
+			
 			if(!quoteExtendsMap.containsKey(symbol)){
 				symbolList.add(symbol);
 				continue;
 			}
 		}
 		
-		log.info("symbol list:{}",symbolList.size());
 		if( null == quoteExtendsMap || quoteExtendsMap.size()<=0){			
 			sendQuoteExtSubEvent();
 		}else if(!symbolList.isEmpty()){		
 			QuoteExtSubEvent requestQuoteExtEvent = new QuoteExtSubEvent(IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER, symbolList);
 			eventManager.sendEvent(requestQuoteExtEvent);
 		}
+	}
+
+	private boolean checkTradeDate(String symbol, MarketSessionData session) {
+		if(!quoteExtendsMap.containsKey(symbol))
+			return false;
 		
-//		Set<Entry<String, MarketSessionData>> entrySet =  symbolSessionMap.entrySet();
-//		for(Entry <String,MarketSessionData> data : entrySet){
-//			log.info("print key:{} value:{} trade date:{}",new Object[]{data.getKey(),data.getValue().getSessionType(),data.getValue().getTradeDateByString()});
-//		}
-		
+		String indexTradeDate = session.getTradeDateByString();
+		DataObject dataObject = quoteExtendsMap.get(symbol);
+		if(null != dataObject){
+			Date lastTradeDate = dataObject.get(Date.class,QuoteExtDataField.TIMESTAMP.value());
+			String symbolTradeDate = TimeUtil.formatDate(lastTradeDate,"yyyy-MM-dd");
+			if(indexTradeDate.equals(symbolTradeDate)){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private List<String> getSymbolList(String key) {
@@ -131,6 +142,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			String key = entry.getKey();
 			MarketSessionData session = entry.getValue();
 			MarketSessionType sessionType = session.getSessionType();
+			log.info("get Index Session:{},{},{}",new Object[]{key,sessionType,session.getTradeDateByString()});
 			List<String> symbols = getSymbolList(key);
 			if (null == symbols || symbols.isEmpty())
 				continue;
@@ -153,9 +165,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("ValidationDataProvider");
 		}
-		log.info("request requestIndexSession");
 		requestIndexSession();
-		log.info("request sendQuoteExtSubEvent");
 		sendQuoteExtSubEvent();
 	}
 
@@ -180,7 +190,6 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	public void processMultiQuoteExtendEvent(MultiQuoteExtendEvent event) {
 		
 		Map<String, DataObject> receiveDataMap = event.getMutilQuoteExtend();
-		log.info("get processMultiQuoteExtendEvent:{}",receiveDataMap.size());
 		if (null == receiveDataMap || 0 == receiveDataMap.size()) {
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
 			return;
@@ -193,7 +202,6 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		}
 
 		Set<Entry<String, DataObject>> entrys = receiveDataMap.entrySet();
-		boolean missingIndexSession = false;
 		for (Entry<String, DataObject> entry : entrys) {
 			String key = entry.getKey();
 			DataObject data = entry.getValue();
@@ -201,7 +209,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 					QuoteExtDataField.SYMBOL.value());
 			Date lastTradeDate = data.get(Date.class,
 					QuoteExtDataField.TIMESTAMP.value());
-			log.info("MuliteQuote:{},{}",symbol,lastTradeDate);
+			log.info("Multi Quote:{},{}",symbol,lastTradeDate);
 			if (!StringUtils.hasText(symbol))
 				continue;
 
@@ -222,15 +230,11 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 					quoteExtendsMap.put(key, data);
 				}else{
 					log.info("missing index session :{}",symbol);
-					missingIndexSession = true;
 				}
 			} catch (Exception e) {
 				log.warn(e.getMessage(), e);
 			}
 		}
-		
-		if(missingIndexSession)		
-			requestIndexSession();	
 	}
 
 	public void processQuoteExtEvent(QuoteExtEvent event) {
@@ -276,7 +280,6 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		AllQuoteExtSubEvent event = new AllQuoteExtSubEvent(
 				IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER);
-		log.info("send QuoteExtSub event");
 		eventManager.sendEvent(event);
 	}
 
