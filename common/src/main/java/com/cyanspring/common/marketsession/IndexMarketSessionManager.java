@@ -7,7 +7,6 @@ import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
-import com.cyanspring.common.filter.RefDataFilter;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -39,9 +38,6 @@ public class IndexMarketSessionManager implements IPlugin {
 
 	@Autowired
 	private MarketSessionUtil marketSessionUtil;
-	
-	@Autowired(required=false)
-	private RefDataFilter refDataFilter;
 
 	private boolean noCheckSettlement = false;
 	private ScheduleManager scheduleManager = new ScheduleManager();
@@ -141,24 +137,12 @@ public class IndexMarketSessionManager implements IPlugin {
 		if (!event.isOk())
 			return;
 		List<RefData> list = event.getRefDataList();
-		try {
-			if (refDataFilter != null)
-				list = refDataFilter.filter(list);
-			for (RefData refData : list) 
-				addQueue.offer(refData);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+		for (RefData refData : list) 
+			addQueue.offer(refData);
 	}
 
 	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
 		List<RefData> list = event.getRefDataList();
-		try {
-			if (refDataFilter != null)
-				list = refDataFilter.filter(list);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
 		
 		if (event.getAction() == Action.ADD) {
 			for (RefData refData : list) 

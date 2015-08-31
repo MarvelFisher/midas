@@ -23,6 +23,7 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
+import com.cyanspring.common.filter.RefDataFilter;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
@@ -51,6 +52,9 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 	@Autowired
 	private ScheduleManager scheduleManager;
 
+	@Autowired(required=false)
+	private RefDataFilter refDataFilter;
+	
 	private List<IRefDataAdaptor> refDataAdaptors;
 	private List<RefData> refDataList;
 	private Map<String, MarketSessionData> sessionDataMap;
@@ -110,6 +114,9 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (this.refDataList == null)
 			this.refDataList = new ArrayList<>();
 		log.debug("Receive RefData from Adapter - " + refDataList.size());
+		if (refDataFilter != null)
+			refDataList = refDataFilter.filter(refDataList);
+		log.debug("After filtered RefData from Adapter - " + refDataList.size());
 		for (RefData refData : refDataList) {
 			if (checkRefData(refData))
 				this.refDataList.add(refData);
@@ -122,6 +129,9 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size() + ", action: " + action.toString());
 			try {
 				List<RefData> send = new ArrayList<>();
+				if (refDataFilter != null)
+					refDataList = refDataFilter.filter(refDataList);
+				log.debug("After filtered RefData from Adapter - " + refDataList.size());
 				for (RefData refData : refDataList) {
 					if (!checkRefData(refData))
 						continue;
