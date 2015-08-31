@@ -17,22 +17,6 @@
         </property>
 	</bean> -->
 	
-	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
-        <property name="settlementDelay"><value>45</value></property>
-        <property name="eventManager" ref="eventManager"></property>        
-    </bean>
-    
-    <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-		<constructor-arg>
-			<list>
-				<ref bean="cfSessionChecker"/>
-				<ref bean="agSessionChecker"/>
-				<ref bean="cuSessionChecker"/>
-				<ref bean="ifSessionChecker"/>
-			</list>
-		</constructor-arg>
-	</bean>
-	
 	<bean id="ifSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>

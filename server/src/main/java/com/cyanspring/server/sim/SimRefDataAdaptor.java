@@ -22,6 +22,7 @@ import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataUtil;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -67,6 +68,7 @@ public class SimRefDataAdaptor implements IRefDataAdaptor {
 			refData.setCode(data.getWindCode());
 			refData.setIType(String.valueOf(data.getSecurityType()));
 			refData.setCategory(RefDataUtil.getCategory(refData));
+			refData.setIndexSessionType(IndexSessionType.SPOT.toString());
 			refDataList.add(refData);
 		}
 		
