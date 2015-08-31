@@ -11,6 +11,7 @@
 	<import resource="test/sc_MarketSession.xml" />
 	<import resource="sc/marketSession/*.xml" />
 	<import resource="sc/business.xml" />
+	<import resource="sc/LiveTrading.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
 	<import resource="common/persistence.xml" />

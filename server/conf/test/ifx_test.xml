@@ -28,7 +28,8 @@
                 <ref bean="liveTradingSession" />
                 <ref bean="statisticManager" />
                 <ref bean="lumpSumManager"/>                
-                <ref bean="systemSuspendValidator"/>                
+                <ref bean="systemSuspendValidator"/>   
+                <ref bean="coinManager" />             
             </list>
         </property>
         <property name="readyMap">
@@ -413,6 +414,13 @@
 	
 
     <bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
+	</bean>
+
+	<!-- coin control -->
+	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+	</bean>
+	
+	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
 	</bean>
 
 </beans>
