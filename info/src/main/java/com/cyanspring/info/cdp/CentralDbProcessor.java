@@ -67,6 +67,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.TickTableManager;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.util.DefPriceSetter;
 import com.cyanspring.info.util.FXPriceSetter;
@@ -115,6 +116,7 @@ public class CentralDbProcessor implements IPlugin
 	private long checkSQLInterval = 10 * 60 * 1000;
 	private int numOfHisThreads = 5;
 	private int curHisThread = 0;
+	private int retrieveTime = -1;
 	//Parameters
 	private String serverMarket;
 	private int nChefCount = 5;
@@ -197,9 +199,17 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void processAsyncTimerEvent(AsyncTimerEvent event) 
 	{
-		if (event == timerEvent && !isStartup)
+		if (event == timerEvent)
 		{
-			resetSymbolDataStat();
+			if (isStartup == false)
+				resetSymbolDataStat();
+			if (retrieveTime != -1)
+			{
+				Calendar cal = Calendar.getInstance();
+				int now = (cal.get(Calendar.HOUR_OF_DAY) * 100) + cal.get(Calendar.MINUTE);
+				if (now == retrieveTime)
+					retrieveChart();
+			}
 		}
 //		else if (event == checkEvent)
 //		{
@@ -814,7 +824,6 @@ public class CentralDbProcessor implements IPlugin
 		while(itr.hasNext())
 		{
 			entry = itr.next();
-			System.out.println(entry.getKey());
 			symbolarr.clear();
 			symbolarr.add(entry.getKey());
 			ArrayList<SymbolInfo> symbolinfos = (ArrayList<SymbolInfo>) getRefSymbolInfo()
@@ -937,20 +946,37 @@ public class CentralDbProcessor implements IPlugin
 	{
 		MarketSessionType sessionType, newSessionType;
 		List<String> indexList = new ArrayList<String>();
+		String indexSessionType;
+		SymbolInfo syminfo;
 		for (Entry<String, MarketSessionData> entry : sessions.entrySet())
 		{
 			ArrayList<SymbolData> symboldatas = new ArrayList<SymbolData>();
-			sessionType = getSessionMap().get(entry.getKey()).getSessionType();
+			sessionType = getSessionMap().get(entry.getKey()) == null ? 
+					null : getSessionMap().get(entry.getKey()).getSessionType();
 			newSessionType = entry.getValue().getSessionType();
 			for (SymbolChef chef : SymbolChefList)
 			{
 				for (Entry<String, SymbolData> symentry : chef.getMapSymboldata().entrySet())
 				{
-					if (symentry.getValue().getSessionIndex().equals(entry.getKey()))
+					indexSessionType = symentry.getValue().getSessionIndex();
+					syminfo = refSymbolInfo.getbySymbol(symentry.getValue().getStrSymbol());
+					if (IndexSessionType.EXCHANGE.name().equals(indexSessionType)
+							&& syminfo.getExchange().equals(entry.getKey()) == false)
 					{
-						symentry.getValue().setSessionType(entry.getValue().getSessionType());
-						symboldatas.add(symentry.getValue());
+						continue;
 					}
+					if (IndexSessionType.SPOT.name().equals(indexSessionType)
+							&& syminfo.getCategory().equals(entry.getKey()) == false)
+					{
+						continue;
+					}
+					if (IndexSessionType.SETTLEMENT.name().equals(indexSessionType)
+							&& syminfo.getCode().equals(entry.getKey()) == false)
+					{
+						continue;
+					}
+//					symentry.getValue().setSessionType(entry.getValue().getSessionType());
+					symboldatas.add(symentry.getValue());
 				}
 			}
 			try
@@ -1406,6 +1432,16 @@ public class CentralDbProcessor implements IPlugin
 	public void setSessionMap(Map<String, MarketSessionData> sessionMap)
 	{
 		this.sessionMap = sessionMap;
+	}
+
+	public int getRetrieveTime()
+	{
+		return retrieveTime;
+	}
+
+	public void setRetrieveTime(int retrieveTime)
+	{
+		this.retrieveTime = retrieveTime;
 	}
 	
 }

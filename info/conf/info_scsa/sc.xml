@@ -51,12 +51,9 @@
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
 		<property name="cpds" ref="cpds"/>
-		<property name="serverMarket">
-			<value>SC</value>
-		</property>
-		<property name="nChefCount">
-			<value>5</value>
-		</property>
+		<property name="serverMarket" value="SC"/>
+		<property name="nChefCount" value="5"/>
+		<property name="retrieveTime" value="1900"/>
 		<property name="preSubscriptionList">
 			<list>
 				<value>601318.SH</value>
