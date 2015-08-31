@@ -294,7 +294,10 @@
 	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
-				<value>FUTURES_CX</value>
+				<value>EXCHANGE_INDEX</value>
+				<value>STOCK</value>
+				<value>STOCK_SSE</value>
+				<value>STOCK_GEI</value>
 			</list>
 		</property>
 	</bean>
