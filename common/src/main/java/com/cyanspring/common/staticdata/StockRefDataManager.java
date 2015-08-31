@@ -21,14 +21,13 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class StockRefDataManager extends RefDataService {
 
-    protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
+    protected static final Logger log = LoggerFactory.getLogger(StockRefDataManager.class);
     private List<RefData> refDataList;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
     
     //Futures
     private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();
-    private MarketSessionUtil marketSessionUtil;
     private String strategyPack = "com.cyanspring.common.staticdata.fu";
     private String refDataTemplatePath;
     private List<RefData> refDataTemplateList;
@@ -145,10 +144,6 @@ public class StockRefDataManager extends RefDataService {
     @Override
     public void clearRefData() {
         refDataList.clear();
-    }
-
-    public void setMarketSessionUtil(MarketSessionUtil marketSessionUtil) {
-        this.marketSessionUtil = marketSessionUtil;
     }
 
     public void setStrategyPack(String strategyPack) {
