@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 public abstract class AsyncEvent implements Serializable {
 	private String key;
-	private EventPriority priority = EventPriority.NORMAL;;
+	private EventPriority priority = EventPriority.NORMAL;
 	
 	public AsyncEvent() {
 	}
