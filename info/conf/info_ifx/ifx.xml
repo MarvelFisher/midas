@@ -39,12 +39,9 @@
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
 		<property name="cpds" ref="cpds"/>
-		<property name="serverMarket">
-			<value>FX</value>
-		</property>
-		<property name="nChefCount">
-			<value>5</value>
-		</property>
+		<property name="serverMarket" value="FX"/>
+		<property name="nChefCount" value="5"/>
+		<property name="retrieveTime" value="0505"/>
 		<property name="preSubscriptionList">
 			<list>
 	            <value>USDCNH</value>
