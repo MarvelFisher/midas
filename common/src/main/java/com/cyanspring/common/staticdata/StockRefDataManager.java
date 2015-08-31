@@ -22,7 +22,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class StockRefDataManager extends RefDataService {
 
     protected static final Logger log = LoggerFactory.getLogger(StockRefDataManager.class);
-    private List<RefData> refDataList;
+    private List<RefData> refDataList = new ArrayList<>();
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
     
@@ -151,7 +151,7 @@ public class StockRefDataManager extends RefDataService {
     }
 
 	@Override
-	public RefData add(RefData refData, String tradeDate) throws Exception {
+	public RefData add(RefData refData, String tradeDate) throws Exception {	
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(sdf.parse(tradeDate));
 		updateRefData(cal, refData);
