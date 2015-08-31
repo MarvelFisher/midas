@@ -47,6 +47,7 @@
 		</property>
 		<property name="preSubscriptionList">
 			<list>
+	            <value>USDCNH</value>
 	            <value>USDJPY</value>
 	            <value>USDCHF</value>
 	            <value>USDCAD</value>
@@ -56,7 +57,6 @@
 	            <value>AUDUSD</value>
 	            <value>NZDUSD</value>
 	            <value>GBPJPY</value>
-	            <value>USDCNH</value>
 	        </list>    
 		</property>
 		<property name="historicalDataCount">
