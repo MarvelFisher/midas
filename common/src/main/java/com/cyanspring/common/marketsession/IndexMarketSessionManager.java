@@ -103,6 +103,7 @@ public class IndexMarketSessionManager implements IPlugin {
 				MarketSessionData data = currentSessionMap.get(refData.getSymbol());
 				if (data == null) {
 					log.error("Request data not complete, index: {}", refData.getSymbol());
+					continue;
 				}
 				send.put(refData.getSymbol(), data);
 			}
@@ -123,6 +124,10 @@ public class IndexMarketSessionManager implements IPlugin {
 					continue;
 				MarketSessionData current = currentSessionMap.get(index);
 				MarketSession session = marketSessionUtil.getMarketSessions(current.getTradeDateByDate(), refData);
+				if (session == null) {
+					log.warn("Can't find market session, symbol: {}, category: {}", refData.getSymbol(), refData.getCategory());
+					continue;
+				}
 				send.put(index, session);
 			}
 			eventManager.sendLocalOrRemoteEvent(
@@ -167,13 +172,17 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 	}
 
-	private String getIndex(RefData refData) {
+	private String getIndex(RefData refData) throws Exception {
 		String index = null;
-		if (refData.getIndexSessionType().equals(IndexSessionType.SETTLEMENT.toString()))
+		String indexType = refData.getIndexSessionType();
+		if (indexType == null) {
+    		throw new Exception("Null indexSessionType, symbol: " + refData.getSymbol());
+		}
+		if (indexType.equals(IndexSessionType.SETTLEMENT.toString()))
 			index = refData.getSymbol();
-		else if (refData.getIndexSessionType().equals(IndexSessionType.SPOT.toString()))
+		else if (indexType.equals(IndexSessionType.SPOT.toString()))
 			index = refData.getCategory();
-		else if (refData.getIndexSessionType().equals(IndexSessionType.EXCHANGE.toString()))
+		else if (indexType.equals(IndexSessionType.EXCHANGE.toString()))
 			index = refData.getExchange();
 		return index;
 	}
@@ -227,6 +236,10 @@ public class IndexMarketSessionManager implements IPlugin {
 		Map<String, MarketSessionData> send = new HashMap<>();
 		for (RefData refData : refDataMap.values()) {
 			MarketSessionData session = marketSessionUtil.getMarketSession(refData, Clock.getInstance().now());
+			if (session == null) {
+	    		log.warn("Can't find market session, symbol: {}", refData.getSymbol());
+				continue;
+			}
 			String index = getIndex(refData);
 			MarketSessionData current = currentSessionMap.get(index);			
 			if (current == null) {

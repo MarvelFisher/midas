@@ -67,6 +67,7 @@ public class RefDataUtil {
 		
 		if(marketSessionUtil == null){
 			log.info("marketSessionUtil is null");
+			return null;
 		}
 		
 		return marketSessionUtil.getTradeDateManager(category);

@@ -44,26 +44,22 @@ public class MarketSessionUtil implements IPlugin{
     
     public MarketSessionData getMarketSession(RefData refData, Date date) throws Exception {
     	SessionPair pair = getSession(refData);
+    	if (pair == null) {
+    		log.warn("Can't find market session, symbol: {}", refData.getSymbol());
+    		return null;
+    	}
     	return pair.session.getState(date, refData);
     }
     
     public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
-    	
-    	
-    	
     	RefData refData = refDataManager.getRefData(symbol);
-    	
     	if(null == refData)
     		return null;
-    	
-    	log.info("get regfdata:{}",refData.getSymbol());
     	String category = RefDataUtil.getCategory(refData);
-    	log.info("get category:{}",category);
     	if(!StringUtils.hasText(category))
     		return null;
     	
     	MarketSessionData data = this.getMarketSession().get(category);
-    	log.info("get data:{}",data);
     	return data;
     }
     
@@ -135,7 +131,7 @@ public class MarketSessionUtil implements IPlugin{
     		if (pair != null)
     			ret.put(pair.index, pair.session.getState(date, refData));
     		else
-    			log.error("Can't find market session symbol: {}", refData.getSymbol());
+    			log.warn("Can't find market session, symbol: {}", refData.getSymbol());
     	}
     	return ret;
     }
@@ -144,24 +140,29 @@ public class MarketSessionUtil implements IPlugin{
     	Map<String, MarketSessionData> ret = new HashMap<>();
     	for(RefData refData : indexList) {
     		SessionPair pair = getSession(refData);
-    		ret.put(pair.index, pair.session.getState(dateMap.get(refData.getSymbol()), refData));
+    		if (pair != null)
+    			ret.put(pair.index, pair.session.getState(dateMap.get(refData.getSymbol()), refData));
+    		else
+    			log.warn("Can't find market session, symbol: {}", refData.getSymbol());
     	}
     	return ret;
     }
     
     public MarketSession getMarketSessions(Date date, RefData refData) throws Exception{
     	IMarketSession session = sessionMap.get(refData.getCategory());
+    	if (session == null)
+    		return null;
     	return session.getMarketSession(date, refData);
     }
     
-    public ITradeDate getTradeDateManager(String category){
-    	if(sessionMap.containsKey(category) && null != sessionMap.get(category)){
-    		return sessionMap.get(category).getTradeDateManager();
+    public ITradeDate getTradeDateManager(String index){
+    	if(sessionMap.containsKey(index) && null != sessionMap.get(index)){
+    		return sessionMap.get(index).getTradeDateManager();
     	}
     	return null;
     }
     
-    private SessionPair getSession(RefData refData) throws Exception {
+    private SessionPair getSession(RefData refData) throws Exception{
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
     		String key = entry.getKey();
     		if(compareIndex(key, refData.getSymbol()) ||
@@ -169,17 +170,21 @@ public class MarketSessionUtil implements IPlugin{
     				compareIndex(key, refData.getCategory()))
     			return getPair(refData, entry.getValue());
     	}
-    	throw new Exception("No session data found");
+    	return null;
     }
     
     private boolean compareIndex(String c1, String c2){
+    	if(c1 == null || c2 == null)
+    		return false;
     	String comp1 = RefDataUtil.getOnlyChars(c1);
     	String comp2 = RefDataUtil.getOnlyChars(c2);
     	return comp2.toLowerCase().equals(comp1.toLowerCase());
     }
     
-    private SessionPair getPair(RefData refData, IMarketSession session) {
+    private SessionPair getPair(RefData refData, IMarketSession session) throws Exception {
     	String sessionIndex = refData.getIndexSessionType();
+    	if (sessionIndex == null)
+    		throw new Exception("Null indexSessionType, symbol: " + refData.getSymbol());
     	if (sessionIndex.equals(IndexSessionType.SETTLEMENT.toString()))
     		return new SessionPair(refData.getSymbol(), session);
     	else if (sessionIndex.equals(IndexSessionType.SPOT.toString()))
