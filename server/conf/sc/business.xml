@@ -14,6 +14,7 @@
 	        <list>
 	        	<ref bean="accountStateValidator"/>
 				<ref bean="marketSessionValidator"/>
+				<ref bean="liveTradingSessionValidator"/>
 				<ref bean="tradableValidator"/>
 				<ref bean="stockStatusValidator"/>
 				<ref bean="orderFieldValidator"/>

@@ -220,20 +220,21 @@
     <bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
     </bean>
 
-    <!-- <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/> -->
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
+     <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
+    <!--<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
 		<constructor-arg>
 			<list>
 				<ref bean="refDataAdapterFCI"/>
 			</list>
 		</constructor-arg>    
-    </bean>
+    </bean> -->
     
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
-			<value>refData/template/template_FC.xml</value>
-			<!-- <value>refData/refData_FC.xml</value> -->
+			<!--<value>refData/template/template_FC.xml</value>-->
+			 <value>refData/refData_livefc.xml</value> 
 		</property>
+		<property name="templateListAsRefDataList" value="true"></property>
     </bean>
     
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">

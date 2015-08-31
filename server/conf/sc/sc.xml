@@ -39,7 +39,9 @@
 				<ref bean="trailingStopManager"/>
 				<ref bean="validationDataProvider"/>
 				<ref bean="statisticManager"/>		
-				<ref bean="systemSuspendValidator"/>		
+				<ref bean="systemSuspendValidator"/>
+				<ref bean="coinManager"/>
+				<ref bean="liveTradingSession" />			
 			</list>
 		</property>
 		<property name="readyMap">
@@ -331,6 +333,13 @@
 				<ref bean="szSessionChecker"/>
 			</list>
 		</constructor-arg>
+	</bean>
+	
+	<!-- coin control -->
+	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+	</bean>
+	
+	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
 	</bean>
 	
 </beans>
