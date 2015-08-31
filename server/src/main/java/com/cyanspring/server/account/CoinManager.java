@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.Default;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,11 @@ public class CoinManager implements IPlugin{
 	}
 	
 	public void processCoinSettingRequestEvent(CoinSettingRequestEvent event){
+
+		// from global MQ, but not for this LTS
+		if (!Strings.isNullOrEmpty(event.getMarket()) && !Default.getMarket().equals(event.getMarket())) {
+			return;
+		}
 		
 		String userId = event.getUserId();	
 		log.info("Receive Coin Setting :{}",userId);
@@ -96,6 +102,11 @@ public class CoinManager implements IPlugin{
 			
 			Account account = getAccountFromUserId(userId);
 			if(null == account){
+
+				if (!Strings.isNullOrEmpty(event.getMarket())) {
+					return; // from global MQ, but not for this LTS, don't send reply event
+				}
+
 				message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST, "Account not exist!");
 				break check;
 			}
@@ -155,7 +166,9 @@ public class CoinManager implements IPlugin{
 			log.info("Coin Setting success:{},{},{}",new Object[]{accountId,coinType,endDate});
 		}
 
-		CoinSettingReplyEvent reply = new CoinSettingReplyEvent(event.getKey(), event.getSender(), event.getUserId(), event.getTxId(), event.getClientId(), isOk, message);
+		CoinSettingReplyEvent reply = new CoinSettingReplyEvent(
+				event.getKey(), event.getSender(), event.getTxId(), event.getUserId(), event.getClientId(),
+				event.getCoinType(), event.getMarket(), isOk, message);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
