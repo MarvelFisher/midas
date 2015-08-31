@@ -27,7 +27,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.00E-5</double>
+        <double>0.00004</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -151,7 +151,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.00E-5</double>
+        <double>0.00004</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -275,7 +275,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.00E-5</double>
+        <double>0.00004</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -396,11 +396,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>5.50E-5</double>
+        <double>0.000055</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>15</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -445,7 +445,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>15</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -514,11 +514,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>5.50E-5</double>
+        <double>0.000055</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -563,7 +563,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -636,7 +636,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>1000</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -681,7 +681,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>1000</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -750,11 +750,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.95E-5</double>
+        <double>0.0000495</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -799,7 +799,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -868,11 +868,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.95E-5</double>
+        <double>0.0000495</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -917,7 +917,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -990,7 +990,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1035,7 +1035,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1108,7 +1108,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1156,7 +1156,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1222,11 +1222,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>6.60E-5</double>
+        <double>0.000066</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>100</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1274,7 +1274,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>100</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1344,7 +1344,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1392,7 +1392,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1462,7 +1462,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1510,7 +1510,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1576,11 +1576,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>5.50E-5</double>
+        <double>0.000055</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1628,7 +1628,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1698,7 +1698,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1746,7 +1746,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1812,11 +1812,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>6.60E-5</double>
+        <double>0.000066</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>100</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1864,7 +1864,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>100</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1930,11 +1930,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>1.65E-4</double>
+        <double>0.000165</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1982,7 +1982,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>2</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2052,7 +2052,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2097,7 +2097,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2170,7 +2170,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2215,7 +2215,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2288,7 +2288,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2336,7 +2336,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2409,7 +2409,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2457,7 +2457,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2530,7 +2530,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2578,7 +2578,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2651,7 +2651,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2699,7 +2699,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2890,7 +2890,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2935,7 +2935,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3004,11 +3004,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>3.30E-5</double>
+        <double>0.000033</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3053,7 +3053,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3122,11 +3122,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.40E-5</double>
+        <double>0.000044</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3171,7 +3171,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3240,11 +3240,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.40E-5</double>
+        <double>0.000044</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3289,7 +3289,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3476,11 +3476,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>2.20E-5</double>
+        <double>0.000022</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>50</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3525,7 +3525,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>50</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3594,11 +3594,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.40E-5</double>
+        <double>0.000044</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3643,7 +3643,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3712,11 +3712,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>6.60E-5</double>
+        <double>0.000066</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>60</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3764,7 +3764,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>60</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3834,7 +3834,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3882,7 +3882,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3952,7 +3952,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4000,7 +4000,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4070,7 +4070,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4118,7 +4118,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4184,11 +4184,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>1.10E-4</double>
+        <double>0.00011</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>500</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4236,7 +4236,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>500</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4306,7 +4306,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4354,7 +4354,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4420,11 +4420,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>1.10E-4</double>
+        <double>0.00011</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>500</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4472,7 +4472,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>500</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4542,7 +4542,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>200</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4590,7 +4590,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>200</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4663,7 +4663,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4711,7 +4711,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4784,7 +4784,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4832,7 +4832,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4905,7 +4905,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4953,7 +4953,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -5026,7 +5026,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -5074,7 +5074,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -5147,7 +5147,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -5195,7 +5195,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -5268,7 +5268,7 @@
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -5316,7 +5316,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
