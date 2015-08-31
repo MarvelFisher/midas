@@ -119,7 +119,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			
 		refData.setStrategy(refData.getExchange());
 		refData.setCategory(getCategory(refData));
-		refData.setSymbol(getSymbol(refData));
+		refData.setSymbol(getSymbol(refData).toUpperCase());
 		refData.setCNDisplayName(getCNName(combineCnName));
 		refData.setTWDisplayName(getTWName(combineTwName));
 		refData.setENDisplayName(getEnName(refData));
@@ -133,7 +133,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setDetailCN(getCNDetailName(combineCnName));
 		refData.setDetailTW(getTWDetailName(combineTwName));
 		refData.setDetailEN(getCNDetailName(combineCnName));	
-		refData.setRefSymbol(getRefSymbol(refSymbol));
+		refData.setRefSymbol(getRefSymbol(refSymbol).toUpperCase());
 	}
 	
 	private boolean checkAcceptableRefData(RefData refData) {
