@@ -1,6 +1,5 @@
 package com.cyanspring.server.validation;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,12 +13,13 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.marketsession.ITradeDate;
 import com.cyanspring.common.marketsession.MarketSessionChecker;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.common.marketsession.TradeDateManager;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.common.type.OrderType;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
@@ -34,7 +34,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 	private static final Logger log = LoggerFactory.getLogger(AllowPlaceOrderTimeValidator.class);
 	
 	@Autowired
-	TradeDateManager tradeDateManager;
+	MarketSessionUtil marketSessionUtil;
 	
 	@Autowired
 	MarketSessionChecker sessionChecker;
@@ -50,10 +50,22 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		
 		try {
 			
+			String symbol;
+			if(order == null){				
+				symbol = (String)map.get(OrderField.SYMBOL.value());
+			}else{			
+				symbol = order.getSymbol();
+			}
+			
+			if( null == symbol)
+				return;
+			
+			ITradeDate tradeDateManager = marketSessionUtil.getTradeDateManagerBySymbol(symbol);
+			RefData refData = marketSessionUtil.getRefData(symbol);
 			Date today = new Date();
 			Date saturday = getSaturdayOfWeek(today);		
 			Date firstTradeDate = tradeDateManager.nextTradeDate(saturday);
-			MarketSessionData session = getOpenMarketSession(firstTradeDate);
+			MarketSessionData session = getOpenMarketSession(firstTradeDate,refData);
 			if(null == session || !session.getSessionType().equals(MarketSessionType.OPEN)){
 				return;
 			}			
@@ -77,7 +89,7 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		return cal.getTime();
 	}
 	
-	private MarketSessionData getOpenMarketSession(Date firstTradeDate) throws Exception {
+	private MarketSessionData getOpenMarketSession(Date firstTradeDate,RefData refData) throws Exception {
 
 		Date today = TimeUtil.getOnlyDate(firstTradeDate);
 		Calendar cal = Calendar.getInstance();
@@ -88,13 +100,17 @@ public class AllowPlaceOrderTimeValidator implements IOrderValidator{
 		tomorrow.add(Calendar.DATE, 1);
 		
 		MarketSessionData data = null;	
+		
+		if(null == refData)
+			return null;
+		
 		while(true){
 			
 			if(cal.getTimeInMillis() > tomorrow.getTimeInMillis()){
 				break;
 			}
 			
-			data = sessionChecker.searchState(cal.getTime(), null);	
+			data = sessionChecker.searchState(cal.getTime(), refData);	
 			if(null == data){
 				break;
 			}	

@@ -162,6 +162,19 @@ public class MarketSessionUtil implements IPlugin{
     	return null;
     }
     
+    public ITradeDate getTradeDateManagerBySymbol(String symbol){
+    	RefData refData = getRefData(symbol);
+    	return getTradeDateManager(refData.getCategory());
+    }
+    
+    public RefData getRefData(String symbol){
+    	RefData refData = refDataManager.getRefData(symbol);
+    	if(null == refData)
+    		return null;
+    	
+    	return refData;
+    }
+    
     private SessionPair getSession(RefData refData) throws Exception{
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
     		String key = entry.getKey();
