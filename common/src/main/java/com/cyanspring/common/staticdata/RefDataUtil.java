@@ -42,7 +42,7 @@ public class RefDataUtil {
 	}
 	
 	enum Commodity{
-		STOCK("S"),INDEX("I"),FUTURE("F");
+		STOCK("S"),INDEX("I"),FUTURE("F"),FOREX("FX");
 		
 		private String value;
 		private Commodity(String value) {
