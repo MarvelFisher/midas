@@ -16,8 +16,9 @@
         </property>
         <property name="plugins">
             <list>
+                <ref bean="marketSessionUtil"/>
+				<ref bean="indexMarketSessionManager"/>
 				<ref bean="refDataHandler" />
-				<ref bean="marketSessionManager" />
                 <ref bean="mdManager" />
                 <ref bean="downStreamManager" />
                 <ref bean="upStreamManager" />
@@ -163,11 +164,11 @@
         </constructor-arg>
     </bean>
 
-    <bean id="simMarketDataAdaptor" class="com.cyanspring.server.sim.SimMarketDataAdaptor">
-        <constructor-arg>
-            <ref bean="simExchange" />
-        </constructor-arg>
-    </bean>
+	<bean id="simMarketDataAdaptor" class="com.cyanspring.server.sim.SimMarketDataAdaptor">
+		<constructor-arg>
+			<ref bean="simExchange" />
+		</constructor-arg>
+	</bean>
 
     <bean id="simExchange" class="webcurve.exchange.Exchange">
     </bean>

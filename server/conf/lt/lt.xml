@@ -27,9 +27,10 @@
 		</property>
 		<property name="plugins">
 			<list>
+			    <ref bean="marketSessionUtil"/>
+				<ref bean="indexMarketSessionManager"/>
 				<ref bean="apiBridgeManager" />
                 <ref bean="refDataHandler" />
-                <ref bean="marketSessionManager" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
