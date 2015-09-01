@@ -95,6 +95,7 @@ public class RefDataFactory extends RefDataService {
 		}
 
 		log.info("can't find template:{}", spotName);
+		log.info("ref symbol:{}, symbol:{}",refData.getRefSymbol(),refData.getSymbol());
 		return null;
 	}
 
@@ -148,8 +149,7 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-		log.info("XML:"+xstream.toXML(refData));
-
+//		log.info("XML:"+xstream.toXML(refData));
 	}
 
 	private void initCategory(RefData refData) {
@@ -245,8 +245,12 @@ public class RefDataFactory extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-		List<RefData> delList = new ArrayList<RefData>();
+		
 		boolean remove = false;
+		if(null == refDataList || refDataList.isEmpty())
+			return remove;
+		
+		List<RefData> delList = new ArrayList<RefData>();
 
 		for (RefData ref : refDataList) {
 			if (ref.getRefSymbol().equals(refData.getRefSymbol()))

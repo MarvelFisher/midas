@@ -99,10 +99,10 @@ public class StockRefDataManager extends RefDataService {
 	private void updateRefData(Calendar cal, RefData refData) {
 		String iType = refData.getIType();
 		if(IType.isFuture(iType)){
-			log.info("update future refdata:{},",refData.getRefSymbol());
+			log.debug("update future refdata:{},",refData.getRefSymbol());
 			updateFutureRefData(cal,refData);
 		}else if(IType.isStock(iType) || IType.isIndex(iType)){
-			log.info("update stock refdata:{},",refData.getRefSymbol());
+			log.debug("update stock refdata:{},",refData.getRefSymbol());
 			updateStockRefData(cal,refData);
 		}else{
 			log.info("none support type:{} , {}",iType,refData.getRefSymbol());
@@ -243,9 +243,13 @@ public class StockRefDataManager extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-		List<RefData> delList = new ArrayList<RefData>();
+		
 		boolean remove = false;
-
+		if(null == refDataList || refDataList.isEmpty())
+			return remove;
+		
+		List<RefData> delList = new ArrayList<RefData>();
+		
 		for (RefData ref : refDataList) {
 			if (ref.getRefSymbol().equals(refData.getRefSymbol()))
 				delList.add(ref);

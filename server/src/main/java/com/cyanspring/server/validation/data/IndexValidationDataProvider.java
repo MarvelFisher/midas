@@ -105,7 +105,8 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		
 		if( null == quoteExtendsMap || quoteExtendsMap.size()<=0){			
 			sendQuoteExtSubEvent();
-		}else if(!symbolList.isEmpty()){		
+		}else if(!symbolList.isEmpty()){
+			log.info("Request QuoteExtSubEvent symbols:{}",symbolList.size());
 			QuoteExtSubEvent requestQuoteExtEvent = new QuoteExtSubEvent(IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER, symbolList);
 			eventManager.sendEvent(requestQuoteExtEvent);
 		}
@@ -144,9 +145,11 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			MarketSessionType sessionType = session.getSessionType();
 			log.info("get Index Session:{},{},{}",new Object[]{key,sessionType,session.getTradeDateByString()});
 			List<String> symbols = getSymbolList(key);
+			
 			if (null == symbols || symbols.isEmpty())
 				continue;
 
+			log.info("{} get symbols:{}",key,symbols.size());
 			if (null == type || type.equals(sessionType)) {
 				for (String symbol : symbols) {
 					symbolMap.put(symbol, session);
@@ -181,7 +184,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	}
 
 	private void requestIndexSession() {
-		log.info("send requestIndexSession ");
+		log.info("Send request Index Session Event");
 		IndexSessionRequestEvent event = new IndexSessionRequestEvent(
 				IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER, null);
 		eventManager.sendEvent(event);
@@ -194,7 +197,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			log.warn(" MultiQuoteExtendEvent reply doesn't contains any data ");
 			return;
 		} else {
-			log.info("receiveData size:" + receiveDataMap.size());
+			log.info("Process MultiQuoteExtend receiveData size:" + receiveDataMap.size());
 		}
 
 		if (null == quoteExtendsMap) {
@@ -205,11 +208,9 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 		for (Entry<String, DataObject> entry : entrys) {
 			String key = entry.getKey();
 			DataObject data = entry.getValue();
-			String symbol = data.get(String.class,
-					QuoteExtDataField.SYMBOL.value());
-			Date lastTradeDate = data.get(Date.class,
-					QuoteExtDataField.TIMESTAMP.value());
-			log.info("Multi Quote:{},{}",symbol,lastTradeDate);
+			String symbol = data.get(String.class,QuoteExtDataField.SYMBOL.value());
+			Date lastTradeDate = data.get(Date.class,QuoteExtDataField.TIMESTAMP.value());
+//			log.info("Multi Quote:{},{}",symbol,lastTradeDate);
 			if (!StringUtils.hasText(symbol))
 				continue;
 
@@ -220,16 +221,20 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			
 			String symbolTradeDate = TimeUtil.formatDate(lastTradeDate,"yyyy-MM-dd");
 			try {
+				if(null == symbolSessionMap || symbolSessionMap.isEmpty()){
+					log.info("IndexSessionMap is empty, waiting AllIndexSession initializing");
+					break;
+				}
 				
 				if (symbolSessionMap.containsKey(symbol)) {
 					MarketSessionData session = symbolSessionMap.get(symbol);
 					if (!session.getTradeDateByString().equals(symbolTradeDate)) {
-						log.info("not same trade date compare session:{}",symbol);
+						log.info("not same trade date compare session:{},index:{},quote:{}",symbol,session.getTradeDateByString(),symbolTradeDate);
 						continue;
 					}
 					quoteExtendsMap.put(key, data);
 				}else{
-					log.info("missing index session :{}",symbol);
+					log.info("waiting index session :{}",symbol);
 				}
 			} catch (Exception e) {
 				log.warn(e.getMessage(), e);
@@ -277,6 +282,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 	}
 
 	public void sendQuoteExtSubEvent() {
+		log.info("Send All QuoteExtSub event");
 		quoteExtendsMap = new ConcurrentHashMap<String, DataObject>();
 		AllQuoteExtSubEvent event = new AllQuoteExtSubEvent(
 				IndexValidationDataProvider.ID, IndexValidationDataProvider.SENDER);
