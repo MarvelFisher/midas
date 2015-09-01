@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.common.marketdata.*;
+
+import webcurve.client.MarketParticipant;
 import webcurve.common.ExchangeListener;
+import webcurve.common.MarketMakerData;
 import webcurve.common.Order;
 import webcurve.common.Trade;
 import webcurve.exchange.Exchange;
@@ -30,6 +33,8 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	private Exchange exchange;
 	private QuoteSource quoteSource;
 	private volatile boolean isConnected = false;
+	private Map<String, MarketParticipant> simMap = new HashMap<>();
+	private boolean createQuote = false;
 	Map<String, List<IMarketDataListener>> subs = 
 		Collections.synchronizedMap(new HashMap<String, List<IMarketDataListener>>());
 
@@ -127,6 +132,12 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 			Quote quote = bookToQuote(book);
 			cache.put(instrument, quote);
 			listener.onQuote(new InnerQuote(quoteSource, (Quote)quote.clone()));
+			if (createQuote && simMap.get(instrument) == null) {
+				MarketParticipant par = new MarketParticipant( exchange, new MarketMakerData(instrument, quote.getAsk(),
+		    			1, 3, 1000, 5000, 1000, 5000, 400));
+				par.start();
+				simMap.put(instrument, par);
+			}
 		}
 			
 	}
@@ -204,5 +215,9 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 
 	public void setQuoteSource(QuoteSource quoteSource) {
 		this.quoteSource = quoteSource;
+	}
+
+	public void setCreateQuote(boolean createQuote) {
+		this.createQuote = createQuote;
 	}
 }
