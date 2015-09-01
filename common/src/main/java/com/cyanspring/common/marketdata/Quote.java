@@ -36,6 +36,7 @@ public class Quote implements Cloneable, Serializable {
 	double last;
 	double lastVol;
 	double turnover;
+	double fTurnover;
 	double high;
 	double low;
 	double open;
@@ -124,6 +125,13 @@ public class Quote implements Cloneable, Serializable {
 	public void setTurnover(double turnover) {
 		this.turnover = turnover;
 	}
+	public double getfTurnover() {
+		return fTurnover;
+	}
+	public void setfTurnover(double fTurnover) {
+		this.fTurnover = fTurnover;
+	}
+
 	protected List<QtyPrice> bids;
 	protected List<QtyPrice> asks;
 	
