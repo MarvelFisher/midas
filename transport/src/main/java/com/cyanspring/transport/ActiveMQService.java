@@ -135,7 +135,8 @@ public class ActiveMQService implements ITransportService, ExceptionListener {
 		TransportConnector connector = new TransportConnector();
 		connector.setUri(new URI(url));
 		broker.addConnector(connector);
-		broker.setBrokerName(url);  // 2015.09.01 add by Steve for multiple broker in one process
+		String str = url.replaceAll("[^a-zA-Z0-9\\.\\_\\-\\:]", "_");
+		broker.setBrokerName(str);  // 2015.09.01 add by Steve for multiple broker in one process
 		broker.start();
 	}
 
