@@ -132,7 +132,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (event.isOk() && event.getRefDataList().size() > 0) {
             log.debug("process RefData Event, Size=" + event.getRefDataList().size());
             preSubscriptionList.clear();
-            List refDataList = event.getRefDataList();
+            List<RefData> refDataList = event.getRefDataList();
             for (int i = 0; i < refDataList.size(); i++) {
                 RefData refData = (RefData) refDataList.get(i);
                 preSubscriptionList.add(refData.getSymbol());
@@ -149,6 +149,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 //                    }
                 }
             }
+            preSubscribe();
             if (!isInitReqDataEnd) isInitRefDateReceived = true;
         } else {
             log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
@@ -387,10 +388,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isInitMarketSessionReceived = false;
         isInitRefDateReceived = false;
         isInitIndexSessionReceived = true;
+        if(!useMarketSession) 
+        	isInitMarketSessionReceived = true;
         for (IMarketDataAdaptor adaptor : adaptors) {
             if ("WindGateWayAdapter".equals(adaptor.getClass().getSimpleName())) {
                 isInitIndexSessionReceived = false;
-                if(!useMarketSession) isInitMarketSessionReceived = true;
                 break;
             }
         }
