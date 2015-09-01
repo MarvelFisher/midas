@@ -75,7 +75,7 @@ public class SymbolData implements Comparable<SymbolData>
 	
 	public SymbolData(String strSymbol, String market, CentralDbProcessor centralDB)
 	{
-		log.info("Create SymbolData " + strSymbol + " Market=" + market + " TradeDate=" + centralDB.getTradedate());
+		log.info("Create SymbolData " + strSymbol + " Market=" + market);
 		isUpdating = true ;
 		this.setStrSymbol(strSymbol) ;
 		this.centralDB = centralDB ;
@@ -157,7 +157,7 @@ public class SymbolData implements Comparable<SymbolData>
 			HistoricalPrice price = priceData.get(cal.getTime()) ;
 			if (price == null)
 			{
-				price = new HistoricalPrice(strSymbol, centralDB.getTradedate(), cal.getTime());
+				price = new HistoricalPrice(strSymbol, getTradedate(), cal.getTime());
 				changed = setter.setPrice(price, quote, dCurVolume);
 				if (changed)
 					priceData.put(cal.getTime(), price);
@@ -180,13 +180,13 @@ public class SymbolData implements Comparable<SymbolData>
 	public void readFromTick()
 	{
 		resetPriceData();
-		String tradedate = centralDB.getTradedate();
+		String tradedate = getTradedate();
 		if (tradedate == null)
 		{
 			return;
 		}
 		String strFile = String.format("./DAT/%s/%s", 
-				centralDB.getTradedate(), getStrSymbol()) ;
+				getTradedate(), getStrSymbol()) ;
 		File fileMins = new File(strFile + ".1M");
 		File fileCache = new File(strFile + ".Ch");
 		if (fileMins.exists() == false)
@@ -231,12 +231,12 @@ public class SymbolData implements Comparable<SymbolData>
 	public void writeToMin()
 	{
 		writeMin = false;
-		if (centralDB.getTradedate() == null)
+		if (getTradedate() == null)
 		{
 			return;
 		}
 		String strFile = String.format("./DAT/%s/%s", 
-				centralDB.getTradedate(), getStrSymbol()) ;
+				getTradedate(), getStrSymbol()) ;
 		File fileMins = new File(strFile + ".1M") ;
         fileMins.getParentFile().mkdirs();
         try
@@ -289,7 +289,7 @@ public class SymbolData implements Comparable<SymbolData>
     	String prefix = (market.equals("FX")) ? "0040" : market;
 		String strTable = String.format("%s_%s", prefix, strType) ;
 		String sqlcmd = "" ;
-		String tradeDate = centralDB.getTradedate() ;
+		String tradeDate = getTradedate() ;
 		HistoricalPrice lastPrice = null;
 		String strSymbol = getRefSymbol();
 		if (strType.equals("W") || strType.equals("M"))
@@ -306,7 +306,7 @@ public class SymbolData implements Comparable<SymbolData>
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
 			List<HistoricalPrice> listBase = null;
-			HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
+			HistoricalPrice curPrice = new HistoricalPrice(getTradedate(), 
 					keyDate, 
 					currentDate, 
 					getStrSymbol(), 
@@ -362,7 +362,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		else
 		{
-			lastPrice = new HistoricalPrice(centralDB.getTradedate(),
+			lastPrice = new HistoricalPrice(getTradedate(),
 											keyDate,
 											currentDate,
 											getStrSymbol(),
@@ -686,7 +686,7 @@ public class SymbolData implements Comparable<SymbolData>
 		emptytime.set(Calendar.MINUTE, 0);
 		emptytime.set(Calendar.SECOND, 0);
 		Date date = emptytime.getTime() ;
-		HistoricalPrice curPrice = new HistoricalPrice(centralDB.getTradedate(), 
+		HistoricalPrice curPrice = new HistoricalPrice(getTradedate(), 
 													   date, 
 													   date, 
 													   getStrSymbol(), 

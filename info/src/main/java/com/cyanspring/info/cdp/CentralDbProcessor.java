@@ -336,7 +336,7 @@ public class CentralDbProcessor implements IPlugin
 	}
 	public void processIndexSessionEvent(IndexSessionEvent event)
 	{
-		if (isUsingIndex())
+//		if (isUsingIndex())
 			mapCentralDbEventProc.get(ProcSession).onEvent(event);
 	}
 	
@@ -948,12 +948,17 @@ public class CentralDbProcessor implements IPlugin
 		List<String> indexList = new ArrayList<String>();
 		String indexSessionType;
 		SymbolInfo syminfo;
+		MarketSessionData session;
 		for (Entry<String, MarketSessionData> entry : sessions.entrySet())
 		{
+			session = entry.getValue();
+			log.info(String.format("Process IndexMarketSession N:%s T:%s D:%s S:%s E:%s", 
+					entry.getKey(), session.getSessionType().name(), 
+					session.getTradeDateByString(), session.getStart(), session.getEnd()));
 			ArrayList<SymbolData> symboldatas = new ArrayList<SymbolData>();
 			sessionType = getSessionMap().get(entry.getKey()) == null ? 
 					null : getSessionMap().get(entry.getKey()).getSessionType();
-			newSessionType = entry.getValue().getSessionType();
+			newSessionType = session.getSessionType();
 			for (SymbolChef chef : SymbolChefList)
 			{
 				for (Entry<String, SymbolData> symentry : chef.getMapSymboldata().entrySet())
@@ -984,8 +989,8 @@ public class CentralDbProcessor implements IPlugin
 				for (SymbolData data : symboldatas)
 				{
 					data.setSessionType(newSessionType);
-					data.setSessionEnd(entry.getValue().getEndDate());
-					data.setTradedate(entry.getValue().getTradeDateByString());
+					data.setSessionEnd(session.getEndDate());
+					data.setTradedate(session.getTradeDateByString());
 				}
 			}
 			catch (ParseException e)
@@ -1076,16 +1081,16 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void sendSessionRequest()
 	{
-		if (isUsingIndex())
-		{
-			log.info("Send IndexMarketSession request");
+//		if (isUsingIndex())
+//		{
 			requestIndexMarketSession();
-		}
-		else
-		{
-			requestMarketSession();
-			log.info("Send MarketSession request");
-		}
+			log.info("Send IndexMarketSession request");
+//		}
+//		else
+//		{
+//			requestMarketSession();
+//			log.info("Send MarketSession request");
+//		}
 	}
 	
 	public void requestMarketSession()
