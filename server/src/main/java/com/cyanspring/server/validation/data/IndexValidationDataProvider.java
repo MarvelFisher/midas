@@ -229,7 +229,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 				if (symbolSessionMap.containsKey(symbol)) {
 					MarketSessionData session = symbolSessionMap.get(symbol);
 					if (!session.getTradeDateByString().equals(symbolTradeDate)) {
-						log.info("not same trade date compare session:{},index:{},quote:{}",symbol,session.getTradeDateByString(),symbolTradeDate);
+						log.info("not same trade date compare session:{},index:{},quote:{}",new Object[]{symbol,session.getTradeDateByString(),symbolTradeDate});
 						continue;
 					}
 					quoteExtendsMap.put(key, data);
