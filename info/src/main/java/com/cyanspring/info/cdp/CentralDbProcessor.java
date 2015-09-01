@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -43,6 +44,7 @@ import com.cyanspring.common.event.info.SymbolListSubscribeEvent;
 import com.cyanspring.common.event.info.SymbolListSubscribeRequestEvent;
 import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.SymbolRequestEvent;
 import com.cyanspring.common.event.marketsession.AllIndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
@@ -60,6 +62,7 @@ import com.cyanspring.common.info.IRefSymbolInfo;
 import com.cyanspring.common.info.RefSubName;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -172,6 +175,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
+			subscribeToEvent(QuoteExtEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
 			subscribeToEvent(RefDataUpdateEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
@@ -286,6 +290,32 @@ public class CentralDbProcessor implements IPlugin
 		else 
 			return;
 		getChefBySymbol(quote.getSymbol()).onQuote(quote);
+	}
+	
+	public void processQuoteExtEvent(QuoteExtEvent event)
+	{
+		DataObject quoteExt = event.getQuoteExt();
+		String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value());
+		if (quoteExt.fieldExists(QuoteExtDataField.FTURNOVER.value()) == false
+				|| quoteExt.fieldExists(QuoteExtDataField.TIMESTAMP.value()) == false)
+		{
+			return;
+		}
+		SymbolData data = null;
+		for (SymbolChef chef : SymbolChefList)
+		{
+			data = chef.getSymbolData(symbol);
+			if (data != null)
+			{
+				break;
+			}
+		}
+		if (data == null)
+		{
+			return;
+		}
+		data.setFTurnover(quoteExt.get(Date.class, QuoteExtDataField.TIMESTAMP.value()),
+				quoteExt.get(Long.class, QuoteExtDataField.FTURNOVER.value()));
 	}
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)

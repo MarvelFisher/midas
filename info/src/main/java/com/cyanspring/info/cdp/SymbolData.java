@@ -1144,5 +1144,13 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		return strSymbol;
 	}
-	
+	public void setFTurnover(Date timestamp, long fTurnover)
+	{
+		HistoricalPrice price = priceData.get(timestamp);
+		if (price == null)
+		{
+			return;
+		}
+		price.setfTurnover(fTurnover);
+	}
 }

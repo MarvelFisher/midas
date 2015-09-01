@@ -23,6 +23,7 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	long   volume ;
 	private double turnover;
 	private double totalVolume;
+	private long fTurnover;
 	
 	public HistoricalPrice()
 	{
@@ -209,6 +210,14 @@ public class HistoricalPrice  implements Serializable, Comparable<HistoricalPric
 	{
 		boolean ret = (tradedate != null && keytime != null && datatime != null && symbol != null);
 		return ret;
+	}
+	public long getfTurnover()
+	{
+		return fTurnover;
+	}
+	public void setfTurnover(long fTurnover)
+	{
+		this.fTurnover = fTurnover;
 	}
 
 }
