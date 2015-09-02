@@ -28,6 +28,7 @@ public class DefPriceSetter implements IPriceSetter
 		}
 		price.setTotalVolume(quote.getTotalVolume());
 		price.setTurnover(quote.getTurnover());
+		price.setfTurnover(quote.getfTurnover());
 		return pricechanged;
 	}
 

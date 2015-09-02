@@ -175,7 +175,6 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(InnerQuoteEvent.class, null);
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
-			subscribeToEvent(QuoteExtEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
 			subscribeToEvent(RefDataUpdateEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
@@ -290,32 +289,6 @@ public class CentralDbProcessor implements IPlugin
 		else 
 			return;
 		getChefBySymbol(quote.getSymbol()).onQuote(quote);
-	}
-	
-	public void processQuoteExtEvent(QuoteExtEvent event)
-	{
-		DataObject quoteExt = event.getQuoteExt();
-		String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value());
-		if (quoteExt.fieldExists(QuoteExtDataField.FTURNOVER.value()) == false
-				|| quoteExt.fieldExists(QuoteExtDataField.TIMESTAMP.value()) == false)
-		{
-			return;
-		}
-		SymbolData data = null;
-		for (SymbolChef chef : SymbolChefList)
-		{
-			data = chef.getSymbolData(symbol);
-			if (data != null)
-			{
-				break;
-			}
-		}
-		if (data == null)
-		{
-			return;
-		}
-		data.setFTurnover(quoteExt.get(Date.class, QuoteExtDataField.TIMESTAMP.value()),
-				quoteExt.get(Long.class, QuoteExtDataField.FTURNOVER.value()));
 	}
 	
 	public void processMarketSessionEvent(MarketSessionEvent event)
