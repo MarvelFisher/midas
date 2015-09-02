@@ -20,6 +20,7 @@ public class WindQuoteCleaner implements IQuoteCleaner{
         quote.setLast(0);
         quote.setLastVol(0);
         quote.setTurnover(0);
+        quote.setfTurnover(0);
         quote.setTotalVolume(0);
         quote.setTimeStamp(Clock.getInstance().now());
         if(null != quote.getBids() && quote.getBids().size() > 0){
