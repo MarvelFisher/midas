@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.sql.Ref;
 import java.util.*;
 
 /**
@@ -175,11 +176,12 @@ public class MarketDataManager extends MarketDataReceiver {
                             if (quote != null) {
                                 Quote tempQuote = (Quote) quote.clone();
                                 if (marketTypes.get(tempQuote.getSymbol()) != null) {
-                                    if ("I".equals(marketTypes.get(tempQuote.getSymbol())) || "S".equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                    if (RefData.Commodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                            || RefData.Commodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
                                         tempQuote.setClose(tempQuote.getLast());
                                         log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                                     }
-                                    if ("F".equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                    if (RefData.Commodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
                                         if (quoteExtends.containsKey(tempQuote.getSymbol())) {
                                             DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
                                             double settlePrice = tempQuote.getLast();
@@ -210,7 +212,7 @@ public class MarketDataManager extends MarketDataReceiver {
                                 if (quotes.containsKey(symbol)) {
                                     preClose = quotes.get(symbol).getLast();
                                 }
-                                if ("F".equals(marketTypes.get(symbol))) {
+                                if (RefData.Commodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
                                     if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
                                         preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
                                     }
