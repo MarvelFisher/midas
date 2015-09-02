@@ -23,7 +23,7 @@
 				<ref bean="orderCountValidator"/>
 				<ref bean="maxLotValidator"/>
 				<ref bean="ceilFloorValidator"/>
-				<!-- <ref bean="availablePositionValidator"/> -->
+				<ref bean="availablePositionValidator"/>
 	        </list>
 	    </constructor-arg>
 	</bean>	
@@ -194,7 +194,7 @@
 	           	<value>SC</value>
 	           	<value>CNY</value>
 	           	<value>A</value>
-	           	<value>1000000.0</value>
+	           	<value>2000000.0</value>
 	           	<value>1.0</value>
 	           	<value>100000.0</value>
 	           	<value>0.00005</value>
