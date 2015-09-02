@@ -115,9 +115,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		if (this.refDataList == null)
 			this.refDataList = new ArrayList<>();
 		log.debug("Receive RefData from Adapter - " + refDataList.size());
-		if (refDataFilter != null)
-			refDataList = refDataFilter.filter(refDataList);
-		log.debug("After filtered RefData from Adapter - " + refDataList.size());
+
 		for (RefData refData : refDataList) {
 			if (checkRefData(refData))
 				this.refDataList.add(refData);
@@ -130,9 +128,6 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			log.debug("Receive RefDataUpdate from Adapter - " + refDataList.size() + ", action: " + action.toString());
 			try {
 				List<RefData> send = new ArrayList<>();
-				if (refDataFilter != null)
-					refDataList = refDataFilter.filter(refDataList);
-				log.debug("After filtered RefData from Adapter - " + refDataList.size());
 				for (RefData refData : refDataList) {
 					if (!checkRefData(refData))
 						continue;
@@ -151,8 +146,8 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 						log.error("Unknow action for RefData update");
 					}
 				}
-				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, send, action);
-				getEventManager().sendGlobalEvent(event);
+				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, filterRefData(send), action);
+				eventManager.sendGlobalEvent(event);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -172,7 +167,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if (sessionDataMap == null) {
-			getEventManager().sendEvent(new InternalSessionRequestEvent(null, null));
+			eventManager.sendEvent(new InternalSessionRequestEvent(null, null));
 			scheduleNextCheck();
 			return;
 		}
@@ -200,7 +195,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				String tradeDate = session.getTradeDateByString();
 				refDataManager.add(refData, tradeDate);
 			}
-			getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+			eventManager.sendGlobalEvent(new RefDataEvent(null, null, filterRefData(refDataManager.getRefDataList()), true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			scheduleNextCheck();
@@ -214,14 +209,19 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 		cal.add(Calendar.SECOND, 1);
 		scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, timerEvent);
 	}
-
+	
+	private List<RefData> filterRefData(List<RefData> list) throws Exception {
+		if (refDataFilter == null)
+			return list;		
+		return refDataFilter.filter(list);
+	}
 	public void processRefDataRequestEvent(RefDataRequestEvent event) {
 		try {
 			boolean ok = true;
 			if (refDataManager.getRefDataList() == null || refDataManager.getRefDataList().size() <= 0)
 				ok = false;
-			getEventManager().sendLocalOrRemoteEvent(
-					new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
+			eventManager.sendLocalOrRemoteEvent(
+					new RefDataEvent(event.getKey(), event.getSender(), filterRefData(refDataManager.getRefDataList()), ok));
 			log.info("Response RefDataRequestEvent, ok: {}", ok);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -255,20 +255,18 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 		if (send.size() > 0) {
 			try {
-				getEventManager().sendGlobalEvent(new RefDataUpdateEvent(null, null, send, Action.MOD));
+				eventManager.sendGlobalEvent(new RefDataUpdateEvent(null, null, filterRefData(send), Action.MOD));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
 	}
 
-	public IRemoteEventManager getEventManager()
-	{
+	public IRemoteEventManager getEventManager() {
 		return eventManager;
 	}
 
-	public void setEventManager(IRemoteEventManager eventManager)
-	{
+	public void setEventManager(IRemoteEventManager eventManager) {
 		this.eventManager = eventManager;
 	}
 }
