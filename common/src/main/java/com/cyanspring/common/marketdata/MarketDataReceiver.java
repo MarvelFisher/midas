@@ -568,14 +568,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isPreSubscribing = true;
         log.debug("Market data presubscribe: " + preSubscriptionList);
         try {
-//            for (IMarketDataAdaptor adaptor : adaptors) {
                 log.debug("Market data presubscribe adapter begin : Adapter=" + adaptor.getClass().getSimpleName() + ",State="
                         + adaptor.getState());
                 if (!adaptor.getState())
                     return;
 
                 adaptor.subscribeMultiMarketData(preSubscriptionList, this);
-//            }
         } catch (MarketDataException e) {
             log.error(e.getMessage(), e);
         } finally {
