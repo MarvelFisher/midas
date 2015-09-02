@@ -8,7 +8,9 @@ import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.PriceUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,20 +148,21 @@ public class MarketDataManager extends MarketDataReceiver {
             for (Quote quote : quotes.values()) {
                 if (quote != null ) {
                     Quote tempQuote = (Quote)quote.clone();
-                    if(marketTypes.get(tempQuote.getSymbol()) != null ){
-                        if("I".equals(marketTypes.get(tempQuote.getSymbol())) || "S".equals(marketTypes.get(tempQuote.getSymbol()))) {
+                    if (marketTypes.get(tempQuote.getSymbol()) != null ) {
+                        if (RefData.Commodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol())) 
+                        		|| RefData.Commodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
                             tempQuote.setClose(tempQuote.getLast());
                             log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                         }
-                        if("F".equals(marketTypes.get(tempQuote.getSymbol()))){
-                            if(quoteExtends.containsKey(tempQuote.getSymbol())){
+                        if (RefData.Commodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                            if (quoteExtends.containsKey(tempQuote.getSymbol())){
                                 DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
                                 double settlePrice = tempQuote.getLast();
                                 if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value()))
                                     settlePrice = quoteExtend.get(Double.class,QuoteExtDataField.SETTLEPRICE.value());
                                 tempQuote.setClose(settlePrice);
                                 log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = SettlePrice = " +settlePrice);
-                            }else{
+                            } else {
                                 log.debug("Symbol=" + tempQuote.getSymbol() + " not in quoteExtends");
                             }
                         }
@@ -181,25 +184,25 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
             quotes.keySet().retainAll(preSubscriptionList);
             quoteExtends.keySet().retainAll(preSubscriptionList);
-            if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
+            if (quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
                 log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
                 for (String symbol : quoteExtends.keySet()) {
                     DataObject quoteExtend = (DataObject)quoteExtends.get(symbol).clone();
-                    if(marketTypes.get(symbol) != null){
+                    if (marketTypes.get(symbol) != null) {
                         double preClose = 0;
                         double ceil = 0;
                         double floor = 0;
-                        if(quotes.containsKey(symbol)){
+                        if (quotes.containsKey(symbol)) {
                             preClose = quotes.get(symbol).getLast();
                         }
-                        if("F".equals(marketTypes.get(symbol))){
-                            if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())){
+                        if (RefData.Commodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
+                            if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
                                 preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
                             }
                         }
                         ceil = preClose * 1.1;
                         floor = preClose * 0.9;
-                        if(PriceUtils.GreaterThan(preClose, 0)) {
+                        if (PriceUtils.GreaterThan(preClose, 0)) {
                             quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
                             quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
                             quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
@@ -263,15 +266,15 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void processQuoteExtSubEvent(QuoteExtSubEvent event){
         log.debug("QuoteExtSubEvent:" + event.getKey() + "," + event.getReceiver());
-        if(event.getRequestSymbolList() != null && event.getRequestSymbolList().size()>0){
+        if (event.getRequestSymbolList() != null && event.getRequestSymbolList().size()>0) {
             log.debug("Request Symbol List:" + event.getRequestSymbolList());
             HashMap<String, DataObject> quoteExtendRequest = new HashMap<>();
-            for(String symbol : event.getRequestSymbolList()){
-                if(quoteExtends.containsKey(symbol)){
+            for (String symbol : event.getRequestSymbolList()) {
+                if (quoteExtends.containsKey(symbol)) {
                     quoteExtendRequest.put(symbol, (DataObject)quoteExtends.get(symbol).clone());
                 }
             }
-            if(quoteExtendRequest.size() > 0){
+            if (quoteExtendRequest.size() > 0) {
                 sendMultiQuoteExtEvent(event, quoteExtendRequest);
             }
 
@@ -287,7 +290,8 @@ public class MarketDataManager extends MarketDataReceiver {
     public void sendMultiQuoteExtEvent(RemoteAsyncEvent event, HashMap<String, DataObject> quoteExtends){
 
         int dataSegmentSize = getQuoteExtendSegmentSize();
-        if (dataSegmentSize <= 1) return;
+        if (dataSegmentSize <= 1)
+        	return;
 
         int transQuoteExtendOffset = 0;
         int totalQuoteExtendCount = 0;
@@ -311,7 +315,8 @@ public class MarketDataManager extends MarketDataReceiver {
             }
             //Check Last Send
             //if count = 0 , send Null Map
-            if ((quoteExtendSegmentMap != null && quoteExtendSegmentMap.size() > 0) || (quoteExtendSegmentMap == null && transQuoteExtendOffset == 0)) {
+            if ((quoteExtendSegmentMap != null && quoteExtendSegmentMap.size() > 0) 
+            		|| (quoteExtendSegmentMap == null && transQuoteExtendOffset == 0)) {
                 totalQuoteExtendCount = totalQuoteExtendCount + (quoteExtendSegmentMap != null ? quoteExtendSegmentMap.size() : 0);
                 MultiQuoteExtendEvent multiQuoteExtendEvent = new MultiQuoteExtendEvent(event.getKey(), event.getSender()
                         , quoteExtendSegmentMap);

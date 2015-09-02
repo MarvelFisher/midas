@@ -224,7 +224,7 @@ public class StockRefDataManager extends RefDataService {
 		
 		String commodity = refData.getCommodity();
 		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
-				&& commodity.equals(RefDataUtil.Commodity.FUTURE.getValue()))) {
+				&& commodity.equals(RefDataUtil.Commodity.FUTURES.getValue()))) {
 			refData.setCategory(getCategory(refData));
 		}	
 	}

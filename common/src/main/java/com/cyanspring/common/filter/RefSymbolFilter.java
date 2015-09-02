@@ -34,7 +34,7 @@ public class RefSymbolFilter implements IRefDataFilter {
 				// Only filter RefData whose commodity is "F", or add directly without filtering
 				String commodity = refData.getCommodity();
 				if (!StringUtils.hasText(commodity)
-						|| !commodity.equalsIgnoreCase(RefDataFilter.FUTURES_COMMODITY)) {
+						|| !commodity.equalsIgnoreCase(RefData.Commodity.FUTURES.getValue())) {
 					fLstRefData.add(refData);
 					continue;
 				}

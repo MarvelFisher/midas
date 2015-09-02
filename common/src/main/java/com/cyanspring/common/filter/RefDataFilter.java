@@ -12,7 +12,6 @@ public class RefDataFilter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RefDataFilter.class);
 	
 	private IRefDataFilter[] refDataFilters;
-	static final String FUTURES_COMMODITY = "F";
 	
 	public RefDataFilter(IRefDataFilter... refDataFilters) {
 		this.refDataFilters = refDataFilters;

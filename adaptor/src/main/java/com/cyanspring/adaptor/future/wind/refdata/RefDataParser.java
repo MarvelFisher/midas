@@ -34,29 +34,34 @@ public class RefDataParser {
         refData.setENDisplayName(codeTableData.getEnglishName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
         refData.setCommodity((String) defaultHashMap.get(RefDataField.COMMODITY));
-        if("S".equals(refData.getCommodity())) refData.setCategory(refData.getExchange());
-        if("I".equals(refData.getCommodity())) refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
-        switch (refData.getCommodity()) {
-            case "S":
-            case "I":
-                refData.setSpellName(codeTableData.getSpellName());
-                refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
-                refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));
-                refData.setLimitMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.LIMIT_MAXIMUM_LOT)));
-                refData.setMarketMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.MARKET_MAXIMUM_LOT)));
-                refData.setMaximumHold(Integer.parseInt((String) defaultHashMap.get(RefDataField.MAXIMUM_HOLD)));
-                refData.setMarginRate(Double.parseDouble((String) defaultHashMap.get(RefDataField.MARGIN_RATE)));
-                refData.setTradable((String) defaultHashMap.get(RefDataField.TRADABLE));
-                refData.setStrategy((String) defaultHashMap.get(RefDataField.STRATEGY));
-                refData.setTickTable((String) defaultHashMap.get(RefDataField.TICK_TABLE));
-                refData.setPricePerUnit(Double.parseDouble((String) defaultHashMap.get(RefDataField.MARGIN_RATE)));
-                refData.setIndexSessionType((String) defaultHashMap.get(RefDataField.INDEX_SESSION_TYPE));
-                break;
-            case "F":
-                break;
-            default:
-                break;
+        
+        String commodity = refData.getCommodity();
+        
+        if (commodity.equals(RefData.Commodity.STOCK.getValue())) {
+        	refData.setCategory(refData.getExchange());
         }
+        
+        if (commodity.equals(RefData.Commodity.INDEX.getValue())) {
+        	refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
+        }
+        
+        
+        if (commodity.equals(RefData.Commodity.STOCK.getValue())
+        		|| commodity.equals(RefData.Commodity.INDEX.getValue())) {
+        	refData.setSpellName(codeTableData.getSpellName());
+            refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
+            refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));
+            refData.setLimitMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.LIMIT_MAXIMUM_LOT)));
+            refData.setMarketMaximumLot(Integer.parseInt((String) defaultHashMap.get(RefDataField.MARKET_MAXIMUM_LOT)));
+            refData.setMaximumHold(Integer.parseInt((String) defaultHashMap.get(RefDataField.MAXIMUM_HOLD)));
+            refData.setMarginRate(Double.parseDouble((String) defaultHashMap.get(RefDataField.MARGIN_RATE)));
+            refData.setTradable((String) defaultHashMap.get(RefDataField.TRADABLE));
+            refData.setStrategy((String) defaultHashMap.get(RefDataField.STRATEGY));
+            refData.setTickTable((String) defaultHashMap.get(RefDataField.TICK_TABLE));
+            refData.setPricePerUnit(Double.parseDouble((String) defaultHashMap.get(RefDataField.MARGIN_RATE)));
+            refData.setIndexSessionType((String) defaultHashMap.get(RefDataField.INDEX_SESSION_TYPE));
+		}
+        
         return refData;
     }
 
