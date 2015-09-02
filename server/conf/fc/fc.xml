@@ -251,7 +251,8 @@
 				<ref bean="refDataAdapterFCI"/>
 				<ref bean="refDataAdapterFCC"/>
 			</list>
-		</constructor-arg>    
+		</constructor-arg>
+		<property name="eventManager" ref="eventManager"/>
     </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">

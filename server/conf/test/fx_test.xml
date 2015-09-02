@@ -330,7 +330,9 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager"/>
+	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">

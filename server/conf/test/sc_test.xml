@@ -264,8 +264,9 @@
 			<list>
 				<ref bean="refDataAdaptor"/>
 			</list>
-		</constructor-arg>    
-    </bean>
+		</constructor-arg>
+		<property name="eventManager" ref="eventManager"/>
+	</bean>
 
     <bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
     	<property name="filePath" value="./conf/sim/codetable_sc.xml"></property>
