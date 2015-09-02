@@ -74,7 +74,7 @@ public class FutureClient implements IMarketDataListener,
 	 * @see com.cyanspring.common.marketdata.IMarketDataStateListener#onState(boolean)
 	 */
 	@Override
-	public void onState(boolean on) {
+	public void onState(boolean on, IMarketDataAdaptor adaptor) {
 		isConnected = on;
 		dialog.addLog("Status is %s", on ? "true" : "false");
 		// update frame

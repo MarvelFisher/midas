@@ -369,7 +369,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     public void sendState(boolean on) {
         for (IMarketDataStateListener listener : stateList) {
             log.debug("IMarketDataStateListener = " + listener.getClass());
-            listener.onState(on);
+            listener.onState(on, this);
         }
     }
 
@@ -436,7 +436,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     @Override
     public void subscribeMarketDataState(IMarketDataStateListener listener) {
         if (!stateList.contains(listener)) {
-            listener.onState(isConnected);
+            listener.onState(isConnected, this);
             stateList.add(listener);
         }
     }

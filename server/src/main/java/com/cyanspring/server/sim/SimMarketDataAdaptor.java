@@ -106,7 +106,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	public void subscribeMarketDataState(IMarketDataStateListener listener) {
 		if(!marketDataStateListeners.contains(listener)) {
 			marketDataStateListeners.add(listener);
-			listener.onState(getState());
+			listener.onState(getState(),this);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 
 	public void sendState(boolean on) {
 		for (IMarketDataStateListener listener : marketDataStateListeners) {
-			listener.onState(on);
+			listener.onState(on, this);
 		}
 	}
 

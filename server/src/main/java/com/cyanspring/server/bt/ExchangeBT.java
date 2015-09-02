@@ -526,7 +526,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	@Override
 	public void subscribeMarketDataState(IMarketDataStateListener listener) {
 		this.stateListener = listener;
-		this.stateListener.onState(true);
+		this.stateListener.onState(true, this);
 	}
 
 	@Override

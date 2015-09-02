@@ -203,7 +203,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     @Override
     public void subscribeMarketDataState(IMarketDataStateListener listener) {
         if (!stateList.contains(listener)) {
-            listener.onState(getState());
+            listener.onState(getState(),this);
             stateList.add(listener);
         }
     }
@@ -299,7 +299,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
      */
     public void sendState(boolean on) {
         for (IMarketDataStateListener listener : stateList) {
-            listener.onState(on);
+            listener.onState(on,this);
         }
     }
 

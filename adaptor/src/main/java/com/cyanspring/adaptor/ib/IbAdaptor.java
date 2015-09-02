@@ -182,7 +182,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     // //////////////////////////////////////////////
     private void notifyMarketDataState(boolean on) {
         for (IMarketDataStateListener listener : marketDataStateListeners)
-            listener.onState(on);
+            listener.onState(on, this);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     public void subscribeMarketDataState(IMarketDataStateListener listener) {
         if (!marketDataStateListeners.contains(listener)) {
             marketDataStateListeners.add(listener);
-            listener.onState(getState());
+            listener.onState(getState(), this);
         }
     }
 

@@ -1,5 +1,5 @@
 package com.cyanspring.common.marketdata;
 
 public interface IMarketDataStateListener {
-	void onState(boolean on);
+	void onState(boolean on, IMarketDataAdaptor adaptor);
 }

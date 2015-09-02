@@ -534,15 +534,15 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     @Override
-    public void onState(boolean on) {
+    public void onState(boolean on, IMarketDataAdaptor adaptor) {
         if (on) {
-            log.info("MarketData feed is up");
+            log.info("MarketData feed is up-" + adaptor.getClass().getSimpleName());
             setState(true);
-            preSubscribe();
+            preSubscribe(adaptor);
             eventManager.sendEvent(new MarketDataReadyEvent(null, true));
         } else {
-            for (IMarketDataAdaptor adaptor : adaptors) {
-                if (adaptor.getState()) {
+            for (IMarketDataAdaptor adaptor1 : adaptors) {
+                if (adaptor1.getState()) {
                     return;
                 }
             }
@@ -561,21 +561,21 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         eventManager.sendRemoteEvent(rdrEvent);
     }
 
-    private void preSubscribe() {
+    private void preSubscribe(IMarketDataAdaptor adaptor) {
         if (null == preSubscriptionList || preSubscriptionList.size() <= 0)
             return;
 
         isPreSubscribing = true;
         log.debug("Market data presubscribe: " + preSubscriptionList);
         try {
-            for (IMarketDataAdaptor adaptor : adaptors) {
+//            for (IMarketDataAdaptor adaptor : adaptors) {
                 log.debug("Market data presubscribe adapter begin : Adapter=" + adaptor.getClass().getSimpleName() + ",State="
                         + adaptor.getState());
                 if (!adaptor.getState())
-                    continue;
+                    return;
 
                 adaptor.subscribeMultiMarketData(preSubscriptionList, this);
-            }
+//            }
         } catch (MarketDataException e) {
             log.error(e.getMessage(), e);
         } finally {

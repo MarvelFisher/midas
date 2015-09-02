@@ -28,10 +28,10 @@ public class ExchangePT extends ExchangeBT implements IMarketDataListener, IMark
 	}
 
 	@Override
-	public void onState(boolean on) {
+	public void onState(boolean on, IMarketDataAdaptor adaptor) {
 		mdState = on;
 		if(null != stateListener)
-			stateListener.onState(on);
+			stateListener.onState(on, adaptor);
 	}
 
 	@Override
