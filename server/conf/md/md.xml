@@ -33,7 +33,9 @@
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager"/>
+	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
 		<property name="refDataFile">

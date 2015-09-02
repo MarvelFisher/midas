@@ -20,6 +20,20 @@ public class RefData extends DataObject {
         // default lot size to 1
         put(RefDataField.LOT_SIZE.value(), new Integer(1));
     }
+    
+    public enum Commodity {
+		STOCK("S"),INDEX("I"),FUTURES("F");
+		
+		private String value;
+		
+		private Commodity(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+	}
 
     public double roundToLots(double qty) {
         int lotSize = this.getLotSize();

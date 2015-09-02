@@ -38,6 +38,8 @@ import com.cyanspring.common.staticdata.RefDataUtil;
  * it will update refdatas and broadcast out.
  *
  * @author elviswu
+ * @version 1.1 modified by SteveGuo removed eventManager autowired
+ * @since 1.0
  */
 
 public class DealerRefDataHandler implements IPlugin, IRefDataListener {
@@ -46,7 +48,6 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 	@Autowired
 	private IRefDataManager refDataManager;
 
-	@Autowired
 	private IRemoteEventManager eventManager;
 
 	@Autowired
@@ -151,7 +152,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 					}
 				}
 				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, send, action);
-				eventManager.sendGlobalEvent(event);
+				getEventManager().sendGlobalEvent(event);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -171,7 +172,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		if (sessionDataMap == null) {
-			eventManager.sendEvent(new InternalSessionRequestEvent(null, null));
+			getEventManager().sendEvent(new InternalSessionRequestEvent(null, null));
 			scheduleNextCheck();
 			return;
 		}
@@ -199,7 +200,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				String tradeDate = session.getTradeDateByString();
 				refDataManager.add(refData, tradeDate);
 			}
-			eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+			getEventManager().sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			scheduleNextCheck();
@@ -219,7 +220,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			boolean ok = true;
 			if (refDataManager.getRefDataList() == null || refDataManager.getRefDataList().size() <= 0)
 				ok = false;
-			eventManager.sendLocalOrRemoteEvent(
+			getEventManager().sendLocalOrRemoteEvent(
 					new RefDataEvent(event.getKey(), event.getSender(), refDataManager.getRefDataList(), ok));
 			log.info("Response RefDataRequestEvent, ok: {}", ok);
 		} catch (Exception e) {
@@ -254,10 +255,20 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 		if (send.size() > 0) {
 			try {
-				eventManager.sendGlobalEvent(new RefDataUpdateEvent(null, null, send, Action.MOD));
+				getEventManager().sendGlobalEvent(new RefDataUpdateEvent(null, null, send, Action.MOD));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
+	}
+
+	public IRemoteEventManager getEventManager()
+	{
+		return eventManager;
+	}
+
+	public void setEventManager(IRemoteEventManager eventManager)
+	{
+		this.eventManager = eventManager;
 	}
 }

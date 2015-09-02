@@ -32,6 +32,7 @@ import java.util.Map.Entry;
  *
  * @author elviswu
  * @version 1.1, modify by shuwei.kuo
+ * @version 1.2 modified by SteveGuo removed eventManager autowired
  * @since 1.0
  */
 
@@ -41,7 +42,6 @@ public class FileRefDataHandler implements IPlugin {
 	@Autowired
 	private IRefDataManager refDataManager;
 
-	@Autowired
 	private IRemoteEventManager eventManager;
 
 	private MarketSessionType currentType;

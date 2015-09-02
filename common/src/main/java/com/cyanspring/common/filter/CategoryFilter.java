@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataTplLoader;
+import com.cyanspring.common.staticdata.RefDataUtil;
 
 public class CategoryFilter implements IRefDataFilter {
 	
@@ -50,7 +51,7 @@ public class CategoryFilter implements IRefDataFilter {
 					// Only filter RefData whose commodity is "F", or add directly without filtering
 					String commodity = refData.getCommodity();
 					if (!StringUtils.hasText(commodity)
-							|| !commodity.equalsIgnoreCase(RefDataFilter.FUTURES_COMMODITY)) {
+							|| !commodity.equals(RefData.Commodity.FUTURES.getValue())) {
 						fLstRefData.add(refData);
 						continue;
 					}

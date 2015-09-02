@@ -45,7 +45,9 @@
 		<constructor-arg value="true"/>
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManagerSA"/>
+	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.cdp.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
@@ -159,21 +161,19 @@
 
     <bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
-		<property name="searchBySymbol" value="false"></property>
+        <property name="eventManager" ref="eventManagerSA"></property>
     </bean>
 
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
-			<map>
-				<entry key="STOCK"><ref bean="shSessionChecker"/></entry>
-				<entry key="INDEX"><ref bean="shSessionChecker"/></entry>
-			</map>
-		</constructor-arg>
-		<constructor-arg>
-			<map>
-				<entry key="STOCK"><ref bean="shTradeDateManager"/></entry>
-				<entry key="INDEX"><ref bean="shTradeDateManager"/></entry>
-			</map>
+			<list>
+				<ref bean="ifSessionChecker"/>
+				<ref bean="ihSessionChecker"/>
+				<ref bean="icSessionChecker"/>
+				<ref bean="indexSessionChecker"/>
+				<ref bean="shSessionChecker"/>
+				<ref bean="szSessionChecker"/>
+			</list>
 		</constructor-arg>
 	</bean>
 
