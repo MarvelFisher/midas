@@ -219,10 +219,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 );
                 indexSessions.put(index, marketSessionData);
             }
-            //Forex only 1 index
-            if (aggregator != null && event.getDataMap().size() == 1) {
-                marketSessionData = event.getDataMap().get(0);
-                aggregator.onMarketSession(event.getDataMap().get(0).getSessionType());
+            //Forex
+            if(event.getDataMap().containsKey("FX")) {
+                marketSessionData = event.getDataMap().get("FX");
+                if (aggregator != null) {
+                    aggregator.onMarketSession(marketSessionData.getSessionType());
+                }
             }
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) adaptor.processEvent(event);
@@ -392,6 +394,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isInitReqDataEnd = false;
         isInitRefDateReceived = false;
         isInitIndexSessionReceived = false;
+        isInitMarketSessionReceived = true;
         // subscribe to events
         eventProcessor.setHandler(this);
         eventProcessor.init();
