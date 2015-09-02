@@ -28,7 +28,7 @@
 		        <include>/mm/*</include>
 		        <include>/strategies/*</include>
 		        <include>/templates/*</include>				
-				<include>/refdata/*</include>
+				<include>/refdata/**</include>
 				<include>/database/**</include>
 			</includes>
 		</fileSet>    
