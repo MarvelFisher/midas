@@ -1,7 +1,6 @@
 package com.cyanspring.common.filter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataCommodity;
 import com.cyanspring.common.staticdata.fu.IType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,7 +44,7 @@ public class TestCategoryFilter {
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
-		refData1.setCommodity(RefData.Commodity.FUTURES.getValue());
+		refData1.setCommodity(RefDataCommodity.FUTURES.getValue());
 
 		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
@@ -53,7 +53,7 @@ public class TestCategoryFilter {
 		refData2.setCategory("BG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
-		refData2.setCommodity(RefData.Commodity.FUTURES.getValue());
+		refData2.setCommodity(RefDataCommodity.FUTURES.getValue());
 
 		refData3 = new RefData();
 		refData3.setIType(IType.FUTURES_CX.getValue());
@@ -61,7 +61,7 @@ public class TestCategoryFilter {
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
-		refData3.setCommodity(RefData.Commodity.FUTURES.getValue());
+		refData3.setCommodity(RefDataCommodity.FUTURES.getValue());
 		
 		// Commodity is not "F", won't be filtered out
 		refData4 = new RefData();

@@ -38,24 +38,6 @@ public class RefDataUtil {
 	private static final Logger log = LoggerFactory
 			.getLogger(RefDataUtil.class);
 
-	enum Category {
-		STOCK, INDEX
-	}
-
-	enum Commodity {
-		STOCK("S"), INDEX("I"), FUTURES("F"), FOREX("FX");
-
-		private String value;
-
-		private Commodity(String value) {
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
-	}
-
 	public static MarketSessionUtil marketSessionUtil;
 
 	private static Calendar truncateDate(Calendar cal) {
@@ -223,9 +205,9 @@ public class RefDataUtil {
 		String commodity = refData.getCommodity();
 		if (StringUtils.hasText(commodity)) {
 
-			if (Commodity.INDEX.getValue().equals(commodity)) {
-				return Category.INDEX.name();
-			} else if (Commodity.STOCK.getValue().equals(commodity)) {
+			if (RefDataCommodity.INDEX.getValue().equals(commodity)) {
+				return RefDataCommodity.INDEX.name();
+			} else if (RefDataCommodity.STOCK.getValue().equals(commodity)) {
 				return refData.getExchange();
 			} else {
 				return getFutureCategory(refData);
@@ -240,7 +222,7 @@ public class RefDataUtil {
 				} else if (IType.isStock(iType)) {
 					return refData.getExchange();
 				} else if (IType.isIndex(iType)) {
-					return Category.INDEX.name();
+					return RefDataCommodity.INDEX.name();
 				}
 			}
 		}

@@ -1,14 +1,5 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.common.business.RefDataField;
-import com.cyanspring.common.staticdata.CodeTableData;
-import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.util.ChineseConvert;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +8,17 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.staticdata.CodeTableData;
+import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataCommodity;
+import com.cyanspring.common.util.ChineseConvert;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataParser {
 
@@ -37,17 +39,17 @@ public class RefDataParser {
         
         String commodity = refData.getCommodity();
         
-        if (commodity.equals(RefData.Commodity.STOCK.getValue())) {
+        if (commodity.equals(RefDataCommodity.STOCK.getValue())) {
         	refData.setCategory(refData.getExchange());
         }
         
-        if (commodity.equals(RefData.Commodity.INDEX.getValue())) {
+        if (commodity.equals(RefDataCommodity.INDEX.getValue())) {
         	refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
         }
         
         
-        if (commodity.equals(RefData.Commodity.STOCK.getValue())
-        		|| commodity.equals(RefData.Commodity.INDEX.getValue())) {
+        if (commodity.equals(RefDataCommodity.STOCK.getValue())
+        		|| commodity.equals(RefDataCommodity.INDEX.getValue())) {
         	refData.setSpellName(codeTableData.getSpellName());
             refData.setDecimalPoint(Integer.parseInt((String)defaultHashMap.get(RefDataField.DECIMALPOINT)));
             refData.setLotSize(Integer.parseInt((String) defaultHashMap.get(RefDataField.LOT_SIZE)));

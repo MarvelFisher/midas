@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataCommodity;
 import com.cyanspring.common.staticdata.fu.IType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,7 +48,7 @@ public class TestRefSymbolFilter {
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
-		refData1.setCommodity(RefData.Commodity.FUTURES.getValue());
+		refData1.setCommodity(RefDataCommodity.FUTURES.getValue());
 
 		// AG 活躍
 		refData2 = new RefData();
@@ -56,7 +57,7 @@ public class TestRefSymbolFilter {
 		refData2.setCategory("AG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG.SHF");
-		refData2.setCommodity(RefData.Commodity.FUTURES.getValue());
+		refData2.setCommodity(RefDataCommodity.FUTURES.getValue());
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);

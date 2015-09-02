@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataCommodity;
 
 public class RefSymbolFilter implements IRefDataFilter {
 	
@@ -34,7 +35,7 @@ public class RefSymbolFilter implements IRefDataFilter {
 				// Only filter RefData whose commodity is "F", or add directly without filtering
 				String commodity = refData.getCommodity();
 				if (!StringUtils.hasText(commodity)
-						|| !commodity.equalsIgnoreCase(RefData.Commodity.FUTURES.getValue())) {
+						|| !commodity.equalsIgnoreCase(RefDataCommodity.FUTURES.getValue())) {
 					fLstRefData.add(refData);
 					continue;
 				}

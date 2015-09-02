@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.fu.AbstractRefDataStrategy;
 import com.cyanspring.common.staticdata.fu.IType;
 import com.thoughtworks.xstream.XStream;
@@ -224,7 +223,7 @@ public class StockRefDataManager extends RefDataService {
 		
 		String commodity = refData.getCommodity();
 		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
-				&& commodity.equals(RefDataUtil.Commodity.FUTURES.getValue()))) {
+				&& commodity.equals(RefDataCommodity.FUTURES.getValue()))) {
 			refData.setCategory(getCategory(refData));
 		}	
 	}

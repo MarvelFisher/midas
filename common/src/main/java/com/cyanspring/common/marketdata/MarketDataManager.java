@@ -1,26 +1,39 @@
 package com.cyanspring.common.marketdata;
 
-import com.cyanspring.common.Clock;
-import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.event.marketsession.*;
-import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.marketsession.MarketSessionData;
-import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.util.PriceUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.marketdata.AllQuoteExtSubEvent;
+import com.cyanspring.common.event.marketdata.LastTradeDateQuotesEvent;
+import com.cyanspring.common.event.marketdata.LastTradeDateQuotesRequestEvent;
+import com.cyanspring.common.event.marketdata.MultiQuoteExtendEvent;
+import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtEvent;
+import com.cyanspring.common.event.marketdata.QuoteExtSubEvent;
+import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.event.marketdata.TradeSubEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionEvent;
+import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataRequestEvent;
+import com.cyanspring.common.marketsession.MarketSessionData;
+import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefDataCommodity;
+import com.cyanspring.common.util.PriceUtils;
 
 /**
  * The manager can collect and broadcast quote data to it's listener.
@@ -179,12 +192,12 @@ public class MarketDataManager extends MarketDataReceiver {
                             if (quote != null) {
                                 Quote tempQuote = (Quote) quote.clone();
                                 if (marketTypes.get(tempQuote.getSymbol()) != null) {
-                                    if (RefData.Commodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
-                                            || RefData.Commodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                    if (RefDataCommodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                            || RefDataCommodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
                                         tempQuote.setClose(tempQuote.getLast());
                                         log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                                     }
-                                    if (RefData.Commodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                    if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
                                         if (quoteExtends.containsKey(tempQuote.getSymbol())) {
                                             DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
                                             double settlePrice = tempQuote.getLast();
@@ -215,7 +228,7 @@ public class MarketDataManager extends MarketDataReceiver {
                                 if (quotes.containsKey(symbol)) {
                                     preClose = quotes.get(symbol).getLast();
                                 }
-                                if (RefData.Commodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
+                                if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
                                     if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
                                         preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
                                     }
