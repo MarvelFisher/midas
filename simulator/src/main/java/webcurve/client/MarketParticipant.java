@@ -190,12 +190,13 @@ public class MarketParticipant extends Thread {
 			}
 		
 	}
-
+	
+	@Override
 	public void run()
 	{
 		MarketOrderGenerator orderGenerator = new RangeBoundOrderGenerator();
 		Random ran = new Random();
-		while (true)
+		while (started)
 		{		
 			try {
 	            synchronized(this) {
@@ -238,6 +239,11 @@ public class MarketParticipant extends Thread {
 	synchronized public void pause()
 	{
 		paused = true;
+	}
+	
+	synchronized public void terminate() {
+		if (started)
+			started = false;
 	}
 
 	public MarketMakerData getData() {

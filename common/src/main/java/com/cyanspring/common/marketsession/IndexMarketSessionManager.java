@@ -11,6 +11,7 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataUtil;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.TimeUtil;
 
@@ -115,7 +116,11 @@ public class IndexMarketSessionManager implements IPlugin {
 			Map<String, MarketSession> send = new HashMap<>();
 			for (Entry<String, RefData> e : refDataMap.entrySet()) {
 				RefData refData = e.getValue();
-				String index = getIndex(refData);
+				String index = RefDataUtil.getSearchIndex(refData);
+				if (index == null){
+					log.warn("Null indexSessionType, symbol: " + refData.getSymbol());
+					continue;
+				}
 				if (send.get(index) != null)
 					continue;
 				MarketSessionData current = currentSessionMap.get(index);
@@ -154,21 +159,6 @@ public class IndexMarketSessionManager implements IPlugin {
 			for (RefData refData : list) 
 				delQueue.offer(refData);
 		}
-	}
-
-	private String getIndex(RefData refData) throws Exception {
-		String index = null;
-		String indexType = refData.getIndexSessionType();
-		if (indexType == null) {
-    		throw new Exception("Null indexSessionType, symbol: " + refData.getSymbol());
-		}
-		if (indexType.equals(IndexSessionType.SETTLEMENT.toString()))
-			index = refData.getSymbol();
-		else if (indexType.equals(IndexSessionType.SPOT.toString()))
-			index = refData.getCategory();
-		else if (indexType.equals(IndexSessionType.EXCHANGE.toString()))
-			index = refData.getExchange();
-		return index;
 	}
 
 	public void processPmSettlementEvent(PmSettlementEvent event) {
@@ -224,7 +214,11 @@ public class IndexMarketSessionManager implements IPlugin {
 	    		log.warn("Can't find market session, symbol: {}", refData.getSymbol());
 				continue;
 			}
-			String index = getIndex(refData);
+			String index = RefDataUtil.getSearchIndex(refData);
+			if (index == null) {
+				log.warn("Null indexSessionType, symbol: " + refData.getSymbol());
+				continue;
+			}
 			MarketSessionData current = currentSessionMap.get(index);			
 			if (current == null) {
 				send.put(index, session);
