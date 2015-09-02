@@ -25,17 +25,20 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 
     protected void updateMarginRate(RefData refData){
         if (PriceUtils.isZero(refData.getMarginRate())){
+            String market = refData.getMarket();
+            Double marginRate = marginRateByMarket.get(market);
+            if (marginRate != null && !PriceUtils.isZero(marginRate)) {
+            	refData.setMarginRate(marginRate);
+            	return;
+            }
+            
             String exchange = refData.getExchange();
-            Double marginRate = marginRateByExchange.get(exchange);
-            if (marginRate == null || PriceUtils.isZero(marginRate)) {
-                String market = refData.getMarket();
-                marginRate = marginRateByMarket.get(market);
-                if (marginRate == null || PriceUtils.isZero(marginRate))
-                    refData.setMarginRate(1/ Default.getMarginTimes());
-                else
-                    refData.setMarginRate(marginRate);
-            } else
-                refData.setMarginRate(marginRate);
+            marginRate = marginRateByExchange.get(exchange);
+            if (marginRate != null && !PriceUtils.isZero(marginRate)) {
+            	refData.setMarginRate(marginRate);
+            } else {
+                refData.setMarginRate(1/ Default.getMarginTimes());
+            }
         }
     }
 
