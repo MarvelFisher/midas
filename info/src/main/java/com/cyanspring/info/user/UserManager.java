@@ -54,7 +54,7 @@ public class UserManager implements IPlugin {
 	private MarketSessionType marketSession;
 	private String market;
 	private String tradeDate;
-
+    private Date LastHeartbeat;
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 		@Override
 		public void subscribeToEvents() {
@@ -189,7 +189,7 @@ public class UserManager implements IPlugin {
 						+ "' and DATE='0'";
 				UpdateQuery(strCmd, sessionCentral);
 			}
-            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "');";
+            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "') on duplicate update set USER_ID='" + UserId + "';";
             try {
                 UpdateQuery(strCmd, session);
             }
@@ -226,6 +226,15 @@ public class UserManager implements IPlugin {
 	}
 
 	private void SendSQLHeartBeat() {
+        Calendar cal = Calendar.getInstance();
+        if ((cal.getTimeInMillis() - LastHeartbeat.getTime()) < 240000)
+        {
+            return ;
+        }
+        else
+        {
+            LastHeartbeat = cal.getTime();
+        }
 		Session session = null;
 		Session sessionCentral = null;
 		try {
@@ -261,22 +270,25 @@ public class UserManager implements IPlugin {
 
 	@Override
 	public void init() throws Exception {
-		// TODO Auto-generated method stub
-		log.info("Initialising...");
+        // TODO Auto-generated method stub
+        log.info("Initialising...");
 
-		eventProcessor.setHandler(this);
-		eventProcessor.init();
-		if (eventProcessor.getThread() != null)
-			eventProcessor.getThread().setName("UserManager");
+        Calendar cal = Calendar.getInstance();
+        LastHeartbeat = cal.getTime();
 
-		eventProcessorMD.setHandler(this);
-		eventProcessorMD.init();
-		if (eventProcessorMD.getThread() != null)
-			eventProcessorMD.getThread().setName("UserManager-MD");
+        eventProcessor.setHandler(this);
+        eventProcessor.init();
+        if (eventProcessor.getThread() != null)
+            eventProcessor.getThread().setName("UserManager");
 
-		scheduleManager.scheduleRepeatTimerEvent(60000, eventProcessorMD,
-				timerEvent);
-	}
+        eventProcessorMD.setHandler(this);
+        eventProcessorMD.init();
+        if (eventProcessorMD.getThread() != null)
+            eventProcessorMD.getThread().setName("UserManager-MD");
+
+        scheduleManager.scheduleRepeatTimerEvent(300000, eventProcessorMD,
+                timerEvent);
+    }
 
 	@Override
 	public void uninit() {

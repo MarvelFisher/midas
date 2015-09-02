@@ -18,7 +18,7 @@
 		</property>
 	</bean>
 	<bean id="InfoGateway" class="com.cyanspring.info.InfoGateway">
-		<property name="createThreadCount" value="100" />
+		<property name="createThreadCount" value="16" />
 		<property name="Computes">
 			<list>
 				<!-- <ref bean="newsManager"/> -->

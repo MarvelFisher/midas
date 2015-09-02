@@ -2,13 +2,7 @@ package com.cyanspring.info.alert;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -57,6 +51,7 @@ public class AlertManager extends Compute {
     private String deepLink;
     private String market ;
 	private boolean checkAlertstart = true;
+    private Date LastHeartbeat;
 
 	private Map<String, ArrayList<BasePriceAlert>> symbolPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
 	private Map<String, ArrayList<BasePriceAlert>> userPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
@@ -85,9 +80,12 @@ public class AlertManager extends Compute {
 	public void init() {
 		// TODO Auto-generated method stub
 		loadSQLdata();
+        Calendar cal = Calendar.getInstance();
+        LastHeartbeat = cal.getTime();
+
 		AsyncTimerEvent SendSQLHeartTimer = new AsyncTimerEvent();
 		SendSQLHeartTimer.setKey("SendSQLHeartTimer");
-		scheduleManager.scheduleRepeatTimerEvent(60000, getEventProcessorMD(), SendSQLHeartTimer);
+		scheduleManager.scheduleRepeatTimerEvent(300000, getEventProcessorMD(), SendSQLHeartTimer);
 	}
 
 	@Override
@@ -983,6 +981,17 @@ public class AlertManager extends Compute {
 	}
 
 	synchronized private void SendSQLHeartBeat() {
+        Calendar cal = Calendar.getInstance();
+        long aaa = cal.getTimeInMillis();
+        long bbb = LastHeartbeat.getTime() ;
+        if ((cal.getTimeInMillis() - LastHeartbeat.getTime()) < 240000)
+        {
+            return ;
+        }
+        else
+        {
+            LastHeartbeat = cal.getTime();
+        }
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();			
