@@ -1046,6 +1046,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		CentralDbReadyEvent event = new CentralDbReadyEvent(null, appserv);
 		event.setTickTableList(tickTableManager.getTickTables());
+		event.setIndexList(new ArrayList<String>(this.sessionMap.keySet()));
 		log.info("Sending ReadyEvent to: " + appserv);
 		sendEvent(event);
 	}
