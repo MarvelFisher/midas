@@ -145,24 +145,6 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
-    public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
-        String newTradeDate = event.getTradeDate();
-        if (tradeDate == null || !newTradeDate.equals(tradeDate)) {
-            tradeDate = newTradeDate;
-            try {
-                List<Quote> lst = new ArrayList<Quote>(lastTradeDateQuotes.values());
-                log.info("LastTradeDatesQuotes: " + lastTradeDateQuotes.keySet() + ", tradeDate:" + tradeDate);
-                if (quoteSaver != null) {
-                    quoteSaver.saveLastTradeDateQuoteToFile(tickDir + "/" + lastTradeDateQuoteFile, quotes, lastTradeDateQuotes);
-                    quoteSaver.saveLastTradeDateQuoteExtendToFile(tickDir + "/" + lastTradeDateQuoteExtendFile, quoteExtends, lastTradeDateQuoteExtends);
-                }
-                eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, tradeDate, lst));
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-    }
-
     public void processRefDataEvent(RefDataEvent event) {
         super.processRefDataEvent(event);
         //Check last.xml Symbol
@@ -175,14 +157,26 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void processIndexSessionEvent(IndexSessionEvent event){
         super.processIndexSessionEvent(event);
-
         if(event != null && event.isOk() && event.getDataMap().size() > 0) {
             for(String index : indexSessions.keySet()){
                 MarketSessionData marketSessionData= indexSessions.get(index);
                 if(marketSessionData != null){
                     if(!marketSessionData.getTradeDateByString().equals(tradeDateByIndex.get(index)) || tradeDateByIndex.get(index) == null){
-                        //send LastTradeQuote
                         tradeDateByIndex.put(index, marketSessionData.getTradeDateByString());
+                        //send LastTradeQuote
+                        ArrayList<String> symbols = indexSessionTypes.get(index);
+                        log.info("LastTradeDatesQuotes: " + symbols + ", tradeDate:" + tradeDateByIndex.get(index) + ",index:" + index);
+                        List<Quote> quoteList = new ArrayList<Quote>();
+                        for(String symbol: symbols){
+                            if(quotes.get(symbol) != null){
+                                quoteList.add((Quote)quotes.get(symbol).clone());
+                            }
+                        }
+                        try {
+                            if(quoteList.size()>0) eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, index, marketSessionData.getTradeDateByString(), quoteList));
+                        } catch (Exception e) {
+                            log.error(e.getMessage(),e);
+                        }
                     }
                     if(marketSessionData.getSessionType() == MarketSessionType.PREOPEN) {
                         ArrayList<String> symbols = indexSessionTypes.get(index);
@@ -259,19 +253,27 @@ public class MarketDataManager extends MarketDataReceiver {
     public void processLastTradeDateQuotesRequestEvent(
             LastTradeDateQuotesRequestEvent event) {
         try {
-            if (tradeDate == null) {
-                TradeDateRequestEvent tdrEvent = new TradeDateRequestEvent(
-                        null, null);
-                eventManager.sendEvent(tdrEvent);
-            } else {
-                List<Quote> lst = new ArrayList<Quote>(
-                        lastTradeDateQuotes.values());
-                log.info("LastTradeDateQuotesRequestEvent sending lastTradeDateQuotes: "
-                        + lastTradeDateQuotes.keySet());
-                LastTradeDateQuotesEvent lastTDQEvent = new LastTradeDateQuotesEvent(
-                        null, null, tradeDate, lst);
-                eventManager.sendRemoteEvent(lastTDQEvent);
+            if(tradeDateByIndex != null && tradeDateByIndex.size() > 0){
+                for(String index : tradeDateByIndex.keySet()){
+                    //send LastTradeQuote
+                    ArrayList<String> symbols = indexSessionTypes.get(index);
+                    log.info("LastTradeDatesQuotes: " + symbols + ", tradeDate:" + tradeDateByIndex.get(index) + ",index:" + index);
+                    if(symbols != null && symbols.size() > 0) {
+                        List<Quote> quoteList = new ArrayList<Quote>();
+                        for (String symbol : symbols) {
+                            if (quotes.get(symbol) != null) {
+                                quoteList.add((Quote) quotes.get(symbol).clone());
+                            }
+                        }
+                        try {
+                            if(quoteList.size()>0)eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, index, marketSessionData.getTradeDateByString(), quoteList));
+                        } catch (Exception e) {
+                            log.error(e.getMessage(), e);
+                        }
+                    }
+                }
             }
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

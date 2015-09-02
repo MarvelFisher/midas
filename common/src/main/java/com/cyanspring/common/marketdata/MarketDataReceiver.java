@@ -67,7 +67,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected Map<String, QuoteEvent> quotesToBeSent = new HashMap<String, QuoteEvent>();
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
-    protected String tradeDate;
     private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
@@ -344,6 +343,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                         + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                         + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
+                        + ",fO=" + quote.getfTurnover()
                         + ",ts=" + sdf.format(quote.getTimeStamp())
                         + ",tt=" + sdf.format(quote.getTimeSent())
                         + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
