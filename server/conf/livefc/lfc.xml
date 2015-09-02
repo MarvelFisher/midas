@@ -234,7 +234,7 @@
     
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
-			<!--<value>refData/template/template_FC.xml</value>-->
+			<!--<value>refdata/template/template_FC.xml</value>-->
 			 <value>refData/refData_livefc.xml</value> 
 		</property>
 		<property name="templateListAsRefDataList" value="true"></property>
