@@ -57,7 +57,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private boolean msgPack = false;
     private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
-    private boolean useMarketSession = true;
+    private boolean useMarketSession = false;
 
     private boolean isAlive = false;
     EventLoopGroup eventLoopGroup = null;

@@ -88,7 +88,6 @@
 		<property name="quoteCleaner" ref="quoteCleaner"/>
 		<property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
         <property name="broadcastQuote" value="false"/>
-		<property name="useMarketSession" ref="useMarketSession"/>
 	</bean>
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 
@@ -102,7 +101,6 @@
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 		<property name="msgPack" value="true"></property>
 		<property name="isSubTrans" value="false"></property>
-		<property name="useMarketSession" ref="useMarketSession"/>
 	</bean>
 
 	<bean id="windAdaptorFCC"
@@ -115,12 +113,6 @@
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 		<property name="msgPack" value="true"></property>
 		<property name="isSubTrans" value="false"></property>
-		<property name="useMarketSession" ref="useMarketSession"/>
-	</bean>
-
-	<!-- useMarketSession setting -->
-	<bean id="useMarketSession" class="java.lang.Boolean">
-		<constructor-arg value="false" />
 	</bean>
 
 	<!-- Derby setting -->

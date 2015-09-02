@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -53,7 +54,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected Map<String, DataObject> lastTradeDateQuoteExtends = new HashMap<String, DataObject>();
     protected HashMap<String, String> marketTypes = new HashMap<>();
     protected ConcurrentHashMap<String, MarketSessionData> indexSessions = new ConcurrentHashMap<>();
-    protected HashMap<String, String> indexSessionTypes = new HashMap<>();
+    protected HashMap<String, ArrayList<String>> indexSessionTypes = new HashMap<String, ArrayList<String>>(); //SymoblArrryByIndex
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -72,7 +73,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private long chkTime;
     private boolean quoteExtendEventIsSend = true;
     private boolean quoteLogIsOpen = false;
-    private boolean useMarketSession = true;
     private int quoteExtendSegmentSize = 300;
     private IQuoteAggregator aggregator;
     private volatile boolean isInitRefDateReceived = false;
@@ -80,7 +80,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitMarketSessionReceived = false;
     private volatile boolean isInitReqDataEnd = false;
     private volatile boolean isPreSubscribing = false;
-    protected MarketSessionEvent marketSessionEvent;
+    protected MarketSessionData marketSessionData;
     boolean state = false;
     boolean isUninit = false;
     private String serverInfo = null;
@@ -90,7 +90,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         @Override
         public void subscribeToEvents() {
-            subscribeToEvent(MarketSessionEvent.class, null);
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
             subscribeToEvent(RefDataUpdateEvent.class, null);
@@ -101,26 +100,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             return eventManager;
         }
     };
-
-    public void processMarketSessionEvent(MarketSessionEvent event) throws Exception {
-        marketSessionEvent = event; //RecordMarketSession
-        if (null != quoteChecker)
-            quoteChecker.setSession(event.getSession());
-        chkTime = sessionMonitor.get(event.getSession());
-        log.info("Get MarketSessionEvent: " + event.getSession()
-                + ", map size: " + sessionMonitor.size() + ", checkTime: "
-                + chkTime);
-
-        if (aggregator != null) {
-            aggregator.onMarketSession(event.getSession());
-        }
-
-        for (IMarketDataAdaptor adaptor : adaptors) {
-            adaptor.processEvent(event);
-        }
-
-        if (!isInitReqDataEnd) isInitMarketSessionReceived = true;
-    }
 
     public void processRefDataEvent(RefDataEvent event) {
         if (isPreSubscribing) {
@@ -137,19 +116,40 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 RefData refData = (RefData) refDataList.get(i);
                 preSubscriptionList.add(refData.getSymbol());
                 marketTypes.put(refData.getSymbol(), refData.getCommodity());
-                indexSessionTypes.put(refData.getSymbol(), refData.getIndexSessionType());
+                //process indexSessionType begin
+                String indexSessionType = refData.getIndexSessionType();
+                String index = "NONAME";
+                switch (indexSessionType){
+                    case "SPOT":
+                        index = refData.getCategory();
+                        break;
+                    case "SETTLEMENT":
+                        index = refData.getSettlementDate();
+                        break;
+                    case "EXCHANGE":
+                        index = refData.getExchange();
+                        break;
+                    default:
+                        break;
+                }
+                ArrayList<String> symbols = null;
+                if(indexSessionTypes.containsKey(index)){
+                    symbols = indexSessionTypes.get(index);
+                    symbols.add(refData.getSymbol());
+                }else{
+                    symbols = new ArrayList<String>();
+                    symbols.add(refData.getSymbol());
+                }
+                if(symbols != null) indexSessionTypes.put(index, symbols);
+            }
+            if(indexSessionTypes.get("NONAME") != null && indexSessionTypes.get("NONAME").size()>0){
+                log.debug("NoName index list:" + indexSessionTypes.get("NONAME"));
             }
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) {
                     adaptor.processEvent(event);
-//                    if (adaptor.getClass().getSimpleName().equals("WindGateWayAdapter")
-//                            && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN && isInitReqDataEnd) {
-//                        adaptor.clean();
-//                        preSubscribe();
-//                    }
                 }
             }
-            preSubscribe();
             if (!isInitReqDataEnd) isInitRefDateReceived = true;
         } else {
             log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
@@ -219,6 +219,11 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 );
                 indexSessions.put(index, marketSessionData);
             }
+            //Forex only 1 index
+            if (aggregator != null && event.getDataMap().size() == 1) {
+                marketSessionData = event.getDataMap().get(0);
+                aggregator.onMarketSession(event.getDataMap().get(0).getSessionType());
+            }
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (null != adaptor) adaptor.processEvent(event);
             }
@@ -252,7 +257,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         sendQuoteEvent(event);
     }
 
-    public void processInnerQuoteEvent(InnerQuoteEvent inEvent) {
+    public void processInnerQuoteEvent(InnerQuoteEvent inEvent) throws ParseException {
         Quote quote = inEvent.getQuote();
         Quote prev = quotes.get(quote.getSymbol());
 
@@ -268,8 +273,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         //Check Forex TimeStamp
         if (inEvent.getQuoteSource()==QuoteSource.ID || inEvent.getQuoteSource()==QuoteSource.IB) {
-            if (marketSessionEvent != null && (marketSessionEvent.getSession() == MarketSessionType.CLOSE
-                    || marketSessionEvent.getSession() == MarketSessionType.PREOPEN)) {
+            if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                    || marketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
                 //get IB close & Open price
                 if(inEvent.getQuoteSource()==QuoteSource.IB){
                     if(quotes.containsKey(quote.getSymbol())){
@@ -281,9 +286,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 return;
             }
             if(null != quoteChecker && !quoteChecker.checkBidAskPirce(quote)) return;
-            if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.OPEN) {
-                if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionEvent.getEnd()) >= 0) {
-                    quote.setTimeStamp(TimeUtil.subDate(marketSessionEvent.getEnd(), 1, TimeUnit.SECONDS));
+            if (marketSessionData != null && marketSessionData.getSessionType() == MarketSessionType.OPEN) {
+                if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionData.getEndDate()) >= 0) {
+                    quote.setTimeStamp(TimeUtil.subDate(marketSessionData.getEndDate(), 1, TimeUnit.SECONDS));
                 }
             }
             if (null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
@@ -385,17 +390,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         log.info("quoteThrottle=" + quoteThrottle);
         isUninit = false;
         isInitReqDataEnd = false;
-        isInitMarketSessionReceived = false;
         isInitRefDateReceived = false;
-        isInitIndexSessionReceived = true;
-        if(!useMarketSession) 
-        	isInitMarketSessionReceived = true;
-        for (IMarketDataAdaptor adaptor : adaptors) {
-            if ("WindGateWayAdapter".equals(adaptor.getClass().getSimpleName())) {
-                isInitIndexSessionReceived = false;
-                break;
-            }
-        }
+        isInitIndexSessionReceived = false;
         // subscribe to events
         eventProcessor.setHandler(this);
         eventProcessor.init();
@@ -450,12 +446,17 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     private void broadCastStaleQuotes() {
-        if (marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.CLOSE) {
-            for (Quote quote : quotes.values()) {
-                if (quote != null && !quote.isStale()) {
-                    log.debug("MDR send final stale quote event:" + quote.getSymbol());
-                    quote.setStale(true);
-                    clearAndSendQuoteEvent(QuoteSource.RESEND, null, new QuoteEvent(quote.getSymbol(), null, quote));
+        for(String index : indexSessions.keySet()){
+            MarketSessionData marketSessionData= indexSessions.get(index);
+            if(marketSessionData != null && marketSessionData.getSessionType() == MarketSessionType.CLOSE){
+                ArrayList<String> symbols = indexSessionTypes.get(index);
+                for(String symbol : symbols){
+                    Quote quote = quotes.get(symbol);
+                    if (quote != null && !quote.isStale()) {
+                        log.debug("MDR send final stale quote event:" + quote.getSymbol());
+                        quote.setStale(true);
+                        clearAndSendQuoteEvent(QuoteSource.RESEND, null, new QuoteEvent(quote.getSymbol(), null, quote));
+                    }
                 }
             }
         }
@@ -534,8 +535,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (on) {
             log.info("MarketData feed is up");
             setState(true);
-            eventManager.sendEvent(new MarketDataReadyEvent(null, true));
             preSubscribe();
+            eventManager.sendEvent(new MarketDataReadyEvent(null, true));
         } else {
             for (IMarketDataAdaptor adaptor : adaptors) {
                 if (adaptor.getState()) {
@@ -549,13 +550,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void requestRequireData() throws Exception {
-        MarketSessionRequestEvent msEvent = new MarketSessionRequestEvent(null, null);
         IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null);
         RefDataRequestEvent rdrEvent = new RefDataRequestEvent(null, null);
-        msEvent.setReceiver(serverInfo);
         isrEvent.setReceiver(serverInfo);
         rdrEvent.setReceiver(serverInfo);
-        eventManager.sendRemoteEvent(msEvent);
         eventManager.sendRemoteEvent(isrEvent);
         eventManager.sendRemoteEvent(rdrEvent);
     }
@@ -680,9 +678,5 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void setServerInfo(String serverInfo) {
         this.serverInfo = serverInfo;
-    }
-
-    public void setUseMarketSession(boolean useMarketSession) {
-        this.useMarketSession = useMarketSession;
     }
 }

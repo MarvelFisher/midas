@@ -7,6 +7,7 @@ import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.util.PriceUtils;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ public class MarketDataManager extends MarketDataReceiver {
     private String lastTradeDateQuoteFile = "last_tdq.xml";
     private String lastTradeDateQuoteExtendFile = "lastExtend_tdq.xml";
     private boolean broadcastQuote;
+    protected HashMap<String, String> tradeDateByIndex = new HashMap<>(); //TradeDateByIndex
 
     public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
         super(adaptors);
@@ -140,38 +142,6 @@ public class MarketDataManager extends MarketDataReceiver {
                 log.error(e.getMessage(), e);
             }
         }
-        //Clear Quote & Send
-        if(quoteCleaner != null && event != null && event.getSession() == MarketSessionType.PREOPEN){
-            log.debug("PreOpen Send Clear Session quote:" + quotes.size());
-            for (Quote quote : quotes.values()) {
-                if (quote != null ) {
-                    Quote tempQuote = (Quote)quote.clone();
-                    if(marketTypes.get(tempQuote.getSymbol()) != null ){
-                        if("I".equals(marketTypes.get(tempQuote.getSymbol())) || "S".equals(marketTypes.get(tempQuote.getSymbol()))) {
-                            tempQuote.setClose(tempQuote.getLast());
-                            log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
-                        }
-                        if("F".equals(marketTypes.get(tempQuote.getSymbol()))){
-                            if(quoteExtends.containsKey(tempQuote.getSymbol())){
-                                DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
-                                double settlePrice = tempQuote.getLast();
-                                if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value()))
-                                    settlePrice = quoteExtend.get(Double.class,QuoteExtDataField.SETTLEPRICE.value());
-                                tempQuote.setClose(settlePrice);
-                                log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = SettlePrice = " +settlePrice);
-                            }else{
-                                log.debug("Symbol=" + tempQuote.getSymbol() + " not in quoteExtends");
-                            }
-                        }
-                    }
-                    quoteCleaner.clear(tempQuote);
-                    tempQuote.setTimeSent(Clock.getInstance().now());
-                    printQuoteLog(QuoteSource.CLEAN_SESSION, null, tempQuote, QuoteLogLevel.GENERAL);
-                    eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
-                }
-            }
-        }
-        super.processMarketSessionEvent(event);
     }
 
     public void processRefDataEvent(RefDataEvent event) {
@@ -181,37 +151,85 @@ public class MarketDataManager extends MarketDataReceiver {
             log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
             quotes.keySet().retainAll(preSubscriptionList);
             quoteExtends.keySet().retainAll(preSubscriptionList);
-            if(quoteExtendCleaner != null && marketSessionEvent != null && marketSessionEvent.getSession() == MarketSessionType.PREOPEN) {
-                log.debug("PreOpen Send Clear Session quoteExtend:" + quoteExtends.size());
-                for (String symbol : quoteExtends.keySet()) {
-                    DataObject quoteExtend = (DataObject)quoteExtends.get(symbol).clone();
-                    if(marketTypes.get(symbol) != null){
-                        double preClose = 0;
-                        double ceil = 0;
-                        double floor = 0;
-                        if(quotes.containsKey(symbol)){
-                            preClose = quotes.get(symbol).getLast();
-                        }
-                        if("F".equals(marketTypes.get(symbol))){
-                            if(quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())){
-                                preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+        }
+    }
+
+    public void processIndexSessionEvent(IndexSessionEvent event){
+        super.processIndexSessionEvent(event);
+
+        if(event != null && event.isOk() && event.getDataMap().size() > 0) {
+            for(String index : indexSessions.keySet()){
+                MarketSessionData marketSessionData= indexSessions.get(index);
+                if(marketSessionData != null){
+                    if(!marketSessionData.getTradeDateByString().equals(tradeDateByIndex.get(index)) || tradeDateByIndex.get(index) == null){
+                        //send LastTradeQuote
+                        tradeDateByIndex.put(index, marketSessionData.getTradeDateByString());
+                    }
+                    if(marketSessionData.getSessionType() == MarketSessionType.PREOPEN) {
+                        ArrayList<String> symbols = indexSessionTypes.get(index);
+                        for (String symbol : symbols) {
+                            //Send Quote Clean Session
+                            Quote quote = quotes.get(symbol);
+                            if (quote != null) {
+                                Quote tempQuote = (Quote) quote.clone();
+                                if (marketTypes.get(tempQuote.getSymbol()) != null) {
+                                    if ("I".equals(marketTypes.get(tempQuote.getSymbol())) || "S".equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                        tempQuote.setClose(tempQuote.getLast());
+                                        log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
+                                    }
+                                    if ("F".equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                        if (quoteExtends.containsKey(tempQuote.getSymbol())) {
+                                            DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
+                                            double settlePrice = tempQuote.getLast();
+                                            if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value()))
+                                                settlePrice = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                                            tempQuote.setClose(settlePrice);
+                                            log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = SettlePrice = " + settlePrice);
+                                        } else {
+                                            log.debug("Symbol=" + tempQuote.getSymbol() + " not in quoteExtends");
+                                        }
+                                    }
+                                }
+                                quoteCleaner.clear(tempQuote);
+                                tempQuote.setTimeSent(Clock.getInstance().now());
+                                printQuoteLog(QuoteSource.CLEAN_SESSION, null, tempQuote, QuoteLogLevel.GENERAL);
+                                try {
+                                    eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
+                                } catch (Exception e) {
+                                    log.error(e.getMessage(), e);
+                                }
+                            }
+                            //Send QuoteExtend Clean Session
+                            DataObject quoteExtend = (DataObject) quoteExtends.get(symbol).clone();
+                            if (marketTypes.get(symbol) != null) {
+                                double preClose = 0;
+                                double ceil = 0;
+                                double floor = 0;
+                                if (quotes.containsKey(symbol)) {
+                                    preClose = quotes.get(symbol).getLast();
+                                }
+                                if ("F".equals(marketTypes.get(symbol))) {
+                                    if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
+                                        preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                                    }
+                                }
+                                ceil = preClose * 1.1;
+                                floor = preClose * 0.9;
+                                if (PriceUtils.GreaterThan(preClose, 0)) {
+                                    quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
+                                    quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
+                                    quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
+                                }
+                            }
+                            quoteExtendCleaner.clear(quoteExtend);
+                            try {
+                                printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
+                                quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
+                                eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
                             }
                         }
-                        ceil = preClose * 1.1;
-                        floor = preClose * 0.9;
-                        if(PriceUtils.GreaterThan(preClose, 0)) {
-                            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
-                            quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
-                            quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
-                        }
-                    }
-                    quoteExtendCleaner.clear(quoteExtend);
-                    try {
-                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
-                        quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
-                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
                     }
                 }
             }
