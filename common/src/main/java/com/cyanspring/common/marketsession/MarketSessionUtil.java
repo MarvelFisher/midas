@@ -55,11 +55,11 @@ public class MarketSessionUtil implements IPlugin{
     	RefData refData = refDataManager.getRefData(symbol);
     	if(null == refData)
     		return null;
-    	String category = RefDataUtil.getCategory(refData);
-    	if(!StringUtils.hasText(category))
+    	String index = searchIndex(refData);
+    	if(!StringUtils.hasText(index))
     		return null;
     	
-    	MarketSessionData data = this.getMarketSession().get(category);
+    	MarketSessionData data = this.getMarketSession().get(index);
     	return data;
     }
     
@@ -149,7 +149,10 @@ public class MarketSessionUtil implements IPlugin{
     }
     
     public MarketSession getMarketSessions(Date date, RefData refData) throws Exception{
-    	IMarketSession session = sessionMap.get(refData.getCategory());
+    	String index = searchIndex(refData);
+    	if (!StringUtils.hasText(index)) 
+    		return null;
+    	IMarketSession session = sessionMap.get(index);
     	if (session == null)
     		return null;
     	return session.getMarketSession(date, refData);
@@ -164,7 +167,10 @@ public class MarketSessionUtil implements IPlugin{
     
     public ITradeDate getTradeDateManagerBySymbol(String symbol){
     	RefData refData = getRefData(symbol);
-    	return getTradeDateManager(refData.getCategory());
+    	String index = searchIndex(refData);
+    	if (!StringUtils.hasText(index))
+    		return null;
+    	return getTradeDateManager(index);
     }
     
     public RefData getRefData(String symbol){
@@ -176,11 +182,9 @@ public class MarketSessionUtil implements IPlugin{
     }
     
     private SessionPair getSession(RefData refData) throws Exception{
+    	String index = searchIndex(refData);
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
-    		String key = entry.getKey();
-    		if(compareIndex(key, refData.getSymbol()) ||
-    				compareIndex(key, refData.getExchange()) ||
-    				compareIndex(key, refData.getCategory()))
+    		if(entry.getKey().equals(index));
     			return getPair(refData, entry.getValue());
     	}
     	return null;
@@ -205,6 +209,20 @@ public class MarketSessionUtil implements IPlugin{
     	else if (sessionIndex.equals(IndexSessionType.EXCHANGE.toString()))
     		return new SessionPair(refData.getExchange(), session);
     	return null;
+    }
+    
+    private String searchIndex(RefData refData) {
+    	String index = null;
+    	index = RefDataUtil.getSearchIndex(refData);
+    	if (index == null) {
+    		if (StringUtils.hasText(refData.getExchange()))
+    			index = refData.getExchange();
+    		else if (StringUtils.hasText(refData.getCategory()))
+    			index = refData.getCategory();
+    		else
+    			index = RefDataUtil.getOnlyChars(refData.getSymbol());
+    	}
+    	return index;
     }
 
     public boolean isHoliday(String symbol, Date date) throws Exception{

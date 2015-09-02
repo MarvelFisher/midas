@@ -30,6 +30,7 @@ import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.marketsession.ITradeDate;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.fu.IType;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -186,11 +187,25 @@ public class RefDataUtil {
 	}
 
 	public static String getOnlyChars(String symbol) {
-		Pattern pattern = Pattern.compile("[a-zA-Z]*");
+		Pattern pattern = Pattern.compile("^[a-zA-Z]*");
 		Matcher matcher = pattern.matcher(symbol);
 		if (matcher.find())
 			return matcher.group(0);
 		return null;
+	}
+	
+	public static String getSearchIndex(RefData refData) {
+		String index = null;
+		String indexType = refData.getIndexSessionType();
+		if (indexType != null) {
+			if (indexType.equals(IndexSessionType.SETTLEMENT.toString()))
+				index = refData.getSymbol();
+			else if (indexType.equals(IndexSessionType.SPOT.toString()))
+				index = refData.getCategory();
+			else if (indexType.equals(IndexSessionType.EXCHANGE.toString()))
+				index = refData.getExchange();
+		}
+		return index;
 	}
 
 	public static String getCategory(RefData refData) {

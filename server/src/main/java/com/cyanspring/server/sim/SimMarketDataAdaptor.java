@@ -69,7 +69,10 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 		@Override
 		public void onChangeEvent(OrderBook book) {
 			Quote quote = bookToQuote(book);
-			
+			MarketParticipant par = simMap.get(quote.getSymbol());
+			if (par != null) {
+				par.terminate();
+			}
 			List<IMarketDataListener> list = subs.get(book.getCode());
 			if(null != list)
 				for(IMarketDataListener listener: list)
