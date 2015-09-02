@@ -58,8 +58,7 @@
 		        <include>/mm/*</include>
 		        <include>/strategies/*</include>
 		        <include>/templates/*</include>
-				<include>/conf/*</include>
-				<include>/conf/*/*</include>
+				<include>/conf/**</include>
 				<include>/refdata/*</include>
 				<include>/database/**</include>
 			</includes>

@@ -23,12 +23,11 @@
 			<outputDirectory></outputDirectory> 
 			<includes>
 				<include>*.bat</include>
-				<include>/conf/*</include>
+				<include>/conf/**</include>
 				<include>/backtest/**</include>
 		        <include>/mm/*</include>
 		        <include>/strategies/*</include>
-		        <include>/templates/*</include>
-				<include>/conf/**</include>
+		        <include>/templates/*</include>				
 				<include>/refdata/*</include>
 				<include>/database/**</include>
 			</includes>
