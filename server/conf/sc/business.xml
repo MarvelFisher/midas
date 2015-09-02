@@ -23,7 +23,7 @@
 				<ref bean="orderCountValidator"/>
 				<ref bean="maxLotValidator"/>
 				<ref bean="ceilFloorValidator"/>
-				<ref bean="availablePositionValidator"/>
+				<!-- <ref bean="availablePositionValidator"/> -->
 	        </list>
 	    </constructor-arg>
 	</bean>	
