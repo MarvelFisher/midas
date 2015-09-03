@@ -108,6 +108,7 @@ import com.cyanspring.common.event.account.UserLoginEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.SettlementEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
 import com.cyanspring.common.event.marketsession.TradeDateRequestEvent;
@@ -124,6 +125,7 @@ import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.QuoteUtils;
+import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.ExtraEventMessage;
 import com.cyanspring.common.message.ExtraEventMessageBuilder;
@@ -251,6 +253,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
             subscribeToEvent(OnUserCreatedEvent.class, null);
             subscribeToEvent(TradeDateEvent.class, null);
+            subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(InternalResetAccountRequestEvent.class, null);
             subscribeToEvent(SettlementEvent.class, null);
             subscribeToEvent(AccountStateRequestEvent.class,null);
@@ -1730,6 +1733,17 @@ public class AccountPositionManager implements IPlugin {
 
     public void processTradeDateEvent(TradeDateEvent event) {
         tradeDate = event.getTradeDate();
+    }
+    
+    public void processIndexSessionEvent(IndexSessionEvent event) {
+    	Map<String, MarketSessionData> map = event.getDataMap();
+    	List<MarketSessionData> list = new ArrayList<>(map.values());
+    	if(list.size() > 0){
+    		MarketSessionData first = list.get(0);
+    		tradeDate = first.getTradeDateByString();    		
+    	} else {
+    		log.warn("No data in IndexSessionEvent.");
+    	}
     }
 
     private String generateAccountId() {
