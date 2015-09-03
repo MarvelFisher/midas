@@ -504,7 +504,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         StringBuffer sb = new StringBuffer();
         for(String symbol : subscribeList){
             //Check Exchange
-            if(exchangeBySymbols.get(symbol) != null){
+            if(exchangeBySymbols!= null && exchangeBySymbols.get(symbol) != null){
                 int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
                 if(index < 0) continue;
             }
