@@ -119,7 +119,7 @@ public class CentralDbProcessor implements IPlugin
 	private long checkSQLInterval = 10 * 60 * 1000;
 	private int numOfHisThreads = 5;
 	private int curHisThread = 0;
-	private int retrieveTime = -1;
+	private int[] retrieveTime;
 	//Parameters
 	private String serverMarket;
 	private int nChefCount = 5;
@@ -206,12 +206,15 @@ public class CentralDbProcessor implements IPlugin
 		{
 			if (isStartup == false)
 				resetSymbolDataStat();
-			if (retrieveTime != -1)
+			Calendar cal = Calendar.getInstance();
+			int now = (cal.get(Calendar.HOUR_OF_DAY) * 100) + cal.get(Calendar.MINUTE);
+			for (int time : retrieveTime)
 			{
-				Calendar cal = Calendar.getInstance();
-				int now = (cal.get(Calendar.HOUR_OF_DAY) * 100) + cal.get(Calendar.MINUTE);
-				if (now == retrieveTime)
+				if (now == time)
+				{
 					retrieveChart();
+					break;
+				}
 			}
 		}
 //		else if (event == checkEvent)
@@ -260,8 +263,8 @@ public class CentralDbProcessor implements IPlugin
 	{
 		if (SymbolChefList.size() != nChefCount)
 			return;
-		if (isProcessQuote == false)
-			return;
+//		if (isProcessQuote == false)
+//			return;
 		SymbolData data = null;
 		for (SymbolChef chef : SymbolChefList)
 		{
@@ -274,13 +277,15 @@ public class CentralDbProcessor implements IPlugin
 		
 		MarketSessionType sessionType = data.getSessionType();
 		Date sessionEnd = data.getSessionEnd();
-		if (sessionType == MarketSessionType.OPEN 
-				&& quote.getTimeStamp().getTime() >= sessionEnd.getTime())
+		if (sessionType == MarketSessionType.OPEN)
 		{
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(sessionEnd);
-			cal.add(Calendar.SECOND, -1);
-			quote.setTimeStamp(cal.getTime());
+			if (quote.getTimeStamp().getTime() >= sessionEnd.getTime())
+			{
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(sessionEnd);
+				cal.add(Calendar.SECOND, -1);
+				quote.setTimeStamp(cal.getTime());
+			}
 		}
 		else if (sessionType == MarketSessionType.PREOPEN)
 		{
@@ -1443,12 +1448,12 @@ public class CentralDbProcessor implements IPlugin
 		this.sessionMap = sessionMap;
 	}
 
-	public int getRetrieveTime()
+	public int[] getRetrieveTime()
 	{
 		return retrieveTime;
 	}
 
-	public void setRetrieveTime(int retrieveTime)
+	public void setRetrieveTime(int[] retrieveTime)
 	{
 		this.retrieveTime = retrieveTime;
 	}
