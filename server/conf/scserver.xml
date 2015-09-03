@@ -67,7 +67,6 @@
 		<constructor-arg>
 			<list>
 				<ref bean="windAdaptorSC" />
-				<ref bean="windAdaptorFCI" />
 			</list>
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"/>
@@ -105,18 +104,6 @@
 		<property name="tradeDateCheckIsOpen" value="true" />
 		<property name="closeOverTimeControlIsOpen" value="true" />
 		<property name="isSubTrans" value="false" />
-	</bean>
-
-	<bean id="windAdaptorFCI"
-		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
-		<property name="showGui" value="true"></property>
-		<property name="gatewayIp" value="10.0.0.32"></property>
-		<property name="gatewayPort" value="10048"></property>
-		<property name="marketDataLog" value="false"></property>
-		<property name="tradeDateCheckIsOpen" value="true"></property>
-		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="msgPack" value="true"></property>
-		<property name="isSubTrans" value="false"></property>
 	</bean>
 
 	<!-- RefData Stock Database -->

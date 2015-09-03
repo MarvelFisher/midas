@@ -91,10 +91,10 @@
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="FCI"/>
         <!--<property name="gatewayIp" value="101.231.55.6"/>-->
-        <property name="gatewayIp" value="#{windAdaptorFCI.gatewayIp}"/>
-        <property name="gatewayPort" value="#{windAdaptorFCI.gatewayPort}"/>
-        <property name="marketDataLog" value="#{windAdaptorFCI.marketDataLog}"/>
-        <property name="msgPack" value="#{windAdaptorFCI.msgPack}"></property>
+        <property name="gatewayIp" value="#{windAdaptorSC.gatewayIp}"/>
+        <property name="gatewayPort" value="#{windAdaptorSC.gatewayPort}"/>
+        <property name="marketDataLog" value="#{windAdaptorSC.marketDataLog}"/>
+        <property name="msgPack" value="#{windAdaptorSC.msgPack}"></property>
         <property name="refDataFile" value="refdata/refData_fci.xml"/>
         <property name="windFilter" ref="fciFilter"/>
         <property name="marketsList">
