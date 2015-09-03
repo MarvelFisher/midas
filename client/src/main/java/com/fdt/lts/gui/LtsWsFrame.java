@@ -470,6 +470,7 @@ public class LtsWsFrame extends JFrame {
         if (!event.isOk())
             return;
 
+        this.account = event.getAccount();
         sendEvent(new QuoteSubEvent(getId(), null, "AUDUSD"));
         sendEvent(new QuoteSubEvent(getId(), null, "USDJPY"));
         sendEvent(new StrategySnapshotRequestEvent(account, null, null));

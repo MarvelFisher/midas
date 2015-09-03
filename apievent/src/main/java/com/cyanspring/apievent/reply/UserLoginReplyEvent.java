@@ -22,18 +22,24 @@ import java.util.List;
  */
 public class UserLoginReplyEvent extends RemoteAsyncEvent {
     private boolean ok;
+    private String account;
     private String message;
     private String txId;
 
-    public UserLoginReplyEvent(String key, String receiver, boolean ok,
+    public UserLoginReplyEvent(String key, String receiver, String account, boolean ok,
                                String message, String txId) {
         super(key, receiver);
+        this.account = account;
         this.ok = ok;
         this.message = message;
         this.txId = txId;
     }
 
-    public boolean isOk() {
+    public String getAccount() {
+		return account;
+	}
+
+	public boolean isOk() {
         return ok;
     }
 

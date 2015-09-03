@@ -43,6 +43,7 @@ public class ApiUserLoginReplyEvent implements IApiReply {
         if(null == record)
             return;
 
+        String accountId = "";
         if(loginReplyEvent.isOk()) {
             String user = loginReplyEvent.getUser().getId();
             if(resourceManager.getUserConnectionType() == UserConnectionType.PREEMPTIVE) {
@@ -67,10 +68,13 @@ public class ApiUserLoginReplyEvent implements IApiReply {
 
             resourceManager.getSocketService().setUserContext(loginReplyEvent.getUser().getId(), record.ctx);
 
-            if(loginReplyEvent.getDefaultAccount() != null)
+            if(loginReplyEvent.getDefaultAccount() != null) {
+            	accountId = loginReplyEvent.getDefaultAccount().getId();
                 resourceManager.saveUser(loginReplyEvent.getDefaultAccount().getId(), loginReplyEvent.getUser().getId());
-            else
+            } else {
+            	accountId = loginReplyEvent.getAccounts().get(0).getId();
                 resourceManager.saveUser(loginReplyEvent.getAccounts().get(0).getId(), loginReplyEvent.getUser().getId());
+            }
             for(Account account: loginReplyEvent.getAccounts()) {
                 resourceManager.saveUser(account.getId(), loginReplyEvent.getUser().getId());
             }
@@ -80,6 +84,7 @@ public class ApiUserLoginReplyEvent implements IApiReply {
         com.cyanspring.apievent.reply.UserLoginReplyEvent reply = new com.cyanspring.apievent.reply.UserLoginReplyEvent(
                 loginReplyEvent.getKey(),
                 null,
+                accountId,
                 loginReplyEvent.isOk(), loginReplyEvent.getMessage(), record.origTxId);
 
         if(record.ctx.isOpen())
