@@ -1,8 +1,9 @@
 package com.cyanspring.common.marketsession;
-import com.cyanspring.common.staticdata.RefData;
-
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import com.cyanspring.common.staticdata.RefData;
 
 
 public interface IMarketSession {
@@ -14,4 +15,5 @@ public interface IMarketSession {
     public String getTradeDate();
     public ITradeDate getTradeDateManager();
     public Map<String, MarketSession> getStateMap();
+    public List<AvailableTimeBean> getAvailableTimeList();
 }

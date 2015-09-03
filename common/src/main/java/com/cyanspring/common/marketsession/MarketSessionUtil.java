@@ -1,6 +1,7 @@
 package com.cyanspring.common.marketsession;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +15,13 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataService;
 import com.cyanspring.common.staticdata.RefDataUtil;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
+import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.common.validation.OrderValidationException;
 
 public class MarketSessionUtil implements IPlugin{
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
@@ -179,6 +183,162 @@ public class MarketSessionUtil implements IPlugin{
     		return null;
     	
     	return refData;
+    }
+    
+    public boolean isNotInOrderAcceptableTime(Date date,String symbol)throws Exception{
+    	
+    	RefData refData = getRefData(symbol);
+    	if(null == refData){
+    		throw new Exception("refdata doesn't exist");
+    	}
+    	
+    	IMarketSession symbolData = getMarketSessionChecker(refData);
+    	if(null == symbolData){
+    		throw new Exception("MarketSession doesn't exist");
+    	}
+    	
+    	MarketSessionData nowMarketSession = getCurrentMarketSession(symbol);
+    	if(null == nowMarketSession){
+    		throw new Exception("This symbol MarketSession doesn't exist:"+symbol);
+    	}
+    	
+    	boolean isInTheTime = false;
+    	List<AvailableTimeBean> timeList = symbolData.getAvailableTimeList();
+    	for(AvailableTimeBean bean : timeList){
+//    		log.info("bean.isTimeInterval():{}",bean.isTimeInterval());
+    		if(bean.isTimeInterval()){
+    			isInTheTime = checkSessionTypeTimeInterVal(bean,nowMarketSession.getSessionType());
+    		}else{
+    			isInTheTime = checkSessionTypeMinutes(bean,date,refData);
+    		}
+    		
+    		if(isInTheTime){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    private boolean checkSessionTypeMinutes(AvailableTimeBean bean,Date date,RefData refData) throws Exception{
+    	int minutes = bean.getHowManyMinutes();
+    	MarketSessionType type = bean.getMarketSession();
+//    	log.info("search bean:{}",type);
+    	MarketSessionData sessionData = getSpecificMarketSession(date,refData,type);
+    	if(null == sessionData){
+    		throw new Exception("no session data");
+    	}
+    	
+    	if(!sessionData.getSessionType().equals(type))
+    		return false;
+    	
+//    	log.info("sessionData:{},{},{}",new Object[]{sessionData.getStart(),sessionData.getEnd(),sessionData.getSessionType()});
+		Date sessionStart = sessionData.getStartDate();
+		Date sessionEnd = sessionData.getEndDate();
+		Calendar adjustTime = Calendar.getInstance();
+    	if(bean.isSessionStart()){
+    		adjustTime.setTime(sessionStart);
+    	}else{//session after
+    		adjustTime.setTime(sessionEnd);
+    	}
+    	
+		if(bean.isSessionBefore()){
+			adjustTime.add(Calendar.MINUTE, -minutes);
+		}else{
+			adjustTime.add(Calendar.MINUTE, minutes);
+		}
+			
+		if(adjustTime.before(sessionStart)){
+			sessionStart = adjustTime.getTime();
+		}else{
+			sessionEnd = adjustTime.getTime();
+		}
+		
+//		log.info("sessionStart:{} , sessionEnd:{}",sessionStart,sessionEnd);
+		
+    	return bean.checkInterval(date, sessionStart, sessionEnd);
+    }
+    
+	private MarketSessionData getSpecificMarketSession(Date firstTradeDate,RefData refData,MarketSessionType type) throws Exception {
+
+		if(null == refData)
+			return null;
+		
+		Date today = TimeUtil.getOnlyDate(firstTradeDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(today);
+		
+		Calendar tomorrow = Calendar.getInstance();
+		tomorrow.setTime(today);
+		tomorrow.add(Calendar.DATE, 1);		
+		MarketSessionData data = null;			
+		IMarketSession sessionSearch = getMarketSessionChecker(refData);
+		
+		if(null == sessionSearch)
+			return null;
+		
+		while(true){
+			
+			if(cal.getTimeInMillis() > tomorrow.getTimeInMillis()){
+				break;
+			}
+			
+			data = sessionSearch.searchState(cal.getTime(), refData);	
+			if(null == data){
+				break;
+			}	
+//			log.info("type:{},data type:{}",type,data.getSessionType());
+			if(!type.equals(data.getSessionType())){
+				cal.setTime(data.getEndDate());
+				cal.add(Calendar.MINUTE, 1);
+				continue;
+			}else{
+				break;
+			}
+		}	
+		
+		return data;
+	}
+    
+    private boolean checkSessionTypeTimeInterVal(AvailableTimeBean bean,MarketSessionType currentSessionType)throws Exception,OrderValidationException{
+		MarketSessionType type = bean.getMarketSession();
+		String startTime = bean.getStartTime();
+		String endTime = bean.getEndTime();
+
+		
+		if(null == type || !type.equals(currentSessionType)){
+			throw new Exception("Session type doesn't exist!");
+		}
+
+		boolean isInTheTime = false;
+
+		if(StringUtils.hasText(startTime) && StringUtils.hasText(endTime)){
+			isInTheTime = bean.checkInterval(startTime,endTime);
+		}else if(!StringUtils.hasText(startTime) && StringUtils.hasText(endTime)){
+			isInTheTime = bean.checkBefore(endTime);
+		}else if(StringUtils.hasText(startTime) && !StringUtils.hasText(endTime)){
+			isInTheTime = bean.checkAfter(startTime);
+		}
+
+		if(isInTheTime){
+			throw new OrderValidationException("Your order can’t be placed. We start to take orders at 9:10 am.",ErrorMessage.MARKET_WILL_TAKE_ORDER_AFTER_OPEN);
+		}
+		return isInTheTime;
+    }
+    
+    private IMarketSession getMarketSessionChecker(RefData refData){
+    	IMarketSession symbolData = null;
+    	if(sessionMap.containsKey(refData.getSymbol())){
+//    		log.info("get sesssion map symbol:{}",refData.getSymbol());
+    		symbolData = sessionMap.get(refData.getSymbol());
+    	}else if(sessionMap.containsKey(refData.getCategory())){
+//    		log.info("get sesssion map category:{}",refData.getCategory());
+    		symbolData = sessionMap.get(refData.getCategory());
+    	}else if(sessionMap.containsKey(refData.getExchange())){
+//    		log.info("get sesssion map getExchange:{}",refData.getExchange());
+    		symbolData = sessionMap.get(refData.getExchange());
+    	}
+    	
+    	return symbolData;
     }
     
     private SessionPair getSession(RefData refData) throws Exception{

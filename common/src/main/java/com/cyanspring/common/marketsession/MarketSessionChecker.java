@@ -3,12 +3,18 @@ package com.cyanspring.common.marketsession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionChecker implements IMarketSession {
+
+	private static final Logger log = LoggerFactory.getLogger(MarketSessionChecker.class);
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Date tradeDate;
@@ -16,6 +22,7 @@ public class MarketSessionChecker implements IMarketSession {
     private ITradeDate tradeDateManager;
     private MarketSessionType currentType;
     private String index;
+    private List <AvailableTimeBean> availableTimeList;
 
     @Override
     public void init(Date date, RefData refData) throws Exception {
@@ -138,6 +145,9 @@ public class MarketSessionChecker implements IMarketSession {
         }
         return false;
     }
+    
+
+    
 
     public void setTradeDate(Date tradeDate) {
         this.tradeDate = tradeDate;
@@ -154,4 +164,13 @@ public class MarketSessionChecker implements IMarketSession {
     public void setIndex(String index) {
         this.index = index;
     }
+
+    @Override
+	public List<AvailableTimeBean> getAvailableTimeList() {
+		return availableTimeList;
+	}
+
+	public void setAvailableTimeList(List<AvailableTimeBean> availableTimeList) {
+		this.availableTimeList = availableTimeList;
+	} 
 }
