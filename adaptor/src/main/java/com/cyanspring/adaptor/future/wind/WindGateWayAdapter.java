@@ -33,10 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback, IWindGWListener {
@@ -58,6 +55,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
     private boolean useMarketSession = false;
+    private List<String> marketsList = new ArrayList();
 
     private boolean isAlive = false;
     EventLoopGroup eventLoopGroup = null;
@@ -78,7 +76,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private ConcurrentHashMap<String, MarketSessionData> marketSessionByIndexMap = new ConcurrentHashMap<>(); //SaveIndexMarketSession
     private ConcurrentHashMap<String, String> marketRuleBySymbolMap = new ConcurrentHashMap<>(); // SaveSymbolRule
     private ConcurrentHashMap<String, WindIndexSessionCheckData> indexSessionCheckDataByIndexMap = new ConcurrentHashMap<>();
-    HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<>(); //calculate dataTimeStat
+    protected HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<>(); //calculate dataTimeStat
+    private HashMap<String, String> exchangeBySymbols = new HashMap<String,String>();
 
     RequestThread thread = null;
     private QuoteMgr quoteMgr = new QuoteMgr(this);
@@ -410,6 +409,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         initReqThread();
         doConnect();
 
+        Collections.sort(marketsList);
+
         if (!eventProcessor.isSync())
             scheduleManager.scheduleRepeatTimerEvent(timerInterval,
                     eventProcessor, timerEvent);
@@ -502,6 +503,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         if (subscribeList == null || subscribeList.size() == 0) return;
         StringBuffer sb = new StringBuffer();
         for(String symbol : subscribeList){
+            //Check Exchange
+            if(exchangeBySymbols.get(symbol) != null){
+                int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
+                if(index < 0) continue;
+            }
             if(sb.length()+symbol.length() >= WindDef.SUBSCRIBE_MAX_LENGTH){
                 subscribe(sb.toString());
                 sb = new StringBuffer();
@@ -674,6 +680,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         for (RefData refData : refDataList) {
             if(refData.getIndexSessionType() == null || "".equals(refData.getIndexSessionType()))
                 continue;
+            String exchange = refData.getExchange();
+            if(exchange != null ) exchangeBySymbols.put(refData.getSymbol(), exchange);
             String indexSessionType = refData.getIndexSessionType();
             if(IndexSessionType.EXCHANGE.name().equals(indexSessionType)){
                 marketRuleBySymbolMap.put(refData.getSymbol(), refData.getExchange());
@@ -1069,6 +1077,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     public ConcurrentHashMap<String, MarketSessionData> getMarketSessionByIndexMap() {
         return marketSessionByIndexMap;
+    }
+
+    public void setMarketsList(List<String> marketsList) {
+        this.marketsList = marketsList;
     }
 }
 

@@ -96,11 +96,18 @@
 		<property name="showGui" value="true"></property>
 		<property name="gatewayIp" value="10.0.0.32"></property>
 		<property name="gatewayPort" value="10048"></property>
-		<property name="marketDataLog" value="true"></property>
+		<property name="marketDataLog" value="false"></property>
 		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 		<property name="msgPack" value="true"></property>
 		<property name="isSubTrans" value="false"></property>
+		<property name="marketsList">
+			<list>
+				<value>SH</value>
+				<value>SZ</value>
+				<value>CF</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="windAdaptorFCC"
@@ -108,11 +115,18 @@
 		<property name="showGui" value="true"></property>
 		<property name="gatewayIp" value="10.0.0.20"></property>
 		<property name="gatewayPort" value="10046"></property>
-		<property name="marketDataLog" value="true"></property>
+		<property name="marketDataLog" value="false"></property>
 		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
 		<property name="msgPack" value="true"></property>
 		<property name="isSubTrans" value="false"></property>
+		<property name="marketsList">
+			<list>
+				<value>SHF</value>
+				<value>DCE</value>
+				<value>CZC</value>
+			</list>
+		</property>
 	</bean>
 
 	<!-- Derby setting -->
