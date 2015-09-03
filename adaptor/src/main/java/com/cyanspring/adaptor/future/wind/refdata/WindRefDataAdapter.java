@@ -3,6 +3,8 @@ package com.cyanspring.adaptor.future.wind.refdata;
 import com.cyanspring.Network.Transport.FDTFields;
 import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
+import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
+import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
 import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
@@ -58,7 +60,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private volatile int serverHeartBeatCountAfterCodeTableCome = -1;
     private volatile int serverRetryCount = 0;
     private volatile int dbRetryCount = 0;
-    private volatile boolean channelActiveSend = false;
     private boolean marketDataLog = false; // log control
     private List<String> marketsList = new ArrayList();
     private List<String> refFilterList;
@@ -73,8 +74,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     HashMap<RefDataField, Object> refDataFCHashMap = new HashMap<>();
     public static HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
     private ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, CodeTableResult> codeTableResultByExchangeMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, RefData> refDataHashMap = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, RefData> refDataUpdateHashMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ExchangeRefData> exRefDataHashMap = new ConcurrentHashMap<String, ExchangeRefData>();
+    private ConcurrentHashMap<String, ExchangeRefData> exRefDataUpdateHashMap = new ConcurrentHashMap<String, ExchangeRefData>();
     protected WindDataParser windDataParser = new WindDataParser();
     EventLoopGroup eventLoopGroup = null;
     private RequestThread thread = null;
@@ -93,7 +96,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         Bootstrap bootstrap = new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                 .handler(new MsgPackRefDataClientInitializer(this));
 
         try {
@@ -134,10 +137,20 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         switch (datatype) {
             case WindDef.MSG_WINDGW_CONNECTED:
                 log.debug("receive WindGW connected");
-                requestMgr.addReqData(new Object[]{datatype, marketsList});
                 break;
             case WindDef.MSG_SYS_CODETABLE_RESULT:
                 log.debug("receive WindGW codetable result");
+                CodeTableResult codeTableResult = null;
+                try {
+                    codeTableResult = windDataParser.convertToCodeTableResult(inputMessageHashMap, codeTableResultByExchangeMap);
+                } catch (Exception e) {
+                    LogUtil.logException(log, e);
+                    return;
+                }
+                if(codeTableResult == null) return;
+                codeTableResultByExchangeMap.put(codeTableResult.getSecurityExchange(),codeTableResult);
+                log.debug("codeTable exchange = " + codeTableResult.getSecurityExchange() + ",hashCode=" + codeTableResult.getHashCode());
+                requestMgr.addReqData(new Object[]{datatype, codeTableResult});
                 break;
             case WindDef.MSG_SYS_CODETABLE:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
@@ -191,13 +204,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 if (serverHeartBeatCountAfterCodeTableCome >= 0) {
                     serverHeartBeatCountAfterCodeTableCome++;
                 }
-                if(channelActiveSend) {
-                    if(!subscribed) {
-                        if (serverHeartBeatCountAfterCodeTableCome < 0) {
-                            serverHeartBeatCountAfterCodeTableCome--;
-                            if (serverHeartBeatCountAfterCodeTableCome < -3) {
-                                channelHandlerContext.close();
-                            }
+                if(!subscribed) {
+                    if (serverHeartBeatCountAfterCodeTableCome < 0) {
+                        serverHeartBeatCountAfterCodeTableCome--;
+                        if (serverHeartBeatCountAfterCodeTableCome < -3) {
+                            channelHandlerContext.close();
                         }
                     }
                     if (serverHeartBeatCountAfterCodeTableCome >= 2) {
@@ -205,8 +216,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                         codeTableIsProcessEnd = true;
                         serverHeartBeatCountAfterCodeTableCome = -1;
                     }
-                }else{
-                    if (serverHeartBeatCountAfterCodeTableCome == 2) {
+                }else {
+                    if (serverHeartBeatCountAfterCodeTableCome == 5) {
                         requestMgr.addReqData(new Object[]{WindDef.MSG_REFDATA_CHECKUPDATE, new Integer(0)});
                         serverHeartBeatCountAfterCodeTableCome = -1;
                     }
@@ -268,7 +279,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         codeTableIsProcessEnd = false;
         serverRetryCount = 0;
         dbRetryCount = 0;
-
+        for(String exchange: marketsList){
+            ExchangeRefData exchangeRefData = new ExchangeRefData(exchange);
+            exRefDataHashMap.put(exchange,exchangeRefData);
+        }
         if (windDBHandler != null) {
             //connect WindSyn DB
             windBaseDBDataHashMap.clear();
@@ -357,8 +371,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         return fsb.toString();
     }
 
-    public void sendRquestCodeTable(boolean channelActiveSend){
-        this.channelActiveSend = channelActiveSend;
+    public void sendRquestCodeTable(List<String> marketsList){
         if (marketsList != null && marketsList.size() > 0) {
             for (int i = 0; i < marketsList.size(); i++) {
                 this.channelHandlerContext.channel().writeAndFlush(makeRequestCodeTable(marketsList.get(i)));
@@ -383,12 +396,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         closeNetty();
         requestMgr.uninit();
         closeReqThread();
-        if(refDataHashMap != null && refDataHashMap.size() > 0){
-            List refDataList = new ArrayList(refDataHashMap.values());
-            RefDataParser.saveListToFile(refDataFile, refDataList);
-        }
-        refDataHashMap.clear();
-        codeTableDataBySymbolMap.clear();
     }
 
     @Override
@@ -406,16 +413,28 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         log.debug("wait codetable end");
         //send RefData Listener
         status = true;
+        List<RefData> refDataList;
         if (serverRetryCount <= WindRefDataAdapter.REFDATA_RETRY_COUNT) {
             log.debug("get RefData from WindGW");
-            List<RefData> refDataList = new ArrayList<RefData>(refDataHashMap.values());
+            refDataList = new ArrayList<RefData>(refDataHashMap.values());
             RefDataParser.saveListToFile(refDataFile, refDataList); //Save RefData File
-            listener.onRefData(refDataList);
         } else {
             log.debug("get RefData from RefDataFile = " + refDataFile);
-            List<RefData> refDataList = RefDataParser.getListFromFile(refDataFile);
-            listener.onRefData(refDataList);
+            refDataList = RefDataParser.getListFromFile(refDataFile);
         }
+        //Save Exchange RefData
+        log.info("Save exchange refdata begin");
+        ExchangeRefData exchangeRefData;
+        for(RefData refData : refDataList){
+            if(exRefDataHashMap.containsKey(refData.getExchange())){
+                exchangeRefData = exRefDataHashMap.get(refData.getExchange());
+            }else{
+                exchangeRefData = new ExchangeRefData(refData.getExchange());
+            }
+            exchangeRefData.getRefDataHashMap().put(refData.getSymbol(),refData);
+        }
+        log.info("Save exchange refdata end");
+        listener.onRefData(refDataList);
         subscribed = true;
     }
 
@@ -445,10 +464,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public void processChannelActive(ChannelHandlerContext ctx) {
         connected = true;
         serverHeartBeatCountAfterCodeTableCome = -1;
-        if(!subscribed) {
-            log.debug("request codetable,subscribe flag=" + subscribed);
-            sendRquestCodeTable(true);
-        }
     }
 
     @Override
@@ -576,8 +591,12 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         return refDataHashMap;
     }
 
-    public ConcurrentHashMap<String, RefData> getRefDataUpdateHashMap() {
-        return refDataUpdateHashMap;
+    public ConcurrentHashMap<String, ExchangeRefData> getExRefDataHashMap() {
+        return exRefDataHashMap;
+    }
+
+    public ConcurrentHashMap<String, ExchangeRefData> getExRefDataUpdateHashMap() {
+        return exRefDataUpdateHashMap;
     }
 
     public void setWindDBHandler(WindDBHandler windDBHandler) {
@@ -590,11 +609,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public void setRefFilterList(List<String> refFilterList) {
         this.refFilterList = refFilterList;
     }
-
-    public boolean isChannelActiveSend() {
-        return channelActiveSend;
-    }
-
     public boolean isSubscribed() {
         return subscribed;
     }
