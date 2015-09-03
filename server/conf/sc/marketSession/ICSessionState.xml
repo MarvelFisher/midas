@@ -28,7 +28,21 @@
 		</property>
         <property name="tradeDateManager"><ref bean="icTradeDateManager"/></property>
         <property name="index" value="IC"/>
+        <property name="availableTimeList"  ref="icAvailableTimeList"/>
 	</bean>
+	
+	<bean id="icAvailableTimeList" class="java.util.ArrayList">
+	 	<constructor-arg>
+	        <list>
+	             <bean id="rejectOrderTimeOnPreopenState" class="com.cyanspring.common.marketsession.AvailableTimeBean">
+				 	 <property name="marketSession" value="PREOPEN"/>
+				 	 <property name="SessionStart" value="false"/>
+				 	 <property name="SessionBefore" value="true"/>
+				 	 <property name="howManyMinutes" value="3"/>
+				 </bean>
+	        </list>
+         </constructor-arg>
+	 </bean>
 	
 	<bean id="icDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
@@ -58,7 +72,7 @@
 		        	<constructor-arg><value>11:30:00</value></constructor-arg>
 		        	<constructor-arg><value>13:00:00</value></constructor-arg>
 				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+		     <bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>OPEN</value></constructor-arg>
 		        	<constructor-arg><value>13:00:00</value></constructor-arg>
 		        	<constructor-arg><value>15:15:00</value></constructor-arg>
@@ -96,6 +110,8 @@
 				<value>2015-04-06</value>
 				<value>2015-05-01</value>
 				<value>2015-06-22</value>
+				<value>2015-09-03</value>
+				<value>2015-09-04</value>
 				<value>2015-10-01</value>
 				<value>2015-10-02</value>
 				<value>2015-10-05</value>
