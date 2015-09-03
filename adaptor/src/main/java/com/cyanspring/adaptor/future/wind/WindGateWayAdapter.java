@@ -409,7 +409,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         initReqThread();
         doConnect();
 
-        Collections.sort(marketsList);
+        if(marketsList != null) Collections.sort(marketsList);
 
         if (!eventProcessor.isSync())
             scheduleManager.scheduleRepeatTimerEvent(timerInterval,
