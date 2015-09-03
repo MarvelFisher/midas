@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.marketsession.AvailableTimeBean;
+import com.cyanspring.common.marketsession.MarketSessionManager;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.common.marketsession.MarketSessionManager;
-import com.cyanspring.server.validation.bean.AvailableTimeBean;
 
 public class MarketSessionValidator implements IOrderValidator{
 	
