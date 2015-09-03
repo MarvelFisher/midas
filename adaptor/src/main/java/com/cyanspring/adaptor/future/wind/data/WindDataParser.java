@@ -699,7 +699,7 @@ public class WindDataParser extends AbstractWindDataParser {
     }
 
     /**
-     * Parser input HashMap to Wind Transation Object
+     * Parser input HashMap to Wind CodeTable Object
      *
      * @param inputHashMap
      * @param codeTableDataBySymbolMap
@@ -730,6 +730,38 @@ public class WindDataParser extends AbstractWindDataParser {
                 codeTableData.setSecurityType(((Number) inputHashMap.get(FDTFields.SecurityType)).intValue());
         }
         return codeTableData;
+    }
+
+    /**
+     * Parser input HashMap to Wind CodeTableResult Object
+     *
+     * @param inputHashMap
+     * @param codeTableResultByExchangeMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public CodeTableResult convertToCodeTableResult(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, CodeTableResult> codeTableResultByExchangeMap) throws UnsupportedEncodingException {
+        CodeTableResult codeTableResult = null;
+        if (inputHashMap != null && inputHashMap.size() > 0) {
+            String exchange = new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8");
+            if (codeTableResultByExchangeMap.containsKey(exchange)) {
+                codeTableResult = codeTableResultByExchangeMap.get(exchange);
+            } else {
+                codeTableResult = new CodeTableResult();
+                codeTableResult.setSecurityExchange(exchange);
+            }
+            if (null != inputHashMap.get(FDTFields.ActionDay))
+                codeTableResult.setActionDay(((Number) inputHashMap.get(FDTFields.ActionDay)).intValue());
+            if (null != inputHashMap.get(FDTFields.HashCode)) {
+                long hashCode = ((Number) inputHashMap.get(FDTFields.HashCode)).longValue();
+                if(codeTableResult.getHashCode() == hashCode){
+                    return null;
+                }else {
+                    codeTableResult.setHashCode(((Number) inputHashMap.get(FDTFields.HashCode)).longValue());
+                }
+            }
+        }
+        return codeTableResult;
     }
 
     /**
