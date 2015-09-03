@@ -1736,11 +1736,11 @@ public class AccountPositionManager implements IPlugin {
     }
     
     public void processIndexSessionEvent(IndexSessionEvent event) {
-    	Map<String, MarketSessionData> map = event.getDataMap();
+    	Map<String, MarketSessionData> map = event.getDataMap(); 
     	List<MarketSessionData> list = new ArrayList<>(map.values());
     	if(list.size() > 0){
     		MarketSessionData first = list.get(0);
-    		tradeDate = first.getTradeDateByString();    		
+    		tradeDate = first.getTradeDateByString();   // Take first marketsession's trade date as system's trade date, but not a great choice
     	} else {
     		log.warn("No data in IndexSessionEvent.");
     	}
