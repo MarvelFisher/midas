@@ -55,7 +55,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
     private boolean useMarketSession = false;
-    private List<String> marketsList = new ArrayList();
+    private List<String> marketsList;
 
     private boolean isAlive = false;
     EventLoopGroup eventLoopGroup = null;
@@ -504,7 +504,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         StringBuffer sb = new StringBuffer();
         for(String symbol : subscribeList){
             //Check Exchange
-            if(exchangeBySymbols!= null && exchangeBySymbols.get(symbol) != null){
+            if(marketsList!= null && exchangeBySymbols.get(symbol) != null){
                 int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
                 if(index < 0) continue;
             }
