@@ -22,6 +22,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="S"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="SC"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).INDEX_SESSION_TYPE}" value="SPOT"/>
     </util:map>
 
     <util:map id="refDataIndexChinaHashMap" map-class="java.util.HashMap">
@@ -37,6 +38,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="I"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="SC"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).INDEX_SESSION_TYPE}" value="SPOT"/>
     </util:map>
 
     <util:map id="refDataFutureChinaHashMap" map-class="java.util.HashMap">
@@ -49,7 +51,7 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="IH" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="1" />
         <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="IF" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="S"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="F"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="IF"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
         <entry key="#{T(com.cyanspring.common.business.RefDataField).EN_TRADING_UNIT}" value="RMB/Point"/>
@@ -63,16 +65,16 @@
         <entry key="#{T(com.cyanspring.common.business.RefDataField).DENOMINATOR}" value="0.0"/>
     </util:map>
 
-    <bean id="refDataAdapter"
+    <bean id="refDataAdapterSC"
           class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
         <property name="refDataAdapterName" value="SC"/>
-        <property name="gatewayIp" value="#{windAdaptor.gatewayIp}" />
-        <property name="gatewayPort" value="#{windAdaptor.gatewayPort}"/>
-        <property name="marketDataLog" value="#{windAdaptor.marketDataLog}"/>
-        <property name="msgPack" value="#{windAdaptor.msgPack}"/>
-        <property name="refDataFile" value="#{refDataManager.refDataFile}" />
+        <property name="gatewayIp" value="#{windAdaptorSC.gatewayIp}" />
+        <property name="gatewayPort" value="#{windAdaptorSC.gatewayPort}"/>
+        <property name="marketDataLog" value="#{windAdaptorSC.marketDataLog}"/>
+        <property name="msgPack" value="#{windAdaptorSC.msgPack}"/>
         <property name="windbaseDataFile" value="ticks/windbase.xml"/>
         <property name="windDBHandler" ref="refDataDBHandler"/>
+        <property name="refDataFile" value="refdata/refData_sc.xml"/>
         <property name="windFilter" ref="scFilter"/>
         <property name="marketsList">
             <list>
@@ -83,7 +85,26 @@
         <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
         <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
         <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
-        <property name="refFilterList" ref="refFilterList"/>
+    </bean>
+
+    <bean id="refDataAdapterFCI"
+          class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <property name="refDataAdapterName" value="FCI"/>
+        <!--<property name="gatewayIp" value="101.231.55.6"/>-->
+        <property name="gatewayIp" value="#{windAdaptorFCI.gatewayIp}"/>
+        <property name="gatewayPort" value="#{windAdaptorFCI.gatewayPort}"/>
+        <property name="marketDataLog" value="#{windAdaptorFCI.marketDataLog}"/>
+        <property name="msgPack" value="#{windAdaptorFCI.msgPack}"></property>
+        <property name="refDataFile" value="refdata/refData_fci.xml"/>
+        <property name="windFilter" ref="fciFilter"/>
+        <property name="marketsList">
+            <list>
+                <value>CF</value>
+            </list>
+        </property>
+        <property name="refDataSCHashMap" ref="refDataStockChinaHashMap" />
+        <property name="refDataFCHashMap" ref="refDataFutureChinaHashMap"/>
+        <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
     </bean>
 
     <bean id="refDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindDBHandler">
@@ -92,8 +113,6 @@
     </bean>
 
     <bean id="scFilter" class="com.cyanspring.adaptor.future.wind.filter.SCFilter"/>
-
-    <util:list id="refFilterList" value-type="java.lang.String">
-    </util:list>
+    <bean id="fciFilter" class="com.cyanspring.adaptor.future.wind.filter.FCIFilter"/>
 
 </beans>
