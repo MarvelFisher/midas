@@ -219,7 +219,7 @@ public class MarketSessionUtil implements IPlugin{
     			index = refData.getExchange();
     		else if (StringUtils.hasText(refData.getCategory()))
     			index = refData.getCategory();
-    		else
+    		else if (StringUtils.hasText(refData.getSymbol()))
     			index = RefDataUtil.getOnlyChars(refData.getSymbol());
     	}
     	return index;
