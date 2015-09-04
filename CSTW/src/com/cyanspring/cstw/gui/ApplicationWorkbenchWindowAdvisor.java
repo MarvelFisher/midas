@@ -127,7 +127,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 				}
 
 			}
-						
+				
+			// filter this item or your coolbar will add gap when every login.
+			IContributionItem items[]=  getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().getItems();
+			for(IContributionItem item : items){
+				if(item.getClass().toString().contains("CoolBarToTrimManager"))
+					getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().remove(item);
+			}
+			
+			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

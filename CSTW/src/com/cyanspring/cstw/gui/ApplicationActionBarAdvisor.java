@@ -12,6 +12,7 @@ package com.cyanspring.cstw.gui;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -21,16 +22,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
-import org.eclipse.ui.internal.CoolBarToTrimManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.common.StyledAction;
 
@@ -68,16 +66,12 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
+		
 		ToolBarManager toolBarManager = new ToolBarManager();
 		coolBar.add(toolBarManager);
 		toolBarManager.add(userInfoItem);
 		toolBarManager.add(new Separator());
 		toolBarManager.add(suspendSystemAction);
-		// filter this item or your coolbar will add gap when every login.
-		for(IContributionItem item : coolBar.getItems()){
-			if(item.getClass().toString().contains("CoolBarToTrimManager"))
-				coolBar.remove(item);	
-		}	
 	}
 
 	@Override
