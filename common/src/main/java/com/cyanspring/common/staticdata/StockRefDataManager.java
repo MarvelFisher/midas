@@ -110,6 +110,7 @@ public class StockRefDataManager extends RefDataService {
 
 	private void updateStockRefData(Calendar cal, RefData refData) {
 		updateMarginRate(refData);
+		updateCommission(refData);
 	}
 
 	@Override
@@ -207,6 +208,7 @@ public class StockRefDataManager extends RefDataService {
 			}
 			strategyMap.put(refData.getStrategy(), strategy);
 			updateMarginRate(refData);
+			updateCommission(refData);
 		} else {
 			strategy = strategyMap.get(refData.getStrategy());
 		}

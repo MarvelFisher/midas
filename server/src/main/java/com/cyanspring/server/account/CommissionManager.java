@@ -3,77 +3,69 @@ package com.cyanspring.server.account;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.type.OrderSide;
+
 import webcurve.util.PriceUtils;
 
-import com.cyanspring.common.Default;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ICommissionManager;
 import com.cyanspring.common.staticdata.RefData;
 
 public class CommissionManager implements ICommissionManager{
 	private Map<String, Double> commissionByMarket = new HashMap<>();
-	private Map<String, Double> commissionByExchange = new HashMap<>();	
-	private double minCommission = 2;
+	private Map<String, Double> commissionByExchange = new HashMap<>();
+	private double minCommissionFee = 2;
 
 	@Override
 	public double getCommission(RefData refData, AccountSetting settings, OrderSide side) {
-		double accountCom = 1;
-		if(settings != null && !PriceUtils.isZero(settings.getCommission()))
-			accountCom = settings.getCommission();		
-		if(refData == null)
-			return Default.getCommission() * accountCom;
-		
-		Double com = refData.getCommissionFee();
-		if(!nullOrZero(com))
-			return com * accountCom;
-		
-		com = refData.getMinimalCommissionFee();
-		if(!nullOrZero(com))
-			return com * accountCom;
-		
-		com = refData.getLotCommissionFee();
-		if(!nullOrZero(com))
-			return com * accountCom;
-		
-		String market = refData.getMarket();
-		com = commissionByMarket.get(market);
-		if(!nullOrZero(com))
-			return com * accountCom;
-		
-		String exchange = refData.getExchange();
-		com = commissionByExchange.get(exchange);
-		if(!nullOrZero(com))
-			return com * accountCom;
-		
-		return Default.getCommission() * accountCom;		
+		return getCommission(refData, settings, 0, side);
 	}
-	
+
 	@Override
 	public double getCommission(RefData refData, AccountSetting settings, double value, OrderSide side) {
-		double commission = getCommission(refData, settings, side);
-		return calCommission(commission , value, refData);
+		double accountCommission = 1;
+		if (settings != null && !PriceUtils.isZero(settings.getCommission())) {
+			accountCommission = settings.getCommission();
+		}
+
+		double commission = Default.getCommission() * accountCommission;
+
+		if (refData != null) {
+			// If LOT_COMMISSION_FEE has value, COMMISSION_FEE and MINIMAL_COMMISSION_FEE wouldn't have values
+			// Thus here means return {refData.getLotCommissionFee() * accountCommission}
+			double lotCommissionFee = refData.getLotCommissionFee();
+			if (!nullOrZero(lotCommissionFee)) {
+				return lotCommissionFee * accountCommission;
+			}
+
+			double minCF = refData.getMinimalCommissionFee();
+			if (!nullOrZero(minCF)) {
+				minCommissionFee = minCF * accountCommission;
+			}
+
+			double commissionPct = refData.getCommissionFee();
+			if (!nullOrZero(commissionPct)) {
+				commission = commissionPct * accountCommission;
+			}
+		}
+
+		if (value > 0) {
+			commission *= value; // The calculated commission fee
+			if (PriceUtils.EqualLessThan(commission, minCommissionFee)) {
+				commission =  minCommissionFee; // If less than minCF, take minCF
+			} else {
+				commission = Math.ceil(commission);
+			}
+		}
+
+		return commission;
 	}
 
-	private double calCommission(double commission, double value, RefData refData) {
-		if(!nullOrZero(refData.getLotCommissionFee())) 
-			return commission;
-
-		Double min = refData.getMinimalCommissionFee();
-		if ( min != null && !PriceUtils.isZero(min))
-			minCommission = min;
-		
-		double price = commission * value;
-		if (PriceUtils.EqualLessThan(price, minCommission))
-			return minCommission;
-		else
-			return Math.ceil(price);
-	}
-	
 	private boolean nullOrZero(Double commission) {
 		return commission == null || PriceUtils.isZero(commission);
 	}
-	
+
 	public Map<String, Double> getCommissionByMarket() {
 		return commissionByMarket;
 	}

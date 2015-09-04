@@ -205,7 +205,6 @@ public class MarketSessionUtil implements IPlugin{
     	boolean isInTheTime = false;
     	List<AvailableTimeBean> timeList = symbolData.getAvailableTimeList();
     	for(AvailableTimeBean bean : timeList){
-//    		log.info("bean.isTimeInterval():{}",bean.isTimeInterval());
     		if(bean.isTimeInterval()){
     			isInTheTime = checkSessionTypeTimeInterVal(bean,nowMarketSession.getSessionType());
     		}else{
@@ -216,13 +215,12 @@ public class MarketSessionUtil implements IPlugin{
     			return true;
     		}
     	}
-    	return false;
+    	return isInTheTime;
     }
     
     private boolean checkSessionTypeMinutes(AvailableTimeBean bean,Date date,RefData refData) throws Exception{
     	int minutes = bean.getHowManyMinutes();
     	MarketSessionType type = bean.getMarketSession();
-//    	log.info("search bean:{}",type);
     	MarketSessionData sessionData = getSpecificMarketSession(date,refData,type);
     	if(null == sessionData){
     		throw new Exception("no session data");
@@ -231,7 +229,6 @@ public class MarketSessionUtil implements IPlugin{
     	if(!sessionData.getSessionType().equals(type))
     		return false;
     	
-//    	log.info("sessionData:{},{},{}",new Object[]{sessionData.getStart(),sessionData.getEnd(),sessionData.getSessionType()});
 		Date sessionStart = sessionData.getStartDate();
 		Date sessionEnd = sessionData.getEndDate();
 		Calendar adjustTime = Calendar.getInstance();
@@ -252,9 +249,7 @@ public class MarketSessionUtil implements IPlugin{
 		}else{
 			sessionEnd = adjustTime.getTime();
 		}
-		
-//		log.info("sessionStart:{} , sessionEnd:{}",sessionStart,sessionEnd);
-		
+
     	return bean.checkInterval(date, sessionStart, sessionEnd);
     }
     
@@ -286,7 +281,6 @@ public class MarketSessionUtil implements IPlugin{
 			if(null == data){
 				break;
 			}	
-//			log.info("type:{},data type:{}",type,data.getSessionType());
 			if(!type.equals(data.getSessionType())){
 				cal.setTime(data.getEndDate());
 				cal.add(Calendar.MINUTE, 1);
@@ -328,13 +322,10 @@ public class MarketSessionUtil implements IPlugin{
     private IMarketSession getMarketSessionChecker(RefData refData){
     	IMarketSession symbolData = null;
     	if(sessionMap.containsKey(refData.getSymbol())){
-//    		log.info("get sesssion map symbol:{}",refData.getSymbol());
     		symbolData = sessionMap.get(refData.getSymbol());
     	}else if(sessionMap.containsKey(refData.getCategory())){
-//    		log.info("get sesssion map category:{}",refData.getCategory());
     		symbolData = sessionMap.get(refData.getCategory());
     	}else if(sessionMap.containsKey(refData.getExchange())){
-//    		log.info("get sesssion map getExchange:{}",refData.getExchange());
     		symbolData = sessionMap.get(refData.getExchange());
     	}
     	

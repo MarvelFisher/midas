@@ -45,6 +45,7 @@ public class RefDataManager extends RefDataService {
     public void injectionMap(List<RefData> refDataList){
         for (RefData refData : refDataList) {
             updateMarginRate(refData);
+            updateCommission(refData);
             map.put(refData.getSymbol(), refData);
         }
     }
