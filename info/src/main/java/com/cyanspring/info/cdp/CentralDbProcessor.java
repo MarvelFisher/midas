@@ -212,7 +212,7 @@ public class CentralDbProcessor implements IPlugin
 			{
 				if (now == time)
 				{
-					retrieveChart();
+					retrieveChart(null);
 					break;
 				}
 			}
@@ -229,7 +229,7 @@ public class CentralDbProcessor implements IPlugin
 		}
 		else if (event == retrieveEvent)
 		{
-			retrieveChart();
+			retrieveChart(null);
 		}
 	}
 	
@@ -618,7 +618,7 @@ public class CentralDbProcessor implements IPlugin
 			if (isAdded || isStartup)
 			{
 				sendCentralReady();
-				retrieveChart();
+				retrieveChart(null);
 			}
 			calledRefdata = true;
 		}
@@ -672,7 +672,7 @@ public class CentralDbProcessor implements IPlugin
 		log.info("Update refData finish");
 	}
 	
-	protected void retrieveChart()
+	protected void retrieveChart(final RetrieveChartEvent event)
 	{
 		if (isRetrieving)
 		{
@@ -699,11 +699,13 @@ public class CentralDbProcessor implements IPlugin
 				getAllChartPrice();
 				log.debug("Retrieve Chart thread finish");
 				isRetrieving = false;
-
-//				if (isStartup)
-//				{
-//					sendCentralReady();
-//				}
+				
+				if (event != null)
+					sendRetrieveReady(event);
+				if (isStartup)
+				{
+					sendCentralReady();
+				}
 				for (SymbolChef chef : SymbolChefList)
 				{
 					chef.checkAllChartPrice();
@@ -711,46 +713,12 @@ public class CentralDbProcessor implements IPlugin
 				log.debug("Retrieve Chart thread finish");
 			}
 		});
-		retrieveThread.setName("CDP_Retrieve_Chart");
+		retrieveThread.setName((event == null) ? "CDP_Retrieve_Chart" : "CDP_Retrieve_Event");
 		retrieveThread.start();
 	}
-	public void retrieveAllChart(final RetrieveChartEvent event)
+	public void retrieveAllChart(RetrieveChartEvent event)
 	{
-		if (isRetrieving)
-		{
-			return;
-		}
-		isRetrieving = true;
-		Thread retrieveThread = new Thread(new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
-				log.debug("Retrieve Chart thread start");
-				while (calledRefdata == false)
-				{
-					try 
-					{
-						Thread.sleep(100);
-					} 
-					catch (InterruptedException e) 
-					{
-						e.printStackTrace();
-					}
-				}
-				getAllChartPrice();
-				log.debug("Retrieve Chart thread finish");
-				isRetrieving = false;
-				sendRetrieveReady(event);
-				for (SymbolChef chef : SymbolChefList)
-				{
-					chef.checkAllChartPrice();
-				}
-				log.debug("Retrieve Chart thread finish");
-			}
-		});
-		retrieveThread.setName("CDP_Retrieve_Event");
-		retrieveThread.start();
+		retrieveChart(event);
 	}
 	
 	public void retrieveCharts(final RetrieveChartEvent event)
@@ -769,7 +737,6 @@ public class CentralDbProcessor implements IPlugin
 				}
 				
 				log.debug("Retrieve Chart thread finish");
-				isRetrieving = false;
 				sendRetrieveReady(event);
 				for (SymbolChef chef : SymbolChefList)
 				{
@@ -917,7 +884,7 @@ public class CentralDbProcessor implements IPlugin
 		if (this.sessionType == null)
 		{
 			reset = true;
-			retrieveChart();
+			retrieveChart(null);
 		}
 		else if(this.sessionType != sessionType) {
 			if (sessionType == MarketSessionType.CLOSE)
