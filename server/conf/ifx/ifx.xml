@@ -317,7 +317,7 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler">
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager"/>
 	</bean>
 
