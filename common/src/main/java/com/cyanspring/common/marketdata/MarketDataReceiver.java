@@ -382,7 +382,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     private boolean processInitReqData() {
-        if (isInitRefDateReceived && isInitMarketSessionReceived && isInitIndexSessionReceived)
+        if ((isInitRefDateReceived && isInitMarketSessionReceived && isInitIndexSessionReceived) || nonWait)
             isInitReqDataEnd = true;
         return isInitReqDataEnd;
     }
@@ -416,7 +416,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             public void run() {
                 for (final IMarketDataAdaptor adaptor : adaptors) {
                     try {
-                        while (!processInitReqData() && !nonWait)
+                        while (!processInitReqData())
                             TimeUnit.SECONDS.sleep(1);
                         log.debug("Adapter:" + adaptor.getClass().getSimpleName() + " init.");
                         adaptor.init();
