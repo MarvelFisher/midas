@@ -142,6 +142,7 @@ public class RefDataFactory extends RefDataService {
 			}
 			strategyMap.put(refData.getStrategy(), strategy);
 			updateMarginRate(refData);
+			updateCommission(refData);
 		} else {
 			strategy = strategyMap.get(refData.getStrategy());
 		}

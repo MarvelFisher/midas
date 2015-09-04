@@ -3,6 +3,7 @@ package com.cyanspring.common.staticdata;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.util.PriceUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,28 +19,77 @@ import java.util.Map;
 public abstract class RefDataService implements IPlugin, IRefDataManager  {
     protected static final Logger log = LoggerFactory
             .getLogger(RefDataService.class);
+
     String market = Default.getMarket();
     String refDataFile;
     Map<String, Double> marginRateByMarket = new HashMap<String, Double>();
     Map<String, Double> marginRateByExchange = new HashMap<String, Double>();
+    Map<String, Double> commissionByMarket = new HashMap<String, Double>();
+    Map<String, Double> commissionByExchange = new HashMap<String, Double>();
 
-    protected void updateMarginRate(RefData refData){
-        if (PriceUtils.isZero(refData.getMarginRate())){
-            String market = refData.getMarket();
-            Double marginRate = marginRateByMarket.get(market);
-            if (marginRate != null && !PriceUtils.isZero(marginRate)) {
-            	refData.setMarginRate(marginRate);
-            	return;
-            }
-            
-            String exchange = refData.getExchange();
-            marginRate = marginRateByExchange.get(exchange);
-            if (marginRate != null && !PriceUtils.isZero(marginRate)) {
-            	refData.setMarginRate(marginRate);
-            } else {
-                refData.setMarginRate(1/ Default.getMarginTimes());
-            }
-        }
+    public Map<String, Double> getCommissionByMarket() {
+		return commissionByMarket;
+	}
+
+	public void setCommissionByMarket(Map<String, Double> commissionByMarket) {
+		this.commissionByMarket = commissionByMarket;
+	}
+
+	public Map<String, Double> getCommissionByExchange() {
+		return commissionByExchange;
+	}
+
+	public void setCommissionByExchange(Map<String, Double> commissionByExchange) {
+		this.commissionByExchange = commissionByExchange;
+	}
+
+	protected void updateCommission(RefData refData) {
+		if (refData != null) {
+			// If LOT_COMMISSION_FEE has value, need not proceed
+			if (!nullOrZero(refData.getLotCommissionFee())) {
+				return;
+			}
+
+			double commission = refData.getCommissionFee();
+			if (PriceUtils.isZero(commission)) {
+	    		String market = refData.getMarket();
+	            commission = commissionByMarket.get(market);
+	            if (!nullOrZero(commission)) {
+					refData.setCommissionFee(commission);
+					return;
+				}
+
+	            String exchange = refData.getExchange();
+	            commission = commissionByExchange.get(exchange);
+	            if (!nullOrZero(commission)) {
+	            	refData.setCommissionFee(commission);
+	            	return;
+				}
+
+	            refData.setCommissionFee(Default.getCommission());
+	    	}
+		}
+	}
+
+	protected void updateMarginRate(RefData refData) {
+		if (refData != null) {
+	        if (PriceUtils.isZero(refData.getMarginRate())) {
+	            String market = refData.getMarket();
+	            Double marginRate = marginRateByMarket.get(market);
+	            if (!nullOrZero(marginRate)) {
+	            	refData.setMarginRate(marginRate);
+	            	return;
+	            }
+
+	            String exchange = refData.getExchange();
+	            marginRate = marginRateByExchange.get(exchange);
+	            if (!nullOrZero(marginRate)) {
+	            	refData.setMarginRate(marginRate);
+	            } else {
+	                refData.setMarginRate(1 / Default.getMarginTimes());
+	            }
+	        }
+		}
     }
 
     public Map<String, Double> getMarginRateByMarket() {
@@ -69,4 +119,9 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
     public String getMarket() {
         return market;
     }
+
+    private boolean nullOrZero(Double val) {
+		return val == null || PriceUtils.isZero(val);
+	}
+
 }
