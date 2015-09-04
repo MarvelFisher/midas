@@ -9,7 +9,7 @@
 
 	<import resource="test/sc_test.xml" />
 	<import resource="test/sc_MarketSession.xml" />
-	<import resource="sc/marketSession/*.xml" />
+	<import resource="sc/marketsession/*.xml" />
 	<import resource="sc/business.xml" />
 	<import resource="sc/LiveTrading.xml" />
 	<import resource="common/strategy.xml" />

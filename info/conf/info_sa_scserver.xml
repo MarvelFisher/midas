@@ -9,7 +9,6 @@
 
 	<context:annotation-config />
 	<import resource="info_scsa/*.xml"/>
-	<import resource="info_scsa/marketSession/*.xml" />
 	<import resource="info_common/ticktable_sc.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		

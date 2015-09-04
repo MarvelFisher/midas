@@ -13,7 +13,7 @@
     <import resource="common/persistence.xml" />
     <import resource="classpath*:conf/common.xml" />
     <import resource="livefc/*.xml" />
-    <import resource="livefc/marketSession/*.xml" />
+    <import resource="livefc/marketsession/*.xml" />
 
     <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
         <property name="env">
