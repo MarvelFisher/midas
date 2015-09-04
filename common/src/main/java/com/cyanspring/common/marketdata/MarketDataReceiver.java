@@ -20,7 +20,8 @@ import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
-import com.cyanspring.common.event.marketsession.*;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
+import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
@@ -79,7 +80,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitMarketSessionReceived = false;
     private volatile boolean isInitReqDataEnd = false;
     private volatile boolean isPreSubscribing = false;
-    protected MarketSessionData marketSessionData;
+    protected MarketSessionData fxMarketSessionData;
     boolean state = false;
     boolean isUninit = false;
     private String serverInfo = null;
@@ -220,9 +221,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
             //Forex
             if(event.getDataMap().containsKey("FX")) {
-                marketSessionData = event.getDataMap().get("FX");
+                fxMarketSessionData = event.getDataMap().get("FX");
                 if (aggregator != null) {
-                    aggregator.onMarketSession(marketSessionData.getSessionType());
+                    aggregator.onMarketSession(fxMarketSessionData.getSessionType());
                 }
             }
             for (IMarketDataAdaptor adaptor : adaptors) {
@@ -274,8 +275,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         //Check Forex TimeStamp
         if (inEvent.getQuoteSource()==QuoteSource.ID || inEvent.getQuoteSource()==QuoteSource.IB) {
-            if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    || marketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
+            if (fxMarketSessionData != null && (fxMarketSessionData.getSessionType() == MarketSessionType.CLOSE
+                    || fxMarketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
                 //get IB close & Open price
                 if(inEvent.getQuoteSource()==QuoteSource.IB){
                     if(quotes.containsKey(quote.getSymbol())){
@@ -287,9 +288,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 return;
             }
             if(null != quoteChecker && !quoteChecker.checkBidAskPirce(quote)) return;
-            if (marketSessionData != null && marketSessionData.getSessionType() == MarketSessionType.OPEN) {
-                if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionData.getEndDate()) >= 0) {
-                    quote.setTimeStamp(TimeUtil.subDate(marketSessionData.getEndDate(), 1, TimeUnit.SECONDS));
+            if (fxMarketSessionData != null && fxMarketSessionData.getSessionType() == MarketSessionType.OPEN) {
+                if (TimeUtil.getTimePass(quote.getTimeStamp(), fxMarketSessionData.getEndDate()) >= 0) {
+                    quote.setTimeStamp(TimeUtil.subDate(fxMarketSessionData.getEndDate(), 1, TimeUnit.SECONDS));
                 }
             }
             if (null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);

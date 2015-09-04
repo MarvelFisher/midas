@@ -9,6 +9,7 @@ import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.IRefDataAdaptor;
@@ -29,6 +30,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -87,7 +89,24 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private IWindFilter windFilter;
     private IRefDataListener refDataListener;
     private String refDataAdapterName = "NoName";
-//    private int testCount = 0;
+    protected ScheduleManager scheduleManager = new ScheduleManager();
+    protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+    protected long timerInterval = 1 * 3000;
+
+    @Autowired
+    protected IRemoteEventManager eventManager;
+
+    private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
+
+        @Override
+        public void subscribeToEvents() {
+        }
+
+        @Override
+        public IAsyncEventManager getEventManager() {
+            return eventManager;
+        }
+    };
 
     private void connect() {
         log.debug("Run Netty RefData Adapter-" + Thread.currentThread().getName());
@@ -179,9 +198,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 if(windDBHandler!=null) {
                     String windCode = codeTableData.getWindCode();
                     if (!windBaseDBDataHashMap.containsKey(windCode)) {
-                        //only Stock record log
-                        if (codeTableData.getSecurityType() >= 16)
-                            log.warn("WindBase DB Not this Symbol," + windCode + ",T=" + codeTableData.getSecurityType());
+                        log.warn("WindBase DB Not this Symbol," + windCode + ",T=" + codeTableData.getSecurityType());
                         return;
                     } else {
                         windBaseDBData = windBaseDBDataHashMap.get(windCode);
@@ -283,6 +300,25 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
             ExchangeRefData exchangeRefData = new ExchangeRefData(exchange);
             exRefDataHashMap.put(exchange,exchangeRefData);
         }
+        processWindDB();
+        //connect WindGW
+        initReqThread(refDataAdapterName);
+        requestMgr.init();
+        addReqData(new Integer(0));
+
+        if(windDBHandler != null) {
+            eventProcessor.setHandler(this);
+            eventProcessor.init();
+            if (eventProcessor.getThread() != null)
+                eventProcessor.getThread().setName("WRDA eP-" + refDataAdapterName);
+
+            if (!eventProcessor.isSync())
+                scheduleManager.scheduleRepeatTimerEvent(timerInterval,
+                        eventProcessor, timerEvent);
+        }
+    }
+
+    public void processWindDB(){
         if (windDBHandler != null) {
             //connect WindSyn DB
             windBaseDBDataHashMap.clear();
@@ -301,10 +337,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 RefDataParser.saveHashMapToFile(windbaseDataFile, windBaseDBDataHashMap);
             }
         }
-        //connect WindGW
-        initReqThread(refDataAdapterName);
-        requestMgr.init();
-        addReqData(new Integer(0));
     }
 
     public void processMsgPackRead(HashMap hashMap) {
@@ -343,13 +375,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
         if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
         if (packType == FDTFields.WindCodeTableResult) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
-//        if (packType == FDTFields.WindHeartBeat){
-//            testCount++;
-//            if(testCount >= 5) {
-//                dataType = WindDef.MSG_WINDGW_CONNECTED;
-//                testCount = 0;
-//            }
-//        }
         return dataType;
     }
 
