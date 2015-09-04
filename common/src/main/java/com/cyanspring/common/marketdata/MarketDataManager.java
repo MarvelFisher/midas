@@ -258,7 +258,7 @@ public class MarketDataManager extends MarketDataReceiver {
                             }
                         }
                         try {
-                            if(quoteList.size()>0)eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, index, marketSessionData.getTradeDateByString(), quoteList));
+                            if(quoteList.size()>0) eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, index, tradeDateByIndex.get(index), quoteList));
                         } catch (Exception e) {
                             log.error(e.getMessage(), e);
                         }
