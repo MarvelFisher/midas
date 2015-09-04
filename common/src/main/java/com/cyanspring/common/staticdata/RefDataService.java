@@ -56,9 +56,9 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 	    		if (commissionByMarket != null
 	    				&& commissionByMarket.size() > 0
 	    				&& market != null) {
-	    			commission = commissionByMarket.get(market);
-		            if (!nullOrZero(commission)) {
-						refData.setCommissionFee(commission);
+	    			double marketCommission = commissionByMarket.get(market);
+		            if (!nullOrZero(marketCommission)) {
+						refData.setCommissionFee(marketCommission);
 						return;
 					}
 				}
@@ -67,9 +67,9 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 	            if (commissionByExchange != null
 	            		&& commissionByExchange.size() > 0
 	            		&& exchange != null) {
-	            	commission = commissionByExchange.get(exchange);
-		            if (!nullOrZero(commission)) {
-		            	refData.setCommissionFee(commission);
+	            	double exchangeCommission = commissionByExchange.get(exchange);
+		            if (!nullOrZero(exchangeCommission)) {
+		            	refData.setCommissionFee(exchangeCommission);
 		            	return;
 					}
 				}
