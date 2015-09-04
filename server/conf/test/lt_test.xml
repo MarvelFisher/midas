@@ -170,7 +170,8 @@
 		<constructor-arg>
 			<ref bean="simExchange" />
 		</constructor-arg>
-	</bean>
+        <property name="quoteSource" value="IB"/>
+    </bean>
 
     <bean id="simExchange" class="webcurve.exchange.Exchange">
     </bean>
