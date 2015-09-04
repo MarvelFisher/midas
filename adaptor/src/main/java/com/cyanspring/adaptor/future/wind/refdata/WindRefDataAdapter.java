@@ -108,6 +108,12 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         }
     };
 
+    public void processAsyncTimerEvent(AsyncTimerEvent event) {
+        if(subscribed){
+
+        }
+    }
+
     private void connect() {
         log.debug("Run Netty RefData Adapter-" + Thread.currentThread().getName());
         eventLoopGroup = new NioEventLoopGroup(2);
