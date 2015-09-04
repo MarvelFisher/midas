@@ -48,14 +48,14 @@ public class CommissionManager implements ICommissionManager{
 			if (!nullOrZero(commissionPct)) {
 				commission = commissionPct * accountCommission;
 			}
+		}
 
-			if (value > 0) {
-				commission *= value; // The calculated commission fee
-				if (PriceUtils.EqualLessThan(commission, minCommissionFee)) {
-					commission =  minCommissionFee; // If less than minCF, take minCF
-				} else {
-					commission = Math.ceil(commission);
-				}
+		if (value > 0) {
+			commission *= value; // The calculated commission fee
+			if (PriceUtils.EqualLessThan(commission, minCommissionFee)) {
+				commission =  minCommissionFee; // If less than minCF, take minCF
+			} else {
+				commission = Math.ceil(commission);
 			}
 		}
 
