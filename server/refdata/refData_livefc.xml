@@ -137,6 +137,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -276,6 +280,10 @@
       <entry>
         <string>Tradable</string>
         <string>1</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -417,6 +425,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -556,6 +568,10 @@
       <entry>
         <string>Tradable</string>
         <string>1</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -697,6 +713,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -836,6 +856,10 @@
       <entry>
         <string>Tradable</string>
         <string>1</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -977,6 +1001,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1116,6 +1144,10 @@
       <entry>
         <string>Tradable</string>
         <string>1</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1257,6 +1289,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1396,6 +1432,10 @@
       <entry>
         <string>Tradable</string>
         <string>1</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1537,6 +1577,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1677,6 +1721,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1756,6 +1804,10 @@
       <entry>
         <string>Tick table</string>
         <string>SC</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1837,6 +1889,10 @@
         <string>Tick table</string>
         <string>SC</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1916,6 +1972,10 @@
       <entry>
         <string>Tick table</string>
         <string>SC</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1997,6 +2057,10 @@
         <string>Tick table</string>
         <string>SC</string>
       </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2076,6 +2140,10 @@
       <entry>
         <string>Tick table</string>
         <string>SC</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>

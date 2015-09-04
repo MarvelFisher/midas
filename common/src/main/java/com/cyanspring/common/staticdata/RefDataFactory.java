@@ -121,8 +121,7 @@ public class RefDataFactory extends RefDataService {
 				Constructor<AbstractRefDataStrategy> ctor = tempClz.getConstructor();
 				strategy = ctor.newInstance();
 			} catch (Exception e) {
-				log.info(e.getMessage(), e);
-				log.error("Can't find strategy: {}", refData.getStrategy());
+				log.warn("Can't find strategy: {}", refData.getStrategy());
 				strategy = new AbstractRefDataStrategy() {
 					@Override
 					public void init(Calendar cal, RefData template) {
