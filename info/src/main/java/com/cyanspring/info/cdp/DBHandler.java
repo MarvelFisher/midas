@@ -182,6 +182,7 @@ public class DBHandler
 					retsymbollist.add(symbolinfo);
 				}
 			}
+			rs.close();
 		}
         catch (SQLException e) 
         {
@@ -218,6 +219,7 @@ public class DBHandler
 				count = (strCount == null) ? 0 : Integer.parseInt(strCount);
 				retsymbollist.add(new GroupInfo(group, name, count));
 			}
+			rs.close();
 		} 
 		catch (SQLException | NumberFormatException e) 
 		{
@@ -288,6 +290,7 @@ public class DBHandler
 			return null;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		boolean success = false;
     	try {
     		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -309,28 +312,23 @@ public class DBHandler
 			rs.close();
 			if (getPrice)
 			{
-				return price ;
-			}
-			else
-			{
-				return null;
+				success = true;
 			}
 		} 
     	catch (SQLException e) 
     	{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-			return null ;
 		} 
     	catch (ParseException e) 
     	{
             log.error(e.getMessage(), e) ;
-			return null ;
 		}
     	finally
     	{
     		closeConnect(connect);
     	}
+		return success ? price : null;
     }
     public List<HistoricalPrice> getPeriodValue(String market, String type, String symbol, Date startdate)
     {
@@ -348,10 +346,11 @@ public class DBHandler
 			return null;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+    	ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>();
+    	boolean success = false;
     	try 
     	{
     		HistoricalPrice price;
-    		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
 				price = new HistoricalPrice();
@@ -369,23 +368,22 @@ public class DBHandler
 				retList.add(price);
 			}
 			rs.close();
-			return retList;
+			success = true;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-			return null ;
 		} 
     	catch (ParseException e) 
     	{
             log.error(e.getMessage(), e) ;
-			return null ;
 		}
     	finally
     	{
     		closeConnect(connect);
     	}
+    	return success ? retList : null; 
     }
     
     public List<HistoricalPrice> getPeriodStartEndValue(String market, String type, String symbol, Date startDate, Date endDate)
@@ -414,12 +412,14 @@ public class DBHandler
 		ResultSet rs = querySQL(connect, sqlcmd);
 		if (rs == null)
 		{
+    		closeConnect(connect);
 			return null;
 		}
+		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
+    	boolean success = false;
     	try 
     	{
     		HistoricalPrice price;
-    		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
 			while (rs.next())
 			{
 				try
@@ -445,18 +445,18 @@ public class DBHandler
 				} 
 			}
 			rs.close();
-			return retList;
+			success = true;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-			return null ;
 		} 
     	finally
     	{
     		closeConnect(connect);
     	}
+		return success ? retList : null;
     }
     
     public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount, String retrieveDate,boolean bLimit)
@@ -550,10 +550,11 @@ public class DBHandler
 		log.debug("Query: " + sqlcmd);
 		ResultSet rs = querySQL(connect, sqlcmd);
 		log.debug("Query return: " + sqlcmd);		
+		HashMap<String, List<HistoricalPrice>> retMap = new HashMap<String, List<HistoricalPrice>>();
+    	boolean success = false;
     	try 
     	{
     		HistoricalPrice price;
-    		HashMap<String, List<HistoricalPrice>> retMap = new HashMap<String, List<HistoricalPrice>>();
     		String symbol;
     		List<HistoricalPrice> lst;    
     		int nCount = 0;
@@ -603,18 +604,18 @@ public class DBHandler
 			}
 			rs.close();
 			log.debug("Get Historical List size: " + nCount);
-			return retMap;
+			success = true;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-			return null ;
 		} 
     	finally
     	{
     		closeConnect(connect);
     	}
+		return success ? retMap : null;
     }
     
 //    public List<HistoricalPrice> getHistoricalPrice(String sqlcmd)
