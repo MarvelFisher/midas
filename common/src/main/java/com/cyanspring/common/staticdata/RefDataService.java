@@ -53,17 +53,25 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 			double commission = refData.getCommissionFee();
 			if (PriceUtils.isZero(commission)) {
 	    		String market = refData.getMarket();
-	            commission = commissionByMarket.get(market);
-	            if (!nullOrZero(commission)) {
-					refData.setCommissionFee(commission);
-					return;
+	    		if (commissionByMarket != null
+	    				&& commissionByMarket.size() > 0
+	    				&& market != null) {
+	    			commission = commissionByMarket.get(market);
+		            if (!nullOrZero(commission)) {
+						refData.setCommissionFee(commission);
+						return;
+					}
 				}
 
 	            String exchange = refData.getExchange();
-	            commission = commissionByExchange.get(exchange);
-	            if (!nullOrZero(commission)) {
-	            	refData.setCommissionFee(commission);
-	            	return;
+	            if (commissionByExchange != null
+	            		&& commissionByExchange.size() > 0
+	            		&& exchange != null) {
+	            	commission = commissionByExchange.get(exchange);
+		            if (!nullOrZero(commission)) {
+		            	refData.setCommissionFee(commission);
+		            	return;
+					}
 				}
 
 	            refData.setCommissionFee(Default.getCommission());
@@ -75,20 +83,29 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 		if (refData != null) {
 	        if (PriceUtils.isZero(refData.getMarginRate())) {
 	            String market = refData.getMarket();
-	            Double marginRate = marginRateByMarket.get(market);
-	            if (!nullOrZero(marginRate)) {
-	            	refData.setMarginRate(marginRate);
-	            	return;
+	            if (marginRateByMarket != null
+	            		&& marginRateByMarket.size() > 0
+	            		&& market != null) {
+		            double marketMarginRate = marginRateByMarket.get(market);
+		            if (!nullOrZero(marketMarginRate)) {
+		            	refData.setMarginRate(marketMarginRate);
+		            	return;
+		            }
 	            }
 
 	            String exchange = refData.getExchange();
-	            marginRate = marginRateByExchange.get(exchange);
-	            if (!nullOrZero(marginRate)) {
-	            	refData.setMarginRate(marginRate);
-	            } else {
-	                refData.setMarginRate(1 / Default.getMarginTimes());
+	            if (marginRateByExchange != null
+	            		&& marginRateByExchange.size() > 0
+	            		&& exchange != null) {
+		            double exchangeMarginRate = marginRateByExchange.get(exchange);
+		            if (!nullOrZero(exchangeMarginRate)) {
+		            	refData.setMarginRate(exchangeMarginRate);
+		            	return;
+		            }
 	            }
 	        }
+
+	        refData.setMarginRate(1 / Default.getMarginTimes());
 		}
     }
 
