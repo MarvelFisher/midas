@@ -394,7 +394,7 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
         //IndexSessionEvent
         if(object instanceof IndexSessionEvent){
             IndexSessionEvent indexSessionEvent = (IndexSessionEvent) object;
-            if(indexSessionEvent.getDataMap().containsKey("FK")) {
+            if(indexSessionEvent.getDataMap().containsKey("FX")) {
                 marketSessionType = indexSessionEvent.getDataMap().get("FX").getSessionType();
             }else{
                 log.warn("IndexSession Not FX!");

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The manager can collect and broadcast quote data to it's listener.
@@ -44,6 +45,9 @@ public class MarketDataManager extends MarketDataReceiver {
     private String lastTradeDateQuoteFile = "last_tdq.xml";
     private String lastTradeDateQuoteExtendFile = "lastExtend_tdq.xml";
     private boolean broadcastQuote;
+    private volatile boolean isInit = false;
+    private RefDataEvent refDataEvent;
+    private IndexSessionEvent indexSessionEvent;
     protected HashMap<String, String> tradeDateByIndex = new HashMap<>(); //TradeDateByIndex
 
     public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
@@ -135,110 +139,123 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processRefDataEvent(RefDataEvent event) {
-        super.processRefDataEvent(event);
-        //Check last.xml Symbol
         if (event != null && event.isOk() && event.getRefDataList().size() > 0) {
-            log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
-            quotes.keySet().retainAll(preSubscriptionList);
-            quoteExtends.keySet().retainAll(preSubscriptionList);
+            if (isInit) {
+                super.processRefDataEvent(event);
+                //Check last.xml Symbol
+                log.debug("Process Last.xml Symbol List=" + preSubscriptionList.size());
+                quotes.keySet().retainAll(preSubscriptionList);
+                quoteExtends.keySet().retainAll(preSubscriptionList);
+            } else {
+                this.refDataEvent = event;
+            }
+        }else{
+            log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
         }
     }
 
     public void processIndexSessionEvent(IndexSessionEvent event){
-        super.processIndexSessionEvent(event);
         if(event != null && event.isOk() && event.getDataMap().size() > 0) {
-            for(String index : indexSessions.keySet()){
-                MarketSessionData marketSessionData= indexSessions.get(index);
-                if(marketSessionData != null){
-                    //Process LastTradeDateQuote
-                    if(!marketSessionData.getTradeDateByString().equals(tradeDateByIndex.get(index)) || tradeDateByIndex.get(index) == null){
-                        tradeDateByIndex.put(index, marketSessionData.getTradeDateByString());
-                        ArrayList<String> symbols = indexSessionTypes.get(index);
-                        log.info("LastTradeDatesQuotes: " + symbols + ", tradeDate:" + tradeDateByIndex.get(index) + ",index:" + index);
-                        List<Quote> quoteList = new ArrayList<Quote>();
-                        for(String symbol: symbols){
-                            if(quotes.get(symbol) != null){
-                                quoteList.add((Quote)quotes.get(symbol).clone());
+            if(isInit) {
+                super.processIndexSessionEvent(event);
+                for (String index : indexSessions.keySet()) {
+                    MarketSessionData marketSessionData = indexSessions.get(index);
+                    if (marketSessionData != null) {
+                        //Process LastTradeDateQuote
+                        if (!marketSessionData.getTradeDateByString().equals(tradeDateByIndex.get(index)) || tradeDateByIndex.get(index) == null) {
+                            tradeDateByIndex.put(index, marketSessionData.getTradeDateByString());
+                            ArrayList<String> symbols = indexSessionTypes.get(index);
+                            log.info("LastTradeDatesQuotes: " + symbols + ", tradeDate:" + tradeDateByIndex.get(index) + ",index:" + index);
+                            List<Quote> quoteList = new ArrayList<Quote>();
+                            for (String symbol : symbols) {
+                                if (quotes.get(symbol) != null) {
+                                    quoteList.add((Quote) quotes.get(symbol).clone());
+                                }
+                            }
+                            try {
+                                if (quoteList.size() > 0)
+                                    eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, index, marketSessionData.getTradeDateByString(), quoteList));
+                            } catch (Exception e) {
+                                log.error(e.getMessage(), e);
                             }
                         }
-                        try {
-                            if(quoteList.size()>0) eventManager.sendRemoteEvent(new LastTradeDateQuotesEvent(null, null, index, marketSessionData.getTradeDateByString(), quoteList));
-                        } catch (Exception e) {
-                            log.error(e.getMessage(),e);
-                        }
-                    }
-                    //Process Clean Session
-                    if(marketSessionData.getSessionType() == MarketSessionType.PREOPEN) {
-                        ArrayList<String> symbols = indexSessionTypes.get(index);
-                        for (String symbol : symbols) {
-                            if(quoteCleaner != null) {
-                                Quote quote = quotes.get(symbol);
-                                if (quote != null) {
-                                    Quote tempQuote = (Quote) quote.clone();
-                                    if (marketTypes.get(tempQuote.getSymbol()) != null) {
-                                        if (RefDataCommodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
-                                                || RefDataCommodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
-                                            tempQuote.setClose(tempQuote.getLast());
-                                            log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
-                                        }
-                                        if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
-                                            if (quoteExtends.containsKey(tempQuote.getSymbol())) {
-                                                DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
-                                                double settlePrice = tempQuote.getLast();
-                                                if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value()))
-                                                    settlePrice = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
-                                                tempQuote.setClose(settlePrice);
-                                                log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = SettlePrice = " + settlePrice);
-                                            } else {
-                                                log.debug("Symbol=" + tempQuote.getSymbol() + " not in quoteExtends");
+                        //Process Clean Session
+                        if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN) {
+                            ArrayList<String> symbols = indexSessionTypes.get(index);
+                            for (String symbol : symbols) {
+                                if (quoteCleaner != null) {
+                                    Quote quote = quotes.get(symbol);
+                                    if (quote != null) {
+                                        Quote tempQuote = (Quote) quote.clone();
+                                        if (marketTypes.get(tempQuote.getSymbol()) != null) {
+                                            if (RefDataCommodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                                    || RefDataCommodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                                tempQuote.setClose(tempQuote.getLast());
+                                                log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
+                                            }
+                                            if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                                if (quoteExtends.containsKey(tempQuote.getSymbol())) {
+                                                    DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
+                                                    double settlePrice = tempQuote.getLast();
+                                                    if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value()))
+                                                        settlePrice = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                                                    tempQuote.setClose(settlePrice);
+                                                    log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = SettlePrice = " + settlePrice);
+                                                } else {
+                                                    log.debug("Symbol=" + tempQuote.getSymbol() + " not in quoteExtends");
+                                                }
                                             }
                                         }
+                                        quoteCleaner.clear(tempQuote);
+                                        tempQuote.setTimeSent(Clock.getInstance().now());
+                                        printQuoteLog(QuoteSource.CLEAN_SESSION, null, tempQuote, QuoteLogLevel.GENERAL);
+                                        try {
+                                            eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
+                                        } catch (Exception e) {
+                                            log.error(e.getMessage(), e);
+                                        }
                                     }
-                                    quoteCleaner.clear(tempQuote);
-                                    tempQuote.setTimeSent(Clock.getInstance().now());
-                                    printQuoteLog(QuoteSource.CLEAN_SESSION, null, tempQuote, QuoteLogLevel.GENERAL);
+                                }
+                                if (quoteExtendCleaner != null) {
+                                    DataObject quoteExtend = (DataObject) quoteExtends.get(symbol).clone();
+                                    if (marketTypes.get(symbol) != null) {
+                                        double preClose = 0;
+                                        double ceil = 0;
+                                        double floor = 0;
+                                        if (quotes.containsKey(symbol)) {
+                                            preClose = quotes.get(symbol).getLast();
+                                        }
+                                        if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
+                                            if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
+                                                preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                                            }
+                                        }
+                                        ceil = preClose * 1.1;
+                                        floor = preClose * 0.9;
+                                        if (PriceUtils.GreaterThan(preClose, 0)) {
+                                            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
+                                            quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
+                                            quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
+                                        }
+                                    }
+                                    quoteExtendCleaner.clear(quoteExtend);
                                     try {
-                                        eventManager.sendRemoteEvent(new QuoteEvent(tempQuote.getSymbol(), null, tempQuote));
+                                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
+                                        quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
+                                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
                                     } catch (Exception e) {
                                         log.error(e.getMessage(), e);
                                     }
                                 }
                             }
-                            if(quoteExtendCleaner != null) {
-                                DataObject quoteExtend = (DataObject) quoteExtends.get(symbol).clone();
-                                if (marketTypes.get(symbol) != null) {
-                                    double preClose = 0;
-                                    double ceil = 0;
-                                    double floor = 0;
-                                    if (quotes.containsKey(symbol)) {
-                                        preClose = quotes.get(symbol).getLast();
-                                    }
-                                    if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
-                                        if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
-                                            preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
-                                        }
-                                    }
-                                    ceil = preClose * 1.1;
-                                    floor = preClose * 0.9;
-                                    if (PriceUtils.GreaterThan(preClose, 0)) {
-                                        quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
-                                        quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
-                                        quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
-                                    }
-                                }
-                                quoteExtendCleaner.clear(quoteExtend);
-                                try {
-                                    printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
-                                    quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
-                                    eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
-                                } catch (Exception e) {
-                                    log.error(e.getMessage(), e);
-                                }
-                            }
                         }
                     }
                 }
+            }else{
+                this.indexSessionEvent = event;
             }
+        }else{
+            log.debug("IndexSession Event NOT OK - " + (event.getDataMap() != null ? "0" : "null"));
         }
     }
 
@@ -286,6 +303,20 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
+        //check init
+        if(!isInit){
+            if(refDataEvent != null && indexSessionEvent != null){
+                log.debug("MDM Event Process begin");
+                isInit = true;
+                processRefDataEvent(refDataEvent);
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                }
+                processIndexSessionEvent(indexSessionEvent);
+                log.debug("MDM Event Process end");
+            }
+        }
         super.processAsyncTimerEvent(event);
         if (quoteSaver != null) {
             quoteSaver.saveLastQuoteToFile(tickDir + "/" + lastQuoteFile, quotes);
