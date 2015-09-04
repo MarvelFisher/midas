@@ -37,7 +37,6 @@
 				<ref bean="liveTradingSession" />	
 				<ref bean="statisticManager" />	
             	<ref bean="systemSuspendValidator"/>
-            	<ref bean="coinManager"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -318,7 +317,7 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.RefDataHandler">
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager"/>
 	</bean>
 
@@ -397,12 +396,4 @@
     </bean>
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner"/>
-
-	<!-- coin control -->
-	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
-	</bean>
-	
-	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
-	</bean>
-
 </beans>
