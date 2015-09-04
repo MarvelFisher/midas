@@ -314,7 +314,7 @@ public class MarketSessionUtil implements IPlugin{
 		}
 
 		if(isInTheTime){
-			throw new OrderValidationException("Your order can’t be placed. We start to take orders at 9:10 am.",ErrorMessage.MARKET_WILL_TAKE_ORDER_AFTER_OPEN);
+			throw new OrderValidationException("Your order can’t be placed. Please make order once market open.",ErrorMessage.MARKET_WILL_TAKE_ORDER_AFTER_OPEN);
 		}
 		return isInTheTime;
     }
