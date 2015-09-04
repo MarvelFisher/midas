@@ -275,7 +275,7 @@
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.StockRefDataManager">
 		<property name="refDataTemplatePath">
-			<value>refData/template/template_SC.xml</value>
+			<value>refdata/template/template_SC.xml</value>
 		</property>
 	</bean>
 	
