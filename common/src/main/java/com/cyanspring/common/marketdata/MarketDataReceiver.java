@@ -78,7 +78,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitRefDateReceived = false;
     private volatile boolean isInitIndexSessionReceived = false;
     private volatile boolean isInitMarketSessionReceived = false;
-    private volatile boolean isInitReqDataEnd = false;
+    protected volatile boolean isInitReqDataEnd = false;
     private volatile boolean isPreSubscribing = false;
     protected MarketSessionData fxMarketSessionData;
     boolean state = false;

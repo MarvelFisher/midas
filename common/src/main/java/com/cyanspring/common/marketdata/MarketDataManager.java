@@ -129,11 +129,13 @@ public class MarketDataManager extends MarketDataReceiver {
                 }
             }
         }
-        if (quote == null || quote.isStale()) {
-            for (IMarketDataAdaptor adaptor : adaptors) {
-                if (!adaptor.getState())
-                    continue;
-                adaptor.subscribeMarketData(symbol, this);
+        if(isInitReqDataEnd) {
+            if (quote == null || quote.isStale()) {
+                for (IMarketDataAdaptor adaptor : adaptors) {
+                    if (!adaptor.getState())
+                        continue;
+                    adaptor.subscribeMarketData(symbol, this);
+                }
             }
         }
     }
@@ -292,10 +294,12 @@ public class MarketDataManager extends MarketDataReceiver {
             throws MarketDataException {
         String symbol = event.getSymbol();
         Quote quote = quotes.get(symbol);
-        if (quote == null) {
-            for (IMarketDataAdaptor adaptor : adaptors) {
-                if (preSubscriptionList.contains(symbol)) {
-                    adaptor.subscribeMarketData(symbol, this);
+        if(isInitReqDataEnd) {
+            if (quote == null) {
+                for (IMarketDataAdaptor adaptor : adaptors) {
+                    if (preSubscriptionList.contains(symbol)) {
+                        adaptor.subscribeMarketData(symbol, this);
+                    }
                 }
             }
         }
@@ -309,10 +313,6 @@ public class MarketDataManager extends MarketDataReceiver {
                 log.debug("MDM Event Process begin");
                 isInit = true;
                 processRefDataEvent(refDataEvent);
-                try {
-                    TimeUnit.SECONDS.sleep(3);
-                } catch (InterruptedException e) {
-                }
                 processIndexSessionEvent(indexSessionEvent);
                 log.debug("MDM Event Process end");
             }
