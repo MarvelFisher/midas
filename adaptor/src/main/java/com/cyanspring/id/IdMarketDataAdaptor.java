@@ -1,5 +1,6 @@
 package com.cyanspring.id;
 
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -390,9 +391,14 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     @Override
     public void processEvent(Object object) {
-        //MarketSession
-        if(object instanceof MarketSessionEvent){
-            marketSessionType = ((MarketSessionEvent) object).getSession();
+        //IndexSessionEvent
+        if(object instanceof IndexSessionEvent){
+            IndexSessionEvent indexSessionEvent = (IndexSessionEvent) object;
+            if(indexSessionEvent.getDataMap().containsKey("FK")) {
+                marketSessionType = indexSessionEvent.getDataMap().get("FX").getSessionType();
+            }else{
+                log.warn("IndexSession Not FX!");
+            }
         }
     }
 
