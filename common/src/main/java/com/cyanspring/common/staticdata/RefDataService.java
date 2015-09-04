@@ -56,9 +56,9 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 	    		if (commissionByMarket != null
 	    				&& commissionByMarket.size() > 0
 	    				&& market != null) {
-	    			double marketCommission = commissionByMarket.get(market);
-		            if (!nullOrZero(marketCommission)) {
-						refData.setCommissionFee(marketCommission);
+	    			commission = commissionByMarket.get(market);
+		            if (!nullOrZero(commission)) {
+						refData.setCommissionFee(commission);
 						return;
 					}
 				}
@@ -67,9 +67,9 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 	            if (commissionByExchange != null
 	            		&& commissionByExchange.size() > 0
 	            		&& exchange != null) {
-	            	double exchangeCommission = commissionByExchange.get(exchange);
-		            if (!nullOrZero(exchangeCommission)) {
-		            	refData.setCommissionFee(exchangeCommission);
+	            	commission = commissionByExchange.get(exchange);
+		            if (!nullOrZero(commission)) {
+		            	refData.setCommissionFee(commission);
 		            	return;
 					}
 				}
@@ -81,14 +81,15 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 
 	protected void updateMarginRate(RefData refData) {
 		if (refData != null) {
-	        if (PriceUtils.isZero(refData.getMarginRate())) {
+			double marginRate = refData.getMarginRate();
+	        if (PriceUtils.isZero(marginRate)) {
 	            String market = refData.getMarket();
 	            if (marginRateByMarket != null
 	            		&& marginRateByMarket.size() > 0
 	            		&& market != null) {
-		            double marketMarginRate = marginRateByMarket.get(market);
-		            if (!nullOrZero(marketMarginRate)) {
-		            	refData.setMarginRate(marketMarginRate);
+	            	marginRate = marginRateByMarket.get(market);
+		            if (!nullOrZero(marginRate)) {
+		            	refData.setMarginRate(marginRate);
 		            	return;
 		            }
 	            }
@@ -97,9 +98,9 @@ public abstract class RefDataService implements IPlugin, IRefDataManager  {
 	            if (marginRateByExchange != null
 	            		&& marginRateByExchange.size() > 0
 	            		&& exchange != null) {
-		            double exchangeMarginRate = marginRateByExchange.get(exchange);
-		            if (!nullOrZero(exchangeMarginRate)) {
-		            	refData.setMarginRate(exchangeMarginRate);
+	            	marginRate = marginRateByExchange.get(exchange);
+		            if (!nullOrZero(marginRate)) {
+		            	refData.setMarginRate(marginRate);
 		            	return;
 		            }
 	            }

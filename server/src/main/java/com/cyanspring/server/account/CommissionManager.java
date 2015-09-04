@@ -50,7 +50,7 @@ public class CommissionManager implements ICommissionManager{
 			}
 		}
 
-		if (value > 0) {
+		if (!nullOrZero(value)) {
 			commission *= value; // The calculated commission fee
 			if (PriceUtils.EqualLessThan(commission, minCommissionFee)) {
 				commission =  minCommissionFee; // If less than minCF, take minCF
