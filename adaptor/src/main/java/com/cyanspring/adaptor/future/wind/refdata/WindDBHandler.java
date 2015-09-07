@@ -26,6 +26,7 @@ public class WindDBHandler {
 
     private BasicDataSource basicDataSource;
     private String lastQuoteExtendFile;
+    private String executeTime = "08:15:00";
 
     public void saveDBDataToQuoteExtendFile(HashMap<String,WindBaseDBData> windBaseDBDataHashMap){
         log.debug("write quoteExtend file begin");
@@ -163,5 +164,13 @@ public class WindDBHandler {
 
     public void setBasicDataSource(BasicDataSource basicDataSource) {
         this.basicDataSource = basicDataSource;
+    }
+
+    public void setExecuteTime(String executeTime) {
+        this.executeTime = executeTime;
+    }
+
+    public String getExecuteTime() {
+        return executeTime;
     }
 }
