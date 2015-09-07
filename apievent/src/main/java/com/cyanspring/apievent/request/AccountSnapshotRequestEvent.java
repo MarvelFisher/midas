@@ -2,6 +2,12 @@ package com.cyanspring.apievent.request;
 
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
+/**
+ * @author elviswu
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class AccountSnapshotRequestEvent extends RemoteAsyncEvent {
 	private String accountId;
 	private String txId;

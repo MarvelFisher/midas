@@ -3,21 +3,11 @@ package com.cyanspring.apievent.request;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
- *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
+
 public class QuoteSubEvent extends RemoteAsyncEvent {
     String symbol;
 

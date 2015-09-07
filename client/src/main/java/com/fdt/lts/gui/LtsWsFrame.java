@@ -37,6 +37,7 @@ import com.cyanspring.apievent.obj.Account;
 import com.cyanspring.apievent.obj.OpenPosition;
 import com.cyanspring.apievent.obj.Order;
 import com.cyanspring.apievent.obj.OrderSide;
+import com.cyanspring.apievent.obj.Quote;
 import com.cyanspring.apievent.reply.AccountSnapshotReplyEvent;
 import com.cyanspring.apievent.reply.AccountUpdateEvent;
 import com.cyanspring.apievent.reply.AmendParentOrderReplyEvent;
@@ -69,6 +70,15 @@ import com.fdt.lts.client.OrderUtil;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+
+/**
+ * @author dennischen
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class LtsWsFrame extends JFrame {
     private static Logger log = LoggerFactory.getLogger(LtsWsFrame.class);
 
@@ -83,6 +93,8 @@ public class LtsWsFrame extends JFrame {
 	private DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
     private JTable tblPosition;
     private JTable tblAccount;
+    private JLabel lblBidAsk;
+    private JTextField edQuote;
 
 	/**
 	 * Create the frame.
@@ -124,6 +136,26 @@ public class LtsWsFrame extends JFrame {
 				}
 			));
 		scrollPane_1.setViewportView(tblPosition);
+		
+		JPanel panel_3 = new JPanel();
+		panel_1.add(panel_3, BorderLayout.SOUTH);
+		panel_3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		
+		edQuote = new JTextField();
+		edQuote.setText("USDJPY");
+		panel_3.add(edQuote);
+		edQuote.setColumns(10);
+		
+		JButton btnQuote = new JButton("Get Quote");
+		btnQuote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        sendEvent(new QuoteSubEvent(getId(), null, edQuote.getText()));
+			}
+		});
+		panel_3.add(btnQuote);
+		
+		lblBidAsk = new JLabel("");
+		panel_3.add(lblBidAsk);
 		
 		JPanel panel_2 = new JPanel();
 		splitPane2.setRightComponent(panel_2);
@@ -461,6 +493,12 @@ public class LtsWsFrame extends JFrame {
 
     public void processQuoteEvent(QuoteEvent event) {
         log.debug("Received QuoteEvent: " + event.getKey() + ", " + event.getQuote());
+        final Quote quote = event.getQuote();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+            	lblBidAsk.setText("    "+ quote.getBid() + " / " + quote.getAsk());
+            }
+        });
     }
 
     public void processUserLoginReplyEvent(UserLoginReplyEvent event) {

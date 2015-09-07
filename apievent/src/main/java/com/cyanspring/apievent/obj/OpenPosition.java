@@ -2,7 +2,7 @@ package com.cyanspring.apievent.obj;
 
 /**
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
 public class OpenPosition extends Position {

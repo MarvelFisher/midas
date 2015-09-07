@@ -93,6 +93,7 @@ public enum ErrorMessage {
 	EVENT_TYPE_NOT_SUPPORT,
 	ACCOUNT_NOT_MATCH,
 	LOGIN_BLOCKED,
+	REACH_MAX_ACCESS_LIMIT,
 	
 	// order errors start with 400
 	ACTION_CANCELLED,

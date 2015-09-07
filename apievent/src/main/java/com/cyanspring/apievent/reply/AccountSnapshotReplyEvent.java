@@ -7,6 +7,12 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.List;
 
+/**
+ * @author elviswu
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class AccountSnapshotReplyEvent extends RemoteAsyncEvent {
 	private Account account;
 	private List<OpenPosition> openPositions;

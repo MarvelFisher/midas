@@ -1,6 +1,9 @@
 package com.cyanspring.server.api;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.apievent.reply.ServerReadyEvent;
@@ -8,6 +11,7 @@ import com.cyanspring.apievent.reply.SystemErrorEvent;
 import com.cyanspring.event.api.ApiEventTranslator;
 import com.cyanspring.event.api.ApiResourceManager;
 import com.cyanspring.event.api.IEventTranslatror;
+import com.cyanspring.event.api.obj.SpamController;
 import com.cyanspring.event.api.obj.reply.IApiReply;
 import com.cyanspring.event.api.obj.request.ApiUserLoginEvent;
 import com.cyanspring.event.api.obj.request.IApiRequest;
@@ -39,6 +43,8 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
     private IEventTranslatror translator = new ApiEventTranslator();
     private Map<String, String> requestMap = new HashMap<String, String>();
     private Map<String, String> replyMap = new HashMap<String, String>();
+    private Map<String, SpamController> spamMap = new HashMap<>();
+    private int restrict = 1000;
 
     private IServerSocketListener listener = new IServerSocketListener() {
         @Override
@@ -55,6 +61,20 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 
         @Override
         public void onMessage(Object obj, IUserSocketContext ctx) {
+        	if (ctx.getUser() != null) {
+        		SpamController con = spamMap.get(ctx.getUser());
+                if (con == null) {
+                	con = new SpamController(ctx.getUser(), restrict);
+                	spamMap.put(ctx.getUser(), con);
+                }
+                
+                if (!con.checkAndCount(Calendar.getInstance())) {
+                	log.info("Account: " + con.getAccount() + " reach max access limit.");
+                    ctx.send(new SystemErrorEvent(null, null, 305, MessageLookup.buildEventMessage(ErrorMessage.REACH_MAX_ACCESS_LIMIT, "")));
+                    return;
+                }
+        	}
+            
             IApiRequest tranObject = translator.translateRequest(obj);
             if (tranObject == null) {
                 ctx.send(new SystemErrorEvent(null, null, 302, MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, obj.getClass().toString())));
@@ -135,5 +155,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
 
     public void setRequestMap(Map<String, String> requestMap) {
         this.requestMap = requestMap;
+    }
+    
+    public void setRestrict(int restrict) {
+    	this.restrict = restrict;
     }
 }

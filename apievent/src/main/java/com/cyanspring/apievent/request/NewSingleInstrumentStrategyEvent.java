@@ -4,6 +4,12 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 
 import java.util.Map;
 
+/**
+ * @author elviswu
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class NewSingleInstrumentStrategyEvent extends RemoteAsyncEvent {
 	private String txId;
 	private Map<String, Object> instrument;

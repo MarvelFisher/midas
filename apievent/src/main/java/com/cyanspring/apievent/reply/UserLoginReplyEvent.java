@@ -5,21 +5,11 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import java.util.List;
 
 /**
- * Description....
- * <ul>
- * <li> Description
- * </ul>
- * <p/>
- * Description....
- * <p/>
- * Description....
- * <p/>
- * Description....
- *
  * @author elviswu
- * @version %I%, %G%
+ * @version 1.0
  * @since 1.0
  */
+
 public class UserLoginReplyEvent extends RemoteAsyncEvent {
     private boolean ok;
     private String account;
