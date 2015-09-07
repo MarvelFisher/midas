@@ -45,9 +45,6 @@ public class MarketDataManager extends MarketDataReceiver {
     private String lastTradeDateQuoteFile = "last_tdq.xml";
     private String lastTradeDateQuoteExtendFile = "lastExtend_tdq.xml";
     private boolean broadcastQuote;
-    private volatile boolean isInit = false;
-    private RefDataEvent refDataEvent;
-    private IndexSessionEvent indexSessionEvent;
     protected HashMap<String, String> tradeDateByIndex = new HashMap<>(); //TradeDateByIndex
 
     public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
@@ -310,16 +307,17 @@ public class MarketDataManager extends MarketDataReceiver {
     @Override
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         //check init
-        if(!isInit){
-            if(refDataEvent != null && indexSessionEvent != null){
+        if(!isInit) {
+            if (refDataEvent != null && indexSessionEvent != null) {
                 log.debug("MDM Event Process begin");
                 isInit = true;
                 processRefDataEvent(refDataEvent);
                 processIndexSessionEvent(indexSessionEvent);
                 log.debug("MDM Event Process end");
             }
+        }else {
+            super.processAsyncTimerEvent(event);
         }
-        super.processAsyncTimerEvent(event);
         if (quoteSaver != null) {
             quoteSaver.saveLastQuoteToFile(tickDir + "/" + lastQuoteFile, quotes);
             quoteSaver.saveLastQuoteExtendToFile(tickDir + "/" + lastQuoteExtendFile, quoteExtends);

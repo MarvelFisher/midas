@@ -78,9 +78,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitRefDateReceived = false;
     private volatile boolean isInitIndexSessionReceived = false;
     private volatile boolean isInitMarketSessionReceived = false;
+    protected volatile boolean isInit = false;
     protected volatile boolean isInitReqDataEnd = false;
     private volatile boolean isPreSubscribing = false;
     protected MarketSessionData fxMarketSessionData;
+    protected RefDataEvent refDataEvent;
+    protected IndexSessionEvent indexSessionEvent;
     boolean state = false;
     boolean isUninit = false;
     private String serverInfo = null;
@@ -109,48 +112,52 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
 
         if (event.isOk() && event.getRefDataList().size() > 0) {
-            log.debug("process RefData Event, Size=" + event.getRefDataList().size());
-            preSubscriptionList.clear();
-            List<RefData> refDataList = event.getRefDataList();
-            for (int i = 0; i < refDataList.size(); i++) {
-                RefData refData = (RefData) refDataList.get(i);
-                preSubscriptionList.add(refData.getSymbol());
-                marketTypes.put(refData.getSymbol(), refData.getCommodity());
-                //process indexSessionType begin
-                String indexSessionType = refData.getIndexSessionType();
-                String index = "NONAME";
-                switch (indexSessionType){
-                    case "SPOT":
-                        index = refData.getCategory();
-                        break;
-                    case "SETTLEMENT":
-                        index = refData.getSettlementDate();
-                        break;
-                    case "EXCHANGE":
-                        index = refData.getExchange();
-                        break;
-                    default:
-                        break;
+            if(isInit) {
+                log.debug("process RefData Event, Size=" + event.getRefDataList().size());
+                preSubscriptionList.clear();
+                List<RefData> refDataList = event.getRefDataList();
+                for (int i = 0; i < refDataList.size(); i++) {
+                    RefData refData = (RefData) refDataList.get(i);
+                    preSubscriptionList.add(refData.getSymbol());
+                    marketTypes.put(refData.getSymbol(), refData.getCommodity());
+                    //process indexSessionType begin
+                    String indexSessionType = refData.getIndexSessionType();
+                    String index = "NONAME";
+                    switch (indexSessionType) {
+                        case "SPOT":
+                            index = refData.getCategory();
+                            break;
+                        case "SETTLEMENT":
+                            index = refData.getSettlementDate();
+                            break;
+                        case "EXCHANGE":
+                            index = refData.getExchange();
+                            break;
+                        default:
+                            break;
+                    }
+                    ArrayList<String> symbols = null;
+                    if (indexSessionTypes.containsKey(index)) {
+                        symbols = indexSessionTypes.get(index);
+                        symbols.add(refData.getSymbol());
+                    } else {
+                        symbols = new ArrayList<String>();
+                        symbols.add(refData.getSymbol());
+                    }
+                    if (symbols != null) indexSessionTypes.put(index, symbols);
                 }
-                ArrayList<String> symbols = null;
-                if(indexSessionTypes.containsKey(index)){
-                    symbols = indexSessionTypes.get(index);
-                    symbols.add(refData.getSymbol());
-                }else{
-                    symbols = new ArrayList<String>();
-                    symbols.add(refData.getSymbol());
+                if (indexSessionTypes.get("NONAME") != null && indexSessionTypes.get("NONAME").size() > 0) {
+                    log.debug("NoName index list:" + indexSessionTypes.get("NONAME"));
                 }
-                if(symbols != null) indexSessionTypes.put(index, symbols);
-            }
-            if(indexSessionTypes.get("NONAME") != null && indexSessionTypes.get("NONAME").size()>0){
-                log.debug("NoName index list:" + indexSessionTypes.get("NONAME"));
-            }
-            for (IMarketDataAdaptor adaptor : adaptors) {
-                if (null != adaptor) {
-                    adaptor.processEvent(event);
+                for (IMarketDataAdaptor adaptor : adaptors) {
+                    if (null != adaptor) {
+                        adaptor.processEvent(event);
+                    }
                 }
+                if (!isInitReqDataEnd) isInitRefDateReceived = true;
+            }else{
+                refDataEvent = event;
             }
-            if (!isInitReqDataEnd) isInitRefDateReceived = true;
         } else {
             log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
         }
@@ -211,25 +218,29 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void processIndexSessionEvent(IndexSessionEvent event) {
         log.debug("Process IndexSession Event");
         if (event.isOk() && event.getDataMap().size() > 0) {
-            for (String index : event.getDataMap().keySet()) {
-                MarketSessionData marketSessionData = event.getDataMap().get(index);
-                log.info("Index=" + index + ",tradeDate=" + marketSessionData.getTradeDateByString()
-                                + ",SessionType=" + marketSessionData.getSessionType()
-                                + ",Start=" + marketSessionData.getStart() + ",End=" + marketSessionData.getEnd()
-                );
-                indexSessions.put(index, marketSessionData);
-            }
-            //Forex
-            if(event.getDataMap().containsKey("FX")) {
-                fxMarketSessionData = event.getDataMap().get("FX");
-                if (aggregator != null) {
-                    aggregator.onMarketSession(fxMarketSessionData.getSessionType());
+            if(isInit) {
+                for (String index : event.getDataMap().keySet()) {
+                    MarketSessionData marketSessionData = event.getDataMap().get(index);
+                    log.info("Index=" + index + ",tradeDate=" + marketSessionData.getTradeDateByString()
+                                    + ",SessionType=" + marketSessionData.getSessionType()
+                                    + ",Start=" + marketSessionData.getStart() + ",End=" + marketSessionData.getEnd()
+                    );
+                    indexSessions.put(index, marketSessionData);
                 }
+                //Forex
+                if (event.getDataMap().containsKey("FX")) {
+                    fxMarketSessionData = event.getDataMap().get("FX");
+                    if (aggregator != null) {
+                        aggregator.onMarketSession(fxMarketSessionData.getSessionType());
+                    }
+                }
+                for (IMarketDataAdaptor adaptor : adaptors) {
+                    if (null != adaptor) adaptor.processEvent(event);
+                }
+                if (!isInitReqDataEnd) isInitIndexSessionReceived = true;
+            }else{
+                indexSessionEvent = event;
             }
-            for (IMarketDataAdaptor adaptor : adaptors) {
-                if (null != adaptor) adaptor.processEvent(event);
-            }
-            if (!isInitReqDataEnd) isInitIndexSessionReceived = true;
         } else {
             log.debug("IndexSession Event NOT OK - " + (event.getDataMap() != null ? "0" : "null"));
         }
@@ -363,6 +374,16 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
+        //Check init
+        if(!isInit) {
+            if (refDataEvent != null && indexSessionEvent != null) {
+                log.debug("MDR Event Process begin");
+                isInit = true;
+                processRefDataEvent(refDataEvent);
+                processIndexSessionEvent(indexSessionEvent);
+                log.debug("MDR Event Process end");
+            }
+        }
         // flush out all quotes throttled
         for (Entry<String, InnerQuoteEvent> entry : innerQuotesToBeSent.entrySet()) {
             InnerQuoteEvent innerQuoteEvent = entry.getValue();
