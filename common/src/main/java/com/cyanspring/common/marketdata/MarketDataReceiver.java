@@ -65,7 +65,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long quoteThrottle = 100; // 0 = no throttle
     protected long timerInterval = 300;
-    protected Map<String, QuoteEvent> quotesToBeSent = new HashMap<String, QuoteEvent>();
+    protected Map<String, InnerQuoteEvent> innerQuotesToBeSent = new HashMap<String, InnerQuoteEvent>();
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     private Map<MarketSessionType, Long> sessionMonitor;
@@ -251,7 +251,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (quoteLogIsOpen)
             printQuoteLog(quoteSource, contributor, event.getQuote(), QuoteLogLevel.GENERAL);
 
-        quotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
+        innerQuotesToBeSent.remove(event.getQuote().getSymbol()); // clear anything
 
         if (null != aggregator) {
             aggregator.reset(event.getQuote().getSymbol());
@@ -311,14 +311,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         String symbol = inEvent.getQuote().getSymbol();
 
         if (null != aggregator) {
-            quote = aggregator.update(symbol, inEvent.getQuote(),
+            quote = aggregator.update(symbol, quote,
                     inEvent.getQuoteSource());
         }
 
-        QuoteEvent event = new QuoteEvent(inEvent.getKey(), null, quote);
-
         if (eventProcessor.isSync()) {
-            sendQuoteEvent(event);
+            sendQuoteEvent(inEvent.getQuoteEvent());
             return;
         }
 
@@ -327,12 +325,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 && TimeUtil.getTimePass(prev.getTimeSent()) < quoteThrottle) {
             quote.setTimeSent(prev.getTimeSent()); // important record the last
             // time sent of this quote
-            quotesToBeSent.put(quote.getSymbol(), event);
+            innerQuotesToBeSent.put(quote.getSymbol(), inEvent);
             return;
         }
 
         // send the quote now
-        clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), event);
+        clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), inEvent.getQuoteEvent());
     }
 
     public void printQuoteLog(QuoteSource quoteSource, String contributor, Quote quote, QuoteLogLevel quoteLogLevel) {
@@ -366,10 +364,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         // flush out all quotes throttled
-        for (Entry<String, QuoteEvent> entry : quotesToBeSent.entrySet()) {
-            sendQuoteEvent(entry.getValue());
+        for (Entry<String, InnerQuoteEvent> entry : innerQuotesToBeSent.entrySet()) {
+            InnerQuoteEvent innerQuoteEvent = entry.getValue();
+            printQuoteLog(innerQuoteEvent.getQuoteSource(),innerQuoteEvent.getContributor()
+                    ,innerQuoteEvent.getQuote(),QuoteLogLevel.GENERAL);
+            sendQuoteEvent(innerQuoteEvent.getQuoteEvent());
         }
-        quotesToBeSent.clear();
+        innerQuotesToBeSent.clear();
         broadCastStaleQuotes();
     }
 
