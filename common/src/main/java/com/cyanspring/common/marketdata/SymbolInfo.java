@@ -118,6 +118,14 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		setDetailTW(refdata.getDetailTW());
 		setIndexSessionType(refdata.getIndexSessionType());
 	}
+	
+	public boolean hasRefSymbol()
+	{
+		if (hint == null || hint.equals(code))
+			return false;
+		else
+			return true;
+	}
 
 	public String getMarket() {
 		return market;

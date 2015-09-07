@@ -437,7 +437,7 @@ public class SymbolData implements Comparable<SymbolData>
     		return;
     	}
     	String symbol;
-    	if (symbolinfos.get(0).getHint() == null)
+    	if (symbolinfos.get(0).hasRefSymbol() == false)
     	{
     		symbol = symbolinfos.get(0).getCode(); 
     	}
@@ -1133,7 +1133,7 @@ public class SymbolData implements Comparable<SymbolData>
 		String strSymbol = null;
 		if (symbolinfo != null)
 		{
-			if (symbolinfo.getHint() != null)
+			if (symbolinfo.hasRefSymbol())
 			{
 				strSymbol = String.format("%s.%s", symbolinfo.getHint(), symbolinfo.getExchange());
 			}

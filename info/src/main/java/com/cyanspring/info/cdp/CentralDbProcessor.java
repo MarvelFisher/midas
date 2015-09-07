@@ -807,7 +807,7 @@ public class CentralDbProcessor implements IPlugin
 			{
 				continue;
 			}
-			if (symbolinfos.get(0).getHint() == null
+			if (symbolinfos.get(0).hasRefSymbol() == false
 					|| entry.getKey().equals(symbolinfos.get(0).getCode()) == false)
 			{
 				symbol = symbolinfos.get(0).getCode();
@@ -840,13 +840,16 @@ public class CentralDbProcessor implements IPlugin
 		cal.add(Calendar.DATE, (-1) * (getHistoricalDataPeriod().get(strType) + 2));
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, List<HistoricalPrice>> historical;
+		List<String> symbolList = refSymbolInfo.getSymbolList(market);
 		if (strType.equals("D") || strType.equals("W") || strType.equals("M"))
 		{
-			historical = getDbhnd().getTotalValue(market, strType, null, historicalDataCount.get(strType));
+			historical = getDbhnd().getSymbolsValue(market, strType, 
+					null, symbolList, historicalDataCount.get(strType));
 		}
 		else
 		{
-			historical = getDbhnd().getTotalValue(market, strType, sdf.format(cal.getTime()), historicalDataCount.get(strType));
+			historical = getDbhnd().getSymbolsValue(market, strType, 
+					sdf.format(cal.getTime()), symbolList, historicalDataCount.get(strType));
 		}
 		HashMap<String, List<HistoricalPrice>> subMap;
 		for (Entry<String, List<HistoricalPrice>> entry : historical.entrySet())
