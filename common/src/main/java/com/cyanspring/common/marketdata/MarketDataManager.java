@@ -219,34 +219,36 @@ public class MarketDataManager extends MarketDataReceiver {
                                     }
                                 }
                                 if (quoteExtendCleaner != null) {
-                                    DataObject quoteExtend = (DataObject) quoteExtends.get(symbol).clone();
-                                    if (marketTypes.get(symbol) != null) {
-                                        double preClose = 0;
-                                        double ceil = 0;
-                                        double floor = 0;
-                                        if (quotes.containsKey(symbol)) {
-                                            preClose = quotes.get(symbol).getLast();
-                                        }
-                                        if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
-                                            if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
-                                                preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                                    if(quoteExtends.get(symbol) != null) {
+                                        DataObject quoteExtend = (DataObject) quoteExtends.get(symbol).clone();
+                                        if (marketTypes.get(symbol) != null) {
+                                            double preClose = 0;
+                                            double ceil = 0;
+                                            double floor = 0;
+                                            if (quotes.containsKey(symbol)) {
+                                                preClose = quotes.get(symbol).getLast();
+                                            }
+                                            if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
+                                                if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
+                                                    preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
+                                                }
+                                            }
+                                            ceil = preClose * 1.1;
+                                            floor = preClose * 0.9;
+                                            if (PriceUtils.GreaterThan(preClose, 0)) {
+                                                quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
+                                                quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
+                                                quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
                                             }
                                         }
-                                        ceil = preClose * 1.1;
-                                        floor = preClose * 0.9;
-                                        if (PriceUtils.GreaterThan(preClose, 0)) {
-                                            quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);
-                                            quoteExtend.put(QuoteExtDataField.CEIL.value(), ceil);
-                                            quoteExtend.put(QuoteExtDataField.FLOOR.value(), floor);
+                                        quoteExtendCleaner.clear(quoteExtend);
+                                        try {
+                                            printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
+                                            quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
+                                            eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
+                                        } catch (Exception e) {
+                                            log.error(e.getMessage(), e);
                                         }
-                                    }
-                                    quoteExtendCleaner.clear(quoteExtend);
-                                    try {
-                                        printQuoteExtendLog(QuoteSource.CLEAN_SESSION, quoteExtend);
-                                        quoteExtend.put(QuoteExtDataField.TIMESENT.value(), Clock.getInstance().now());
-                                        eventManager.sendRemoteEvent(new QuoteExtEvent(symbol, null, quoteExtend, QuoteSource.CLEAN_SESSION));
-                                    } catch (Exception e) {
-                                        log.error(e.getMessage(), e);
                                     }
                                 }
                             }
@@ -331,7 +333,7 @@ public class MarketDataManager extends MarketDataReceiver {
             HashMap<String, DataObject> quoteExtendRequest = new HashMap<>();
             for(String symbol : event.getRequestSymbolList()){
                 if(quoteExtends.containsKey(symbol)){
-                    quoteExtendRequest.put(symbol, (DataObject)quoteExtends.get(symbol).clone());
+                    quoteExtendRequest.put(symbol, (DataObject) quoteExtends.get(symbol).clone());
                 }
             }
             if(quoteExtendRequest.size() > 0){
