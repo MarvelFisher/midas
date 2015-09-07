@@ -233,12 +233,17 @@ public class StockRefDataManager extends RefDataService {
 	@Override
 	public List<RefData> update(String index, String tradeDate) throws Exception {
 		List<RefData> ret = new ArrayList<>();
+		
 		for (RefData refData : refDataList) {
 			if (index.equals(refData.getCategory())) {
-				refData = add(refData, tradeDate);
 				ret.add(refData);
 			}
 		}
+		
+		for(RefData refData : ret){
+			add(refData, tradeDate);
+		}
+		
 		return ret;
 	}
 
