@@ -172,7 +172,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(codeTableResult == null) return;
+                if(codeTableResult == null || !marketsList.contains(codeTableResult.getSecurityExchange())) return;
                 codeTableResultByExchangeMap.put(codeTableResult.getSecurityExchange(),codeTableResult);
                 log.debug("codeTable exchange = " + codeTableResult.getSecurityExchange() + ",hashCode=" + codeTableResult.getHashCode());
                 requestMgr.addReqData(new Object[]{datatype, codeTableResult});
