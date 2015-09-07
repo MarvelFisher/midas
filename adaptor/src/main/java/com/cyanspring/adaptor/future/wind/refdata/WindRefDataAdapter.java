@@ -16,6 +16,7 @@ import com.cyanspring.common.staticdata.IRefDataAdaptor;
 import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.ChineseConvert;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
@@ -37,6 +38,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,7 +93,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private String refDataAdapterName = "NoName";
     protected ScheduleManager scheduleManager = new ScheduleManager();
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-    protected long timerInterval = 1 * 3000;
+    private long timerInterval = 1000 * 1;
+    private long lastGetDBTime = System.currentTimeMillis();
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -110,7 +113,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
         if(subscribed){
-
+            //Check Process DB
+            Date tempDate = new Date(System.currentTimeMillis());
+            String tempDateStr = TimeUtil.formatDate(tempDate, "HH:mm:ss");
+            if(tempDate.getTime() > lastGetDBTime && windDBHandler.getExecuteTime().equals(tempDateStr)){
+                lastGetDBTime = tempDate.getTime();
+                log.debug("Process DB method - " + tempDate);
+                processWindDB();
+            }
         }
     }
 
@@ -326,6 +336,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public void processWindDB(){
         if (windDBHandler != null) {
+            dbRetryCount = 0;
             //connect WindSyn DB
             windBaseDBDataHashMap.clear();
             windBaseDBDataHashMap = windDBHandler.getWindBaseDBData();

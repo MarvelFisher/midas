@@ -110,6 +110,7 @@
     <bean id="refDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindDBHandler">
         <property name="basicDataSource" ref="refDataSource"/>
         <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
+        <property name="executeTime" value="08:15:00" />
     </bean>
 
     <bean id="scFilter" class="com.cyanspring.adaptor.future.wind.filter.SCFilter"/>
