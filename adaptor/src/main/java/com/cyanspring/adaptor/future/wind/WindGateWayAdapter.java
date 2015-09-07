@@ -454,6 +454,16 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                                     IMarketDataListener listener) throws MarketDataException {
         if (symbol.isEmpty())
             return;
+        //Check Exchange
+        if(marketsList!= null){
+            if(exchangeBySymbols.get(symbol) != null) {
+                int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
+                if (index < 0) return;
+            }else {
+                log.debug("Symbol No exchange in RefData," + symbol);
+                return;
+            }
+        }
         log.info("subscribeMarketData Symbol: " + symbol);
         if (!quoteMgr.checkSymbol(symbol)) {
             subscribe(symbol);
