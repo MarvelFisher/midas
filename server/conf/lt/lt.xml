@@ -272,8 +272,8 @@
 		<property name="autoStartStrategy">
 			<value>true</value>
 		</property>
-		<property name="cancelAllOrdersAtClose" value="true"/>
-		<property name="closeAllPositionsAtClose" value="true"/>
+		<property name="cancelAllOrdersAtClose" value="false"/>
+		<property name="closeAllPositionsAtClose" value="false"/>
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
