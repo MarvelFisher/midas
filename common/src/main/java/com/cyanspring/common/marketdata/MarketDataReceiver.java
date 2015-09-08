@@ -56,6 +56,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected HashMap<String, String> marketTypes = new HashMap<>();
     protected ConcurrentHashMap<String, MarketSessionData> indexSessions = new ConcurrentHashMap<>();
     protected HashMap<String, ArrayList<String>> indexSessionTypes = new HashMap<String, ArrayList<String>>(); //SymoblArrryByIndex
+    private HashMap<String, String> indexs = new HashMap<>(); //IndexBySymbol
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -81,7 +82,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected volatile boolean isInit = false;
     protected volatile boolean isInitReqDataEnd = false;
     private volatile boolean isPreSubscribing = false;
-    protected MarketSessionData fxMarketSessionData;
     protected RefDataEvent refDataEvent;
     protected IndexSessionEvent indexSessionEvent;
     boolean state = false;
@@ -145,6 +145,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         symbols.add(refData.getSymbol());
                     }
                     if (symbols != null) indexSessionTypes.put(index, symbols);
+                    indexs.put(refData.getSymbol(),index);
                 }
                 if (indexSessionTypes.get("NONAME") != null && indexSessionTypes.get("NONAME").size() > 0) {
                     log.debug("NoName index list:" + indexSessionTypes.get("NONAME"));
@@ -227,13 +228,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     );
                     indexSessions.put(index, marketSessionData);
                 }
-                //Forex
-                if (event.getDataMap().containsKey("FX")) {
-                    fxMarketSessionData = event.getDataMap().get("FX");
-                    if (aggregator != null) {
-                        aggregator.onMarketSession(fxMarketSessionData.getSessionType());
-                    }
-                }
                 for (IMarketDataAdaptor adaptor : adaptors) {
                     if (null != adaptor) adaptor.processEvent(event);
                 }
@@ -286,8 +280,17 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         //Check Forex TimeStamp
         if (inEvent.getQuoteSource()==QuoteSource.ID || inEvent.getQuoteSource()==QuoteSource.IB) {
-            if (fxMarketSessionData != null && (fxMarketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    || fxMarketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
+            MarketSessionData marketSessionData = null;
+            try{
+                marketSessionData = indexSessions.get(indexs.get(quote.getSymbol()));
+                System.out.println("S=" + quote.getSymbol() + "," + marketSessionData.getSessionType() + "," + marketSessionData.getTradeDateByString()
+                    + "," + marketSessionData.getStart()+"-" + marketSessionData.getEnd()
+                        + "," + indexs.get(quote.getSymbol()));
+            }catch (Exception e){
+                log.debug("forex can't get marketSessionData - " + quote.getSymbol() + "," + e.getMessage());
+            }
+            if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                    || marketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
                 //get IB close & Open price
                 if(inEvent.getQuoteSource()==QuoteSource.IB){
                     if(quotes.containsKey(quote.getSymbol())){
@@ -299,9 +302,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 return;
             }
             if(null != quoteChecker && !quoteChecker.checkBidAskPirce(quote)) return;
-            if (fxMarketSessionData != null && fxMarketSessionData.getSessionType() == MarketSessionType.OPEN) {
-                if (TimeUtil.getTimePass(quote.getTimeStamp(), fxMarketSessionData.getEndDate()) >= 0) {
-                    quote.setTimeStamp(TimeUtil.subDate(fxMarketSessionData.getEndDate(), 1, TimeUnit.SECONDS));
+            if (marketSessionData != null && marketSessionData.getSessionType() == MarketSessionType.OPEN) {
+                if (TimeUtil.getTimePass(quote.getTimeStamp(), marketSessionData.getEndDate()) >= 0) {
+                    quote.setTimeStamp(TimeUtil.subDate(marketSessionData.getEndDate(), 1, TimeUnit.SECONDS));
                 }
             }
             if (null != quoteChecker) quoteChecker.fixPriceQuote(prev, quote);
