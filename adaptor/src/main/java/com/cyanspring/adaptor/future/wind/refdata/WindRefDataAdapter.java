@@ -5,7 +5,8 @@ import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
 import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
-import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
+import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
+import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
@@ -120,6 +121,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 lastGetDBTime = tempDate.getTime();
                 log.debug("Process DB method - " + tempDate);
                 processWindDB();
+                WindBaseInfoEvent windBaseInfoEvent = new WindBaseInfoEvent(null,null,windBaseDBDataHashMap);
+                eventManager.sendEvent(windBaseInfoEvent);
             }
         }
     }

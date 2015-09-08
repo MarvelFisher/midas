@@ -1,4 +1,4 @@
-package com.cyanspring.adaptor.future.wind.data;
+package com.cyanspring.common.staticdata;
 
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.data.DataObject;

@@ -3,7 +3,7 @@ package com.cyanspring.adaptor.future.wind;
 import com.cyanspring.adaptor.future.wind.data.AbstractWindDataParser;
 import com.cyanspring.adaptor.future.wind.data.DataTimeStat;
 import com.cyanspring.adaptor.future.wind.data.StockData;
-import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
+import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.InnerQuote;

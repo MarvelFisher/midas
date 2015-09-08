@@ -45,17 +45,17 @@
 		<property name="preSubscriptionList">
 			<list>
 	            <value>IFC1</value>
-				<value>IHC1</value>
-				<value>ICC1</value>
 	            <value>IFC2</value>
+				<value>IHC1</value>
 				<value>IHC2</value>
+				<value>ICC1</value>
 				<value>ICC2</value>
-	            <value>IFC3</value>
-				<value>IHC3</value>
-				<value>ICC3</value>
-	            <value>IFC4</value>
-				<value>IHC4</value>
-				<value>ICC4</value>
+	            <value>CU</value>
+				<value>M</value>
+				<value>MA</value>
+	            <value>RB</value>
+				<value>L</value>
+				<value>SR</value>
 	        </list>    
 		</property>
 		<property name="historicalDataCount">
