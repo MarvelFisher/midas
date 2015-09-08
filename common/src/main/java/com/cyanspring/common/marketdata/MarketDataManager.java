@@ -8,12 +8,12 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.marketdata.*;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefDataCommodity;
+import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.common.util.PriceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The manager can collect and broadcast quote data to it's listener.
@@ -53,6 +52,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     private List<Class<? extends AsyncEvent>> subscribeEvent() {
         ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
+        clzList.add(WindBaseInfoEvent.class);
         clzList.add(TradeSubEvent.class);
         clzList.add(QuoteSubEvent.class);
         clzList.add(QuoteExtSubEvent.class);
@@ -108,6 +108,23 @@ public class MarketDataManager extends MarketDataReceiver {
         for (Class<? extends AsyncEvent> clz : subscribeEvent())
             eventProcessor.subscribeToEvent(clz, null);
         super.init();
+    }
+
+    public void processWindBaseInfoEvent(WindBaseInfoEvent event) {
+        log.debug("Receive windBaseInfoEvent");
+        HashMap<String, WindBaseDBData> windBaseDBDataHashMap = event.getWindBaseDBDataHashMap();
+        if (windBaseDBDataHashMap != null && windBaseDBDataHashMap.size() > 0) {
+            for (String symbol : windBaseDBDataHashMap.keySet()) {
+                WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(symbol);
+                DataObject quoteExtend = new DataObject();
+                quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbol);
+                quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), event.getTimeStamp());
+                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
+                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(), windBaseDBData.getTotalShares());
+                quoteExtend.put(QuoteExtDataField.PERATIO.value(), windBaseDBData.getPERatio());
+                onQuoteExt(quoteExtend, QuoteSource.WIND_GENERAL);
+            }
+        }
     }
 
     public void processQuoteSubEvent(QuoteSubEvent event) throws Exception {
@@ -407,9 +424,8 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     protected void requestRequireData() {
-        eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
-        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null));
         eventManager.sendEvent(new RefDataRequestEvent(null, null));
+        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null));
     }
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {

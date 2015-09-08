@@ -1,6 +1,6 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.adaptor.future.wind.data.WindBaseDBData;
+import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.data.JdbcSQLHandler;
@@ -42,7 +42,9 @@ public class WindDBHandler {
                     quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbol);
                     quoteExtends.put(symbol,quoteExtend);
                 }
-//                quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
+                if(!quoteExtend.fieldExists(QuoteExtDataField.TIMESTAMP.value())) {
+                    quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
+                }
                 quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
                 quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
                 quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());
