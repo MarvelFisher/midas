@@ -283,9 +283,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             MarketSessionData marketSessionData = null;
             try{
                 marketSessionData = indexSessions.get(indexs.get(quote.getSymbol()));
-                System.out.println("S=" + quote.getSymbol() + "," + marketSessionData.getSessionType() + "," + marketSessionData.getTradeDateByString()
-                    + "," + marketSessionData.getStart()+"-" + marketSessionData.getEnd()
-                        + "," + indexs.get(quote.getSymbol()));
             }catch (Exception e){
                 log.debug("forex can't get marketSessionData - " + quote.getSymbol() + "," + e.getMessage());
             }
@@ -312,6 +309,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 printQuoteLog(inEvent.getQuoteSource(), inEvent.getContributor(), quote, QuoteLogLevel.PRICE_ERROR);
                 return;
             }
+            quote.setLast((quote.getBid()+quote.getAsk())/2.0); //set forex lastprice
         }
         if (null == prev) {
             quotes.put(quote.getSymbol(), quote);
