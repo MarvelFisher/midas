@@ -540,6 +540,53 @@ public class DBHandler
     	else
     		sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s';", strTable, retrieveDate);
 
+    	return getMapValue(sqlcmd, counts);
+    }
+    
+    public Map<String, List<HistoricalPrice>> getSymbolsValue(String market, String type, String retrieveDate, List<String> symbols, int counts)
+    {
+		HashMap<String, List<HistoricalPrice>> retMap = new HashMap<String, List<HistoricalPrice>>();
+		int symCount = symbols.size();
+		if (symCount == 0) return retMap;
+		int parts = (symCount/100);
+		int head, tail;
+		List<String> subSymbols;
+		Map<String, List<HistoricalPrice>> subMap;
+		String prefix = (market.equals("FX")) ? "0040" : market;
+		String strTable = String.format("%s_%s", prefix, type);
+		String sqlcmd = "";
+		for (int ii=0; ii<=parts; ii++)
+		{
+			head = ii * 100;
+			tail = (ii + 1) * 100;
+			if (tail > symCount)
+				tail = symCount - 1;
+			subSymbols = symbols.subList(head, tail);
+			if (retrieveDate == null)
+				sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL` IN(", strTable);
+			else
+				sqlcmd = String.format("SELECT * FROM %s WHERE `KEYTIME`>'%s' AND `SYMBOL` IN(",
+						strTable, retrieveDate);
+			boolean first = true;
+			for (String symbol : subSymbols)
+			{
+				sqlcmd += (first ? "" : ",");
+				first = false;
+				sqlcmd += "'" + symbol + "'";
+			}
+			sqlcmd += ");";
+			subMap = getMapValue(sqlcmd, counts);
+			if (subMap != null)
+			{
+				retMap.putAll(subMap);
+				log.debug("Retrieve symbol:" + head + "-" + tail + " type:" + type);
+			}
+		}
+    	return retMap;
+    }
+    
+    public Map<String, List<HistoricalPrice>> getMapValue(String sqlcmd, int counts)
+    {
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		Connection connect = getConnect();

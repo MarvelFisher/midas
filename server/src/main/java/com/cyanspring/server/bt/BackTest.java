@@ -81,7 +81,7 @@ public class BackTest implements IAsyncEventListener {
 	private void saveStrategies() throws IOException {
 		List list = new ArrayList();
 		for(ParentOrder order: parentOrders.values()) {
-			list.add(new EnterParentOrderEvent(null, null, order.getFields(), "", false));
+			list.add(new EnterParentOrderEvent(null, null, order.getFields(), "", false,true));
 		}
 		
 		for(MultiInstrumentStrategyData data: multiData.values()) {

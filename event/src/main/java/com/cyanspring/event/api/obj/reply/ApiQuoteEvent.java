@@ -1,11 +1,11 @@
 package com.cyanspring.event.api.obj.reply;
 
-import com.cyanspring.apievent.obj.Quote;
-import com.cyanspring.event.api.ApiResourceManager;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Map;
+
+import com.cyanspring.apievent.obj.Quote;
+import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.event.api.ApiResourceManager;
+import com.cyanspring.event.api.obj.reply.IApiReply;
 
 /**
  * Description....
@@ -48,8 +48,9 @@ public class ApiQuoteEvent implements IApiReply {
         } else {
             Map<String, String> userSymbol = resourceManager.getSubscriptionMap(quoteEvent.getQuote().getSymbol());
             if(null != userSymbol) {
-                for(String user: userSymbol.keySet())
-                    resourceManager.sendEventToUser(user, sendEvent);
+                for(String user: userSymbol.keySet()) {
+					resourceManager.sendEventToUser(user, sendEvent);
+				}
             }
         }
     }

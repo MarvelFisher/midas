@@ -29,43 +29,6 @@ public abstract class IRefSymbolInfo {
 			if (refdata.getExchange() == null || refdata.getSymbol() == null) continue;
 			
 			symbolinfo = new SymbolInfo(serverMarket, refdata.getSymbol());
-//			symbolinfo.setExchange(refdata.getExchange());
-//			symbolinfo.setWindCode(null);
-//			symbolinfo.setHint(refdata.getRefSymbol());
-//			symbolinfo.setCategory(refdata.getCategory());
-//			strTmp = (refdata.getENDisplayName() == null) ? refdata.getSymbol() : refdata.getENDisplayName();
-//			symbolinfo.setEnName(strTmp);
-//			symbolinfo.setCnName((refdata.getCNDisplayName() == null) ? strTmp : refdata.getCNDisplayName());
-//			symbolinfo.setTwName((refdata.getTWDisplayName() == null) ? strTmp : refdata.getTWDisplayName());
-//			symbolinfo.setJpName(strTmp);
-//			symbolinfo.setKrName(strTmp);
-//			symbolinfo.setEsName(strTmp);
-//			symbolinfo.setupSubNames();
-//			symbolinfo.setLotSize(refdata.getLotSize());
-//			symbolinfo.setTickTable(refdata.getTickTable());
-//			symbolinfo.setCNTradingUnit(refdata.getCNTradingUnit());
-//			symbolinfo.setENTradingUnit(refdata.getENTradingUnit());
-//			symbolinfo.setTWTradingUnit(refdata.getTWTradingUnit());
-//			symbolinfo.setSettlementDate(refdata.getSettlementDate());
-//			symbolinfo.setCommissionFee(refdata.getCommissionFee());
-//			symbolinfo.setNumeratorDP(refdata.getNumberatorDp());
-//			symbolinfo.setDecimalPoint(refdata.getDeciamlPoint());
-//			symbolinfo.setMinimalCF(refdata.getMinimalCommissionFee());
-//			symbolinfo.setPricePerUnit(refdata.getPricePerUnit());
-//			symbolinfo.setLimitMaximumLot(refdata.getLimitMaximumLot());
-//			symbolinfo.setMarketMaximumLot(refdata.getMarketMaximumLot());
-////			symbolinfo.setMaximumLot(refdata.getMaximumLot());
-//			symbolinfo.setMaximumHold(refdata.getMaximumHold());
-//			symbolinfo.setStrategy(refdata.getStrategy());
-//			symbolinfo.setMarginRate(refdata.getMarginRate());
-//			symbolinfo.setDenominator(refdata.getDenominator());
-//			symbolinfo.setTradable(refdata.getTradable());
-//			symbolinfo.setSpellName(refdata.getSpellName());
-//			symbolinfo.setCommodity(refdata.getCommodity());
-//			symbolinfo.setDetailCN(refdata.getDetailCN());
-//			symbolinfo.setDetailEN(refdata.getDetailEN());
-//			symbolinfo.setDetailTW(refdata.getDetailTW());
-//			symbolinfo.setIndexSessionType(refdata.getIndexSessionType());
 			index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 			if (index < 0)
 			{
@@ -105,6 +68,21 @@ public abstract class IRefSymbolInfo {
 			}
 		}
 		return infoList;
+	}
+	public List<String> getSymbolList(String market)
+	{
+		ArrayList<String> retList = new ArrayList<String>();
+		for (SymbolInfo symbolinfo : refSymbolInfo)
+		{
+			if (symbolinfo.getExchange().equals(market))
+			{
+				if (symbolinfo.hasRefSymbol() == false)
+					retList.add(symbolinfo.getCode());
+				else
+					retList.add(symbolinfo.getHint() + "." + symbolinfo.getExchange());
+			}
+		}
+		return retList;
 	}
 	public int at(SymbolInfo symbolinfo) 
 	{

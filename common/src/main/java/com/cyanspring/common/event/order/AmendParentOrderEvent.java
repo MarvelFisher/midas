@@ -19,14 +19,21 @@ public class AmendParentOrderEvent extends RemoteAsyncEvent {
 	private String id;
 	private Map<String, Object> fields;
 	private String txId;
+	private boolean isFromSystem;
 	
 	public AmendParentOrderEvent(String key, String receiver, String id,
 			Map<String, Object> fields, String txId) {
+		this(key, receiver, id, fields, txId, false);
+	}
+	
+	public AmendParentOrderEvent(String key, String receiver, String id,
+			Map<String, Object> fields, String txId,boolean isFromSystem) {
 		super(key, receiver);
 		setPriority(EventPriority.HIGH);
 		this.id = id;
 		this.fields = fields;
 		this.txId = txId;
+		this.isFromSystem = isFromSystem;
 	}
 
 	public String getId() {
@@ -40,5 +47,9 @@ public class AmendParentOrderEvent extends RemoteAsyncEvent {
 	public String getTxId() {
 		return txId;
 	}
-	
+
+	public boolean isFromSystem() {
+		return isFromSystem;
+	}
+
 }

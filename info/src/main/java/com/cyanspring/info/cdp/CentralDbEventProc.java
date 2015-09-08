@@ -76,7 +76,7 @@ public class CentralDbEventProc implements Runnable
 	{
     	if (centraldb.isRetrieving)
     	{
-    		onEvent(event);
+//    		onEvent(event);
     		return;
     	}
 		String symbol = event.getSymbol() ;
