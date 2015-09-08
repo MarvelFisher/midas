@@ -18,13 +18,20 @@ public class EnterParentOrderEvent extends RemoteAsyncEvent {
 	private Map<String, Object> fields;
 	private String txId;
 	private boolean fix;
+	private boolean isFromSystem;
 	
 	public EnterParentOrderEvent(String key, String receiver,
 			Map<String, Object> fields, String txId, boolean fix) {
+		this(key, receiver, fields, txId, fix,false);
+	}
+	
+	public EnterParentOrderEvent(String key, String receiver,
+			Map<String, Object> fields, String txId, boolean fix,boolean isFromSystem) {
 		super(key, receiver);
 		this.fields = fields;
 		this.txId = txId;
 		this.fix = fix;
+		this.isFromSystem = isFromSystem;
 	}
 
 	public Map<String, Object> getFields() {
@@ -37,5 +44,9 @@ public class EnterParentOrderEvent extends RemoteAsyncEvent {
 
 	public boolean isFix() {
 		return fix;
+	}
+
+	public boolean isFromSystem() {
+		return isFromSystem;
 	}
 }

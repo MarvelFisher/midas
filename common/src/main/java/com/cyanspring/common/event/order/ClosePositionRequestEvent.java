@@ -9,15 +9,22 @@ public class ClosePositionRequestEvent extends RemoteAsyncEvent {
 	private double qty;
 	private OrderReason reason;
 	private String txId;
+	private boolean isFromSystem;
 	
 	public ClosePositionRequestEvent(String key, String receiver,
 			String account, String symbol, double qty, OrderReason reason, String txId) {
+		this(key,receiver,account,symbol,qty,reason,txId,false);
+	}
+	
+	public ClosePositionRequestEvent(String key, String receiver,
+			String account, String symbol, double qty, OrderReason reason, String txId,boolean isFromSystem) {
 		super(key, receiver);
 		this.account = account;
 		this.symbol = symbol;
 		this.qty = qty;
 		this.reason = reason;
 		this.txId = txId;
+		this.isFromSystem = isFromSystem;
 	}
 
 	public String getAccount() {
@@ -39,5 +46,8 @@ public class ClosePositionRequestEvent extends RemoteAsyncEvent {
 	public double getQty() {
 		return qty;
 	}
-	
+
+	public boolean isFromSystem() {
+		return isFromSystem;
+	}
 }

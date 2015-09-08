@@ -28,25 +28,29 @@ public class TransactionThrottleValidator implements ITransactionValidator {
 	@Override
 	public void checkEnterOrder(EnterParentOrderEvent event, String account)
 			throws TransactionValidationException {
-		check(account);
+		if(!event.isFromSystem())
+			check(account);
 	}
 
 	@Override
 	public void checkAmendOrder(AmendParentOrderEvent event, String account)
 			throws TransactionValidationException {
-		check(account);
+		if(!event.isFromSystem())
+			check(account);
 	}
 
 	@Override
 	public void checkCancelOrder(CancelParentOrderEvent event, String account)
 			throws TransactionValidationException {
-		check(account);
+		if(!event.isFromSystem())
+			check(account);
 	}
 
 	@Override
 	public void checkClosePosition(ClosePositionRequestEvent event,
 			String account) throws TransactionValidationException {
-		check(account);
+		if(!event.isFromSystem())
+			check(account);
 	}
 
 	public long getInterval() {

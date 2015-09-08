@@ -176,7 +176,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		fields.put(OrderField.PRICE.value(), "68.25");
 		fields.put(OrderField.QUANTITY.value(), "2000");
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
-		enterOrderEvent = new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false);
+		enterOrderEvent = new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false,true);
 		return enterOrderEvent;
 	}
 	
@@ -193,7 +193,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		fields.put(OrderField.POV.value(), "30");
 		fields.put(OrderField.POV_LIMIT.value(), "30");
 		fields.put(OrderField.STRATEGY.value(), "POV");
-		enterOrderEvent = new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false);
+		enterOrderEvent = new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false,true);
 		return enterOrderEvent;
 	}
 	

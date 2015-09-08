@@ -82,7 +82,7 @@ public class TradingUtil {
                     quote);
             ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                     null, position.getAccount(), position.getSymbol(), 0.0, orderReason,
-                    IdGenerator.getInstance().getNextID());
+                    IdGenerator.getInstance().getNextID(),true);
 
             eventManager.sendEvent(event);
         }

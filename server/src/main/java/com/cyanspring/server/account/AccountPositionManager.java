@@ -1585,7 +1585,7 @@ public class AccountPositionManager implements IPlugin {
         		
                 ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                         null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.PositionStopLoss,
-                        IdGenerator.getInstance().getNextID());
+                        IdGenerator.getInstance().getNextID(),true);
 
                 eventManager.sendEvent(event);
                 result = true;
@@ -1693,7 +1693,7 @@ public class AccountPositionManager implements IPlugin {
             		
                     ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(),
                             null, position.getAccount(), position.getSymbol(), qty, OrderReason.MarginCall,
-                            IdGenerator.getInstance().getNextID());
+                            IdGenerator.getInstance().getNextID(),true);
 
                     eventManager.sendEvent(event);
                     result = true;

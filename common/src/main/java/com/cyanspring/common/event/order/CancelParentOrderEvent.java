@@ -17,14 +17,23 @@ public final class CancelParentOrderEvent extends RemoteAsyncEvent {
 	private String orderId;
 	private String txId;
 	private boolean force;
+	private boolean isFromSystem;
+	
 	public CancelParentOrderEvent(String key, String receiver, String orderId, boolean force,
 			String txId) {
+		this(key,receiver,orderId,force,txId,false);
+	}
+	
+	public CancelParentOrderEvent(String key, String receiver, String orderId, boolean force,
+			String txId,boolean isFromSystem) {
 		super(key, receiver);
 		this.setPriority(EventPriority.HIGH);
 		this.orderId = orderId;
 		this.txId = txId;
 		this.force = force;
+		this.isFromSystem = isFromSystem;
 	}
+	
 	public String getOrderId() {
 		return orderId;
 	}
@@ -34,5 +43,8 @@ public final class CancelParentOrderEvent extends RemoteAsyncEvent {
 	public boolean isForce() {
 		return force;
 	}
-	
+
+	public boolean isFromSystem() {
+		return isFromSystem;
+	}
 }
