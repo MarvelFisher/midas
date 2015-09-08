@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class RefDataFactory extends RefDataService {
 
 	protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
-	List<RefData> refDataList = new ArrayList<>();
+	List<RefData> refDataList = new CopyOnWriteArrayList<>();
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();

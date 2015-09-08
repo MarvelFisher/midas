@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,8 +83,9 @@ public class MarketSessionUtil implements IPlugin{
     	boolean isCategory = false;
     	boolean isExchange = false;
     	
-    	for(RefData ref : refs){
-    		
+    	Iterator <RefData>refDataIte = refs.iterator();
+    	while(refDataIte.hasNext()){
+    		RefData ref = refDataIte.next();
     		String category = ref.getCategory();
     		String symbol = ref.getSymbol();
     		String exchange = ref.getExchange();
