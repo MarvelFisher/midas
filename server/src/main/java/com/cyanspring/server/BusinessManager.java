@@ -1070,7 +1070,7 @@ public class BusinessManager implements ApplicationContextAware {
 								position.getAccount(), null,
 								position.getAccount(), position.getSymbol(),
 								0.0, OrderReason.DayEnd, IdGenerator
-										.getInstance().getNextID());
+										.getInstance().getNextID(),true);
 
 						eventManager.sendEvent(closeEvent);
 					}

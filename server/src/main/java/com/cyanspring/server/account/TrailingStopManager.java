@@ -190,7 +190,7 @@ public class TrailingStopManager implements IPlugin {
 							trailingStop);
 					ClosePositionRequestEvent event = new ClosePositionRequestEvent(position.getAccount(), 
 							null, position.getAccount(), position.getSymbol(), 0.0, OrderReason.TrailingStop,
-							IdGenerator.getInstance().getNextID());
+							IdGenerator.getInstance().getNextID(),true);
 					
 					eventManager.sendEvent(event);
 				}				

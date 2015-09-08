@@ -96,20 +96,20 @@ public class UpStreamManager implements IPlugin {
 		@Override
 		public void onNewOrder(String txId, Map<String, Object> fields) {
 			log.debug("txId: " + txId + " [" + fields.toString() + "]");
-			EnterParentOrderEvent event = new EnterParentOrderEvent(connection.getId(), null, fields, txId, true);
+			EnterParentOrderEvent event = new EnterParentOrderEvent(connection.getId(), null, fields, txId, true,true);
 			eventManager.sendEvent(event);
 		}
 
 		@Override
 		public void onAmendOrder(String txId, Map<String, Object> fields) {
 			String id = (String)fields.get(OrderField.ID.value());
-			AmendParentOrderEvent event = new AmendParentOrderEvent(connection.getId(), null, id, fields, txId);
+			AmendParentOrderEvent event = new AmendParentOrderEvent(connection.getId(), null, id, fields, txId,true);
 			eventManager.sendEvent(event);
 		}
 
 		@Override
 		public void onCancelOrder(String txId, String orderId) {
-			CancelParentOrderEvent event = new CancelParentOrderEvent(connection.getId(), null, orderId, false, txId);
+			CancelParentOrderEvent event = new CancelParentOrderEvent(connection.getId(), null, orderId, false, txId,true);
 			eventManager.sendEvent(event);
 		}
 
