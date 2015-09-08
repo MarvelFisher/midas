@@ -188,7 +188,9 @@ public class MarketDataManager extends MarketDataReceiver {
                                         Quote tempQuote = (Quote) quote.clone();
                                         if (marketTypes.get(tempQuote.getSymbol()) != null) {
                                             if (RefDataCommodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
-                                                    || RefDataCommodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                                    || RefDataCommodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                                    || RefDataCommodity.FOREX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                                    ) {
                                                 tempQuote.setClose(tempQuote.getLast());
                                                 log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                                             }

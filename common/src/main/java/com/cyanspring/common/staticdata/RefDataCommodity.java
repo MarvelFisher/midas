@@ -2,7 +2,7 @@ package com.cyanspring.common.staticdata;
 
 public enum RefDataCommodity {
 
-	STOCK("S"), INDEX("I"), FUTURES("F");
+	STOCK("S"), INDEX("I"), FUTURES("F"), FOREX("FX");
 	
 	private String value;
 	
