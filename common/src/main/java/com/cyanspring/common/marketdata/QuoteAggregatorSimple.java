@@ -9,21 +9,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Calvin on 15/4/21.
  */
 public class QuoteAggregatorSimple implements IQuoteAggregator {
-    private MarketSessionType marketSessionType = MarketSessionType.DEFAULT;
-
-    ConcurrentHashMap<String, QuoteS> table = new ConcurrentHashMap<String, QuoteS>();
+    ConcurrentHashMap<String, QuoteS> quotes = new ConcurrentHashMap<String, QuoteS>();
 
     QuoteS getQuote(String symbol, Quote quote, QuoteSource quoteSource) {
-        QuoteS q = table.get(symbol);
+        QuoteS q = quotes.get(symbol);
         if (q == null) {
             q = new QuoteS(quote, quoteSource);
-            table.put(symbol, q);
+            quotes.put(symbol, q);
         }
         return q;
     }
 
     public void reset(String symbol) {
-        QuoteS q = table.get(symbol);
+        QuoteS q = quotes.get(symbol);
         if (q != null) {
             q.reset();
         }
@@ -33,20 +31,6 @@ public class QuoteAggregatorSimple implements IQuoteAggregator {
         QuoteS q = getQuote(symbol, quote, quoteSource);
         q.update(quote, quoteSource);
         return q.quote;
-    }
-
-
-    public void onMarketSession(MarketSessionType marketSessionType) {
-        if (marketSessionType == this.marketSessionType) {
-            return;
-        }
-        this.marketSessionType = marketSessionType;
-        if (this.marketSessionType == MarketSessionType.PREOPEN) {
-            for (String symbol : table.keySet()) {
-                table.get(symbol).sunrise();
-            }
-        }
-
     }
 }
 
