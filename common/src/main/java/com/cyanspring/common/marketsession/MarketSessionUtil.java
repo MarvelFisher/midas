@@ -337,7 +337,7 @@ public class MarketSessionUtil implements IPlugin{
     private SessionPair getSession(RefData refData) throws Exception{
     	String index = searchIndex(refData);
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
-    		if(entry.getKey().equals(index));
+    		if(entry.getKey().equals(index))
     			return getPair(refData, entry.getValue());
     	}
     	return null;
