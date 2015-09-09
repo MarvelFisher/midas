@@ -301,11 +301,7 @@ public class SymbolData implements Comparable<SymbolData>
 		}
 		if (strType.equals("W") || strType.equals("M"))
 		{
-			if (getMapHistorical().get(strType) == null)
-			{
-//				lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
-			}
-			else
+			if (getMapHistorical().get(strType) != null)
 			{
 				if (getMapHistorical().get(strType).size() > 0)
 					lastPrice = getMapHistorical().get(strType).get(0);
@@ -364,7 +360,19 @@ public class SymbolData implements Comparable<SymbolData>
 			}
 			else
 			{
-				lastPrice = (HistoricalPrice) curPrice.clone();
+				lastPrice = centralDB.getDbhnd().getLastValue(market, strType, getStrSymbol(), false) ;
+				if (lastPrice == null)
+					lastPrice = (HistoricalPrice) curPrice.clone();
+				else
+				{
+					cal_.setTime(lastPrice.getKeytime());
+					if (getWeek(sdf.format(cal_.getTime())) == getWeek(sdf.format(cal.getTime()))
+							|| (cal_.get(Calendar.MONTH) == cal.get(Calendar.MONTH)
+									&& cal_.get(Calendar.YEAR) == cal.get(Calendar.YEAR)))
+						lastPrice.update(curPrice);
+					else
+						lastPrice = (HistoricalPrice) curPrice.clone();
+				}
 			}
 		}
 		else
