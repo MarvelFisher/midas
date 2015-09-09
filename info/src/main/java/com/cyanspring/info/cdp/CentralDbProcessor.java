@@ -509,6 +509,11 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void userSetGroupList(GroupListEvent retEvent, List<GroupInfo> groups)
 	{
+		if (groups == null || groups.isEmpty())
+		{
+			userRequestGroupList(retEvent);
+			return;
+		}
 		List<GroupInfo> orgList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
 		List<GroupInfo> delList = new ArrayList<GroupInfo>();
 		ArrayList<GroupInfo> sortSource = new ArrayList<GroupInfo>();

@@ -123,7 +123,6 @@ public class JdbcSQLHandler {
 		} catch (SQLException e) {
 			log.error(e.getMessage(), e);
 			log.warn("Exception while: " + sqlcmd);
-            this.reconnectSQL();
             retVal = false;
         }
         finally 
