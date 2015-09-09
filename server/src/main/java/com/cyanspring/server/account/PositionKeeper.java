@@ -53,6 +53,7 @@ public class PositionKeeper {
 
 	private IPositionListener listener;
 	private IQuoteFeeder quoteFeeder;
+	private boolean useMid;
 
 	@Autowired
 	IRefDataManager refDataManager;
@@ -585,9 +586,7 @@ public class PositionKeeper {
 					if(null != list) {
 						boolean validMarketablePrice = true;
 						for(OpenPosition position: list) {
-							double price = QuoteUtils.getMarketablePrice(quote, position.getQty());
-							if(!PriceUtils.validPrice(price))
-								price = QuoteUtils.getValidPrice(quote);
+							double price = QuoteUtils.getPnlPrice(quote, position.getQty(), useMid);
 							
 							validMarketablePrice = PriceUtils.validPrice(price);
 							if(!validMarketablePrice)
@@ -932,4 +931,13 @@ public class PositionKeeper {
 		}	
 		this.notifyAccountUpdate(account);
 	}
+
+	public boolean isUseMid() {
+		return useMid;
+	}
+
+	public void setUseMid(boolean useMid) {
+		this.useMid = useMid;
+	}
+		
 }
