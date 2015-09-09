@@ -52,4 +52,22 @@ public class QuoteUtils {
 		
 		return price;
 	}
+	
+	public static double getPnlPrice(Quote quote, double qty, boolean useMid) {
+		if(quote.isStale()) {
+			double price = 0.0;
+			if(useMid) {
+				price = getMidPrice(quote);
+				if(!PriceUtils.validPrice(price))
+					price = quote.getLast();
+			} else {
+				price = quote.getLast();
+				if(!PriceUtils.validPrice(price))
+					price = getMidPrice(quote);
+			}
+			return price;
+		} else {
+			return getMarketablePrice(quote, qty);
+		}
+	}
 }
