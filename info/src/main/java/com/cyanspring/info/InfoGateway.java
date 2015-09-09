@@ -21,6 +21,7 @@ import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
+import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.alert.Compute;
@@ -106,6 +107,19 @@ public class InfoGateway implements IPlugin {
 			});
 		}
 	}
+
+    public void processParentOrderUpdateEvent(final ParentOrderUpdateEvent event) {
+        if (null == event)
+            return;
+        log.info("[processUpdateChildOrderEvent] " + event.getInfo() + ":" + event.getTxId());
+        for (final Compute compute : Computes) {
+            service.submit(new Runnable() {
+                public void run() {
+                    compute.processParentOrderUpdateEvent(event, Computes);
+                }
+            });
+        }
+    }
 
 	public void processResetAccountRequestEvent(
 			final ResetAccountRequestEvent event) {

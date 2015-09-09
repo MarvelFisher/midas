@@ -15,6 +15,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.event.AsyncEventProcessor;
+import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 
 public abstract class Compute {
 	private List<Class<? extends AsyncEvent>> lst;
@@ -107,6 +108,10 @@ public abstract class Compute {
 	public void processChildOrderUpdateEvent(ChildOrderUpdateEvent event,
 			List<Compute> computes) {
 	}
+
+    public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event,
+                                              List<Compute> computes) {
+    }
 
 	public List<Class<? extends AsyncEvent>> getLst() {
 		return lst;
