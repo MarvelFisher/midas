@@ -301,7 +301,7 @@ public class SymbolData implements Comparable<SymbolData>
 			else
 			{
 				if (getMapHistorical().get(strType).size() > 0)
-					lastPrice = getMapHistorical().get(strType).get(0);
+					lastPrice = getMapHistorical().get(strType).get(getMapHistorical().get(strType).size()-1);
 			}
 			SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);
 			Calendar cal_ = Calendar.getInstance() ;
@@ -544,7 +544,7 @@ public class SymbolData implements Comparable<SymbolData>
 			else
 			{
 				if (getMapHistorical().get(strType).size() > 0)
-					priceEmpty = getMapHistorical().get(strType).get(0);
+					priceEmpty = getMapHistorical().get(strType).get(getMapHistorical().get(strType).size()-1);
 			}
 			if (priceEmpty != null)
 			{
