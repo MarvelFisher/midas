@@ -36,7 +36,7 @@
 		<constructor-arg value="false"/>
 	</bean>
 	
-	<bean id="centralDbProcessor" class="com.cyanspring.info.CentralDbProcessor">
+	<bean id="centralDbProcessor" class="com.cyanspring.info.cdp.CentralDbProcessor">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl" ref="jdbcUrl"/>
 		<property name="cpds" ref="cpds"/>
