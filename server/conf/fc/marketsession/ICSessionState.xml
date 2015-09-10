@@ -38,7 +38,7 @@
 				 	 <property name="marketSession" value="PREOPEN"/>
 				 	 <property name="SessionStart" value="false"/>
 				 	 <property name="SessionBefore" value="true"/>
-				 	 <property name="howManyMinutes" value="3"/>
+				 	 <property name="howManyMinutes" value="10"/>
 				 </bean>
 	        </list>
          </constructor-arg>
