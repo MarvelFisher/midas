@@ -1,5 +1,14 @@
 package com.cyanspring.server.validation;
 
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.OrderField;
@@ -14,12 +23,6 @@ import com.cyanspring.common.validation.OrderValidationException;
 import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.account.PositionKeeper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-
 public class AvailablePositionValidator implements IOrderValidator {
 	private static final Logger log = LoggerFactory.getLogger(AvailablePositionValidator.class);
     @Autowired
@@ -30,11 +33,14 @@ public class AvailablePositionValidator implements IOrderValidator {
     
     @Autowired
     IRefDataManager refDataManager;
+    
+    private Set <IType> futureITypeSet;
 
     @Override
     public void validate(Map<String, Object> map, ParentOrder order) throws OrderValidationException {
 
         try {
+        
             Double qty = (Double) map.get(OrderField.QUANTITY.value());
             if (null == qty) {
                 return;
@@ -59,9 +65,8 @@ public class AvailablePositionValidator implements IOrderValidator {
             	log.warn("Can't find refData");
             } else {
             	String type = refData.getIType();
-            	if (type != null && 
-            			(IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type))
-            			)
+         
+            	if (type != null && isFutureIType(type))
             		return;
             }
 
@@ -83,7 +88,22 @@ public class AvailablePositionValidator implements IOrderValidator {
         }
     }
 
-    private boolean checkQty(double qty, double availableQty, ParentOrder order) {
+    private boolean isFutureIType(String type) {
+    	if( null == getFutureITypeSet() || getFutureITypeSet().isEmpty())
+    		return false;
+    	
+    	Iterator <IType>itypeIte = getFutureITypeSet().iterator();
+    	while(itypeIte.hasNext()){
+    		IType iType = itypeIte.next();
+    		if(iType.getValue().equals(type))
+    			return true;
+    		
+    	}
+    	
+    	return false;
+	}
+
+	private boolean checkQty(double qty, double availableQty, ParentOrder order) {
 
         double oldQty = 0;
         if (null != order) {
@@ -92,4 +112,12 @@ public class AvailablePositionValidator implements IOrderValidator {
 
         return availableQty + oldQty - qty >= 0;
     }
+
+	public Set<IType> getFutureITypeSet() {
+		return futureITypeSet;
+	}
+
+	public void setFutureITypeSet(Set<IType> futureITypeSet) {
+		this.futureITypeSet = futureITypeSet;
+	}
 }
