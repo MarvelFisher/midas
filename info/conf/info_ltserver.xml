@@ -16,7 +16,8 @@
 		<property name="maxNoOfAlerts" value="20" />
         <property name="deepLink" value="forexmasterlive://fdt/portfolio/portfoliodetail?symbolid=" />
         <property name="market"   value="FX"/>
-	</bean>	
+        <property name="timerinterval"   value="300000"/>
+    </bean>
 	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
 		<property name="getPremiumTableInterval" value="300000" />
 <!-- 	##b$$ = <b> -->
