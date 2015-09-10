@@ -79,6 +79,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private Set<Integer> openOrderIds = new LinkedHashSet<Integer>();
     private boolean cancellingOpenOrders;
     private long lastTimeSend;
+    private long checkLastTimeInterval = 0;
 
     public IbAdaptor() {
         clientSocket = new EClientSocket(this);
@@ -94,7 +95,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                         if (clientSocket.isConnected() == false) {
                             ConnectToIBGateway();
                         } else {
-                            if(System.currentTimeMillis() - lastTimeSend > 15000) {
+                            if(checkLastTimeInterval != 0 && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
                                 log.warn("IB Gateway too long not tick,reconnect!");
                                 clientSocket.eDisconnect();
                                 //wait disconnect
@@ -1256,5 +1257,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     public void setNewsIsSubCurrentDay(boolean newsIsSubCurrentDay) {
         this.newsIsSubCurrentDay = newsIsSubCurrentDay;
+    }
+
+    public void setCheckLastTimeInterval(long checkLastTimeInterval) {
+        this.checkLastTimeInterval = checkLastTimeInterval;
     }
 }
