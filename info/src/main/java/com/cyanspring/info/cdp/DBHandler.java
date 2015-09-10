@@ -562,6 +562,10 @@ public class DBHandler
 			if (tail > symCount)
 				tail = symCount - 1;
 			subSymbols = symbols.subList(head, tail);
+			if (subSymbols.isEmpty())
+			{
+				continue;
+			}
 			if (retrieveDate == null)
 				sqlcmd = String.format("SELECT * FROM %s WHERE `SYMBOL` IN(", strTable);
 			else
