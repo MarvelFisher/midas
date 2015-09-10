@@ -411,7 +411,7 @@ public class PositionKeeper {
 				if(null != quoteFeeder) {
 					Quote quote = quoteFeeder.getQuote(symbol);
 					if(null != quote && null != pos) {
-						double price = QuoteUtils.getMarketablePrice(quote, pos.getQty());
+						double price = QuoteUtils.getPnlPrice(quote, pos.getQty(), useMid);
 						if(!PriceUtils.validPrice(price))
 							price = QuoteUtils.getValidPrice(quote);
 						
@@ -875,7 +875,7 @@ public class PositionKeeper {
 			if(quote == null)
 				continue;
 			
-			double qPrice = QuoteUtils.getMarketablePrice(quote, position.getQty());
+			double qPrice = QuoteUtils.getPnlPrice(quote, position.getQty(), useMid);
 			if(!PriceUtils.validPrice(qPrice))
 				qPrice = QuoteUtils.getValidPrice(quote);
 			if(!PriceUtils.validPrice(qPrice))
