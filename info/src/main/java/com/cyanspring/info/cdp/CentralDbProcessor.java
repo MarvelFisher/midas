@@ -287,7 +287,7 @@ public class CentralDbProcessor implements IPlugin
 				quote.setTimeStamp(cal.getTime());
 			}
 		}
-		else if (sessionType == MarketSessionType.PREOPEN)
+		else if (sessionType == MarketSessionType.PREMARKET)
 		{
 			quote.setTimeStamp(sessionEnd);
 		}
@@ -921,7 +921,7 @@ public class CentralDbProcessor implements IPlugin
 			resetStatement() ;
 			sendRefDataRequest();
 		}
-		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREOPEN)
+		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PREMARKET)
 			isProcessQuote = true;
 	}
 	

@@ -32,7 +32,7 @@ public class MarketSessionChecker implements IMarketSession {
             if (session == null)
                 session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
             for (MarketSessionData data : session.getSessionDatas()) {
-                if (!data.getSessionType().equals(MarketSessionType.PREOPEN))
+                if (!data.getSessionType().equals(MarketSessionType.PREMARKET))
                     continue;
                 if (TimeUtil.getTimePass(date, data.getStartDate()) > 0) {
                     tradeDate = date;
@@ -54,7 +54,7 @@ public class MarketSessionChecker implements IMarketSession {
             if (!compare(data, date))
                 continue;
             
-            if (data.getSessionType().equals(MarketSessionType.PREOPEN) && tradeDateManager != null) {
+            if (data.getSessionType().equals(MarketSessionType.PREMARKET) && tradeDateManager != null) {
                 if (currentType != null && !currentType.equals(data.getSessionType())){
                 	if( tradeDate == null)
                 		continue;

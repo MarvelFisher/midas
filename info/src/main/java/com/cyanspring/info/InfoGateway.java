@@ -80,7 +80,7 @@ public class InfoGateway implements IPlugin {
 
 	public void processMarketSessionEvent(final MarketSessionEvent event) {
 		MarketSessionType mst = event.getSession();
-		if (MarketSessionType.PREOPEN != mst && MarketSessionType.CLOSE != mst) {
+		if (MarketSessionType.PREMARKET != mst && MarketSessionType.CLOSE != mst) {
 			return;
 		}
 		log.info("[MarketSessionEvent] : " + mst);

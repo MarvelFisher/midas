@@ -196,7 +196,7 @@ public class MarketDataManager extends MarketDataReceiver {
                             }
                         }
                         //Process Clean Session
-                        if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN) {
+                        if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET) {
                             ArrayList<String> symbols = indexSessionTypes.get(index);
                             for (String symbol : symbols) {
                                 if (quoteCleaner != null) {

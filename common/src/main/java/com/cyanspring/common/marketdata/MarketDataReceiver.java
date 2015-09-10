@@ -287,7 +287,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 log.debug("forex can't get marketSessionData - " + quote.getSymbol() + "," + e.getMessage());
             }
             if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    || marketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
+                    || marketSessionData.getSessionType() == MarketSessionType.PREMARKET)) {
                 //get IB close & Open price
                 if(inEvent.getQuoteSource()==QuoteSource.IB){
                     if(quotes.containsKey(quote.getSymbol())){

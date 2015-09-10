@@ -69,7 +69,7 @@ public class PremiumFollowManager extends Compute {
 	public void processMarketSessionEvent(MarketSessionEvent event,
 			List<Compute> computes) {
 		MarketSessionType mst = event.getSession();
-		if (MarketSessionType.PREOPEN == mst) {
+		if (MarketSessionType.PREMARKET == mst) {
 			// Get All
 			getPremiumUserTableAll();
 		} else if (MarketSessionType.CLOSE == mst) {

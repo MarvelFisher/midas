@@ -13,7 +13,7 @@ public abstract class AbstractWindDataParser {
 
     public static int getItemSessionStatus(MarketSessionData marketSessionData){
         int sessionStatus = -1;
-        if(MarketSessionType.PREOPEN == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_PREOPEN;
+        if(MarketSessionType.PREMARKET == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_PREOPEN;
         if(MarketSessionType.OPEN == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_OPEN;
         if(MarketSessionType.CLOSE == marketSessionData.getSessionType()) sessionStatus = INDEXSESSION_CLOSE;
         return sessionStatus;

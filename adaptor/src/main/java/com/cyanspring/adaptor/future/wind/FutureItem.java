@@ -134,7 +134,7 @@ public class FutureItem implements AutoCloseable {
 
             //modify tick Time
         	if (quoteMgr.isModifyTickTime()) {
-	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+	            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
 	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
 	                tickTime = endDate;
 	            }
@@ -179,7 +179,7 @@ public class FutureItem implements AutoCloseable {
             quote.setfTurnover((double) futureData.getfTurnover());
 
             //Check Stale
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
                     || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
                 quote.setStale(true);
             }
