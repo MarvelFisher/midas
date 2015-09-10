@@ -143,7 +143,7 @@ public class MarketDataManager extends MarketDataReceiver {
                 }
             }
         }
-        if(isInitReqDataEnd) {
+        if(isInitReqDataEnd && !isPreSubscribing) {
             if (quote == null || quote.isStale()) {
                 for (IMarketDataAdaptor adaptor : adaptors) {
                     if (!adaptor.getState())
