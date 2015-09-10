@@ -93,6 +93,17 @@
         <property name="reqMarketDepth" value="false" />
         <property name="logMarketData" value="false" />
         <property name="cancelOpenOrders" value="true" />
+        <property name="checkLastTimeInterval" value="15000" />
+    </bean>
+
+    <bean id="ibAdaptor2" class="com.cyanspring.adaptor.ib.IbAdaptor">
+        <property name="id" value="IB02" />
+        <property name="host" value="10.0.0.30" />
+        <property name="port" value="4001" />
+        <property name="clientId" value="300" />
+        <property name="reqMarketDepth" value="false" />
+        <property name="logMarketData" value="false" />
+        <property name="cancelOpenOrders" value="true" />
     </bean>
 
     <!-- IDAdaptor setting (Setting can be marked if not used) -->

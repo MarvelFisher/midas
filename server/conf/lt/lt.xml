@@ -358,6 +358,7 @@
 		<constructor-arg>
 			<list>
 				<ref bean="ibAdaptor" />
+				<ref bean="ibAdaptor2" />
 			</list>
 		</constructor-arg>
 	</bean>
