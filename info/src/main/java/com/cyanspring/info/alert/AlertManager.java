@@ -52,6 +52,7 @@ public class AlertManager extends Compute {
     private String market ;
 	private boolean checkAlertstart = true;
     private Date LastHeartbeat;
+    private int timerinterval;
 
 	private Map<String, ArrayList<BasePriceAlert>> symbolPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
 	private Map<String, ArrayList<BasePriceAlert>> userPriceAlerts = new HashMap<String, ArrayList<BasePriceAlert>>();
@@ -85,7 +86,7 @@ public class AlertManager extends Compute {
 
 		AsyncTimerEvent SendSQLHeartTimer = new AsyncTimerEvent();
 		SendSQLHeartTimer.setKey("SendSQLHeartTimer");
-		scheduleManager.scheduleRepeatTimerEvent(300000, getEventProcessorMD(), SendSQLHeartTimer);
+		scheduleManager.scheduleRepeatTimerEvent(getTimerinterval(), getEventProcessorMD(), SendSQLHeartTimer);
 	}
 
 	@Override
@@ -1112,6 +1113,14 @@ public class AlertManager extends Compute {
 
     public void setMarket(String market) {
         this.market = market;
+    }
+
+    public int getTimerinterval() {
+        return timerinterval;
+    }
+
+    public void setTimerinterval(int timerinterval) {
+        this.timerinterval = timerinterval;
     }
 
 }
