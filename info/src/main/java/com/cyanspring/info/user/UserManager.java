@@ -55,6 +55,7 @@ public class UserManager implements IPlugin {
 	private String market;
 	private String tradeDate;
     private Date LastHeartbeat;
+    private int timerinterval;
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 		@Override
 		public void subscribeToEvents() {
@@ -191,11 +192,12 @@ public class UserManager implements IPlugin {
 			}
             strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "') on duplicate update set USER_ID='" + UserId + "';";
             try {
-                UpdateQuery(strCmd, session);
+                query = session.createSQLQuery(strCmd);
+                Return = query.executeUpdate();
             }
-            catch(Exception e)
-            {
+            catch (Exception e) {
             }
+
 			ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(
 					event.getKey(), event.getSender(), event.getAccount(),
 					event.getTxId(), event.getUserId(), event.getMarket(),
@@ -286,7 +288,7 @@ public class UserManager implements IPlugin {
         if (eventProcessorMD.getThread() != null)
             eventProcessorMD.getThread().setName("UserManager-MD");
 
-        scheduleManager.scheduleRepeatTimerEvent(300000, eventProcessorMD,
+        scheduleManager.scheduleRepeatTimerEvent(getTimerinterval(), eventProcessorMD,
                 timerEvent);
     }
 
@@ -296,4 +298,12 @@ public class UserManager implements IPlugin {
 		eventProcessor.uninit();
 		// TODO Auto-generated method stub
 	}
+
+    public int getTimerinterval() {
+        return timerinterval;
+    }
+
+    public void setTimerinterval(int timerinterval) {
+        this.timerinterval = timerinterval;
+    }
 }

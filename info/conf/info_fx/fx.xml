@@ -29,7 +29,8 @@
 	</bean>
 	
 	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
-	</bean>
+        <property name="timerinterval"   value="300000"/>
+    </bean>
 	
 	<bean id="useLocalMdReceiver" class="java.lang.Boolean">
 		<constructor-arg value="false"/>

@@ -411,6 +411,7 @@
 	</bean>
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
+		<property name="useMid" value="true"></property>
 	</bean>
 
 	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
