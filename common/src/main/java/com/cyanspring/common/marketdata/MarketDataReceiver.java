@@ -81,7 +81,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitMarketSessionReceived = false;
     protected volatile boolean isInit = false;
     protected volatile boolean isInitReqDataEnd = false;
-    private volatile boolean isPreSubscribing = false;
+    protected volatile boolean isPreSubscribing = false;
     protected RefDataEvent refDataEvent;
     protected IndexSessionEvent indexSessionEvent;
     boolean state = false;
@@ -602,6 +602,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         } finally {
             isPreSubscribing = false;
         }
+        log.debug("Market data presubscribe end");
     }
 
     public int getQuoteExtendSegmentSize() {
