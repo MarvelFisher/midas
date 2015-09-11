@@ -15,6 +15,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.event.AsyncEventProcessor;
+import com.cyanspring.info.InfoGateway;
 
 public abstract class Compute {
 	private List<Class<? extends AsyncEvent>> lst;
@@ -24,6 +25,7 @@ public abstract class Compute {
 //	private IRemoteEventManager eventManagerMD;	
 	private AsyncEventProcessor eventProcessor ;
 	private AsyncEventProcessor eventProcessorMD ;
+	private InfoGateway gateway;
 	public List<Class<? extends AsyncEvent>> getSubscirbetoEventList() {
 		setLst(new ArrayList<Class<? extends AsyncEvent>>());
 		SubscirbetoEvents();
@@ -57,10 +59,12 @@ public abstract class Compute {
 //		init() ;
 //	}
 	
-	public void initial(AsyncEventProcessor EventProcessor , AsyncEventProcessor EventProcessorMD)
+	public void initial(AsyncEventProcessor EventProcessor, 
+			AsyncEventProcessor EventProcessorMD, InfoGateway gateway)
 	{
 		this.setEventProcessor(EventProcessor);		
-		this.setEventProcessorMD(EventProcessorMD) ;
+		this.setEventProcessorMD(EventProcessorMD);
+		this.setGateway(gateway);
 		init() ;
 	}
 	
@@ -130,5 +134,15 @@ public abstract class Compute {
 
 	public void setEventProcessorMD(AsyncEventProcessor eventProcessorMD) {
 		this.eventProcessorMD = eventProcessorMD;
+	}
+
+	public InfoGateway getGateway()
+	{
+		return gateway;
+	}
+
+	public void setGateway(InfoGateway gateway)
+	{
+		this.gateway = gateway;
 	}
 }

@@ -207,6 +207,10 @@ public class InfoGateway implements IPlugin {
 			}
 		}
 	}
+	
+	public RefData getRefData(String symbol) {
+		return refDataMap.get(symbol);
+	}
 
 	@Override
 	public void init() throws Exception {
@@ -233,7 +237,7 @@ public class InfoGateway implements IPlugin {
 //			sendRemoteEventQueue = new ConcurrentLinkedQueue<AsyncEvent>(); 
 //			sendEventQueue = new ConcurrentLinkedQueue<AsyncEvent>();
 			for (Compute compute : Computes) {
-				compute.initial(eventProcessor, eventProcessorMD);
+				compute.initial(eventProcessor, eventProcessorMD, this);
 			}
 			
 		} catch (Exception e) {
