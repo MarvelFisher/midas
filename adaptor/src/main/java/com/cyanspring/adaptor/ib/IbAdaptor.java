@@ -108,6 +108,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 public void run() {
                     while (true) {
                         if (clientSocket.isConnected() == false) {
+                            isConnected = true;
                             marketSubscribed = false;
                             if(reqDataReceived){
                                 ConnectToIBGateway();
