@@ -388,7 +388,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         // flush out all quotes throttled
         for (Entry<String, InnerQuoteEvent> entry : innerQuotesToBeSent.entrySet()) {
             InnerQuoteEvent innerQuoteEvent = entry.getValue();
-            printQuoteLog(innerQuoteEvent.getQuoteSource(),innerQuoteEvent.getContributor()
+            if(quoteLogIsOpen) printQuoteLog(innerQuoteEvent.getQuoteSource(),innerQuoteEvent.getContributor()
                     ,innerQuoteEvent.getQuote(),QuoteLogLevel.GENERAL);
             sendQuoteEvent(innerQuoteEvent.getQuoteEvent());
         }

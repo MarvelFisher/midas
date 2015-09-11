@@ -59,7 +59,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     String path = "";
     volatile boolean isClose = false;
     Object m_lock = new Object();
-    MarketSessionType marketSessionType = MarketSessionType.DEFAULT;
 
     List<IMarketDataStateListener> stateList = new ArrayList<IMarketDataStateListener>();
     List<UserClient> clientsList = new ArrayList<UserClient>();
@@ -174,13 +173,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
             try {
                 Thread.sleep(3000);
-                if (IdMarketDataAdaptor.instance.marketSessionType == MarketSessionType.CLOSE) {
-                    log.info("Market is Closed , wait for pre-open");
-                    while (IdMarketDataAdaptor.instance.marketSessionType == MarketSessionType.CLOSE) {
-                        Thread.sleep(1000);
-                        continue;
-                    }
-                }
             } catch (InterruptedException e) {
             }
         }
@@ -391,15 +383,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     @Override
     public void processEvent(Object object) {
-        //IndexSessionEvent
-        if(object instanceof IndexSessionEvent){
-            IndexSessionEvent indexSessionEvent = (IndexSessionEvent) object;
-            if(indexSessionEvent.getDataMap().containsKey("FX")) {
-                marketSessionType = indexSessionEvent.getDataMap().get("FX").getSessionType();
-            }else{
-                log.warn("IndexSession Not FX!");
-            }
-        }
     }
 
     @Override

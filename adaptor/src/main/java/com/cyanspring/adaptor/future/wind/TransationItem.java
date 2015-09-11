@@ -99,7 +99,7 @@ public class TransationItem implements AutoCloseable {
 
         //modify tick Time
         if (quoteMgr.isModifyTickTime()) {
-            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
+            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
                     && DateUtil.compareDate(tickTime, endDate) < 0) {
                 tickTime = endDate;
             }
@@ -109,7 +109,8 @@ public class TransationItem implements AutoCloseable {
                 tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
             }
 
-            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+            if ((marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                    || marketSessionData.getSessionType() == MarketSessionType.BREAK)
                     && DateUtil.compareDate(tickTime, startDate) >= 0) {
                 if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
                     tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
