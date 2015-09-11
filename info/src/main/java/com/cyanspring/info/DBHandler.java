@@ -112,7 +112,6 @@ public class DBHandler
             log.error(se.getMessage(), se);
 			log.warn("Exception while: " + sqlcmd);
 			closeConnect(connect);
-			return;
         }
 		try 
 		{
@@ -218,6 +217,7 @@ public class DBHandler
 		}
 		try 
 		{
+			int pos;
 			String group, name, strCount;
 			int count;
 			while(rs.next())
@@ -310,6 +310,7 @@ public class DBHandler
     		closeConnect(connect);
 			return null;
 		}
+		boolean success = false;
     	try {
     		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -331,29 +332,23 @@ public class DBHandler
 			rs.close();
 			if (getPrice)
 			{
-//				return price ;
-			}
-			else
-			{
-				price = null;
+				success = true;
 			}
 		} 
     	catch (SQLException e) 
     	{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-            price = null ;
 		} 
     	catch (ParseException e) 
     	{
             log.error(e.getMessage(), e) ;
-            price = null ;
 		}
     	finally
     	{
     		closeConnect(connect);
     	}
-    	return price;
+		return success ? price : null;
     }
     public List<HistoricalPrice> getPeriodValue(String market, String type, String symbol, Date startdate)
     {
@@ -376,7 +371,8 @@ public class DBHandler
     		closeConnect(connect);
 			return null;
 		}
-		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
+    	ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>();
+    	boolean success = false;
     	try 
     	{
     		HistoricalPrice price;
@@ -397,23 +393,22 @@ public class DBHandler
 				retList.add(price);
 			}
 			rs.close();
+			success = true;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-            retList = null ;
 		} 
     	catch (ParseException e) 
     	{
             log.error(e.getMessage(), e) ;
-            retList = null ;
 		}
     	finally
     	{
     		closeConnect(connect);
     	}
-		return retList;
+    	return success ? retList : null; 
     }
     
     public List<HistoricalPrice> getPeriodStartEndValue(String market, String type, String symbol, Date startDate, Date endDate)
@@ -446,6 +441,7 @@ public class DBHandler
 			return null;
 		}
 		ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>(); 
+    	boolean success = false;
     	try 
     	{
     		HistoricalPrice price;
@@ -474,18 +470,18 @@ public class DBHandler
 				} 
 			}
 			rs.close();
+			success = true;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-            retList = null ;
 		} 
     	finally
     	{
     		closeConnect(connect);
     	}
-		return retList;
+		return success ? retList : null;
     }
     
     public List<HistoricalPrice> getCountsValue(String market, String type, String symbol, int dataCount, String retrieveDate,boolean bLimit)
@@ -585,6 +581,7 @@ public class DBHandler
 			return null;
 		}	
 		HashMap<String, List<HistoricalPrice>> retMap = new HashMap<String, List<HistoricalPrice>>();
+    	boolean success = false;
     	try 
     	{
     		HistoricalPrice price;
@@ -637,18 +634,18 @@ public class DBHandler
 			}
 			rs.close();
 			log.debug("Get Historical List size: " + nCount);
+			success = true;
 		} 
     	catch (SQLException e) 
 		{
             log.error(e.getMessage(), e) ;
             log.trace(sqlcmd);
-            retMap = null ;
 		} 
     	finally
     	{
     		closeConnect(connect);
     	}
-		return retMap;
+		return success ? retMap : null;
     }
     
 //    public List<HistoricalPrice> getHistoricalPrice(String sqlcmd)
