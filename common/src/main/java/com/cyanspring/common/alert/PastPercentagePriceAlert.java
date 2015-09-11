@@ -8,8 +8,8 @@ public class PastPercentagePriceAlert extends BasePriceAlert{
 	private String content ;
 	private double percentage ;	
 	
-	public PastPercentagePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content) {
-		super(userId, percentage, symbol, strdateTime, content);
+	public PastPercentagePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content, String commodity) {
+		super(userId, percentage, symbol, strdateTime, content, commodity);
 	}
 	
 	public PastPercentagePriceAlert()

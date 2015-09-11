@@ -98,7 +98,7 @@ public class AlertManager extends Compute {
 			List<Compute> computes) {
 		log.info("[MarketSessionEvent] : " + event);
 		MarketSessionType mst = event.getSession();
-		if (MarketSessionType.PREOPEN == mst) {			
+		if (MarketSessionType.PREMARKET == mst) {			
 			checkAlertstart = true;
 		} else if (MarketSessionType.CLOSE == mst) {
 			checkAlertstart = false;

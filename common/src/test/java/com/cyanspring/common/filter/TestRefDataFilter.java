@@ -19,16 +19,16 @@ import com.cyanspring.common.staticdata.fu.IType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataFilterTest.xml" })
 public class TestRefDataFilter {
-	
+
 	@Autowired
 	RefDataFilter refDataFilter;
-	
+
 	RefData refData1;
 	RefData refData2;
 	RefData refData3;
 	RefData refData4;
 	List<RefData> lstRefData;
-	
+
 	@Before
 	public void before() {
 		lstRefData = new ArrayList<RefData>();
@@ -42,7 +42,7 @@ public class TestRefDataFilter {
 		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
-		refData1.setRefSymbol("AG12.SHF");
+		refData1.setRefSymbol("AG12");
 		refData1.setSettlementDate("2017-08-21");
 		refData1.setCommodity(RefDataCommodity.FUTURES.getValue());
 
@@ -51,7 +51,7 @@ public class TestRefDataFilter {
 		refData2.setSymbol("ag1511.SHF");
 		refData2.setCategory("AG");
 		refData2.setExchange("SHF");
-		refData2.setRefSymbol("AG11.SHF");
+		refData2.setRefSymbol("AG11");
 		refData2.setSettlementDate("2017-08-21");
 		refData2.setCommodity(RefDataCommodity.FUTURES.getValue());
 
@@ -61,17 +61,17 @@ public class TestRefDataFilter {
 		refData3.setSymbol("IF1502");
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
-		refData3.setRefSymbol("AG.SHF");
+		refData3.setRefSymbol("AG");
 		refData3.setSettlementDate("2017-08-21");
 		refData3.setCommodity(RefDataCommodity.FUTURES.getValue());
-		
+
 		// Non-existing Category
 		refData4 = new RefData();
 		refData4.setIType(IType.FUTURES_CX.getValue());
 		refData4.setSymbol("IF1502");
 		refData4.setCategory("BG");
 		refData4.setExchange("SHF");
-		refData4.setRefSymbol("AG.SHF");
+		refData4.setRefSymbol("AG");
 		refData4.setSettlementDate("2017-08-21");
 		refData4.setCommodity(RefDataCommodity.FUTURES.getValue());
 
@@ -80,11 +80,11 @@ public class TestRefDataFilter {
 		lstRefData.add(refData3);
 		lstRefData.add(refData4);
 		assertEquals(4, lstRefData.size());
-		
+
 		lstRefData = refDataFilter.filter(lstRefData);
-		
+
 		assertEquals(2, lstRefData.size());
-		assertEquals("AG.SHF", lstRefData.get(1).getRefSymbol());
+		assertEquals("AG", lstRefData.get(1).getRefSymbol());
 	}
-	
+
 }

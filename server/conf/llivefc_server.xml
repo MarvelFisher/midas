@@ -8,12 +8,10 @@
     <context:annotation-config />
 
     <import resource="test/livefc_test.xml" />
-    <import resource="livefc/MarketSession.xml" />
-    <import resource="livefc/IFSessionState.xml" />
-    <import resource="livefc/ICSessionState.xml" />
-    <import resource="livefc/IHSessionState.xml" />
-    <import resource="livefc/INDEXSessionState.xml" />
+    
+    <import resource="livefc/marketsession/*.xml" />
     <import resource="livefc/business.xml" />
+    <import resource="livefc/windRefData.xml" />
     <import resource="livefc/LiveTrading.xml" />
     <import resource="common/strategy.xml" />
     <import resource="common/centralDb.xml" />
@@ -50,30 +48,51 @@
         <constructor-arg value="05:45:00" />
     </bean>
 
-    <!-- MarketDataManager setting-->
+    <!-- MarketDataManager setting -->
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <ref bean="simMarketDataAdaptor" />
+                <ref bean="windAdaptorFCI" />
             </list>
         </constructor-arg>
-        <property name="quoteThrottle" value="1000"/>
-        <property name="timerInterval" value="1000"/>
         <property name="quoteLogIsOpen" value="true"/>
-        <property name="quoteExtendEventIsSend" value="false"/>
+        <property name="quoteExtendEventIsSend" value="true"/>
+        <property name="quoteExtendSegmentSize" value="300"/>
         <property name="preSubscriptionList">
             <ref bean="preSubscriptionList" />
         </property>
         <property name="sessionMonitor">
             <map>
                 <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-                <entry key="PREOPEN" value="0" />
+                <entry key="PREMARKET" value="0" />
                 <entry key="CLOSE" value="0" />
             </map>
         </property>
         <property name="quoteChecker" ref="quoteChecker"/>
         <property name="quoteSaver" ref="quoteSaver"/>
+        <property name="quoteCleaner" ref="quoteCleaner"/>
+        <property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
         <property name="broadcastQuote" value="false"/>
+    </bean>
+
+    <!-- WindAdaptor setting (Setting can be marked if not used) -->
+
+    <bean id="windAdaptorFCI"
+          class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+        <property name="showGui" value="true"></property>
+        <property name="gatewayIp" value="10.0.0.32"></property>
+        <property name="gatewayPort" value="10048"></property>
+        <property name="marketDataLog" value="false"></property>
+        <property name="tradeDateCheckIsOpen" value="true"></property>
+        <property name="closeOverTimeControlIsOpen" value="true"></property>
+        <property name="msgPack" value="true"></property>
+        <property name="isSubTrans" value="false"></property>
+        <property name="useMarketSession" ref="useMarketSession"/>
+    </bean>
+
+    <!-- useMarketSession setting -->
+    <bean id="useMarketSession" class="java.lang.Boolean">
+        <constructor-arg value="false" />
     </bean>
 
     <!-- Derby setting -->
@@ -165,6 +184,7 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
                 <value>DEFAULT</value>          <!-- liveTradingType -->
+                <value>1.0</value>              <!-- orderQuantity2 -->
             </list>
         </property>
     </bean>

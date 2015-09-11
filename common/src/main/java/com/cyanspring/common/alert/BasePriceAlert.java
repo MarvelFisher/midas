@@ -6,29 +6,43 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	private String id;
 	private String userId;
 	private String symbol;
+    private String Commodity;
 	private double price;
 	private String dateTime ;
 	private String content ;
 	private double percentage ;
 	private boolean sendFlag;
 	
-	public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content){
+	public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content, String commodity){
 		super();
 		this.id = "A" + IdGenerator.getInstance().getNextID();
 		this.setUserId(userId); //david
 		this.setSymbol(symbol);  //USDJPY
+        this.setCommodity(commodity);
 		this.setPrice(price);
 		this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 		this.setContent(content);
 		this.setSendFlag(false);
 	}
+
+    public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content){
+        super();
+        this.id = "A" + IdGenerator.getInstance().getNextID();
+        this.setUserId(userId); //david
+        this.setSymbol(symbol);  //USDJPY
+        this.setPrice(price);
+        this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
+        this.setContent(content);
+        this.setSendFlag(false);
+    }
 	
-	public BasePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content){
+	public BasePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content, String commodity){
 			super();
 			this.id = "A" + IdGenerator.getInstance().getNextID();
 			this.setUserId(userId); //david
 			this.setSymbol(symbol);  //USDJPY
-			this.setPercentage(percentage);
+			this.setCommodity(commodity);
+            this.setPercentage(percentage);
 			this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 			this.setContent(content);
 			this.setSendFlag(false);
@@ -144,5 +158,14 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 
 	public void setSendFlag(boolean sendFlag) {
 		this.sendFlag = sendFlag;
-	}	
+	}
+
+    public String getCommodity() {
+        return Commodity;
+    }
+
+    public void setCommodity(String commodity) {
+        Commodity = commodity;
+    }
+
 }

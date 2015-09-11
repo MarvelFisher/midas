@@ -81,7 +81,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private volatile boolean isInitMarketSessionReceived = false;
     protected volatile boolean isInit = false;
     protected volatile boolean isInitReqDataEnd = false;
-    private volatile boolean isPreSubscribing = false;
+    protected volatile boolean isPreSubscribing = false;
     protected RefDataEvent refDataEvent;
     protected IndexSessionEvent indexSessionEvent;
     boolean state = false;
@@ -287,7 +287,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 log.debug("forex can't get marketSessionData - " + quote.getSymbol() + "," + e.getMessage());
             }
             if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    || marketSessionData.getSessionType() == MarketSessionType.PREOPEN)) {
+                    || marketSessionData.getSessionType() == MarketSessionType.PREMARKET)) {
                 //get IB close & Open price
                 if(inEvent.getQuoteSource()==QuoteSource.IB){
                     if(quotes.containsKey(quote.getSymbol())){
@@ -602,6 +602,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         } finally {
             isPreSubscribing = false;
         }
+        log.debug("Market data presubscribe end");
     }
 
     public int getQuoteExtendSegmentSize() {

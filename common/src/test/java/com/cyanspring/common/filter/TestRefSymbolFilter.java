@@ -22,23 +22,23 @@ import com.cyanspring.common.staticdata.fu.IType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/RefSymbolFilterTest.xml" })
 public class TestRefSymbolFilter {
-	
+
 	@Autowired
 	@Qualifier("refSymbolFilter")
 	IRefDataFilter iDataFilter;
-	
+
 	RefData refData1;
 	RefData refData2;
 	List<RefData> lstRefData;
 
 	boolean flagAG = false;
 	boolean flagAG11 = false;
-	
+
 	@Before
 	public void before() {
 		lstRefData = new ArrayList<RefData>();
 	}
-	
+
 	@Test
 	public void testRefDataFilter() throws Exception {
 		// Will be replaced by 活躍 one later
@@ -47,7 +47,7 @@ public class TestRefSymbolFilter {
 		refData1.setSymbol("IF1502");
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
-		refData1.setRefSymbol("AG12.SHF");
+		refData1.setRefSymbol("AG12");
 		refData1.setCommodity(RefDataCommodity.FUTURES.getValue());
 
 		// AG 活躍
@@ -56,24 +56,24 @@ public class TestRefSymbolFilter {
 		refData2.setSymbol("IF1502");
 		refData2.setCategory("AG");
 		refData2.setExchange("SHF");
-		refData2.setRefSymbol("AG.SHF");
+		refData2.setRefSymbol("AG");
 		refData2.setCommodity(RefDataCommodity.FUTURES.getValue());
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);
 		assertEquals(2, lstRefData.size());
-		
-		List<RefData> lstFilteredRefData = (List<RefData>) iDataFilter.filter(lstRefData);
+
+		List<RefData> lstFilteredRefData = iDataFilter.filter(lstRefData);
 		assertEquals(1, lstFilteredRefData.size());
-		
+
 		for (RefData refData : lstFilteredRefData) {
-			if (refData.getRefSymbol().equals("AG.SHF")) {
+			if (refData.getRefSymbol().equals("AG")) {
 				flagAG = true;
-			} else if (refData.getRefSymbol().equals("AG11.SHF")) {
+			} else if (refData.getRefSymbol().equals("AG11")) {
 				flagAG11 = true;
 			}
 		}
-		
+
 		assertTrue(flagAG);
 		assertFalse(flagAG11); // since symbol doesn't exist in FcRefDataTemplate and were excluded.
 	}

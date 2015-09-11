@@ -62,7 +62,7 @@
         <property name="sessionMonitor">
             <map>
                 <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-                <entry key="PREOPEN" value="0" />
+                <entry key="PREMARKET" value="0" />
                 <entry key="CLOSE" value="0" />
             </map>
         </property>
@@ -184,6 +184,7 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
                 <value>DEFAULT</value>          <!-- liveTradingType -->
+                <value>1.0</value>              <!-- orderQuantity2 -->
             </list>
         </property>
     </bean>

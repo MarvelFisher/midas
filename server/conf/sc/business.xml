@@ -12,6 +12,7 @@
 	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
 	    <constructor-arg>
 	        <list>
+	        	
 	        	<ref bean="accountStateValidator"/>
 				<ref bean="marketSessionValidator"/>
 				<ref bean="liveTradingSessionValidator"/>
@@ -113,7 +114,14 @@
 	<bean id="maxLotValidator" class="com.cyanspring.server.validation.MaxLotValidator"></bean>
 	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.IndexMarketSessionValidator"></bean>
 
-	<bean id="availablePositionValidator" class="com.cyanspring.server.validation.AvailablePositionValidator" />
+	<bean id="availablePositionValidator" class="com.cyanspring.server.validation.AvailablePositionValidator" >
+		<property name="futureITypeSet" >
+			<set value-type="com.cyanspring.common.staticdata.fu.IType">
+				<value>FUTURES_CX</value>
+				<value>FUTURES_IDX</value>
+			</set>
+		</property>
+	</bean>
 	
 	<bean id="fixToOrderMap" class="com.cyanspring.common.util.DualMap">
 	    <constructor-arg>
@@ -194,6 +202,7 @@
 				<value>0</value>
 				<value>0</value>
 				<value>DAY_TRADING</value>
+				<value>100000.0</value>         <!-- orderQuantity2 -->
             </list>
        </property>
     </bean>

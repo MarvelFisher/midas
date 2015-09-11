@@ -66,11 +66,11 @@ public class RefSymbolFilter implements IRefDataFilter {
 				String key = type + symbol;
 				// If DataObject has duplicate IType+Symbol, exclude the later one unless it's 活躍
 				if (mapRefData.containsKey(key)) { 
-					if (refSymbol.equals(category + "." + exchange)) {
+					if (refSymbol.equals(category)) {
 						// Means current one is 活躍, remove existing one
 						mapRefData.remove(key);
 					} else {
-						continue; // Even Map has unique keys...
+						continue;
 					}
 				}
 				

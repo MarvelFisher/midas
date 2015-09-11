@@ -32,7 +32,7 @@
 
     <bean id="dataBaseUrl" class="java.lang.String">
         <constructor-arg
-                value="jdbc:mysql://125.227.191.247:3306/LT_Global?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+                value="jdbc:mysql://125.227.191.247:3306/LTS_Global_INC?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
     </bean>
     <bean id="dataBaseUser" class="java.lang.String">
         <constructor-arg value="tqt001" />
@@ -72,7 +72,7 @@
         <property name="sessionMonitor">
             <map>
                 <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-                <entry key="PREOPEN" value="0" />
+                <entry key="PREMARKET" value="0" />
                 <entry key="CLOSE" value="0" />
                 <entry key="PRECLOSE" value="0" />
             </map>
@@ -212,6 +212,7 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->              
                 <value>DAY_TRADING</value>          <!-- liveTradingType -->
+                <value>100000.0</value>         <!-- orderQuantity2 -->
             </list>
         </property>
     </bean>

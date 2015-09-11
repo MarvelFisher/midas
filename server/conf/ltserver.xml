@@ -72,7 +72,7 @@
         <property name="sessionMonitor">
             <map>
                 <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-                <entry key="PREOPEN" value="0" />
+                <entry key="PREMARKET" value="0" />
                 <entry key="CLOSE" value="0" />
                 <entry key="PRECLOSE" value="0" />
             </map>
@@ -90,6 +90,17 @@
         <property name="host" value="10.0.0.30" />
         <property name="port" value="4001" />
         <property name="clientId" value="499" />
+        <property name="reqMarketDepth" value="false" />
+        <property name="logMarketData" value="false" />
+        <property name="cancelOpenOrders" value="true" />
+        <property name="checkLastTimeInterval" value="15000" />
+    </bean>
+
+    <bean id="ibAdaptor2" class="com.cyanspring.adaptor.ib.IbAdaptor">
+        <property name="id" value="IB02" />
+        <property name="host" value="10.0.0.30" />
+        <property name="port" value="4001" />
+        <property name="clientId" value="500" />
         <property name="reqMarketDepth" value="false" />
         <property name="logMarketData" value="false" />
         <property name="cancelOpenOrders" value="true" />
@@ -212,6 +223,7 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->              
                 <value>DEFAULT</value>          <!-- liveTradingType -->
+                <value>100000.0</value>         <!-- orderQuantity2 -->
             </list>
         </property>
     </bean>

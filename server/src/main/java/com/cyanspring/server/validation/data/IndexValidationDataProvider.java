@@ -82,7 +82,7 @@ public class IndexValidationDataProvider implements IPlugin, IQuoteExtProvider {
 			
 			MarketSessionData session = entry.getValue();
 			symbolSessionMap.put(symbol, session);
-			if(MarketSessionType.PREOPEN.equals(session.getSessionType())){
+			if(MarketSessionType.PREMARKET.equals(session.getSessionType())){
 				symbolList.add(symbol);
 				if(quoteExtendsMap.containsKey(symbol)){
 					quoteExtendsMap.remove(symbol);

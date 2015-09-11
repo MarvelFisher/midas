@@ -12,10 +12,13 @@
 	<import resource="info_common/ticktable_ifx.xml"/>
 
 	
-	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
-		<property name="maxNoOfAlerts" value="20" />
-	</bean>	
-	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">	
+	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">
+        <property name="maxNoOfAlerts" value="20" />
+        <property name="deepLink" value="forexmasterinc://fdt/portfolio/portfoliodetail?symbolid=" />
+        <property name="market"   value="FX"/>
+        <property name="timerinterval"   value="300000"/>
+    </bean>
+	<bean id="premiumFollowManager" class="com.cyanspring.info.alert.PremiumFollowManager">
 		<property name="getPremiumTableInterval" value="300000" />
 <!-- 	##b$$ = <b> -->
 		<property name="PremiumFollowHtmlFormat" value="##b$$%UserName%##/b$$ %Side% ##b$$%Currency%##/b$$ %Quantity%@%Price%" />
@@ -160,7 +163,7 @@
 		<property name="sessionMonitor">
 			<map>
 				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-				<entry key="PREOPEN" value="0" />
+				<entry key="PREMARKET" value="0" />
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
