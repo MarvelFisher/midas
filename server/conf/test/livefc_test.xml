@@ -29,7 +29,6 @@
         <property name="plugins">
             <list>
             	<ref bean="marketSessionUtil"/>
-                <ref bean="marketSessionManager" />
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager"/>
                 <ref bean="mdManager" />
@@ -355,4 +354,6 @@
 		</constructor-arg>
 	</bean>
 
+    <bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner"/>
+    <bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner"/>
 </beans>

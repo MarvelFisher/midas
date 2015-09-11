@@ -36,9 +36,6 @@ public class CoinManager implements IPlugin{
 	
 	@Autowired
 	protected IRemoteEventManager eventManager;
-
-	@Autowired
-	private IRemoteEventManager globalEventManager;
 	
 	@Autowired
     AccountKeeper accountKeeper;
@@ -55,32 +52,15 @@ public class CoinManager implements IPlugin{
 			return eventManager;
 		}
 	};
-
-	private AsyncEventProcessor globalEventProcessor = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {
-			subscribeToEvent(CoinSettingRequestEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return globalEventManager;
-		}
-	};
 	
 	@Override
 	public void init() throws Exception {
+		log.info("init coinControl");
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
 		if (eventProcessor.getThread() != null){
 			eventProcessor.getThread().setName("CoinManager");
 		}
-
-		globalEventProcessor.setHandler(this);
-		globalEventProcessor.init();
-		if(globalEventProcessor.getThread() != null)
-			globalEventProcessor.getThread().setName("CoinManager");
 	}
 
 	@Override
@@ -181,6 +161,7 @@ public class CoinManager implements IPlugin{
 		if(Strings.isNullOrEmpty(message)){
 			isOk = true;
 			coin.setAccountId(accountId);
+//			coin.setModifyTime(new Date());
 			PmUpdateCoinControlEvent pmEvent = new PmUpdateCoinControlEvent(event.getKey(),event.getReceiver(),coin);
 			eventManager.sendEvent(pmEvent);
 			accountCoinControlMap.put(accountId, coin);
@@ -191,11 +172,7 @@ public class CoinManager implements IPlugin{
 				event.getKey(), event.getSender(), event.getTxId(), event.getUserId(), event.getClientId(),
 				event.getCoinType(), event.getMarket(), isOk, message);
 		try {
-			if (!Strings.isNullOrEmpty(event.getMarket())) {
-				globalEventManager.sendRemoteEvent(reply);
-			} else {
-				eventManager.sendRemoteEvent(reply);
-			}
+			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
 			log.warn(e.getMessage(),e);
 		}

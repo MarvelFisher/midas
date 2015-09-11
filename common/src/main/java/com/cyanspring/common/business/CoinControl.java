@@ -15,6 +15,7 @@ public class CoinControl implements Serializable{
 	private Date checkTrailingStopEnd;
 	private Date checkDayTradingModeStart;
 	private Date checkDayTradingModeEnd;
+	private Date modifyTime;
 	
 	public static CoinControl createDefaultCoinControl(String accountId){
 		CoinControl control = new CoinControl();
@@ -27,6 +28,7 @@ public class CoinControl implements Serializable{
 		control.setCheckTrailingStopEnd(null);
 		control.setCheckDayTradingModeStart(null);
 		control.setCheckDayTradingModeEnd(null);
+		control.setModifyTime(new Date());
 		return control;
 	}
 	
@@ -145,5 +147,13 @@ public class CoinControl implements Serializable{
 
 	public void setCheckDayTradingModeEnd(Date checkDayTradingModeEnd) {
 		this.checkDayTradingModeEnd = checkDayTradingModeEnd;
+	}
+
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 }

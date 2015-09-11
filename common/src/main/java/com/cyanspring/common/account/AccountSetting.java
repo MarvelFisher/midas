@@ -35,7 +35,7 @@ public class AccountSetting extends DataObject {
 		settings.setLiveTradingSettedDate("");
 		settings.setFreezeValue(Default.getFreezeValue());			//company daily stop loss value
 		settings.setTerminateValue(Default.getTerminateValue());	//company account stop loss percent
-//		settings.setDefaultQty2(Default.getOrderQuantity2());
+		settings.setDefaultQty2(Default.getOrderQuantity2());
 		return settings;
 	}
 	
@@ -170,7 +170,13 @@ public class AccountSetting extends DataObject {
 		put(AccountSettingType.TERMINATE_VALUE.value(), terminateValue);
 	}
 	
-
+	public Double getDefaultQty2() {
+		Double result = get(double.class, AccountSettingType.DEFAULT_QTY2.value());
+		return null == result? Default.getOrderQuantity2() : result;
+	}
+	public void setDefaultQty2(Double defaultQty2) {
+		put(AccountSettingType.DEFAULT_QTY2.value(), defaultQty2);
+	}
 	
 	public boolean checkLiveTrading(){
 		return (isLiveTrading()||isUserLiveTrading());
