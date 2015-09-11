@@ -175,6 +175,10 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processRefDataEvent(RefDataEvent event) {
+        if(event != null && event.getKey() != null){
+            log.debug("event Key not send self:" + event.getKey());
+            return;
+        }
         super.processRefDataEvent(event);
         //Check last.xml Symbol
         if (event != null && event.isOk() && event.getRefDataList().size() > 0) {
