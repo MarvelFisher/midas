@@ -112,7 +112,7 @@ public class IndexItem implements AutoCloseable {
 
         //modify tick Time
         if (quoteMgr.isModifyTickTime()) {
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
                     && DateUtil.compareDate(tickTime, endDate) < 0) {
                 tickTime = endDate;
             }
@@ -137,7 +137,7 @@ public class IndexItem implements AutoCloseable {
         quote.setTimeStamp(tickTime);
 
         //Check Stale
-        if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+        if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
                 || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
             quote.setStale(true);
         }

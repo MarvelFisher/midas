@@ -87,7 +87,7 @@ public class MarketValidationDataProvider implements IPlugin, IQuoteExtProvider 
 			Date oldTradeDate = tradeDate;
 			String td = event.getTradeDate();
 
-			if (null == oldTradeDate || MarketSessionType.PREOPEN == event.getSession()) {
+			if (null == oldTradeDate || MarketSessionType.PREMARKET == event.getSession()) {
 				setTradeDate(td);
 				sendQuoteExtSubEvent();
 			}

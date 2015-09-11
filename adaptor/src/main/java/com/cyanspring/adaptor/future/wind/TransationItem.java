@@ -99,7 +99,7 @@ public class TransationItem implements AutoCloseable {
 
         //modify tick Time
         if (quoteMgr.isModifyTickTime()) {
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
+            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
                     && DateUtil.compareDate(tickTime, endDate) < 0) {
                 tickTime = endDate;
             }

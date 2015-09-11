@@ -83,7 +83,7 @@ public class FileRefDataHandler implements IPlugin {
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 				return;
 			}
-			if (currentType.equals(event.getSession()) || !MarketSessionType.PREOPEN.equals(event.getSession()))
+			if (currentType.equals(event.getSession()) || !MarketSessionType.PREMARKET.equals(event.getSession()))
 				return;
 			currentType = event.getSession();
 
@@ -111,7 +111,7 @@ public class FileRefDataHandler implements IPlugin {
 				for (Entry<String, MarketSessionData> e : event.getDataMap().entrySet()) {
 					MarketSessionData data = e.getValue();
 					rawMap.put(e.getKey(), data);
-					if (!data.getSessionType().equals(MarketSessionType.PREOPEN))
+					if (!data.getSessionType().equals(MarketSessionType.PREMARKET))
 						continue;
 					log.info("Update refData index: {}", e.getKey());
 					refDataManager.update(e.getKey(), data.getTradeDateByString());

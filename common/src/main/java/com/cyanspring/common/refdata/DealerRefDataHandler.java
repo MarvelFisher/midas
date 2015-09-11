@@ -242,7 +242,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			String index = session.getKey();
 			MarketSessionType type = session.getValue().getSessionType();
 			sessionDataMap.put(index, session.getValue());
-			if (type != MarketSessionType.PREOPEN)
+			if (type != MarketSessionType.PREMARKET)
 				continue;
 			log.info(index + ", " + type.toString());
 			try {

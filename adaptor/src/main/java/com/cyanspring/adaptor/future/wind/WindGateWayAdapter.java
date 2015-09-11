@@ -641,7 +641,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     WindIndexSessionCheckData windIndexSessionCheckData = new WindIndexSessionCheckData(index);
                     windIndexSessionCheckData.setTradeDateForWindFormat(tradeDateForWindFormat);
                     MarketSessionType marketSessionType = marketSessionData.getSessionType();
-                    if (marketSessionType == MarketSessionType.PREOPEN || marketSessionType == MarketSessionType.OPEN)
+                    if (marketSessionType == MarketSessionType.PREMARKET || marketSessionType == MarketSessionType.OPEN)
                         windIndexSessionCheckData.setSessionClose(false);
                     if (marketSessionType == MarketSessionType.CLOSE) {
                         windIndexSessionCheckData.setSessionClose(true);
@@ -670,7 +670,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                                 + marketSessionEvent.getEnd());
                 MarketSessionType marketSessionType = marketSessionEvent.getSession();
 
-                if (marketSessionType == MarketSessionType.PREOPEN) {
+                if (marketSessionType == MarketSessionType.PREMARKET) {
                     bigSessionIsClose = false;
                 }
                 if (marketSessionType == MarketSessionType.OPEN) {
