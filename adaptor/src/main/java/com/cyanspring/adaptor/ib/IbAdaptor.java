@@ -108,7 +108,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 public void run() {
                     while (true) {
                         if (clientSocket.isConnected() == false) {
-                            isConnected = true;
+                            isConnected = false;
+                            notifyMarketDataState(false);
                             marketSubscribed = false;
                             if(reqDataReceived){
                                 ConnectToIBGateway();
@@ -215,6 +216,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public boolean getState() {
+        if(!clientSocket.isConnected())
+            return false;
         return isConnected;
     }
 
@@ -365,6 +368,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
+            if(!clientSocket.isConnected())
+                return false;
             return isConnected;
         }
 
@@ -517,6 +522,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
+            if(!clientSocket.isConnected())
+                return false;
             return isConnected;
         }
 
