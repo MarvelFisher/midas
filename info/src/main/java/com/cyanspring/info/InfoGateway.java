@@ -209,6 +209,10 @@ public class InfoGateway implements IPlugin {
 	}
 	
 	public RefData getRefData(String symbol) {
+		if (refDataMap == null)
+		{
+			return null;
+		}
 		return refDataMap.get(symbol);
 	}
 

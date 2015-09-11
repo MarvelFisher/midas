@@ -168,6 +168,11 @@ public class AlertManager extends Compute {
 
 	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
 		Session session = null;
+		RefData refdata = getGateway().getRefData(execution.getSymbol());
+		if (refdata == null)
+		{
+			return;
+		}
 		try {
 			DecimalFormat qtyFormat = new DecimalFormat("#0");
 			String strQty = qtyFormat.format(execution.getQuantity());
@@ -191,6 +196,7 @@ public class AlertManager extends Compute {
 						null, execution.getQuantity(), execution.getPrice(),
 						Datetime, tradeMessage);
 			}
+			TA.setCommdity(refdata.getCommodity());
 			String keyValue = execution.getSymbol() + "," + strPrice + ","
 					+ strQty + ","
 					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
