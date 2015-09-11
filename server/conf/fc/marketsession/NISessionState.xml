@@ -25,21 +25,7 @@
 		</property>
         <property name="tradeDateManager"><ref bean="niTradeDateManager"/></property>
         <property name="index" value="NI"/>
-        <property name="availableTimeList"  ref="niAvailableTimeList"/>
-	</bean>
-	
-	<bean id="niAvailableTimeList" class="java.util.ArrayList">
-	 	<constructor-arg>
-	        <list>
-	             <bean id="rejectOrderTimeOnPreopenState" class="com.cyanspring.common.marketsession.AvailableTimeBean">
-				 	 <property name="marketSession" value="PREMARKET"/>
-				 	 <property name="SessionStart" value="false"/>
-				 	 <property name="SessionBefore" value="true"/>
-				 	 <property name="howManyMinutes" value="3"/>
-				 </bean>
-	        </list>
-         </constructor-arg>
-	 </bean>
+    </bean>
 	
 	<bean id="niDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>

@@ -25,21 +25,7 @@
 		</property>
         <property name="tradeDateManager"><ref bean="pbTradeDateManager"/></property>
         <property name="index" value="PB"/>
-        <property name="availableTimeList"  ref="pbAvailableTimeList"/>
-	</bean>
-	
-	<bean id="pbAvailableTimeList" class="java.util.ArrayList">
-	 	<constructor-arg>
-	        <list>
-	             <bean id="rejectOrderTimeOnPreopenState" class="com.cyanspring.common.marketsession.AvailableTimeBean">
-				 	 <property name="marketSession" value="PREMARKET"/>
-				 	 <property name="SessionStart" value="false"/>
-				 	 <property name="SessionBefore" value="true"/>
-				 	 <property name="howManyMinutes" value="3"/>
-				 </bean>
-	        </list>
-         </constructor-arg>
-	 </bean>
+    </bean>
 	
 	<bean id="pbDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
