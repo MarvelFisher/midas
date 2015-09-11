@@ -7,7 +7,11 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.stream.IStreamAdaptor;
@@ -19,6 +23,7 @@ import com.cyanspring.common.util.TimeUtil;
 import com.ib.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -27,10 +32,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
-        IStreamAdaptor<IDownStreamConnection> {
+        IStreamAdaptor<IDownStreamConnection>, IAsyncEventListener {
     private static final Logger log = LoggerFactory.getLogger(IbAdaptor.class);
     private static final Logger newsLog = LoggerFactory
             .getLogger(IbAdaptor.class.getName() + ".NewsLog");
+
+    @Autowired
+    private IRemoteEventManager eventManager;
 
     // connection parameters
     private String host;
@@ -50,7 +58,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private Map<String, List<IMarketDataListener>> subs = Collections
             .synchronizedMap(new HashMap<String, List<IMarketDataListener>>());
 
-    private ConcurrentHashMap<String, RefData> refDateBySymbolMap = new ConcurrentHashMap<String, RefData>();
+    private ConcurrentHashMap<String, RefData> refDataBySymbolMap = new ConcurrentHashMap<String, RefData>();
 
     // Down Stream
     private DownStreamConnection downStreamConnection = new DownStreamConnection();
@@ -65,6 +73,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private String id = "IB";
     private boolean initialised;
     private boolean newsIsSubCurrentDay = false;
+    private volatile boolean reqDataReceived = false;
+    private volatile boolean marketSubscribed = false;
+    private String refDataEventKey;
 
     // caching
     DualMap<String, Integer> symbolToId = new DualMap<String, Integer>();
@@ -88,14 +99,24 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     @Override
     synchronized public void init() throws Exception {
         if (!initialised) {
+            refDataEventKey = IdGenerator.getInstance().getNextID();
+            log.debug(id + " event key = " + refDataEventKey);
+            eventManager.subscribe(RefDataEvent.class, refDataEventKey, this);
+            //Request Require Data
+            RefDataRequestEvent event = new RefDataRequestEvent(refDataEventKey, null);
+            eventManager.sendEvent(event);
             gcThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
                         if (clientSocket.isConnected() == false) {
-                            ConnectToIBGateway();
+                            marketSubscribed = false;
+                            if(reqDataReceived){
+                                ConnectToIBGateway();
+                            }
                         } else {
-                            if(checkLastTimeInterval != 0 && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
+                            if(marketSubscribed && checkLastTimeInterval != 0
+                                    && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
                                 log.warn("IB Gateway too long not tick,reconnect!");
                                 clientSocket.eDisconnect();
                                 //wait disconnect
@@ -109,7 +130,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                         try {
                             TimeUnit.SECONDS.sleep(10);
                         } catch (InterruptedException e) {
-//                            return;
                         }
                     }
                 }
@@ -156,6 +176,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     @Override
     synchronized public void uninit() {
         log.info("Ib Adapter uninit begin");
+        eventManager.unsubscribe(RefDataEvent.class, this);
         gcThread.interrupt();
         clientSocket.eDisconnect();
         log.info("Ib Adapter uninit end");
@@ -188,7 +209,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public boolean getState() {
-        // return clientSocket.isConnected();
         return isConnected;
     }
 
@@ -209,7 +229,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     public void subscribeMarketData(String instrument,
                                     IMarketDataListener listener) throws MarketDataException {
         log.info("subscribeMarketData: " + instrument);
-        RefData refData = refDateBySymbolMap.get(instrument);
+        RefData refData = refDataBySymbolMap.get(instrument);
         if (refData == null) {
             throw new MarketDataException("Symbol " + instrument
                     + " is not found in reference data");
@@ -277,12 +297,33 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         for(String symbol: subscribeList){
             subscribeMarketData(symbol, listener);
         }
+        if(subscribeList != null && subscribeList.size() > 0){
+            marketSubscribed = true;
+        }
     }
 
     @Override
     public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
         for(String symbol: unSubscribeList){
             unsubscribeMarketData(symbol, listener);
+        }
+    }
+
+    @Override
+    public void onEvent(AsyncEvent event) {
+        if(refDataEventKey != null && event.getKey().equals(refDataEventKey)) {
+            if (event instanceof RefDataEvent) {
+                log.debug("Ib Adapter Receive RefDataEvent - " + id + "-" + event.getKey());
+                RefDataEvent refDataEvent = (RefDataEvent) event;
+                for (RefData refData : refDataEvent.getRefDataList()) {
+                    refDataBySymbolMap.put(refData.getSymbol(), refData);
+                }
+            }
+            if(refDataBySymbolMap.size() > 0){
+                reqDataReceived = true;
+            }else{
+                log.warn(id + "-RefDataEvent is empty!");
+            }
         }
     }
 
@@ -318,14 +359,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
-            // return clientSocket.isConnected();
             return isConnected;
         }
 
         @Override
         synchronized public void newOrder(ChildOrder order) throws DownStreamException {
             log.debug("Sending new order: " + order);
-            RefData refData = refDateBySymbolMap.get(order.getSymbol());
+            RefData refData = refDataBySymbolMap.get(order.getSymbol());
             Contract contract = refData.get(Contract.class,
                     RefDataField.CONTRACT.value());
             if (refData == null || null == contract) {
@@ -352,7 +392,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         public void amendOrder(ChildOrder order, Map<String, Object> fields)
                 throws DownStreamException {
             log.debug("Amending order: " + order);
-            RefData refData = refDateBySymbolMap.get(order.getSymbol());
+            RefData refData = refDataBySymbolMap.get(order.getSymbol());
             Contract contract = refData.get(Contract.class,
                     RefDataField.CONTRACT.value());
             if (refData == null || null == contract) {
@@ -471,7 +511,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
-            // return clientSocket.isConnected();
             return isConnected;
         }
 
@@ -1163,15 +1202,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public void processEvent(Object object) {
-        //RefDataEvent
-        if (object instanceof RefDataEvent)
-        {
-            log.debug("Ib Adapter Receive RefDataEvent");
-            RefDataEvent refDataEvent = (RefDataEvent) object;
-            for(RefData refData : refDataEvent.getRefDataList()){
-                refDateBySymbolMap.put(refData.getSymbol(), refData);
-            }
-        }
     }
 
     @Override

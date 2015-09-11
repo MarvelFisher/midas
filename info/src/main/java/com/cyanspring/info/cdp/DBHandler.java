@@ -161,6 +161,11 @@ public class DBHandler
 			return retsymbollist;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		if (rs == null)
+		{
+    		closeConnect(connect);
+			return null;
+		}
 		SymbolInfo symbolinfo;
 		int index;
 		try {
@@ -206,6 +211,11 @@ public class DBHandler
 			return null;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		if (rs == null)
+		{
+    		closeConnect(connect);
+			return null;
+		}
 		try 
 		{
 			int pos;
@@ -248,10 +258,16 @@ public class DBHandler
 			return 0;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		if (rs == null)
+		{
+    		closeConnect(connect);
+			return 0;
+		}
 		try 
 		{
 			while (rs.next())
 				ret++;
+			rs.close();
 		}
 		catch (SQLException e) 
 		{
@@ -290,6 +306,11 @@ public class DBHandler
 			return null;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		if (rs == null)
+		{
+    		closeConnect(connect);
+			return null;
+		}
 		boolean success = false;
     	try {
     		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -346,6 +367,11 @@ public class DBHandler
 			return null;
 		}
 		ResultSet rs = querySQL(connect, sqlcmd);
+		if (rs == null)
+		{
+    		closeConnect(connect);
+			return null;
+		}
     	ArrayList<HistoricalPrice> retList = new ArrayList<HistoricalPrice>();
     	boolean success = false;
     	try 
@@ -600,7 +626,12 @@ public class DBHandler
 		}
 		log.debug("Query: " + sqlcmd);
 		ResultSet rs = querySQL(connect, sqlcmd);
-		log.debug("Query return: " + sqlcmd);		
+		log.debug("Query return: " + sqlcmd);	
+		if (rs == null)
+		{
+    		closeConnect(connect);
+			return null;
+		}	
 		HashMap<String, List<HistoricalPrice>> retMap = new HashMap<String, List<HistoricalPrice>>();
     	boolean success = false;
     	try 
