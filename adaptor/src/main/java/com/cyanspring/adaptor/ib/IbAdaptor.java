@@ -102,9 +102,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             refDataEventKey = IdGenerator.getInstance().getNextID();
             log.debug(id + " event key = " + refDataEventKey);
             eventManager.subscribe(RefDataEvent.class, refDataEventKey, this);
-            //Request Require Data
-            RefDataRequestEvent event = new RefDataRequestEvent(refDataEventKey, null);
-            eventManager.sendEvent(event);
+            requestRequireData();
             gcThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -113,6 +111,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                             marketSubscribed = false;
                             if(reqDataReceived){
                                 ConnectToIBGateway();
+                            }else{
+                                requestRequireData();
                             }
                         } else {
                             if(marketSubscribed && checkLastTimeInterval != 0
@@ -154,6 +154,11 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
             initialised = true;
         }
+    }
+
+    public void requestRequireData(){
+        RefDataRequestEvent event = new RefDataRequestEvent(refDataEventKey, null);
+        eventManager.sendEvent(event);
     }
 
     private void ConnectToIBGateway() {
@@ -311,7 +316,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public void onEvent(AsyncEvent event) {
-        if(refDataEventKey != null && event.getKey().equals(refDataEventKey)) {
+        if(!reqDataReceived) {
             if (event instanceof RefDataEvent) {
                 log.debug("Ib Adapter Receive RefDataEvent - " + id + "-" + event.getKey());
                 RefDataEvent refDataEvent = (RefDataEvent) event;
@@ -319,9 +324,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     refDataBySymbolMap.put(refData.getSymbol(), refData);
                 }
             }
-            if(refDataBySymbolMap.size() > 0){
+            if (refDataBySymbolMap.size() > 0) {
                 reqDataReceived = true;
-            }else{
+            } else {
                 log.warn(id + "-RefDataEvent is empty!");
             }
         }
