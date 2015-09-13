@@ -8,6 +8,7 @@ import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     public void init() throws Exception {
+        requestDataEventkey = IdGenerator.getInstance().getNextID();
         if (quoteSaver != null) {
             // create tick directory
             File file = new File(tickDir);
@@ -175,8 +177,8 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processRefDataEvent(RefDataEvent event) {
-        if(event != null && event.getKey() != null){
-            log.debug("event Key not send self:" + event.getKey());
+        if(event != null && (event.getKey() != null && !event.getKey().equals(requestDataEventkey))){
+            log.debug("refData event Key not send self:" + event.getKey());
             return;
         }
         super.processRefDataEvent(event);
@@ -331,9 +333,9 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     protected void requestRequireData() {
-        eventManager.sendEvent(new MarketSessionRequestEvent(null, null, true));
-        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now()));
-        eventManager.sendEvent(new RefDataRequestEvent(null, null));
+        eventManager.sendEvent(new MarketSessionRequestEvent(requestDataEventkey, null, true));
+        eventManager.sendEvent(new IndexSessionRequestEvent(requestDataEventkey, null, null, Clock.getInstance().now()));
+        eventManager.sendEvent(new RefDataRequestEvent(requestDataEventkey, null));
     }
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {

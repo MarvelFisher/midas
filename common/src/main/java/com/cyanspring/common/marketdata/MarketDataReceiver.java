@@ -28,6 +28,7 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
@@ -81,6 +82,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean isUninit = false;
     private String serverInfo = null;
     private boolean nonWait = false;
+    protected String requestDataEventkey;
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -119,6 +121,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     public void processRefDataEvent(RefDataEvent event) {
+        if(event != null && (event.getKey() != null && !event.getKey().equals(requestDataEventkey))){
+            log.debug("refData event Key not send self:" + event.getKey());
+            return;
+        }
         if (isPreSubscribing) {
             log.warn("RefData Event coming in presubscribe");
             event = null;
@@ -375,6 +381,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void init() throws Exception {
         log.info("initialising");
         log.info("quoteThrottle=" + quoteThrottle);
+        if(requestDataEventkey == null || "".equals(requestDataEventkey))
+            requestDataEventkey = IdGenerator.getInstance().getNextID();
+        log.info("requestDataEventkey:" + requestDataEventkey);
         isUninit = false;
         isInitReqDataEnd = false;
         isInitMarketSessionReceived = false;
@@ -539,9 +548,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void requestRequireData() throws Exception {
-        MarketSessionRequestEvent msEvent = new MarketSessionRequestEvent(null, null);
-        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null, Clock.getInstance().now());
-        RefDataRequestEvent rdrEvent = new RefDataRequestEvent(null, null);
+        MarketSessionRequestEvent msEvent = new MarketSessionRequestEvent(requestDataEventkey, null);
+        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(requestDataEventkey, null, null, Clock.getInstance().now());
+        RefDataRequestEvent rdrEvent = new RefDataRequestEvent(requestDataEventkey, null);
         msEvent.setReceiver(serverInfo);
         isrEvent.setReceiver(serverInfo);
         rdrEvent.setReceiver(serverInfo);
