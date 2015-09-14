@@ -93,6 +93,7 @@
         <property name="quoteSaver" ref="quoteSaver"/>
         <property name="quoteCleaner" ref="quoteCleaner"/>
         <property name="broadcastQuote" value="true"/>
+        <property name="quoteListener" ref="kdbQuoteListener"/>
     </bean>
 
     <!-- IBAdaptor setting (Setting can be marked if not used) -->

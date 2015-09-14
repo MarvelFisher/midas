@@ -2,7 +2,9 @@ package com.cyanspring.server.marketdata;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.IQuoteListener;
 import com.cyanspring.common.marketdata.InnerQuote;
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteSource;
 import com.cyanspring.common.marketdata.Trade;
+import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.server.persistence.KDBPersistenceManager;
 
 public class KDBQuoteListener implements IQuoteListener {
@@ -22,20 +26,22 @@ public class KDBQuoteListener implements IQuoteListener {
 	@Autowired
 	private KDBPersistenceManager kdbPersistenceManager;
 
-	private BlockingQueue<InnerQuote> queue;
+	private BlockingQueue<Quote> queue;
 	private Thread quoteThread = new Thread(){
 		@Override
 		public void run(){
+			List<Quote> quoteLst = new ArrayList<>();
+			TimeThrottler throttler = new TimeThrottler(5000);
 			log.info("Start to listen quotes");
 			while(true) {
 				try {
-					InnerQuote quote = queue.take();
-					List<InnerQuote> quoteLst = new ArrayList<>();
-					queue.drainTo(quoteLst);
+					Quote quote = queue.take();
 					quoteLst.add(quote);
-					for (InnerQuote q : quoteLst) {
-						kdbPersistenceManager.saveQuote(q);
-					}
+					queue.drainTo(quoteLst);
+					kdbPersistenceManager.saveQuotes(quoteLst);
+					quoteLst.clear();
+					if (throttler.check())
+						log.info("Queue size: " + queue.size());
 				} catch (InterruptedException e) {
 					log.error(e.getMessage(), e);
 				}
@@ -58,7 +64,7 @@ public class KDBQuoteListener implements IQuoteListener {
 	@Override
 	public void onQuote(InnerQuote InnerQuote) {
 		try {
-			queue.put(InnerQuote);
+			queue.put(InnerQuote.getQuote());
 			if (!quoteThread.isAlive())
 				quoteThread.start();
 		} catch (InterruptedException e) {
