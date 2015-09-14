@@ -27,7 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
-				<ref bean="kdbPersistenceManager"/>
+				<!-- <ref bean="kdbPersistenceManager"/> -->
 			    <ref bean="marketSessionUtil"/>
 				<ref bean="indexMarketSessionManager"/>
 				<ref bean="apiBridgeManager" />
