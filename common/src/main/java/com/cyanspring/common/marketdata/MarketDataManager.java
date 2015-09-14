@@ -155,6 +155,10 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processRefDataEvent(RefDataEvent event) {
+        if(event != null && event.getKey() != null){
+            log.debug("event Key not send self:" + event.getKey());
+            return;
+        }
         if (event != null && event.isOk() && event.getRefDataList().size() > 0) {
             if (isInit) {
                 super.processRefDataEvent(event);
@@ -345,7 +349,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     public void processQuoteExtSubEvent(QuoteExtSubEvent event){
         log.debug("QuoteExtSubEvent:" + event.getKey() + "," + event.getReceiver());
-        if(event.getRequestSymbolList() != null && event.getRequestSymbolList().size()>0){
+        if (event.getRequestSymbolList() != null && event.getRequestSymbolList().size()>0){
             log.debug("Request Symbol List:" + event.getRequestSymbolList());
             HashMap<String, DataObject> quoteExtendRequest = new HashMap<>();
             for(String symbol : event.getRequestSymbolList()){

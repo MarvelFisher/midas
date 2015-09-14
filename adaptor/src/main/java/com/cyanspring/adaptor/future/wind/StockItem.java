@@ -148,7 +148,7 @@ public class StockItem implements AutoCloseable {
 
             //modify tick Time
             if (quoteMgr.isModifyTickTime()) {
-                if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
+                if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
                         && DateUtil.compareDate(tickTime, endDate) < 0) {
                     tickTime = endDate;
                 }
@@ -158,7 +158,8 @@ public class StockItem implements AutoCloseable {
                     tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
                 }
 
-                if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                if ((marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                        || marketSessionData.getSessionType() == MarketSessionType.BREAK)
                         && DateUtil.compareDate(tickTime, startDate) >= 0) {
                     if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
                         tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
@@ -178,9 +179,15 @@ public class StockItem implements AutoCloseable {
             quote.setTimeStamp(tickTime);
 
             //Check Stale
-            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
-                    || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
-                quote.setStale(true);
+            switch (marketSessionData.getSessionType()){
+                case PREOPEN:
+                case PREMARKET:
+                case CLOSE:
+                case BREAK:
+                    quote.setStale(true);
+                    break;
+                default:
+                    break;
             }
             if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
                 switch (stockData.getStatus()) {

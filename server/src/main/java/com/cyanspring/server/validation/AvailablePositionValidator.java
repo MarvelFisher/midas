@@ -64,8 +64,7 @@ public class AvailablePositionValidator implements IOrderValidator {
             if (refData == null) {
             	log.warn("Can't find refData");
             } else {
-            	String type = refData.getIType();
-         
+            	String type = refData.getIType();         
             	if (type != null && isFutureIType(type))
             		return;
             }
@@ -73,9 +72,7 @@ public class AvailablePositionValidator implements IOrderValidator {
             if (Default.getSettlementDays() > 0 && orderSide.isSell()) {
 
                 Account account = accountKeeper.getAccount(accountId);
-
                 double availableQty = positionKeeper.getOverallPosition(account, symbol).getAvailableQty();
-
                 if (!checkQty(qty, availableQty, order)) {
                     throw new OrderValidationException("Sell quantity exceeded available position quantity", ErrorMessage.QUANTITY_EXCEED_AVAILABLE_QUANTITY);
                 }
@@ -96,10 +93,8 @@ public class AvailablePositionValidator implements IOrderValidator {
     	while(itypeIte.hasNext()){
     		IType iType = itypeIte.next();
     		if(iType.getValue().equals(type))
-    			return true;
-    		
-    	}
-    	
+    			return true;  		
+    	}	
     	return false;
 	}
 

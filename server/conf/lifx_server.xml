@@ -160,7 +160,6 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->              
                 <value>DAY_TRADING</value>        		  <!-- liveTradingType -->
-                <value>100000.0</value>               <!-- orderQuantity2 -->
             </list>
         </property>
     </bean>

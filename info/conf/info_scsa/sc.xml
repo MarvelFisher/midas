@@ -20,10 +20,10 @@
 		<property name="refDataHandler" ref="refDataHandler" />
 		<property name = "plugins">
 	        <list>
-<!-- 	        	<ref bean="InfoGateway" /> -->
+				<ref bean="marketSessionUtil" />
+                <ref bean="indexMarketSessionManager"/>
+                <ref bean="refDataHandler" />
             	<ref bean="centralDbProcessor"/>
-<!--             	<ref bean="userManager"/> -->
-<!--             	<ref bean="ParseManager"/> -->
 	        </list>
 		</property>
 	</bean>

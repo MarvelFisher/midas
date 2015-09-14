@@ -27,6 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
+				<!-- <ref bean="kdbPersistenceManager"/> -->
 			    <ref bean="marketSessionUtil"/>
 				<ref bean="indexMarketSessionManager"/>
 				<ref bean="apiBridgeManager" />
@@ -49,6 +50,8 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager"></bean>
 	
     <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
         <property name="validators">

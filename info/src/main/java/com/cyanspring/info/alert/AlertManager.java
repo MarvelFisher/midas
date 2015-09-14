@@ -37,6 +37,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.info.alert.Compute;
 
@@ -307,6 +308,11 @@ public class AlertManager extends Compute {
 
 	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
 		Session session = null;
+		RefData refdata = getGateway().getRefData(execution.getSymbol());
+		if (refdata == null)
+		{
+			return;
+		}
 		try {
 			DecimalFormat qtyFormat = new DecimalFormat("#0");
 			String strQty = qtyFormat.format(execution.getQuantity());
@@ -330,6 +336,7 @@ public class AlertManager extends Compute {
 						null, execution.getQuantity(), execution.getPrice(),
 						Datetime, tradeMessage);
 			}
+			TA.setCommdity(refdata.getCommodity());
 			String keyValue = execution.getSymbol() + "," + strPrice + ","
 					+ strQty + ","
 					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
@@ -532,9 +539,13 @@ public class AlertManager extends Compute {
 	@Override
 	public void processQuoteEvent(QuoteEvent event, List<Compute> computes) {
 		Quote quote = event.getQuote();
-
 		if (quotes.get(quote.getSymbol()) == null) {
 			quotes.put(quote.getSymbol(), quote);
+			return;
+		}
+		RefData refdata = getGateway().getRefData(quote.getSymbol());
+		if (refdata == null)
+		{
 			return;
 		}
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
@@ -566,6 +577,7 @@ public class AlertManager extends Compute {
 							alert.getPrice(), alert.getDateTime(),
 							alert.getContent());
 					pastPriceAlert.setId(alert.getId());
+					pastPriceAlert.setCommodity(refdata.getCommodity());
 					SQLSave(pastPriceAlert);
 					// Add Alert to pastUserPriceAlertList
 					UserPriceList = userPastPriceAlerts.get(alert.getUserId());
@@ -592,6 +604,7 @@ public class AlertManager extends Compute {
 							alert.getUserId(), alert.getSymbol(),
 							alert.getPrice(), setDateTime, alert.getContent());
 					curPriceAlert.setId(alert.getId());
+					curPriceAlert.setCommodity(refdata.getCommodity());
 					SQLDelete(curPriceAlert);
 					// Delete Alert from CurUserPriceAlertList
 					UserPriceList = userPriceAlerts.get(alert.getUserId());
@@ -733,6 +746,11 @@ public class AlertManager extends Compute {
 	private void receiveAddPriceAlert(SetPriceAlertRequestEvent event) {
 		ArrayList<BasePriceAlert> list;
 		BasePriceAlert priceAlert = event.getPriceAlert();
+		RefData refdata = getGateway().getRefData(priceAlert.getSymbol());
+		if (refdata == null)
+		{
+			return;
+		}
 		int search;
 		String Msg = "";
 		PriceAlertReplyEvent pricealertreplyevent = null;
@@ -749,6 +767,7 @@ public class AlertManager extends Compute {
 					priceAlert.getPrice(), priceAlert.getDateTime(),
 					priceAlert.getContent());
 			curPriceAlert.setId(priceAlert.getId());
+			curPriceAlert.setCommodity(refdata.getCommodity());
 			SQLSave(curPriceAlert);
 			// SendPriceAlertreplyEvent
 			pricealertreplyevent = new PriceAlertReplyEvent(null,
@@ -842,6 +861,11 @@ public class AlertManager extends Compute {
 		int search;
 		String Msg = "";
 		BasePriceAlert priceAlert = event.getPriceAlert();
+		RefData refdata = getGateway().getRefData(priceAlert.getSymbol());
+		if (refdata == null)
+		{
+			return;
+		}
 		PriceAlertReplyEvent pricealertreplyevent = null;
 		// Add Alert to List
 		list = userPriceAlerts.get(priceAlert.getUserId());
@@ -875,6 +899,7 @@ public class AlertManager extends Compute {
 								priceAlert.getDateTime(),
 								priceAlert.getContent());
 						curPriceAlert.setId(priceAlert.getId());
+						curPriceAlert.setCommodity(refdata.getCommodity());
 						SQLUpdate(curPriceAlert);
 						// SendPriceAlertreplyEvent
 						pricealertreplyevent = new PriceAlertReplyEvent(null,
@@ -922,6 +947,11 @@ public class AlertManager extends Compute {
 		ArrayList<BasePriceAlert> list;
 		int search;
 		BasePriceAlert priceAlert = event.getPriceAlert();
+		RefData refdata = getGateway().getRefData(priceAlert.getSymbol());
+		if (refdata == null)
+		{
+			return;
+		}
 		PriceAlertReplyEvent pricealertreplyevent = null;
 		String Msg = "";
 		// Add Alert to List
@@ -953,6 +983,7 @@ public class AlertManager extends Compute {
 						priceAlert.getPrice(), priceAlert.getDateTime(),
 						priceAlert.getContent());
 				curPriceAlert.setId(priceAlert.getId());
+				curPriceAlert.setCommodity(refdata.getCommodity());
 				SQLDelete(curPriceAlert);
 				// SendPriceAlertreplyEvent
 				pricealertreplyevent = new PriceAlertReplyEvent(null,

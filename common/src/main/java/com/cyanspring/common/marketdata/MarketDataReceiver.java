@@ -88,6 +88,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean isUninit = false;
     private String serverInfo = null;
     private boolean nonWait = false;
+    private IQuoteListener quoteListener;
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -388,7 +389,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         // flush out all quotes throttled
         for (Entry<String, InnerQuoteEvent> entry : innerQuotesToBeSent.entrySet()) {
             InnerQuoteEvent innerQuoteEvent = entry.getValue();
-            printQuoteLog(innerQuoteEvent.getQuoteSource(),innerQuoteEvent.getContributor()
+            if(quoteLogIsOpen) printQuoteLog(innerQuoteEvent.getQuoteSource(),innerQuoteEvent.getContributor()
                     ,innerQuoteEvent.getQuote(),QuoteLogLevel.GENERAL);
             sendQuoteEvent(innerQuoteEvent.getQuoteEvent());
         }
@@ -420,6 +421,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         isInitIndexSessionReceived = false;
         isInitMarketSessionReceived = true;
         // subscribe to events
+        if (quoteListener != null)
+        	quoteListener.init();
         eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
@@ -515,6 +518,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     @Override
     public void onQuote(InnerQuote innerQuote) {
+    	if (quoteListener != null)
+    		quoteListener.onQuote(innerQuote);
         if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
             log.warn("Quotes receive time large than excepted.");
         }
@@ -532,7 +537,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     @Override
     public void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource) {
-
+    	if (quoteListener != null)
+    		quoteListener.onQuoteExt(quoteExt, quoteSource);
         if (quoteExt != null && isQuoteExtendEventIsSend()) {
             printQuoteExtendLog(quoteSource, quoteExt);
             String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.value());
@@ -551,7 +557,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     @Override
     public void onTrade(Trade trade) {
-        if(quoteLogIsOpen) log.debug("Trade Receive:S="+trade.getSymbol()+",I="+trade.getId()+",BS="+trade.getBuySellFlag()+",P="+trade.getPrice()+",V=" + trade.getQuantity());
+    	if (quoteListener != null)
+    		quoteListener.onTrade(trade);
+        if(quoteLogIsOpen) 
+        	log.debug("Trade Receive:S="+trade.getSymbol()+",I="+trade.getId()+",BS="+trade.getBuySellFlag()+",P="+trade.getPrice()+",V=" + trade.getQuantity());
         TradeEvent event = new TradeEvent(trade.getSymbol(), null, trade);
         eventProcessor.onEvent(event);
     }
@@ -704,4 +713,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void setServerInfo(String serverInfo) {
         this.serverInfo = serverInfo;
     }
+
+	public IQuoteListener getQuoteListener() {
+		return quoteListener;
+	}
+
+	public void setQuoteListener(IQuoteListener quoteListener) {
+		this.quoteListener = quoteListener;
+	}
 }

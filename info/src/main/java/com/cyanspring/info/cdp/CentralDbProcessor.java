@@ -287,7 +287,7 @@ public class CentralDbProcessor implements IPlugin
 				quote.setTimeStamp(cal.getTime());
 			}
 		}
-		else if (sessionType == MarketSessionType.PREMARKET)
+		else if (sessionType == MarketSessionType.PREOPEN)
 		{
 			quote.setTimeStamp(sessionEnd);
 		}

@@ -134,7 +134,7 @@ public class FutureItem implements AutoCloseable {
 
             //modify tick Time
         	if (quoteMgr.isModifyTickTime()) {
-	            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
+	            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
 	                    && DateUtil.compareDate(tickTime, endDate) < 0) {
 	                tickTime = endDate;
 	            }
@@ -144,7 +144,8 @@ public class FutureItem implements AutoCloseable {
 	                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
 	            }
 	
-	            if (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+	            if ((marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                    || marketSessionData.getSessionType() == MarketSessionType.BREAK)
 	                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
 	                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
 	                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
@@ -179,13 +180,18 @@ public class FutureItem implements AutoCloseable {
             quote.setfTurnover((double) futureData.getfTurnover());
 
             //Check Stale
-            if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET
-                    || marketSessionData.getSessionType() == MarketSessionType.CLOSE) {
-                quote.setStale(true);
-            }
-
-            if (marketSessionData.getSessionType() == MarketSessionType.OPEN) {
-                quote.setStale(false);
+            switch (marketSessionData.getSessionType()){
+                case PREOPEN:
+                case PREMARKET:
+                case CLOSE:
+                case BREAK:
+                    quote.setStale(true);
+                    break;
+                case OPEN:
+                    quote.setStale(false);
+                    break;
+                default:
+                    break;
             }
 
             //volume

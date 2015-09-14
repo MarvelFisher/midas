@@ -15,5 +15,4 @@ public interface IMarketSession {
     public String getTradeDate();
     public ITradeDate getTradeDateManager();
     public Map<String, MarketSession> getStateMap();
-    public List<AvailableTimeBean> getAvailableTimeList();
 }

@@ -192,7 +192,6 @@
 				<value>0</value>
 				<value>0</value>
 				<value>DAY_TRADING</value>
-				<value>1.0</value>
             </list>
        </property>
     </bean>

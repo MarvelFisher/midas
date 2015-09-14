@@ -7,7 +7,8 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		private String userId;
 		private String symbol;
 		private double price;
-		private double quantity ;
+        private String Commdity;
+        private double quantity ;
 		private OrderReason orderReason;
 		private String dateTime ;
 		private String content ;
@@ -23,7 +24,20 @@ public class TradeAlert implements Comparable<TradeAlert>{
 			this.setDateTime(dateTime); // yyyy-mm-dd hh:mm:ss
 			this.content = content ;
 		}
-		
+
+        public TradeAlert(String userId, String symbol,OrderReason orderReason, double quantity, double price, String dateTime, String content, String commdity) {
+            super();
+            this.id = "A" + IdGenerator.getInstance().getNextID();
+            this.setUserId(userId); //david
+            this.setSymbol(symbol);  //USDJPY
+            this.setOrderReason(orderReason) ;
+            this.setQuantity(quantity); //-1000000
+            this.setPrice(price); // 118.153
+            this.setDateTime(dateTime); // yyyy-mm-dd hh:mm:ss
+            this.setCommdity(commdity);
+            this.content = content ;
+        }
+
 		public TradeAlert()
 		{
 			super();
@@ -112,12 +126,12 @@ public class TradeAlert implements Comparable<TradeAlert>{
 			return dateTime;
 		}
 
-		
+        public String getCommdity() {
+            return Commdity;
+        }
 
-
-		
-
-		
-
+        public void setCommdity(String commdity) {
+            Commdity = commdity;
+        }
 
 }

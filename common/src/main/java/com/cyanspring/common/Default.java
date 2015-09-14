@@ -33,7 +33,6 @@ public class Default {
 	private static boolean liveTrading = false;
 	private static boolean userLiveTrading = false;
 	private static LiveTradingType liveTradingType = LiveTradingType.DEFAULT;
-	private static double orderQuantity2 = 100000;
 	
 	protected static void setValues(
 		String user,  
@@ -59,8 +58,8 @@ public class Default {
 		double companyStopLossValue,
 		double freezeValue,
 		double terminateValue,
-		LiveTradingType liveTradingType,
-		double orderQuantity2) {
+		LiveTradingType liveTradingType) {
+		
 		Default.user = user;
 		Default.account = account;
 		Default.market = market;
@@ -85,7 +84,7 @@ public class Default {
 		Default.freezeValue = freezeValue;
 		Default.terminateValue = terminateValue;
 		Default.liveTradingType = liveTradingType;
-		Default.orderQuantity2 = orderQuantity2;
+		
 	}
 	
 	static public String getUser() {
@@ -194,9 +193,5 @@ public class Default {
 	
 	public static LiveTradingType getLiveTradingType() {
 		return liveTradingType;
-	}
-	
-	public static double getOrderQuantity2() {
-		return orderQuantity2;
 	}
 }
