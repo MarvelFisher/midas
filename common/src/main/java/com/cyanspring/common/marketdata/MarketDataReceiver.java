@@ -20,8 +20,7 @@ import com.cyanspring.common.event.marketdata.InnerQuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.TradeEvent;
-import com.cyanspring.common.event.marketsession.IndexSessionEvent;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
@@ -29,6 +28,7 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
@@ -88,6 +88,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     boolean isUninit = false;
     private String serverInfo = null;
     private boolean nonWait = false;
+    protected String requestDataEventkey;
     private IQuoteListener quoteListener;
 
     protected AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
@@ -106,6 +107,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     };
 
     public void processRefDataEvent(RefDataEvent event) {
+        if(event != null && (event.getKey() != null && !event.getKey().equals(requestDataEventkey))){
+            log.debug("refData event Key not send self:" + event.getKey());
+            return;
+        }
         if (isPreSubscribing) {
             log.warn("RefData Event coming in presubscribe");
             event = null;
@@ -415,6 +420,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void init() throws Exception {
         log.info("initialising");
         log.info("quoteThrottle=" + quoteThrottle);
+        if(requestDataEventkey == null || "".equals(requestDataEventkey))
+            requestDataEventkey = IdGenerator.getInstance().getNextID();
+        log.info("requestDataEventkey:" + requestDataEventkey);
         isUninit = false;
         isInitReqDataEnd = false;
         isInitRefDateReceived = false;
@@ -585,8 +593,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void requestRequireData() throws Exception {
-        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(null, null, null);
-        RefDataRequestEvent rdrEvent = new RefDataRequestEvent(null, null);
+        IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(requestDataEventkey, null, null, Clock.getInstance().now());
+        RefDataRequestEvent rdrEvent = new RefDataRequestEvent(requestDataEventkey, null);
         isrEvent.setReceiver(serverInfo);
         rdrEvent.setReceiver(serverInfo);
         eventManager.sendRemoteEvent(isrEvent);
