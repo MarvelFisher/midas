@@ -5,18 +5,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.TimeZone;
-
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.sql.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -25,7 +21,6 @@ import com.cyanspring.common.event.account.ResetAccountReplyEvent;
 import com.cyanspring.common.event.account.ResetAccountReplyType;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
-import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
@@ -171,7 +166,7 @@ public class UserManager implements IPlugin {
 
 			while (iterator.hasNext()) {
 				Object[] rows = (Object[]) iterator.next();
-				String StartDate = (String) rows[2].toString();
+				String StartDate = rows[2].toString();
 				String EndDate = rows[3].toString();
 
 				if (tradeDate.compareTo(EndDate) > 0) {
@@ -280,13 +275,15 @@ public class UserManager implements IPlugin {
 
         eventProcessor.setHandler(this);
         eventProcessor.init();
-        if (eventProcessor.getThread() != null)
-            eventProcessor.getThread().setName("UserManager");
+        if (eventProcessor.getThread() != null) {
+			eventProcessor.getThread().setName("UserManager");
+		}
 
         eventProcessorMD.setHandler(this);
         eventProcessorMD.init();
-        if (eventProcessorMD.getThread() != null)
-            eventProcessorMD.getThread().setName("UserManager-MD");
+        if (eventProcessorMD.getThread() != null) {
+			eventProcessorMD.getThread().setName("UserManager-MD");
+		}
 
         scheduleManager.scheduleRepeatTimerEvent(getTimerinterval(), eventProcessorMD,
                 timerEvent);
@@ -296,7 +293,8 @@ public class UserManager implements IPlugin {
 	public void uninit() {
 		log.info("Uninitialising...");
 		eventProcessor.uninit();
-		// TODO Auto-generated method stub
+		eventProcessorMD.uninit();
+		scheduleManager.uninit();
 	}
 
     public int getTimerinterval() {

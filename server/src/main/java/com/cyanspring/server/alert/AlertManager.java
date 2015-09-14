@@ -278,6 +278,8 @@ public class AlertManager implements IPlugin {
 		{
 			PT.setstartThread(false) ;
 		}
+
+		scheduleManager.uninit();
 	}
 	
 	// getters and setters

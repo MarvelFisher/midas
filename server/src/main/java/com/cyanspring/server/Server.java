@@ -163,6 +163,7 @@ public class Server implements ApplicationContextAware {
 			subscribeToEvent(DuplicateSystemIdEvent.class, null);
 			subscribeToEvent(DownStreamReadyEvent.class, null);
 			subscribeToEvent(MarketDataReadyEvent.class, null);
+			subscribeToEvent(ServerShutdownEvent.class, null);
 		}
 
 		@Override
@@ -227,6 +228,10 @@ public class Server implements ApplicationContextAware {
 			log.info("System hits end time, shutting down...");
 			System.exit(0);
 		}
+	}
+
+	public void processServerShutdownEvent(ServerShutdownEvent event) throws Exception {
+		shutdown();
 	}
 
 	class ReadyList {

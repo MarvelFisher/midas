@@ -103,8 +103,10 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 	@Override
 	public void uninit() {
-		for (IRefDataAdaptor adaptor : refDataAdaptors)
+		for (IRefDataAdaptor adaptor : refDataAdaptors) {
+			adaptor.unsubscribeRefData(this);
 			adaptor.uninit();
+		}
 		eventProcessor.uninit();
 	}
 

@@ -510,6 +510,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
 
         for (IMarketDataAdaptor adaptor : adaptors) {
+        	adaptor.unsubscribeMarketDataState(this);
             adaptor.uninit();
         }
 

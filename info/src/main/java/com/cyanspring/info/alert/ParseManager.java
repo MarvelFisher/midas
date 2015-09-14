@@ -158,6 +158,8 @@ public class ParseManager implements IPlugin {
 		for (ParseThread PT : ParseThreadList) {
 			PT.setstartThread(false);
 		}
+		eventProcessorMD.uninit();
+		scheduleManager.uninit();
 	}
 	
 	public int getTimeoutSecond() {

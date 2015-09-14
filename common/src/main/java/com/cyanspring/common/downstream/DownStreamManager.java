@@ -96,9 +96,22 @@ public class DownStreamManager implements IPlugin {
 				try {
 					connection.setListener(null);
 				} catch (DownStreamException e) {
+					log.error(e.getMessage(), e);
 				}
 			}
+			adaptor.uninit();
 		}
+		for (IStreamAdaptor<IDownStreamConnection> adaptor : specialAdaptors) {
+			for (IDownStreamConnection connection : adaptor.getConnections()) {
+				try {
+					connection.setListener(null);
+				} catch (DownStreamException e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+			adaptor.uninit();
+		}
+		eventManager.sendEvent(new DownStreamReadyEvent(null, false));
 	}
 
 	private boolean allReady() {

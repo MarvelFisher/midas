@@ -483,6 +483,7 @@ public class AccountPositionManager implements IPlugin {
         scheduleManager.uninit();
         eventProcessor.uninit();
         timerProcessor.uninit();
+        eventMultiProcessor.uninit();
     }
     
     public void processUpdateOpenPositionPriceEvent(UpdateOpenPositionPriceEvent event) {

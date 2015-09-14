@@ -135,15 +135,17 @@ public class TickDataManager implements IPlugin {
 	public void uninit() {
 		log.info("uninitialising");
 		eventProcessor.uninit();
-		for(BufferedWriter writer: writers.values()) {
-			try {
-				writer.close();
-			} catch (IOException e) {
-				log.error(e.getMessage(), e);
+		if (writers != null && writers.size() > 0) {
+			for(BufferedWriter writer: writers.values()) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
+				}
 			}
 		}
 	}
-	
+
 	//////////////////////
 	// getters and setters
 	//////////////////////

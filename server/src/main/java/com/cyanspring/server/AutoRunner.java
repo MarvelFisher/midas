@@ -60,6 +60,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 	AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	Thread thread;
 	DateTimeRoller dateTimeRoller;
+	boolean threadSentinel = false;
 
 	static class DateTimeRoller {
 		int countToRollDate;
@@ -88,13 +89,15 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 	public void init() throws ParseException {
 		log.info("Initialising AutoRunner");
 		eventManager.subscribe(ServerReadyEvent.class, this);
-		
-//		String dateStr = "2014-07-21 10:20:25.234";
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//		Date now = dateFormat.parse(dateStr);
-//		dateTimeRoller = new DateTimeRoller(now, 100);
-//		scheduleManager.scheduleRepeatTimerEvent(1000, this, timerEvent);
-		
+
+		// String dateStr = "2014-07-21 10:20:25.234";
+		// SimpleDateFormat dateFormat = new
+		// SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		// Date now = dateFormat.parse(dateStr);
+		// dateTimeRoller = new DateTimeRoller(now, 100);
+		// scheduleManager.scheduleRepeatTimerEvent(1000, this, timerEvent);
+
+		threadSentinel = true;
 		thread = new Thread() {
 			@Override
 			public void run() {
@@ -130,20 +133,25 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 //	}
 	
 	private void asyncRun() {
-		
-		for(int i=1; i<=10; i++) {
-			User user = new User("test"+i, "xxx");
-			user.setName("test"+i);
-			user.setEmail("test"+i+"@test.com");
-			user.setPhone("12345678");
-			user.setUserType(UserType.TEST);
-			CreateUserEvent event = new CreateUserEvent(null, null, user, "", "", "123");
-			eventManager.sendEvent(event);
+
+		for (int i = 1; i <= 10; i++) {
+			if (threadSentinel) {
+				User user = new User("test" + i, "xxx");
+				user.setName("test" + i);
+				user.setEmail("test" + i + "@test.com");
+				user.setPhone("12345678");
+				user.setUserType(UserType.TEST);
+				CreateUserEvent event = new CreateUserEvent(null, null, user,
+						"", "", "123");
+				eventManager.sendEvent(event);
+			}
 		}
 	}
-	
+
 	@Override
 	public void uninit() {
+		threadSentinel = false;
+		eventManager.clearAllSubscriptions();
 	}
 
 	@Override
