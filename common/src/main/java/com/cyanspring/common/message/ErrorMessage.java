@@ -94,6 +94,7 @@ public enum ErrorMessage {
 	ACCOUNT_NOT_MATCH,
 	LOGIN_BLOCKED,
 	REACH_MAX_ACCESS_LIMIT,
+	VERSION_NEED_UPDATE,
 	
 	// order errors start with 400
 	ACTION_CANCELLED,
