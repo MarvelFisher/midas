@@ -1,6 +1,8 @@
 package com.cyanspring.info;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +23,10 @@ import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.info.alert.Compute;
 public class InfoGateway implements IPlugin {
@@ -39,6 +44,7 @@ public class InfoGateway implements IPlugin {
 	private int createThreadCount;
 	private ExecutorService service;
 	private List<Compute> Computes;
+	private Map<String, RefData> refDataMap;
 //	private ConcurrentLinkedQueue<AsyncEvent> sendRemoteEventQueue;
 //	private ConcurrentLinkedQueue<AsyncEvent> sendEventQueue;
 //	private AsyncTimerEvent timerEvent1min = new AsyncTimerEvent();
@@ -70,6 +76,8 @@ public class InfoGateway implements IPlugin {
 					subscribeToEvent(event, null);
 				}
 			}
+			subscribeToEvent(RefDataEvent.class, null);
+			subscribeToEvent(RefDataUpdateEvent.class, null);
 		}
 
 		@Override
@@ -177,6 +185,36 @@ public class InfoGateway implements IPlugin {
 			});
 		}
 	}
+	
+	public void processRefDataEvent(RefDataEvent event) {
+		if (refDataMap == null) {
+			refDataMap = new ConcurrentHashMap<String, RefData>();
+		}
+		refDataMap.clear();
+		for (RefData refdata : event.getRefDataList()) {
+			refDataMap.put(refdata.getSymbol(), refdata);
+		}
+	}
+	
+	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
+		RefDataUpdateEvent.Action act = event.getAction();
+		for (RefData refdata : event.getRefDataList()) {
+			if (act == RefDataUpdateEvent.Action.DEL) {
+				refDataMap.remove(refdata.getSymbol());
+			}
+			else {
+				refDataMap.put(refdata.getSymbol(), refdata);
+			}
+		}
+	}
+	
+	public RefData getRefData(String symbol) {
+		if (refDataMap == null)
+		{
+			return null;
+		}
+		return refDataMap.get(symbol);
+	}
 
 	@Override
 	public void init() throws Exception {
@@ -203,7 +241,7 @@ public class InfoGateway implements IPlugin {
 //			sendRemoteEventQueue = new ConcurrentLinkedQueue<AsyncEvent>(); 
 //			sendEventQueue = new ConcurrentLinkedQueue<AsyncEvent>();
 			for (Compute compute : Computes) {
-				compute.initial(eventProcessor, eventProcessorMD);
+				compute.initial(eventProcessor, eventProcessorMD, this);
 			}
 			
 		} catch (Exception e) {
@@ -232,5 +270,13 @@ public class InfoGateway implements IPlugin {
 
 	public void setCreateThreadCount(int createThreadCount) {
 		this.createThreadCount = createThreadCount;
+	}
+
+	public Map<String, RefData> getRefDataMap() {
+		return refDataMap;
+	}
+
+	public void setRefDataMap(Map<String, RefData> refDataMap) {
+		this.refDataMap = refDataMap;
 	}
 }

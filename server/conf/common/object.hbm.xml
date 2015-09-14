@@ -253,7 +253,7 @@
 	<property column="LIVE_TRADING_SETTED_DATE" 			name="liveTradingSettedDate" 		  type="java.lang.String"/>
   	<property column="FREEZE_VALUE" 			name="freezeValue" 		  type="java.lang.Double"/>
   	<property column="TERMINATE_VALUE" 			name="terminateValue" 		  type="java.lang.Double"/>	
-  	<property column="DEFAULT_QTY2"		name="defaultQty2"	  type="java.lang.Double"/>
+  	<property column="DEFAULT_QTY2"		name="defaultQty2"	  type="java.lang.String"/>
   </class>
   
   <class name="com.cyanspring.common.account.PositionPeakPrice" table="ANYONE.POSITION_PEAK_PRICE">
