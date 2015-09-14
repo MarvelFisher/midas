@@ -146,8 +146,13 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return true;
 	}
 
-	protected String getEnName(RefData data){		
-		return getCategory(data)+data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
+	protected String getEnName(RefData data) throws ParseException{		
+		String spotName = getCategory(data);
+		String date = data.getCNDisplayName().replaceAll("\\W", "").replaceAll("\\D", "");
+		if(date.length()==3)
+			date = formatSymbolYearMonth(data.getCNDisplayName());
+		
+		return spotName + date;
 	}
 	
 	protected String getRefSymbol(String refSymbol){
@@ -158,13 +163,35 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return RefDataUtil.getCategory(refData);
 	}
 	
-	protected String getCNName(String combineCnName){
-		return getSpotName(combineCnName,Locale.CN).replaceAll("\\d", "")+combineCnName.replaceAll("\\W", "").replaceAll("\\D", "");
+	protected String getCNName(String combineCnName) throws ParseException{
+		String spotName =  getSpotName(combineCnName,Locale.CN).replaceAll("\\d", "");
+		String date = combineCnName.replaceAll("\\W", "").replaceAll("\\D", "");
+		if(date.length()==3)
+			date = formatSymbolYearMonth(combineCnName);	
+		
+		return spotName + date;
 	}
 	
-	protected String getTWName(String combineTwName){
-		return getSpotName(combineTwName,Locale.TW).replaceAll("\\d", "")+combineTwName.replaceAll("\\W", "").replaceAll("\\D", "");
+	protected String getTWName(String combineTwName) throws ParseException{		
+		String spotName = getSpotName(combineTwName,Locale.TW).replaceAll("\\d", "");
+		String date = combineTwName.replaceAll("\\W", "").replaceAll("\\D", "");
+		if(date.length()==3)
+			date = formatSymbolYearMonth(combineTwName);
+		
+		return spotName + date;
 	}
+	
+	private String formatSymbolYearMonth(String combineName) throws ParseException{
+
+		if(StringUtils.hasText(combineName)){
+			SimpleDateFormat contractSdf = new SimpleDateFormat("yyMM");
+			Calendar cal = getContractDate(combineName);
+			return contractSdf.format(cal.getTime());
+		}
+		
+		return combineName;
+	}
+	
 	
 	protected String getSpotName(String combineCnName,Locale locale){
 		
