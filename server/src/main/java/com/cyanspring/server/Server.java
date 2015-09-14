@@ -3,9 +3,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -98,7 +98,7 @@ public class Server implements ApplicationContextAware {
 
 	@Autowired
 	ScheduleManager scheduleManager;
-	
+
 	@Autowired(required = false)
 	CoinManager coinManager;
 
@@ -115,7 +115,7 @@ public class Server implements ApplicationContextAware {
 	@Autowired(required = false)
 	@Qualifier("userGroupRecoveryProcessor")
 	IRecoveryProcessor<GroupManagement> userGroupRecoveryProcessor;
-	
+
 	@Autowired(required = false)
 	@Qualifier("coinControlRecoveryProcessor")
 	IRecoveryProcessor<CoinControl> coinControlRecoveryProcessor;
@@ -245,8 +245,9 @@ public class Server implements ApplicationContextAware {
 		}
 
 		synchronized void update(String key, boolean value) {
-			if (!map.containsKey(key))
+			if (!map.containsKey(key)) {
 				return;
+			}
 			map.put(key, value);
 			boolean now = allUp();
 			if (!serverReady && now) {
@@ -268,8 +269,9 @@ public class Server implements ApplicationContextAware {
 
 		synchronized boolean allUp() {
 			for (Entry<String, Boolean> entry : map.entrySet()) {
-				if (!entry.getValue())
+				if (!entry.getValue()) {
 					return false;
+				}
 			}
 			return true;
 		}
@@ -314,7 +316,7 @@ public class Server implements ApplicationContextAware {
 			log.info("CoinControl loaded: " + list.size());
 			coinManager.injectCoinControls(list);
 		}
-		
+
 		if (null != positionRecoveryProcessor) {
 			List<OpenPosition> list1 = positionRecoveryProcessor
 					.recoverOpenPositions();
@@ -341,8 +343,9 @@ public class Server implements ApplicationContextAware {
 			for (DataObject obj : list) {
 				StrategyState state = obj.get(StrategyState.class,
 						OrderField.STATE.value());
-				if (state.equals(StrategyState.Terminated))
+				if (state.equals(StrategyState.Terminated)) {
 					continue;
+				}
 
 				obj.put(OrderField.STATE.value(), StrategyState.Stopped);
 			}
@@ -359,8 +362,9 @@ public class Server implements ApplicationContextAware {
 	}
 
 	private void registerShutdownTime() throws ParseException {
-		if (null == shutdownTime)
+		if (null == shutdownTime) {
 			return;
+		}
 		Date endTime = TimeUtil.parseTime("HH:mm:ss", shutdownTime);
 		scheduleManager.scheduleTimerEvent(endTime, eventProcessor,
 				shutdownEvent);
@@ -403,8 +407,9 @@ public class Server implements ApplicationContextAware {
 		// subscribe to events
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
-		if (eventProcessor.getThread() != null)
+		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("Server");
+		}
 
 		// ScheduleManager initialization
 		log.debug("ScheduleManager initialized");
@@ -471,8 +476,9 @@ public class Server implements ApplicationContextAware {
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval,
 				eventProcessor, timerEvent);
 		registerShutdownTime();
-		if (isSimulatorMode())
+		if (isSimulatorMode()) {
 			runSim();
+		}
 
 	}
 
@@ -546,7 +552,6 @@ public class Server implements ApplicationContextAware {
 		log.debug("");
 		// stop heart beat
 		scheduleManager.cancelTimerEvent(timerEvent);
-		eventManager.sendEvent(new ServerShutdownEvent());
 		try { // give it 2 seconds for an opportunity of clean shutdown
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
