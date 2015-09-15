@@ -2,27 +2,22 @@ package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
-import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.*;
-import com.cyanspring.common.event.marketsession.IndexSessionEvent;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
+import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefDataCommodity;
 import com.cyanspring.common.staticdata.WindBaseDBData;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The manager can collect and broadcast quote data to it's listener.
@@ -63,6 +58,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     public void init() throws Exception {
+        requestDataEventkey = IdGenerator.getInstance().getNextID();
         if (quoteSaver != null) {
             // create tick directory
             File file = new File(tickDir);
@@ -155,8 +151,8 @@ public class MarketDataManager extends MarketDataReceiver {
     }
 
     public void processRefDataEvent(RefDataEvent event) {
-        if(event != null && event.getKey() != null){
-            log.debug("event Key not send self:" + event.getKey());
+        if(event != null && (event.getKey() != null && !event.getKey().equals(requestDataEventkey))){
+            log.debug("refData event Key not send self:" + event.getKey());
             return;
         }
         if (event != null && event.isOk() && event.getRefDataList().size() > 0) {
@@ -428,8 +424,8 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     protected void requestRequireData() {
-        eventManager.sendEvent(new RefDataRequestEvent(null, null));
-        eventManager.sendEvent(new IndexSessionRequestEvent(null, null, null));
+        eventManager.sendEvent(new IndexSessionRequestEvent(requestDataEventkey, null, null));
+        eventManager.sendEvent(new RefDataRequestEvent(requestDataEventkey, null));
     }
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {

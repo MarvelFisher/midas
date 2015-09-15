@@ -1129,6 +1129,7 @@ public class SymbolData implements Comparable<SymbolData>
 	public void setTradedate(String tradedate)
 	{
 		this.tradedate = tradedate;
+		readFromTick();
 	}
 	public String getSessionIndex()
 	{

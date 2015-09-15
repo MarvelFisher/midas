@@ -194,6 +194,12 @@ public class AlertManager extends Compute {
             {
                 return ;
             }
+
+    		RefData refdata = getGateway().getRefData(parentOrder.getSymbol());
+    		if (refdata == null)
+    		{
+    			return;
+    		}
             DecimalFormat qtyFormat = new DecimalFormat("#0");
             String strQty = "";
             DecimalFormat priceFormat = new DecimalFormat("#0.#####");
@@ -225,6 +231,7 @@ public class AlertManager extends Compute {
                         null, parentOrder.getQuantity(), parentOrder.getPrice(),
                         Datetime, tradeMessage);
             }
+			TA.setCommdity(refdata.getCommodity());
             String keyValue = parentOrder.getSymbol() + "," + strAvgPx + ","
                     + strQty + ","
                     + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD");

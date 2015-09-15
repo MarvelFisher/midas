@@ -8,6 +8,8 @@ import java.util.Map;
 
 import com.cyanspring.apievent.reply.ServerReadyEvent;
 import com.cyanspring.apievent.reply.SystemErrorEvent;
+import com.cyanspring.apievent.request.UserLoginEvent;
+import com.cyanspring.apievent.version.ApiVersion;
 import com.cyanspring.event.api.ApiEventTranslator;
 import com.cyanspring.event.api.ApiResourceManager;
 import com.cyanspring.event.api.IEventTranslatror;
@@ -15,6 +17,7 @@ import com.cyanspring.event.api.obj.SpamController;
 import com.cyanspring.event.api.obj.reply.IApiReply;
 import com.cyanspring.event.api.obj.request.ApiUserLoginEvent;
 import com.cyanspring.event.api.obj.request.IApiRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +76,17 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
                     ctx.send(new SystemErrorEvent(null, null, 305, MessageLookup.buildEventMessage(ErrorMessage.REACH_MAX_ACCESS_LIMIT, "")));
                     return;
                 }
+        	}
+        	
+        	//check user client version
+        	if(null != obj && obj instanceof UserLoginEvent){
+        		UserLoginEvent checkVersion = (UserLoginEvent)obj;
+        		ApiVersion version = checkVersion.getVersion();
+        		if(null == version || !version.isSameVersion(new ApiVersion())){
+                    ctx.send(new SystemErrorEvent(null, null, 306, MessageLookup.buildEventMessage(ErrorMessage.VERSION_NEED_UPDATE
+                    		, "now api version :"+new ApiVersion().getID()+" user version:"+(version==null? "no version control program":version.getID()))));
+                    return;
+        		}
         	}
             
             IApiRequest tranObject = translator.translateRequest(obj);

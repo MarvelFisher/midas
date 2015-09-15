@@ -45,7 +45,7 @@ public class InfoGateway implements IPlugin {
 	private int createThreadCount;
 	private ExecutorService service;
 	private List<Compute> Computes;
-	private Map<String, RefData> refDataMap;
+	private ConcurrentHashMap<String, RefData> refDataMap;
 //	private ConcurrentLinkedQueue<AsyncEvent> sendRemoteEventQueue;
 //	private ConcurrentLinkedQueue<AsyncEvent> sendEventQueue;
 //	private AsyncTimerEvent timerEvent1min = new AsyncTimerEvent();
@@ -115,6 +115,19 @@ public class InfoGateway implements IPlugin {
 			});
 		}
 	}
+
+    public void processParentOrderUpdateEvent(final ParentOrderUpdateEvent event) {
+        if (null == event)
+            return;
+        log.info("[processUpdateChildOrderEvent] " + event.getInfo() + ":" + event.getTxId());
+        for (final Compute compute : Computes) {
+            service.submit(new Runnable() {
+                public void run() {
+                    compute.processParentOrderUpdateEvent(event, Computes);
+                }
+            });
+        }
+    }
 
     public void processParentOrderUpdateEvent(final ParentOrderUpdateEvent event) {
         if (null == event)
@@ -290,7 +303,7 @@ public class InfoGateway implements IPlugin {
 		return refDataMap;
 	}
 
-	public void setRefDataMap(Map<String, RefData> refDataMap) {
+	public void setRefDataMap(ConcurrentHashMap<String, RefData> refDataMap) {
 		this.refDataMap = refDataMap;
 	}
 }

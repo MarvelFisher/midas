@@ -51,6 +51,7 @@
 		</property>
 	</bean>
 	
+	<bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener"></bean>
 	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager"></bean>
 	
     <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">

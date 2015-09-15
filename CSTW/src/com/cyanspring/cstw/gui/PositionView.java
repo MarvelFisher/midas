@@ -7,6 +7,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -15,6 +17,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -57,6 +60,8 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class PositionView extends ViewPart implements IAsyncEventListener {
+	public PositionView() {
+	}
 	private static final Logger log = LoggerFactory.getLogger(PositionView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.PositionViewer";
 	private DynamicTableViewer openPositionViewer;
@@ -84,7 +89,12 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private final String MENU_ID_CLOSEPOSITION = "POPUP_CLOSE_POSITION";
 	private final String MENU_ID_MANUALCLOSEPOSITION = "POPUP_MANUAL_CLOSE_POSITION";
 	private final String MENU_ID_MODIFYPOSITIONPRICE = "POPUP_MODIFY_POSITION_PRICE";
-
+	
+	//tab folder
+	private CTabFolder tabFolder;
+	private CTabItem tbtmOpenPositions;
+	private CTabItem tbtmClosedPositions;
+	private CTabItem tbtmTrades;
 	@Override
 	public void createPartControl(Composite parent) {
 		imageRegistry = Activator.getDefault().getImageRegistry();
@@ -138,104 +148,49 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		bottomComposite.setLayoutData(bottomData);
 
 		// create the left composite in the bottom composite
-		Composite leftComposite = new Composite(bottomComposite, SWT.BORDER);
+		tabFolder = new CTabFolder(bottomComposite, SWT.BORDER);
+		tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+		
+		tbtmOpenPositions = new CTabItem(tabFolder, SWT.NONE);
+		tbtmOpenPositions.setText("Open Positions");
+			
+		Composite leftComposite = new Composite(tabFolder, SWT.BORDER);
 		leftComposite.setLayout(new GridLayout(1, true));
-		Label lbOpenPosition = new Label(leftComposite, SWT.NONE);
-		lbOpenPosition.setText("Open Positions");
-		Composite openComposite = new Composite(leftComposite, SWT.NONE);
+		Composite openComposite = new Composite(tabFolder, SWT.NONE);
 		openComposite.setLayout(new FillLayout());
 		openComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createOpenPositionViewer(openComposite);
-
-		final Sash sash1 = new Sash(bottomComposite, SWT.VERTICAL);
-		// create mid composite
-		Composite midComposite = new Composite(bottomComposite, SWT.BORDER);
-		midComposite.setLayout(new GridLayout(1, true));
-		Label lbClosedPosition = new Label(midComposite, SWT.NONE);
-		lbClosedPosition.setText("Closed Positions");
-		Composite closedComposite = new Composite(midComposite, SWT.NONE);
-		closedComposite.setLayout(new FillLayout());
-		closedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createClosedPositionViewer(closedComposite);
-
-		final Sash sash2 = new Sash(bottomComposite, SWT.VERTICAL);
-		// create mid composite
-		Composite rightComposite = new Composite(bottomComposite, SWT.BORDER);
-		rightComposite.setLayout(new GridLayout(1, true));
-		Label lbExecutionPosition = new Label(rightComposite, SWT.NONE);
-		lbExecutionPosition.setText("Trades");
-		Composite executionComposite = new Composite(rightComposite, SWT.NONE);
-		executionComposite.setLayout(new FillLayout());
-		executionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createExecutionViewer(executionComposite);
-
-		// setting up form layout for bottom composite
-		bottomComposite.setLayout(new FormLayout());
-
-		FormData leftData = new FormData();
-		leftData.left = new FormAttachment(0, 0);
-		leftData.right = new FormAttachment(sash1, 0);
-		leftData.top = new FormAttachment(0, 0);
-		leftData.bottom = new FormAttachment(100, 0);
-		leftComposite.setLayoutData(leftData);
-
-		final FormData sashData1 = new FormData();
-		sashData1.left = new FormAttachment(sash1, 300);
-		sashData1.top = new FormAttachment(0, 0);
-		sashData1.bottom = new FormAttachment(100, 0);
-		sash1.setLayoutData(sashData1);
-
-		sash1.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				Rectangle sashRect = sash1.getBounds();
-				Rectangle shellRect = bottomComposite.getClientArea();
-				int right = shellRect.width - sashRect.width - limit;
-				e.x = Math.max(Math.min(e.x, right), limit);
-				if (e.x != sashRect.x) {
-					sashData1.left = new FormAttachment(0, e.x);
-					bottomComposite.layout();
-				}
-			}
-		});
-
-		FormData midData = new FormData();
-		midData.left = new FormAttachment(sash1, 0);
-		midData.right = new FormAttachment(sash2, 0);
-		midData.top = new FormAttachment(0, 0);
-		midData.bottom = new FormAttachment(100, 0);
-		midComposite.setLayoutData(midData);
-
-		final FormData sashData2 = new FormData();
-		sashData2.left = new FormAttachment(sash2, 600);
-		sashData2.top = new FormAttachment(0, 0);
-		sashData2.bottom = new FormAttachment(100, 0);
-		sash2.setLayoutData(sashData2);
-
-		sash2.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				Rectangle sashRect = sash2.getBounds();
-				Rectangle shellRect = bottomComposite.getClientArea();
-				int right = shellRect.width - sashRect.width - limit;
-				e.x = Math.max(Math.min(e.x, right), limit);
-				if (e.x != sashRect.x) {
-					sashData2.left = new FormAttachment(0, e.x);
-					bottomComposite.layout();
-				}
-			}
-		});
-
-		FormData rightData = new FormData();
-		rightData.left = new FormAttachment(sash2, 0);
-		rightData.right = new FormAttachment(100, 0);
-		rightData.top = new FormAttachment(0, 0);
-		rightData.bottom = new FormAttachment(100, 0);
-		rightComposite.setLayoutData(rightData);
+		createOpenPositionViewer(openComposite);		
+		tbtmOpenPositions.setControl(openComposite);
+		
+		if(Business.getInstance().getUserGroup().isAdmin()){
+			
+			tbtmClosedPositions = new CTabItem(tabFolder, SWT.NONE);
+			tbtmClosedPositions.setText("Closed Positions");
+			
+			tbtmTrades = new CTabItem(tabFolder, SWT.NONE);
+			tbtmTrades.setText("Trades");
+			
+			Composite midComposite = new Composite(tabFolder, SWT.BORDER);
+			midComposite.setLayout(new GridLayout(1, true));
+			Composite closedComposite = new Composite(midComposite, SWT.NONE);
+			closedComposite.setLayout(new FillLayout());
+			closedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			createClosedPositionViewer(closedComposite);
+			tbtmClosedPositions.setControl(midComposite);
+			
+			Composite rightComposite = new Composite(tabFolder, SWT.BORDER);
+			rightComposite.setLayout(new GridLayout(1, true));
+			Composite executionComposite = new Composite(rightComposite, SWT.NONE);
+			executionComposite.setLayout(new FillLayout());
+			executionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			createExecutionViewer(executionComposite);
+			tbtmTrades.setControl(rightComposite);
+		}
 
 		createMenu(leftComposite);
 
 		// finally lay them out
 		mainComposite.layout();
-
 		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(AccountSnapshotReplyEvent.class, ID, this);
 		if (Business.getInstance().getOrderManager().isReady())
@@ -247,14 +202,14 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 	// account fields
 	private Label lbValue;
-	private Label lbCash;
-	private Label lbMargin;
+//	private Label lbCash;
+//	private Label lbMargin;
 	private Label lbDailyPnL;
 	private Label lbPnL;
 	private Label lbUrPnL;
 	private Label lbCashAvailable;
 	private Label lbCashDeduct;
-	private Label lbMarginHeld;
+//	private Label lbMarginHeld;
 
 	private void createAccountInfoPad(Composite parent) {
 		GridLayout layout = new GridLayout(3, true);
@@ -276,25 +231,18 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		comp3.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
 
 		Label lb1 = new Label(comp1, SWT.LEFT);
-		lb1.setText("Account value: ");
+		lb1.setText("Account Value: ");
 		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		lbValue = new Label(comp1, SWT.RIGHT);
 		lbValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Label lb8 = new Label(comp2, SWT.LEFT);
+		lb8.setText("Account Cash: ");
+		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		Label lb2 = new Label(comp2, SWT.LEFT);
-		lb2.setText("Cash value: ");
-		lb2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbCash = new Label(comp2, SWT.RIGHT);
-		lbCash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Label lb3 = new Label(comp3, SWT.LEFT);
-		lb3.setText("Margin value: ");
-		lb3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbMargin = new Label(comp3, SWT.RIGHT);
-		lbMargin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		lbCashDeduct = new Label(comp2, SWT.RIGHT);
+		lbCashDeduct.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Label lb4 = new Label(comp1, SWT.LEFT);
 		lb4.setText("Daily P&&L: ");
@@ -317,26 +265,33 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lbUrPnL = new Label(comp3, SWT.RIGHT);
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		Label lb7 = new Label(comp1, SWT.LEFT);
+		Label lb7 = new Label(comp3, SWT.LEFT);
 		lb7.setText("Cash Available: ");
 		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbCashAvailable = new Label(comp1, SWT.RIGHT);
+		lbCashAvailable = new Label(comp3, SWT.RIGHT);
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Label lb8 = new Label(comp2, SWT.LEFT);
-		lb8.setText("Cash Deduct");
-		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbCashDeduct = new Label(comp2, SWT.RIGHT);
-		lbCashDeduct.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Label lb10 = new Label(comp3, SWT.LEFT);
-		lb10.setText("Margin Held");
-		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbMarginHeld = new Label(comp3, SWT.RIGHT);
-		lbMarginHeld.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+//		Label lb2 = new Label(comp2, SWT.LEFT);
+//		lb2.setText("Cash value: ");
+//		lb2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//
+//		lbCash = new Label(comp2, SWT.RIGHT);
+//		lbCash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//
+//		Label lb3 = new Label(comp3, SWT.LEFT);
+//		lb3.setText("Margin value: ");
+//		lb3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//
+//		lbMargin = new Label(comp3, SWT.RIGHT);
+//		lbMargin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//
+//		Label lb10 = new Label(comp3, SWT.LEFT);
+//		lb10.setText("Margin Held");
+//		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//
+//		lbMarginHeld = new Label(comp3, SWT.RIGHT);
+//		lbMarginHeld.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 	}
 
@@ -528,18 +483,17 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						return;
 
 					PositionView.this.lbValue.setText(decimalFormat.format(PositionView.this.account.getValue()));
-					PositionView.this.lbCash.setText(decimalFormat.format(PositionView.this.account.getCash()));
-					PositionView.this.lbMargin.setText(decimalFormat.format(PositionView.this.account.getMargin()));
+					PositionView.this.lbCashDeduct.setText(decimalFormat.format(PositionView.this.account.getCashDeduct()));
 					PositionView.this.lbDailyPnL.setText(decimalFormat.format(PositionView.this.account.getDailyPnL()));
 					PositionView.this.lbPnL.setText(decimalFormat.format(PositionView.this.account.getPnL()));
 					PositionView.this.lbUrPnL.setText(decimalFormat.format(PositionView.this.account.getUrPnL()));
 					PositionView.this.lbCashAvailable
 							.setText(decimalFormat.format(PositionView.this.account.getCashAvailable()));
-					PositionView.this.lbMarginHeld
-							.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
-					PositionView.this.lbCashDeduct
-							.setText(decimalFormat.format(PositionView.this.account.getCashDeduct()));
+//					PositionView.this.lbCash.setText(decimalFormat.format(PositionView.this.account.getCash()));
+//					PositionView.this.lbMargin.setText(decimalFormat.format(PositionView.this.account.getMargin()));
+//					PositionView.this.lbMarginHeld.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
 					PositionView.this.topComposite.layout();
+					tabFolder.setSelection(tbtmOpenPositions);
 				}
 			}
 		});

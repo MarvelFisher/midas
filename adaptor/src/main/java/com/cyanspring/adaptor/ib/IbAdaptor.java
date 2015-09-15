@@ -75,6 +75,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private boolean newsIsSubCurrentDay = false;
     private volatile boolean reqDataReceived = false;
     private volatile boolean marketSubscribed = false;
+    private volatile boolean prevStatus = false;
     private String refDataEventKey;
 
     // caching
@@ -102,14 +103,11 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             refDataEventKey = IdGenerator.getInstance().getNextID();
             log.debug(id + " event key = " + refDataEventKey);
             eventManager.subscribe(RefDataEvent.class, refDataEventKey, this);
-            requestRequireData();
             gcThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
                         if (clientSocket.isConnected() == false) {
-                            isConnected = false;
-                            notifyMarketDataState(false);
                             marketSubscribed = false;
                             if(reqDataReceived){
                                 ConnectToIBGateway();
@@ -158,7 +156,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
     }
 
-    public void requestRequireData(){
+    private void requestRequireData(){
         RefDataRequestEvent event = new RefDataRequestEvent(refDataEventKey, null);
         eventManager.sendEvent(event);
     }
@@ -183,9 +181,11 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     @Override
     synchronized public void uninit() {
         log.info("Ib Adapter uninit begin");
-        eventManager.unsubscribe(RefDataEvent.class, this);
+        eventManager.unsubscribe(RefDataEvent.class, refDataEventKey, this);
         gcThread.interrupt();
         clientSocket.eDisconnect();
+        prevStatus = false;
+        isConnected = false;
         log.info("Ib Adapter uninit end");
     }
 
@@ -206,18 +206,28 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
     }
 
+    private void notifyAdaptorState(boolean on){
+        if(prevStatus == on){
+            return;
+        }else{
+            prevStatus = on;
+        }
+        if(marketDataStateListeners != null && marketDataStateListeners.size() > 0){
+            for (IMarketDataStateListener listener : marketDataStateListeners)
+                listener.onState(on, this);
+        }
+        if(downStreamListener != null){
+            downStreamListener.onState(on);
+        }
+    }
+
     // //////////////////////////////////////////////
     // Begin: implementation of IMarketDataAdaptor
     // //////////////////////////////////////////////
-    private void notifyMarketDataState(boolean on) {
-        for (IMarketDataStateListener listener : marketDataStateListeners)
-            listener.onState(on, this);
-    }
 
     @Override
     public boolean getState() {
-        if(!clientSocket.isConnected())
-            return false;
+        if(!clientSocket.isConnected()) return false;
         return isConnected;
     }
 
@@ -324,14 +334,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             if (event instanceof RefDataEvent) {
                 log.debug("Ib Adapter Receive RefDataEvent - " + id + "-" + event.getKey());
                 RefDataEvent refDataEvent = (RefDataEvent) event;
-                for (RefData refData : refDataEvent.getRefDataList()) {
-                    refDataBySymbolMap.put(refData.getSymbol(), refData);
+                if(refDataEvent != null && refDataEvent.isOk() && refDataEvent.getRefDataList().size() > 0) {
+                    for (RefData refData : refDataEvent.getRefDataList()) {
+                        refDataBySymbolMap.put(refData.getSymbol(), refData);
+                    }
+                    reqDataReceived = true;
+                }else{
+                    log.warn(id + "-RefDataEvent is empty or null!");
                 }
-            }
-            if (refDataBySymbolMap.size() > 0) {
-                reqDataReceived = true;
-            } else {
-                log.warn(id + "-RefDataEvent is empty!");
             }
         }
     }
@@ -368,8 +378,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
-            if(!clientSocket.isConnected())
-                return false;
+            if(!clientSocket.isConnected()) return false;
             return isConnected;
         }
 
@@ -522,8 +531,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
-            if(!clientSocket.isConnected())
-                return false;
+            if(!clientSocket.isConnected()) return false;
             return isConnected;
         }
 
@@ -531,7 +539,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         public IDownStreamSender setListener(IDownStreamListener listener) {
             IbAdaptor.this.downStreamListener = listener;
             if (null != listener)
-                downStreamListener.onState(true);
+                downStreamListener.onState(getState());
             return IbAdaptor.this.downStreamSender;
         }
 
@@ -612,15 +620,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     public void connectionClosed() {
         log.info("IB connection closed");
         clear();
-
-        // notify downstream down
-        if (downStreamListener != null) {
-            downStreamListener.onState(false);
-        }
-
-        // notify market data feed down
         isConnected = false;
-        notifyMarketDataState(isConnected);
+        notifyAdaptorState(isConnected);
     }
 
     private void clear() {
@@ -1079,7 +1080,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
 
         isConnected = true;
-        notifyMarketDataState(isConnected);
+        notifyAdaptorState(isConnected);
 
         //request ib News
         newsLog.info("IB Request News");
