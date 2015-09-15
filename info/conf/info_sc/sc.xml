@@ -45,6 +45,9 @@
 		<property name="retrieveTime" value="1900"/>
 		<property name="preSubscriptionList">
 			<list>
+	            <value>IFC1</value>
+				<value>IHC1</value>
+				<value>ICC1</value>
 				<value>601318.SH</value>
 				<value>600030.SH</value>
 				<value>601628.SH</value>
