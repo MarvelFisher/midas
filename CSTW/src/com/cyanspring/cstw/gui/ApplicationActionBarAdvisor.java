@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -12,8 +12,6 @@ package com.cyanspring.cstw.gui;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.GroupMarker;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.Separator;
@@ -39,15 +37,17 @@ import com.cyanspring.cstw.gui.common.StyledAction;
  */
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private final static Logger log = LoggerFactory.getLogger(ApplicationActionBarAdvisor.class);
-	
+
 	private Action suspendSystemAction;
-	
+	private Action serverShutdownAction;
+
 	private Action userInfoAction;
-	private ActionContributionItem  userInfoItem; 
+	private ActionContributionItem  userInfoItem;
 	private final String ID_SUSPEND_SYSTEM_ACTION = "SUSPEND_SYSTEM_ACTION";
+	private final String ID_SERVER_SHUTDOWN_ACTION = "SERVER_SHUTDOWN_ACTION";
 	private final String ID_USER_INFO_ACTION = "USER_INFO_ACTION";
 	private ImageRegistry imageRegistry;
-	
+
 	// Actions - important to allocate these only in makeActions, and then use
 	// them
 	// in the fill methods. This ensures that the actions aren't recreated
@@ -59,27 +59,29 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	@Override
-	protected void makeActions(final IWorkbenchWindow window) {		
+	protected void makeActions(final IWorkbenchWindow window) {
 		createSuspendSystemAction();
+		createServerShutdownAction();
 		createUserInfoAction();
 	}
 
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
-		
+
 		ToolBarManager toolBarManager = new ToolBarManager();
 		coolBar.add(toolBarManager);
 		toolBarManager.add(userInfoItem);
 		toolBarManager.add(new Separator());
 		toolBarManager.add(suspendSystemAction);
+		toolBarManager.add(serverShutdownAction);
 	}
 
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
 		ServerStatusDisplay.getInstance().setStatusLineManager(statusLine);
 	}
-	
-	public void createUserInfoAction(){
+
+	public void createUserInfoAction() {
 		userInfoAction = new StyledAction("",org.eclipse.jface.action.IAction.AS_UNSPECIFIED) {
 		};
 		userInfoAction.setId(ID_USER_INFO_ACTION);
@@ -91,25 +93,25 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		userInfoItem.setMode(ActionContributionItem.MODE_FORCE_TEXT);
 		userInfoAction.setEnabled(false);
 	}
-	
-	public void createSuspendSystemAction(){
-		suspendSystemAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX){
-			public void run(){
+
+	public void createSuspendSystemAction() {
+		suspendSystemAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+			public void run() {
 				boolean suspend;
-				if(this.isChecked()){
+				if (this.isChecked()) {
 					suspend = true;
 					boolean isOk = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "", "suspend server?");
-					if(!isOk){
+					if (!isOk) {
 						suspendSystemAction.setChecked(false);
-						return;					
+						return;
 					}
 				} else {
 					suspend = false;
 				}
-				
+
 				try {
 					Business.getInstance().getEventManager().sendRemoteEvent(
-							new SuspendServerEvent(null, 
+							new SuspendServerEvent(null,
 									Business.getInstance().getFirstServer(), suspend));
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
@@ -118,6 +120,28 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		};
 		suspendSystemAction.setId(ID_SUSPEND_SYSTEM_ACTION);
 		suspendSystemAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.ALERT_ICON.toString()));
+	}
+
+	public void createServerShutdownAction() {
+		serverShutdownAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				boolean isOk = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "", "Shutdown server?");
+				if (!isOk) {
+					return;
+				}
+
+				try {
+					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+					ConfirmPasswordDialog loginDialog =
+							new ConfirmPasswordDialog(Business.getInstance().getAccount(), window.getShell());
+					loginDialog.open();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		};
+		serverShutdownAction.setId(ID_SERVER_SHUTDOWN_ACTION);
+		serverShutdownAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.STOP_ICON.toString()));
 	}
 
 }

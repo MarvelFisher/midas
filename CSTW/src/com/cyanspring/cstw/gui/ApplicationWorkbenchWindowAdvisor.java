@@ -2,15 +2,14 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.core.commands.Command;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
@@ -25,7 +24,6 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,14 +56,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		configurer.setTitle("Cyan Spring Trader Workstation");
 		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
 	}
-	
+
 	@Override
 	public void postWindowOpen() {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();
-		
+
 		try {
-			
+
 			//add listener
 			ViewAuthListener authListener =new  ViewAuthListener();
 			page.addPartListener(authListener);
@@ -73,9 +71,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 				LoginDialog loginDialog = new LoginDialog(window.getShell());
 				loginDialog.open();
 			}
-			
+
 			setUserAccount(Business.getInstance().getUser(), Business.getInstance().getAccount());
-			
+
 			// check login role
 			log.info("fire account login menu change :{}",Business.getInstance().getUserGroup().getRole().name());
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window.getService(ISourceProviderService.class);
@@ -83,10 +81,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
 			commandStateService.fireAccountChanged();
 
-			// filter already open view 
+			// filter already open view
 			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
 			for(IWorkbenchPage activePage: pages){
-				
+
 				IViewReference vrs[] = activePage.getViewReferences();
 				for(IViewReference vr : vrs){
 					log.info("show view :{}",vr.getId());
@@ -94,14 +92,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 						log.info("hide view :{}",vr.getId());
 						IViewPart part = activePage.findView(vr.getId());
 						log.info("part:{}",part.getViewSite().getId());
-						part.getViewSite().getShell().setVisible(false);						
+						part.getViewSite().getShell().setVisible(false);
 						activePage.hideView(vr);
 						log.info("visible:{}",part.getViewSite().getShell().isVisible());
 
 					}else{
 						authListener.filterViewAllAction(vr.getPartName(), vr.getPart(true));
 					}
-					
+
 				}
 			}
 
@@ -127,15 +125,16 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 				}
 
 			}
-				
+
 			// filter this item or your coolbar will add gap when every login.
 			IContributionItem items[]=  getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().getItems();
 			for(IContributionItem item : items){
-				if(item.getClass().toString().contains("CoolBarToTrimManager"))
+				if(item.getClass().toString().contains("CoolBarToTrimManager")) {
 					getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().remove(item);
+				}
 			}
-			
-			
+
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -154,16 +153,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 	private void setUserAccount(String user, String account) {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setTitle("Cyan Spring Trader Workstation - " + 
+		configurer.setTitle("Cyan Spring Trader Workstation - " +
 				user + "/" + account);
 	}
-	
+
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if(event instanceof SelectUserAccountEvent) {
 			setUserAccount(((SelectUserAccountEvent) event).getUser(), ((SelectUserAccountEvent) event).getAccount());
 		}
-		
 	}
 
 }
