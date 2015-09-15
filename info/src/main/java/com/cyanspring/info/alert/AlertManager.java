@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.type.ExecType;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -30,6 +32,7 @@ import com.cyanspring.common.event.alert.SetPriceAlertRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
+import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
@@ -73,6 +76,7 @@ public class AlertManager extends Compute {
 	@Override
 	public void SubscribetoEventsMD() {
 		SubscirbetoEvent(ChildOrderUpdateEvent.class);
+//        SubscirbetoEvent(ParentOrderUpdateEvent.class);
 		SubscirbetoEvent(AsyncTimerEvent.class);
 		SubscirbetoEvent(MarketSessionEvent.class);
 		SubscirbetoEvent(QuoteEvent.class);
@@ -112,6 +116,21 @@ public class AlertManager extends Compute {
 		log.info("[processUpdateChildOrderEvent] " + execution.toString());
 		receiveChildOrderUpdateEvent(execution);
 	}
+
+    @Override
+    public void processParentOrderUpdateEvent(ParentOrderUpdateEvent event,
+                                             List<Compute> computes) {
+        if (null == event)
+            return;
+
+        ExecType execType = event.getExecType();
+        if (execType == ExecType.PARTIALLY_FILLED || execType == ExecType.FILLED)
+        {
+            ParentOrder parentOrder = event.getOrder();
+            log.info("[processParentOrderUpdateEvent] " + parentOrder.toString());
+            receiveParentOrderUpdateEvent(event);
+        }
+    }
 
 	@Override
 	public void processResetAccountRequestEvent(ResetAccountRequestEvent event, List<Compute> computes) {
@@ -165,6 +184,127 @@ public class AlertManager extends Compute {
 			log.error("[ResetUser]:[" + strCmd + "] :" + e.getMessage());
 		}
 	}
+
+    synchronized private void receiveParentOrderUpdateEvent(ParentOrderUpdateEvent parentOrderUpdateEvent) {
+        Session session = null;
+        try {
+            ExecType execType = parentOrderUpdateEvent.getExecType();
+            ParentOrder parentOrder = parentOrderUpdateEvent.getOrder();
+            if (execType == null || parentOrder == null)
+            {
+                return ;
+            }
+            DecimalFormat qtyFormat = new DecimalFormat("#0");
+            String strQty = "";
+            DecimalFormat priceFormat = new DecimalFormat("#0.#####");
+            String strAvgPx = priceFormat.format(parentOrder.getAvgPx());
+            if (execType == ExecType.FILLED)
+            {
+                strQty = qtyFormat.format(parentOrder.getQuantity());
+            }
+            else if (execType == ExecType.PARTIALLY_FILLED)
+            {
+                strQty = qtyFormat.format(parentOrder.getCumQty());
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm:ss");
+            String Datetime = dateFormat.format(parentOrder.get(Date.class,
+                    "Created"));
+            String tradeMessage = "Trade " + parentOrder.getSymbol() + " "
+                    + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD") + " " + strQty + "@"
+//					+ "SOLD" + " " + strQty + "@"
+                    + strAvgPx;
+            TradeAlert TA;
+            if (parentOrder.getSide().toString().toLowerCase().equals("sell")) {
+                TA = new TradeAlert(parentOrder.getUser(), parentOrder.getSymbol(),
+                        null, 0 - parentOrder.getQuantity(),
+                        parentOrder.getPrice(), Datetime, tradeMessage);
+            } else {
+                TA = new TradeAlert(parentOrder.getUser(), parentOrder.getSymbol(),
+                        null, parentOrder.getQuantity(), parentOrder.getPrice(),
+                        Datetime, tradeMessage);
+            }
+            String keyValue = parentOrder.getSymbol() + "," + strAvgPx + ","
+                    + strQty + ","
+                    + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD");
+            // SendEvent
+            SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+                    null, null, "txId", new ParseData(parentOrder.getUser(),
+                    tradeMessage, TA.getId(), AlertMsgType.MSG_TYPE_ORDER.getType(), Datetime,
+                    keyValue, deepLink + parentOrder.getSymbol() + "." + market));
+            // eventManagerMD.sendEvent(sendNotificationRequestEvent);
+            SendEvent(sendNotificationRequestEvent) ;
+            // save to Array
+            ArrayList<TradeAlert> list;
+            list = userTradeAlerts.get(parentOrder.getUser());
+            if (null == list) {
+                session = sessionFactory.openSession();
+                Query query = session.getNamedQuery("LoadPastTradeAlert");
+                query.setString(0, parentOrder.getUser());
+//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+                Iterator iterator = query.list().iterator();
+                list = new ArrayList<TradeAlert>();
+                ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
+                while (iterator.hasNext()) {
+                    TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
+                    if (list.size() < 20)
+                    {
+                        list.add(pastTradeAlert);
+                    }
+                    else
+                    {
+                        lstExpired.add(pastTradeAlert);
+                    }
+                }
+                if (list.size() == 0) {
+                    list.add(TA);
+                } else if (list.size() >= 20) {
+                    list.remove(19);
+                    list.add(0, TA);
+                } else {
+                    list.add(0, TA);
+                }
+                userTradeAlerts.put(parentOrder.getUser(), list);
+                if (lstExpired.size() > 0)
+                {
+                    try {
+                        Transaction tx = session.beginTransaction();
+                        for (TradeAlert tradealert : lstExpired)
+                        {
+                            session.delete(tradealert);
+                        }
+                        tx.commit();
+                    } catch (Exception e) {
+                        log.warn("[SQLDelete] : " + e.getMessage());
+                    }
+                }
+            } else {
+                if (list.indexOf(TA) != -1) {
+                    log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
+                    if (null != session) {
+                        session.close();
+                    }
+                    return;
+                } else {
+                    if (list.size() >= 20) {
+                        list.remove(19);
+                        list.add(0, TA);
+                    } else {
+                        list.add(0, TA);
+                    }
+                }
+            }
+            // save to SQL
+            SQLSave(TA);
+        } catch (Exception e) {
+            log.warn("[receiveChildOrderUpdateEvent] : " + e.getMessage());
+        } finally {
+            if (null != session) {
+                session.close();
+            }
+        }
+    }
 
 	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
 		Session session = null;
