@@ -8,11 +8,20 @@
         >
 
     <context:annotation-config />
-    <bean id="marketSessionManager" class="com.cyanspring.common.marketsession.MarketSessionManager">
-        <property name="sessionChecker">
-            <ref bean="sessionChecker"/>
-        </property>
+    
+	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
+        <property name="settlementDelay"><value>45</value></property>
+        <property name="noCheckSettlement" value="true"/>
+        <property name="eventManager" ref="eventManager"></property>        
     </bean>
+    
+    <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<list>
+				<ref bean="sessionChecker"/>
+			</list>
+		</constructor-arg>
+	</bean>
 
     <bean id="sessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
         <property name="stateMap">
