@@ -45,7 +45,7 @@ public class InfoGateway implements IPlugin {
 	private int createThreadCount;
 	private ExecutorService service;
 	private List<Compute> Computes;
-	private Map<String, RefData> refDataMap;
+	private ConcurrentHashMap<String, RefData> refDataMap;
 //	private ConcurrentLinkedQueue<AsyncEvent> sendRemoteEventQueue;
 //	private ConcurrentLinkedQueue<AsyncEvent> sendEventQueue;
 //	private AsyncTimerEvent timerEvent1min = new AsyncTimerEvent();
@@ -290,7 +290,7 @@ public class InfoGateway implements IPlugin {
 		return refDataMap;
 	}
 
-	public void setRefDataMap(Map<String, RefData> refDataMap) {
+	public void setRefDataMap(ConcurrentHashMap<String, RefData> refDataMap) {
 		this.refDataMap = refDataMap;
 	}
 }
