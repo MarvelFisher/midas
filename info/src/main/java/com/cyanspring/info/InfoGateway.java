@@ -129,19 +129,6 @@ public class InfoGateway implements IPlugin {
         }
     }
 
-    public void processParentOrderUpdateEvent(final ParentOrderUpdateEvent event) {
-        if (null == event)
-            return;
-        log.info("[processUpdateChildOrderEvent] " + event.getInfo() + ":" + event.getTxId());
-        for (final Compute compute : Computes) {
-            service.submit(new Runnable() {
-                public void run() {
-                    compute.processParentOrderUpdateEvent(event, Computes);
-                }
-            });
-        }
-    }
-
 	public void processResetAccountRequestEvent(
 			final ResetAccountRequestEvent event) {
 		log.info("[processResetAccountRequestEvent] : AccountId :"
