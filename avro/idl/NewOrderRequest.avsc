@@ -1,0 +1,51 @@
+{
+  "namespace": "com.cyanspring.avro.trading",
+  "type": "record",
+  "name": "NewOrderRequest",
+  "fields": [
+    {
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "symbol",
+      "type": "string"
+    },
+    {
+      "name": "side",
+      "type": "int"
+    },    
+    {
+      "name": "type",
+      "type": "int"
+    },
+    {
+      "name": "tif",
+      "type": "int"
+    },
+    {
+      "name": "price",
+      "type": "double"
+    },
+    {
+      "name": "quantity",
+      "type": "double"
+    },
+    {
+      "name": "exchangeAccount",
+      "type": "string"
+    },
+    {
+      "name": "created",
+      "type": "string"
+    },
+    {
+      "name": "clOrderId",
+      "type": "string"
+    },
+    {
+      "name": "txId",
+      "type": "string"
+    }
+  ]
+}

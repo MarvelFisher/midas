@@ -1,0 +1,27 @@
+{
+  "namespace": "com.cyanspring.avro.trading",
+  "type": "record",
+  "name": "AmendOrderRequest",
+  "fields": [
+    {
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "orderId",
+      "type": "string"
+    },
+    {
+      "name": "price",
+      "type": "double"
+    },
+    {
+      "name": "quantity",
+      "type": "double"
+    },
+    {
+      "name": "txId",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "namespace": "com.cyanspring.avro.trading",
+  "type": "record",
+  "name": "CancelOrderRequest",
+  "fields": [
+    {
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "orderId",
+      "type": "string"
+    },
+    {
+      "name": "txId",
+      "type": "string"
+    }
+  ]
+}

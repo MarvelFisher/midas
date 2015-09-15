@@ -1,0 +1,14 @@
+{
+  "namespace": "com.cyanspring.avro.types",
+  "type": "enum",
+  "name": "ObjectType",
+  "symbols": [
+    "NewOrderRequest",
+    "AmendOrderRequest",
+    "CancelOrderRequest",
+    "NewOrderReply",
+    "AmendOrderReply",
+    "CancelOrderReply",
+    "OrderUpdate"
+  ]
+}

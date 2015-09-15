@@ -1,0 +1,27 @@
+{
+  "namespace": "com.cyanspring.avro.trading",
+  "type": "record",
+  "name": "NewOrderReply",
+  "fields": [
+    {
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "orderId",
+      "type": "string"
+    },
+    {
+      "name": "result",
+      "type": "boolean"
+    },
+    {
+      "name": "message",
+      "type": "string"
+    },
+    {
+      "name": "txId",
+      "type": "string"
+    }
+  ]
+}

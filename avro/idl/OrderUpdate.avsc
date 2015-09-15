@@ -1,0 +1,63 @@
+{
+  "namespace": "com.cyanspring.avro.trading",
+  "type": "record",
+  "name": "OrderUpdate",
+  "fields": [
+    {
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "execType",
+      "type": "int"
+    },
+    {
+      "name": "symbol",
+      "type": "string"
+    },
+    {
+      "name": "ordStatus",
+      "type": "int"
+    },
+    {
+      "name": "side",
+      "type": "int"
+    },    
+    {
+      "name": "type",
+      "type": "int"
+    },
+    {
+      "name": "tif",
+      "type": "int"
+    },
+    {
+      "name": "price",
+      "type": "double"
+    },
+    {
+      "name": "quantity",
+      "type": "double"
+    },
+    {
+      "name": "created",
+      "type": "string"
+    },
+    {
+      "name": "exchangeAccount",
+      "type": "string"
+    },
+    {
+      "name": "exchangeOrderId",
+      "type": "string"
+    },
+    {
+      "name": "clOrderId",
+      "type": "string"
+    },
+    {
+      "name": "txId",
+      "type": "string"
+    }
+  ]
+}
