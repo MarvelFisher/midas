@@ -214,7 +214,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
         if(marketDataStateListeners != null && marketDataStateListeners.size() > 0){
             for (IMarketDataStateListener listener : marketDataStateListeners)
-                listener.onState(on);
+                listener.onState(on, this);
         }
         if(downStreamListener != null){
             downStreamListener.onState(on);

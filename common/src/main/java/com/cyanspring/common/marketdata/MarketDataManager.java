@@ -424,7 +424,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     protected void requestRequireData() {
-        eventManager.sendEvent(new IndexSessionRequestEvent(requestDataEventkey, null, null, Clock.getInstance().now()));
+        eventManager.sendEvent(new IndexSessionRequestEvent(requestDataEventkey, null, null));
         eventManager.sendEvent(new RefDataRequestEvent(requestDataEventkey, null));
     }
 
