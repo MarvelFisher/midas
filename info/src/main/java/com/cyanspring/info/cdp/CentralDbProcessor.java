@@ -1154,6 +1154,9 @@ public class CentralDbProcessor implements IPlugin
 		log.info("Uninitialising...");
 		eventProcessorMD.uninit();
 		eventProcessor.uninit();
+		chartCacheProcessor.clear();
+		chartCacheProcessor.exit();
+		scheduleManager.uninit();
 	}
 	
 	public boolean isUsingIndex()

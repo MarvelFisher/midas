@@ -103,8 +103,10 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 
 	@Override
 	public void uninit() {
-		for (IRefDataAdaptor adaptor : refDataAdaptors)
+		for (IRefDataAdaptor adaptor : refDataAdaptors) {
+			adaptor.unsubscribeRefData(this);
 			adaptor.uninit();
+		}
 		eventProcessor.uninit();
 	}
 
@@ -132,9 +134,16 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 					if (!checkRefData(refData))
 						continue;
 					String index = RefDataUtil.getCategory(refData);
-					if (index == null)
-						throw new Exception("RefData index not find");
-					String tradeDate = sessionDataMap.get(index).getTradeDateByString();
+					if (index == null) {
+						log.warn("RefDataUpdate: index not found");
+						continue;
+					}
+					MarketSessionData sessionData = sessionDataMap.get(index);
+					if (sessionData == null){
+						log.warn("RefDataUpdate: market session data not found, index: " + index);
+						continue;
+					}
+					String tradeDate = sessionData.getTradeDateByString();
 
 					if (action == Action.ADD || action == Action.MOD) {
 						refDataManager.add(refData, tradeDate);

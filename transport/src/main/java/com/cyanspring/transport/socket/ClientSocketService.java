@@ -178,9 +178,10 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
 
 	@Override
 	public void uninit() {
-        group.shutdownGracefully();
-    }
-
+		if (group != null) {
+			group.shutdownGracefully();
+		}
+	}
 
 	@Override
 	public boolean sendMessage(Object obj) {

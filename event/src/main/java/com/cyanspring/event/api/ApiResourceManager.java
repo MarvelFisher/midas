@@ -38,9 +38,14 @@ public class ApiResourceManager{
         socketService.init();
     }
 
-    public String getBridgeId() {
-        return bridgeId;
-    }
+	public void uninit(IServerSocketListener listener) {
+		socketService.removeListener(listener);
+		socketService.uninit();
+	}
+
+	public String getBridgeId() {
+		return bridgeId;
+	}
 
     public void setBridgeId(String bridgeId) {
         this.bridgeId = bridgeId;

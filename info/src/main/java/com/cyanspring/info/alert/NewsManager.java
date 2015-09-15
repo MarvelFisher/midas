@@ -91,6 +91,7 @@ public class NewsManager implements IPlugin {
 		log.info("Uninitialising...");
 		newsLst.clear();
 		eventProcessor.uninit();
+		scheduleManager.uninit();
 	}
 
 	public static String getEndString() {

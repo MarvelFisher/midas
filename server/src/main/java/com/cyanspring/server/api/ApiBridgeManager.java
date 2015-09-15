@@ -144,10 +144,11 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
         translator.init(requestMap, replyMap);
     }
 
-    @Override
-    public void uninit() {
-        thread.exit();
-    }
+	@Override
+	public void uninit() {
+		thread.exit();
+		resourceManager.uninit(listener);
+	}
 
     public void setReplyMap(Map<String, String> replyMap) {
         this.replyMap = replyMap;
