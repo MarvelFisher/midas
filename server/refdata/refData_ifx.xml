@@ -10,6 +10,10 @@
         <int>-1</int>
       </entry>
       <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
         <string>Price per unit</string>
         <double>1.0</double>
       </entry>
@@ -93,6 +97,10 @@
       <entry>
         <string>Decimal point</string>
         <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
       <entry>
         <string>Price per unit</string>
@@ -180,6 +188,10 @@
         <int>-1</int>
       </entry>
       <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
         <string>Price per unit</string>
         <double>1.0</double>
       </entry>
@@ -263,6 +275,10 @@
       <entry>
         <string>Decimal point</string>
         <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
       <entry>
         <string>Price per unit</string>
@@ -350,6 +366,10 @@
         <int>-1</int>
       </entry>
       <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
         <string>Price per unit</string>
         <double>1.0</double>
       </entry>
@@ -433,6 +453,10 @@
       <entry>
         <string>Decimal point</string>
         <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
       <entry>
         <string>Price per unit</string>
@@ -520,6 +544,10 @@
         <int>-1</int>
       </entry>
       <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
         <string>Price per unit</string>
         <double>1.0</double>
       </entry>
@@ -603,6 +631,10 @@
       <entry>
         <string>Decimal point</string>
         <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
       <entry>
         <string>Price per unit</string>
@@ -690,6 +722,10 @@
         <int>-1</int>
       </entry>
       <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
         <string>Price per unit</string>
         <double>1.0</double>
       </entry>
@@ -773,6 +809,10 @@
       <entry>
         <string>Decimal point</string>
         <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
       </entry>
       <entry>
         <string>Price per unit</string>

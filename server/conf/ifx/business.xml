@@ -101,7 +101,7 @@
 	<bean id="orderCountValidator" class="com.cyanspring.server.validation.OrderCountValidator">       
 	</bean>
 
-	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.MarketSessionValidator"/>
+	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.IndexMarketSessionValidator"/>
 		
 	<bean id="fixToOrderMap" class="com.cyanspring.common.util.DualMap">
 	    <constructor-arg>

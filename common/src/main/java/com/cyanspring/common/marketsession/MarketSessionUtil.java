@@ -220,15 +220,29 @@ public class MarketSessionUtil implements IPlugin{
     private String searchIndex(RefData refData) {
     	String index = null;
     	index = RefDataUtil.getSearchIndex(refData);
-    	if (index == null) {
-    		if (StringUtils.hasText(refData.getExchange()))
-    			index = refData.getExchange();
-    		else if (StringUtils.hasText(refData.getCategory()))
-    			index = refData.getCategory();
-    		else if (StringUtils.hasText(refData.getSymbol()))
-    			index = RefDataUtil.getOnlyChars(refData.getSymbol());
+    	if (index != null && index.equals(refData.getSymbol())) {
+    		if (checkExist(index)) {
+    			return index;
+    		}
     	}
+    	
+    	if (StringUtils.hasText(refData.getCategory()))
+			index = refData.getCategory();
+    	if (checkExist(index))
+			return index;
+    	if (StringUtils.hasText(refData.getExchange()))
+			index = refData.getExchange();
+    	if (checkExist(index))
+			return index;   	
+    	if (StringUtils.hasText(refData.getSymbol()))
+			index = RefDataUtil.getOnlyChars(refData.getSymbol());
+    	if (checkExist(index))
+			return index;
     	return index;
+    }
+    
+    private boolean checkExist(String index) {
+    	return sessionMap.get(index) != null ? true : false;
     }
 
     public boolean isHoliday(String symbol, Date date) throws Exception{
