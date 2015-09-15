@@ -539,7 +539,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         public IDownStreamSender setListener(IDownStreamListener listener) {
             IbAdaptor.this.downStreamListener = listener;
             if (null != listener)
-                downStreamListener.onState(true);
+                downStreamListener.onState(getState());
             return IbAdaptor.this.downStreamSender;
         }
 
