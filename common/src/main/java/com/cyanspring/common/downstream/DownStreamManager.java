@@ -110,6 +110,16 @@ public class DownStreamManager implements IPlugin {
 				}
 			}
 		}
+		
+		for (IStreamAdaptor<IDownStreamConnection> adaptor : specialAdaptors) {
+			for (IDownStreamConnection connection : adaptor.getConnections()) {
+				if (!connection.getState()) {
+					log.debug("Connection is still down: " + connection.getId());
+					return false;
+				}
+			}
+		}
+		
 		return true;
 	}
 	
