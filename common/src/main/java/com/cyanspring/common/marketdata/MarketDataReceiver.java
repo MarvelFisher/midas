@@ -134,7 +134,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                             index = refData.getCategory();
                             break;
                         case "SETTLEMENT":
-                            index = refData.getSettlementDate();
+                            index = refData.getSymbol();
                             break;
                         case "EXCHANGE":
                             index = refData.getExchange();
