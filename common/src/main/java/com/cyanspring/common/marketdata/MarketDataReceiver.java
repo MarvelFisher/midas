@@ -363,7 +363,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                         + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                         + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
-                        + ",fO=" + quote.getfTurnover()
                         + ",ts=" + sdf.format(quote.getTimeStamp())
                         + ",tt=" + sdf.format(quote.getTimeSent())
                         + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
