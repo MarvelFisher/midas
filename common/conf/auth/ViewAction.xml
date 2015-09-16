@@ -13,6 +13,7 @@
 	<import resource="view/AccountView.xml" />
 	<import resource="view/PositionView.xml" />
 	<import resource="view/SingleOrderStrategyView.xml" />
+	<import resource="view/QuoteView.xml" />
 	
 	<bean id="viewActionList" class="java.util.ArrayList">
     	<constructor-arg>
@@ -46,6 +47,7 @@
             	<ref bean="singleOrderStrategyViewToolBarAction8"/>
             	<ref bean="singleOrderStrategyViewToolBarAction9"/>
             	<ref bean="singleOrderStrategyViewToolBarAction10"/>
+            	<ref bean="quoteView"/>
         	</list>
    		</constructor-arg>
 	</bean>
