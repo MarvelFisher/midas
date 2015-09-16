@@ -1,0 +1,9 @@
+{
+  "namespace": "com.cyanspring.avro.types",
+  "type": "enum",
+  "name": "OrderType",
+  "symbols": [
+     "Market", 
+	 "Limit"
+  ]
+}

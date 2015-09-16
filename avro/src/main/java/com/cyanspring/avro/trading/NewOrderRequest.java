@@ -7,13 +7,13 @@ package com.cyanspring.avro.trading;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"NewOrderRequest\",\"namespace\":\"com.cyanspring.avro.trading\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"symbol\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"side\",\"type\":\"int\"},{\"name\":\"type\",\"type\":\"int\"},{\"name\":\"tif\",\"type\":\"int\"},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"quantity\",\"type\":\"double\"},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"created\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"clOrderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"NewOrderRequest\",\"namespace\":\"com.cyanspring.avro.trading\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"symbol\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"orderSide\",\"type\":\"int\"},{\"name\":\"orderType\",\"type\":\"int\"},{\"name\":\"timeInForce\",\"type\":\"int\"},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"quantity\",\"type\":\"double\"},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"created\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"clOrderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public int objectType;
   @Deprecated public java.lang.String symbol;
-  @Deprecated public int side;
-  @Deprecated public int type;
-  @Deprecated public int tif;
+  @Deprecated public int orderSide;
+  @Deprecated public int orderType;
+  @Deprecated public int timeInForce;
   @Deprecated public double price;
   @Deprecated public double quantity;
   @Deprecated public java.lang.String exchangeAccount;
@@ -31,12 +31,12 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
   /**
    * All-args constructor.
    */
-  public NewOrderRequest(java.lang.Integer objectType, java.lang.String symbol, java.lang.Integer side, java.lang.Integer type, java.lang.Integer tif, java.lang.Double price, java.lang.Double quantity, java.lang.String exchangeAccount, java.lang.String created, java.lang.String clOrderId, java.lang.String txId) {
+  public NewOrderRequest(java.lang.Integer objectType, java.lang.String symbol, java.lang.Integer orderSide, java.lang.Integer orderType, java.lang.Integer timeInForce, java.lang.Double price, java.lang.Double quantity, java.lang.String exchangeAccount, java.lang.String created, java.lang.String clOrderId, java.lang.String txId) {
     this.objectType = objectType;
     this.symbol = symbol;
-    this.side = side;
-    this.type = type;
-    this.tif = tif;
+    this.orderSide = orderSide;
+    this.orderType = orderType;
+    this.timeInForce = timeInForce;
     this.price = price;
     this.quantity = quantity;
     this.exchangeAccount = exchangeAccount;
@@ -51,9 +51,9 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
     switch (field$) {
     case 0: return objectType;
     case 1: return symbol;
-    case 2: return side;
-    case 3: return type;
-    case 4: return tif;
+    case 2: return orderSide;
+    case 3: return orderType;
+    case 4: return timeInForce;
     case 5: return price;
     case 6: return quantity;
     case 7: return exchangeAccount;
@@ -69,9 +69,9 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
     switch (field$) {
     case 0: objectType = (java.lang.Integer)value$; break;
     case 1: symbol = (java.lang.String)value$; break;
-    case 2: side = (java.lang.Integer)value$; break;
-    case 3: type = (java.lang.Integer)value$; break;
-    case 4: tif = (java.lang.Integer)value$; break;
+    case 2: orderSide = (java.lang.Integer)value$; break;
+    case 3: orderType = (java.lang.Integer)value$; break;
+    case 4: timeInForce = (java.lang.Integer)value$; break;
     case 5: price = (java.lang.Double)value$; break;
     case 6: quantity = (java.lang.Double)value$; break;
     case 7: exchangeAccount = (java.lang.String)value$; break;
@@ -113,48 +113,48 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
   }
 
   /**
-   * Gets the value of the 'side' field.
+   * Gets the value of the 'orderSide' field.
    */
-  public java.lang.Integer getSide() {
-    return side;
+  public java.lang.Integer getOrderSide() {
+    return orderSide;
   }
 
   /**
-   * Sets the value of the 'side' field.
+   * Sets the value of the 'orderSide' field.
    * @param value the value to set.
    */
-  public void setSide(java.lang.Integer value) {
-    this.side = value;
+  public void setOrderSide(java.lang.Integer value) {
+    this.orderSide = value;
   }
 
   /**
-   * Gets the value of the 'type' field.
+   * Gets the value of the 'orderType' field.
    */
-  public java.lang.Integer getType() {
-    return type;
+  public java.lang.Integer getOrderType() {
+    return orderType;
   }
 
   /**
-   * Sets the value of the 'type' field.
+   * Sets the value of the 'orderType' field.
    * @param value the value to set.
    */
-  public void setType(java.lang.Integer value) {
-    this.type = value;
+  public void setOrderType(java.lang.Integer value) {
+    this.orderType = value;
   }
 
   /**
-   * Gets the value of the 'tif' field.
+   * Gets the value of the 'timeInForce' field.
    */
-  public java.lang.Integer getTif() {
-    return tif;
+  public java.lang.Integer getTimeInForce() {
+    return timeInForce;
   }
 
   /**
-   * Sets the value of the 'tif' field.
+   * Sets the value of the 'timeInForce' field.
    * @param value the value to set.
    */
-  public void setTif(java.lang.Integer value) {
-    this.tif = value;
+  public void setTimeInForce(java.lang.Integer value) {
+    this.timeInForce = value;
   }
 
   /**
@@ -270,9 +270,9 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
 
     private int objectType;
     private java.lang.String symbol;
-    private int side;
-    private int type;
-    private int tif;
+    private int orderSide;
+    private int orderType;
+    private int timeInForce;
     private double price;
     private double quantity;
     private java.lang.String exchangeAccount;
@@ -296,16 +296,16 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
         this.symbol = data().deepCopy(fields()[1].schema(), other.symbol);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.side)) {
-        this.side = data().deepCopy(fields()[2].schema(), other.side);
+      if (isValidValue(fields()[2], other.orderSide)) {
+        this.orderSide = data().deepCopy(fields()[2].schema(), other.orderSide);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.type)) {
-        this.type = data().deepCopy(fields()[3].schema(), other.type);
+      if (isValidValue(fields()[3], other.orderType)) {
+        this.orderType = data().deepCopy(fields()[3].schema(), other.orderType);
         fieldSetFlags()[3] = true;
       }
-      if (isValidValue(fields()[4], other.tif)) {
-        this.tif = data().deepCopy(fields()[4].schema(), other.tif);
+      if (isValidValue(fields()[4], other.timeInForce)) {
+        this.timeInForce = data().deepCopy(fields()[4].schema(), other.timeInForce);
         fieldSetFlags()[4] = true;
       }
       if (isValidValue(fields()[5], other.price)) {
@@ -345,16 +345,16 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
         this.symbol = data().deepCopy(fields()[1].schema(), other.symbol);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.side)) {
-        this.side = data().deepCopy(fields()[2].schema(), other.side);
+      if (isValidValue(fields()[2], other.orderSide)) {
+        this.orderSide = data().deepCopy(fields()[2].schema(), other.orderSide);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.type)) {
-        this.type = data().deepCopy(fields()[3].schema(), other.type);
+      if (isValidValue(fields()[3], other.orderType)) {
+        this.orderType = data().deepCopy(fields()[3].schema(), other.orderType);
         fieldSetFlags()[3] = true;
       }
-      if (isValidValue(fields()[4], other.tif)) {
-        this.tif = data().deepCopy(fields()[4].schema(), other.tif);
+      if (isValidValue(fields()[4], other.timeInForce)) {
+        this.timeInForce = data().deepCopy(fields()[4].schema(), other.timeInForce);
         fieldSetFlags()[4] = true;
       }
       if (isValidValue(fields()[5], other.price)) {
@@ -432,74 +432,74 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
       return this;
     }
 
-    /** Gets the value of the 'side' field */
-    public java.lang.Integer getSide() {
-      return side;
+    /** Gets the value of the 'orderSide' field */
+    public java.lang.Integer getOrderSide() {
+      return orderSide;
     }
     
-    /** Sets the value of the 'side' field */
-    public com.cyanspring.avro.trading.NewOrderRequest.Builder setSide(int value) {
+    /** Sets the value of the 'orderSide' field */
+    public com.cyanspring.avro.trading.NewOrderRequest.Builder setOrderSide(int value) {
       validate(fields()[2], value);
-      this.side = value;
+      this.orderSide = value;
       fieldSetFlags()[2] = true;
       return this; 
     }
     
-    /** Checks whether the 'side' field has been set */
-    public boolean hasSide() {
+    /** Checks whether the 'orderSide' field has been set */
+    public boolean hasOrderSide() {
       return fieldSetFlags()[2];
     }
     
-    /** Clears the value of the 'side' field */
-    public com.cyanspring.avro.trading.NewOrderRequest.Builder clearSide() {
+    /** Clears the value of the 'orderSide' field */
+    public com.cyanspring.avro.trading.NewOrderRequest.Builder clearOrderSide() {
       fieldSetFlags()[2] = false;
       return this;
     }
 
-    /** Gets the value of the 'type' field */
-    public java.lang.Integer getType() {
-      return type;
+    /** Gets the value of the 'orderType' field */
+    public java.lang.Integer getOrderType() {
+      return orderType;
     }
     
-    /** Sets the value of the 'type' field */
-    public com.cyanspring.avro.trading.NewOrderRequest.Builder setType(int value) {
+    /** Sets the value of the 'orderType' field */
+    public com.cyanspring.avro.trading.NewOrderRequest.Builder setOrderType(int value) {
       validate(fields()[3], value);
-      this.type = value;
+      this.orderType = value;
       fieldSetFlags()[3] = true;
       return this; 
     }
     
-    /** Checks whether the 'type' field has been set */
-    public boolean hasType() {
+    /** Checks whether the 'orderType' field has been set */
+    public boolean hasOrderType() {
       return fieldSetFlags()[3];
     }
     
-    /** Clears the value of the 'type' field */
-    public com.cyanspring.avro.trading.NewOrderRequest.Builder clearType() {
+    /** Clears the value of the 'orderType' field */
+    public com.cyanspring.avro.trading.NewOrderRequest.Builder clearOrderType() {
       fieldSetFlags()[3] = false;
       return this;
     }
 
-    /** Gets the value of the 'tif' field */
-    public java.lang.Integer getTif() {
-      return tif;
+    /** Gets the value of the 'timeInForce' field */
+    public java.lang.Integer getTimeInForce() {
+      return timeInForce;
     }
     
-    /** Sets the value of the 'tif' field */
-    public com.cyanspring.avro.trading.NewOrderRequest.Builder setTif(int value) {
+    /** Sets the value of the 'timeInForce' field */
+    public com.cyanspring.avro.trading.NewOrderRequest.Builder setTimeInForce(int value) {
       validate(fields()[4], value);
-      this.tif = value;
+      this.timeInForce = value;
       fieldSetFlags()[4] = true;
       return this; 
     }
     
-    /** Checks whether the 'tif' field has been set */
-    public boolean hasTif() {
+    /** Checks whether the 'timeInForce' field has been set */
+    public boolean hasTimeInForce() {
       return fieldSetFlags()[4];
     }
     
-    /** Clears the value of the 'tif' field */
-    public com.cyanspring.avro.trading.NewOrderRequest.Builder clearTif() {
+    /** Clears the value of the 'timeInForce' field */
+    public com.cyanspring.avro.trading.NewOrderRequest.Builder clearTimeInForce() {
       fieldSetFlags()[4] = false;
       return this;
     }
@@ -658,9 +658,9 @@ public class NewOrderRequest extends org.apache.avro.specific.SpecificRecordBase
         NewOrderRequest record = new NewOrderRequest();
         record.objectType = fieldSetFlags()[0] ? this.objectType : (java.lang.Integer) defaultValue(fields()[0]);
         record.symbol = fieldSetFlags()[1] ? this.symbol : (java.lang.String) defaultValue(fields()[1]);
-        record.side = fieldSetFlags()[2] ? this.side : (java.lang.Integer) defaultValue(fields()[2]);
-        record.type = fieldSetFlags()[3] ? this.type : (java.lang.Integer) defaultValue(fields()[3]);
-        record.tif = fieldSetFlags()[4] ? this.tif : (java.lang.Integer) defaultValue(fields()[4]);
+        record.orderSide = fieldSetFlags()[2] ? this.orderSide : (java.lang.Integer) defaultValue(fields()[2]);
+        record.orderType = fieldSetFlags()[3] ? this.orderType : (java.lang.Integer) defaultValue(fields()[3]);
+        record.timeInForce = fieldSetFlags()[4] ? this.timeInForce : (java.lang.Integer) defaultValue(fields()[4]);
         record.price = fieldSetFlags()[5] ? this.price : (java.lang.Double) defaultValue(fields()[5]);
         record.quantity = fieldSetFlags()[6] ? this.quantity : (java.lang.Double) defaultValue(fields()[6]);
         record.exchangeAccount = fieldSetFlags()[7] ? this.exchangeAccount : (java.lang.String) defaultValue(fields()[7]);

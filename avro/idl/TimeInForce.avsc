@@ -1,0 +1,15 @@
+{
+  "namespace": "com.cyanspring.avro.types",
+  "type": "enum",
+  "name": "TimeInForce",
+  "symbols": [
+    "Day",
+	"GoodTillCancel",
+	"AtTheOpening",
+	"ImmediateOrCancel",
+	"FillOrKill",
+	"GoodTillCrossing",
+	"GoodTillDate",
+	"AtTheClose"
+  ]
+}

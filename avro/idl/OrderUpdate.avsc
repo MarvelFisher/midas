@@ -20,15 +20,15 @@
       "type": "int"
     },
     {
-      "name": "side",
+      "name": "orderSide",
       "type": "int"
     },    
     {
-      "name": "type",
+      "name": "orderType",
       "type": "int"
     },
     {
-      "name": "tif",
+      "name": "timeInForce",
       "type": "int"
     },
     {

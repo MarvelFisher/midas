@@ -1,0 +1,22 @@
+{
+  "namespace": "com.cyanspring.avro.types",
+  "type": "enum",
+  "name": "OrdStatus",
+  "symbols": [
+    "New",
+	"PartiallyFilled",
+	"Filled",
+	"DoneForDay",
+	"Canceled",
+	"Replaced",
+	"PendingCancel",
+	"Stopped",
+	"Rejected",
+	"Suspended",
+	"PendingNew",
+	"Calculated",
+	"Expired",
+	"AcceptedForBidding",
+	"PendingReplace"
+  ]
+}
