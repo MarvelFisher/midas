@@ -108,6 +108,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 public void run() {
                     while (true) {
                         if (clientSocket.isConnected() == false) {
+                            isConnected =false;
+                            notifyAdaptorState(false);
                             marketSubscribed = false;
                             if(reqDataReceived){
                                 ConnectToIBGateway();
@@ -118,10 +120,12 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                             if(marketSubscribed && checkLastTimeInterval != 0
                                     && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
                                 log.warn("IB Gateway too long not tick,reconnect!");
+                                isConnected = false;
+                                notifyAdaptorState(false);
                                 clientSocket.eDisconnect();
                                 //wait disconnect
                                 try {
-                                    TimeUnit.SECONDS.sleep(20);
+                                    TimeUnit.SECONDS.sleep(10);
                                 } catch (InterruptedException e) {}
                                 continue;
                             }
@@ -207,16 +211,20 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     private void notifyAdaptorState(boolean on){
-        if(prevStatus == on){
+        log.info(id + " notifyState, prev=" + prevStatus +",now=" + on);
+        if(prevStatus == on && !prevStatus){
             return;
         }else{
             prevStatus = on;
         }
         if(marketDataStateListeners != null && marketDataStateListeners.size() > 0){
-            for (IMarketDataStateListener listener : marketDataStateListeners)
+            log.info(id + " sendState to marketDataListener");
+            for (IMarketDataStateListener listener : marketDataStateListeners) {
                 listener.onState(on);
+            }
         }
         if(downStreamListener != null){
+            log.info(id + " sendState to downStreamListener");
             downStreamListener.onState(on);
         }
     }
@@ -1071,12 +1079,12 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public void nextValidId(int orderId) {
-        log.info("nextValidId: " + orderId);
+        log.info(id + " nextValidId: " + orderId);
 
         if (orderId > nextOrderId.get()) {
             nextOrderId.set(orderId);
         } else {
-            log.debug("IB use ourself " + nextOrderId.get());
+            log.debug(id + " use ourself " + nextOrderId.get());
         }
 
         isConnected = true;
