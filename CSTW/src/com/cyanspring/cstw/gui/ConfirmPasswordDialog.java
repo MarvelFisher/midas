@@ -37,19 +37,16 @@ public class ConfirmPasswordDialog extends Dialog implements
 
 	private static final Logger log = LoggerFactory
 			.getLogger(ConfirmPasswordDialog.class);
+	private Text txtUser;
 	private Text txtPassword;
 	private Text txtConfirmPassword;
 	private Label lblMessage;
 	private Button btnOk, btnCancel;
 	private String id = IdGenerator.getInstance().getNextID();
 	private ImageRegistry imageRegistry;
-	private String username;
 	private boolean isPwdConfirmed;
-
-	public ConfirmPasswordDialog(String username, Shell parentShell) {
-		this(parentShell);
-		this.username = username;
-	}
+	private String username;
+	private String password;
 
 	protected ConfirmPasswordDialog(Shell parentShell) {
 		super(parentShell);
@@ -74,6 +71,22 @@ public class ConfirmPasswordDialog extends Dialog implements
 		layout.marginLeft = 20;
 		layout.marginTop = 50;
 		container.setLayout(layout);
+
+		Label lblUser = new Label(container, SWT.NONE);
+		lblUser.setText("Admin Id:");
+		txtUser = new Text(container, SWT.BORDER);
+		txtUser.setText("");
+		txtUser.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+				1, 1));
+
+		txtUser.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.CR) {
+					txtPassword.setFocus();
+				}
+			}
+		});
 
 		Label lblPwd = new Label(container, SWT.NONE);
 		lblPwd.setText("Password:");
@@ -121,17 +134,18 @@ public class ConfirmPasswordDialog extends Dialog implements
 
 	@Override
 	protected Control createButtonBar(Composite parent) {
-		Composite buttonArea =  new Composite(parent, SWT.NONE);
+		Composite buttonArea = new Composite(parent, SWT.NONE);
 		buttonArea.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		GridLayout layoutButtons = new GridLayout(2, true);
 		layoutButtons.marginRight = 30;
 		layoutButtons.marginLeft = 30;
 		buttonArea.setLayout(layoutButtons);
-		buttonArea.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
+		buttonArea.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true,
+				false, 1, 1));
 
 		btnOk = new Button(buttonArea, SWT.PUSH);
 		btnOk.setText("Shutdown");
-		//setButtonLayoutData(btnOk);
+		// setButtonLayoutData(btnOk);
 		btnOk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		btnOk.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -142,8 +156,9 @@ public class ConfirmPasswordDialog extends Dialog implements
 
 		btnCancel = new Button(buttonArea, SWT.PUSH);
 		btnCancel.setText("Cancel");
-		//setButtonLayoutData(btnCancel);
-		btnCancel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		// setButtonLayoutData(btnCancel);
+		btnCancel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,
+				1, 1));
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -189,8 +204,10 @@ public class ConfirmPasswordDialog extends Dialog implements
 		Business business = Business.getInstance();
 		// need to review which server to get login
 		String server = business.getFirstServer();
+		username = txtUser.getText();
+		password = txtPassword.getText();
 		CSTWUserLoginEvent event = new CSTWUserLoginEvent(id, server, username,
-				txtPassword.getText());
+				password, true);
 		try {
 			business.getEventManager().sendRemoteEvent(event);
 		} catch (Exception ex) {
@@ -230,7 +247,8 @@ public class ConfirmPasswordDialog extends Dialog implements
 				Business business = Business.getInstance();
 				String server = business.getFirstServer();
 				try {
-					business.getEventManager().sendRemoteEvent(new ServerShutdownEvent(id, server));
+					business.getEventManager().sendRemoteEvent(
+							new ServerShutdownEvent(id, server));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

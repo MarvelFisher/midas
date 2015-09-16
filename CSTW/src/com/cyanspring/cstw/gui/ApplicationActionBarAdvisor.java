@@ -61,8 +61,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	@Override
 	protected void makeActions(final IWorkbenchWindow window) {
 		createSuspendSystemAction();
-		createServerShutdownAction();
 		createUserInfoAction();
+		createServerShutdownAction();
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 				try {
 					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 					ConfirmPasswordDialog confirmPasswordDialog =
-							new ConfirmPasswordDialog(Business.getInstance().getAccount(), window.getShell());
+							new ConfirmPasswordDialog(window.getShell());
 					confirmPasswordDialog.open();
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
