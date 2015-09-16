@@ -92,6 +92,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private boolean cancellingOpenOrders;
     private long lastTimeSend;
     private long checkLastTimeInterval = 0;
+    private boolean reconnectOn = true;
 
     public IbAdaptor() {
         clientSocket = new EClientSocket(this);
@@ -119,10 +120,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                         } else {
                             if(marketSubscribed && checkLastTimeInterval != 0
                                     && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
-                                log.warn("IB Gateway too long not tick,reconnect!");
-                                isConnected = false;
-                                notifyAdaptorState(false);
-                                clientSocket.eDisconnect();
+                                if(reconnectOn) {
+                                    log.warn("IB Gateway too long not tick,reconnect!" + id);
+                                    clientSocket.eDisconnect();
+                                    isConnected = false;
+                                    notifyAdaptorState(false);
+                                }else{
+                                    log.error("IB Gateway too long not tick,reconnect!" + id);
+                                }
                                 //wait disconnect
                                 try {
                                     TimeUnit.SECONDS.sleep(10);
@@ -139,7 +144,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 }
 
             });
-            gcThread.setName("IbInitThread");
+            gcThread.setName("IbInitThread-" + id);
             gcThread.start();
 
             if (cancelOpenOrders) {
@@ -148,7 +153,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
                     @Override
                     public void run() {
-                        log.info("Requesting open orders");
+                        log.info(id + " Requesting open orders");
                         clientSocket.reqOpenOrders();
                     }
 
@@ -167,7 +172,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     private void ConnectToIBGateway() {
         if(clientSocket.isConnected()) return;
-        log.info("Attempting to establish connection to IB TWS/Gateway...");
+        log.info("Attempting to establish connection to IB TWS/Gateway..." + id);
         clear();
         clientSocket.eDisconnect();
         clientSocket.eConnect(host, port, clientId);
@@ -178,7 +183,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
         if(clientSocket.isConnected()){
             lastTimeSend = System.currentTimeMillis();
-            log.info("IB connected");
+            log.info(id + " connected");
         }
     }
 
@@ -1313,5 +1318,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     public void setCheckLastTimeInterval(long checkLastTimeInterval) {
         this.checkLastTimeInterval = checkLastTimeInterval;
+    }
+
+    public void setReconnectOn(boolean reconnectOn) {
+        this.reconnectOn = reconnectOn;
     }
 }
