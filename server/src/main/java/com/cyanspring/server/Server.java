@@ -634,7 +634,7 @@ public class Server implements ApplicationContextAware {
 	 */
 	public static void main(String[] args) throws Exception {
 		String configFile = "conf/lfx_server.xml";
-		String logConfigFile = "conf/common/mylog4j.xml";
+		String logConfigFile = "conf/common/log4j.xml";
 		if (args.length == 1) {
 			configFile = args[0];
 		} else if (args.length == 2) {
