@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -34,14 +34,15 @@ public enum ImageID {
 	FREZZE_ICON("icons/frezze.png"),
 	AMEND_OPTIONS_ICON("icons/amendOptions.png"),
 	MONEY_ICON("icons/money.png"),
-	LOGIN_BG("icons/loginBg.png"), 
+	LOGIN_BG("icons/loginBg.png"),
 	SKULL_ICON("icons/skull.png"),
 	ALERT_ICON("icons/alert.png"),
 	ORDER_CLOSE_ICON("icons/orderclose.png"),
 	MANUAL_CLOSE_ICON("icons/manualclose.png"),
 	STOP_PROGRESS_ICON("icons/stopProgress.png"),
 	MANUAL_PRICE_ICON("icons/manualPrice.png"),
-	USER_ICON("icons/user.png")
+	USER_ICON("icons/user.png"),
+	POWER_ICON("icons/power.png")
 	;
 	private String value;
 	ImageID(String value) {
@@ -50,5 +51,5 @@ public enum ImageID {
 	public String value() {
 		return value;
 	}
-	
+
 }

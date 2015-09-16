@@ -1164,6 +1164,5 @@ public class SymbolData implements Comparable<SymbolData>
 		{
 			return;
 		}
-		price.setfTurnover(fTurnover);
 	}
 }

@@ -44,7 +44,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 	private String id = IdGenerator.getInstance().getNextID();
 	private ImageRegistry imageRegistry;
 	private String username;
-	private boolean loginOk;
+	private boolean isPwdConfirmed;
 
 	public ConfirmPasswordDialog(String username, Shell parentShell) {
 		this(parentShell);
@@ -71,8 +71,8 @@ public class ConfirmPasswordDialog extends Dialog implements
 
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginRight = 10;
-		layout.marginLeft = 40;
-		layout.marginTop = 30;
+		layout.marginLeft = 20;
+		layout.marginTop = 50;
 		container.setLayout(layout);
 
 		Label lblPwd = new Label(container, SWT.NONE);
@@ -104,7 +104,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
-					doLogin();
+					doConfirm();
 				}
 			}
 		});
@@ -130,13 +130,13 @@ public class ConfirmPasswordDialog extends Dialog implements
 		buttonArea.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
 
 		btnOk = new Button(buttonArea, SWT.PUSH);
-		btnOk.setText("Login");
+		btnOk.setText("Shutdown");
 		//setButtonLayoutData(btnOk);
 		btnOk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		btnOk.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				doLogin();
+				doConfirm();
 			}
 		});
 
@@ -173,7 +173,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 		return super.close();
 	}
 
-	private void doLogin() {
+	private void doConfirm() {
 
 		if (!Business.getInstance().isFirstServerReady()) {
 			lblMessage.setText("Server not ready");
@@ -205,12 +205,12 @@ public class ConfirmPasswordDialog extends Dialog implements
 			final CSTWUserLoginReplyEvent reply = (CSTWUserLoginReplyEvent) event;
 			log.info("loginOk:" + reply.isOk());
 
-			loginOk = reply.isOk();
+			isPwdConfirmed = reply.isOk();
 
-			if (loginOk
+			if (isPwdConfirmed
 					&& (null == reply.getUserGroup() || null == reply
 							.getUserGroup().getRole())) {
-				loginOk = false;
+				isPwdConfirmed = false;
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -220,7 +220,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 				return;
 			}
 
-			if (loginOk) {
+			if (isPwdConfirmed) {
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {

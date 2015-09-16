@@ -51,21 +51,21 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		
+
 		// create ImageRegistery
 		imageRegistry = Activator.getDefault().getImageRegistry();
-		
+
 		Composite container = (Composite) super.createDialogArea(parent);
 		container.setBackgroundMode(SWT.INHERIT_FORCE);
 		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		ImageDescriptor backward_imageDesc = imageRegistry
 				.getDescriptor(ImageID.LOGIN_BG.toString());
 		container.setBackgroundImage(backward_imageDesc.createImage());
-		
+
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginRight = 10;
-		layout.marginLeft = 40;
-		layout.marginTop = 30;
+		layout.marginLeft = 50;
+		layout.marginTop = 50;
 		container.setLayout(layout);
 
 		Label lblUser = new Label(container, SWT.NONE);
@@ -102,7 +102,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 				}
 	        }
 	      });
-		
+
 
 		lblMessage = new Label(container, SWT.NONE);
 		GridData gdLblMessage = new GridData(SWT.FILL, SWT.CENTER, true,
@@ -113,9 +113,9 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		lblMessage.setForeground(red);
 		return container;
 	}
-	
+
 	private void doLogin() {
-		
+
 		if(!Business.getInstance().isFirstServerReady()){
 			lblMessage.setText("Server not ready");
 			return;
@@ -125,16 +125,16 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		Business business = Business.getInstance();
 		// need to review which server to get login
 		String server = business.getFirstServer();
-		CSTWUserLoginEvent event = new CSTWUserLoginEvent(id, server, 
+		CSTWUserLoginEvent event = new CSTWUserLoginEvent(id, server,
 				txtUser.getText(), txtPassword.getText());
 		try {
 			business.getEventManager().sendRemoteEvent(event);
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 		}
-		
+
 	}
-	
+
 	@Override
 	protected Control createButtonBar(Composite parent) {
 		Composite buttonArea =  new Composite(parent, SWT.NONE);
@@ -144,7 +144,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		layoutButtons.marginLeft = 30;
 		buttonArea.setLayout(layoutButtons);
 		buttonArea.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
-		
+
 		btnOk = new Button(buttonArea, SWT.PUSH);
 		btnOk.setText("Login");
 		//setButtonLayoutData(btnOk);
@@ -155,7 +155,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 				doLogin();
 			}
 		});
-		
+
 		btnCancel = new Button(buttonArea, SWT.PUSH);
 		btnCancel.setText("Cancel");
 		//setButtonLayoutData(btnCancel);
@@ -176,7 +176,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		Business.getInstance().getEventManager().subscribe(CSTWUserLoginReplyEvent.class, id, LoginDialog.this);
 		return super.open();
 	}
-	
+
 	@Override
 	public boolean close() {
 		Business.getInstance().getEventManager().unsubscribe(CSTWUserLoginReplyEvent.class, id, LoginDialog.this);
@@ -187,7 +187,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected Point getInitialSize() {
 		return new Point(300, 160);
@@ -198,9 +198,9 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		if(event instanceof CSTWUserLoginReplyEvent) {
 			final CSTWUserLoginReplyEvent reply = (CSTWUserLoginReplyEvent) event;
 			log.info("loginOk:"+reply.isOk());
-			
+
 			loginOk = reply.isOk();
-			
+
 
 			if(loginOk &&( null == reply.getUserGroup() || null == reply.getUserGroup().getRole())){
 				loginOk = false;
@@ -208,17 +208,17 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 					@Override
 					public void run() {
 						lblMessage.setText("invalid user role");
-						
+
 					}
 				});
 				return ;
 			}
-			
+
 			if(loginOk) {
 				this.getContents().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						
+
 						LoginDialog.this.close();
 					}
 				});
@@ -227,7 +227,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 					@Override
 					public void run() {
 						MessageBean bean = MessageLookup.getMsgBeanFromEventMessage(reply.getMessage());
-						lblMessage.setText(bean.getLocalMsg());							
+						lblMessage.setText(bean.getLocalMsg());
 					}
 				});
 			}

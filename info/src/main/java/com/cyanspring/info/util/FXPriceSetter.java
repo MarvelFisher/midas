@@ -20,7 +20,6 @@ public class FXPriceSetter implements IPriceSetter
 		double dPrice = (quote.getBid() + quote.getAsk()) / 2;
 		boolean changed = price.setPrice(dPrice);
 		price.setDatatime(quote.getTimeStamp()) ;
-		price.setfTurnover(quote.getfTurnover());
 		return changed;
 	}
 

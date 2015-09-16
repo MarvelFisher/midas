@@ -53,6 +53,7 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.system.DuplicateSystemIdEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
@@ -164,6 +165,7 @@ public class Server implements ApplicationContextAware {
 			subscribeToEvent(DownStreamReadyEvent.class, null);
 			subscribeToEvent(MarketDataReadyEvent.class, null);
 			subscribeToEvent(ServerShutdownEvent.class, null);
+			subscribeToEvent(RefDataEvent.class, null);
 		}
 
 		@Override
@@ -219,6 +221,11 @@ public class Server implements ApplicationContextAware {
 	public void processMarketDataReadyEvent(MarketDataReadyEvent event) {
 		log.info("Market data is ready: " + event.isReady());
 		readyList.update("MarketData", event.isReady());
+	}
+	
+	public void processRefDataEvent(RefDataEvent event) {
+		log.info("RefData is ready: " + event.isOk());
+		readyList.update("RefData", event.isOk());
 	}
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) throws Exception {
@@ -336,6 +343,14 @@ public class Server implements ApplicationContextAware {
 			accountPositionManager.injectExecutions(executions);
 		}
 
+		if (null != trailingStopManager) {
+			List<PositionPeakPrice> list = persistenceManager
+					.recoverPositionPeakPrices();
+			trailingStopManager.injectPositionPeakPrices(list);
+		}
+	}
+	
+	private void recoverStrategies() {
 		if (null != strategyRecoveryProcessor) {
 			List<DataObject> list = strategyRecoveryProcessor.recover();
 
@@ -352,12 +367,6 @@ public class Server implements ApplicationContextAware {
 			orderManager.injectStrategies(list);
 			businessManager.injectStrategies(list);
 			log.info("Strategies recovered: " + list.size());
-		}
-
-		if (null != trailingStopManager) {
-			List<PositionPeakPrice> list = persistenceManager
-					.recoverPositionPeakPrices();
-			trailingStopManager.injectPositionPeakPrices(list);
 		}
 	}
 
@@ -447,21 +456,32 @@ public class Server implements ApplicationContextAware {
 		log.info("Published my node info");
 
 		// recovery
+		recover();
 		Thread thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				// wait for downstream ready before recover
-				while (!readyList.map.get("DownStream")) {
-					log.debug("waiting for down stream ready before recovery...");
+				// wait for downstream and refData ready before recover
+				while (true) {
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 					}
+					
+					if (!readyList.map.get("DownStream")) {
+						log.debug("waiting for down stream ready before recovery...");
+						continue;
+					}
+					
+					if (!readyList.map.get("RefData")) {
+						log.debug("waiting for refData ready before recovery...");
+						continue;
+					}
+					break;
 				}
 
 				try {
-					recover();
+					recoverStrategies();
 					readyList.update("Recovery", true);
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
@@ -552,6 +572,7 @@ public class Server implements ApplicationContextAware {
 		log.debug("");
 		// stop heart beat
 		scheduleManager.cancelTimerEvent(timerEvent);
+		eventManager.sendEvent(new ServerShutdownEvent());
 		try { // give it 2 seconds for an opportunity of clean shutdown
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -624,7 +645,7 @@ public class Server implements ApplicationContextAware {
 	 */
 	public static void main(String[] args) throws Exception {
 		String configFile = "conf/lfx_server.xml";
-		String logConfigFile = "conf/common/log4j.xml";
+		String logConfigFile = "conf/common/mylog4j.xml";
 		if (args.length == 1) {
 			configFile = args[0];
 		} else if (args.length == 2) {

@@ -134,7 +134,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                             index = refData.getCategory();
                             break;
                         case "SETTLEMENT":
-                            index = refData.getSettlementDate();
+                            index = refData.getSymbol();
                             break;
                         case "EXCHANGE":
                             index = refData.getExchange();
@@ -329,12 +329,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         String symbol = inEvent.getQuote().getSymbol();
 
         if (null != aggregator) {
-            quote = aggregator.update(symbol, quote,
+            quote = aggregator.update(symbol, inEvent.getQuote(),
                     inEvent.getQuoteSource());
         }
 
+        QuoteEvent event = new QuoteEvent(inEvent.getKey(), null, quote);
+
         if (eventProcessor.isSync()) {
-            sendQuoteEvent(inEvent.getQuoteEvent());
+            sendQuoteEvent(event);
             return;
         }
 
@@ -343,12 +345,13 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 && TimeUtil.getTimePass(prev.getTimeSent()) < quoteThrottle) {
             quote.setTimeSent(prev.getTimeSent()); // important record the last
             // time sent of this quote
-            innerQuotesToBeSent.put(quote.getSymbol(), inEvent);
+            innerQuotesToBeSent.put(quote.getSymbol(),
+                    new InnerQuoteEvent(null, null, event.getQuote(),inEvent.getQuoteSource(),inEvent.getContributor()));
             return;
         }
 
         // send the quote now
-        clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), inEvent.getQuoteEvent());
+        clearAndSendQuoteEvent(inEvent.getQuoteSource(), inEvent.getContributor(), event);
     }
 
     public void printQuoteLog(QuoteSource quoteSource, String contributor, Quote quote, QuoteLogLevel quoteLogLevel) {
@@ -360,7 +363,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
                         + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
                         + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
-                        + ",fO=" + quote.getfTurnover()
                         + ",ts=" + sdf.format(quote.getTimeStamp())
                         + ",tt=" + sdf.format(quote.getTimeSent())
                         + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
