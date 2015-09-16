@@ -119,6 +119,7 @@
 			<set value-type="com.cyanspring.common.staticdata.fu.IType">
 				<value>FUTURES_CX</value>
 				<value>FUTURES_IDX</value>
+				<value>FUTURES_CX_IDX</value>
 			</set>
 		</property>
 	</bean>
