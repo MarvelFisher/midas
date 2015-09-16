@@ -1,5 +1,7 @@
 package com.cyanspring.avro.wrap;
 
+import java.util.HashMap;
+
 import com.cyanspring.avro.types.ExecType;
 
 public enum WrapExecType {
@@ -65,6 +67,36 @@ public enum WrapExecType {
 
 	public com.cyanspring.common.type.ExecType getCommonExecType() {
 		return commonExecType;
+	}
+
+	private static HashMap<Integer, WrapExecType> map4Code;
+
+	private static HashMap<com.cyanspring.common.type.ExecType, WrapExecType> map4CommonExecType;
+
+	static {
+		WrapExecType[] values = values();
+		map4Code = new HashMap<Integer, WrapExecType>(values.length);
+		map4CommonExecType = new HashMap<com.cyanspring.common.type.ExecType, WrapExecType>(
+				values.length);
+		for (WrapExecType wrapExecType : values) {
+			map4Code.put(wrapExecType.code, wrapExecType);
+			map4CommonExecType.put(wrapExecType.commonExecType, wrapExecType);
+		}
+	}
+
+	public static WrapExecType valueOf(int code) {
+		if (map4Code.containsKey(code)) {
+			return map4Code.get(code);
+		}
+		return null;
+	}
+
+	public static WrapExecType valueOf(
+			com.cyanspring.common.type.ExecType commonExecType) {
+		if (map4CommonExecType.containsKey(commonExecType)) {
+			return map4CommonExecType.get(commonExecType);
+		}
+		return null;
 	}
 
 }

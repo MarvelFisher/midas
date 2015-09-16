@@ -1,5 +1,7 @@
 package com.cyanspring.avro.wrap;
 
+import java.util.HashMap;
+
 import com.cyanspring.avro.types.OrdStatus;
 
 public enum WrapOrdStatus {
@@ -68,6 +70,36 @@ public enum WrapOrdStatus {
 
 	public com.cyanspring.common.type.OrdStatus getCommonOrdStatus() {
 		return commonOrdStatus;
+	}
+	
+	private static HashMap<Integer, WrapOrdStatus> map4Code;
+
+	private static HashMap<com.cyanspring.common.type.OrdStatus, WrapOrdStatus> map4CommonOrdStatus;
+
+	static {
+		WrapOrdStatus[] values = values();
+		map4Code = new HashMap<Integer, WrapOrdStatus>(values.length);
+		map4CommonOrdStatus = new HashMap<com.cyanspring.common.type.OrdStatus, WrapOrdStatus>(
+				values.length);
+		for (WrapOrdStatus wrapOrdStatus : values) {
+			map4Code.put(wrapOrdStatus.code, wrapOrdStatus);
+			map4CommonOrdStatus.put(wrapOrdStatus.commonOrdStatus,
+					wrapOrdStatus);
+		}
+	}
+
+	public static WrapOrdStatus valueOf(int code) {
+		if (map4Code.containsKey(code)) {
+			return map4Code.get(code);
+		}
+		return null;
+	}
+
+	public static WrapOrdStatus valueOf(com.cyanspring.common.type.OrdStatus commonOrdStatus) {
+		if (map4CommonOrdStatus.containsKey(commonOrdStatus)) {
+			return map4CommonOrdStatus.get(commonOrdStatus);
+		}
+		return null;
 	}
 
 }

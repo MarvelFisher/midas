@@ -1,5 +1,7 @@
 package com.cyanspring.avro.wrap;
 
+import java.util.HashMap;
+
 import com.cyanspring.avro.types.OrderSide;
 
 public enum WrapOrderSide {
@@ -31,6 +33,37 @@ public enum WrapOrderSide {
 
 	public com.cyanspring.common.type.OrderSide getCommonOrderSide() {
 		return commonOrderSide;
+	}
+
+	private static HashMap<Integer, WrapOrderSide> map4Code;
+
+	private static HashMap<com.cyanspring.common.type.OrderSide, WrapOrderSide> map4CommonOrderSide;
+
+	static {
+		WrapOrderSide[] values = values();
+		map4Code = new HashMap<Integer, WrapOrderSide>(values.length);
+		map4CommonOrderSide = new HashMap<com.cyanspring.common.type.OrderSide, WrapOrderSide>(
+				values.length);
+		for (WrapOrderSide wrapOrderSide : values) {
+			map4Code.put(wrapOrderSide.code, wrapOrderSide);
+			map4CommonOrderSide.put(wrapOrderSide.commonOrderSide,
+					wrapOrderSide);
+		}
+	}
+
+	public static WrapOrderSide valueOf(int code) {
+		if (map4Code.containsKey(code)) {
+			return map4Code.get(code);
+		}
+		return null;
+	}
+
+	public static WrapOrderSide valueOf(
+			com.cyanspring.common.type.OrderSide commonOrderSide) {
+		if (map4CommonOrderSide.containsKey(commonOrderSide)) {
+			return map4CommonOrderSide.get(commonOrderSide);
+		}
+		return null;
 	}
 
 }

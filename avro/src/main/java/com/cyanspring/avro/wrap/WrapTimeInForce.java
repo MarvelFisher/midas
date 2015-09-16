@@ -1,5 +1,7 @@
 package com.cyanspring.avro.wrap;
 
+import java.util.HashMap;
+
 import com.cyanspring.avro.types.TimeInForce;
 
 public enum WrapTimeInForce {
@@ -50,6 +52,37 @@ public enum WrapTimeInForce {
 
 	public com.cyanspring.common.type.TimeInForce getCommonTimeInForce() {
 		return commonTimeInForce;
+	}
+
+	private static HashMap<Integer, WrapTimeInForce> map4Code;
+
+	private static HashMap<com.cyanspring.common.type.TimeInForce, WrapTimeInForce> map4CommonTimeInForce;
+
+	static {
+		WrapTimeInForce[] values = values();
+		map4Code = new HashMap<Integer, WrapTimeInForce>(values.length);
+		map4CommonTimeInForce = new HashMap<com.cyanspring.common.type.TimeInForce, WrapTimeInForce>(
+				values.length);
+		for (WrapTimeInForce wrapTimeInForce : values) {
+			map4Code.put(wrapTimeInForce.code, wrapTimeInForce);
+			map4CommonTimeInForce.put(wrapTimeInForce.commonTimeInForce,
+					wrapTimeInForce);
+		}
+	}
+
+	public static WrapTimeInForce valueOf(int code) {
+		if (map4Code.containsKey(code)) {
+			return map4Code.get(code);
+		}
+		return null;
+	}
+
+	public static WrapTimeInForce valueOf(
+			com.cyanspring.common.type.TimeInForce commonTimeInForce) {
+		if (map4CommonTimeInForce.containsKey(commonTimeInForce)) {
+			return map4CommonTimeInForce.get(commonTimeInForce);
+		}
+		return null;
 	}
 
 }
