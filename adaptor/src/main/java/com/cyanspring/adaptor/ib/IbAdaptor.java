@@ -92,6 +92,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     private boolean cancellingOpenOrders;
     private long lastTimeSend;
     private long checkLastTimeInterval = 0;
+    private boolean reconnectOn = true;
 
     public IbAdaptor() {
         clientSocket = new EClientSocket(this);
@@ -108,6 +109,8 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 public void run() {
                     while (true) {
                         if (clientSocket.isConnected() == false) {
+                            isConnected =false;
+                            notifyAdaptorState(false);
                             marketSubscribed = false;
                             if(reqDataReceived){
                                 ConnectToIBGateway();
@@ -117,11 +120,17 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                         } else {
                             if(marketSubscribed && checkLastTimeInterval != 0
                                     && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
-                                log.warn("IB Gateway too long not tick,reconnect!");
-                                clientSocket.eDisconnect();
+                                if(reconnectOn) {
+                                    log.warn("IB Gateway too long not tick,reconnect!" + id);
+                                    clientSocket.eDisconnect();
+                                    isConnected = false;
+                                    notifyAdaptorState(false);
+                                }else{
+                                    log.error("IB Gateway too long not tick,reconnect!" + id);
+                                }
                                 //wait disconnect
                                 try {
-                                    TimeUnit.SECONDS.sleep(20);
+                                    TimeUnit.SECONDS.sleep(10);
                                 } catch (InterruptedException e) {}
                                 continue;
                             }
@@ -135,7 +144,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 }
 
             });
-            gcThread.setName("IbInitThread");
+            gcThread.setName("IbInitThread-" + id);
             gcThread.start();
 
             if (cancelOpenOrders) {
@@ -144,7 +153,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
                     @Override
                     public void run() {
-                        log.info("Requesting open orders");
+                        log.info(id + " Requesting open orders");
                         clientSocket.reqOpenOrders();
                     }
 
@@ -163,7 +172,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     private void ConnectToIBGateway() {
         if(clientSocket.isConnected()) return;
-        log.info("Attempting to establish connection to IB TWS/Gateway...");
+        log.info("Attempting to establish connection to IB TWS/Gateway..." + id);
         clear();
         clientSocket.eDisconnect();
         clientSocket.eConnect(host, port, clientId);
@@ -174,7 +183,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         }
         if(clientSocket.isConnected()){
             lastTimeSend = System.currentTimeMillis();
-            log.info("IB connected");
+            log.info(id + " connected");
         }
     }
 
@@ -207,16 +216,20 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     private void notifyAdaptorState(boolean on){
-        if(prevStatus == on){
+        log.info(id + " notifyState, prev=" + prevStatus +",now=" + on);
+        if(prevStatus == on && !prevStatus){
             return;
         }else{
             prevStatus = on;
         }
         if(marketDataStateListeners != null && marketDataStateListeners.size() > 0){
-            for (IMarketDataStateListener listener : marketDataStateListeners)
+            log.info(id + " sendState to marketDataListener");
+            for (IMarketDataStateListener listener : marketDataStateListeners) {
                 listener.onState(on, this);
+            }
         }
         if(downStreamListener != null){
+            log.info(id + " sendState to downStreamListener");
             downStreamListener.onState(on);
         }
     }
@@ -1071,12 +1084,12 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public void nextValidId(int orderId) {
-        log.info("nextValidId: " + orderId);
+        log.info(id + " nextValidId: " + orderId);
 
         if (orderId > nextOrderId.get()) {
             nextOrderId.set(orderId);
         } else {
-            log.debug("IB use ourself " + nextOrderId.get());
+            log.debug(id + " use ourself " + nextOrderId.get());
         }
 
         isConnected = true;
@@ -1305,5 +1318,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     public void setCheckLastTimeInterval(long checkLastTimeInterval) {
         this.checkLastTimeInterval = checkLastTimeInterval;
+    }
+
+    public void setReconnectOn(boolean reconnectOn) {
+        this.reconnectOn = reconnectOn;
     }
 }

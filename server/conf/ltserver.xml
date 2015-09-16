@@ -94,6 +94,7 @@
         <property name="logMarketData" value="false" />
         <property name="cancelOpenOrders" value="true" />
         <property name="checkLastTimeInterval" value="15000" />
+        <property name="reconnectOn" value="false"/>
     </bean>
 
     <bean id="ibAdaptor2" class="com.cyanspring.adaptor.ib.IbAdaptor">

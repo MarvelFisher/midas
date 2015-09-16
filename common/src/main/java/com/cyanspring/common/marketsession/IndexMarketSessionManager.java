@@ -275,7 +275,7 @@ public class IndexMarketSessionManager implements IPlugin {
 			}
 
 			if (TimeUtil.sameDate(chkDate, data.getTradeDateByDate())
-					|| data.getSessionType().equals(MarketSessionType.CLOSE))
+					|| !data.getSessionType().equals(MarketSessionType.CLOSE))
 				continue;
 			chkDate = data.getTradeDateByDate();
 			checkDateMap.put(index, chkDate);
