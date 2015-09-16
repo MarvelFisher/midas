@@ -132,16 +132,16 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 				try {
 					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-					ConfirmPasswordDialog loginDialog =
+					ConfirmPasswordDialog confirmPasswordDialog =
 							new ConfirmPasswordDialog(Business.getInstance().getAccount(), window.getShell());
-					loginDialog.open();
+					confirmPasswordDialog.open();
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}
 			}
 		};
 		serverShutdownAction.setId(ID_SERVER_SHUTDOWN_ACTION);
-		serverShutdownAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.STOP_ICON.toString()));
+		serverShutdownAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.POWER_ICON.toString()));
 	}
 
 }

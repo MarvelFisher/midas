@@ -572,6 +572,7 @@ public class Server implements ApplicationContextAware {
 		log.debug("");
 		// stop heart beat
 		scheduleManager.cancelTimerEvent(timerEvent);
+		eventManager.sendEvent(new ServerShutdownEvent());
 		try { // give it 2 seconds for an opportunity of clean shutdown
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {

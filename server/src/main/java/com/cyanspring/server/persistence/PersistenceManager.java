@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -22,10 +22,7 @@ import com.cyanspring.common.event.account.*;
 import com.google.common.base.Strings;
 
 import org.hibernate.*;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +120,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmDeleteGroupManagementEvent.class, null);
 			subscribeToEvent(PmAddCashEvent.class, null);
 			subscribeToEvent(PmUpdateCoinControlEvent.class, null);
-			
+
 			if (persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
 				subscribeToEvent(CancelSignalEvent.class, null);
@@ -163,27 +160,30 @@ public class PersistenceManager {
 
 	public void init() throws Exception {
 		log.info("initialising");
-		if (embeddedSQLServer)
+		if (embeddedSQLServer) {
 			startEmbeddedSQLServer();
+		}
 
-		if (cleanStart)
+		if (cleanStart) {
 			truncateData(Clock.getInstance().now());
-		else if (todayOnly)
+		} else if (todayOnly) {
 			truncateData(TimeUtil.getOnlyDate(Clock.getInstance().now()));
-		else if (purgeOrderDays > 0) {
+		} else if (purgeOrderDays > 0) {
 			truncateOrders();
 		}
 
 		// subscribe to events
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
-		if (eventProcessor.getThread() != null)
+		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("PersistenceManager");
+		}
 
 		userEventProcessor.setHandler(this);
 		userEventProcessor.init();
-		if (userEventProcessor.getThread() != null)
+		if (userEventProcessor.getThread() != null) {
 			userEventProcessor.getThread().setName("PersistenceManager(Users)");
+		}
 
 		scheduleManager.scheduleRepeatTimerEvent(timeInterval, userEventProcessor, timerEvent);
 
@@ -193,8 +193,9 @@ public class PersistenceManager {
 		log.info("uninitialising");
 		scheduleManager.uninit();
 		eventProcessor.uninit();
-		if (embeddedSQLServer)
+		if (embeddedSQLServer) {
 			stopEmbeddedSQLServer();
+		}
 	}
 
 	private void startEmbeddedSQLServer() throws UnknownHostException, Exception {
@@ -204,11 +205,21 @@ public class PersistenceManager {
 	}
 
 	private void stopEmbeddedSQLServer() {
+		boolean interrupted = false;
+
 		try {
 			server.shutdown();
 			log.info("Embedded SQL server stopped");
+		} catch (InterruptedException ie) {
+			log.error(ie.getMessage(), ie);
+			interrupted = true;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+		} finally {
+			if (interrupted) {
+				// Restore the interrupted status
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
@@ -272,8 +283,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -308,8 +320,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -374,8 +387,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -388,7 +402,7 @@ public class PersistenceManager {
 		try {
 			tx = session.beginTransaction();
 			@SuppressWarnings("unchecked")
-			List<TextObject> list1 = (List<TextObject>) session.createCriteria(TextObject.class)
+			List<TextObject> list1 = session.createCriteria(TextObject.class)
 					.add(Restrictions.eq("id", id)).add(Restrictions.eq("persistType", persistType)).list();
 
 			for (TextObject obj : list1) {
@@ -404,8 +418,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -417,7 +432,7 @@ public class PersistenceManager {
 		try {
 			tx = session.beginTransaction();
 			@SuppressWarnings("unchecked")
-			List<TextObject> list1 = (List<TextObject>) session.createCriteria(TextObject.class)
+			List<TextObject> list1 = session.createCriteria(TextObject.class)
 					.add(Restrictions.eq("id", id)).add(Restrictions.eq("persistType", persistType)).list();
 
 			for (TextObject obj : list1) {
@@ -427,16 +442,18 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
 	}
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		if (syncCentralDb)
+		if (syncCentralDb) {
 			log.debug("Received AsyncTimerEvent, connection:" + centralDbConnector.updateConnection());
+		}
 	}
 
 	public void processPmUserLoginEvent(PmUserLoginEvent event) {
@@ -615,16 +632,18 @@ public class PersistenceManager {
 				if (ue instanceof UserException) {
 					log.warn(ue.getMessage(), ue);
 					message = MessageLookup.buildEventMessage(msg, ue.getMessage());
-					if (msg == null)
+					if (msg == null) {
 						message = MessageLookup.buildEventMessage(ErrorMessage.INVALID_USER_ACCOUNT_PWD,
 								ue.getMessage());
+					}
 				} else {
 					log.error(ue.getMessage(), ue);
 					message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED, ue.getMessage());
 				}
 
-				if (tx != null)
+				if (tx != null) {
 					tx.rollback();
+				}
 
 			} finally {
 				session.close();
@@ -740,8 +759,9 @@ public class PersistenceManager {
 			ok = false;
 			message = MessageLookup.buildEventMessageWithCode(msg, e.getMessage());
 
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -808,9 +828,10 @@ public class PersistenceManager {
 							event.getOriginalEvent().getOriginalID(), message, event.getOriginalEvent().getTxId(),
 							true));
 					if (ok) {
-						for (Account account : event.getAccounts())
+						for (Account account : event.getAccounts()) {
 							eventManager.sendRemoteEvent(
 									new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+						}
 					}
 				}
 
@@ -1102,8 +1123,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1127,8 +1149,9 @@ public class PersistenceManager {
 			}
 			tx.commit();
 		} catch (Exception e) {
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 			log.error(e.getMessage(), e);
 		} finally {
 			session.close();
@@ -1153,8 +1176,9 @@ public class PersistenceManager {
 			}
 			tx.commit();
 		} catch (Exception e) {
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 			log.error(e.getMessage(), e);
 		} finally {
 			session.close();
@@ -1166,7 +1190,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<User> result = new ArrayList<User>();
 		try {
-			result = (List<User>) session.createCriteria(User.class).list();
+			result = session.createCriteria(User.class).list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 			throw e;
@@ -1181,7 +1205,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<Account> result = new ArrayList<Account>();
 		try {
-			result = (List<Account>) session.createCriteria(Account.class).list();
+			result = session.createCriteria(Account.class).list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 			throw e;
@@ -1196,7 +1220,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<AccountSetting> result = new ArrayList<AccountSetting>();
 		try {
-			result = (List<AccountSetting>) session.createCriteria(AccountSetting.class).list();
+			result = session.createCriteria(AccountSetting.class).list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 			throw e;
@@ -1211,7 +1235,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<OpenPosition> result = new ArrayList<OpenPosition>();
 		try {
-			result = (List<OpenPosition>) session.createCriteria(OpenPosition.class).addOrder(Order.asc("created"))
+			result = session.createCriteria(OpenPosition.class).addOrder(Order.asc("created"))
 					// .add(Restrictions.eq("class", OpenPosition.class)) not
 					// working!!!
 					.list();
@@ -1230,7 +1254,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<ClosedPosition> result = new ArrayList<ClosedPosition>();
 		try {
-			result = (List<ClosedPosition>) session.createCriteria(ClosedPosition.class).addOrder(Order.asc("created"))
+			result = session.createCriteria(ClosedPosition.class).addOrder(Order.asc("created"))
 					.list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
@@ -1246,7 +1270,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<Execution> result = new ArrayList<Execution>();
 		try {
-			result = (List<Execution>) session.createCriteria(Execution.class)
+			result = session.createCriteria(Execution.class)
 					.add(Restrictions.eq("serverId", IdGenerator.getInstance().getSystemId()))
 					.add(Restrictions.gt("created",
 							todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
@@ -1264,8 +1288,9 @@ public class PersistenceManager {
 		result.add(dataObject);
 		if (deleteTerminated) {
 			StrategyState state = dataObject.get(StrategyState.class, OrderField.STATE.value());
-			if (null != state && state.equals(StrategyState.Terminated))
+			if (null != state && state.equals(StrategyState.Terminated)) {
 				toBeRemoved.add(dataObject.get(String.class, OrderField.ID.value()));
+			}
 		}
 	}
 
@@ -1276,7 +1301,7 @@ public class PersistenceManager {
 		List<String> toBeRemoved = new ArrayList<String>();
 		try {
 			@SuppressWarnings("unchecked")
-			List<TextObject> list = (List<TextObject>) session.createCriteria(TextObject.class)
+			List<TextObject> list = session.createCriteria(TextObject.class)
 					.add(Restrictions.eq("serverId", IdGenerator.getInstance().getSystemId()))
 					.add(Restrictions.eq("persistType", persistType))
 					.add(Restrictions.gt("timeStamp",
@@ -1311,7 +1336,7 @@ public class PersistenceManager {
 			for (String id : toBeRemoved) {
 				Transaction tx = session.beginTransaction();
 				@SuppressWarnings("unchecked")
-				List<TextObject> list = (List<TextObject>) session.createCriteria(TextObject.class)
+				List<TextObject> list = session.createCriteria(TextObject.class)
 						.add(Restrictions.eq("id", id)).list();
 
 				for (TextObject obj : list) {
@@ -1347,8 +1372,9 @@ public class PersistenceManager {
 
 		} finally {
 
-			if (null != session)
+			if (null != session) {
 				session.close();
+			}
 		}
 	}
 
@@ -1369,13 +1395,15 @@ public class PersistenceManager {
 
 			log.error(e.getMessage(), e);
 
-			if (null != tx)
+			if (null != tx) {
 				tx.rollback();
+			}
 
 		} finally {
 
-			if (null != session)
+			if (null != session) {
 				session.close();
+			}
 		}
 
 	}
@@ -1388,7 +1416,7 @@ public class PersistenceManager {
 		try {
 
 			session = sessionFactory.openSession();
-			result = (List<PositionPeakPrice>) session.createCriteria(PositionPeakPrice.class).list();
+			result = session.createCriteria(PositionPeakPrice.class).list();
 
 		} catch (HibernateException e) {
 
@@ -1396,8 +1424,9 @@ public class PersistenceManager {
 
 		} finally {
 
-			if (session != null)
+			if (session != null) {
 				session.close();
+			}
 
 		}
 		return result;
@@ -1409,12 +1438,13 @@ public class PersistenceManager {
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
-			result = (List<GroupManagement>) session.createCriteria(GroupManagement.class).list();
+			result = session.createCriteria(GroupManagement.class).list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			if (session != null)
+			if (session != null) {
 				session.close();
+			}
 		}
 		return result;
 	}
@@ -1428,16 +1458,18 @@ public class PersistenceManager {
 
 		try {
 			if (syncCentralDb) {
-				if (centralDbConnector.isUserExist(user.getId()))
+				if (centralDbConnector.isUserExist(user.getId())) {
 					throw new CentralDbException("This user already exists: " + user.getId(),
 							ErrorMessage.USER_ALREADY_EXIST);
+				}
 
 				if (checkEmailUnique.equals(CheckEmailType.allCheck)
 						|| (checkEmailUnique.equals(CheckEmailType.onlyExist) && null != user.getEmail()
 								&& !user.getEmail().isEmpty())) {
-					if (centralDbConnector.isEmailExist(user.getEmail()))
+					if (centralDbConnector.isEmailExist(user.getEmail())) {
 						throw new CentralDbException("This email already exists: " + user.getEmail(),
 								ErrorMessage.USER_EMAIL_EXIST);
+					}
 				}
 
 				if (checkPhoneUnique == CheckPhoneType.allCheck
@@ -1451,9 +1483,10 @@ public class PersistenceManager {
 
 				if (!centralDbConnector.registerUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(),
 						user.getPhone(), user.getUserType(), event.getOriginalEvent().getCountry(),
-						event.getOriginalEvent().getLanguage()))
+						event.getOriginalEvent().getLanguage())) {
 					throw new CentralDbException("can't create this user: " + user.getId(),
 							ErrorMessage.CREATE_DEFAULT_ACCOUNT_ERROR);
+				}
 			}
 
 			tx = session.beginTransaction();
@@ -1473,15 +1506,17 @@ public class PersistenceManager {
 			ok = false;
 			// message = String.format("can't create user, err=[%s]",
 			// e.getMessage());
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
 
 		if (ok) {
-			for (Account account : event.getAccounts())
+			for (Account account : event.getAccounts()) {
 				createAccount(account);
+			}
 			eventManager.sendEvent(new OnUserCreatedEvent(user, event.getAccounts()));
 
 			try {
@@ -1496,9 +1531,10 @@ public class PersistenceManager {
 				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getOriginalEvent().getKey(),
 						event.getOriginalEvent().getSender(), user, ok, message, event.getOriginalEvent().getTxId()));
 				if (ok) {
-					for (Account account : event.getAccounts())
+					for (Account account : event.getAccounts()) {
 						eventManager.sendRemoteEvent(
 								new AccountUpdateEvent(event.getOriginalEvent().getKey(), null, account));
+					}
 				}
 
 			} catch (Exception e) {
@@ -1520,8 +1556,9 @@ public class PersistenceManager {
 		} catch (Exception e) {
 			isOk = false;
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1551,8 +1588,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1573,8 +1611,9 @@ public class PersistenceManager {
 			log.debug("Persisted account=[" + account.getUserId() + ":" + account.getId() + "]");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1590,8 +1629,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1607,8 +1647,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1624,8 +1665,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1641,8 +1683,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1659,8 +1702,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1681,8 +1725,9 @@ public class PersistenceManager {
 			tx.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			if (tx != null)
+			if (tx != null) {
 				tx.rollback();
+			}
 		} finally {
 			session.close();
 		}
@@ -1893,25 +1938,26 @@ public class PersistenceManager {
 		Session session = null;
 		try {
 			session = sessionFactory.openSession();
-			result = (List<CoinControl>)session.createCriteria(CoinControl.class)
+			result = session.createCriteria(CoinControl.class)
 				.list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 		} finally {
-			if(session!=null)
+			if(session!=null) {
 				session.close();
+			}
 		}
 		return result;
 	}
-    
+
     public void processPmUpdateCoinControlEvent(PmUpdateCoinControlEvent event){
-		
+
 		CoinControl coinControl = event.getCoinControl();
 		if(null == coinControl){
 			log.warn("coin control is null");
 			return;
 		}
-		
+
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 		try {
@@ -1922,15 +1968,16 @@ public class PersistenceManager {
 		}
 		catch (Exception e) {
 			log.error(e.getMessage(), e);
-		    if (tx!=null) 
-		    	tx.rollback();
+		    if (tx!=null) {
+				tx.rollback();
+			}
 		}
 		finally {
 			session.close();
 		}
     }
 
-	
+
 	// getters and setters
 	public int getTextSize() {
 		return textSize;
