@@ -138,6 +138,14 @@
             name="User View"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.gui.QuoteView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.QuoteViewer"
+            name="Quote"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -383,6 +391,24 @@
                   	</or>
             	  </visibleWhen>       
             </command>
+            <command
+                     commandId="CSTW.QuoteView"
+                     label="Quote"
+                     style="push">
+                     <visibleWhen checkEnabled="false">
+	                  	<or>
+	                  	   <with variable="Admin">
+			                  <equals value="ENABLED"></equals>        
+			               </with>
+			               <with variable="RiskManager">
+		                  	  <equals value="ENABLED"></equals>        
+		               	   </with>
+		                   <with variable="Trader">
+		                      <equals value="ENABLED"></equals>        
+		                   </with>
+	                  	</or>
+            	  	 </visibleWhen>
+            </command>
             <menu
                   label="New">
                <command
@@ -536,6 +562,12 @@
             description="Users"
             id="CSTW.usermanagement.UserView"
             name="Users">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.QuoteViewCommand"
+            description="Quote"
+            id="CSTW.QuoteView"
+            name="Quote">
       </command>
    </extension>
    <extension
