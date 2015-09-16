@@ -288,6 +288,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 }
             } else {
                 String index = marketRuleBySymbolMap.get(symbol);
+                if (indexSessionCheckDataByIndexMap.get(index) == null){
+                    log.error(String.format("%s %s,%s", title,
+                            WindDef.ERROR_NO_INDEXSESSION, symbol));
+                    return false;
+                }
                 if (tradingDay != indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()) {
                     log.debug(String.format("%s %s,%s", title,
                             WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));

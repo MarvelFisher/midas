@@ -177,7 +177,6 @@ public class FutureItem implements AutoCloseable {
             quote.setLast((double) futureData.getMatch() / 10000);
             quote.setClose((double) futureData.getPreClose() / 10000);
             quote.setTurnover((double) futureData.getTurnover());
-            quote.setfTurnover((double) futureData.getfTurnover());
 
             //Check Stale
             switch (marketSessionData.getSessionType()){
