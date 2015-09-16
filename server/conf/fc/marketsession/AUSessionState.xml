@@ -84,6 +84,8 @@
 	<bean id="auTradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
 			<list>
+				<value>2015-09-06</value>
+				<value>2015-10-10</value>
 			</list>
 		</constructor-arg>
 		<constructor-arg>
