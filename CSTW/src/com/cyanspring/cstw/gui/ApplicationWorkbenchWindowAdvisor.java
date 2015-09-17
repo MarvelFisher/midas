@@ -87,15 +87,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 				IViewReference vrs[] = activePage.getViewReferences();
 				for(IViewReference vr : vrs){
-					log.info("show view :{}",vr.getId());
 					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
-						log.info("hide view :{}",vr.getId());
 						IViewPart part = activePage.findView(vr.getId());
-						log.info("part:{}",part.getViewSite().getId());
 						part.getViewSite().getShell().setVisible(false);
 						activePage.hideView(vr);
-						log.info("visible:{}",part.getViewSite().getShell().isVisible());
-
 					}else{
 						authListener.filterViewAllAction(vr.getPartName(), vr.getPart(true));
 					}
@@ -115,7 +110,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 						if(toolItem instanceof ActionContributionItem){
 							ActionContributionItem actionItem =(ActionContributionItem) toolItem;
 							if(actionItem.getId().equals("USER_INFO_ACTION")){
-								actionItem.getAction().setText(Business.getInstance().getAccount()+" - "+Business.getInstance().getUserGroup().getRole().toString());
+								actionItem.getAction().setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
 							}
 							authListener.filterViewAction("Application View", actionItem);
 						}

@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -49,6 +50,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.SetPriceDialog.Mode;
@@ -73,7 +75,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 1000;
 	private boolean columnCreated = false;
-	
 	private Menu menu;
 	private Action popDeleteSymbol;
 	private final String MENU_ID_DELETESYMBOL = "POPUP_DELETE_SYMBOL";
@@ -111,7 +112,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 
 						@Override
 						public void widgetSelected(SelectionEvent e) {
-							String symbol = textSymbol.getText();
+							final String symbol = textSymbol.getText();
 							if(!StringUtils.hasText(symbol)){
 								showMessageBox("Symbol is empty" , parentComposite);
 								return;
@@ -124,9 +125,25 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 
 							if(!quoteMap.containsKey(symbol)){
 								log.info("send sub event:{},{}",textSymbol.getText(),receiverId);
-								showMessageBox("this symbol doesn't exist or hasn't any quote yet" , parentComposite);
 								QuoteSubEvent subEvent = new QuoteSubEvent(receiverId, Business.getInstance().getFirstServer(), symbol);
 								sendRemoteEvent(subEvent);
+								parentComposite.getDisplay().asyncExec(new Runnable(){
+
+									@Override
+									public void run() {
+										try {
+											Thread.sleep(1000);
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+										if(!quoteMap.containsKey(symbol))
+											showMessageBox("this symbol doesn't exist or hasn't any quote yet" , parentComposite);
+										else{
+											subList.add(symbol);
+											refreshQuote();
+										}
+									}	
+								});
 							}else{
 								subList.add(symbol);
 								refreshQuote();
@@ -137,8 +154,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						public void widgetDefaultSelected(SelectionEvent e) {
 
 						}
-					});
-				
+					});		
 				}
 			}
 			{
@@ -208,8 +224,10 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if(event instanceof QuoteEvent){
-			QuoteEvent e = (QuoteEvent) event;
-			quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
+			QuoteEvent e = (QuoteEvent) event;			
+			log.info("e.getQuote().getSymbol():{},{}",e.getQuote().getSymbol());
+			if(!PriceUtils.isZero(e.getQuote().getAsk()) && !PriceUtils.isZero(e.getQuote().getBid()))
+				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
 		}else if(event instanceof AsyncTimerEvent){
 			refreshQuote();
 		}

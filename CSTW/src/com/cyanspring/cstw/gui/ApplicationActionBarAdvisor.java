@@ -85,7 +85,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		userInfoAction = new StyledAction("",org.eclipse.jface.action.IAction.AS_UNSPECIFIED) {
 		};
 		userInfoAction.setId(ID_USER_INFO_ACTION);
-		userInfoAction.setText(Business.getInstance().getAccount()+" - "+Business.getInstance().getUserGroup().getRole().toString());
+		userInfoAction.setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
 		userInfoAction.setDescription("");
 		userInfoAction.setToolTipText("");
 		userInfoAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.USER_ICON.toString()));

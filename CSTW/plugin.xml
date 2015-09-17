@@ -95,7 +95,7 @@
             class="com.cyanspring.cstw.gui.PositionView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.PositionViewer"
-            name="Positions"
+            name="Account"
             restorable="true">
       </view>
       <view
@@ -304,9 +304,6 @@
 		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-		               <with variable="Trader">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
                   	</or>
             	  </visibleWhen>
             </command>
@@ -327,7 +324,7 @@
             </command>
             <command
                   commandId="CSTW.PositionView"
-                  label="Account Position"
+                  label="Account"
                   style="push">
                   <visibleWhen checkEnabled="false">
                   	<or>
