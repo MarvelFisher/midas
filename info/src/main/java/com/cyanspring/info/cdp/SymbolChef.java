@@ -78,6 +78,7 @@ public class SymbolChef implements Runnable
 		SymbolData data = getMapSymboldata().get(symbol);
 		if (data != null)
 		{
+			log.debug("Remove symbol " + symbol);
 			getMapSymboldata().remove(symbol);
 		}
 	}

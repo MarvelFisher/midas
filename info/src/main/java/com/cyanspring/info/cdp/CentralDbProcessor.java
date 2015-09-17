@@ -660,7 +660,8 @@ public class CentralDbProcessor implements IPlugin
 					info.updateByRefData(refdata);
 				int chefNum = getChefNumber(refdata.getSymbol());
 				SymbolChef chef = SymbolChefList.get(chefNum);
-				chef.createSymbol(refdata, this);
+				if (chef.createSymbol(refdata, this))
+					log.debug("Add symbol " + refdata.getSymbol());
 				SymbolData data = chef.getSymbolData(refdata.getSymbol());
 				data.setSessionIndex(refdata.getIndexSessionType());
 			}
