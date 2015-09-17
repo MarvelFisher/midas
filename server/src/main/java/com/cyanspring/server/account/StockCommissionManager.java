@@ -2,10 +2,11 @@ package com.cyanspring.server.account;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.AccountSetting;
-import com.cyanspring.common.account.ICommissionManager;
+import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IType;
 import com.cyanspring.common.type.OrderSide;
+
 import webcurve.util.PriceUtils;
 
 /**
@@ -22,17 +23,22 @@ public class StockCommissionManager extends CommissionManager {
     private double transferFee = 0.0001;
 
     @Override
-    public double getCommission(RefData refData, AccountSetting settings, double value, OrderSide side) {    	
+    public double getCommission(RefData refData, AccountSetting settings, double value, Execution execution) {
     	if (refData != null) {
         	String type = refData.getIType();
-        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type)))
-        		return super.getCommission(refData, settings, value, side);
+        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type))) {
+				return super.getCommission(refData, settings, value, execution);
+			}
         }
     	double accountCom = 1;
-        if (settings != null && !PriceUtils.isZero(settings.getCommission()))
-            accountCom = settings.getCommission();
-        if (side == null)
-            return Default.getCommission() * value * accountCom;
+        if (settings != null && !PriceUtils.isZero(settings.getCommission())) {
+			accountCom = settings.getCommission();
+		}
+
+        OrderSide side = execution.getSide();
+        if (side == null) {
+			return Default.getCommission() * value * accountCom;
+		}
 
         double stampValue = 0.0;
         if (side.equals(OrderSide.Sell)) {
@@ -41,28 +47,35 @@ public class StockCommissionManager extends CommissionManager {
         double brokerageValue = Math.ceil(brokerage * value * accountCom);
         double secValue = Math.ceil(secFee * value * accountCom);
         double commissionValue = Math.ceil(commission * value * accountCom);
-        if (PriceUtils.LessThan(commissionValue, 5))
-            commissionValue = 5;
+        if (PriceUtils.LessThan(commissionValue, 5)) {
+			commissionValue = 5;
+		}
         double transferValue = Math.ceil(transferFee * value * accountCom);
 
         return stampValue + brokerageValue + secValue + commissionValue + transferValue;
     }
 
     @Override
-    public double getCommission(RefData refData, AccountSetting settings, OrderSide side) {
+    public double getCommission(RefData refData, AccountSetting settings, Execution execution) {
     	if (refData != null) {
         	String type = refData.getIType();
-        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type)))
-        		return super.getCommission(refData, settings, side);
+        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type))) {
+				return super.getCommission(refData, settings, execution);
+			}
         }
         double accountCom = 1;
-        if (settings != null && !PriceUtils.isZero(settings.getCommission()))
-            accountCom = settings.getCommission();
-        if (side == null)
-            return Default.getCommission() * accountCom;
+        if (settings != null && !PriceUtils.isZero(settings.getCommission())) {
+			accountCom = settings.getCommission();
+		}
+
+        OrderSide side = execution.getSide();
+        if (side == null) {
+			return Default.getCommission() * accountCom;
+		}
         double totalCom = brokerage + secFee + commission + transferFee;
-        if (side.equals(OrderSide.Sell))
-            totalCom += stampTax;
+        if (side.equals(OrderSide.Sell)) {
+			totalCom += stampTax;
+		}
         return totalCom * accountCom;
     }
 
