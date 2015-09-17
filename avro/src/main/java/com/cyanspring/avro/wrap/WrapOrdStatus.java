@@ -2,7 +2,7 @@ package com.cyanspring.avro.wrap;
 
 import java.util.HashMap;
 
-import com.cyanspring.avro.types.OrdStatus;
+import com.cyanspring.avro.generate.trade.types.OrdStatus;
 
 public enum WrapOrdStatus {
 

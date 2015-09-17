@@ -2,7 +2,7 @@ package com.cyanspring.avro.wrap;
 
 import java.util.HashMap;
 
-import com.cyanspring.avro.types.OrderSide;
+import com.cyanspring.avro.generate.trade.types.OrderSide;
 
 public enum WrapOrderSide {
 

@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 
 import org.junit.Test;
 
-import com.cyanspring.avro.trading.NewOrderRequest;
+import com.cyanspring.avro.generate.trade.bean.NewOrderRequest;
 import com.cyanspring.avro.wrap.WrapObjectType;
 import com.cyanspring.avro.wrap.WrapOrderSide;
 import com.cyanspring.avro.wrap.WrapOrderType;

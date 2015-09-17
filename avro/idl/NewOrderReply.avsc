@@ -1,5 +1,5 @@
 {
-  "namespace": "com.cyanspring.avro.trading",
+  "namespace": "com.cyanspring.avro.generate.trade.bean",
   "type": "record",
   "name": "NewOrderReply",
   "fields": [
@@ -9,6 +9,10 @@
     },
     {
       "name": "orderId",
+      "type": "string"
+    },
+    {
+      "name": "exchangeAccount",
       "type": "string"
     },
     {

@@ -1,7 +1,7 @@
 {
-  "namespace": "com.cyanspring.avro.generate.trade.bean",
+  "namespace": "com.cyanspring.avro.generate.base",
   "type": "record",
-  "name": "AmendOrderRequest",
+  "name": "StateUpdate",
   "fields": [
     {
       "name": "objectType",
@@ -16,12 +16,12 @@
       "type": "string"
     },
     {
-      "name": "price",
-      "type": "double"
+      "name": "result",
+      "type": "boolean"
     },
     {
-      "name": "quantity",
-      "type": "double"
+      "name": "message",
+      "type": "string"
     },
     {
       "name": "txId",

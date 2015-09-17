@@ -3,14 +3,15 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package com.cyanspring.avro.trading;  
+package com.cyanspring.avro.generate.trade.bean;  
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"CancelOrderRequest\",\"namespace\":\"com.cyanspring.avro.trading\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"CancelOrderRequest\",\"namespace\":\"com.cyanspring.avro.generate.trade.bean\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public int objectType;
   @Deprecated public java.lang.String orderId;
+  @Deprecated public java.lang.String exchangeAccount;
   @Deprecated public java.lang.String txId;
 
   /**
@@ -23,9 +24,10 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
   /**
    * All-args constructor.
    */
-  public CancelOrderRequest(java.lang.Integer objectType, java.lang.String orderId, java.lang.String txId) {
+  public CancelOrderRequest(java.lang.Integer objectType, java.lang.String orderId, java.lang.String exchangeAccount, java.lang.String txId) {
     this.objectType = objectType;
     this.orderId = orderId;
+    this.exchangeAccount = exchangeAccount;
     this.txId = txId;
   }
 
@@ -35,7 +37,8 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     switch (field$) {
     case 0: return objectType;
     case 1: return orderId;
-    case 2: return txId;
+    case 2: return exchangeAccount;
+    case 3: return txId;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -45,7 +48,8 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     switch (field$) {
     case 0: objectType = (java.lang.Integer)value$; break;
     case 1: orderId = (java.lang.String)value$; break;
-    case 2: txId = (java.lang.String)value$; break;
+    case 2: exchangeAccount = (java.lang.String)value$; break;
+    case 3: txId = (java.lang.String)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -81,6 +85,21 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
   }
 
   /**
+   * Gets the value of the 'exchangeAccount' field.
+   */
+  public java.lang.String getExchangeAccount() {
+    return exchangeAccount;
+  }
+
+  /**
+   * Sets the value of the 'exchangeAccount' field.
+   * @param value the value to set.
+   */
+  public void setExchangeAccount(java.lang.String value) {
+    this.exchangeAccount = value;
+  }
+
+  /**
    * Gets the value of the 'txId' field.
    */
   public java.lang.String getTxId() {
@@ -96,18 +115,18 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
   }
 
   /** Creates a new CancelOrderRequest RecordBuilder */
-  public static com.cyanspring.avro.trading.CancelOrderRequest.Builder newBuilder() {
-    return new com.cyanspring.avro.trading.CancelOrderRequest.Builder();
+  public static com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder newBuilder() {
+    return new com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder();
   }
   
   /** Creates a new CancelOrderRequest RecordBuilder by copying an existing Builder */
-  public static com.cyanspring.avro.trading.CancelOrderRequest.Builder newBuilder(com.cyanspring.avro.trading.CancelOrderRequest.Builder other) {
-    return new com.cyanspring.avro.trading.CancelOrderRequest.Builder(other);
+  public static com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder newBuilder(com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder other) {
+    return new com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder(other);
   }
   
   /** Creates a new CancelOrderRequest RecordBuilder by copying an existing CancelOrderRequest instance */
-  public static com.cyanspring.avro.trading.CancelOrderRequest.Builder newBuilder(com.cyanspring.avro.trading.CancelOrderRequest other) {
-    return new com.cyanspring.avro.trading.CancelOrderRequest.Builder(other);
+  public static com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder newBuilder(com.cyanspring.avro.generate.trade.bean.CancelOrderRequest other) {
+    return new com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder(other);
   }
   
   /**
@@ -118,15 +137,16 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
 
     private int objectType;
     private java.lang.String orderId;
+    private java.lang.String exchangeAccount;
     private java.lang.String txId;
 
     /** Creates a new Builder */
     private Builder() {
-      super(com.cyanspring.avro.trading.CancelOrderRequest.SCHEMA$);
+      super(com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.SCHEMA$);
     }
     
     /** Creates a Builder by copying an existing Builder */
-    private Builder(com.cyanspring.avro.trading.CancelOrderRequest.Builder other) {
+    private Builder(com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.objectType)) {
         this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
@@ -136,15 +156,19 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
         this.orderId = data().deepCopy(fields()[1].schema(), other.orderId);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.txId)) {
-        this.txId = data().deepCopy(fields()[2].schema(), other.txId);
+      if (isValidValue(fields()[2], other.exchangeAccount)) {
+        this.exchangeAccount = data().deepCopy(fields()[2].schema(), other.exchangeAccount);
         fieldSetFlags()[2] = true;
+      }
+      if (isValidValue(fields()[3], other.txId)) {
+        this.txId = data().deepCopy(fields()[3].schema(), other.txId);
+        fieldSetFlags()[3] = true;
       }
     }
     
     /** Creates a Builder by copying an existing CancelOrderRequest instance */
-    private Builder(com.cyanspring.avro.trading.CancelOrderRequest other) {
-            super(com.cyanspring.avro.trading.CancelOrderRequest.SCHEMA$);
+    private Builder(com.cyanspring.avro.generate.trade.bean.CancelOrderRequest other) {
+            super(com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.SCHEMA$);
       if (isValidValue(fields()[0], other.objectType)) {
         this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
         fieldSetFlags()[0] = true;
@@ -153,9 +177,13 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
         this.orderId = data().deepCopy(fields()[1].schema(), other.orderId);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.txId)) {
-        this.txId = data().deepCopy(fields()[2].schema(), other.txId);
+      if (isValidValue(fields()[2], other.exchangeAccount)) {
+        this.exchangeAccount = data().deepCopy(fields()[2].schema(), other.exchangeAccount);
         fieldSetFlags()[2] = true;
+      }
+      if (isValidValue(fields()[3], other.txId)) {
+        this.txId = data().deepCopy(fields()[3].schema(), other.txId);
+        fieldSetFlags()[3] = true;
       }
     }
 
@@ -165,7 +193,7 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     }
     
     /** Sets the value of the 'objectType' field */
-    public com.cyanspring.avro.trading.CancelOrderRequest.Builder setObjectType(int value) {
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder setObjectType(int value) {
       validate(fields()[0], value);
       this.objectType = value;
       fieldSetFlags()[0] = true;
@@ -178,7 +206,7 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     }
     
     /** Clears the value of the 'objectType' field */
-    public com.cyanspring.avro.trading.CancelOrderRequest.Builder clearObjectType() {
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder clearObjectType() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -189,7 +217,7 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     }
     
     /** Sets the value of the 'orderId' field */
-    public com.cyanspring.avro.trading.CancelOrderRequest.Builder setOrderId(java.lang.String value) {
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder setOrderId(java.lang.String value) {
       validate(fields()[1], value);
       this.orderId = value;
       fieldSetFlags()[1] = true;
@@ -202,9 +230,34 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     }
     
     /** Clears the value of the 'orderId' field */
-    public com.cyanspring.avro.trading.CancelOrderRequest.Builder clearOrderId() {
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder clearOrderId() {
       orderId = null;
       fieldSetFlags()[1] = false;
+      return this;
+    }
+
+    /** Gets the value of the 'exchangeAccount' field */
+    public java.lang.String getExchangeAccount() {
+      return exchangeAccount;
+    }
+    
+    /** Sets the value of the 'exchangeAccount' field */
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder setExchangeAccount(java.lang.String value) {
+      validate(fields()[2], value);
+      this.exchangeAccount = value;
+      fieldSetFlags()[2] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'exchangeAccount' field has been set */
+    public boolean hasExchangeAccount() {
+      return fieldSetFlags()[2];
+    }
+    
+    /** Clears the value of the 'exchangeAccount' field */
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder clearExchangeAccount() {
+      exchangeAccount = null;
+      fieldSetFlags()[2] = false;
       return this;
     }
 
@@ -214,22 +267,22 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
     }
     
     /** Sets the value of the 'txId' field */
-    public com.cyanspring.avro.trading.CancelOrderRequest.Builder setTxId(java.lang.String value) {
-      validate(fields()[2], value);
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder setTxId(java.lang.String value) {
+      validate(fields()[3], value);
       this.txId = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[3] = true;
       return this; 
     }
     
     /** Checks whether the 'txId' field has been set */
     public boolean hasTxId() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[3];
     }
     
     /** Clears the value of the 'txId' field */
-    public com.cyanspring.avro.trading.CancelOrderRequest.Builder clearTxId() {
+    public com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.Builder clearTxId() {
       txId = null;
-      fieldSetFlags()[2] = false;
+      fieldSetFlags()[3] = false;
       return this;
     }
 
@@ -239,7 +292,8 @@ public class CancelOrderRequest extends org.apache.avro.specific.SpecificRecordB
         CancelOrderRequest record = new CancelOrderRequest();
         record.objectType = fieldSetFlags()[0] ? this.objectType : (java.lang.Integer) defaultValue(fields()[0]);
         record.orderId = fieldSetFlags()[1] ? this.orderId : (java.lang.String) defaultValue(fields()[1]);
-        record.txId = fieldSetFlags()[2] ? this.txId : (java.lang.String) defaultValue(fields()[2]);
+        record.exchangeAccount = fieldSetFlags()[2] ? this.exchangeAccount : (java.lang.String) defaultValue(fields()[2]);
+        record.txId = fieldSetFlags()[3] ? this.txId : (java.lang.String) defaultValue(fields()[3]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

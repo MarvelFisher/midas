@@ -1,11 +1,15 @@
 {
-  "namespace": "com.cyanspring.avro.trading",
+  "namespace": "com.cyanspring.avro.generate.trade.bean",
   "type": "record",
   "name": "NewOrderRequest",
   "fields": [
     {
       "name": "objectType",
       "type": "int"
+    },
+    {
+      "name": "exchangeAccount",
+      "type": "string"
     },
     {
       "name": "symbol",
@@ -30,10 +34,6 @@
     {
       "name": "quantity",
       "type": "double"
-    },
-    {
-      "name": "exchangeAccount",
-      "type": "string"
     },
     {
       "name": "created",

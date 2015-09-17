@@ -1,5 +1,5 @@
 {
-  "namespace": "com.cyanspring.avro.types",
+  "namespace": "com.cyanspring.avro.generate.trade.types",
   "type": "enum",
   "name": "OrderSide",
   "symbols": [

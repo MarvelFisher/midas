@@ -3,14 +3,15 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package com.cyanspring.avro.trading;  
+package com.cyanspring.avro.generate.trade.bean;  
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"AmendOrderRequest\",\"namespace\":\"com.cyanspring.avro.trading\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"quantity\",\"type\":\"double\"},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"AmendOrderRequest\",\"namespace\":\"com.cyanspring.avro.generate.trade.bean\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"quantity\",\"type\":\"double\"},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public int objectType;
   @Deprecated public java.lang.String orderId;
+  @Deprecated public java.lang.String exchangeAccount;
   @Deprecated public double price;
   @Deprecated public double quantity;
   @Deprecated public java.lang.String txId;
@@ -25,9 +26,10 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
   /**
    * All-args constructor.
    */
-  public AmendOrderRequest(java.lang.Integer objectType, java.lang.String orderId, java.lang.Double price, java.lang.Double quantity, java.lang.String txId) {
+  public AmendOrderRequest(java.lang.Integer objectType, java.lang.String orderId, java.lang.String exchangeAccount, java.lang.Double price, java.lang.Double quantity, java.lang.String txId) {
     this.objectType = objectType;
     this.orderId = orderId;
+    this.exchangeAccount = exchangeAccount;
     this.price = price;
     this.quantity = quantity;
     this.txId = txId;
@@ -39,9 +41,10 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     switch (field$) {
     case 0: return objectType;
     case 1: return orderId;
-    case 2: return price;
-    case 3: return quantity;
-    case 4: return txId;
+    case 2: return exchangeAccount;
+    case 3: return price;
+    case 4: return quantity;
+    case 5: return txId;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -51,9 +54,10 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     switch (field$) {
     case 0: objectType = (java.lang.Integer)value$; break;
     case 1: orderId = (java.lang.String)value$; break;
-    case 2: price = (java.lang.Double)value$; break;
-    case 3: quantity = (java.lang.Double)value$; break;
-    case 4: txId = (java.lang.String)value$; break;
+    case 2: exchangeAccount = (java.lang.String)value$; break;
+    case 3: price = (java.lang.Double)value$; break;
+    case 4: quantity = (java.lang.Double)value$; break;
+    case 5: txId = (java.lang.String)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -86,6 +90,21 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
    */
   public void setOrderId(java.lang.String value) {
     this.orderId = value;
+  }
+
+  /**
+   * Gets the value of the 'exchangeAccount' field.
+   */
+  public java.lang.String getExchangeAccount() {
+    return exchangeAccount;
+  }
+
+  /**
+   * Sets the value of the 'exchangeAccount' field.
+   * @param value the value to set.
+   */
+  public void setExchangeAccount(java.lang.String value) {
+    this.exchangeAccount = value;
   }
 
   /**
@@ -134,18 +153,18 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
   }
 
   /** Creates a new AmendOrderRequest RecordBuilder */
-  public static com.cyanspring.avro.trading.AmendOrderRequest.Builder newBuilder() {
-    return new com.cyanspring.avro.trading.AmendOrderRequest.Builder();
+  public static com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder newBuilder() {
+    return new com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder();
   }
   
   /** Creates a new AmendOrderRequest RecordBuilder by copying an existing Builder */
-  public static com.cyanspring.avro.trading.AmendOrderRequest.Builder newBuilder(com.cyanspring.avro.trading.AmendOrderRequest.Builder other) {
-    return new com.cyanspring.avro.trading.AmendOrderRequest.Builder(other);
+  public static com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder newBuilder(com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder other) {
+    return new com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder(other);
   }
   
   /** Creates a new AmendOrderRequest RecordBuilder by copying an existing AmendOrderRequest instance */
-  public static com.cyanspring.avro.trading.AmendOrderRequest.Builder newBuilder(com.cyanspring.avro.trading.AmendOrderRequest other) {
-    return new com.cyanspring.avro.trading.AmendOrderRequest.Builder(other);
+  public static com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder newBuilder(com.cyanspring.avro.generate.trade.bean.AmendOrderRequest other) {
+    return new com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder(other);
   }
   
   /**
@@ -156,17 +175,18 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
 
     private int objectType;
     private java.lang.String orderId;
+    private java.lang.String exchangeAccount;
     private double price;
     private double quantity;
     private java.lang.String txId;
 
     /** Creates a new Builder */
     private Builder() {
-      super(com.cyanspring.avro.trading.AmendOrderRequest.SCHEMA$);
+      super(com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$);
     }
     
     /** Creates a Builder by copying an existing Builder */
-    private Builder(com.cyanspring.avro.trading.AmendOrderRequest.Builder other) {
+    private Builder(com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.objectType)) {
         this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
@@ -176,23 +196,27 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
         this.orderId = data().deepCopy(fields()[1].schema(), other.orderId);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.price)) {
-        this.price = data().deepCopy(fields()[2].schema(), other.price);
+      if (isValidValue(fields()[2], other.exchangeAccount)) {
+        this.exchangeAccount = data().deepCopy(fields()[2].schema(), other.exchangeAccount);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.quantity)) {
-        this.quantity = data().deepCopy(fields()[3].schema(), other.quantity);
+      if (isValidValue(fields()[3], other.price)) {
+        this.price = data().deepCopy(fields()[3].schema(), other.price);
         fieldSetFlags()[3] = true;
       }
-      if (isValidValue(fields()[4], other.txId)) {
-        this.txId = data().deepCopy(fields()[4].schema(), other.txId);
+      if (isValidValue(fields()[4], other.quantity)) {
+        this.quantity = data().deepCopy(fields()[4].schema(), other.quantity);
         fieldSetFlags()[4] = true;
+      }
+      if (isValidValue(fields()[5], other.txId)) {
+        this.txId = data().deepCopy(fields()[5].schema(), other.txId);
+        fieldSetFlags()[5] = true;
       }
     }
     
     /** Creates a Builder by copying an existing AmendOrderRequest instance */
-    private Builder(com.cyanspring.avro.trading.AmendOrderRequest other) {
-            super(com.cyanspring.avro.trading.AmendOrderRequest.SCHEMA$);
+    private Builder(com.cyanspring.avro.generate.trade.bean.AmendOrderRequest other) {
+            super(com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$);
       if (isValidValue(fields()[0], other.objectType)) {
         this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
         fieldSetFlags()[0] = true;
@@ -201,17 +225,21 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
         this.orderId = data().deepCopy(fields()[1].schema(), other.orderId);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.price)) {
-        this.price = data().deepCopy(fields()[2].schema(), other.price);
+      if (isValidValue(fields()[2], other.exchangeAccount)) {
+        this.exchangeAccount = data().deepCopy(fields()[2].schema(), other.exchangeAccount);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.quantity)) {
-        this.quantity = data().deepCopy(fields()[3].schema(), other.quantity);
+      if (isValidValue(fields()[3], other.price)) {
+        this.price = data().deepCopy(fields()[3].schema(), other.price);
         fieldSetFlags()[3] = true;
       }
-      if (isValidValue(fields()[4], other.txId)) {
-        this.txId = data().deepCopy(fields()[4].schema(), other.txId);
+      if (isValidValue(fields()[4], other.quantity)) {
+        this.quantity = data().deepCopy(fields()[4].schema(), other.quantity);
         fieldSetFlags()[4] = true;
+      }
+      if (isValidValue(fields()[5], other.txId)) {
+        this.txId = data().deepCopy(fields()[5].schema(), other.txId);
+        fieldSetFlags()[5] = true;
       }
     }
 
@@ -221,7 +249,7 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Sets the value of the 'objectType' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder setObjectType(int value) {
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder setObjectType(int value) {
       validate(fields()[0], value);
       this.objectType = value;
       fieldSetFlags()[0] = true;
@@ -234,7 +262,7 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Clears the value of the 'objectType' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder clearObjectType() {
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder clearObjectType() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -245,7 +273,7 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Sets the value of the 'orderId' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder setOrderId(java.lang.String value) {
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder setOrderId(java.lang.String value) {
       validate(fields()[1], value);
       this.orderId = value;
       fieldSetFlags()[1] = true;
@@ -258,9 +286,34 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Clears the value of the 'orderId' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder clearOrderId() {
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder clearOrderId() {
       orderId = null;
       fieldSetFlags()[1] = false;
+      return this;
+    }
+
+    /** Gets the value of the 'exchangeAccount' field */
+    public java.lang.String getExchangeAccount() {
+      return exchangeAccount;
+    }
+    
+    /** Sets the value of the 'exchangeAccount' field */
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder setExchangeAccount(java.lang.String value) {
+      validate(fields()[2], value);
+      this.exchangeAccount = value;
+      fieldSetFlags()[2] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'exchangeAccount' field has been set */
+    public boolean hasExchangeAccount() {
+      return fieldSetFlags()[2];
+    }
+    
+    /** Clears the value of the 'exchangeAccount' field */
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder clearExchangeAccount() {
+      exchangeAccount = null;
+      fieldSetFlags()[2] = false;
       return this;
     }
 
@@ -270,21 +323,21 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Sets the value of the 'price' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder setPrice(double value) {
-      validate(fields()[2], value);
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder setPrice(double value) {
+      validate(fields()[3], value);
       this.price = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[3] = true;
       return this; 
     }
     
     /** Checks whether the 'price' field has been set */
     public boolean hasPrice() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[3];
     }
     
     /** Clears the value of the 'price' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder clearPrice() {
-      fieldSetFlags()[2] = false;
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder clearPrice() {
+      fieldSetFlags()[3] = false;
       return this;
     }
 
@@ -294,21 +347,21 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Sets the value of the 'quantity' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder setQuantity(double value) {
-      validate(fields()[3], value);
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder setQuantity(double value) {
+      validate(fields()[4], value);
       this.quantity = value;
-      fieldSetFlags()[3] = true;
+      fieldSetFlags()[4] = true;
       return this; 
     }
     
     /** Checks whether the 'quantity' field has been set */
     public boolean hasQuantity() {
-      return fieldSetFlags()[3];
+      return fieldSetFlags()[4];
     }
     
     /** Clears the value of the 'quantity' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder clearQuantity() {
-      fieldSetFlags()[3] = false;
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder clearQuantity() {
+      fieldSetFlags()[4] = false;
       return this;
     }
 
@@ -318,22 +371,22 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
     }
     
     /** Sets the value of the 'txId' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder setTxId(java.lang.String value) {
-      validate(fields()[4], value);
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder setTxId(java.lang.String value) {
+      validate(fields()[5], value);
       this.txId = value;
-      fieldSetFlags()[4] = true;
+      fieldSetFlags()[5] = true;
       return this; 
     }
     
     /** Checks whether the 'txId' field has been set */
     public boolean hasTxId() {
-      return fieldSetFlags()[4];
+      return fieldSetFlags()[5];
     }
     
     /** Clears the value of the 'txId' field */
-    public com.cyanspring.avro.trading.AmendOrderRequest.Builder clearTxId() {
+    public com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.Builder clearTxId() {
       txId = null;
-      fieldSetFlags()[4] = false;
+      fieldSetFlags()[5] = false;
       return this;
     }
 
@@ -343,9 +396,10 @@ public class AmendOrderRequest extends org.apache.avro.specific.SpecificRecordBa
         AmendOrderRequest record = new AmendOrderRequest();
         record.objectType = fieldSetFlags()[0] ? this.objectType : (java.lang.Integer) defaultValue(fields()[0]);
         record.orderId = fieldSetFlags()[1] ? this.orderId : (java.lang.String) defaultValue(fields()[1]);
-        record.price = fieldSetFlags()[2] ? this.price : (java.lang.Double) defaultValue(fields()[2]);
-        record.quantity = fieldSetFlags()[3] ? this.quantity : (java.lang.Double) defaultValue(fields()[3]);
-        record.txId = fieldSetFlags()[4] ? this.txId : (java.lang.String) defaultValue(fields()[4]);
+        record.exchangeAccount = fieldSetFlags()[2] ? this.exchangeAccount : (java.lang.String) defaultValue(fields()[2]);
+        record.price = fieldSetFlags()[3] ? this.price : (java.lang.Double) defaultValue(fields()[3]);
+        record.quantity = fieldSetFlags()[4] ? this.quantity : (java.lang.Double) defaultValue(fields()[4]);
+        record.txId = fieldSetFlags()[5] ? this.txId : (java.lang.String) defaultValue(fields()[5]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

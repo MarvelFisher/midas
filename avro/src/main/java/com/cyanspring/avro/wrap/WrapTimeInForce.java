@@ -2,7 +2,7 @@ package com.cyanspring.avro.wrap;
 
 import java.util.HashMap;
 
-import com.cyanspring.avro.types.TimeInForce;
+import com.cyanspring.avro.generate.trade.types.TimeInForce;
 
 public enum WrapTimeInForce {
 
