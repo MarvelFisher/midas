@@ -4,28 +4,12 @@
   "name": "StateUpdate",
   "fields": [
     {
-      "name": "objectType",
-      "type": "int"
-    },
-    {
-      "name": "orderId",
-      "type": "string"
-    },
-    {
       "name": "exchangeAccount",
       "type": "string"
     },
     {
-      "name": "result",
+      "name": "online",
       "type": "boolean"
-    },
-    {
-      "name": "message",
-      "type": "string"
-    },
-    {
-      "name": "txId",
-      "type": "string"
     }
   ]
 }
