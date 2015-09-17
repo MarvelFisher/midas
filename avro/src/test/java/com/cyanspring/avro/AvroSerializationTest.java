@@ -1,12 +1,12 @@
 package com.cyanspring.avro;
 
-import java.text.DateFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 
+import org.apache.avro.specific.SpecificRecord;
 import org.junit.Test;
 
 import com.cyanspring.avro.trading.NewOrderRequest;
+import com.cyanspring.avro.types.ObjectType;
 import com.cyanspring.avro.wrap.WrapObjectType;
 import com.cyanspring.avro.wrap.WrapOrderSide;
 import com.cyanspring.avro.wrap.WrapOrderType;
@@ -23,7 +23,7 @@ public class AvroSerializationTest {
 	@Test
 	public void test() {
 		
-		Format dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSSS");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSSS");
 
 		AvroSerialization avroSerialization = new AvroSerialization();
 
@@ -36,7 +36,7 @@ public class AvroSerializationTest {
 		NewOrderRequest newOrderRequest = NewOrderRequest
 				.newBuilder()
 				.setExchangeAccount(exchangeAccount)
-				.setObjectType(WrapObjectType.NewOrderReply.getCode())
+				.setObjectType(WrapObjectType.NewOrderRequest.getCode())
 				.setSymbol(childOrder.getSymbol())
 				.setPrice(childOrder.getPrice())
 				.setQuantity(childOrder.getQuantity())
@@ -49,7 +49,21 @@ public class AvroSerializationTest {
 				.setClOrderId(clOrderId)
 				.build();
 		
-		System.out.println(newOrderRequest.toString());
+		System.out.println("Serialize NewOrderRequest : " + newOrderRequest.toString());
+		
+		try {
+			byte[] bytes = (byte[]) avroSerialization.serialize(new AvroSerializableObject(newOrderRequest, WrapObjectType.NewOrderRequest));
+			AvroSerializableObject deSerializeObject = (AvroSerializableObject) avroSerialization.deSerialize(bytes);
+			WrapObjectType objectType = deSerializeObject.getObjectType();
+			if(objectType.equals(WrapObjectType.NewOrderRequest)){
+				NewOrderRequest deSerializeRecord = (NewOrderRequest) deSerializeObject.getRecord();
+				System.out.println("DeSerializeRecord : " + deSerializeRecord.toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
 
 	}
 
