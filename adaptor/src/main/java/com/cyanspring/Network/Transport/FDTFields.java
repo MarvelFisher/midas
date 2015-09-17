@@ -77,4 +77,10 @@ public class FDTFields {
 	public final static int SD2 = 97;
 	public final static int DataCount = 98;
 	public final static int HashCode = 99;
+	
+    public final static int SymbolName = 100;
+    public final static int Group = 101;
+    public final static int Product = 102;
+    public final static int ProductName = 103;
+    public final static int Currency = 104;	
 }
