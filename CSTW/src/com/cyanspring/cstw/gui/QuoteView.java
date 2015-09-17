@@ -164,7 +164,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				createMenu(bottomComposite);
 
 			}
-			sashForm.setWeights(new int[] {1,6});
+			sashForm.setWeights(new int[] {1,4});
 		}
 		
 		subEvent(QuoteEvent.class);
