@@ -28,6 +28,7 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.SystemInfo;
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
@@ -88,6 +89,7 @@ public class Business {
 	private Map<AlertType, Integer> alertColorConfig;
 	private String user = Default.getUser();
 	private String account = Default.getAccount();
+	private Account loginAccount = null;
 	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
 	// singleton implementation
 	private Business() {
@@ -446,14 +448,20 @@ public class Business {
 		if(!event.isOk())
 			return false;
 		
+		List<Account>accountList = event.getAccountList();
+		if(null != accountList && !accountList.isEmpty()){
+			loginAccount = event.getAccountList().get(0);
+		}
 		UserGroup userGroup = event.getUserGroup();
 		this.user = userGroup.getUser();
-		this.account = userGroup.getUser();
+		
+		if(null != loginAccount)
+			this.account = loginAccount.getId();
+		else
+			this.account = userGroup.getUser();
+		
 		this.userGroup = userGroup;
 		log.info("login user:{},{}",user,userGroup.getRole());
-		
-
-		
 		return true;
 	}
 	
@@ -505,4 +513,10 @@ public class Business {
 	public boolean hasViewAuth(String view){
 		return this.authManager.hasViewAuth(userGroup.getRole(), view);
 	}
+
+	public Account getLoginAccount() {
+		return loginAccount;
+	}
+	
+	
 }

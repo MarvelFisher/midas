@@ -34,6 +34,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -45,14 +46,17 @@ import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
+import com.cyanspring.common.event.account.UserMappingEvent;
 import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
+import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.gui.SetPriceDialog.Mode;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
@@ -193,10 +197,14 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		mainComposite.layout();
 		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(AccountSnapshotReplyEvent.class, ID, this);
+		log.info("Business.getInstance().getOrderManager().isReady():{}",Business.getInstance().getOrderManager().isReady());
+		log.info("Business.getInstance().getAccount():{}",Business.getInstance().getAccount());
 		if (Business.getInstance().getOrderManager().isReady())
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		else
 			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
+		
+		sendTraderRequestEvent();
 
 	}
 
@@ -520,6 +528,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void showClosedPositions(final boolean setInput) {
+		if( null == closedPositionViewer)
+			return;
+		
 		closedPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -538,6 +549,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void showExecutions(final boolean setInput) {
+		if(null == executionViewer)
+			return;
+		
 		executionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -555,6 +569,17 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 
+	private void sendTraderRequestEvent(){
+		log.info("sendTraderRequestEvent");
+		if(UserRole.Trader == Business.getInstance().getUserGroup().getRole()){
+			Account account = Business.getInstance().getLoginAccount();
+			if( null != account){
+				sendSubscriptionRequest(account.getId());
+			}
+		}
+	}
+	
+	
 	private void sendSubscriptionRequest(String account) {
 		// unsubscribe for current account event
 		Business.getInstance().getEventManager().unsubscribe(OpenPositionUpdateEvent.class, currentAccount, this);

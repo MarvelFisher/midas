@@ -818,6 +818,8 @@ public class AccountPositionManager implements IPlugin {
     	boolean isOk = false;
     	String message = "";
     	UserGroup userGroup = null;
+    	List <Account> accountList = null;
+
     	boolean isAdminRole = false;
     	boolean isServerShutdownEvent = event.getShutdownServer();
 
@@ -827,7 +829,7 @@ public class AccountPositionManager implements IPlugin {
 
     	if (isAdminRole) {
     		userGroup = new UserGroup(id,UserRole.Admin);
-    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup);
+    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup,accountList);
     		try {
     			eventManager.sendRemoteEvent(reply);
     		} catch (Exception e) {
@@ -861,13 +863,12 @@ public class AccountPositionManager implements IPlugin {
 	    	if (!StringUtils.hasText(message)) {
 				isOk =true;
 			}
-
+	    	
 	    	userGroup = userKeeper.getUserGroup(id);
-
+	    	accountList = accountKeeper.getAccounts(id);
 	    	if ( null == userGroup ){
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
-
 
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
@@ -877,8 +878,8 @@ public class AccountPositionManager implements IPlugin {
     		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
     		log.info("CSTW Login fail:{} - {}",id,message);
     	}
-
-		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup);
+    	    	
+		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup,accountList);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {

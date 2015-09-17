@@ -8,7 +8,7 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd"
 >	
 	<bean id="positionView" class="com.cyanspring.common.cstw.auth.ViewActionBean">
-		<constructor-arg value="Positions"/>
+		<constructor-arg value="Account"/>
 		<constructor-arg value=""/>
 		<constructor-arg >					   
 		<array>
@@ -19,7 +19,7 @@
 	</bean>	
 	
 	<bean id="positionViewPopUpAction1" class="com.cyanspring.common.cstw.auth.ViewActionBean">
-		<constructor-arg value="Positions"/><!-- part name -->
+		<constructor-arg value="Account"/><!-- part name -->
 		<constructor-arg value="POPUP_CLOSE_POSITION"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
