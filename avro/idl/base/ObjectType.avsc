@@ -3,12 +3,16 @@
   "type": "enum",
   "name": "ObjectType",
   "symbols": [
+    "StateUpdate",
+    "OrderUpdate",
     "NewOrderRequest",
-    "AmendOrderRequest",
-    "CancelOrderRequest",
     "NewOrderReply",
-    "AmendOrderReply",
+    "CancelOrderRequest",
     "CancelOrderReply",
-    "OrderUpdate"
+    "AmendOrderReply",
+    "AmendOrderRequest",
+    "Quote",
+    "SubscribeQuote",
+    "UnsubscribeQuote"
   ]
 }

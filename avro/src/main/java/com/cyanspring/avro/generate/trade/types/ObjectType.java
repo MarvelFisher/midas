@@ -7,7 +7,7 @@ package com.cyanspring.avro.generate.trade.types;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public enum ObjectType { 
-  NewOrderRequest, AmendOrderRequest, CancelOrderRequest, NewOrderReply, AmendOrderReply, CancelOrderReply, OrderUpdate  ;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"ObjectType\",\"namespace\":\"com.cyanspring.avro.generate.trade.types\",\"symbols\":[\"NewOrderRequest\",\"AmendOrderRequest\",\"CancelOrderRequest\",\"NewOrderReply\",\"AmendOrderReply\",\"CancelOrderReply\",\"OrderUpdate\"]}");
+  StateUpdate, NewOrderRequest, NewOrderReply, CancelOrderRequest, CancelOrderReply, AmendOrderReply, AmendOrderRequest, OrderUpdate, Quote, SubscribeQuote, UnsubscribeQuote  ;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"ObjectType\",\"namespace\":\"com.cyanspring.avro.generate.trade.types\",\"symbols\":[\"StateUpdate\",\"NewOrderRequest\",\"NewOrderReply\",\"CancelOrderRequest\",\"CancelOrderReply\",\"AmendOrderReply\",\"AmendOrderRequest\",\"OrderUpdate\",\"Quote\",\"SubscribeQuote\",\"UnsubscribeQuote\"]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 }

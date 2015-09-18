@@ -1,19 +1,43 @@
 {
   "namespace": "com.cyanspring.avro.generate.trade.bean",
   "type": "record",
-  "name": "NewOrderRequest",
+  "name": "OrderUpdate",
   "fields": [
     {
       "name": "objectType",
       "type": "int"
     },
     {
+      "name": "orderId",
+      "type": "string"
+    },
+    {
       "name": "exchangeAccount",
+      "type": "string"
+    },
+    {
+      "name": "exchangeOrderId",
       "type": "string"
     },
     {
       "name": "symbol",
       "type": "string"
+    },
+    {
+      "name": "price",
+      "type": "double"
+    },
+    {
+      "name": "quantity",
+      "type": "double"
+    },
+    {
+      "name": "execType",
+      "type": "int"
+    },
+    {
+      "name": "ordStatus",
+      "type": "int"
     },
     {
       "name": "orderSide",
@@ -28,14 +52,6 @@
       "type": "int"
     },
     {
-      "name": "price",
-      "type": "double"
-    },
-    {
-      "name": "quantity",
-      "type": "double"
-    },
-    {
       "name": "created",
       "type": "string"
     },
@@ -45,6 +61,10 @@
     },
     {
       "name": "txId",
+      "type": "string"
+    },
+    {
+      "name": "msg",
       "type": "string"
     }
   ]
