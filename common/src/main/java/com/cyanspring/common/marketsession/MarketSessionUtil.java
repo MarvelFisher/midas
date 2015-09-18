@@ -60,11 +60,8 @@ public class MarketSessionUtil implements IPlugin{
     	RefData refData = refDataManager.getRefData(symbol);
     	if(null == refData)
     		return null;
-    	String index = searchIndex(refData);
-    	if(!StringUtils.hasText(index))
-    		return null;
     	
-    	MarketSessionData data = this.getMarketSession().get(index);
+    	MarketSessionData data = getMarketSession(refData,new Date());
     	return data;
     }
     
