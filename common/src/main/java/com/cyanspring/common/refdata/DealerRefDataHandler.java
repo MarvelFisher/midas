@@ -155,8 +155,12 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 						log.error("Unknow action for RefData update");
 					}
 				}
-				RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, filterRefData(send), action);
-				eventManager.sendGlobalEvent(event);
+				List<RefData> filteredRefDataList = filterRefData(send);
+				if(filteredRefDataList.size() > 0) {
+					log.debug("send refDataUpdateEvent, action:" + action);
+					RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, filteredRefDataList, action);
+					eventManager.sendGlobalEvent(event);
+				}
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}

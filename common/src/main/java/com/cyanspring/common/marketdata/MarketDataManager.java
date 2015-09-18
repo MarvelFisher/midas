@@ -176,6 +176,10 @@ public class MarketDataManager extends MarketDataReceiver {
                 super.processIndexSessionEvent(event);
                 for (String index : indexSessions.keySet()) {
                     MarketSessionData marketSessionData = indexSessions.get(index);
+                    if(!event.getDataMap().containsKey(index)){
+                        log.debug("index:" + index + " no include this event");
+                        continue;
+                    }
                     if (marketSessionData != null) {
                         //Process LastTradeDateQuote
                         if (!marketSessionData.getTradeDateByString().equals(tradeDateByIndex.get(index)) || tradeDateByIndex.get(index) == null) {
@@ -197,6 +201,7 @@ public class MarketDataManager extends MarketDataReceiver {
                         }
                         //Process Clean Session
                         if (marketSessionData.getSessionType() == MarketSessionType.PREMARKET) {
+                            log.debug("MDM process clean session, index:" + index);
                             ArrayList<String> symbols = indexSessionTypes.get(index);
                             for (String symbol : symbols) {
                                 if (quoteCleaner != null) {

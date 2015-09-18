@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.cyanspring.common.Default;
-import com.cyanspring.common.type.OrderSide;
-
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ICommissionManager;
+import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.staticdata.RefData;
 
 public class CommissionManager implements ICommissionManager{
@@ -18,12 +17,12 @@ public class CommissionManager implements ICommissionManager{
 	private double minCommissionFee = 2;
 
 	@Override
-	public double getCommission(RefData refData, AccountSetting settings, OrderSide side) {
-		return getCommission(refData, settings, 0, side);
+	public double getCommission(RefData refData, AccountSetting settings, Execution execution) {
+		return getCommission(refData, settings, 0, execution);
 	}
 
 	@Override
-	public double getCommission(RefData refData, AccountSetting settings, double value, OrderSide side) {
+	public double getCommission(RefData refData, AccountSetting settings, double value, Execution execution) {
 		double accountCommission = 1;
 		if (settings != null && !PriceUtils.isZero(settings.getCommission())) {
 			accountCommission = settings.getCommission();
@@ -36,7 +35,8 @@ public class CommissionManager implements ICommissionManager{
 			// Thus here means return {refData.getLotCommissionFee() * accountCommission}
 			double lotCommissionFee = refData.getLotCommissionFee();
 			if (!nullOrZero(lotCommissionFee)) {
-				return lotCommissionFee * accountCommission;
+				double quantity = execution.getQuantity();
+				return lotCommissionFee * quantity * accountCommission;
 			}
 
 			double minCF = refData.getMinimalCommissionFee();

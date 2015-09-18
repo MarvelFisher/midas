@@ -230,10 +230,10 @@ public class PositionKeeper {
 			}
 			RefData refData = refDataManager.getRefData(execution.getSymbol());
 			
-			if(!PriceUtils.isZero(commissionManager.getCommission(refData, accountSetting, execution.getSide()))) {
+			if(!PriceUtils.isZero(commissionManager.getCommission(refData, accountSetting, execution))) {
 				double value = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 						execution.getSymbol(), execution.getQuantity(), execution.getPrice());
-				double commision = commissionManager.getCommission(refData, accountSetting, value, execution.getSide());
+				double commision = commissionManager.getCommission(refData, accountSetting, value, execution);
 				account.updatePnL(-commision);
 			} 
 
