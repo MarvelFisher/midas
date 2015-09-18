@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface IServerSocketListener
+    public interface IServerSocketListener
     {
         void OnConnected(bool connected, IUserSocketContext ctx);
         void OnMessage(object obj, IUserSocketContext ctx);

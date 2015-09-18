@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface IObjectTransportService : ITransportService
+    public interface IObjectTransportService : ITransportService
     {
         void CreateReceiver(string subject, IObjectListener listener);
         void CreateSubscriber(string subject, IObjectListener listener);

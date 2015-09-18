@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Basic
 {
-    interface IPlugin
+    public interface IPlugin
     {
         void Init();
         void UnInit();

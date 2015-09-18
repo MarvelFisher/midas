@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface ITransportService
+    public interface ITransportService
     {
         void StartBroker();
         void CloseBroker();

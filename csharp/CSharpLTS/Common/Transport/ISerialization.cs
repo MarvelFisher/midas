@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface ISerialization
+    public interface ISerialization
     {
         object Serialize(object obj);
         object Deserialize(object obj);
