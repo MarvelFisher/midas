@@ -256,11 +256,11 @@ public class RefData extends DataObject {
         this.set(denominator, RefDataField.DENOMINATOR.value());
     }
 
-    public double getNumberatorDp() {
+    public double getNumeratorDP() {
         return this.get(double.class, RefDataField.NUMERATOR_DP.value());
     }
 
-    public void setNumberatorDp(double numberatorDp) {
+    public void setNumeratorDP(double numberatorDp) {
         this.set(numberatorDp, RefDataField.NUMERATOR_DP.value());
     }
 

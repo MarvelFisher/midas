@@ -40,9 +40,9 @@ public enum RefDataField {
 	MARKET_MAXIMUM_LOT("Market maximum lot"), // 市價單最大數量
 	MAXIMUM_HOLD("Maximum hold"),	// 最大持倉量
 	PRICE_LIMIT("Price limit"),     // 帳跌停板幅度 %
-	DECIMALPOINT("Decimal point"),  // 小數位數	
+	DECIMALPOINT("Decimal point"),  // 小數位數
 	DENOMINATOR("Denominator"),     // 分母
-	NUMERATOR_DP("Nnumerator DP"),   // 分子小數位數 
+	NUMERATOR_DP("Numerator DP"),   // 分子小數位數
 	TRADABLE("Tradable"),			// 是否可交易
 	STRATEGY("Strategy"),
 	SPELL_NAME("Spell name"),
@@ -57,9 +57,9 @@ public enum RefDataField {
 	ITYPE("IType"),							// Wind商品類型
 	INDEX_SESSION_TYPE("Index Session Type")  // marketSessionType settlement/spot/exchange
 	;
-	
+
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();
-	
+
 	private String value;
 	RefDataField(String value) {
 		this.value = value;
@@ -67,7 +67,7 @@ public enum RefDataField {
 	public String value() {
 		return value;
 	}
-	
+
 	static public RefDataField getValue(String str) {
 		return map.get(str);
 	}
@@ -75,12 +75,13 @@ public enum RefDataField {
 	public static void validate() throws Exception {
 		map.clear();
 		for (RefDataField field: RefDataField.values()) {
-			if (map.containsKey(field.value()))
+			if (map.containsKey(field.value())) {
 				throw new Exception("RefDataField duplicated: " + field.value);
-			else
+			} else {
 				map.put(field.value(), field);
+			}
 		}
-		
+
 	}
 
 

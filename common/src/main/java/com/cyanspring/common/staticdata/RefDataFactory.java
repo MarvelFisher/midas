@@ -30,7 +30,7 @@ public class RefDataFactory extends RefDataService {
 	private List<RefData> refDataTemplateList;
 	private Map<String, RefData> refDataTemplateMap = new HashMap<String, RefData>();
 	private boolean templateListAsRefDataList = false;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
@@ -43,12 +43,13 @@ public class RefDataFactory extends RefDataService {
 			if (templateFile.exists()) {
 				refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
 				if (null != refDataTemplateList && !refDataTemplateList.isEmpty()) {
-					
+
 					buildTemplateMap(refDataTemplateList);
-					
-					if(templateListAsRefDataList)
+
+					if(templateListAsRefDataList) {
 						refDataList = refDataTemplateList;
-					
+					}
+
 				}
 			} else {
 				throw new Exception("Missing refdata template: " + refDataTemplatePath);
@@ -149,19 +150,20 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-//		log.info("XML:"+xstream.toXML(refData));
+		log.info("XML:"+xstream.toXML(refData));
 	}
 
 	private void initCategory(RefData refData) {
-		
-		if(StringUtils.hasText(refData.getCategory()))
+
+		if(StringUtils.hasText(refData.getCategory())) {
 			return;
-		
+		}
+
 		String commodity = refData.getCommodity();
 		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
 				&& commodity.equals(RefDataCommodity.FUTURES.getValue()))) {
 			refData.setCategory(getCategory(refData));
-		}	
+		}
 	}
 
 	@Override
@@ -176,8 +178,9 @@ public class RefDataFactory extends RefDataService {
 			if (!StringUtils.hasText(refData.getSymbol())) {
 				continue;
 			}
-			if (refData.getSymbol().equals(symbol))
+			if (refData.getSymbol().equals(symbol)) {
 				return refData;
+			}
 		}
 		return null;
 	}
@@ -245,20 +248,23 @@ public class RefDataFactory extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-		
+
 		boolean remove = false;
-		if(null == refDataList || refDataList.isEmpty())
+		if(null == refDataList || refDataList.isEmpty()) {
 			return remove;
-		
+		}
+
 		List<RefData> delList = new ArrayList<RefData>();
 
 		for (RefData ref : refDataList) {
-			if (ref.getRefSymbol().equals(refData.getRefSymbol()))
+			if (ref.getRefSymbol().equals(refData.getRefSymbol())) {
 				delList.add(ref);
+			}
 		}
 
-		if (!delList.isEmpty())
+		if (!delList.isEmpty()) {
 			remove = true;
+		}
 
 		for (RefData ref : delList) {
 			refDataList.remove(ref);
