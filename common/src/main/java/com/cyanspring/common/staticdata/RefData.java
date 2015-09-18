@@ -259,11 +259,11 @@ public class RefData extends DataObject {
         this.set(denominator, RefDataField.DENOMINATOR.value());
     }
 
-    public double getNumberatorDp() {
+    public double getNumeratorDP() {
         return this.get(double.class, RefDataField.NUMERATOR_DP.value());
     }
 
-    public void setNumberatorDp(double numberatorDp) {
+    public void setNumeratorDP(double numberatorDp) {
         this.set(numberatorDp, RefDataField.NUMERATOR_DP.value());
     }
 
@@ -406,5 +406,12 @@ public class RefData extends DataObject {
     public void setSubscribeSymbol(String subscribeSymbol) {
         this.set(subscribeSymbol, RefDataField.SUBSCRIBE_SYMBOL.value());
     }
+    
+    public int getDayTradable() {
+        return this.get(int.class, RefDataField.DAY_TRADABLE.value());
+    }
 
+    public void setDayTradable(int dayTradable) {
+        this.set(dayTradable, RefDataField.DAY_TRADABLE.value());
+    }
 }

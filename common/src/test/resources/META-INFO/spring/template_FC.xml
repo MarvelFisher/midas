@@ -27,7 +27,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.00E-5</double>
+        <double>0.00004</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -151,7 +151,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.00E-5</double>
+        <double>0.00004</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -275,7 +275,7 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.00E-5</double>
+        <double>0.00004</double>
       </entry>
       <entry>
         <string>Lot size</string>
@@ -396,11 +396,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>5.50E-5</double>
+        <double>0.000055</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>15</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -445,7 +445,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>15</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -514,11 +514,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>5.50E-5</double>
+        <double>0.000055</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -563,7 +563,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -631,12 +631,12 @@
         <string>黄金</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>11</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>1000</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -681,7 +681,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>1000</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -750,11 +750,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.95E-5</double>
+        <double>0.0000495</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -799,7 +799,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -868,11 +868,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.95E-5</double>
+        <double>0.0000495</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -917,7 +917,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -985,12 +985,12 @@
         <string>锌</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.5</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1035,7 +1035,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1103,12 +1103,12 @@
         <string>豆粕</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.65</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1156,7 +1156,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1222,11 +1222,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>6.60E-5</double>
+        <double>0.000066</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>100</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1274,7 +1274,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>100</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1339,12 +1339,12 @@
         <string>聚乙烯</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1392,7 +1392,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1457,12 +1457,12 @@
         <string>豆油</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.75</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1510,7 +1510,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1576,11 +1576,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>5.50E-5</double>
+        <double>0.000055</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1628,7 +1628,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1693,12 +1693,12 @@
         <string>棕榈油</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.75</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1746,7 +1746,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1812,11 +1812,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>6.60E-5</double>
+        <double>0.000066</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>100</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1864,7 +1864,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>100</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -1930,11 +1930,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>1.65E-4</double>
+        <double>0.000165</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -1982,7 +1982,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>2</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2047,12 +2047,12 @@
         <string>玻璃</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2097,7 +2097,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2165,12 +2165,12 @@
         <string>菜籽粕</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.65</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2215,7 +2215,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2283,12 +2283,12 @@
         <string>PTA</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2336,7 +2336,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2404,12 +2404,12 @@
         <string>白糖</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2457,7 +2457,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2525,12 +2525,12 @@
         <string>郑醇</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.54</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2578,7 +2578,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2646,12 +2646,12 @@
         <string>棉花</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>4.73</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2699,7 +2699,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2767,7 +2767,7 @@
         <string>沪镍</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>8</double>
       </entry>
       <entry>
@@ -2885,12 +2885,12 @@
         <string>铝</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -2935,7 +2935,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3004,11 +3004,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>3.30E-5</double>
+        <double>0.000033</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3053,7 +3053,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3122,11 +3122,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.40E-5</double>
+        <double>0.000044</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3171,7 +3171,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3240,11 +3240,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.40E-5</double>
+        <double>0.000044</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3289,7 +3289,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3357,7 +3357,7 @@
         <string>沪锡</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>5</double>
       </entry>
       <entry>
@@ -3476,11 +3476,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>2.20E-5</double>
+        <double>0.000022</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>50</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3525,7 +3525,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>50</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3594,11 +3594,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>4.40E-5</double>
+        <double>0.000044</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3643,7 +3643,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3712,11 +3712,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>6.60E-5</double>
+        <double>0.000066</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>60</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3764,7 +3764,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>60</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3829,12 +3829,12 @@
         <string>玉米</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.32</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -3882,7 +3882,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -3947,12 +3947,12 @@
         <string>淀粉</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.65</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4000,7 +4000,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4065,12 +4065,12 @@
         <string>PVC</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4118,7 +4118,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4184,11 +4184,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>1.10E-4</double>
+        <double>0.00011</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>500</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4236,7 +4236,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>500</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4301,12 +4301,12 @@
         <string>豆二</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4354,7 +4354,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4420,11 +4420,11 @@
       </entry>
       <entry>
         <string>Commission fee</string>
-        <double>1.10E-4</double>
+        <double>0.00011</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>500</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4472,7 +4472,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>500</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4537,12 +4537,12 @@
         <string>动力煤</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>8.8</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>200</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4590,7 +4590,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>200</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4658,12 +4658,12 @@
         <string>油菜籽</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>10</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4711,7 +4711,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4779,12 +4779,12 @@
         <string>早稻</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.75</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4832,7 +4832,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -4900,12 +4900,12 @@
         <string>矽铁</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -4953,7 +4953,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -5021,12 +5021,12 @@
         <string>晚籼稻</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -5074,7 +5074,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -5139,15 +5139,15 @@
       </entry>
       <entry>
         <string>Spot ENName</string>
-        <string>锰矽</string>
+        <string>锰硅</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>5</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -5163,7 +5163,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>锰矽1602</string>
+        <string>锰硅1602</string>
       </entry>
       <entry>
         <string>Numerator DP</string>
@@ -5191,11 +5191,11 @@
       </entry>
       <entry>
         <string>Spot CNName</string>
-        <string>锰矽</string>
+        <string>锰硅</string>
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>5</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -5263,12 +5263,12 @@
         <string>粳稻</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
         <string>Lot size</string>
-        <int>20</int>
+        <int>1</int>
       </entry>
       <entry>
         <string>Exchange</string>
@@ -5316,7 +5316,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>1</double>
+        <double>20</double>
       </entry>
       <entry>
         <string>Strategy</string>

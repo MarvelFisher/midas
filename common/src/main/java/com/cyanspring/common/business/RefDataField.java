@@ -42,7 +42,7 @@ public enum RefDataField {
 	PRICE_LIMIT("Price limit"),     // 帳跌停板幅度 %
 	DECIMALPOINT("Decimal point"),  // 小數位數
 	DENOMINATOR("Denominator"),     // 分母
-	NUMERATOR_DP("Nnumerator DP"),   // 分子小數位數
+	NUMERATOR_DP("Numerator DP"),   // 分子小數位數
 	TRADABLE("Tradable"),			// 是否可交易
 	STRATEGY("Strategy"),
 	SPELL_NAME("Spell name"),
@@ -56,7 +56,8 @@ public enum RefDataField {
 	CODE("Code"),							// WindCode
 	ITYPE("IType"),							// Wind商品類型
 	INDEX_SESSION_TYPE("Index Session Type"),  // marketSessionType settlement/spot/exchange
-	SUBSCRIBE_SYMBOL("Subscribe symbol")
+	SUBSCRIBE_SYMBOL("Subscribe symbol"),
+	DAY_TRADABLE("Day tradable") //是否可當沖
 	;
 
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

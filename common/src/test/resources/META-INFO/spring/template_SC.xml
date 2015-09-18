@@ -121,10 +121,6 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
-      <entry>
-        <string>Day tradable</string>
-        <string>1</string>
-      </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -249,10 +245,6 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
-      <entry>
-        <string>Day tradable</string>
-        <string>1</string>
-      </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -377,10 +369,6 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
-      <entry>
-        <string>Day tradable</string>
-        <string>1</string>
-      </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
 </list>
