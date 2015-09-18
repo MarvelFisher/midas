@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.apache.avro.Schema;
 
-import com.cyanspring.avro.generate.trade.types.ObjectType;
+import com.cyanspring.avro.generate.base.types.ObjectType;
 
 public enum WrapObjectType {
 

@@ -1,5 +1,5 @@
 {
-  "namespace": "com.cyanspring.avro.generate.trade.types",
+  "namespace": "com.cyanspring.avro.generate.base.types",
   "type": "enum",
   "name": "ObjectType",
   "symbols": [
