@@ -436,8 +436,9 @@ public class PositionKeeper {
 	private OpenPosition getOverallPosition(List<OpenPosition> list, Account account, String symbol) throws PositionException {
 		if (null == list || list.size() <= 0)
 			return null;
-
+		
 		checkOverallPosition(list);
+		RefData refData = refDataManager.getRefData(symbol);
 		double qty = 0;
 		double amount = 0;
 		double PnL = 0;
@@ -448,7 +449,7 @@ public class PositionKeeper {
 			amount += pos.getQty() * pos.getPrice();
 			PnL += pos.getPnL();
 			margin += pos.getMargin();
-			availableQty += pos.getDetailAvailableQty();
+			availableQty += pos.getDetailAvailableQty(refData);
 		}
 		double price = amount / qty;
 

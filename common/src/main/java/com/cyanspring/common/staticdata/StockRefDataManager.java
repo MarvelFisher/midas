@@ -219,15 +219,9 @@ public class StockRefDataManager extends RefDataService {
 		}
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
-		isDayTradable(template,refData);
+		refData.setDayTradable(template.getDayTradable());
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
 		log.info("XML:"+xstream.toXML(refData));
-	}
-
-	private void isDayTradable(RefData template, RefData refData) {
-		String dayTradable = template.getDayTradable();
-		if(StringUtils.hasText(dayTradable))
-			refData.setDayTradable(dayTradable);
 	}
 
 	private void initCategory(RefData refData) {
