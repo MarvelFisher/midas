@@ -114,10 +114,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 					if(actionItem.getId().equals("USER_INFO_ACTION")){
 						actionItem.getAction().setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
 					}
-					authListener.filterViewAction("Application View", actionItem);
-					
+					authListener.filterViewAction("Application View", actionItem);					
 					if(!actionItem.isEnabled())
 						newToolBarManager.remove(actionItem.getId());
+					
 				} catch (Exception e) {
 					log.error("e:"+e.getMessage());
 				}

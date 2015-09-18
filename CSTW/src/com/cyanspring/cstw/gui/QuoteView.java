@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
+import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
 import com.cyanspring.cstw.gui.SetPriceDialog.Mode;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
@@ -171,12 +174,39 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		scheduleJob(refreshEvent, maxRefreshInterval);
 	}
 	
+	private void triggerMarketData(String symbol){
+		if(!StringUtils.hasText(symbol))
+			return ;
+		
+		QuoteSymbolSelectEvent event = new QuoteSymbolSelectEvent(symbol);
+		Business.getInstance().getEventManager().sendEvent(event);
+	}
+	
 	private void createQuoteViewer(Composite parent) {
 		String strFile = Business.getInstance().getConfigPath() + "QuoteTable.xml";
 		quoteViewer = new DynamicTableViewer(parent,
 				SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance().getXstream(),
 				strFile, BeanHolder.getInstance().getDataConverter());
 		quoteViewer.init();
+		quoteViewer.getTable().addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Table table = quoteViewer.getTable();				
+				TableItem items[] = table.getSelection();
+				for (TableItem item : items) {
+					Object obj = item.getData();
+					if (obj instanceof Quote) {
+						triggerMarketData(((Quote) obj).getSymbol());
+					}
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
 	}
 	
 	
