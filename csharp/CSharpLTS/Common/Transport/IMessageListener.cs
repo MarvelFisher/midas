@@ -5,8 +5,10 @@ using System.Text;
 
 namespace Common.Transport
 {
-    public interface IMessageListener
-    {
-        void OnMessage(string message);
-    }
+    public delegate void IMessageListener(string message);
+
+    //public interface IMessageListener
+    //{
+    //    void OnMessage(string message);
+    //}
 }
