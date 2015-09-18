@@ -84,4 +84,5 @@ public class FDTFields {
     public final static int Product = 102;
     public final static int ProductName = 103;
     public final static int Currency = 104;	
+    public final static int ShowID = 105;
 }
