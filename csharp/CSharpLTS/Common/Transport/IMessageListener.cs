@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface IMessageListener
+    public interface IMessageListener
     {
         void OnMessage(string message);
     }

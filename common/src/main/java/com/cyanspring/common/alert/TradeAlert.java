@@ -7,7 +7,7 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		private String userId;
 		private String symbol;
 		private double price;
-        private String Commdity;
+        private String Commodity;
         private double quantity ;
 		private OrderReason orderReason;
 		private String dateTime ;
@@ -34,7 +34,7 @@ public class TradeAlert implements Comparable<TradeAlert>{
             this.setQuantity(quantity); //-1000000
             this.setPrice(price); // 118.153
             this.setDateTime(dateTime); // yyyy-mm-dd hh:mm:ss
-            this.setCommdity(commdity);
+            this.setCommodity(commdity);
             this.content = content ;
         }
 
@@ -127,11 +127,11 @@ public class TradeAlert implements Comparable<TradeAlert>{
 		}
 
         public String getCommdity() {
-            return Commdity;
+            return Commodity;
         }
 
-        public void setCommdity(String commdity) {
-            Commdity = commdity;
+        public void setCommodity(String commodity) {
+            Commodity = commodity;
         }
 
 }

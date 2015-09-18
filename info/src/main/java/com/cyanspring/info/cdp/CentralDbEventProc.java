@@ -334,6 +334,10 @@ public class CentralDbEventProc implements Runnable
 		{
 			processIndexSessionEvent((IndexSessionEvent)event);
 		}
+		else if (event instanceof RefDataUpdateEvent)
+		{
+			processRefDataUpdateEvent((RefDataUpdateEvent)event);
+		}
 	}
 
 	@Override

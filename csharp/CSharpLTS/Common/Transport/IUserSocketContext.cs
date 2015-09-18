@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface IUserSocketContext
+    public interface IUserSocketContext
     {
         string GetId();
         string GetUser();

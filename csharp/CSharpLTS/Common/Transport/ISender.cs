@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Transport
 {
-    interface ISender
+    public interface ISender
     {
         void SendMessage(String message);
     }

@@ -168,7 +168,7 @@ public class RequestMgr implements IReqThreadCallback {
                     if (refDataDel.size() > 0) {
                         List<RefData> refDataDelList = new ArrayList<>();
                         for (String key : refDataDel) {
-                            refDataDelList.add(exchangeRefDataUpdate.getRefDataHashMap().get(key));
+                            refDataDelList.add(exchangeRefData.getRefDataHashMap().get(key));
                         }
                         windRefDataAdapter.sendRefDataUpdate(refDataDelList, RefDataUpdateEvent.Action.DEL);
                     }

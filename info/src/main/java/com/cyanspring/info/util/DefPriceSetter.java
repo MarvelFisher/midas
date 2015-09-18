@@ -13,7 +13,8 @@ public class DefPriceSetter implements IPriceSetter
 	@Override
 	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume) 
 	{
-		if (PriceUtils.EqualLessThan(quote.getLast(), 0))
+		if (PriceUtils.EqualLessThan(quote.getLast(), 0)
+				|| PriceUtils.EqualLessThan(quote.getLastVol(), 0))
 		{
 			return false;
 		}
@@ -34,28 +35,27 @@ public class DefPriceSetter implements IPriceSetter
 	@Override
 	public boolean setDataPrice(SymbolData symboldata, Quote quote) 
 	{
-		if (quote.getLast() < 0)
+		if (PriceUtils.EqualLessThan(quote.getLast(), 0)
+				|| PriceUtils.EqualLessThan(quote.getLastVol(), 0))
 		{
 			return false;
 		}
 		double dPrice = quote.getLast();
-		if (PriceUtils.isZero(dPrice))
-		{
-			return false;
-		}
-		if (symboldata.getD52WHigh() < dPrice)
+		if (PriceUtils.LessThan(symboldata.getD52WHigh(), dPrice))
 		{
 			symboldata.setD52WHigh(dPrice) ;
 		}
-		if (PriceUtils.isZero(symboldata.getD52WLow()) || symboldata.getD52WLow() > dPrice)
+		if (PriceUtils.isZero(symboldata.getD52WLow()) 
+				|| PriceUtils.GreaterThan(symboldata.getD52WLow(), dPrice))
 		{
 			symboldata.setD52WLow(dPrice);
 		}
-		if (symboldata.getdCurHigh() < dPrice)
+		if (PriceUtils.LessThan(symboldata.getdCurHigh(), dPrice))
 		{
 			symboldata.setdCurHigh(dPrice);
 		}
-		if (PriceUtils.isZero(symboldata.getdCurLow()) || symboldata.getdCurLow() > dPrice)
+		if (PriceUtils.isZero(symboldata.getdCurLow()) 
+				|| PriceUtils.GreaterThan(symboldata.getdCurLow(), dPrice))
 		{
 			symboldata.setdCurLow(dPrice);
 		}

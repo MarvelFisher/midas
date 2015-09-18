@@ -48,7 +48,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 	private String username;
 	private String password;
 
-	protected ConfirmPasswordDialog(Shell parentShell) {
+	public ConfirmPasswordDialog(Shell parentShell) {
 		super(parentShell);
 		setShellStyle(SWT.BORDER);
 	}

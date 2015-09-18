@@ -631,7 +631,7 @@
         <string>黄金</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>11</double>
       </entry>
       <entry>
@@ -985,7 +985,7 @@
         <string>锌</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.5</double>
       </entry>
       <entry>
@@ -1103,7 +1103,7 @@
         <string>豆粕</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.65</double>
       </entry>
       <entry>
@@ -1339,7 +1339,7 @@
         <string>聚乙烯</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
@@ -1457,7 +1457,7 @@
         <string>豆油</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.75</double>
       </entry>
       <entry>
@@ -1693,7 +1693,7 @@
         <string>棕榈油</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.75</double>
       </entry>
       <entry>
@@ -2047,7 +2047,7 @@
         <string>玻璃</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -2165,7 +2165,7 @@
         <string>菜籽粕</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.65</double>
       </entry>
       <entry>
@@ -2283,7 +2283,7 @@
         <string>PTA</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -2404,7 +2404,7 @@
         <string>白糖</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -2525,7 +2525,7 @@
         <string>郑醇</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.54</double>
       </entry>
       <entry>
@@ -2646,7 +2646,7 @@
         <string>棉花</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>4.73</double>
       </entry>
       <entry>
@@ -2767,7 +2767,7 @@
         <string>沪镍</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>8</double>
       </entry>
       <entry>
@@ -2885,7 +2885,7 @@
         <string>铝</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -3357,7 +3357,7 @@
         <string>沪锡</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>5</double>
       </entry>
       <entry>
@@ -3829,7 +3829,7 @@
         <string>玉米</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.32</double>
       </entry>
       <entry>
@@ -3947,7 +3947,7 @@
         <string>淀粉</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>1.65</double>
       </entry>
       <entry>
@@ -4065,7 +4065,7 @@
         <string>PVC</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
@@ -4301,7 +4301,7 @@
         <string>豆二</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
@@ -4537,7 +4537,7 @@
         <string>动力煤</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>8.8</double>
       </entry>
       <entry>
@@ -4658,7 +4658,7 @@
         <string>油菜籽</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.2</double>
       </entry>
       <entry>
@@ -4779,7 +4779,7 @@
         <string>早稻</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>2.75</double>
       </entry>
       <entry>
@@ -4900,7 +4900,7 @@
         <string>矽铁</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -5021,7 +5021,7 @@
         <string>晚籼稻</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -5142,7 +5142,7 @@
         <string>锰硅</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>
@@ -5263,7 +5263,7 @@
         <string>粳稻</string>
       </entry>
       <entry>
-        <string>Commission fee</string>
+        <string>Lot CF</string>
         <double>3.3</double>
       </entry>
       <entry>

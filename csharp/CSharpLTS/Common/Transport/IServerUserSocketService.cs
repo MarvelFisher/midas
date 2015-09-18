@@ -6,7 +6,7 @@ using Common.Basic;
 
 namespace Common.Transport
 {
-    interface IServerUserSocketService : IPlugin
+    public interface IServerUserSocketService : IPlugin
     {
         IUserSocketContext GetContext(string key);
         List<IUserSocketContext> GetContextByUser(string user);

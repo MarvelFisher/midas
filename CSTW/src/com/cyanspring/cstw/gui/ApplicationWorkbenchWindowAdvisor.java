@@ -10,10 +10,14 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
@@ -31,9 +35,12 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.gui.command.auth.AuthProvider;
 import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
+import com.cyanspring.cstw.gui.command.auth.WorkbenchActionProvider;
+import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -97,24 +104,20 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 				}
 			}
-
-			IActionBarConfigurer barConfig =  getWindowConfigurer().getActionBarConfigurer();
-			ICoolBarManager coolBarManager = barConfig.getCoolBarManager();
-			IContributionItem[] coolItems = coolBarManager.getItems();
-			for(IContributionItem coolItem : coolItems){
-
+			
+			ToolBarManager newToolBarManager = WorkbenchActionProvider.getInstance().getWorkbenchCoolBarActions();
+			ToolBarManager coolBarItemManager = WorkbenchActionProvider.getInstance().getToolBarManager(WorkbenchActionProvider.ID_TOOLBARMANAGER_COOLBAR);
+			IContributionItem[] coolBarItems = coolBarItemManager.getItems();
+			for(IContributionItem coolItem : coolBarItems){
 				try {
-					ToolBarContributionItem action = (ToolBarContributionItem)coolItem;
-					IContributionItem[] toolItems = action.getToolBarManager().getItems();
-					for(IContributionItem toolItem : toolItems){
-						if(toolItem instanceof ActionContributionItem){
-							ActionContributionItem actionItem =(ActionContributionItem) toolItem;
-							if(actionItem.getId().equals("USER_INFO_ACTION")){
-								actionItem.getAction().setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
-							}
-							authListener.filterViewAction("Application View", actionItem);
-						}
+					ActionContributionItem actionItem =(ActionContributionItem) coolItem;
+					if(actionItem.getId().equals("USER_INFO_ACTION")){
+						actionItem.getAction().setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
 					}
+					authListener.filterViewAction("Application View", actionItem);					
+					if(!actionItem.isEnabled())
+						newToolBarManager.remove(actionItem.getId());
+					
 				} catch (Exception e) {
 					log.error("e:"+e.getMessage());
 				}
@@ -124,11 +127,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			// filter this item or your coolbar will add gap when every login.
 			IContributionItem items[]=  getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().getItems();
 			for(IContributionItem item : items){
-				if(item.getClass().toString().contains("CoolBarToTrimManager")) {
+				if(!item.getClass().getSimpleName().contains("GroupMarker"))
 					getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().remove(item);
-				}
 			}
-
+			getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().add(newToolBarManager);
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

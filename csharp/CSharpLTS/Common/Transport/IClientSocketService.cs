@@ -6,7 +6,7 @@ using Common.Basic;
 
 namespace Common.Transport
 {
-    interface IClientSocketService : IPlugin 
+    public interface IClientSocketService : IPlugin 
     {
         bool SendMessage(Object obj);
         bool AddListener(IClientSocketListener listener);

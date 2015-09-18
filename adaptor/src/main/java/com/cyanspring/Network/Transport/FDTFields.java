@@ -18,6 +18,7 @@ public class FDTFields {
 	public final static int WindHeartBeat = 20024;
 	public final static int WindConnected = 20025;
 	public final static int WindCodeTableResult = 2026;
+	public final static int SnapShotEnds = 2027;
 
 
 	public final static int ArrayOfString = 101;
@@ -77,4 +78,10 @@ public class FDTFields {
 	public final static int SD2 = 97;
 	public final static int DataCount = 98;
 	public final static int HashCode = 99;
+	
+    public final static int SymbolName = 100;
+    public final static int Group = 101;
+    public final static int Product = 102;
+    public final static int ProductName = 103;
+    public final static int Currency = 104;	
 }

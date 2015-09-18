@@ -349,6 +349,12 @@
                   	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
+		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+		               <with variable="Trader">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
                   	</or>
             	  </visibleWhen>
             </command>
