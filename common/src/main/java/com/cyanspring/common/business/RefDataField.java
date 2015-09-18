@@ -55,7 +55,8 @@ public enum RefDataField {
 	SPOT_TWNAME("Spot TWName"),
 	CODE("Code"),							// WindCode
 	ITYPE("IType"),							// Wind商品類型
-	INDEX_SESSION_TYPE("Index Session Type")  // marketSessionType settlement/spot/exchange
+	INDEX_SESSION_TYPE("Index Session Type"),  // marketSessionType settlement/spot/exchange
+	DAY_TRADABLE("Day tradable") //是否可當沖
 	;
 
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

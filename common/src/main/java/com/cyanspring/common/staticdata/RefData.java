@@ -393,4 +393,11 @@ public class RefData extends DataObject {
         this.set(IType, RefDataField.ITYPE.value());
     }
     
+    public String getDayTradable() {
+        return this.get(String.class, RefDataField.DAY_TRADABLE.value());
+    }
+
+    public void setDayTradable(String dayTradable) {
+        this.set(dayTradable, RefDataField.DAY_TRADABLE.value());
+    }
 }
