@@ -1,0 +1,75 @@
+{
+  "namespace": "com.cyanspring.avro.generate.market.bean",
+  "type": "record",
+  "name": "OrderUpdate",
+  "fields": [
+  	{
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "symbol",
+      "type": "string"
+    },
+    {
+      "name": "bid",
+      "type": "double"
+    },
+    {
+      "name": "ask",
+      "type": "double"
+    },
+    {
+      "name": "bidVol",
+      "type": "double"
+    },
+    {
+      "name": "askVol",
+      "type": "double"
+    },
+    {
+      "name": "last",
+      "type": "double"
+    },
+    {
+      "name": "lastVol",
+      "type": "double"
+    },
+    {
+      "name": "turnover",
+      "type": "double"
+    },
+    {
+      "name": "high",
+      "type": "double"
+    },
+    {
+      "name": "low",
+      "type": "double"
+    },
+    {
+      "name": "open",
+      "type": "double"
+    },
+    {
+      "name": "close",
+      "type": "double"
+    },
+    {
+      "name": "totalVolume",
+      "type": "double"
+    },
+    {
+      "name": "timeStamp",
+      "type": "string"
+    },
+    {
+      "name": "timeSent",
+      "type": "string"
+    },
+    {
+      "name": "stale",
+      "type": "boolean"
+    }
+  ]
+}

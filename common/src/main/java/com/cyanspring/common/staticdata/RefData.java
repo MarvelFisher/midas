@@ -23,10 +23,11 @@ public class RefData extends DataObject {
 
     public double roundToLots(double qty) {
         int lotSize = this.getLotSize();
-        if (qty > 0)
-            return ((long) (qty / lotSize)) * lotSize;
-        else
-            return 0;
+        if (qty > 0) {
+			return ((long) (qty / lotSize)) * lotSize;
+		} else {
+			return 0;
+		}
     }
 
     // getters and setters
@@ -56,8 +57,9 @@ public class RefData extends DataObject {
 
     public String getCurrency() {
         String cur = this.get(String.class, RefDataField.CURRENCY.value());
-        if (null == cur && null != this.getExchange() && this.getExchange().equals("FX"))
-            return FxUtils.getFromCurrency(this.getSymbol());
+        if (null == cur && null != this.getExchange() && this.getExchange().equals("FX")) {
+			return FxUtils.getFromCurrency(this.getSymbol());
+		}
         return cur;
     }
 
@@ -67,8 +69,9 @@ public class RefData extends DataObject {
 
     public String getFxCurrency() {
         String cur = this.get(String.class, RefDataField.FX_CURRENCY.value());
-        if (null == cur && null != this.getExchange() && this.getExchange().equals("FX"))
-            return FxUtils.getToCurrency(this.getSymbol());
+        if (null == cur && null != this.getExchange() && this.getExchange().equals("FX")) {
+			return FxUtils.getToCurrency(this.getSymbol());
+		}
         return cur;
     }
 
@@ -196,7 +199,7 @@ public class RefData extends DataObject {
     public void setMinimalCommissionFee(double minimalCommissionFee) {
         this.set(minimalCommissionFee, RefDataField.MINIMAL_COMMISSION_FEE.value());
     }
-    
+
     public double getLotCommissionFee() {
         return this.get(double.class, RefDataField.LOT_COMMISSION_FEE.value());
     }
@@ -256,11 +259,11 @@ public class RefData extends DataObject {
         this.set(denominator, RefDataField.DENOMINATOR.value());
     }
 
-    public double getNumberatorDp() {
+    public double getNumeratorDP() {
         return this.get(double.class, RefDataField.NUMERATOR_DP.value());
     }
 
-    public void setNumberatorDp(double numberatorDp) {
+    public void setNumeratorDP(double numberatorDp) {
         this.set(numberatorDp, RefDataField.NUMERATOR_DP.value());
     }
 
@@ -359,7 +362,7 @@ public class RefData extends DataObject {
     public void setCode(String code) {
         this.set(code, RefDataField.CODE.value());
     }
-    
+
     public String getIndexSessionType() {
         return this.get(String.class, RefDataField.INDEX_SESSION_TYPE.value());
     }
@@ -367,24 +370,27 @@ public class RefData extends DataObject {
     public void setIndexSessionType(String indexSessionType) {
         this.set(indexSessionType, RefDataField.INDEX_SESSION_TYPE.value());
     }
-    
+
     @Override
     public boolean equals(Object object) {
     	RefData compare = (RefData) object;
-    	
-    	if (compare.getSymbol() == null || this.getSymbol() == null) 
-    		return super.equals(object);
-    	if (compare.getSymbol().equals(this.getSymbol()))
-    		return true;
-    	
+
+    	if (compare.getSymbol() == null || this.getSymbol() == null) {
+			return super.equals(object);
+		}
+
+    	if (compare.getSymbol().equals(this.getSymbol())) {
+			return true;
+		}
+
     	return false;
     }
-    
+
     @Override
     public int hashCode() {
     	return (this.getSymbol().hashCode() * 17);
     }
-    
+
     public String getIType() {
         return this.get(String.class, RefDataField.ITYPE.value());
     }
@@ -392,5 +398,20 @@ public class RefData extends DataObject {
     public void setIType(String IType) {
         this.set(IType, RefDataField.ITYPE.value());
     }
+
+    public String getSubscribeSymbol() {
+        return this.get(String.class, RefDataField.SUBSCRIBE_SYMBOL.value());
+    }
+
+    public void setSubscribeSymbol(String subscribeSymbol) {
+        this.set(subscribeSymbol, RefDataField.SUBSCRIBE_SYMBOL.value());
+    }
     
+    public int getDayTradable() {
+        return this.get(int.class, RefDataField.DAY_TRADABLE.value());
+    }
+
+    public void setDayTradable(int dayTradable) {
+        this.set(dayTradable, RefDataField.DAY_TRADABLE.value());
+    }
 }

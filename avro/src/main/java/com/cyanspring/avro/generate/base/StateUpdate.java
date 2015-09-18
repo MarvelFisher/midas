@@ -7,8 +7,9 @@ package com.cyanspring.avro.generate.base;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"StateUpdate\",\"namespace\":\"com.cyanspring.avro.generate.base\",\"fields\":[{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"online\",\"type\":\"boolean\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"StateUpdate\",\"namespace\":\"com.cyanspring.avro.generate.base\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"online\",\"type\":\"boolean\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
+  @Deprecated public int objectType;
   @Deprecated public java.lang.String exchangeAccount;
   @Deprecated public boolean online;
 
@@ -22,7 +23,8 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
   /**
    * All-args constructor.
    */
-  public StateUpdate(java.lang.String exchangeAccount, java.lang.Boolean online) {
+  public StateUpdate(java.lang.Integer objectType, java.lang.String exchangeAccount, java.lang.Boolean online) {
+    this.objectType = objectType;
     this.exchangeAccount = exchangeAccount;
     this.online = online;
   }
@@ -31,8 +33,9 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
   // Used by DatumWriter.  Applications should not call. 
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return exchangeAccount;
-    case 1: return online;
+    case 0: return objectType;
+    case 1: return exchangeAccount;
+    case 2: return online;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -40,10 +43,26 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: exchangeAccount = (java.lang.String)value$; break;
-    case 1: online = (java.lang.Boolean)value$; break;
+    case 0: objectType = (java.lang.Integer)value$; break;
+    case 1: exchangeAccount = (java.lang.String)value$; break;
+    case 2: online = (java.lang.Boolean)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
+  }
+
+  /**
+   * Gets the value of the 'objectType' field.
+   */
+  public java.lang.Integer getObjectType() {
+    return objectType;
+  }
+
+  /**
+   * Sets the value of the 'objectType' field.
+   * @param value the value to set.
+   */
+  public void setObjectType(java.lang.Integer value) {
+    this.objectType = value;
   }
 
   /**
@@ -97,6 +116,7 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<StateUpdate>
     implements org.apache.avro.data.RecordBuilder<StateUpdate> {
 
+    private int objectType;
     private java.lang.String exchangeAccount;
     private boolean online;
 
@@ -108,27 +128,59 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     /** Creates a Builder by copying an existing Builder */
     private Builder(com.cyanspring.avro.generate.base.StateUpdate.Builder other) {
       super(other);
-      if (isValidValue(fields()[0], other.exchangeAccount)) {
-        this.exchangeAccount = data().deepCopy(fields()[0].schema(), other.exchangeAccount);
+      if (isValidValue(fields()[0], other.objectType)) {
+        this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.online)) {
-        this.online = data().deepCopy(fields()[1].schema(), other.online);
+      if (isValidValue(fields()[1], other.exchangeAccount)) {
+        this.exchangeAccount = data().deepCopy(fields()[1].schema(), other.exchangeAccount);
         fieldSetFlags()[1] = true;
+      }
+      if (isValidValue(fields()[2], other.online)) {
+        this.online = data().deepCopy(fields()[2].schema(), other.online);
+        fieldSetFlags()[2] = true;
       }
     }
     
     /** Creates a Builder by copying an existing StateUpdate instance */
     private Builder(com.cyanspring.avro.generate.base.StateUpdate other) {
             super(com.cyanspring.avro.generate.base.StateUpdate.SCHEMA$);
-      if (isValidValue(fields()[0], other.exchangeAccount)) {
-        this.exchangeAccount = data().deepCopy(fields()[0].schema(), other.exchangeAccount);
+      if (isValidValue(fields()[0], other.objectType)) {
+        this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.online)) {
-        this.online = data().deepCopy(fields()[1].schema(), other.online);
+      if (isValidValue(fields()[1], other.exchangeAccount)) {
+        this.exchangeAccount = data().deepCopy(fields()[1].schema(), other.exchangeAccount);
         fieldSetFlags()[1] = true;
       }
+      if (isValidValue(fields()[2], other.online)) {
+        this.online = data().deepCopy(fields()[2].schema(), other.online);
+        fieldSetFlags()[2] = true;
+      }
+    }
+
+    /** Gets the value of the 'objectType' field */
+    public java.lang.Integer getObjectType() {
+      return objectType;
+    }
+    
+    /** Sets the value of the 'objectType' field */
+    public com.cyanspring.avro.generate.base.StateUpdate.Builder setObjectType(int value) {
+      validate(fields()[0], value);
+      this.objectType = value;
+      fieldSetFlags()[0] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'objectType' field has been set */
+    public boolean hasObjectType() {
+      return fieldSetFlags()[0];
+    }
+    
+    /** Clears the value of the 'objectType' field */
+    public com.cyanspring.avro.generate.base.StateUpdate.Builder clearObjectType() {
+      fieldSetFlags()[0] = false;
+      return this;
     }
 
     /** Gets the value of the 'exchangeAccount' field */
@@ -138,21 +190,21 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'exchangeAccount' field */
     public com.cyanspring.avro.generate.base.StateUpdate.Builder setExchangeAccount(java.lang.String value) {
-      validate(fields()[0], value);
+      validate(fields()[1], value);
       this.exchangeAccount = value;
-      fieldSetFlags()[0] = true;
+      fieldSetFlags()[1] = true;
       return this; 
     }
     
     /** Checks whether the 'exchangeAccount' field has been set */
     public boolean hasExchangeAccount() {
-      return fieldSetFlags()[0];
+      return fieldSetFlags()[1];
     }
     
     /** Clears the value of the 'exchangeAccount' field */
     public com.cyanspring.avro.generate.base.StateUpdate.Builder clearExchangeAccount() {
       exchangeAccount = null;
-      fieldSetFlags()[0] = false;
+      fieldSetFlags()[1] = false;
       return this;
     }
 
@@ -163,20 +215,20 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'online' field */
     public com.cyanspring.avro.generate.base.StateUpdate.Builder setOnline(boolean value) {
-      validate(fields()[1], value);
+      validate(fields()[2], value);
       this.online = value;
-      fieldSetFlags()[1] = true;
+      fieldSetFlags()[2] = true;
       return this; 
     }
     
     /** Checks whether the 'online' field has been set */
     public boolean hasOnline() {
-      return fieldSetFlags()[1];
+      return fieldSetFlags()[2];
     }
     
     /** Clears the value of the 'online' field */
     public com.cyanspring.avro.generate.base.StateUpdate.Builder clearOnline() {
-      fieldSetFlags()[1] = false;
+      fieldSetFlags()[2] = false;
       return this;
     }
 
@@ -184,8 +236,9 @@ public class StateUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     public StateUpdate build() {
       try {
         StateUpdate record = new StateUpdate();
-        record.exchangeAccount = fieldSetFlags()[0] ? this.exchangeAccount : (java.lang.String) defaultValue(fields()[0]);
-        record.online = fieldSetFlags()[1] ? this.online : (java.lang.Boolean) defaultValue(fields()[1]);
+        record.objectType = fieldSetFlags()[0] ? this.objectType : (java.lang.Integer) defaultValue(fields()[0]);
+        record.exchangeAccount = fieldSetFlags()[1] ? this.exchangeAccount : (java.lang.String) defaultValue(fields()[1]);
+        record.online = fieldSetFlags()[2] ? this.online : (java.lang.Boolean) defaultValue(fields()[2]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

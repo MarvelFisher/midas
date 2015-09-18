@@ -1,0 +1,15 @@
+{
+  "namespace": "com.cyanspring.avro.generate.market.bean",
+  "type": "record",
+  "name": "UnsubscribeQuote",
+  "fields": [
+    {
+      "name": "objectType",
+      "type": "int"
+    },
+    {
+      "name": "symbols",
+      "type": {"type": "array", "items": "string"}
+    }
+  ]
+}

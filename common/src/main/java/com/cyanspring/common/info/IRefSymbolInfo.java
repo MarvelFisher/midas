@@ -53,7 +53,7 @@ public abstract class IRefSymbolInfo {
 			index = Collections.binarySearch(refSymbolInfo, symbolinfo);
 			if (index >= 0)
 			{
-				refSymbolInfo.remove(symbolinfo);
+				refSymbolInfo.remove(index);
 			}
 		}
 	}

@@ -2,7 +2,9 @@ package com.cyanspring.common.account;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +45,11 @@ public class OpenPosition extends Position implements Cloneable {
 		this.availableQty = availableQty;
 	}
 
-	public double getDetailAvailableQty() {
-
-		if (Default.getSettlementDays() == 0) {
+	public double getDetailAvailableQty(RefData refData) {
+		if (refData != null && refData.getDayTradable() == 1)
 			return getQty();
-		}
+		if (Default.getSettlementDays() == 0)
+			return getQty();
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(TimeUtil.getOnlyDate(getCreated()));

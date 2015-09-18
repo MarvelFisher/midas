@@ -219,8 +219,9 @@ public class StockRefDataManager extends RefDataService {
 		}
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
+		refData.setDayTradable(template.getDayTradable());
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-//		log.info("XML:"+xstream.toXML(refData));
+		log.info("XML:"+xstream.toXML(refData));
 	}
 
 	private void initCategory(RefData refData) {

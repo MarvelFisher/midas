@@ -36,6 +36,11 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.cyanspring.common</groupId>
+			<artifactId>cyanspring-avro</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.cyanspring.event</groupId>
 			<artifactId>cyanspring-event</artifactId>
 			<version>${project.parent.version}</version>

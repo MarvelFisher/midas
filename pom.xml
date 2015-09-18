@@ -12,6 +12,7 @@
 		<module>dependency</module>
 		<module>simulator</module>
 		<module>common</module>
+		<module>avro</module>
 		<module>transport</module>
 		<module>event</module>
 		<module>strategy</module>

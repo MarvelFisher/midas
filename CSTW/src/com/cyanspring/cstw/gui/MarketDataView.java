@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.business.OrderField;
@@ -45,15 +46,15 @@ import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.event.InstrumentSelectionEvent;
 import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.ObjectSelectionEvent;
+import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
 import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 
 public class MarketDataView extends ViewPart implements IAsyncEventListener {
-	private static final Logger log = LoggerFactory
-			.getLogger(MarketDataView.class);
 	
+	private static final Logger log = LoggerFactory.getLogger(MarketDataView.class);	
 	public static final String ID = "com.cyanspring.cstw.gui.MarketDataView"; //$NON-NLS-1$
 	private static final DecimalFormat priceFormat = new DecimalFormat("#0.####");
 	private Composite topComposite;
@@ -246,6 +247,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager().subscribe(SingleInstrumentStrategySelectionEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(QuoteEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(InstrumentSelectionEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(QuoteSymbolSelectEvent.class, this);
 
 	}
 
@@ -406,6 +408,10 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 			
 		Business.getInstance().getEventManager().subscribe(QuoteEvent.class, this.symbol, this);
 		this.symbol = symbol;
+		
+		if(!StringUtils.hasText(server))
+			server = Business.getInstance().getFirstServer();
+		
 		QuoteSubEvent request = new QuoteSubEvent(ID, server, symbol);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(request);
@@ -515,6 +521,11 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 		} else if (e instanceof QuoteEvent) {
 			showQuote(((QuoteEvent)e).getQuote());
+		} else if (e instanceof QuoteSymbolSelectEvent) {
+			QuoteSymbolSelectEvent event = (QuoteSymbolSelectEvent)e;
+			String symbol = event.getSymbol();
+			subscribeMD(symbol, null);
+			setSymbol(symbol);
 		} else {
 			log.error("Unhandled event: " + e.getClass());
 		}

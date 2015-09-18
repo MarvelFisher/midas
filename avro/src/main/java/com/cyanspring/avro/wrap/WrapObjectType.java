@@ -4,31 +4,43 @@ import java.util.HashMap;
 
 import org.apache.avro.Schema;
 
-import com.cyanspring.avro.generate.trade.types.ObjectType;
+import com.cyanspring.avro.generate.base.types.ObjectType;
 
 public enum WrapObjectType {
 
-	OrderUpdate(0, ObjectType.OrderUpdate,
+	StateUpdate(0, ObjectType.StateUpdate,
+			com.cyanspring.avro.generate.base.StateUpdate.SCHEMA$),
+
+	OrderUpdate(1, ObjectType.OrderUpdate,
 			com.cyanspring.avro.generate.trade.bean.OrderUpdate.SCHEMA$),
 
-	NewOrderRequest(1, ObjectType.NewOrderRequest,
+	NewOrderRequest(2, ObjectType.NewOrderRequest,
 			com.cyanspring.avro.generate.trade.bean.NewOrderRequest.SCHEMA$),
 
-	NewOrderReply(2, ObjectType.NewOrderReply,
+	NewOrderReply(3, ObjectType.NewOrderReply,
 			com.cyanspring.avro.generate.trade.bean.NewOrderReply.SCHEMA$),
 
-	AmendOrderRequest(3, ObjectType.AmendOrderRequest,
+	AmendOrderRequest(4, ObjectType.AmendOrderRequest,
 			com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$),
 
-	AmendOrderReply(4, ObjectType.AmendOrderReply,
+	AmendOrderReply(5, ObjectType.AmendOrderReply,
 			com.cyanspring.avro.generate.trade.bean.AmendOrderReply.SCHEMA$),
 
-	CancelOrderRequest(5, ObjectType.CancelOrderRequest,
+	CancelOrderRequest(6, ObjectType.CancelOrderRequest,
 			com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.SCHEMA$),
 
-	CancelOrderReply(6, ObjectType.CancelOrderReply,
+	CancelOrderReply(7, ObjectType.CancelOrderReply,
 			com.cyanspring.avro.generate.trade.bean.CancelOrderReply.SCHEMA$),
 
+	Quote(8, ObjectType.Quote,
+			com.cyanspring.avro.generate.market.bean.OrderUpdate.SCHEMA$),
+
+	SubscribeQuote(9, ObjectType.SubscribeQuote,
+			com.cyanspring.avro.generate.market.bean.SubscribeQuote.SCHEMA$),
+
+	UnsubscribeQuote(10, ObjectType.UnsubscribeQuote,
+			com.cyanspring.avro.generate.market.bean.UnsubscribeQuote.SCHEMA$), 
+			
 	;
 
 	private int code;

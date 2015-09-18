@@ -18,4 +18,10 @@ public enum ExchangeOrderType {
 		
 		return LIMIT;
 	}
+	
+	public static OrderType toOrderType(ExchangeOrderType orderType) {
+		if (orderType == ExchangeOrderType.MARKET)
+			return OrderType.Market;
+		return OrderType.Limit;		
+	}
 }

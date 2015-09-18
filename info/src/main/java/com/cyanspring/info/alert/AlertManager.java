@@ -231,7 +231,7 @@ public class AlertManager extends Compute {
                         null, parentOrder.getQuantity(), parentOrder.getPrice(),
                         Datetime, tradeMessage);
             }
-			TA.setCommdity(refdata.getCommodity());
+			TA.setCommodity(refdata.getCommodity());
             String keyValue = parentOrder.getSymbol() + "," + strAvgPx + ","
                     + strQty + ","
                     + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD");
@@ -343,7 +343,7 @@ public class AlertManager extends Compute {
 						null, execution.getQuantity(), execution.getPrice(),
 						Datetime, tradeMessage);
 			}
-			TA.setCommdity(refdata.getCommodity());
+			TA.setCommodity(refdata.getCommodity());
 			String keyValue = execution.getSymbol() + "," + strPrice + ","
 					+ strQty + ","
 					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");

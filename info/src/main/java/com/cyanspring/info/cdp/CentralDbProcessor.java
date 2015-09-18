@@ -644,6 +644,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		log.info("Update refData start");
 		List<RefData> refList = event.getRefDataList();
+		String symbol, indexSessionType, key;
 		if (event.getAction() == Action.ADD || event.getAction() == Action.MOD)
 		{
 			int nCount = getRefSymbolInfo().setByRefData(refList);
@@ -655,14 +656,38 @@ public class CentralDbProcessor implements IPlugin
 			{
 				if (refdata.getExchange() == null) 
 					continue;
-				SymbolInfo info = getRefSymbolInfo().getbySymbol(refdata.getSymbol());
+				symbol = refdata.getSymbol();
+				indexSessionType = refdata.getIndexSessionType();
+				SymbolInfo info = getRefSymbolInfo().getbySymbol(symbol);
 				if (info != null)
 					info.updateByRefData(refdata);
-				int chefNum = getChefNumber(refdata.getSymbol());
+				int chefNum = getChefNumber(symbol);
 				SymbolChef chef = SymbolChefList.get(chefNum);
-				chef.createSymbol(refdata, this);
-				SymbolData data = chef.getSymbolData(refdata.getSymbol());
-				data.setSessionIndex(refdata.getIndexSessionType());
+				if (chef.createSymbol(refdata, this))
+					log.debug("Add symbol " + symbol);
+				SymbolData data = chef.getSymbolData(symbol);
+				data.setSessionIndex(indexSessionType);
+				if (IndexSessionType.EXCHANGE.name().equals(indexSessionType))
+				{
+					key = info.getExchange();
+				}
+				else if (IndexSessionType.SPOT.name().equals(indexSessionType))
+				{
+					key = info.getCategory();
+				}
+				else if (IndexSessionType.SETTLEMENT.name().equals(indexSessionType))
+				{
+					key = info.getCode();
+				}
+				else 
+				{
+					continue;
+				}
+				MarketSessionData sesdata = sessionMap.get(key);
+				if (sesdata != null)
+				{
+					data.setSessionType(sesdata.getSessionType());
+				}
 			}
 		}
 		else if (event.getAction() == Action.DEL)

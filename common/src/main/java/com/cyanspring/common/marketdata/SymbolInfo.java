@@ -99,7 +99,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		setTWTradingUnit(refdata.getTWTradingUnit());
 		setSettlementDate(refdata.getSettlementDate());
 		setCommissionFee(refdata.getCommissionFee());
-		setNumeratorDP(refdata.getNumberatorDp());
+		setNumeratorDP(refdata.getNumeratorDP());
 		setDecimalPoint(refdata.getDeciamlPoint());
 		setMinimalCF(refdata.getMinimalCommissionFee());
 		setPricePerUnit(refdata.getPricePerUnit());

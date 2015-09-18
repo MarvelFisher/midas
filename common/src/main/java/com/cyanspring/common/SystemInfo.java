@@ -15,6 +15,7 @@ public class SystemInfo {
 	private String category = "EB";
 	private String id = "CSTW";
 	private String url = "nio://localhost:61616";
+	private String downStream = "downStream";
 	
 	public String getId() {
 		return id;
@@ -38,9 +39,19 @@ public class SystemInfo {
 	public String getUrl() {
 		return url;
 	}
+	
 	public void setUrl(String url) {
 		this.url = url;
 	}
+	
+	public String getDownStream() {
+		return downStream;
+	}
+	
+	public void setDownStream(String downStream) {
+		this.downStream = downStream;
+	}
+	
 	@Override
 	public String toString() {
 		return env + ":" + category + ":" + id + ":" + url;
