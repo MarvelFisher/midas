@@ -18,6 +18,7 @@ public class FDTFields {
 	public final static int WindHeartBeat = 20024;
 	public final static int WindConnected = 20025;
 	public final static int WindCodeTableResult = 2026;
+	public final static int SnapShotEnds = 2027;
 
 
 	public final static int ArrayOfString = 101;
