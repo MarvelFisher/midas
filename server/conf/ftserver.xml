@@ -1,0 +1,137 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+
+	<import resource="ft/*.xml" />
+	<import resource="ft/marketsession/*.xml" />
+<!-- 	<import resource="common/business.xml" /> -->
+	<import resource="common/strategy.xml" />
+	<import resource="common/centralDb.xml" />
+	<import resource="common/persistence.xml" />
+	<import resource="classpath*:conf/common.xml" />
+
+	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>Test</value>
+		</property>
+		<property name="category">
+			<value>EB</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+	
+	<bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>GLOBAL</value>
+		</property>
+		<property name="category">
+			<value>FC-MQ</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="nio://0.0.0.0:61626"></property>
+	</bean>
+	
+	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="nio://10.0.0.51:60006"></property>
+	</bean>
+
+	<bean id="dataBaseUrl" class="java.lang.String">
+		<constructor-arg
+			value="jdbc:mysql://125.227.191.247:3306/LTS_China?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+	</bean>
+	<bean id="dataBaseUser" class="java.lang.String">
+		<constructor-arg value="tqt001" />
+	</bean>
+	<bean id="dataBasePwd" class="java.lang.String">
+		<constructor-arg value="tqt001" />
+	</bean>
+
+	<bean id="dailyExec" class="java.lang.String">
+		<constructor-arg value="16:45:00" />
+	</bean>
+
+	<!-- MarketDataManager setting -->
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
+		<constructor-arg>
+			<list>
+				<ref bean="windAdaptorFCI" />
+				<ref bean="windAdaptorFCC" />
+			</list>
+		</constructor-arg>
+		<property name="quoteLogIsOpen" value="true"/>
+		<property name="quoteExtendEventIsSend" value="true"/>
+		<property name="quoteExtendSegmentSize" value="300"/>
+		<property name="preSubscriptionList">
+			<ref bean="preSubscriptionList" />
+		</property>
+		<property name="sessionMonitor">
+			<map>
+				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+				<entry key="PREMARKET" value="0" />
+				<entry key="CLOSE" value="0" />
+			</map>
+		</property>
+		<property name="quoteChecker" ref="quoteChecker"/>
+		<property name="quoteSaver" ref="quoteSaver"/>
+		<property name="quoteCleaner" ref="quoteCleaner"/>
+		<property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
+        <property name="broadcastQuote" value="false"/>
+	</bean>
+	<!-- WindAdaptor setting (Setting can be marked if not used) -->
+
+	<bean id="windAdaptorFCI"
+		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+		<property name="showGui" value="true"></property>
+		<property name="gatewayIp" value="10.0.0.32"></property>
+		<property name="gatewayPort" value="10048"></property>
+		<property name="marketDataLog" value="false"></property>
+		<property name="tradeDateCheckIsOpen" value="true"></property>
+		<property name="closeOverTimeControlIsOpen" value="true"></property>
+		<property name="msgPack" value="true"></property>
+		<property name="isSubTrans" value="false"></property>
+		<property name="marketsList">
+			<list>
+				<value>SH</value>
+				<value>SZ</value>
+				<value>CF</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="windAdaptorFCC"
+		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+		<property name="showGui" value="true"></property>
+		<property name="gatewayIp" value="10.0.0.20"></property>
+		<property name="gatewayPort" value="10046"></property>
+		<property name="marketDataLog" value="false"></property>
+		<property name="tradeDateCheckIsOpen" value="true"></property>
+		<property name="closeOverTimeControlIsOpen" value="true"></property>
+		<property name="msgPack" value="true"></property>
+		<property name="isSubTrans" value="false"></property>
+		<property name="marketsList">
+			<list>
+				<value>SHF</value>
+				<value>DCE</value>
+				<value>CZC</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Derby setting -->
+	<bean id="derbyPort" class="java.lang.String">
+		<constructor-arg value="1528" />
+	</bean>
+
+</beans>

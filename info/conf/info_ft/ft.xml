@@ -1,0 +1,163 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+	<bean id="infoServer" class="com.cyanspring.info.InfoServer">
+		<property name = "plugins">
+	        <list>
+	        	<ref bean="InfoGateway" />
+            	<ref bean="centralDbProcessor"/>
+            	<ref bean="userManager"/>
+            	<ref bean="ParseManager"/>
+	        </list>
+		</property>
+	</bean>
+	<bean id="InfoGateway" class="com.cyanspring.info.InfoGateway">
+		<property name="createThreadCount" value="16" />
+		<property name="Computes">
+			<list>
+				<!-- <ref bean="newsManager"/> -->
+				<!--<ref bean="premiumFollowManager" />-->
+				<ref bean="alertManager" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="userManager" class="com.cyanspring.info.user.UserManager">
+        <property name="timerinterval"   value="300000"/>
+	</bean>
+	
+	<bean id="useLocalMdReceiver" class="java.lang.Boolean">
+		<constructor-arg value="true"/>
+	</bean>
+	
+	<bean id="centralDbProcessor" class="com.cyanspring.info.cdp.CentralDbProcessor">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" ref="jdbcUrl"/>
+		<property name="cpds" ref="cpds"/>
+		<property name="serverMarket" value="FT"/>
+		<property name="nChefCount" value="5"/>
+		<property name="retrieveTime" value="1900"/>
+		<property name="preSubscriptionList">
+			<list>
+	            <value>IFC1</value>
+	            <value>IFC2</value>
+				<value>IHC1</value>
+				<value>IHC2</value>
+				<value>ICC1</value>
+				<value>ICC2</value>
+	            <value>CU</value>
+				<value>M</value>
+				<value>MA</value>
+	            <value>RB</value>
+				<value>L</value>
+				<value>SR</value>
+	        </list>    
+		</property>
+		<property name="historicalDataCount">
+			<map>
+				<entry key="1" value="360" />
+				<entry key="R" value="80" />
+				<entry key="A" value="210" />
+				<entry key="Q" value="150" />
+				<entry key="H" value="150" />
+				<entry key="6" value="80" />
+				<entry key="T" value="60" />
+				<entry key="D" value="100" />
+				<entry key="W" value="60" />
+				<entry key="M" value="80" />
+			</map>
+		</property>
+		<property name="historicalDataPeriod">
+			<map>
+				<entry key="1" value="10" />
+				<entry key="R" value="10" />
+				<entry key="A" value="21" />
+				<entry key="Q" value="21" />
+				<entry key="H" value="30" />
+				<entry key="6" value="30" />
+				<entry key="T" value="60" />
+				<entry key="D" value="120" />
+				<entry key="W" value="400" />
+				<entry key="M" value="2400" />
+			</map>
+		</property>
+		<property name="SQLDelayInterval">
+			<value>300000</value>
+		</property>
+		<property name="timeInterval">
+			<value>60000</value>
+		</property>
+		<property name="checkSQLInterval">
+			<value>600000</value>
+		</property>
+	</bean>
+	
+	<bean id="cpds" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" ref="jdbcUrl" />
+<!-- 		<property name="user" ref="dataBaseUser"/> -->
+<!-- 		<property name="password" ref="dataBasePwd"/> -->
+
+		<property name="initialPoolSize" value="3" />
+		<property name="maxPoolSize" value="10" />
+		<property name="maxIdleTime" value="600"/>
+		<property name="minPoolSize" value="2" />
+				
+		<property name="acquireRetryAttempts" value="30" />
+		<property name="numHelperThreads" value="3" />
+        <property name="testConnectionOnCheckin" value="false"/>
+        <property name="testConnectionOnCheckout" value="true"/>
+        <property name="preferredTestQuery" value="SELECT 1"/>
+        <property name="automaticTestTable" value="Test"/>
+        <property name="idleConnectionTestPeriod" value="60"/>
+	</bean>
+	
+	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
+	</bean>
+	
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportService"/>
+	    </constructor-arg>
+		<property name="embedBroker" value="true"></property>
+	</bean>
+	
+	<bean id="eventManagerMD" class="com.cyanspring.event.RemoteEventManager">
+	    <constructor-arg>
+	    	<ref bean="transportServiceMD"/>
+	    </constructor-arg>
+		<property name="embedBroker" value="false"></property>
+	</bean>
+	
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
+		<property name="refDataFile">
+			<value>refdata/refData_fc.xml</value>
+		</property>
+	</bean>
+
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>IFC1</value>
+				<value>IFC2</value>
+				<value>IFC3</value>
+				<value>IFC4</value>
+				<value>IHC1</value>
+				<value>IHC2</value>
+				<value>IHC3</value>
+				<value>IHC4</value>
+				<value>ICC1</value>
+				<value>ICC2</value>
+				<value>ICC3</value>
+				<value>ICC4</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+</beans>
