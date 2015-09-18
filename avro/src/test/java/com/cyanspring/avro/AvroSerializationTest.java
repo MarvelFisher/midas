@@ -27,12 +27,14 @@ public class AvroSerializationTest {
 
 		String exchangeAccount = "99995555";
 		
+		String orderID = "A0001";
 		String clOrderId = "X0001";
 		
 		ChildOrder childOrder = getChildOrder();
 
 		NewOrderRequest newOrderRequest = NewOrderRequest
 				.newBuilder()
+				.setOrderId(orderID)
 				.setExchangeAccount(exchangeAccount)
 				.setObjectType(WrapObjectType.NewOrderRequest.getCode())
 				.setSymbol(childOrder.getSymbol())
