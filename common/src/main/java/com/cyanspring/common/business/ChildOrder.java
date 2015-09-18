@@ -83,6 +83,14 @@ public class ChildOrder extends Order {
 		put(OrderField.UNSOLICITED.value(), unsolicited);
 	}
 	
+	public String getExchangeOrderId() {
+		return get(String.class, OrderField.EXCHANGE_ORDER_ID.value());
+	}
+
+	public void setExchangeOrderId(String id) {
+		put(OrderField.EXCHANGE_ORDER_ID.value(), id);
+	}
+	
 	@Override
 	protected String fieldsToString() {
 		return super.fieldsToString() + ", " + getType() + ", " + getParentOrderId() + ", " + getStrategyId() + ", " + getClOrderId();

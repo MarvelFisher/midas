@@ -20,6 +20,7 @@ import com.cyanspring.avro.wrap.WrapObjectType;
 import com.cyanspring.avro.wrap.WrapOrdStatus;
 import com.cyanspring.avro.wrap.WrapOrderSide;
 import com.cyanspring.avro.wrap.WrapOrderType;
+import com.cyanspring.avro.wrap.WrapTimeInForce;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.OrderField;
@@ -31,6 +32,7 @@ import com.cyanspring.common.transport.IObjectListener;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.type.TimeInForce;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
@@ -107,17 +109,19 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
-			log.info("New order: " + order.getClOrderId());
-			//  .setTimeInForce(value) ?
-			orders.put(order.getClOrderId(), order);
+			log.info("New order: " + order.getId());
+			String txId = IdGenerator.getInstance().getNextID();
+			orders.put(txId, order);
 			int side = WrapOrderSide.valueOf(order.getSide()).getCode();
 			int type = WrapOrderType.valueOf(ExchangeOrderType.toOrderType(order.getType())).getCode();
-			String txId = IdGenerator.getInstance().getNextID();
-			NewOrderRequest request = NewOrderRequest.newBuilder().setClOrderId(order.getClOrderId())
+			NewOrderRequest request = NewOrderRequest.newBuilder().setOrderId(order.getId())
+					.setClOrderId(order.getClOrderId())
 					.setCreated(TimeUtil.formatDate(order.getCreated(), "yyyy-MM-dd HH:mm:ss.SSS"))
 					.setExchangeAccount(exchangeAccount).setOrderSide(side).setOrderType(type)
 					.setPrice(order.getPrice()).setQuantity(order.getQuantity()).setSymbol(order.getSymbol())
-					.setObjectType(WrapObjectType.NewOrderRequest.getCode()).setTxId(txId).build();
+					.setObjectType(WrapObjectType.NewOrderRequest.getCode()).setTxId(txId)
+					.setTimeInForce(WrapTimeInForce.valueOf(order.get(TimeInForce.class, OrderField.TIF.value())).getCode())
+					.build();
 			downStreamEventSender.sendRemoteEvent(request);
 			order.setOrdStatus(OrdStatus.PENDING_NEW);
 		}
@@ -125,11 +129,12 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		@Override
 		public void amendOrder(ChildOrder order, Map<String, Object> fields)
 				throws DownStreamException {
-			log.info("Amend order: " + order.getClOrderId());
-			ChildOrder local = orders.get(order.getClOrderId());
+			log.info("Amend order: " + order.getId());
+			ChildOrder local = orders.remove(order.getExchangeOrderId());
 			if(!checkOrderStatus(order, local))
 				return;
 			String txId = IdGenerator.getInstance().getNextID();
+			orders.put(txId, local);
 			Builder request = AmendOrderRequest.newBuilder()
 					.setObjectType(WrapObjectType.AmendOrderRequest.getCode()).setOrderId(order.getClOrderId());
 			Double qty = (Double) fields.get(OrderField.QUANTITY.value());		
@@ -145,11 +150,12 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
-			log.info("Cancel order: " + order.getClOrderId());
-			ChildOrder local = orders.get(order.getClOrderId());
+			log.info("Cancel order: " + order.getId());
+			ChildOrder local = orders.remove(order.getExchangeOrderId());
 			if(!checkOrderStatus(order, local))
 				return;
 			String txId = IdGenerator.getInstance().getNextID();
+			orders.put(txId, local);
 			CancelOrderRequest request = CancelOrderRequest.newBuilder()
 					.setObjectType(WrapObjectType.CancelOrderRequest.getCode()).setOrderId(order.getClOrderId())
 					.setTxId(txId).build();
@@ -174,53 +180,69 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 
 	@Override
 	public void onMessage(Object obj) {
-		AvroSerializableObject deObj = (AvroSerializableObject)obj;
-		WrapObjectType type = deObj.getObjectType();
-		if (type.equals(WrapObjectType.NewOrderReply)){
-			onNewOrderReply((NewOrderReply)deObj.getRecord());
-		} else if (type.equals(WrapObjectType.AmendOrderReply)) {
-			onAmendOrderReply((AmendOrderReply)deObj.getRecord());
-		} else if (type.equals(WrapObjectType.CancelOrderReply)) {
-			onCancelOrderReply((CancelOrderReply)deObj.getRecord());
-		} else if (type.equals(WrapObjectType.OrderUpdate)) {
-			onOrderUpdate((OrderUpdate)deObj.getRecord());
-		} else {
-			log.error("Unhandle event type: " + type.toString());
+		try {
+			AvroSerializableObject deObj = (AvroSerializableObject)obj;
+			WrapObjectType type = deObj.getObjectType();
+			if (type.equals(WrapObjectType.NewOrderReply)){
+				onNewOrderReply((NewOrderReply)deObj.getRecord());
+			} else if (type.equals(WrapObjectType.AmendOrderReply)) {
+				onAmendOrderReply((AmendOrderReply)deObj.getRecord());
+			} else if (type.equals(WrapObjectType.CancelOrderReply)) {
+				onCancelOrderReply((CancelOrderReply)deObj.getRecord());
+			} else if (type.equals(WrapObjectType.OrderUpdate)) {
+				onOrderUpdate((OrderUpdate)deObj.getRecord());
+			} else {
+				log.error("Unhandle event type: " + type.toString());
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 	
 	private void onNewOrderReply(NewOrderReply reply) {
-		ChildOrder order = orders.get(reply.getOrderId());
+		ChildOrder order = orders.remove(reply.getTxId());
 		if (reply.getResult()) {
+			// need set exchange ID;
 			listener.onOrder(ExecType.NEW, order, null, reply.getMessage());
 		} else {
 			log.info("order: " + reply.getOrderId() + ", msg" + reply.getMessage());
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
 		}
+		orders.put(order.getId(), order); // not get exchange order id yet
 	}
 	
 	private void onAmendOrderReply(AmendOrderReply reply) {
-		ChildOrder order = orders.get(reply.getOrderId());
+		ChildOrder order = orders.remove(reply.getTxId());
 		if (reply.getResult()) {
 			listener.onOrder(ExecType.REPLACE, order, null, reply.getMessage());
 		} else {
 			log.info("order: " + reply.getOrderId() + ", msg" + reply.getMessage());
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
 		}
+		orders.put(order.getExchangeOrderId(), order);
 	}
 	
 	private void onCancelOrderReply(CancelOrderReply reply) {
-		ChildOrder order = orders.get(reply.getOrderId());
+		ChildOrder order = orders.remove(reply.getTxId());
 		if (reply.getResult()) {
 			listener.onOrder(ExecType.CANCELED, order, null, reply.getMessage());
 		} else {
 			log.info("order: " + reply.getOrderId() + ", msg" + reply.getMessage());
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
+			orders.put(order.getExchangeOrderId(), order);
 		}
 	}
 	
-	private void onOrderUpdate(OrderUpdate update) {
-		ChildOrder order = orders.get(update.getClOrderId());
+	private void onOrderUpdate(OrderUpdate update) throws Exception {
+		ChildOrder order = orders.get(update.getExchangeOrderId());
+		if (order == null){
+			order = orders.remove(update.getOrderId());
+			if (order == null)
+				throw new Exception("Order not found");
+			orders.put(update.getExchangeOrderId(), order);
+		}
+		if (order.getExchangeOrderId() == null)
+			order.setExchangeOrderId(update.getExchangeOrderId());
 		ExecType type = WrapExecType.valueOf(update.getExecType()).getCommonExecType();
 		OrdStatus status = WrapOrdStatus.valueOf(update.getOrdStatus()).getCommonOrdStatus();
 		double comQty = update.getQuantity() - order.getCumQty();
