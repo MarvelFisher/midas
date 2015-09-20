@@ -63,12 +63,6 @@
     <Compile Include="Generate\trade\types\TimeInForce.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{3ECABBC2-BF44-4AA9-A0F1-6306473C8CAA}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

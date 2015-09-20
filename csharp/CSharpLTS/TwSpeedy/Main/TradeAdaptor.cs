@@ -8,6 +8,8 @@ using System.Collections.Concurrent;
 using OrderConnection;
 using OrderMessage;
 using TwSpeedy.Utils;
+using Common.Utils;
+using com.cyanspring.avro.generate.trade.types;
 
 namespace Adaptor.TwSpeedy.Main
 {
@@ -17,33 +19,44 @@ namespace Adaptor.TwSpeedy.Main
         private bool state;
         private ConcurrentDictionary<string, Order> orders = new ConcurrentDictionary<string, Order>();
         private ConcurrentDictionary<long, Order> pendings = new ConcurrentDictionary<long, Order>();
-        private ConcurrentDictionary<string, IExecutionReportMessage> ers = new ConcurrentDictionary<string, IExecutionReportMessage>();
 
         private ConcurrentDictionary<string, Order> recoverOrders = new ConcurrentDictionary<string, Order>();
         private TaifexConnection exchangeConnection;
         private string localIP;
         private bool recovering;
+        private Persistence persistence;
+
         public string user { get; set; } = "haida";
         public string account { get; set; } = "1365651";
         public string password { get; set; } = "123456";
         public string subAccount { get; set; } = "1365651";
         public string brokerID { get; set; } = "F018000";
         public string memberID { get; set; } = "F018";
+        public OrderMessage.MarketEnum market { get; set; } = MarketEnum.mFutures;
         public string host { get; set; } = "Speedy150.masterlink.com.tw";
         public int port { get; set; } = 23456;
 
 
         public void init()
         {
+            recovering = false;
+            state = false;
             localIP = Utils.getLocalIPAddress();
+            persistence = new Persistence();
+            persistence.init();
 
-            TaifexConnection exchangeConnection = new TaifexConnection();
+            exchangeConnection = new TaifexConnection();
             exchangeConnection.OnConnected += new OrderConnection.ITaifexConnectionEvents_OnConnectedEventHandler(onExchangeConnected);
             exchangeConnection.OnDisconnected += new OrderConnection.ITaifexConnectionEvents_OnDisconnectedEventHandler(onExchangeDisconnected);
             exchangeConnection.OnExecutionReport += new OrderConnection.ITaifexConnectionEvents_OnExecutionReportEventHandler(onExecutionReport);
             exchangeConnection.OnLogonReply += new OrderConnection.ITaifexConnectionEvents_OnLogonReplyEventHandler(onLogonReply);
             exchangeConnection.OnRecoverFinished += new OrderConnection.ITaifexConnectionEvents_OnRecoverFinishedEventHandler(onRecoverFinished);
+            connect();
+        }
 
+        public void uninit()
+        {
+            persistence.uninit();
         }
 
         private void connect()
@@ -72,67 +85,6 @@ namespace Adaptor.TwSpeedy.Main
             System.Diagnostics.Debug.WriteLine("====================Disconnected====================");
         }
 
-        void onExecutionReport(OrderMessage.IExecutionReportMessage msg, OrderConnection.ExecDupEnum possDup)
-        {
-            Utils.printExecutionReport(msg, possDup);
-            if(recovering)
-            {
-                // TODO
-            } else
-            {
-                processExecutionReport(msg, possDup);
-            }
-        }
-
-        void processExecutionReport(OrderMessage.IExecutionReportMessage msg, OrderConnection.ExecDupEnum possDup)
-        {
-            if(possDup == OrderConnection.ExecDupEnum.edNewExecution)
-            {
-                ers.TryAdd(msg.OrderID, msg);
-
-                Order existingOrder;
-                if(null != msg.OrderID && msg.OrderID != "")
-                {
-                    if(orders.TryGetValue(msg.OrderID, out existingOrder))
-                    {
-                        updateOrder(existingOrder, msg);
-                    }
-                    else if (msg.NID != 0 && pendings.TryRemove(msg.NID, out existingOrder))
-                    {
-                        updateOrder(existingOrder, msg);
-                        orders[msg.OrderID] = existingOrder;
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine("Cant find corresponding order in cache");
-                    }
-
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("ExecutionReport OrderId is null or empty");
-                }
-            }
-        }
-
-        private void onOrder(Order order)
-        {
-            if (this.listener != null)
-                this.listener.onOrder(order);
-        }
-
-        private void updateOrder(Order order, IExecutionReportMessage er)
-        {
-            //TODO
-            order.exchangeOrderId = er.OrderID;
-            switch(er.ExecType)
-            {
-                case ExecTypeEnum.etCanceled:
-
-                    break;
-            }
-        }
-
         void onLogonReply(string ReplyString, OrderConnection.LogonResultEnum LogonResult, int ConnectionID)
         {
             if (LogonResult == OrderConnection.LogonResultEnum.lrFailed)
@@ -151,7 +103,109 @@ namespace Adaptor.TwSpeedy.Main
         {
             //回補
             System.Diagnostics.Debug.WriteLine("====================Recovery Done====================");
-            return;
+            recovering = false;
+            state = true;
+            if (null != this.listener)
+                this.listener.onState(state);
+        }
+
+        void onExecutionReport(OrderMessage.IExecutionReportMessage msg, OrderConnection.ExecDupEnum possDup)
+        {
+            Utils.printExecutionReport(msg, possDup);
+            Order existingOrder;
+            if (null != msg.OrderID && msg.OrderID != "")
+            {
+                if(this.recovering) // during recovery there won't be an order in the cache
+                {
+                    Order order = new Order(msg.Symbol, "unknown", msg.Price, msg.OrderQty,
+                        FieldConverter.convert(msg.Side), FieldConverter.convert(msg.OrderType));
+
+                    if (updateOrder(order, msg))
+                    {
+                        orders[order.exchangeOrderId] = order;
+                        PersistItem item = persistence.getItem(order.exchangeOrderId);
+                        if (null == item) // log error here !!!
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error: Cant find order in peristence: " + order.exchangeOrderId);
+                            return;
+                        }
+                        // This is the only reason we need persistence!
+                        order.symbol = item.symbol;
+                        order.orderId = item.orderId;
+
+                        System.Diagnostics.Debug.WriteLine("Recovery add order: " + order);
+
+
+                    }
+                }
+                else
+                {
+                    if (orders.TryGetValue(msg.OrderID, out existingOrder))
+                    {
+                        if (updateOrder(existingOrder, msg))
+                        {
+                            persistence.save(existingOrder);
+                            this.onOrder(existingOrder);
+                        }
+                    }
+                    else if (msg.NID != 0 && pendings.TryRemove(msg.NID, out existingOrder))
+                    {
+                        if (updateOrder(existingOrder, msg))
+                        {
+                            orders[msg.OrderID] = existingOrder;
+                            persistence.save(existingOrder);
+                            this.onOrder(existingOrder);
+                        }
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Cant find corresponding order in cache");
+                    }
+
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("ExecutionReport OrderId is null or empty");
+            }
+        }
+
+        private bool updateOrder(Order order, IExecutionReportMessage er)
+        {
+            // stupid protocol...but this is what the API sends...
+            if(er.ExecType == ExecTypeEnum.etPartiallyFilled ||
+                er.ExecType == ExecTypeEnum.etFilled)
+            {
+                order.avgPx = (order.avgPx * order.cumQty + er.OrderQty * er.Price) / (order.cumQty + er.OrderQty);
+                order.cumQty += er.OrderQty;
+            }
+            else if(er.ExecType == ExecTypeEnum.etReplaced)
+            {
+                if (!PriceUtils.isZero(er.OrderQty))
+                    order.quantity = er.OrderQty;
+
+                if (!PriceUtils.isZero(er.Price))
+                    order.price = er.Price;
+            }
+
+            ExecType? execType = FieldConverter.convert(er.ExecType, order);
+            OrdStatus? ordStatus = FieldConverter.convert(er.OrderStatus, order);
+
+            if(null != execType && null != ordStatus)
+            {
+                order.exchangeOrderId = er.OrderID;
+                order.ordStatus = ordStatus??order.ordStatus;
+                order.execType = execType??order.execType;
+                order.lastMsg = er.Text;
+                return true;
+            }
+            return false;
+        }
+
+        private void onOrder(Order order)
+        {
+            if (this.listener != null)
+                this.listener.onOrder(order);
         }
 
         public void addListener(IDownStreamListener listener)
@@ -169,42 +223,20 @@ namespace Adaptor.TwSpeedy.Main
 
         public void newOrder(Order order)
         {
+            if (order.orderId == null)
+                throw new DownStreamException("Order id can't be null");
+
             OrderMessage.NewOrderMessage newOrderMsg = new OrderMessage.NewOrderMessage();
             newOrderMsg.AE = user;
             newOrderMsg.Account = account;
             newOrderMsg.BrokerID = brokerID;
             newOrderMsg.Symbol = order.symbol;
 
-            // TODO
-            if(order.orderType == 0)
-            {
-                newOrderMsg.OrderType = OrderMessage.OrderTypeEnum.otMarket;
-            }
-            else if (order.orderType == 1)
-            {
-                newOrderMsg.OrderType = OrderMessage.OrderTypeEnum.otLimit;
-            } else
-            {
-                throw new DownStreamException("Unsupported order type: " + order.orderType);
-            }
-
-            // TODO
-            if (order.orderSide == 0)
-            {
-                newOrderMsg.Side = OrderMessage.SideEnum.sBuy;
-            }
-            else if (order.orderSide == 1)
-            {
-                newOrderMsg.Side = OrderMessage.SideEnum.sSell;
-            }
-            else
-            {
-                throw new DownStreamException("Unsupported order side: " + order.orderSide);
-            }
-
+            newOrderMsg.OrderType = FieldConverter.convert(order.orderType);
+            newOrderMsg.Side = FieldConverter.convert(order.orderSide);
             newOrderMsg.Price = order.price;
             newOrderMsg.OrderQty = (int)order.quantity;
-            newOrderMsg.Market = OrderMessage.MarketEnum.mFutures;
+            newOrderMsg.Market = this.market;
             //TO DO
             newOrderMsg.TimeInForce = OrderMessage.TimeInForceEnum.tifROD;
             newOrderMsg.Data = formatData(newOrderMsg.OrderQty);
@@ -228,12 +260,22 @@ namespace Adaptor.TwSpeedy.Main
                 throw new DownStreamException("Amend order not found: " + exchangeOrderId);
             }
 
-            if(qty != 0 && qty > order.quantity)
+            if (PriceUtils.EqualGreaterThan(qty, order.quantity))
             {
                 throw new DownStreamException("Can't amend quantity up: " + exchangeOrderId);
             }
 
-            if(price == order.price && qty == order.quantity)
+            if (PriceUtils.EqualLessThan(qty, order.cumQty))
+            {
+                throw new DownStreamException("Can't amend quantity to equal or less than filled quantity: " + exchangeOrderId);
+            }
+
+            if (!PriceUtils.Equal(price, order.price) && !PriceUtils.Equal(qty, order.quantity))
+            {
+                throw new DownStreamException("Can't amend both price and quantity: " + exchangeOrderId);
+            }
+
+            if (price == order.price && qty == order.quantity)
             {
                 throw new DownStreamException("Can't amend price and qty to same value: " + exchangeOrderId);
             }
@@ -244,11 +286,19 @@ namespace Adaptor.TwSpeedy.Main
             replaceOrderMessage.BrokerID = brokerID;
             replaceOrderMessage.Symbol = order.symbol;
             replaceOrderMessage.OrderID = order.exchangeOrderId;
-            replaceOrderMessage.Side = XXX;
-            replaceOrderMessage.OrderQty = (int)qty;
+            replaceOrderMessage.Side = FieldConverter.convert(order.orderSide);
+            if(!PriceUtils.Equal(price, order.price))
+            {
+                replaceOrderMessage.Price = price;
+            }
+
+            if(!PriceUtils.Equal(qty, order.quantity))
+            {
+                replaceOrderMessage.OrderQty = (int)qty;
+            }
             replaceOrderMessage.Data = formatData(replaceOrderMessage.OrderQty);
 
-            replaceOrderMessage.NID = exchangeConnection.GenerateUniqueID(xxx.Market, OrderMessage.MessageTypeEnum.mtReplace);
+            replaceOrderMessage.NID = exchangeConnection.GenerateUniqueID(this.market, OrderMessage.MessageTypeEnum.mtReplace);
             exchangeConnection.ReplaceOrder(replaceOrderMessage);
         }
 
@@ -257,7 +307,7 @@ namespace Adaptor.TwSpeedy.Main
             Order order;
             if (!orders.TryGetValue(exchangeOrderId, out order))
             {
-                throw new DownStreamException("Amend order not found: " + exchangeOrderId);
+                throw new DownStreamException("Cancel order not found: " + exchangeOrderId);
             }
 
             OrderMessage.CancelOrderMessage cancelOrderMessage = new OrderMessage.CancelOrderMessage();
@@ -266,10 +316,10 @@ namespace Adaptor.TwSpeedy.Main
             cancelOrderMessage.BrokerID = brokerID;
             cancelOrderMessage.Symbol = order.symbol;
             cancelOrderMessage.OrderID = order.exchangeOrderId;
-            cancelOrderMessage.Side = XXX;
+            cancelOrderMessage.Side = FieldConverter.convert(order.orderSide);
             cancelOrderMessage.Data = formatData((int)order.quantity);
 
-            cancelOrderMessage.NID = exchangeConnection.GenerateUniqueID(xxx.Market, OrderMessage.MessageTypeEnum.mtCancel);
+            cancelOrderMessage.NID = exchangeConnection.GenerateUniqueID(this.market, OrderMessage.MessageTypeEnum.mtCancel);
             exchangeConnection.CancelOrder(cancelOrderMessage);
         }
 
@@ -283,6 +333,7 @@ namespace Adaptor.TwSpeedy.Main
             return String.Format("{0,-7}{1,-20}{2,10}{3:D4}",
                 subAccount, localIP, " ", qty);
         }
+
 
     }
 }

@@ -49,6 +49,8 @@ namespace TwSpeedy.Utils
             System.Diagnostics.Debug.WriteLine("Msg.CxlRejResponseTo: " + Msg.CxlRejResponseTo);
             System.Diagnostics.Debug.WriteLine("Msg.Text: " + Msg.Text);
             System.Diagnostics.Debug.WriteLine("Msg.Data: " + Msg.Data);
+            System.Diagnostics.Debug.WriteLine("Msg.src: " + Msg.src);
+            System.Diagnostics.Debug.WriteLine("Msg.TransactTime: " + Msg.TransactTime);
             System.Diagnostics.Debug.WriteLine("========================================");
             System.Diagnostics.Debug.WriteLine("");
         }

@@ -76,6 +76,14 @@
     <Compile Include="Transport\ISocketStateListener.cs" />
     <Compile Include="Transport\ITransportService.cs" />
     <Compile Include="Transport\IUserSocketContext.cs" />
+    <Compile Include="Utils\AsyncQueueProcessor.cs" />
+    <Compile Include="Utils\PriceUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Avro\Avro.csproj">
+      <Project>{4f8a6d36-df47-4330-b1c4-31c66b4ed2ed}</Project>
+      <Name>Avro</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

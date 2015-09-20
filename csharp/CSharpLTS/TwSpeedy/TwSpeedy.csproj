@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Main\FieldConverter.cs" />
+    <Compile Include="Main\Persistence.cs" />
+    <Compile Include="Main\PersistItem.cs" />
     <Compile Include="Main\TradeAdaptor.cs" />
     <Compile Include="Main\Utils.cs" />
     <Compile Include="Test\TradeTest.cs">
@@ -86,6 +89,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Avro\Avro.csproj">
+      <Project>{4f8a6d36-df47-4330-b1c4-31c66b4ed2ed}</Project>
+      <Name>Avro</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{3ecabbc2-bf44-4aa9-a0f1-6306473c8caa}</Project>
       <Name>Common</Name>
