@@ -123,7 +123,7 @@
       </entry>
       <entry>
         <string>Day tradable</string>
-        <string>1</string>
+        <int>1</int>
       </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -251,7 +251,7 @@
       </entry>
       <entry>
         <string>Day tradable</string>
-        <string>1</string>
+        <int>1</int>
       </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -379,7 +379,7 @@
       </entry>
       <entry>
         <string>Day tradable</string>
-        <string>1</string>
+        <int>1</int>
       </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
