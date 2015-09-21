@@ -1,0 +1,37 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <util:map id="refDataFutureTaiwanHashMap" map-class="java.util.HashMap">
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="FT"/>
+    </util:map>
+
+    <bean id="refDataAdapterFT"
+          class="com.cyanspring.adaptor.future.wind.refdata.WindRefDataAdapter">
+        <property name="refDataAdapterName" value="FT"/>
+        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayPort" value="10038"/>
+        <property name="marketDataLog" value="true"/>
+        <property name="msgPack" value="true"></property>
+        <property name="refDataFile" value="refdata/refData_ft.xml"/>
+        <property name="windFilter" ref="ftFilter"/>
+        <property name="needsubscribe" value="true"/>
+        <property name="marketsList">
+            <list>
+                <value>TWF</value>
+            </list>
+        </property>
+        <property name="refDataFTHashMap" ref="refDataFutureTaiwanHashMap"/>
+        <property name="refFilterList" ref="refFilterList"/>
+    </bean>
+
+    <bean id="ftFilter" class="com.cyanspring.adaptor.future.wind.filter.FTFilter"/>
+    <util:list id="refFilterList" value-type="java.lang.String">
+    </util:list>
+
+</beans>

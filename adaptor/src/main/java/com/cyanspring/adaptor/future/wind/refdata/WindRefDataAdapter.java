@@ -64,6 +64,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private volatile boolean connected = false;
     private volatile boolean codeTableIsProcessEnd = false;
     private volatile boolean subscribed = false;
+    private volatile boolean needsubscribeDataIsReceive = false;
     private volatile int serverHeartBeatCountAfterCodeTableCome = -1;
     private volatile int serverRetryCount = 0;
     private volatile int dbRetryCount = 0;
@@ -206,6 +207,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     }
                     requestMgr.addReqData(new Object[]{
                             WindDef.MSG_SYS_CODETABLE, futureCodeTableData});
+                    needsubscribeDataIsReceive = true;
                 }
                 break;
             case WindDef.MSG_SYS_MARKETS:
@@ -271,7 +273,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                             + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
                             + ",Sp=" + codeTableData.getSpellName() + ",EN=" + codeTableData.getEnglishName());
                 }
-                requestMgr.addReqData(new Object[]{datatype, codeTableData});
+                if(!needsubscribe)requestMgr.addReqData(new Object[]{datatype, codeTableData});
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
                 //check CodeTable done.
@@ -282,15 +284,21 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     if (serverHeartBeatCountAfterCodeTableCome < 0) {
                         serverHeartBeatCountAfterCodeTableCome--;
                         if (serverHeartBeatCountAfterCodeTableCome < -3) {
-                            channelHandlerContext.close();
+                            if(needsubscribe && needsubscribeDataIsReceive){
+//                                RefDataParser.saveHashMapToFile("ticks/codetable_ft.xml", new HashMap<>(codeTableDataBySymbolMap));
+                                codeTableIsProcessEnd = true;
+                                serverHeartBeatCountAfterCodeTableCome = -1;
+                            }else {
+                                channelHandlerContext.close();
+                            }
                         }
                     }
                     if (serverHeartBeatCountAfterCodeTableCome >= 2) {
-//                        RefDataParser.saveHashMapToFile("ticks/codetable_fcc.xml", new HashMap<>(codeTableDataBySymbolMap));
                         if(needsubscribe) {
                             requestMgr.addReqData(new Object[]{WindDef.MSG_SYS_REQUEST_SNAPSHOT, new Integer(0)});
                             serverHeartBeatCountAfterCodeTableCome = -1;
                         }else{
+                            //RefDataParser.saveHashMapToFile("ticks/codetable_fcc.xml", new HashMap<>(codeTableDataBySymbolMap));
                             codeTableIsProcessEnd = true;
                             serverHeartBeatCountAfterCodeTableCome = -1;
                         }
@@ -356,6 +364,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         isAlive = true;
         subscribed = false;
         codeTableIsProcessEnd = false;
+        needsubscribeDataIsReceive = false;
         serverRetryCount = 0;
         dbRetryCount = 0;
         for(String exchange: marketsList){

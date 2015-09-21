@@ -249,8 +249,7 @@
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
 		<constructor-arg>
 			<list>
-				<ref bean="refDataAdapterFCI"/>
-				<ref bean="refDataAdapterFCC"/>
+				<ref bean="refDataAdapterFT"/>
 			</list>
 		</constructor-arg>
 		<property name="eventManager" ref="eventManager"/>
@@ -326,9 +325,7 @@
 	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
-				<value>FUTURES_CX</value>
-				<value>FUTURES_CX_IDX</value>
-				<value>EXCHANGE_INDEX</value>
+				<value>FUTURES_FT</value>
 			</list>
 		</property>
 	</bean>
