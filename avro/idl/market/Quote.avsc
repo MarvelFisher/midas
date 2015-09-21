@@ -1,7 +1,7 @@
 {
   "namespace": "com.cyanspring.avro.generate.market.bean",
   "type": "record",
-  "name": "OrderUpdate",
+  "name": "Quote",
   "fields": [
   	{
       "name": "objectType",

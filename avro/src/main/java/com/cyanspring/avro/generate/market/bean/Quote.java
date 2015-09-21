@@ -6,8 +6,8 @@
 package com.cyanspring.avro.generate.market.bean;  
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderUpdate\",\"namespace\":\"com.cyanspring.avro.generate.market.bean\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"symbol\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"bid\",\"type\":\"double\"},{\"name\":\"ask\",\"type\":\"double\"},{\"name\":\"bidVol\",\"type\":\"double\"},{\"name\":\"askVol\",\"type\":\"double\"},{\"name\":\"last\",\"type\":\"double\"},{\"name\":\"lastVol\",\"type\":\"double\"},{\"name\":\"turnover\",\"type\":\"double\"},{\"name\":\"high\",\"type\":\"double\"},{\"name\":\"low\",\"type\":\"double\"},{\"name\":\"open\",\"type\":\"double\"},{\"name\":\"close\",\"type\":\"double\"},{\"name\":\"totalVolume\",\"type\":\"double\"},{\"name\":\"timeStamp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"timeSent\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"stale\",\"type\":\"boolean\"}]}");
+public class Quote extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Quote\",\"namespace\":\"com.cyanspring.avro.generate.market.bean\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"symbol\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"bid\",\"type\":\"double\"},{\"name\":\"ask\",\"type\":\"double\"},{\"name\":\"bidVol\",\"type\":\"double\"},{\"name\":\"askVol\",\"type\":\"double\"},{\"name\":\"last\",\"type\":\"double\"},{\"name\":\"lastVol\",\"type\":\"double\"},{\"name\":\"turnover\",\"type\":\"double\"},{\"name\":\"high\",\"type\":\"double\"},{\"name\":\"low\",\"type\":\"double\"},{\"name\":\"open\",\"type\":\"double\"},{\"name\":\"close\",\"type\":\"double\"},{\"name\":\"totalVolume\",\"type\":\"double\"},{\"name\":\"timeStamp\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"timeSent\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"stale\",\"type\":\"boolean\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public int objectType;
   @Deprecated public java.lang.String symbol;
@@ -32,12 +32,12 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>. 
    */
-  public OrderUpdate() {}
+  public Quote() {}
 
   /**
    * All-args constructor.
    */
-  public OrderUpdate(java.lang.Integer objectType, java.lang.String symbol, java.lang.Double bid, java.lang.Double ask, java.lang.Double bidVol, java.lang.Double askVol, java.lang.Double last, java.lang.Double lastVol, java.lang.Double turnover, java.lang.Double high, java.lang.Double low, java.lang.Double open, java.lang.Double close, java.lang.Double totalVolume, java.lang.String timeStamp, java.lang.String timeSent, java.lang.Boolean stale) {
+  public Quote(java.lang.Integer objectType, java.lang.String symbol, java.lang.Double bid, java.lang.Double ask, java.lang.Double bidVol, java.lang.Double askVol, java.lang.Double last, java.lang.Double lastVol, java.lang.Double turnover, java.lang.Double high, java.lang.Double low, java.lang.Double open, java.lang.Double close, java.lang.Double totalVolume, java.lang.String timeStamp, java.lang.String timeSent, java.lang.Boolean stale) {
     this.objectType = objectType;
     this.symbol = symbol;
     this.bid = bid;
@@ -361,26 +361,26 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     this.stale = value;
   }
 
-  /** Creates a new OrderUpdate RecordBuilder */
-  public static com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder newBuilder() {
-    return new com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder();
+  /** Creates a new Quote RecordBuilder */
+  public static com.cyanspring.avro.generate.market.bean.Quote.Builder newBuilder() {
+    return new com.cyanspring.avro.generate.market.bean.Quote.Builder();
   }
   
-  /** Creates a new OrderUpdate RecordBuilder by copying an existing Builder */
-  public static com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder newBuilder(com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder other) {
-    return new com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder(other);
+  /** Creates a new Quote RecordBuilder by copying an existing Builder */
+  public static com.cyanspring.avro.generate.market.bean.Quote.Builder newBuilder(com.cyanspring.avro.generate.market.bean.Quote.Builder other) {
+    return new com.cyanspring.avro.generate.market.bean.Quote.Builder(other);
   }
   
-  /** Creates a new OrderUpdate RecordBuilder by copying an existing OrderUpdate instance */
-  public static com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder newBuilder(com.cyanspring.avro.generate.market.bean.OrderUpdate other) {
-    return new com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder(other);
+  /** Creates a new Quote RecordBuilder by copying an existing Quote instance */
+  public static com.cyanspring.avro.generate.market.bean.Quote.Builder newBuilder(com.cyanspring.avro.generate.market.bean.Quote other) {
+    return new com.cyanspring.avro.generate.market.bean.Quote.Builder(other);
   }
   
   /**
-   * RecordBuilder for OrderUpdate instances.
+   * RecordBuilder for Quote instances.
    */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<OrderUpdate>
-    implements org.apache.avro.data.RecordBuilder<OrderUpdate> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Quote>
+    implements org.apache.avro.data.RecordBuilder<Quote> {
 
     private int objectType;
     private java.lang.String symbol;
@@ -402,11 +402,11 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
 
     /** Creates a new Builder */
     private Builder() {
-      super(com.cyanspring.avro.generate.market.bean.OrderUpdate.SCHEMA$);
+      super(com.cyanspring.avro.generate.market.bean.Quote.SCHEMA$);
     }
     
     /** Creates a Builder by copying an existing Builder */
-    private Builder(com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder other) {
+    private Builder(com.cyanspring.avro.generate.market.bean.Quote.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.objectType)) {
         this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
@@ -478,9 +478,9 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
       }
     }
     
-    /** Creates a Builder by copying an existing OrderUpdate instance */
-    private Builder(com.cyanspring.avro.generate.market.bean.OrderUpdate other) {
-            super(com.cyanspring.avro.generate.market.bean.OrderUpdate.SCHEMA$);
+    /** Creates a Builder by copying an existing Quote instance */
+    private Builder(com.cyanspring.avro.generate.market.bean.Quote other) {
+            super(com.cyanspring.avro.generate.market.bean.Quote.SCHEMA$);
       if (isValidValue(fields()[0], other.objectType)) {
         this.objectType = data().deepCopy(fields()[0].schema(), other.objectType);
         fieldSetFlags()[0] = true;
@@ -557,7 +557,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'objectType' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setObjectType(int value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setObjectType(int value) {
       validate(fields()[0], value);
       this.objectType = value;
       fieldSetFlags()[0] = true;
@@ -570,7 +570,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'objectType' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearObjectType() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearObjectType() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -581,7 +581,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'symbol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setSymbol(java.lang.String value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setSymbol(java.lang.String value) {
       validate(fields()[1], value);
       this.symbol = value;
       fieldSetFlags()[1] = true;
@@ -594,7 +594,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'symbol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearSymbol() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearSymbol() {
       symbol = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -606,7 +606,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'bid' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setBid(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setBid(double value) {
       validate(fields()[2], value);
       this.bid = value;
       fieldSetFlags()[2] = true;
@@ -619,7 +619,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'bid' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearBid() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearBid() {
       fieldSetFlags()[2] = false;
       return this;
     }
@@ -630,7 +630,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'ask' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setAsk(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setAsk(double value) {
       validate(fields()[3], value);
       this.ask = value;
       fieldSetFlags()[3] = true;
@@ -643,7 +643,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'ask' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearAsk() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearAsk() {
       fieldSetFlags()[3] = false;
       return this;
     }
@@ -654,7 +654,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'bidVol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setBidVol(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setBidVol(double value) {
       validate(fields()[4], value);
       this.bidVol = value;
       fieldSetFlags()[4] = true;
@@ -667,7 +667,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'bidVol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearBidVol() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearBidVol() {
       fieldSetFlags()[4] = false;
       return this;
     }
@@ -678,7 +678,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'askVol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setAskVol(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setAskVol(double value) {
       validate(fields()[5], value);
       this.askVol = value;
       fieldSetFlags()[5] = true;
@@ -691,7 +691,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'askVol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearAskVol() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearAskVol() {
       fieldSetFlags()[5] = false;
       return this;
     }
@@ -702,7 +702,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'last' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setLast(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setLast(double value) {
       validate(fields()[6], value);
       this.last = value;
       fieldSetFlags()[6] = true;
@@ -715,7 +715,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'last' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearLast() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearLast() {
       fieldSetFlags()[6] = false;
       return this;
     }
@@ -726,7 +726,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'lastVol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setLastVol(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setLastVol(double value) {
       validate(fields()[7], value);
       this.lastVol = value;
       fieldSetFlags()[7] = true;
@@ -739,7 +739,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'lastVol' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearLastVol() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearLastVol() {
       fieldSetFlags()[7] = false;
       return this;
     }
@@ -750,7 +750,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'turnover' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setTurnover(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setTurnover(double value) {
       validate(fields()[8], value);
       this.turnover = value;
       fieldSetFlags()[8] = true;
@@ -763,7 +763,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'turnover' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearTurnover() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearTurnover() {
       fieldSetFlags()[8] = false;
       return this;
     }
@@ -774,7 +774,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'high' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setHigh(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setHigh(double value) {
       validate(fields()[9], value);
       this.high = value;
       fieldSetFlags()[9] = true;
@@ -787,7 +787,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'high' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearHigh() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearHigh() {
       fieldSetFlags()[9] = false;
       return this;
     }
@@ -798,7 +798,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'low' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setLow(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setLow(double value) {
       validate(fields()[10], value);
       this.low = value;
       fieldSetFlags()[10] = true;
@@ -811,7 +811,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'low' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearLow() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearLow() {
       fieldSetFlags()[10] = false;
       return this;
     }
@@ -822,7 +822,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'open' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setOpen(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setOpen(double value) {
       validate(fields()[11], value);
       this.open = value;
       fieldSetFlags()[11] = true;
@@ -835,7 +835,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'open' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearOpen() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearOpen() {
       fieldSetFlags()[11] = false;
       return this;
     }
@@ -846,7 +846,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'close' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setClose(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setClose(double value) {
       validate(fields()[12], value);
       this.close = value;
       fieldSetFlags()[12] = true;
@@ -859,7 +859,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'close' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearClose() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearClose() {
       fieldSetFlags()[12] = false;
       return this;
     }
@@ -870,7 +870,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'totalVolume' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setTotalVolume(double value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setTotalVolume(double value) {
       validate(fields()[13], value);
       this.totalVolume = value;
       fieldSetFlags()[13] = true;
@@ -883,7 +883,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'totalVolume' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearTotalVolume() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearTotalVolume() {
       fieldSetFlags()[13] = false;
       return this;
     }
@@ -894,7 +894,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'timeStamp' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setTimeStamp(java.lang.String value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setTimeStamp(java.lang.String value) {
       validate(fields()[14], value);
       this.timeStamp = value;
       fieldSetFlags()[14] = true;
@@ -907,7 +907,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'timeStamp' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearTimeStamp() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearTimeStamp() {
       timeStamp = null;
       fieldSetFlags()[14] = false;
       return this;
@@ -919,7 +919,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'timeSent' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setTimeSent(java.lang.String value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setTimeSent(java.lang.String value) {
       validate(fields()[15], value);
       this.timeSent = value;
       fieldSetFlags()[15] = true;
@@ -932,7 +932,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'timeSent' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearTimeSent() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearTimeSent() {
       timeSent = null;
       fieldSetFlags()[15] = false;
       return this;
@@ -944,7 +944,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Sets the value of the 'stale' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder setStale(boolean value) {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder setStale(boolean value) {
       validate(fields()[16], value);
       this.stale = value;
       fieldSetFlags()[16] = true;
@@ -957,15 +957,15 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     }
     
     /** Clears the value of the 'stale' field */
-    public com.cyanspring.avro.generate.market.bean.OrderUpdate.Builder clearStale() {
+    public com.cyanspring.avro.generate.market.bean.Quote.Builder clearStale() {
       fieldSetFlags()[16] = false;
       return this;
     }
 
     @Override
-    public OrderUpdate build() {
+    public Quote build() {
       try {
-        OrderUpdate record = new OrderUpdate();
+        Quote record = new Quote();
         record.objectType = fieldSetFlags()[0] ? this.objectType : (java.lang.Integer) defaultValue(fields()[0]);
         record.symbol = fieldSetFlags()[1] ? this.symbol : (java.lang.String) defaultValue(fields()[1]);
         record.bid = fieldSetFlags()[2] ? this.bid : (java.lang.Double) defaultValue(fields()[2]);
