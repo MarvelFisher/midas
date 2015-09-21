@@ -298,7 +298,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                             requestMgr.addReqData(new Object[]{WindDef.MSG_SYS_REQUEST_SNAPSHOT, new Integer(0)});
                             serverHeartBeatCountAfterCodeTableCome = -1;
                         }else{
-                            RefDataParser.saveHashMapToFile("ticks/codetable_fci.xml", new HashMap<>(codeTableDataBySymbolMap));
+//                            RefDataParser.saveHashMapToFile("ticks/codetable_fci.xml", new HashMap<>(codeTableDataBySymbolMap));
                             codeTableIsProcessEnd = true;
                             serverHeartBeatCountAfterCodeTableCome = -1;
                         }
