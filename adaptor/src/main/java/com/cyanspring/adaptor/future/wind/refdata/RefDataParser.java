@@ -36,7 +36,24 @@ public class RefDataParser {
         refData.setENDisplayName(codeTableData.getEnglishName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
         String commodity = (String) defaultHashMap.get(RefDataField.COMMODITY);
-        if(commodity.equals("FC") || commodity.equals("FT")){
+        if(commodity.equals("FT")){
+            commodity = RefDataCommodity.FUTURES.getValue();
+            try {
+                String extractStr = codeTableData.getWindCode().replaceAll("\\D+", "");
+                refData.setSymbol(codeTableData.getProduct() + extractStr.substring(2));
+                refData.setDesc(codeTableData.getGroup());
+                refData.setCurrency(codeTableData.getCurrency());
+                refData.setTWDisplayName(codeTableData.getSymbolName());
+                refData.setCNDisplayName(ChineseConvert.TtoS(codeTableData.getSymbolName()));
+                refData.setRefSymbol(refData.getSymbol() + "." + codeTableData.getSecurityExchange());
+                refData.setCategory(codeTableData.getProduct());
+                refData.setSpotTWName(codeTableData.getProductName());
+                refData.setCode(codeTableData.getWindCode());
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
+        }
+        if(commodity.equals("FC")){
             commodity = RefDataCommodity.FUTURES.getValue();
         }
         refData.setCommodity(commodity);
