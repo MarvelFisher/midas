@@ -42,27 +42,7 @@
     </util:map>
 
     <util:map id="refDataFutureChinaHashMap" map-class="java.util.HashMap">
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).DECIMALPOINT}" value="1" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).LOT_SIZE}" value="1" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).LIMIT_MAXIMUM_LOT}" value="100" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).MARKET_MAXIMUM_LOT}" value="50" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).MAXIMUM_HOLD}" value="100000" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).MARGIN_RATE}" value="0.12" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="IH" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="1" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="IF" />
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="F"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="IF"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).EN_TRADING_UNIT}" value="RMB/Point"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).TW_TRADING_UNIT}" value="人民幣/點"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).CN_TRADING_UNIT}" value="人民币/点"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).TYPE}" value="INDEX_FU"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_LIMIT}" value="10.0"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMISSION_FEE}" value="0.5"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).NUMERATOR_DP}" value="0.0"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).MINIMAL_COMMISSION_FEE}" value="0.0"/>
-        <entry key="#{T(com.cyanspring.common.business.RefDataField).DENOMINATOR}" value="0.0"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="FC"/>
     </util:map>
 
     <bean id="refDataAdapterSC"
