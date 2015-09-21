@@ -2,6 +2,7 @@ package com.cyanspring.id.Test;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -24,7 +25,7 @@ import com.cyanspring.id.Library.Util.LogUtil;
 public class ForexClient implements IMarketDataListener,
 		IMarketDataStateListener, IFrameClose, AutoCloseable {
 	
-	public static final String _ClientName = "QuotesFeed 1.20150807.1";
+	public static final String _ClientName = "QuotesFeed 1.20150921.1";
 	private static final Logger log = LoggerFactory.getLogger(ForexClient.class);
 	
 	public static ForexClient instance = null;
@@ -131,8 +132,25 @@ public class ForexClient implements IMarketDataListener,
 		dialog.addFollow(innerQuote.getSymbol(), "[%s][%s] bid:%.5f ask:%.5f %s", innerQuote.getSymbol(),
 				DateUtil.formatDate(DateUtil.toGmt(innerQuote.getQuote().getTimeStamp()), "HH:mm:ss.SSS"),
 				innerQuote.getQuote().getBid(), innerQuote.getQuote().getAsk(), innerQuote.getContributor());
-
+		printQuoteLog(innerQuote.getContributor(), innerQuote.getQuote());
 	}
+	
+	public void printQuoteLog(String contributor, Quote quote) {
+        StringBuffer sb = new StringBuffer();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HH:mm:ss.SSS");
+        sb.append("Sc=2"+ ",S=" + quote.getSymbol() + ",A=" + quote.getAsk()
+                        + ",B=" + quote.getBid() + ",C=" + quote.getClose()
+                        + ",O=" + quote.getOpen() + ",H=" + quote.getHigh()
+                        + ",L=" + quote.getLow() + ",Last=" + quote.getLast()
+                        + ",Stale=" + quote.isStale() + ",tO=" + quote.getTurnover()
+                        + ",ts=" + sdf.format(quote.getTimeStamp())
+                        + ",tt=" + sdf.format(quote.getTimeSent())
+                        + ",lsV=" + quote.getLastVol() + ",tV=" + quote.getTotalVolume()
+                        + ",Cb=" + contributor
+        );
+        log.debug("Quote Receive : " + sb.toString());
+
+    }
 
 	/*
 	 * (non-Javadoc)
