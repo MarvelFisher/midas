@@ -157,10 +157,11 @@ namespace Adaptor.TwSpeedy.Main
                             this.onOrder(existingOrder);
                         }
                     }
-                    else if (msg.NID != 0 && pendings.TryRemove(msg.NID, out existingOrder))
+                    else if (msg.NID != 0 && pendings.TryGetValue(msg.NID, out existingOrder))
                     {
                         if (updateOrder(existingOrder, msg))
                         {
+                            pendings.TryRemove(msg.NID, out existingOrder);
                             orders[msg.OrderID] = existingOrder;
                             persistence.save(existingOrder);
                             this.onOrder(existingOrder);
