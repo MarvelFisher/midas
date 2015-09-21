@@ -23,6 +23,11 @@ public class AvroEventSender implements IDownStreamEventSender {
 	@Autowired
 	private SystemInfo systemInfo;
 	
+	public AvroEventSender(IObjectTransportService transportService, ISerialization serializator) {
+		this.transportService = transportService;
+		this.serializator = serializator;
+	}
+	
 	@Override
 	public void init() throws Exception {
 		if (listener == null)
@@ -44,17 +49,9 @@ public class AvroEventSender implements IDownStreamEventSender {
 	}
 
 	@Override
-	public void sendRemoteEvent(Object o) {
-		byte[] bytes;
+	public void sendRemoteEvent(Object o, WrapObjectType type) {
 		try {
-			if (o instanceof NewOrderRequest)
-				bytes = (byte[]) serializator.serialize(new AvroSerializableObject((NewOrderRequest)o, WrapObjectType.NewOrderRequest));
-			else if (o instanceof AmendOrderRequest)
-				bytes = (byte[]) serializator.serialize(new AvroSerializableObject((AmendOrderRequest)o, WrapObjectType.AmendOrderRequest));				
-			else if (o instanceof CancelOrderRequest)
-				bytes = (byte[]) serializator.serialize(new AvroSerializableObject((CancelOrderRequest)o, WrapObjectType.CancelOrderRequest));
-			else
-				throw new Exception("Unhandle remote event");
+			byte[] bytes = (byte[]) serializator.serialize(new AvroSerializableObject((NewOrderRequest)o, type));
 			transportService.sendMessage(channel, bytes);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
