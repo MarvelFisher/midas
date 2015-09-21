@@ -298,7 +298,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                             requestMgr.addReqData(new Object[]{WindDef.MSG_SYS_REQUEST_SNAPSHOT, new Integer(0)});
                             serverHeartBeatCountAfterCodeTableCome = -1;
                         }else{
-                            //RefDataParser.saveHashMapToFile("ticks/codetable_fcc.xml", new HashMap<>(codeTableDataBySymbolMap));
+                            RefDataParser.saveHashMapToFile("ticks/codetable_fci.xml", new HashMap<>(codeTableDataBySymbolMap));
                             codeTableIsProcessEnd = true;
                             serverHeartBeatCountAfterCodeTableCome = -1;
                         }
@@ -615,7 +615,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public static void main(String[] args) throws Exception {
         String logConfigFile = "conf/windlog4j.xml";
-        String configFile = "conf/mlRefData.xml";
+        String configFile = "conf/windRefData.xml";
         DOMConfigurator.configure(logConfigFile);
         ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
         // start server
@@ -624,7 +624,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 //        refDataAdaptor.uninit();
         //RefData補拼音,簡繁體股名 使用
         log.debug("Process RefData Begin");
-        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterFT");
+        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterFCI");
         refDataAdaptor.init();
 
 //        refDataAdaptor.windBaseDBDataHashMap = refDataAdaptor.getWindBaseDBData();
