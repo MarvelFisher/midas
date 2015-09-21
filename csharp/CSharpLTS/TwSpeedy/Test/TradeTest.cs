@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Adaptor.TwSpeedy.Main;
 using Common.Adaptor;
 using com.cyanspring.avro.generate.trade.types;
+using System.Threading;
 
 namespace Adaptor
 {
@@ -30,13 +31,18 @@ namespace Adaptor
         {
             this.order = order;
             System.Diagnostics.Debug.WriteLine("Order: " + order);
-            edExchangeOrderId.Text = order.exchangeOrderId;
+            this.edExchangeOrderId.BeginInvoke((MethodInvoker)delegate () {
+                edExchangeOrderId.Text = order.exchangeOrderId;
+            });
         }
 
         public void onState(bool up)
         {
-            lbState.Text = "On line";
-            lbState.BackColor = Color.Green;
+            this.lbState.BeginInvoke((MethodInvoker)delegate () {
+                lbState.Text = "On line";
+                lbState.BackColor = Color.Green;
+            });
+
         }
 
         private void btNew_Click(object sender, EventArgs e)
@@ -90,6 +96,7 @@ namespace Adaptor
         private void TradeTest_FormClosing(object sender, FormClosingEventArgs e)
         {
             adaptor.uninit();
+            Thread.Sleep(1000);
         }
     }
 }
