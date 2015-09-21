@@ -33,7 +33,7 @@ public enum WrapObjectType {
 			com.cyanspring.avro.generate.trade.bean.CancelOrderReply.SCHEMA$),
 
 	Quote(8, ObjectType.Quote,
-			com.cyanspring.avro.generate.market.bean.OrderUpdate.SCHEMA$),
+			com.cyanspring.avro.generate.market.bean.Quote.SCHEMA$),
 
 	SubscribeQuote(9, ObjectType.SubscribeQuote,
 			com.cyanspring.avro.generate.market.bean.SubscribeQuote.SCHEMA$),
