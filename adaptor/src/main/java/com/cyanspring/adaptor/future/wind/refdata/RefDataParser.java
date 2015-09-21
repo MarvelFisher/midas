@@ -39,8 +39,7 @@ public class RefDataParser {
         if(commodity.equals("FT")){
             commodity = RefDataCommodity.FUTURES.getValue();
             try {
-                String extractStr = codeTableData.getWindCode().replaceAll("\\D+", "");
-                refData.setSymbol(codeTableData.getProduct() + extractStr.substring(2));
+                refData.setSymbol(codeTableData.getShowID());
                 refData.setDesc(codeTableData.getGroup());
                 refData.setCurrency(codeTableData.getCurrency());
                 refData.setTWDisplayName(codeTableData.getSymbolName());

@@ -26,6 +26,7 @@ namespace Adaptor.TwSpeedy.Main
         private bool recovering;
         private Persistence persistence;
 
+        public string id { get; set; } = "YF01";
         public string user { get; set; } = "haida";
         public string account { get; set; } = "1365651";
         public string password { get; set; } = "123456";
@@ -39,19 +40,27 @@ namespace Adaptor.TwSpeedy.Main
 
         public void init()
         {
-            recovering = false;
-            state = false;
-            localIP = Utils.getLocalIPAddress();
-            persistence = new Persistence();
-            persistence.init();
+            try
+            {
+                recovering = false;
+                state = false;
+                localIP = Utils.getLocalIPAddress();
+                persistence = new Persistence();
+                persistence.init();
 
-            exchangeConnection = new TaifexConnection();
-            exchangeConnection.OnConnected += new OrderConnection.ITaifexConnectionEvents_OnConnectedEventHandler(onExchangeConnected);
-            exchangeConnection.OnDisconnected += new OrderConnection.ITaifexConnectionEvents_OnDisconnectedEventHandler(onExchangeDisconnected);
-            exchangeConnection.OnExecutionReport += new OrderConnection.ITaifexConnectionEvents_OnExecutionReportEventHandler(onExecutionReport);
-            exchangeConnection.OnLogonReply += new OrderConnection.ITaifexConnectionEvents_OnLogonReplyEventHandler(onLogonReply);
-            exchangeConnection.OnRecoverFinished += new OrderConnection.ITaifexConnectionEvents_OnRecoverFinishedEventHandler(onRecoverFinished);
-            connect();
+                exchangeConnection = new TaifexConnection();
+                exchangeConnection.OnConnected += new OrderConnection.ITaifexConnectionEvents_OnConnectedEventHandler(onExchangeConnected);
+                exchangeConnection.OnDisconnected += new OrderConnection.ITaifexConnectionEvents_OnDisconnectedEventHandler(onExchangeDisconnected);
+                exchangeConnection.OnExecutionReport += new OrderConnection.ITaifexConnectionEvents_OnExecutionReportEventHandler(onExecutionReport);
+                exchangeConnection.OnLogonReply += new OrderConnection.ITaifexConnectionEvents_OnLogonReplyEventHandler(onLogonReply);
+                exchangeConnection.OnRecoverFinished += new OrderConnection.ITaifexConnectionEvents_OnRecoverFinishedEventHandler(onRecoverFinished);
+                connect();
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.Message);
+                System.Diagnostics.Debug.WriteLine(e.StackTrace);
+            }
         }
 
         public void uninit()

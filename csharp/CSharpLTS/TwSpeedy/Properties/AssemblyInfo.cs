@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Adaptor")]
+[assembly: AssemblyTitle("TwSpeedy")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Adaptor")]
+[assembly: AssemblyProduct("TwSpeedy")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7ea8aabc-106e-4993-837f-d8b2ef269ead")]
+[assembly: Guid("5ca0da3f-1ec9-4fd4-af03-cc488198a7b0")]
 
 // Version information for an assembly consists of the following four values:
 //

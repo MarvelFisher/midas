@@ -18,13 +18,14 @@ namespace CSharpLTS
         [STAThread]
         static void Main(string[] args)
         {
+
             IApplicationContext ctx = ContextRegistry.GetContext();
 
             Console.WriteLine("Start Server...");
             Program server = ctx.GetObject("server") as Program;
             server.Init();
 
-            Console.ReadLine();
+            Console.Read();
         }
 
         public void Init()
