@@ -11,12 +11,12 @@ namespace Transport.Transport
     class ActiveMQService : ITransportService
     {
         // ActiveMQ configuration parameters
-        private string user;
-        private string password;
-        private string url = "nio://localhost:61616";
-        protected MsgDeliveryMode persistent;
-        private bool transacted;
-        private AcknowledgementMode ackMode;
+        public string user{set;get;}
+        public string password{set;get;}
+        public string url{set;get;}
+        public MsgDeliveryMode persistent { set; get; } = MsgDeliveryMode.NonPersistent;
+        public bool transacted { set; get; }
+        public AcknowledgementMode ackMode { set; get; } = AcknowledgementMode.AutoAcknowledge;
         private long memoryLimit = 128 * 1024 * 1024;
 
         // members
@@ -28,9 +28,6 @@ namespace Transport.Transport
         protected Dictionary<string, IMessageProducer> publishers = new Dictionary<string, IMessageProducer>();
         private Dictionary<string, List<IMessageListener>> subscribers = new Dictionary<string, List<IMessageListener>>();
         private Dictionary<IMessageListener, IMessageConsumer> consumers = new Dictionary<IMessageListener, IMessageConsumer>();
-
-        public event IMessageListener OnMessage;
-        private IMessageListener OnXXX;
 
         class Sender : ISender
         {
@@ -119,11 +116,14 @@ namespace Transport.Transport
             }
         }
 
+        /**
+        * think about how to process this method
+        */
         private void consumer_MessageListener(IMessage message)
         {
             if (message is ITextMessage)
             {
-                OnMessage.Invoke(((ITextMessage)message).Text);
+                
             }
             else
             {
@@ -200,5 +200,6 @@ namespace Transport.Transport
         {
             CreatePublisher(subject).SendMessage(message);
         }
+
     }
 }
