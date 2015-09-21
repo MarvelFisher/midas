@@ -1188,11 +1188,10 @@ public class CentralDbProcessor implements IPlugin
 	{
 		switch (serverMarket)
 		{
-		case "FC":
-		case "SC":
-			return true;
-		default:
+		case "FX":
 			return false;
+		default:
+			return true;
 		}
 	}
 	

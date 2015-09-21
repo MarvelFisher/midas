@@ -13,9 +13,9 @@ namespace com.cyanspring.avro.generate.market.bean
 	using Avro;
 	using Avro.Specific;
 	
-	public partial class Quote : ISpecificRecord
+	public partial class OrderUpdate : ISpecificRecord
 	{
-		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""Quote"",""namespace"":""com.cyanspring.avro.generate.market.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""symbol"",""type"":""string""},{""name"":""bid"",""type"":""double""},{""name"":""ask"",""type"":""double""},{""name"":""bidVol"",""type"":""double""},{""name"":""askVol"",""type"":""double""},{""name"":""last"",""type"":""double""},{""name"":""lastVol"",""type"":""double""},{""name"":""turnover"",""type"":""double""},{""name"":""high"",""type"":""double""},{""name"":""low"",""type"":""double""},{""name"":""open"",""type"":""double""},{""name"":""close"",""type"":""double""},{""name"":""totalVolume"",""type"":""double""},{""name"":""timeStamp"",""type"":""string""},{""name"":""timeSent"",""type"":""string""},{""name"":""stale"",""type"":""boolean""}]}");
+		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""OrderUpdate"",""namespace"":""com.cyanspring.avro.generate.market.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""symbol"",""type"":""string""},{""name"":""bid"",""type"":""double""},{""name"":""ask"",""type"":""double""},{""name"":""bidVol"",""type"":""double""},{""name"":""askVol"",""type"":""double""},{""name"":""last"",""type"":""double""},{""name"":""lastVol"",""type"":""double""},{""name"":""turnover"",""type"":""double""},{""name"":""high"",""type"":""double""},{""name"":""low"",""type"":""double""},{""name"":""open"",""type"":""double""},{""name"":""close"",""type"":""double""},{""name"":""totalVolume"",""type"":""double""},{""name"":""timeStamp"",""type"":""string""},{""name"":""timeSent"",""type"":""string""},{""name"":""stale"",""type"":""boolean""}]}");
 		private int _objectType;
 		private string _symbol;
 		private double _bid;
@@ -37,7 +37,7 @@ namespace com.cyanspring.avro.generate.market.bean
 		{
 			get
 			{
-				return Quote._SCHEMA;
+				return OrderUpdate._SCHEMA;
 			}
 		}
 		public int objectType

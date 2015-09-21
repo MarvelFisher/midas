@@ -5,6 +5,7 @@ import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
 import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
+import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
 import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
@@ -33,6 +34,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -66,17 +68,21 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private volatile int serverRetryCount = 0;
     private volatile int dbRetryCount = 0;
     private boolean marketDataLog = false; // log control
+    private boolean needsubscribe = false;
     private List<String> marketsList = new ArrayList();
     private List<String> refFilterList;
     protected
-    @Resource(name = "refDataStockChinaHashMap")
+    @Autowired(required = false) @Qualifier("refDataStockChinaHashMap")
     HashMap<RefDataField, Object> refDataSCHashMap = new HashMap<>();
     protected
-    @Resource(name = "refDataIndexChinaHashMap")
+    @Autowired(required = false) @Qualifier("refDataIndexChinaHashMap")
     HashMap<RefDataField, Object> refDataICHashMap = new HashMap<>();
     protected
-    @Resource(name = "refDataFutureChinaHashMap")
+    @Autowired(required = false) @Qualifier("refDataFutureChinaHashMap")
     HashMap<RefDataField, Object> refDataFCHashMap = new HashMap<>();
+    protected
+    @Autowired(required = false) @Qualifier("refDataFutureTaiwanHashMap")
+    HashMap<RefDataField, Object> refDataFTHashMap = new HashMap<>();
     public static HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
     private ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, CodeTableResult> codeTableResultByExchangeMap = new ConcurrentHashMap<>();
@@ -173,6 +179,38 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
             if (in_arr == null) return;
         }
         switch (datatype) {
+            case WindDef.MSG_SYS_SNAPSHOTENDS:
+                log.debug("recieve WindGW snapshotends");
+                requestMgr.addReqData(new Object[]{WindDef.MSG_SYS_SNAPSHOTENDS, new Integer(0)});
+                break;
+            case WindDef.MSG_DATA_FUTURE:
+                if(needsubscribe) {
+                    CodeTableData futureCodeTableData = null;
+                    try {
+                        futureCodeTableData = windDataParser.convertToCodeTableData(inputMessageHashMap, codeTableDataBySymbolMap);
+                    } catch (Exception e) {
+                        LogUtil.logException(log, e);
+                        return;
+                    }
+                    if (futureCodeTableData == null) return;
+                    codeTableDataBySymbolMap.put(futureCodeTableData.getWindCode(), futureCodeTableData);
+                    if (marketDataLog) {
+                        log.debug("CODETABLE INFO:S=" + futureCodeTableData.getWindCode() + ",C=" + futureCodeTableData.getCnName()
+                                        + ",CT=" + ChineseConvert.StoT(futureCodeTableData.getCnName()) + ",E="
+                                        + futureCodeTableData.getSecurityExchange() + ",SN=" + futureCodeTableData.getShortName() + ",T=" + futureCodeTableData.getSecurityType()
+                                        + ",Sp=" + futureCodeTableData.getSpellName() + ",EN=" + futureCodeTableData.getEnglishName()
+                                        + ",Group=" + futureCodeTableData.getGroup() + ",P=" + futureCodeTableData.getProduct()
+                                        + ",PN=" + futureCodeTableData.getProductName() + ",SyN=" + futureCodeTableData.getSymbolName()
+                                        + ",Cu=" + futureCodeTableData.getCurrency() + ",SID=" + futureCodeTableData.getShowID()
+                        );
+                    }
+                    requestMgr.addReqData(new Object[]{
+                            WindDef.MSG_SYS_CODETABLE, futureCodeTableData});
+                }
+                break;
+            case WindDef.MSG_SYS_MARKETS:
+                log.debug("receive WindGW markets");
+                break;
             case WindDef.MSG_WINDGW_CONNECTED:
                 log.debug("receive WindGW connected");
                 break;
@@ -231,7 +269,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode()
                             + ",CT=" + ChineseConvert.StoT(codeTableData.getCnName()) + ",E="
                             + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
-                            + ",Sp=" + codeTableData.getSpellName());
+                            + ",Sp=" + codeTableData.getSpellName() + ",EN=" + codeTableData.getEnglishName());
                 }
                 requestMgr.addReqData(new Object[]{datatype, codeTableData});
                 break;
@@ -249,8 +287,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     }
                     if (serverHeartBeatCountAfterCodeTableCome >= 2) {
 //                        RefDataParser.saveHashMapToFile("ticks/codetable_fcc.xml", new HashMap<>(codeTableDataBySymbolMap));
-                        codeTableIsProcessEnd = true;
-                        serverHeartBeatCountAfterCodeTableCome = -1;
+                        if(needsubscribe) {
+                            requestMgr.addReqData(new Object[]{WindDef.MSG_SYS_REQUEST_SNAPSHOT, new Integer(0)});
+                            serverHeartBeatCountAfterCodeTableCome = -1;
+                        }else{
+                            codeTableIsProcessEnd = true;
+                            serverHeartBeatCountAfterCodeTableCome = -1;
+                        }
                     }
                 }else {
                     if (serverHeartBeatCountAfterCodeTableCome == 5) {
@@ -391,10 +434,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public int parsePackTypeToDataType(int packType, HashMap hashMap) {
         int dataType = -1;
         if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE;
+        if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
         if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
         if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
         if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
         if (packType == FDTFields.WindCodeTableResult) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
+        if (packType == FDTFields.WindMarkets) dataType = WindDef.MSG_SYS_MARKETS;
+        if (packType == FDTFields.SnapShotEnds) dataType = WindDef.MSG_SYS_SNAPSHOTENDS;
         return dataType;
     }
 
@@ -422,6 +468,33 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                 this.channelHandlerContext.channel().writeAndFlush(makeRequestCodeTable(marketsList.get(i)));
             }
         }
+    }
+
+    public void sendClearSubscribe() {
+        FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
+
+        sbSymbol.append("API");
+        sbSymbol.append("ClearSubscribe");
+
+        String subscribeStr = sbSymbol.toString();
+
+        subscribeStr = subscribeStr + "|Hash="
+                + String.valueOf(subscribeStr.hashCode());
+        log.debug("[sendClearSubscribe]" + subscribeStr);
+        this.channelHandlerContext.channel().writeAndFlush(subscribeStr);
+    }
+
+    public void sendSubscribe(String symbol) {
+        FixStringBuilder sbSymbol = new FixStringBuilder('=', '|');
+        sbSymbol.append("API");
+        sbSymbol.append("SUBSCRIBE");
+        sbSymbol.append("Symbol");
+        sbSymbol.append(symbol);
+        String subscribeStr = sbSymbol.toString();
+        subscribeStr = subscribeStr + "|Hash="
+                + String.valueOf(subscribeStr.hashCode());
+        log.debug("[Subscribe]" + subscribeStr);
+        this.channelHandlerContext.channel().writeAndFlush(subscribeStr);
     }
 
     public void sendRefDataUpdate(List<RefData> refDataList, RefDataUpdateEvent.Action action){
@@ -526,9 +599,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         this.channelHandlerContext = ctx;
     }
 
+    @Override
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     public static void main(String[] args) throws Exception {
         String logConfigFile = "conf/windlog4j.xml";
-        String configFile = "conf/windRefData.xml";
+        String configFile = "conf/mlRefData.xml";
         DOMConfigurator.configure(logConfigFile);
         ApplicationContext context = new FileSystemXmlApplicationContext(configFile);
         // start server
@@ -537,7 +615,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 //        refDataAdaptor.uninit();
         //RefData補拼音,簡繁體股名 使用
         log.debug("Process RefData Begin");
-        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterFCC");
+        WindRefDataAdapter refDataAdaptor = (WindRefDataAdapter) context.getBean("refDataAdapterFT");
         refDataAdaptor.init();
 
 //        refDataAdaptor.windBaseDBDataHashMap = refDataAdaptor.getWindBaseDBData();
@@ -624,6 +702,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         this.refDataFCHashMap = refDataFCHashMap;
     }
 
+    public HashMap<RefDataField, Object> getRefDataFTHashMap() {
+        return refDataFTHashMap;
+    }
+
+    public void setRefDataFTHashMap(HashMap<RefDataField, Object> refDataFTHashMap) {
+        this.refDataFTHashMap = refDataFTHashMap;
+    }
+
     public void setRefDataFile(String refDataFile) {
         this.refDataFile = refDataFile;
     }
@@ -648,12 +734,18 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         this.windDBHandler = windDBHandler;
     }
 
+    public ConcurrentHashMap<String, CodeTableData> getCodeTableDataBySymbolMap() {
+        return codeTableDataBySymbolMap;
+    }
+
     public void setWindFilter(IWindFilter windFilter) {
         this.windFilter = windFilter;
     }
+
     public void setRefFilterList(List<String> refFilterList) {
         this.refFilterList = refFilterList;
     }
+
     public boolean isSubscribed() {
         return subscribed;
     }
@@ -662,8 +754,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         this.refDataAdapterName = refDataAdapterName;
     }
 
-	@Override
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
+    public void setNeedsubscribe(boolean needsubscribe) {
+        this.needsubscribe = needsubscribe;
+    }
+
+    public boolean isNeedsubscribe() {
+        return needsubscribe;
+    }
 }
