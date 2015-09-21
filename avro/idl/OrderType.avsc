@@ -1,9 +1,0 @@
-{
-  "namespace": "com.cyanspring.avro.generate.trade.types",
-  "type": "enum",
-  "name": "OrderType",
-  "symbols": [
-     "Market", 
-	 "Limit"
-  ]
-}

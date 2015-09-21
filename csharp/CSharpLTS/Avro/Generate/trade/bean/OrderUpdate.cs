@@ -15,7 +15,7 @@ namespace com.cyanspring.avro.generate.trade.bean
 	
 	public partial class OrderUpdate : ISpecificRecord
 	{
-		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""OrderUpdate"",""namespace"":""com.cyanspring.avro.generate.trade.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""orderId"",""type"":""string""},{""name"":""exchangeAccount"",""type"":""string""},{""name"":""exchangeOrderId"",""type"":""string""},{""name"":""symbol"",""type"":""string""},{""name"":""price"",""type"":""double""},{""name"":""quantity"",""type"":""double""},{""name"":""execType"",""type"":""int""},{""name"":""ordStatus"",""type"":""int""},{""name"":""orderSide"",""type"":""int""},{""name"":""orderType"",""type"":""int""},{""name"":""timeInForce"",""type"":""int""},{""name"":""created"",""type"":""string""},{""name"":""clOrderId"",""type"":""string""},{""name"":""txId"",""type"":""string""},{""name"":""msg"",""type"":""string""}]}");
+		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""OrderUpdate"",""namespace"":""com.cyanspring.avro.generate.trade.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""orderId"",""type"":""string""},{""name"":""exchangeAccount"",""type"":""string""},{""name"":""exchangeOrderId"",""type"":""string""},{""name"":""symbol"",""type"":""string""},{""name"":""price"",""type"":""double""},{""name"":""quantity"",""type"":""double""},{""name"":""cumQty"",""type"":""double""},{""name"":""avgPx"",""type"":""double""},{""name"":""execType"",""type"":""int""},{""name"":""ordStatus"",""type"":""int""},{""name"":""orderSide"",""type"":""int""},{""name"":""orderType"",""type"":""int""},{""name"":""timeInForce"",""type"":""int""},{""name"":""created"",""type"":""string""},{""name"":""clOrderId"",""type"":""string""},{""name"":""txId"",""type"":""string""},{""name"":""msg"",""type"":""string""}]}");
 		private int _objectType;
 		private string _orderId;
 		private string _exchangeAccount;
@@ -23,6 +23,8 @@ namespace com.cyanspring.avro.generate.trade.bean
 		private string _symbol;
 		private double _price;
 		private double _quantity;
+		private double _cumQty;
+		private double _avgPx;
 		private int _execType;
 		private int _ordStatus;
 		private int _orderSide;
@@ -114,6 +116,28 @@ namespace com.cyanspring.avro.generate.trade.bean
 			set
 			{
 				this._quantity = value;
+			}
+		}
+		public double cumQty
+		{
+			get
+			{
+				return this._cumQty;
+			}
+			set
+			{
+				this._cumQty = value;
+			}
+		}
+		public double avgPx
+		{
+			get
+			{
+				return this._avgPx;
+			}
+			set
+			{
+				this._avgPx = value;
 			}
 		}
 		public int execType
@@ -226,15 +250,17 @@ namespace com.cyanspring.avro.generate.trade.bean
 			case 4: return this.symbol;
 			case 5: return this.price;
 			case 6: return this.quantity;
-			case 7: return this.execType;
-			case 8: return this.ordStatus;
-			case 9: return this.orderSide;
-			case 10: return this.orderType;
-			case 11: return this.timeInForce;
-			case 12: return this.created;
-			case 13: return this.clOrderId;
-			case 14: return this.txId;
-			case 15: return this.msg;
+			case 7: return this.cumQty;
+			case 8: return this.avgPx;
+			case 9: return this.execType;
+			case 10: return this.ordStatus;
+			case 11: return this.orderSide;
+			case 12: return this.orderType;
+			case 13: return this.timeInForce;
+			case 14: return this.created;
+			case 15: return this.clOrderId;
+			case 16: return this.txId;
+			case 17: return this.msg;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Get()");
 			};
 		}
@@ -249,15 +275,17 @@ namespace com.cyanspring.avro.generate.trade.bean
 			case 4: this.symbol = (System.String)fieldValue; break;
 			case 5: this.price = (System.Double)fieldValue; break;
 			case 6: this.quantity = (System.Double)fieldValue; break;
-			case 7: this.execType = (System.Int32)fieldValue; break;
-			case 8: this.ordStatus = (System.Int32)fieldValue; break;
-			case 9: this.orderSide = (System.Int32)fieldValue; break;
-			case 10: this.orderType = (System.Int32)fieldValue; break;
-			case 11: this.timeInForce = (System.Int32)fieldValue; break;
-			case 12: this.created = (System.String)fieldValue; break;
-			case 13: this.clOrderId = (System.String)fieldValue; break;
-			case 14: this.txId = (System.String)fieldValue; break;
-			case 15: this.msg = (System.String)fieldValue; break;
+			case 7: this.cumQty = (System.Double)fieldValue; break;
+			case 8: this.avgPx = (System.Double)fieldValue; break;
+			case 9: this.execType = (System.Int32)fieldValue; break;
+			case 10: this.ordStatus = (System.Int32)fieldValue; break;
+			case 11: this.orderSide = (System.Int32)fieldValue; break;
+			case 12: this.orderType = (System.Int32)fieldValue; break;
+			case 13: this.timeInForce = (System.Int32)fieldValue; break;
+			case 14: this.created = (System.String)fieldValue; break;
+			case 15: this.clOrderId = (System.String)fieldValue; break;
+			case 16: this.txId = (System.String)fieldValue; break;
+			case 17: this.msg = (System.String)fieldValue; break;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Put()");
 			};
 		}

@@ -7,7 +7,7 @@ package com.cyanspring.avro.generate.trade.bean;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderUpdate\",\"namespace\":\"com.cyanspring.avro.generate.trade.bean\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"exchangeOrderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"symbol\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"quantity\",\"type\":\"double\"},{\"name\":\"execType\",\"type\":\"int\"},{\"name\":\"ordStatus\",\"type\":\"int\"},{\"name\":\"orderSide\",\"type\":\"int\"},{\"name\":\"orderType\",\"type\":\"int\"},{\"name\":\"timeInForce\",\"type\":\"int\"},{\"name\":\"created\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"clOrderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"msg\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderUpdate\",\"namespace\":\"com.cyanspring.avro.generate.trade.bean\",\"fields\":[{\"name\":\"objectType\",\"type\":\"int\"},{\"name\":\"orderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"exchangeAccount\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"exchangeOrderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"symbol\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"price\",\"type\":\"double\"},{\"name\":\"quantity\",\"type\":\"double\"},{\"name\":\"cumQty\",\"type\":\"double\"},{\"name\":\"avgPx\",\"type\":\"double\"},{\"name\":\"execType\",\"type\":\"int\"},{\"name\":\"ordStatus\",\"type\":\"int\"},{\"name\":\"orderSide\",\"type\":\"int\"},{\"name\":\"orderType\",\"type\":\"int\"},{\"name\":\"timeInForce\",\"type\":\"int\"},{\"name\":\"created\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"clOrderId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"txId\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"msg\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
   @Deprecated public int objectType;
   @Deprecated public java.lang.String orderId;
@@ -16,6 +16,8 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
   @Deprecated public java.lang.String symbol;
   @Deprecated public double price;
   @Deprecated public double quantity;
+  @Deprecated public double cumQty;
+  @Deprecated public double avgPx;
   @Deprecated public int execType;
   @Deprecated public int ordStatus;
   @Deprecated public int orderSide;
@@ -36,7 +38,7 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
   /**
    * All-args constructor.
    */
-  public OrderUpdate(java.lang.Integer objectType, java.lang.String orderId, java.lang.String exchangeAccount, java.lang.String exchangeOrderId, java.lang.String symbol, java.lang.Double price, java.lang.Double quantity, java.lang.Integer execType, java.lang.Integer ordStatus, java.lang.Integer orderSide, java.lang.Integer orderType, java.lang.Integer timeInForce, java.lang.String created, java.lang.String clOrderId, java.lang.String txId, java.lang.String msg) {
+  public OrderUpdate(java.lang.Integer objectType, java.lang.String orderId, java.lang.String exchangeAccount, java.lang.String exchangeOrderId, java.lang.String symbol, java.lang.Double price, java.lang.Double quantity, java.lang.Double cumQty, java.lang.Double avgPx, java.lang.Integer execType, java.lang.Integer ordStatus, java.lang.Integer orderSide, java.lang.Integer orderType, java.lang.Integer timeInForce, java.lang.String created, java.lang.String clOrderId, java.lang.String txId, java.lang.String msg) {
     this.objectType = objectType;
     this.orderId = orderId;
     this.exchangeAccount = exchangeAccount;
@@ -44,6 +46,8 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     this.symbol = symbol;
     this.price = price;
     this.quantity = quantity;
+    this.cumQty = cumQty;
+    this.avgPx = avgPx;
     this.execType = execType;
     this.ordStatus = ordStatus;
     this.orderSide = orderSide;
@@ -66,15 +70,17 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     case 4: return symbol;
     case 5: return price;
     case 6: return quantity;
-    case 7: return execType;
-    case 8: return ordStatus;
-    case 9: return orderSide;
-    case 10: return orderType;
-    case 11: return timeInForce;
-    case 12: return created;
-    case 13: return clOrderId;
-    case 14: return txId;
-    case 15: return msg;
+    case 7: return cumQty;
+    case 8: return avgPx;
+    case 9: return execType;
+    case 10: return ordStatus;
+    case 11: return orderSide;
+    case 12: return orderType;
+    case 13: return timeInForce;
+    case 14: return created;
+    case 15: return clOrderId;
+    case 16: return txId;
+    case 17: return msg;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -89,15 +95,17 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     case 4: symbol = (java.lang.String)value$; break;
     case 5: price = (java.lang.Double)value$; break;
     case 6: quantity = (java.lang.Double)value$; break;
-    case 7: execType = (java.lang.Integer)value$; break;
-    case 8: ordStatus = (java.lang.Integer)value$; break;
-    case 9: orderSide = (java.lang.Integer)value$; break;
-    case 10: orderType = (java.lang.Integer)value$; break;
-    case 11: timeInForce = (java.lang.Integer)value$; break;
-    case 12: created = (java.lang.String)value$; break;
-    case 13: clOrderId = (java.lang.String)value$; break;
-    case 14: txId = (java.lang.String)value$; break;
-    case 15: msg = (java.lang.String)value$; break;
+    case 7: cumQty = (java.lang.Double)value$; break;
+    case 8: avgPx = (java.lang.Double)value$; break;
+    case 9: execType = (java.lang.Integer)value$; break;
+    case 10: ordStatus = (java.lang.Integer)value$; break;
+    case 11: orderSide = (java.lang.Integer)value$; break;
+    case 12: orderType = (java.lang.Integer)value$; break;
+    case 13: timeInForce = (java.lang.Integer)value$; break;
+    case 14: created = (java.lang.String)value$; break;
+    case 15: clOrderId = (java.lang.String)value$; break;
+    case 16: txId = (java.lang.String)value$; break;
+    case 17: msg = (java.lang.String)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -205,6 +213,36 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
    */
   public void setQuantity(java.lang.Double value) {
     this.quantity = value;
+  }
+
+  /**
+   * Gets the value of the 'cumQty' field.
+   */
+  public java.lang.Double getCumQty() {
+    return cumQty;
+  }
+
+  /**
+   * Sets the value of the 'cumQty' field.
+   * @param value the value to set.
+   */
+  public void setCumQty(java.lang.Double value) {
+    this.cumQty = value;
+  }
+
+  /**
+   * Gets the value of the 'avgPx' field.
+   */
+  public java.lang.Double getAvgPx() {
+    return avgPx;
+  }
+
+  /**
+   * Sets the value of the 'avgPx' field.
+   * @param value the value to set.
+   */
+  public void setAvgPx(java.lang.Double value) {
+    this.avgPx = value;
   }
 
   /**
@@ -370,6 +408,8 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     private java.lang.String symbol;
     private double price;
     private double quantity;
+    private double cumQty;
+    private double avgPx;
     private int execType;
     private int ordStatus;
     private int orderSide;
@@ -416,41 +456,49 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
         this.quantity = data().deepCopy(fields()[6].schema(), other.quantity);
         fieldSetFlags()[6] = true;
       }
-      if (isValidValue(fields()[7], other.execType)) {
-        this.execType = data().deepCopy(fields()[7].schema(), other.execType);
+      if (isValidValue(fields()[7], other.cumQty)) {
+        this.cumQty = data().deepCopy(fields()[7].schema(), other.cumQty);
         fieldSetFlags()[7] = true;
       }
-      if (isValidValue(fields()[8], other.ordStatus)) {
-        this.ordStatus = data().deepCopy(fields()[8].schema(), other.ordStatus);
+      if (isValidValue(fields()[8], other.avgPx)) {
+        this.avgPx = data().deepCopy(fields()[8].schema(), other.avgPx);
         fieldSetFlags()[8] = true;
       }
-      if (isValidValue(fields()[9], other.orderSide)) {
-        this.orderSide = data().deepCopy(fields()[9].schema(), other.orderSide);
+      if (isValidValue(fields()[9], other.execType)) {
+        this.execType = data().deepCopy(fields()[9].schema(), other.execType);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.orderType)) {
-        this.orderType = data().deepCopy(fields()[10].schema(), other.orderType);
+      if (isValidValue(fields()[10], other.ordStatus)) {
+        this.ordStatus = data().deepCopy(fields()[10].schema(), other.ordStatus);
         fieldSetFlags()[10] = true;
       }
-      if (isValidValue(fields()[11], other.timeInForce)) {
-        this.timeInForce = data().deepCopy(fields()[11].schema(), other.timeInForce);
+      if (isValidValue(fields()[11], other.orderSide)) {
+        this.orderSide = data().deepCopy(fields()[11].schema(), other.orderSide);
         fieldSetFlags()[11] = true;
       }
-      if (isValidValue(fields()[12], other.created)) {
-        this.created = data().deepCopy(fields()[12].schema(), other.created);
+      if (isValidValue(fields()[12], other.orderType)) {
+        this.orderType = data().deepCopy(fields()[12].schema(), other.orderType);
         fieldSetFlags()[12] = true;
       }
-      if (isValidValue(fields()[13], other.clOrderId)) {
-        this.clOrderId = data().deepCopy(fields()[13].schema(), other.clOrderId);
+      if (isValidValue(fields()[13], other.timeInForce)) {
+        this.timeInForce = data().deepCopy(fields()[13].schema(), other.timeInForce);
         fieldSetFlags()[13] = true;
       }
-      if (isValidValue(fields()[14], other.txId)) {
-        this.txId = data().deepCopy(fields()[14].schema(), other.txId);
+      if (isValidValue(fields()[14], other.created)) {
+        this.created = data().deepCopy(fields()[14].schema(), other.created);
         fieldSetFlags()[14] = true;
       }
-      if (isValidValue(fields()[15], other.msg)) {
-        this.msg = data().deepCopy(fields()[15].schema(), other.msg);
+      if (isValidValue(fields()[15], other.clOrderId)) {
+        this.clOrderId = data().deepCopy(fields()[15].schema(), other.clOrderId);
         fieldSetFlags()[15] = true;
+      }
+      if (isValidValue(fields()[16], other.txId)) {
+        this.txId = data().deepCopy(fields()[16].schema(), other.txId);
+        fieldSetFlags()[16] = true;
+      }
+      if (isValidValue(fields()[17], other.msg)) {
+        this.msg = data().deepCopy(fields()[17].schema(), other.msg);
+        fieldSetFlags()[17] = true;
       }
     }
     
@@ -485,41 +533,49 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
         this.quantity = data().deepCopy(fields()[6].schema(), other.quantity);
         fieldSetFlags()[6] = true;
       }
-      if (isValidValue(fields()[7], other.execType)) {
-        this.execType = data().deepCopy(fields()[7].schema(), other.execType);
+      if (isValidValue(fields()[7], other.cumQty)) {
+        this.cumQty = data().deepCopy(fields()[7].schema(), other.cumQty);
         fieldSetFlags()[7] = true;
       }
-      if (isValidValue(fields()[8], other.ordStatus)) {
-        this.ordStatus = data().deepCopy(fields()[8].schema(), other.ordStatus);
+      if (isValidValue(fields()[8], other.avgPx)) {
+        this.avgPx = data().deepCopy(fields()[8].schema(), other.avgPx);
         fieldSetFlags()[8] = true;
       }
-      if (isValidValue(fields()[9], other.orderSide)) {
-        this.orderSide = data().deepCopy(fields()[9].schema(), other.orderSide);
+      if (isValidValue(fields()[9], other.execType)) {
+        this.execType = data().deepCopy(fields()[9].schema(), other.execType);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.orderType)) {
-        this.orderType = data().deepCopy(fields()[10].schema(), other.orderType);
+      if (isValidValue(fields()[10], other.ordStatus)) {
+        this.ordStatus = data().deepCopy(fields()[10].schema(), other.ordStatus);
         fieldSetFlags()[10] = true;
       }
-      if (isValidValue(fields()[11], other.timeInForce)) {
-        this.timeInForce = data().deepCopy(fields()[11].schema(), other.timeInForce);
+      if (isValidValue(fields()[11], other.orderSide)) {
+        this.orderSide = data().deepCopy(fields()[11].schema(), other.orderSide);
         fieldSetFlags()[11] = true;
       }
-      if (isValidValue(fields()[12], other.created)) {
-        this.created = data().deepCopy(fields()[12].schema(), other.created);
+      if (isValidValue(fields()[12], other.orderType)) {
+        this.orderType = data().deepCopy(fields()[12].schema(), other.orderType);
         fieldSetFlags()[12] = true;
       }
-      if (isValidValue(fields()[13], other.clOrderId)) {
-        this.clOrderId = data().deepCopy(fields()[13].schema(), other.clOrderId);
+      if (isValidValue(fields()[13], other.timeInForce)) {
+        this.timeInForce = data().deepCopy(fields()[13].schema(), other.timeInForce);
         fieldSetFlags()[13] = true;
       }
-      if (isValidValue(fields()[14], other.txId)) {
-        this.txId = data().deepCopy(fields()[14].schema(), other.txId);
+      if (isValidValue(fields()[14], other.created)) {
+        this.created = data().deepCopy(fields()[14].schema(), other.created);
         fieldSetFlags()[14] = true;
       }
-      if (isValidValue(fields()[15], other.msg)) {
-        this.msg = data().deepCopy(fields()[15].schema(), other.msg);
+      if (isValidValue(fields()[15], other.clOrderId)) {
+        this.clOrderId = data().deepCopy(fields()[15].schema(), other.clOrderId);
         fieldSetFlags()[15] = true;
+      }
+      if (isValidValue(fields()[16], other.txId)) {
+        this.txId = data().deepCopy(fields()[16].schema(), other.txId);
+        fieldSetFlags()[16] = true;
+      }
+      if (isValidValue(fields()[17], other.msg)) {
+        this.msg = data().deepCopy(fields()[17].schema(), other.msg);
+        fieldSetFlags()[17] = true;
       }
     }
 
@@ -695,6 +751,54 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
       return this;
     }
 
+    /** Gets the value of the 'cumQty' field */
+    public java.lang.Double getCumQty() {
+      return cumQty;
+    }
+    
+    /** Sets the value of the 'cumQty' field */
+    public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setCumQty(double value) {
+      validate(fields()[7], value);
+      this.cumQty = value;
+      fieldSetFlags()[7] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'cumQty' field has been set */
+    public boolean hasCumQty() {
+      return fieldSetFlags()[7];
+    }
+    
+    /** Clears the value of the 'cumQty' field */
+    public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearCumQty() {
+      fieldSetFlags()[7] = false;
+      return this;
+    }
+
+    /** Gets the value of the 'avgPx' field */
+    public java.lang.Double getAvgPx() {
+      return avgPx;
+    }
+    
+    /** Sets the value of the 'avgPx' field */
+    public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setAvgPx(double value) {
+      validate(fields()[8], value);
+      this.avgPx = value;
+      fieldSetFlags()[8] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'avgPx' field has been set */
+    public boolean hasAvgPx() {
+      return fieldSetFlags()[8];
+    }
+    
+    /** Clears the value of the 'avgPx' field */
+    public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearAvgPx() {
+      fieldSetFlags()[8] = false;
+      return this;
+    }
+
     /** Gets the value of the 'execType' field */
     public java.lang.Integer getExecType() {
       return execType;
@@ -702,20 +806,20 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'execType' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setExecType(int value) {
-      validate(fields()[7], value);
+      validate(fields()[9], value);
       this.execType = value;
-      fieldSetFlags()[7] = true;
+      fieldSetFlags()[9] = true;
       return this; 
     }
     
     /** Checks whether the 'execType' field has been set */
     public boolean hasExecType() {
-      return fieldSetFlags()[7];
+      return fieldSetFlags()[9];
     }
     
     /** Clears the value of the 'execType' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearExecType() {
-      fieldSetFlags()[7] = false;
+      fieldSetFlags()[9] = false;
       return this;
     }
 
@@ -726,20 +830,20 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'ordStatus' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setOrdStatus(int value) {
-      validate(fields()[8], value);
+      validate(fields()[10], value);
       this.ordStatus = value;
-      fieldSetFlags()[8] = true;
+      fieldSetFlags()[10] = true;
       return this; 
     }
     
     /** Checks whether the 'ordStatus' field has been set */
     public boolean hasOrdStatus() {
-      return fieldSetFlags()[8];
+      return fieldSetFlags()[10];
     }
     
     /** Clears the value of the 'ordStatus' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearOrdStatus() {
-      fieldSetFlags()[8] = false;
+      fieldSetFlags()[10] = false;
       return this;
     }
 
@@ -750,20 +854,20 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'orderSide' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setOrderSide(int value) {
-      validate(fields()[9], value);
+      validate(fields()[11], value);
       this.orderSide = value;
-      fieldSetFlags()[9] = true;
+      fieldSetFlags()[11] = true;
       return this; 
     }
     
     /** Checks whether the 'orderSide' field has been set */
     public boolean hasOrderSide() {
-      return fieldSetFlags()[9];
+      return fieldSetFlags()[11];
     }
     
     /** Clears the value of the 'orderSide' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearOrderSide() {
-      fieldSetFlags()[9] = false;
+      fieldSetFlags()[11] = false;
       return this;
     }
 
@@ -774,20 +878,20 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'orderType' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setOrderType(int value) {
-      validate(fields()[10], value);
+      validate(fields()[12], value);
       this.orderType = value;
-      fieldSetFlags()[10] = true;
+      fieldSetFlags()[12] = true;
       return this; 
     }
     
     /** Checks whether the 'orderType' field has been set */
     public boolean hasOrderType() {
-      return fieldSetFlags()[10];
+      return fieldSetFlags()[12];
     }
     
     /** Clears the value of the 'orderType' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearOrderType() {
-      fieldSetFlags()[10] = false;
+      fieldSetFlags()[12] = false;
       return this;
     }
 
@@ -798,20 +902,20 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'timeInForce' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setTimeInForce(int value) {
-      validate(fields()[11], value);
+      validate(fields()[13], value);
       this.timeInForce = value;
-      fieldSetFlags()[11] = true;
+      fieldSetFlags()[13] = true;
       return this; 
     }
     
     /** Checks whether the 'timeInForce' field has been set */
     public boolean hasTimeInForce() {
-      return fieldSetFlags()[11];
+      return fieldSetFlags()[13];
     }
     
     /** Clears the value of the 'timeInForce' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearTimeInForce() {
-      fieldSetFlags()[11] = false;
+      fieldSetFlags()[13] = false;
       return this;
     }
 
@@ -822,21 +926,21 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'created' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setCreated(java.lang.String value) {
-      validate(fields()[12], value);
+      validate(fields()[14], value);
       this.created = value;
-      fieldSetFlags()[12] = true;
+      fieldSetFlags()[14] = true;
       return this; 
     }
     
     /** Checks whether the 'created' field has been set */
     public boolean hasCreated() {
-      return fieldSetFlags()[12];
+      return fieldSetFlags()[14];
     }
     
     /** Clears the value of the 'created' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearCreated() {
       created = null;
-      fieldSetFlags()[12] = false;
+      fieldSetFlags()[14] = false;
       return this;
     }
 
@@ -847,21 +951,21 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'clOrderId' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setClOrderId(java.lang.String value) {
-      validate(fields()[13], value);
+      validate(fields()[15], value);
       this.clOrderId = value;
-      fieldSetFlags()[13] = true;
+      fieldSetFlags()[15] = true;
       return this; 
     }
     
     /** Checks whether the 'clOrderId' field has been set */
     public boolean hasClOrderId() {
-      return fieldSetFlags()[13];
+      return fieldSetFlags()[15];
     }
     
     /** Clears the value of the 'clOrderId' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearClOrderId() {
       clOrderId = null;
-      fieldSetFlags()[13] = false;
+      fieldSetFlags()[15] = false;
       return this;
     }
 
@@ -872,21 +976,21 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'txId' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setTxId(java.lang.String value) {
-      validate(fields()[14], value);
+      validate(fields()[16], value);
       this.txId = value;
-      fieldSetFlags()[14] = true;
+      fieldSetFlags()[16] = true;
       return this; 
     }
     
     /** Checks whether the 'txId' field has been set */
     public boolean hasTxId() {
-      return fieldSetFlags()[14];
+      return fieldSetFlags()[16];
     }
     
     /** Clears the value of the 'txId' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearTxId() {
       txId = null;
-      fieldSetFlags()[14] = false;
+      fieldSetFlags()[16] = false;
       return this;
     }
 
@@ -897,21 +1001,21 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
     
     /** Sets the value of the 'msg' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder setMsg(java.lang.String value) {
-      validate(fields()[15], value);
+      validate(fields()[17], value);
       this.msg = value;
-      fieldSetFlags()[15] = true;
+      fieldSetFlags()[17] = true;
       return this; 
     }
     
     /** Checks whether the 'msg' field has been set */
     public boolean hasMsg() {
-      return fieldSetFlags()[15];
+      return fieldSetFlags()[17];
     }
     
     /** Clears the value of the 'msg' field */
     public com.cyanspring.avro.generate.trade.bean.OrderUpdate.Builder clearMsg() {
       msg = null;
-      fieldSetFlags()[15] = false;
+      fieldSetFlags()[17] = false;
       return this;
     }
 
@@ -926,15 +1030,17 @@ public class OrderUpdate extends org.apache.avro.specific.SpecificRecordBase imp
         record.symbol = fieldSetFlags()[4] ? this.symbol : (java.lang.String) defaultValue(fields()[4]);
         record.price = fieldSetFlags()[5] ? this.price : (java.lang.Double) defaultValue(fields()[5]);
         record.quantity = fieldSetFlags()[6] ? this.quantity : (java.lang.Double) defaultValue(fields()[6]);
-        record.execType = fieldSetFlags()[7] ? this.execType : (java.lang.Integer) defaultValue(fields()[7]);
-        record.ordStatus = fieldSetFlags()[8] ? this.ordStatus : (java.lang.Integer) defaultValue(fields()[8]);
-        record.orderSide = fieldSetFlags()[9] ? this.orderSide : (java.lang.Integer) defaultValue(fields()[9]);
-        record.orderType = fieldSetFlags()[10] ? this.orderType : (java.lang.Integer) defaultValue(fields()[10]);
-        record.timeInForce = fieldSetFlags()[11] ? this.timeInForce : (java.lang.Integer) defaultValue(fields()[11]);
-        record.created = fieldSetFlags()[12] ? this.created : (java.lang.String) defaultValue(fields()[12]);
-        record.clOrderId = fieldSetFlags()[13] ? this.clOrderId : (java.lang.String) defaultValue(fields()[13]);
-        record.txId = fieldSetFlags()[14] ? this.txId : (java.lang.String) defaultValue(fields()[14]);
-        record.msg = fieldSetFlags()[15] ? this.msg : (java.lang.String) defaultValue(fields()[15]);
+        record.cumQty = fieldSetFlags()[7] ? this.cumQty : (java.lang.Double) defaultValue(fields()[7]);
+        record.avgPx = fieldSetFlags()[8] ? this.avgPx : (java.lang.Double) defaultValue(fields()[8]);
+        record.execType = fieldSetFlags()[9] ? this.execType : (java.lang.Integer) defaultValue(fields()[9]);
+        record.ordStatus = fieldSetFlags()[10] ? this.ordStatus : (java.lang.Integer) defaultValue(fields()[10]);
+        record.orderSide = fieldSetFlags()[11] ? this.orderSide : (java.lang.Integer) defaultValue(fields()[11]);
+        record.orderType = fieldSetFlags()[12] ? this.orderType : (java.lang.Integer) defaultValue(fields()[12]);
+        record.timeInForce = fieldSetFlags()[13] ? this.timeInForce : (java.lang.Integer) defaultValue(fields()[13]);
+        record.created = fieldSetFlags()[14] ? this.created : (java.lang.String) defaultValue(fields()[14]);
+        record.clOrderId = fieldSetFlags()[15] ? this.clOrderId : (java.lang.String) defaultValue(fields()[15]);
+        record.txId = fieldSetFlags()[16] ? this.txId : (java.lang.String) defaultValue(fields()[16]);
+        record.msg = fieldSetFlags()[17] ? this.msg : (java.lang.String) defaultValue(fields()[17]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
