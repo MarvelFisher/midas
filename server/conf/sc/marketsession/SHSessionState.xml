@@ -30,11 +30,6 @@
 	<bean id="shDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
-				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>15:00:00</value></constructor-arg>
-		        	<constructor-arg><value>32:30:00</value></constructor-arg>
-				</bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>CLOSE</value></constructor-arg>
                     <constructor-arg><value>-9:00:00</value></constructor-arg>
@@ -65,6 +60,11 @@
 		        	<constructor-arg><value>13:00:00</value></constructor-arg>
 		        	<constructor-arg><value>15:00:00</value></constructor-arg>
 				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+                    <constructor-arg><value>CLOSE</value></constructor-arg>
+                    <constructor-arg><value>15:00:00</value></constructor-arg>
+                    <constructor-arg><value>32:30:00</value></constructor-arg>
+                </bean>
 			</list>
 		</constructor-arg>
 	</bean>
