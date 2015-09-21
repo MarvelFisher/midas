@@ -3,11 +3,7 @@ package com.cyanspring.server.marketdata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,7 +16,6 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.statistic.AccountStatisticReplyEvent;
 import com.cyanspring.common.marketdata.IKDBThrottling;
 import com.cyanspring.common.marketdata.IQuoteListener;
 import com.cyanspring.common.marketdata.InnerQuote;
@@ -38,7 +33,7 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	
 	private AsyncTimerEvent timerThrottlingEvent = new AsyncTimerEvent();
 	private long quoteThrottlingInterval = 1000;
-	private IKDBThrottling KdbThrottling = null;
+	private IKDBThrottling kdbThrottling = null;
 	HashMap<String, Quote> quoteHold = new HashMap<String, Quote>();
 
 	private BlockingQueue<Quote> queue;
@@ -85,7 +80,7 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	private void SaveQuotes(List<Quote> Quotes)
 	{
 		
-		if(null == KdbThrottling)
+		if(null == kdbThrottling)
 		{
 			kdbPersistenceManager.saveQuotes(Quotes);
 			return;
@@ -98,7 +93,7 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 			{
 				if(quoteHold.containsKey(q.getSymbol()))
 				{
-					if(KdbThrottling.isNewQuote(q, quoteHold.get(q.getSymbol())))
+					if(kdbThrottling.isNewQuote(q, quoteHold.get(q.getSymbol())))
 					{
 						priorityQuotes.add(quoteHold.get(q.getSymbol()));
 					}
@@ -115,9 +110,9 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	public void init() throws Exception {
 		queue = new LinkedBlockingQueue<>();
 		quoteThread.start();
-		if(null != KdbThrottling)
+		if(null != kdbThrottling)
 		{
-			log.info("KDB Standalone Throttler Start as :" + KdbThrottling.getClass().getName());
+			log.info("KDB Standalone Throttler Start as :" + kdbThrottling.getClass().getName());
 			scheduleManager.scheduleRepeatTimerEvent(quoteThrottlingInterval,
 					KDBQuoteListener.this, timerThrottlingEvent);
 		}
@@ -160,10 +155,10 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	}
 
 	public IKDBThrottling getKdbThrottling() {
-		return KdbThrottling;
+		return kdbThrottling;
 	}
 
 	public void setKdbThrottling(IKDBThrottling kdbThrottling) {
-		KdbThrottling = kdbThrottling;
+		this.kdbThrottling = kdbThrottling;
 	}
 }
