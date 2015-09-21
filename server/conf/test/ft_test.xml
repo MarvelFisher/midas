@@ -344,7 +344,7 @@
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
-				<ref bean="hyperDownStreamAdaptor" />
+				<ref bean="avroAdaptor" />
 			</list>
 		</constructor-arg>
 		<constructor-arg>
@@ -353,14 +353,28 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="hyperDownStreamAdaptor" class="com.cyanspring.server.sim.HyperDownStreamAdaptor">
+	<bean id="avroAdaptor" class="com.cyanspring.adaptor.avro.AvroAdaptor">
+		<property name="connections">
+			<list>
+				<ref bean="avroDownStreamConnection"/>
+			</list>
+		</property>
 	</bean>
-
-	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-        <property name="checkSingleSide" value="true"/>
-        <property name="reject" value="false"/>
-        <property name="cancel" value="false"/>
-    </bean>
+	<bean id="avroDownStreamConnection" class="com.cyanspring.adaptor.avro.AvroDownStreamConnection">
+		<property name="downStreamEventSender" ref="avroEventSender"></property>
+		<property name="id" value="avro01"></property>
+		<property name="exchangeAccount" value="exAc1"></property>
+	</bean>
+	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">	
+		<constructor-arg>
+			<ref bean="transportService"/>
+		</constructor-arg>
+		<constructor-arg>
+			<ref bean="avroSerialization"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="avroSerialization" class="com.cyanspring.avro.AvroSerialization"/>
 
 	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
 		<constructor-arg>

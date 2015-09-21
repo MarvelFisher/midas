@@ -61,9 +61,10 @@ import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.gui.session.GuiSession;
 
 public class QuoteView extends ViewPart implements IAsyncEventListener {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(QuoteView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.QuoteViewer";
 	private Composite parentComposite = null;
@@ -73,8 +74,8 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private Text textSymbol;
 	private DynamicTableViewer quoteViewer;
 	private String receiverId = IdGenerator.getInstance().getNextID();
-	private ConcurrentMap<String, Quote> quoteMap = new ConcurrentHashMap<String,Quote>();
-	private List<String>subList = new ArrayList<String>();
+	private ConcurrentMap<String, Quote> quoteMap = new ConcurrentHashMap<String, Quote>();
+	private List<String> subList = new ArrayList<String>();
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 1000;
 	private boolean columnCreated = false;
@@ -90,7 +91,8 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
 		{
-			SashForm sashForm = new SashForm(container,SWT.SMOOTH | SWT.VERTICAL);
+			SashForm sashForm = new SashForm(container, SWT.SMOOTH
+					| SWT.VERTICAL);
 			{
 				Composite composite = new Composite(sashForm, SWT.NONE);
 				GridLayout gl_composite = new GridLayout(3, false);
@@ -102,7 +104,8 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				}
 				{
 					textSymbol = new Text(composite, SWT.BORDER);
-					GridData gd_text = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+					GridData gd_text = new GridData(SWT.LEFT, SWT.CENTER,
+							false, false, 1, 1);
 					gd_text.widthHint = 171;
 					textSymbol.setLayoutData(gd_text);
 					textSymbol.setSize(149, 468);
@@ -116,38 +119,47 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
 							final String symbol = textSymbol.getText();
-							if(!StringUtils.hasText(symbol)){
-								showMessageBox("Symbol is empty" , parentComposite);
+							if (!StringUtils.hasText(symbol)) {
+								showMessageBox("Symbol is empty",
+										parentComposite);
 								return;
 							}
 
-							if(subList.contains(symbol)){
-								showMessageBox(symbol+" already subscribed" , parentComposite);
+							if (subList.contains(symbol)) {
+								showMessageBox(symbol + " already subscribed",
+										parentComposite);
 								return;
 							}
 
-							if(!quoteMap.containsKey(symbol)){
-								log.info("send sub event:{},{}",textSymbol.getText(),receiverId);
-								QuoteSubEvent subEvent = new QuoteSubEvent(receiverId, Business.getInstance().getFirstServer(), symbol);
+							if (!quoteMap.containsKey(symbol)) {
+								log.info("send sub event:{},{}",
+										textSymbol.getText(), receiverId);
+								QuoteSubEvent subEvent = new QuoteSubEvent(
+										receiverId, Business.getInstance()
+												.getFirstServer(), symbol);
 								sendRemoteEvent(subEvent);
-								parentComposite.getDisplay().asyncExec(new Runnable(){
+								parentComposite.getDisplay().asyncExec(
+										new Runnable() {
 
-									@Override
-									public void run() {
-										try {
-											Thread.sleep(1000);
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-										if(!quoteMap.containsKey(symbol))
-											showMessageBox("this symbol doesn't exist or hasn't any quote yet" , parentComposite);
-										else{
-											subList.add(symbol);
-											refreshQuote();
-										}
-									}	
-								});
-							}else{
+											@Override
+											public void run() {
+												try {
+													Thread.sleep(1000);
+												} catch (InterruptedException e) {
+													e.printStackTrace();
+												}
+												if (!quoteMap
+														.containsKey(symbol))
+													showMessageBox(
+															"this symbol doesn't exist or hasn't any quote yet",
+															parentComposite);
+												else {
+													subList.add(symbol);
+													refreshQuote();
+												}
+											}
+										});
+							} else {
 								subList.add(symbol);
 								refreshQuote();
 							}
@@ -157,7 +169,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						public void widgetDefaultSelected(SelectionEvent e) {
 
 						}
-					});		
+					});
 				}
 			}
 			{
@@ -167,32 +179,34 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				createMenu(bottomComposite);
 
 			}
-			sashForm.setWeights(new int[] {1,4});
+			sashForm.setWeights(new int[] { 1, 4 });
 		}
-		
+
 		subEvent(QuoteEvent.class);
 		scheduleJob(refreshEvent, maxRefreshInterval);
 	}
-	
-	private void triggerMarketData(String symbol){
-		if(!StringUtils.hasText(symbol))
-			return ;
-		
+
+	private void triggerMarketData(String symbol) {
+		if (!StringUtils.hasText(symbol))
+			return;
+		GuiSession.getInstance().setSymbol(symbol);
 		QuoteSymbolSelectEvent event = new QuoteSymbolSelectEvent(symbol);
 		Business.getInstance().getEventManager().sendEvent(event);
 	}
-	
+
 	private void createQuoteViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath() + "QuoteTable.xml";
-		quoteViewer = new DynamicTableViewer(parent,
-				SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance().getXstream(),
-				strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = Business.getInstance().getConfigPath()
+				+ "QuoteTable.xml";
+		quoteViewer = new DynamicTableViewer(parent, SWT.MULTI
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
+				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		quoteViewer.init();
 		quoteViewer.getTable().addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Table table = quoteViewer.getTable();				
+				Table table = quoteViewer.getTable();
 				TableItem items[] = table.getSelection();
 				for (TableItem item : items) {
 					Object obj = item.getData();
@@ -201,33 +215,34 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					}
 				}
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				
+
 			}
 		});
 	}
-	
-	
+
 	@Override
-	public void setFocus() {		
+	public void setFocus() {
 	}
-	
+
 	private void createMenu(Composite parent) {
 
-		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());
+		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this
+				.getPartName());
 		menuMgr.add(createPopDeleteSymbol(parent));
 		menu = menuMgr.createContextMenu(quoteViewer.getTable());
 		quoteViewer.setBodyMenu(menu);
 	}
-	
+
 	private Action createPopDeleteSymbol(final Composite parent) {
-		popDeleteSymbol = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		popDeleteSymbol = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 
 				try {
-					Table table = quoteViewer.getTable();				
+					Table table = quoteViewer.getTable();
 					TableItem items[] = table.getSelection();
 					for (TableItem item : items) {
 						Object obj = item.getData();
@@ -246,23 +261,25 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		popDeleteSymbol.setText("Delete Symbol");
 		popDeleteSymbol.setToolTipText("Delete Symbol");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.MANUAL_CLOSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.MANUAL_CLOSE_ICON.toString());
 		popDeleteSymbol.setImageDescriptor(imageDesc);
 		return popDeleteSymbol;
 	}
-	
+
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if(event instanceof QuoteEvent){
-			QuoteEvent e = (QuoteEvent) event;			
-			log.info("e.getQuote().getSymbol():{},{}",e.getQuote().getSymbol());
-			if(!PriceUtils.isZero(e.getQuote().getAsk()) && !PriceUtils.isZero(e.getQuote().getBid()))
+		if (event instanceof QuoteEvent) {
+			QuoteEvent e = (QuoteEvent) event;
+			log.info("e.getQuote().getSymbol():{},{}", e.getQuote().getSymbol());
+			if (!PriceUtils.isZero(e.getQuote().getAsk())
+					&& !PriceUtils.isZero(e.getQuote().getBid()))
 				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
-		}else if(event instanceof AsyncTimerEvent){
+		} else if (event instanceof AsyncTimerEvent) {
 			refreshQuote();
 		}
 	}
-	
+
 	private void refreshQuote() {
 		quoteViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -270,58 +287,59 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				synchronized (quoteViewer) {
 					if (quoteViewer.isViewClosing())
 						return;
-								
-					if( null != quoteViewer.getTable() && null != quoteViewer.getTable().getMenu() && quoteViewer.getTable().getMenu().isVisible()){
+
+					if (null != quoteViewer.getTable()
+							&& null != quoteViewer.getTable().getMenu()
+							&& quoteViewer.getTable().getMenu().isVisible()) {
 						log.info("menu is visible dont refresh");
 						return;
 					}
-					
-					List <Quote> tempList = collectQuote();
+
+					List<Quote> tempList = collectQuote();
 					if (!columnCreated) {
-								
-						if(tempList.isEmpty())
+
+						if (tempList.isEmpty())
 							return;
-						
+
 						Object obj = tempList.get(0);
 						List<ColumnProperty> properties = quoteViewer
 								.setObjectColumnProperties(obj);
-						quoteViewer.setSmartColumnProperties(obj.getClass().getName(),
-								properties);
-						
+						quoteViewer.setSmartColumnProperties(obj.getClass()
+								.getName(), properties);
+
 						columnCreated = true;
 						quoteViewer.setInput(tempList);
-					}else{
+					} else {
 						quoteViewer.setInput(tempList);
 					}
 
 					quoteViewer.refresh();
 				}
 			}
-		});		
+		});
 	}
 
 	private List<Quote> collectQuote() {
-		List <Quote> list = new ArrayList<Quote>();
-		for(String symbol : subList){
+		List<Quote> list = new ArrayList<Quote>();
+		for (String symbol : subList) {
 			Quote quote = quoteMap.get(symbol);
-			if(null == quote){
-				quote = new Quote(symbol,null,null);
+			if (null == quote) {
+				quote = new Quote(symbol, null, null);
 			}
 			list.add(quote);
 		}
-		
-		
+
 		return list;
 	}
-	
-	private void subEvent(Class<? extends AsyncEvent> clazz){
+
+	private void subEvent(Class<? extends AsyncEvent> clazz) {
 		Business.getInstance().getEventManager().subscribe(clazz, this);
 	}
-	
-	private void unSubEvent(Class<? extends AsyncEvent> clazz){
-		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
+
+	private void unSubEvent(Class<? extends AsyncEvent> clazz) {
+		Business.getInstance().getEventManager().unsubscribe(clazz, ID, this);
 	}
-	
+
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -329,37 +347,39 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
-	private void scheduleJob(AsyncTimerEvent timerEvent,
-			long maxRefreshInterval) {
-		Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
-				QuoteView.this, timerEvent);
+
+	private void scheduleJob(AsyncTimerEvent timerEvent, long maxRefreshInterval) {
+		Business.getInstance()
+				.getScheduleManager()
+				.scheduleRepeatTimerEvent(maxRefreshInterval, QuoteView.this,
+						timerEvent);
 	}
 
 	private void cancelScheduleJob(AsyncTimerEvent timerEvent) {
-		Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);		
+		Business.getInstance().getScheduleManager()
+				.cancelTimerEvent(timerEvent);
 	}
-	
-	private void showMessageBox(final String msg, Composite parent){
-		parent.getDisplay().asyncExec(new Runnable(){
+
+	private void showMessageBox(final String msg, Composite parent) {
+		parent.getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				MessageBox messageBox = new MessageBox(parentComposite.getShell(),
-						SWT.ICON_INFORMATION);
+				MessageBox messageBox = new MessageBox(parentComposite
+						.getShell(), SWT.ICON_INFORMATION);
 				messageBox.setText("Info");
 				messageBox.setMessage(msg);
-				messageBox.open();				
+				messageBox.open();
 			}
-			
+
 		});
 	}
-	
+
 	@Override
 	public void dispose() {
 		super.dispose();
 		unSubEvent(QuoteEvent.class);
 		cancelScheduleJob(refreshEvent);
 	}
-	
+
 }

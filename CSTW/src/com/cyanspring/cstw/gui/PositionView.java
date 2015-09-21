@@ -4,11 +4,14 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -46,17 +49,14 @@ import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
-import com.cyanspring.common.event.account.UserMappingEvent;
 import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
-import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
-import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.gui.SetPriceDialog.Mode;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
@@ -66,7 +66,9 @@ import com.cyanspring.cstw.gui.common.StyledAction;
 public class PositionView extends ViewPart implements IAsyncEventListener {
 	public PositionView() {
 	}
-	private static final Logger log = LoggerFactory.getLogger(PositionView.class);
+
+	private static final Logger log = LoggerFactory
+			.getLogger(PositionView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.PositionViewer";
 	private DynamicTableViewer openPositionViewer;
 	private DynamicTableViewer closedPositionViewer;
@@ -93,12 +95,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private final String MENU_ID_CLOSEPOSITION = "POPUP_CLOSE_POSITION";
 	private final String MENU_ID_MANUALCLOSEPOSITION = "POPUP_MANUAL_CLOSE_POSITION";
 	private final String MENU_ID_MODIFYPOSITIONPRICE = "POPUP_MODIFY_POSITION_PRICE";
-	
-	//tab folder
+
+	// tab folder
 	private CTabFolder tabFolder;
 	private CTabItem tbtmOpenPositions;
 	private CTabItem tbtmClosedPositions;
 	private CTabItem tbtmTrades;
+
 	@Override
 	public void createPartControl(Composite parent) {
 		imageRegistry = Activator.getDefault().getImageRegistry();
@@ -111,7 +114,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 		final Sash sash = new Sash(mainComposite, SWT.HORIZONTAL);
 		// create bottom composite
-		final Composite bottomComposite = new Composite(mainComposite, SWT.BORDER);
+		final Composite bottomComposite = new Composite(mainComposite,
+				SWT.BORDER);
 		bottomComposite.setLayout(new FillLayout());
 
 		// setting up form layout
@@ -153,40 +157,45 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 		// create the left composite in the bottom composite
 		tabFolder = new CTabFolder(bottomComposite, SWT.BORDER);
-		tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
-		
+		tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(
+				SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+
 		tbtmOpenPositions = new CTabItem(tabFolder, SWT.NONE);
 		tbtmOpenPositions.setText("Open Positions");
-			
+
 		Composite leftComposite = new Composite(tabFolder, SWT.BORDER);
 		leftComposite.setLayout(new GridLayout(1, true));
 		Composite openComposite = new Composite(tabFolder, SWT.NONE);
 		openComposite.setLayout(new FillLayout());
-		openComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createOpenPositionViewer(openComposite);		
+		openComposite
+				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		createOpenPositionViewer(openComposite);
 		tbtmOpenPositions.setControl(openComposite);
-		
-		if(Business.getInstance().getUserGroup().isAdmin()){
-			
+
+		if (Business.getInstance().getUserGroup().isAdmin()) {
+
 			tbtmClosedPositions = new CTabItem(tabFolder, SWT.NONE);
 			tbtmClosedPositions.setText("Closed Positions");
-			
+
 			tbtmTrades = new CTabItem(tabFolder, SWT.NONE);
 			tbtmTrades.setText("Trades");
-			
+
 			Composite midComposite = new Composite(tabFolder, SWT.BORDER);
 			midComposite.setLayout(new GridLayout(1, true));
 			Composite closedComposite = new Composite(midComposite, SWT.NONE);
 			closedComposite.setLayout(new FillLayout());
-			closedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			closedComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+					true, true));
 			createClosedPositionViewer(closedComposite);
 			tbtmClosedPositions.setControl(midComposite);
-			
+
 			Composite rightComposite = new Composite(tabFolder, SWT.BORDER);
 			rightComposite.setLayout(new GridLayout(1, true));
-			Composite executionComposite = new Composite(rightComposite, SWT.NONE);
+			Composite executionComposite = new Composite(rightComposite,
+					SWT.NONE);
 			executionComposite.setLayout(new FillLayout());
-			executionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			executionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+					true, true));
 			createExecutionViewer(executionComposite);
 			tbtmTrades.setControl(rightComposite);
 		}
@@ -195,29 +204,35 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 		// finally lay them out
 		mainComposite.layout();
-		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(AccountSnapshotReplyEvent.class, ID, this);
-		log.info("Business.getInstance().getOrderManager().isReady():{}",Business.getInstance().getOrderManager().isReady());
-		log.info("Business.getInstance().getAccount():{}",Business.getInstance().getAccount());
+		Business.getInstance().getEventManager()
+				.subscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(AccountSnapshotReplyEvent.class, ID, this);
+		log.info("Business.getInstance().getOrderManager().isReady():{}",
+				Business.getInstance().getOrderManager().isReady());
+		log.info("Business.getInstance().getAccount():{}", Business
+				.getInstance().getAccount());
 		if (Business.getInstance().getOrderManager().isReady())
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		else
-			Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
-		
+			Business.getInstance().getEventManager()
+					.subscribe(OrderCacheReadyEvent.class, this);
+
 		sendTraderRequestEvent();
 
 	}
 
 	// account fields
 	private Label lbValue;
-//	private Label lbCash;
-//	private Label lbMargin;
+	// private Label lbCash;
+	// private Label lbMargin;
 	private Label lbDailyPnL;
 	private Label lbPnL;
 	private Label lbUrPnL;
 	private Label lbCashAvailable;
 	private Label lbCashDeduct;
-//	private Label lbMarginHeld;
+
+	// private Label lbMarginHeld;
 
 	private void createAccountInfoPad(Composite parent) {
 		GridLayout layout = new GridLayout(3, true);
@@ -244,13 +259,14 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 		lbValue = new Label(comp1, SWT.RIGHT);
 		lbValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
+
 		Label lb8 = new Label(comp2, SWT.LEFT);
 		lb8.setText("Account Cash: ");
 		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		lbCashDeduct = new Label(comp2, SWT.RIGHT);
-		lbCashDeduct.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		lbCashDeduct
+				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Label lb4 = new Label(comp1, SWT.LEFT);
 		lb4.setText("Daily P&&L: ");
@@ -278,57 +294,81 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		lbCashAvailable = new Label(comp3, SWT.RIGHT);
-		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
-//		Label lb2 = new Label(comp2, SWT.LEFT);
-//		lb2.setText("Cash value: ");
-//		lb2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//
-//		lbCash = new Label(comp2, SWT.RIGHT);
-//		lbCash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//
-//		Label lb3 = new Label(comp3, SWT.LEFT);
-//		lb3.setText("Margin value: ");
-//		lb3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//
-//		lbMargin = new Label(comp3, SWT.RIGHT);
-//		lbMargin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//
-//		Label lb10 = new Label(comp3, SWT.LEFT);
-//		lb10.setText("Margin Held");
-//		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//
-//		lbMarginHeld = new Label(comp3, SWT.RIGHT);
-//		lbMarginHeld.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
+
+		// Label lb2 = new Label(comp2, SWT.LEFT);
+		// lb2.setText("Cash value: ");
+		// lb2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		//
+		// lbCash = new Label(comp2, SWT.RIGHT);
+		// lbCash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		//
+		// Label lb3 = new Label(comp3, SWT.LEFT);
+		// lb3.setText("Margin value: ");
+		// lb3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		//
+		// lbMargin = new Label(comp3, SWT.RIGHT);
+		// lbMargin.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		//
+		// Label lb10 = new Label(comp3, SWT.LEFT);
+		// lb10.setText("Margin Held");
+		// lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		//
+		// lbMarginHeld = new Label(comp3, SWT.RIGHT);
+		// lbMarginHeld.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+		// true));
 
 	}
 
 	private void createOpenPositionViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath() + "OpenPositionTable.xml";
-		openPositionViewer = new DynamicTableViewer(parent,
-				SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance().getXstream(),
-				strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = Business.getInstance().getConfigPath()
+				+ "OpenPositionTable.xml";
+		openPositionViewer = new DynamicTableViewer(parent, SWT.MULTI
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
+				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		openPositionViewer.init();
+		initOpenPositionViewerListener();
+	}
+
+	private void initOpenPositionViewerListener() {
+		openPositionViewer.getTable().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				if (MessageDialog.openConfirm(openPositionViewer.getTable()
+						.getShell(), "confirm close",
+						"Do you want to close it ?")) {
+					popClosePosition.run();
+				}
+			}
+		});
 	}
 
 	private void createClosedPositionViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath() + "ClosedPositionTable.xml";
-		closedPositionViewer = new DynamicTableViewer(parent,
-				SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance().getXstream(),
-				strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = Business.getInstance().getConfigPath()
+				+ "ClosedPositionTable.xml";
+		closedPositionViewer = new DynamicTableViewer(parent, SWT.MULTI
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
+				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		closedPositionViewer.init();
 	}
 
 	private void createExecutionViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath() + "ExecutionPositionTable.xml";
-		executionViewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL,
-				Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = Business.getInstance().getConfigPath()
+				+ "ExecutionPositionTable.xml";
+		executionViewer = new DynamicTableViewer(parent, SWT.MULTI
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
+				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		executionViewer.init();
 
 	}
 
 	private Action createPopClosePosition() {
-		popClosePosition = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		popClosePosition = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				Table table = openPositionViewer.getTable();
 
@@ -342,11 +382,14 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						// servers
 						String server = Business.getInstance().getFirstServer();
 
-						ClosePositionRequestEvent request = new ClosePositionRequestEvent(position.getAccount(), server,
-								position.getAccount(), position.getSymbol(), 0.0, OrderReason.ManualClose,
-								IdGenerator.getInstance().getNextID());
+						ClosePositionRequestEvent request = new ClosePositionRequestEvent(
+								position.getAccount(), server,
+								position.getAccount(), position.getSymbol(),
+								0.0, OrderReason.ManualClose, IdGenerator
+										.getInstance().getNextID());
 						try {
-							Business.getInstance().getEventManager().sendRemoteEvent(request);
+							Business.getInstance().getEventManager()
+									.sendRemoteEvent(request);
 						} catch (Exception e) {
 							log.error(e.getMessage(), e);
 						}
@@ -359,13 +402,15 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		popClosePosition.setText("Close Position");
 		popClosePosition.setToolTipText("Close Position");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.ORDER_CLOSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.ORDER_CLOSE_ICON.toString());
 		popClosePosition.setImageDescriptor(imageDesc);
 		return popClosePosition;
 	}
 
 	private Action createPopManualClosePosition(final Composite parent) {
-		popManualClosePosition = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		popManualClosePosition = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 
 				try {
@@ -375,7 +420,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						Object obj = item.getData();
 						if (obj instanceof OpenPosition) {
 							OpenPosition position = (OpenPosition) obj;
-							closePriceDialog = new SetPriceDialog(parent.getShell(), position, Mode.CLOSE_POSITION);
+							closePriceDialog = new SetPriceDialog(
+									parent.getShell(), position,
+									Mode.CLOSE_POSITION);
 							closePriceDialog.open();
 						}
 					}
@@ -389,13 +436,15 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		popManualClosePosition.setText("Manual Close Position");
 		popManualClosePosition.setToolTipText("Manual Close Position");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.MANUAL_CLOSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.MANUAL_CLOSE_ICON.toString());
 		popManualClosePosition.setImageDescriptor(imageDesc);
 		return popManualClosePosition;
 	}
 
 	private Action createPopModifyOpenPositionPrice(final Composite parent) {
-		popModifyPositionPrice = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		popModifyPositionPrice = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 
 				try {
@@ -405,7 +454,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						Object obj = item.getData();
 						if (obj instanceof OpenPosition) {
 							OpenPosition position = (OpenPosition) obj;
-							modifyPositionDialog = new SetPriceDialog(parent.getShell(), position, Mode.CHANGE_POSITION_PRICE);
+							modifyPositionDialog = new SetPriceDialog(
+									parent.getShell(), position,
+									Mode.CHANGE_POSITION_PRICE);
 							modifyPositionDialog.open();
 						}
 					}
@@ -414,19 +465,21 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 		};
-		
+
 		popModifyPositionPrice.setId(MENU_ID_MODIFYPOSITIONPRICE);
 		popModifyPositionPrice.setText("Modify open position price");
 		popModifyPositionPrice.setToolTipText("Modify open position price");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.MANUAL_PRICE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.MANUAL_PRICE_ICON.toString());
 		popModifyPositionPrice.setImageDescriptor(imageDesc);
 		return popModifyPositionPrice;
 	}
 
 	private void createMenu(Composite parent) {
 
-		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());
+		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this
+				.getPartName());
 		menuMgr.add(createPopClosePosition());
 		menuMgr.add(createPopManualClosePosition(parent));
 		menuMgr.add(createPopModifyOpenPositionPrice(parent));
@@ -445,11 +498,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private void createOpenPositionColumns(List<OpenPosition> positions) {
 		if (!openPositionColumnsCreated) {
 			Object obj = positions.get(0);
-			List<ColumnProperty> properties = openPositionViewer.setObjectColumnProperties(obj);
+			List<ColumnProperty> properties = openPositionViewer
+					.setObjectColumnProperties(obj);
 			String[] from = { "PnL" };
 			String[] to = { "Ur. P&&L" };
 			openPositionViewer.setTitleMap(from, to);
-			openPositionViewer.setSmartColumnProperties(obj.getClass().getName(), properties);
+			openPositionViewer.setSmartColumnProperties(obj.getClass()
+					.getName(), properties);
 			openPositionViewer.setInput(positions);
 			openPositionColumnsCreated = true;
 		}
@@ -457,14 +512,17 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 	private boolean closedPositionColumnsCreated = false;
 
-	private void createClosedPositionColumns(List<ClosedPosition> closedPositions) {
+	private void createClosedPositionColumns(
+			List<ClosedPosition> closedPositions) {
 		if (!closedPositionColumnsCreated) {
 			Object obj = closedPositions.get(0);
-			List<ColumnProperty> properties = closedPositionViewer.setObjectColumnProperties(obj);
+			List<ColumnProperty> properties = closedPositionViewer
+					.setObjectColumnProperties(obj);
 			String[] from = { "BuyPrice", "SellPrice", "PnL" };
 			String[] to = { "Buy Px", "Sell Px", "P&&L" };
 			closedPositionViewer.setTitleMap(from, to);
-			closedPositionViewer.setSmartColumnProperties(obj.getClass().getName(), properties);
+			closedPositionViewer.setSmartColumnProperties(obj.getClass()
+					.getName(), properties);
 			closedPositionViewer.setInput(closedPositions);
 			closedPositionColumnsCreated = true;
 		}
@@ -475,8 +533,10 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private void createExecutionColumns(List<Execution> executions) {
 		if (!executionColumnsCreated) {
 			Object obj = executions.get(0);
-			List<ColumnProperty> properties = executionViewer.setObjectColumnProperties(obj);
-			executionViewer.setSmartColumnProperties(obj.getClass().getName(), properties);
+			List<ColumnProperty> properties = executionViewer
+					.setObjectColumnProperties(obj);
+			executionViewer.setSmartColumnProperties(obj.getClass().getName(),
+					properties);
 			executionViewer.setInput(executions);
 			executionColumnsCreated = true;
 		}
@@ -487,19 +547,26 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			@Override
 			public void run() {
 				synchronized (openPositionViewer) {
-					if (PositionView.this.account == null || openPositionViewer.isViewClosing())
+					if (PositionView.this.account == null
+							|| openPositionViewer.isViewClosing())
 						return;
 
-					PositionView.this.lbValue.setText(decimalFormat.format(PositionView.this.account.getValue()));
-					PositionView.this.lbCashDeduct.setText(decimalFormat.format(PositionView.this.account.getCashDeduct()));
-					PositionView.this.lbDailyPnL.setText(decimalFormat.format(PositionView.this.account.getDailyPnL()));
-					PositionView.this.lbPnL.setText(decimalFormat.format(PositionView.this.account.getPnL()));
-					PositionView.this.lbUrPnL.setText(decimalFormat.format(PositionView.this.account.getUrPnL()));
-					PositionView.this.lbCashAvailable
-							.setText(decimalFormat.format(PositionView.this.account.getCashAvailable()));
-//					PositionView.this.lbCash.setText(decimalFormat.format(PositionView.this.account.getCash()));
-//					PositionView.this.lbMargin.setText(decimalFormat.format(PositionView.this.account.getMargin()));
-//					PositionView.this.lbMarginHeld.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
+					PositionView.this.lbValue.setText(decimalFormat
+							.format(PositionView.this.account.getValue()));
+					PositionView.this.lbCashDeduct.setText(decimalFormat
+							.format(PositionView.this.account.getCashDeduct()));
+					PositionView.this.lbDailyPnL.setText(decimalFormat
+							.format(PositionView.this.account.getDailyPnL()));
+					PositionView.this.lbPnL.setText(decimalFormat
+							.format(PositionView.this.account.getPnL()));
+					PositionView.this.lbUrPnL.setText(decimalFormat
+							.format(PositionView.this.account.getUrPnL()));
+					PositionView.this.lbCashAvailable.setText(decimalFormat
+							.format(PositionView.this.account
+									.getCashAvailable()));
+					// PositionView.this.lbCash.setText(decimalFormat.format(PositionView.this.account.getCash()));
+					// PositionView.this.lbMargin.setText(decimalFormat.format(PositionView.this.account.getMargin()));
+					// PositionView.this.lbMarginHeld.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
 					PositionView.this.topComposite.layout();
 					tabFolder.setSelection(tbtmOpenPositions);
 				}
@@ -512,14 +579,16 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			@Override
 			public void run() {
 				synchronized (openPositionViewer) {
-					if (null == PositionView.this.openPositions || openPositionViewer.isViewClosing())
+					if (null == PositionView.this.openPositions
+							|| openPositionViewer.isViewClosing())
 						return;
 
 					if (PositionView.this.openPositions.size() > 0)
 						createOpenPositionColumns(PositionView.this.openPositions);
 
 					if (setInput)
-						openPositionViewer.setInput(PositionView.this.openPositions);
+						openPositionViewer
+								.setInput(PositionView.this.openPositions);
 
 					openPositionViewer.refresh();
 				}
@@ -528,35 +597,39 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void showClosedPositions(final boolean setInput) {
-		if( null == closedPositionViewer)
+		if (null == closedPositionViewer)
 			return;
-		
-		closedPositionViewer.getControl().getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				synchronized (closedPositionViewer) {
-					if (null == PositionView.this.closedPositions || closedPositionViewer.isViewClosing())
-						return;
-					if (PositionView.this.closedPositions.size() > 0)
-						createClosedPositionColumns(PositionView.this.closedPositions);
 
-					if (setInput)
-						closedPositionViewer.setInput(PositionView.this.closedPositions);
-					closedPositionViewer.refresh();
-				}
-			}
-		});
+		closedPositionViewer.getControl().getDisplay()
+				.asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						synchronized (closedPositionViewer) {
+							if (null == PositionView.this.closedPositions
+									|| closedPositionViewer.isViewClosing())
+								return;
+							if (PositionView.this.closedPositions.size() > 0)
+								createClosedPositionColumns(PositionView.this.closedPositions);
+
+							if (setInput)
+								closedPositionViewer
+										.setInput(PositionView.this.closedPositions);
+							closedPositionViewer.refresh();
+						}
+					}
+				});
 	}
 
 	private void showExecutions(final boolean setInput) {
-		if(null == executionViewer)
+		if (null == executionViewer)
 			return;
-		
+
 		executionViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				synchronized (executionViewer) {
-					if (null == PositionView.this.executions || executionViewer.isViewClosing())
+					if (null == PositionView.this.executions
+							|| executionViewer.isViewClosing())
 						return;
 					if (PositionView.this.executions.size() > 0)
 						createExecutionColumns(PositionView.this.executions);
@@ -569,40 +642,69 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 
-	private void sendTraderRequestEvent(){
+	private void sendTraderRequestEvent() {
 		log.info("sendTraderRequestEvent");
-		if(UserRole.Trader == Business.getInstance().getUserGroup().getRole()){
+		if (UserRole.Trader == Business.getInstance().getUserGroup().getRole()) {
 			Account account = Business.getInstance().getLoginAccount();
-			if( null != account){
+			if (null != account) {
 				sendSubscriptionRequest(account.getId());
 			}
 		}
 	}
-	
-	
+
 	private void sendSubscriptionRequest(String account) {
 		// unsubscribe for current account event
-		Business.getInstance().getEventManager().unsubscribe(OpenPositionUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().unsubscribe(OpenPositionDynamicUpdateEvent.class, currentAccount,
-				this);
-		Business.getInstance().getEventManager().unsubscribe(ClosedPositionUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().unsubscribe(ExecutionUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().unsubscribe(AccountUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().unsubscribe(AccountDynamicUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().unsubscribe(ClosePositionReplyEvent.class, currentAccount, this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(OpenPositionUpdateEvent.class, currentAccount,
+						this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(OpenPositionDynamicUpdateEvent.class,
+						currentAccount, this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(ClosedPositionUpdateEvent.class, currentAccount,
+						this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(ExecutionUpdateEvent.class, currentAccount, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(AccountUpdateEvent.class, currentAccount, this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(AccountDynamicUpdateEvent.class, currentAccount,
+						this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(ClosePositionReplyEvent.class, currentAccount,
+						this);
 
 		currentAccount = account;
 		// subscribe for new account
-		Business.getInstance().getEventManager().subscribe(OpenPositionUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().subscribe(OpenPositionDynamicUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().subscribe(ClosedPositionUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().subscribe(ExecutionUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().subscribe(AccountUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().subscribe(AccountDynamicUpdateEvent.class, currentAccount, this);
-		Business.getInstance().getEventManager().subscribe(ClosePositionReplyEvent.class, currentAccount, this);
+		Business.getInstance().getEventManager()
+				.subscribe(OpenPositionUpdateEvent.class, currentAccount, this);
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(OpenPositionDynamicUpdateEvent.class,
+						currentAccount, this);
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(ClosedPositionUpdateEvent.class, currentAccount,
+						this);
+		Business.getInstance().getEventManager()
+				.subscribe(ExecutionUpdateEvent.class, currentAccount, this);
+		Business.getInstance().getEventManager()
+				.subscribe(AccountUpdateEvent.class, currentAccount, this);
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(AccountDynamicUpdateEvent.class, currentAccount,
+						this);
+		Business.getInstance().getEventManager()
+				.subscribe(ClosePositionReplyEvent.class, currentAccount, this);
 
-		AccountSnapshotRequestEvent request = new AccountSnapshotRequestEvent(ID,
-				Business.getInstance().getFirstServer(), currentAccount, null);
+		AccountSnapshotRequestEvent request = new AccountSnapshotRequestEvent(
+				ID, Business.getInstance().getFirstServer(), currentAccount,
+				null);
 
 		log.debug("AccountSnapshotRequestEvent sent: " + currentAccount);
 		try {
@@ -685,7 +787,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof ClosePositionReplyEvent) {
 
 			ClosePositionReplyEvent evt = (ClosePositionReplyEvent) event;
-			log.info("Close position reply: " + evt.getAccount() + ", " + evt.getSymbol() + ", " + evt.isOk() + ", "
+			log.info("Close position reply: " + evt.getAccount() + ", "
+					+ evt.getSymbol() + ", " + evt.isOk() + ", "
 					+ evt.getMessage());
 		} else if (event instanceof AccountSelectionEvent) {
 
