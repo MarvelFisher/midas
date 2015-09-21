@@ -39,11 +39,13 @@ public class RefDataParser {
         if(commodity.equals("FT")){
             commodity = RefDataCommodity.FUTURES.getValue();
             try {
+                String extractYYMMStr = codeTableData.getWindCode().replaceAll("\\D+", "").substring(2);
                 refData.setSymbol(codeTableData.getShowID());
                 refData.setDesc(codeTableData.getGroup());
                 refData.setCurrency(codeTableData.getCurrency());
-                refData.setTWDisplayName(codeTableData.getSymbolName());
-                refData.setCNDisplayName(ChineseConvert.TtoS(codeTableData.getSymbolName()));
+                refData.setENDisplayName(codeTableData.getProduct() + extractYYMMStr);
+                refData.setTWDisplayName(codeTableData.getProductName() + extractYYMMStr);
+                refData.setCNDisplayName(codeTableData.getProductName() + extractYYMMStr);
                 refData.setRefSymbol(refData.getSymbol() + "." + codeTableData.getSecurityExchange());
                 refData.setCategory(codeTableData.getProduct());
                 refData.setSpotTWName(codeTableData.getProductName());

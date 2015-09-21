@@ -27,15 +27,15 @@
       </entry>
       <entry>
         <string>Symbol</string>
+        <string>TXFC6</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
         <string>FITX1603</string>
       </entry>
       <entry>
-        <string>ENName</string>
-        <string>ICE.TWF.FITX.201603</string>
-      </entry>
-      <entry>
         <string>CNName</string>
-        <string>臺指03</string>
+        <string>臺指1603</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -43,11 +43,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>臺指03</string>
+        <string>臺指1603</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>FITX1603.TWF</string>
+        <string>TXFC6.TWF</string>
       </entry>
       <entry>
         <string>Currency</string>
@@ -87,15 +87,15 @@
       </entry>
       <entry>
         <string>Symbol</string>
+        <string>TXFL5</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
         <string>FITX1512</string>
       </entry>
       <entry>
-        <string>ENName</string>
-        <string>ICE.TWF.FITX.201512</string>
-      </entry>
-      <entry>
         <string>CNName</string>
-        <string>臺指12</string>
+        <string>臺指1512</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -103,11 +103,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>臺指12</string>
+        <string>臺指1512</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>FITX1512.TWF</string>
+        <string>TXFL5.TWF</string>
       </entry>
       <entry>
         <string>Currency</string>
@@ -147,15 +147,15 @@
       </entry>
       <entry>
         <string>Symbol</string>
+        <string>TXFJ5</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
         <string>FITX1510</string>
       </entry>
       <entry>
-        <string>ENName</string>
-        <string>ICE.TWF.FITX.201510</string>
-      </entry>
-      <entry>
         <string>CNName</string>
-        <string>臺指10</string>
+        <string>臺指1510</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -163,11 +163,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>臺指10</string>
+        <string>臺指1510</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>FITX1510.TWF</string>
+        <string>TXFJ5.TWF</string>
       </entry>
       <entry>
         <string>Currency</string>
@@ -207,15 +207,15 @@
       </entry>
       <entry>
         <string>Symbol</string>
+        <string>TXFK5</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
         <string>FITX1511</string>
       </entry>
       <entry>
-        <string>ENName</string>
-        <string>ICE.TWF.FITX.201511</string>
-      </entry>
-      <entry>
         <string>CNName</string>
-        <string>臺指11</string>
+        <string>臺指1511</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -223,11 +223,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>臺指11</string>
+        <string>臺指1511</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>FITX1511.TWF</string>
+        <string>TXFK5.TWF</string>
       </entry>
       <entry>
         <string>Currency</string>
@@ -267,15 +267,15 @@
       </entry>
       <entry>
         <string>Symbol</string>
-        <string>FITX1606</string>
+        <string>TXFF6</string>
       </entry>
       <entry>
         <string>ENName</string>
-        <string>ICE.TWF.FITX.201606</string>
+        <string>FITX1606</string>
       </entry>
       <entry>
         <string>CNName</string>
-        <string>臺指06</string>
+        <string>臺指1606</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -283,11 +283,11 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>臺指06</string>
+        <string>臺指1606</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>FITX1606.TWF</string>
+        <string>TXFF6.TWF</string>
       </entry>
       <entry>
         <string>Currency</string>
