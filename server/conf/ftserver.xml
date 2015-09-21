@@ -8,7 +8,6 @@
 	<context:annotation-config />
 
 	<import resource="ft/*.xml" />
-	<import resource="ft/marketsession/*.xml" />
 <!-- 	<import resource="common/business.xml" /> -->
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
@@ -32,7 +31,7 @@
 			<value>GLOBAL</value>
 		</property>
 		<property name="category">
-			<value>FC-MQ</value>
+			<value>FT-MQ</value>
 		</property>
 		<property name="id">
 			<value>S1</value>
@@ -40,11 +39,11 @@
 	</bean>
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61626"></property>
+		<property name="url" value="nio://0.0.0.0:61656"></property>
 	</bean>
 	
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://10.0.0.51:60006"></property>
+		<property name="url" value="nio://10.0.0.61:60006"></property>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -131,7 +130,7 @@
 
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String">
-		<constructor-arg value="1528" />
+		<constructor-arg value="1530" />
 	</bean>
 
 </beans>

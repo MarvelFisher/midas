@@ -8,33 +8,12 @@
 >
 
 	<context:annotation-config />
-	<!-- 
-		when modify any session time of market, that need checking modified data whether effecting on business.xml  (bean : availableTimeList)
-	 -->
-	<!-- <bean id="marketSessionManager" class="com.cyanspring.common.marketsession.MarketSessionManager">
-	    <property name="sessionChecker"> 
-        	<ref bean="sessionChecker"/>
-        </property>
-	</bean> -->
 	
-	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
-        <property name="settlementDelay"><value>45</value></property>
-        <property name="eventManager" ref="eventManager"></property>        
-    </bean>
-    
-    <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
-		<constructor-arg>
-			<list>
-				<ref bean="txSessionChecker"/>
-			</list>
-		</constructor-arg>
-	</bean>
-	
-	<bean id="txSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+	<bean id="sessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>
 				<entry key="DEFAULT">
-					<ref bean="txDefaultSession"/>
+					<ref bean="defaultSession"/>
 				</entry>
 				<entry key="FIRST_HOLIDAY">
 					<ref bean="holidaySession"/>
@@ -43,15 +22,14 @@
 					<ref bean="holidaySession"/>
 				</entry>
 				<entry key="SETTLEMENT_DAY">
-                    <ref bean="txSettlementSession"/>
-                </entry>
+                    <ref bean="settlementSession"/>
+                </entry>				
 			</map>
 		</property>
-		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
-		<property name="index" value="CF"/>
-	</bean>
+        <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+    </bean>
 	
-	<bean id="txDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="defaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
@@ -82,7 +60,7 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="holidaySession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
@@ -93,36 +71,36 @@
                 </bean>
 			</list>
 		</constructor-arg>
-	</bean>
+	</bean>	
 	
 	<bean id="tradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
-            <list />
-        </constructor-arg>
-        <constructor-arg>
-            <list>
-                <value>2015-01-01</value>
-                <value>2015-01-02</value>
-                <value>2015-02-16</value>
-                <value>2015-02-17</value>
-                <value>2015-02-18</value>
-                <value>2015-02-19</value>
-                <value>2015-02-20</value>
-                <value>2015-02-21</value>
-                <value>2015-02-22</value>
-                <value>2015-02-23</value>
-                <value>2015-02-27</value>
-                <value>2015-04-03</value>
-                <value>2015-04-06</value>
-                <value>2015-05-01</value>
-                <value>2015-06-19</value>
-                <value>2015-09-28</value>               
-                <value>2015-10-09</value>
-            </list>
-        </constructor-arg>
+			<list />
+		</constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>2015-01-01</value>
+				<value>2015-01-02</value>
+				<value>2015-02-16</value>
+				<value>2015-02-17</value>
+				<value>2015-02-18</value>
+				<value>2015-02-19</value>
+				<value>2015-02-20</value>
+				<value>2015-02-21</value>
+				<value>2015-02-22</value>
+				<value>2015-02-23</value>
+				<value>2015-02-27</value>
+				<value>2015-04-03</value>
+				<value>2015-04-06</value>
+				<value>2015-05-01</value>
+				<value>2015-06-19</value>
+				<value>2015-09-28</value>				
+				<value>2015-10-09</value>
+			</list>
+		</constructor-arg>
 	</bean>
 	
-	<bean id="txSettlementSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="settlementSession" class="com.cyanspring.common.marketsession.MarketSession">
         <constructor-arg>
             <list>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">

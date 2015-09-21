@@ -358,52 +358,7 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<list>
-				<ref bean="ifSessionChecker"/>
-				<ref bean="ihSessionChecker"/>
-				<ref bean="icSessionChecker"/>
-				<ref bean="agSessionChecker"/>
-				<ref bean="cuSessionChecker"/>
-				<ref bean="auSessionChecker"/>
-				<ref bean="rbSessionChecker"/>
-				<ref bean="ruSessionChecker"/>
-				<ref bean="znSessionChecker"/>
-				<ref bean="mSessionChecker"/>
-				<ref bean="iSessionChecker"/>
-				<ref bean="lSessionChecker"/>
-				<ref bean="ySessionChecker"/>
-				<ref bean="ppSessionChecker"/>
-				<ref bean="pSessionChecker"/>
-				<ref bean="jSessionChecker"/>
-				<ref bean="jdSessionChecker"/>
-				<ref bean="fgSessionChecker"/>
-				<ref bean="rmSessionChecker"/>
-				<ref bean="taSessionChecker"/>
-				<ref bean="srSessionChecker"/>
-				<ref bean="maSessionChecker"/>
-				<ref bean="cfSessionChecker"/>
-				<ref bean="niSessionChecker"/>
-				<ref bean="alSessionChecker"/>
-				<ref bean="buSessionChecker"/>
-				<ref bean="pbSessionChecker"/>
-				<ref bean="hcSessionChecker"/>
-				<ref bean="snSessionChecker"/>
-				<ref bean="fuSessionChecker"/>
-				<ref bean="wrSessionChecker"/>
-				<ref bean="jmSessionChecker"/>
-				<ref bean="cSessionChecker"/>
-				<ref bean="csSessionChecker"/>
-				<ref bean="vSessionChecker"/>
-				<ref bean="bbSessionChecker"/>
-				<ref bean="bSessionChecker"/>
-				<ref bean="fbSessionChecker"/>
-				<ref bean="tcSessionChecker"/>
-				<ref bean="rsSessionChecker"/>
-				<ref bean="riSessionChecker"/>
-				<ref bean="sfSessionChecker"/>
-				<ref bean="lrSessionChecker"/>
-				<ref bean="smSessionChecker"/>
-				<ref bean="jrSessionChecker"/>
-				<ref bean="indexSessionChecker"/>
+				<ref bean="sessionChecker"/>
 			</list>
 		</constructor-arg>
 	</bean>
