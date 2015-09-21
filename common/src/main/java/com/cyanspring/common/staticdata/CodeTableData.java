@@ -6,7 +6,13 @@ public class CodeTableData {
     private String spellName;
     private String shortName;
     private String securityExchange;
-    private String EnglishName;
+    private String englishName;
+    private String product;
+    private String productName;
+    private String symbolName;
+    private String currency;
+    private String showID;
+    private String group;
     private int securityType;
 
     public String getWindCode() {
@@ -58,10 +64,58 @@ public class CodeTableData {
     }
 
     public String getEnglishName() {
-        return EnglishName;
+        return englishName;
     }
 
     public void setEnglishName(String englishName) {
-        EnglishName = englishName;
+        this.englishName = englishName;
+    }
+
+    public String getProduct() {
+        return product;
+    }
+
+    public void setProduct(String product) {
+        this.product = product;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getSymbolName() {
+        return symbolName;
+    }
+
+    public void setSymbolName(String symbolName) {
+        this.symbolName = symbolName;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getShowID() {
+        return showID;
+    }
+
+    public void setShowID(String showID) {
+        this.showID = showID;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }

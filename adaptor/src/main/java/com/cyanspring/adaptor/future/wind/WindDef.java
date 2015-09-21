@@ -13,6 +13,9 @@ public final class WindDef {
     public static final int MSG_SYS_QUOTATIONDATE_CHANGE = -95;
     public static final int MSG_SYS_MARKET_CLOSE = -94;
     public static final int MSG_SYS_HEART_BEAT = -93;
+    public static final int MSG_SYS_MARKETS = -101;
+    public static final int MSG_SYS_SNAPSHOTENDS = -102;
+    public static final int MSG_SYS_REQUEST_SNAPSHOT = -103;
     public static final int MSG_DATA_INDEX = -92;
     public static final int MSG_DATA_MARKET = -91;
     public static final int MSG_DATA_FUTURE = -90;
