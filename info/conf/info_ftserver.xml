@@ -107,12 +107,12 @@
 	</bean>	
 	
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://0.0.0.0:61627"></property>
+		<property name="url" value="nio://0.0.0.0:61657"></property>
 	</bean>
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<!-- 	Solve channel is inactive problem -->
 <!-- 		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
-		<property name="url" value="failover:(nio://localhost:61626?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
+		<property name="url" value="failover:(nio://localhost:61656?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
 	</bean>
 	
 		<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -148,9 +148,8 @@
 	<bean id="mdReceiver" class="com.cyanspring.common.marketdata.MarketDataReceiver">
 		<constructor-arg>
 			<list>
-				<ref bean="windAdaptorFCI" />
-				<ref bean="windAdaptorFCC" />
-			</list>		 
+				<ref bean="windAdaptorFT" />
+			</list>
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
 		<property name="timerInterval" value="1000"></property>
@@ -177,11 +176,11 @@
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 
-	<bean id="windAdaptorFCI"
+	<bean id="windAdaptorFT"
 		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="showGui" value="true"></property>
 		<property name="gatewayIp" value="10.0.0.32"></property>
-		<property name="gatewayPort" value="10048"></property>
+		<property name="gatewayPort" value="10038"></property>
 		<property name="marketDataLog" value="false"></property>
 		<property name="tradeDateCheckIsOpen" value="true"></property>
 		<property name="closeOverTimeControlIsOpen" value="true"></property>
@@ -189,28 +188,7 @@
 		<property name="isSubTrans" value="false"></property>
 		<property name="marketsList">
 			<list>
-				<value>SH</value>
-				<value>SZ</value>
-				<value>CF</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="windAdaptorFCC"
-		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
-		<property name="showGui" value="true"></property>
-		<property name="gatewayIp" value="10.0.0.20"></property>
-		<property name="gatewayPort" value="10046"></property>
-		<property name="marketDataLog" value="false"></property>
-		<property name="tradeDateCheckIsOpen" value="true"></property>
-		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="msgPack" value="true"></property>
-		<property name="isSubTrans" value="false"></property>
-		<property name="marketsList">
-			<list>
-				<value>SHF</value>
-				<value>DCE</value>
-				<value>CZC</value>
+				<value>TWF</value>
 			</list>
 		</property>
 	</bean>
