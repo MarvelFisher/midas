@@ -8,6 +8,9 @@ namespace Common.Adaptor
 {
     public interface IDownStreamAdaptor
     {
+        void init();
+        void uninit();
+        string id { get; }
         bool getState();
         void newOrder(Order order);
         void amendOrder(string exchangeOrderId, double price, double qty);
