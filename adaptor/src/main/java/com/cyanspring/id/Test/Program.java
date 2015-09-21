@@ -38,8 +38,9 @@ public class Program implements IFrameClose, TimerEventHandler {
 	List<ForexClient> clients = new ArrayList<ForexClient>();
 
 	public static boolean isConnected = false;
-	public static final String version = "1.00R03";
-	public static final String timeStamp = "2015-04-23";
+	public static final String version = "1.00R04";
+	public static final String timeStamp = "2015-09-21";
+	private static boolean quoteLog = false;
 	
 	private JButton btnNewClient;
 
@@ -81,6 +82,9 @@ public class Program implements IFrameClose, TimerEventHandler {
 		try {
 			ApplicationContext context = new FileSystemXmlApplicationContext(
 					configFile);
+			Boolean writeLog = (Boolean) context.getBean("quoteLog");
+			if (writeLog != null) 
+				Program.setQuoteLog(writeLog);
 
 			// start server
 			IdMarketDataAdaptor bean = (IdMarketDataAdaptor) context
@@ -293,5 +297,15 @@ public class Program implements IFrameClose, TimerEventHandler {
 	@Override
 	public void onTimer(TimerThread objSender) {
 		System.gc();		
+	}
+
+	public static boolean isQuoteLog()
+	{
+		return quoteLog;
+	}
+
+	public static void setQuoteLog(boolean quoteLog)
+	{
+		Program.quoteLog = quoteLog;
 	}
 }
