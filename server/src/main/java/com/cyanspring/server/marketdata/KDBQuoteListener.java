@@ -38,8 +38,7 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	
 	private AsyncTimerEvent timerThrottlingEvent = new AsyncTimerEvent();
 	private long quoteThrottlingInterval = 1000;
-	@Autowired
-	private IKDBThrottling KdbThrottling;
+	private IKDBThrottling KdbThrottling = null;
 	HashMap<String, Quote> quoteHold = new HashMap<String, Quote>();
 
 	private BlockingQueue<Quote> queue;
@@ -85,7 +84,13 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	
 	private void SaveQuotes(List<Quote> Quotes)
 	{
-//		kdbPersistenceManager.saveQuotes(Quotes);
+		
+		if(null == KdbThrottling)
+		{
+			kdbPersistenceManager.saveQuotes(Quotes);
+			return;
+		}
+		
 		ArrayList<Quote> priorityQuotes = new ArrayList<Quote>();
 		for(Quote q : Quotes)
 		{
@@ -110,8 +115,11 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	public void init() throws Exception {
 		queue = new LinkedBlockingQueue<>();
 		quoteThread.start();
-		scheduleManager.scheduleRepeatTimerEvent(quoteThrottlingInterval,
-				KDBQuoteListener.this, timerThrottlingEvent);
+		if(null == KdbThrottling)
+		{
+			scheduleManager.scheduleRepeatTimerEvent(quoteThrottlingInterval,
+					KDBQuoteListener.this, timerThrottlingEvent);
+		}
 	}
 
 	@Override
