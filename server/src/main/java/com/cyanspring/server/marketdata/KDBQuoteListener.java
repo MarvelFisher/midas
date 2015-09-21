@@ -115,11 +115,14 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	public void init() throws Exception {
 		queue = new LinkedBlockingQueue<>();
 		quoteThread.start();
-		if(null == KdbThrottling)
+		if(null != KdbThrottling)
 		{
+			log.info("KDB Standalone Throttler Start as :" + KdbThrottling.getClass().getName());
 			scheduleManager.scheduleRepeatTimerEvent(quoteThrottlingInterval,
 					KDBQuoteListener.this, timerThrottlingEvent);
 		}
+		else
+			log.info("KDB Standalone Throttler disabled");
 	}
 
 	@Override
@@ -154,5 +157,13 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 
 	public void setQuoteThrottlingInterval(long quoteThrottlingInterval) {
 		this.quoteThrottlingInterval = quoteThrottlingInterval;
+	}
+
+	public IKDBThrottling getKdbThrottling() {
+		return KdbThrottling;
+	}
+
+	public void setKdbThrottling(IKDBThrottling kdbThrottling) {
+		KdbThrottling = kdbThrottling;
 	}
 }

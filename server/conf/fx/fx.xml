@@ -56,6 +56,9 @@
 		<property name="quoteThrottlingInterval">
 			<value>1500</value>
 		</property>
+		<property name="KdbThrottling">
+			<ref bean="KdbThrottling" />
+		</property>
 	</bean>
 	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager"></bean>
 	
