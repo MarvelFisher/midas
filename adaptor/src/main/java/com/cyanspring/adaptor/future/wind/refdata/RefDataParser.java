@@ -35,19 +35,17 @@ public class RefDataParser {
         refData.setTWDisplayName(ChineseConvert.StoT(codeTableData.getCnName()));
         refData.setENDisplayName(codeTableData.getEnglishName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
-        refData.setCommodity((String) defaultHashMap.get(RefDataField.COMMODITY));
-        
-        String commodity = refData.getCommodity();
-        
+        String commodity = (String) defaultHashMap.get(RefDataField.COMMODITY);
+        if(commodity.equals("FC") || commodity.equals("FT")){
+            commodity = RefDataCommodity.FUTURES.getValue();
+        }
+        refData.setCommodity(commodity);
         if (commodity.equals(RefDataCommodity.STOCK.getValue())) {
         	refData.setCategory(refData.getExchange());
         }
-        
         if (commodity.equals(RefDataCommodity.INDEX.getValue())) {
         	refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
         }
-        
-        
         if (commodity.equals(RefDataCommodity.STOCK.getValue())
         		|| commodity.equals(RefDataCommodity.INDEX.getValue())) {
         	refData.setSpellName(codeTableData.getSpellName());
