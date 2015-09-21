@@ -54,10 +54,10 @@
 	
 	<bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener">
 		<property name="quoteThrottlingInterval">
-			<value>1500</value>
+			<value>1000</value>
 		</property>
-		<property name="KdbThrottling">
-			<ref bean="KdbThrottling" />
+		<property name="kdbThrottling">
+			<ref bean="kdbThrottling" />
 		</property>
 	</bean>
 	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager"></bean>
