@@ -52,6 +52,9 @@ public class Quote implements Cloneable, Serializable {
 	public String getSymbol() {
 		return symbol;
 	}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
 	public double getBid() {
 		return bid;
 	}

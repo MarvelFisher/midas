@@ -32,6 +32,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -235,29 +237,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 		gridData.horizontalAlignment = GridData.FILL;
 		viewer.getControl().setLayoutData(gridData);
 
-		final Table table = viewer.getTable();
-		table.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				TableItem item = table.getItem(table.getSelectionIndex());
-				Object obj = item.getData();
-				if (obj instanceof HashMap) {
-					@SuppressWarnings("unchecked")
-					HashMap<String, Object> map = (HashMap<String, Object>) obj;
-					String strategyName = (String) map.get(OrderField.STRATEGY
-							.value());
-					populateOrderPad(map);
-					Business.getInstance()
-							.getEventManager()
-							.sendEvent(
-									new SingleOrderStrategySelectionEvent(
-											map,
-											Business.getInstance()
-													.getSingleOrderAmendableFields(
-															strategyName)));
-				}
-			}
-		});
-
 		// create pin order action
 		createPinAction(parent);
 
@@ -294,7 +273,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			log.info("action:{}", item.getId());
 		}
 
-		initKeyListener();
+		initListener();
 		initSessionListener();
 
 	}
@@ -323,7 +302,46 @@ public class SingleOrderStrategyView extends ViewPart implements
 		parent.layout();
 	}
 
-	private void initKeyListener() {
+	private void initListener() {
+		final Table table = viewer.getTable();
+		table.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				TableItem item = table.getItem(table.getSelectionIndex());
+				Object obj = item.getData();
+				if (obj instanceof HashMap) {
+					@SuppressWarnings("unchecked")
+					HashMap<String, Object> map = (HashMap<String, Object>) obj;
+					String strategyName = (String) map.get(OrderField.STRATEGY
+							.value());
+					populateOrderPad(map);
+					Business.getInstance()
+							.getEventManager()
+							.sendEvent(
+									new SingleOrderStrategySelectionEvent(
+											map,
+											Business.getInstance()
+													.getSingleOrderAmendableFields(
+															strategyName)));
+				}
+			}
+		});
+
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				quickCancelOrder();
+			}
+		});
+
+		table.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.ESC) {
+					quickCancelOrder();
+				}
+			}
+		});
+
 		KeyListener listener = new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {

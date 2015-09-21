@@ -70,6 +70,8 @@ import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.event.statistic.TickTableReplyEvent;
+import com.cyanspring.common.event.statistic.TickTableRequestEvent;
 import com.cyanspring.common.event.strategy.AddStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent;
@@ -204,6 +206,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(LiveTradingEndEvent.class, null);
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
+			subscribeToEvent(TickTableRequestEvent.class, null);
 		}
 
 		@Override
@@ -1182,6 +1185,16 @@ public class BusinessManager implements ApplicationContextAware {
 		scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor,
 				cancelPendingOrderEvent);
 		log.info("Schedule cancel pending order event at {}", cal.getTime());
+	}
+	
+	public void processTickTableRequestEvent(TickTableRequestEvent event) {
+		try {
+			eventManager.sendLocalOrRemoteEvent(
+					new TickTableReplyEvent(event.getKey(), 
+							event.getSender(), tickTableManager.getTickTables()));
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 	public void injectStrategies(List<DataObject> list) {
