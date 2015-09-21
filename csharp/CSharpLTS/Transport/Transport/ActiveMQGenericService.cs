@@ -18,6 +18,8 @@ namespace Transport.Transport
 
         private Dictionary<IObjectListener, IMessageConsumer> objConsumers = new Dictionary<IObjectListener, IMessageConsumer>();
 
+        private IObjectListener objRecListener;
+
 
         class ObjectSender : IObjectSender
         {
@@ -64,89 +66,118 @@ namespace Transport.Transport
             }
         }
 
-        public IObjectSender CreateObjectPublisher(string subject)
+        public IObjectSender CreateObjectPublisher()
         {
             IMessageProducer producer = null;
-            if (publishers.ContainsKey(subject))
+            if (publishers.ContainsKey(publisherTopic))
             {
-                producer = publishers[subject];
+                producer = publishers[publisherTopic];
             }
             else
             {
-                IDestination dest = session.GetTopic(subject);
+                IDestination dest = session.GetTopic(publisherTopic);
                 producer = session.CreateProducer(dest);
                 producer.DeliveryMode = persistent;
-                senders.Add(subject, producer);              
+                senders.Add(publisherTopic, producer);              
             }
-            ISerialization serialization = getSerializationInstance(subject);           
+            ISerialization serialization = getSerializationInstance(publisherTopic);           
             return new ObjectSender(this, producer, serialization);
         }
 
-        public IObjectSender CreateObjectSender(string subject)
+        public IObjectSender CreateObjectSender()
         {
             IMessageProducer producer = null;
-            if (senders.ContainsKey(subject))
+            if (senders.ContainsKey(senderTopic))
             {
-                producer = senders[subject];
+                producer = senders[senderTopic];
             } 
             else
             {
-                IDestination dest = session.GetQueue(subject);
+                IDestination dest = session.GetQueue(senderTopic);
                 producer = session.CreateProducer(dest);
                 producer.DeliveryMode = persistent;
-                senders.Add(subject, producer);
+                senders.Add(senderTopic, producer);
             }
-            ISerialization serialization = getSerializationInstance(subject);
+            ISerialization serialization = getSerializationInstance(senderTopic);
             return new ObjectSender(this, producer, serialization);
         }
         
-        public void CreateReceiver(string subject, IObjectListener listener)
+        public void CreateReceiver( IObjectListener listener)
         {
             // only one listener per subject allowed for point to point connection
             IMessageConsumer consumer = null;
-            if (receivers.ContainsKey(subject))
+            if (receivers.ContainsKey(senderTopic))
             {
-                consumer = receivers[subject];
+                consumer = receivers[senderTopic];
             }
             else
             {
-                IDestination dest = session.GetQueue(subject);
+                IDestination dest = session.GetQueue(senderTopic);
                 consumer = session.CreateConsumer(dest);
-                receivers.Add(subject, consumer);
+                receivers.Add(senderTopic, consumer);
             }
             if ( listener == null )
             {
                 consumer.Listener -= Consumer_Listener1;
             }
-            consumer.Listener += new MessageListener(Consumer_Listener1);
-        }
-
-        /**
-       * think about how to process this method
-       */
-        private void Consumer_Listener1(IMessage message)
-        {
+            else
+            {
+                this.objRecListener = listener;
+                consumer.Listener += new MessageListener(Consumer_Listener1);
+            }
             
         }
+        
+        private void Consumer_Listener1(IMessage message)
+        {
+            if (message is ITextMessage)
+            {
+                string str = ((ITextMessage)message).Text;
+                object obj = getSerializationInstance(senderTopic).Deserialize(str);
+                objRecListener.OnMessage(obj);
+            }
+            else if (message is IBytesMessage)
+            {
+                IBytesMessage bms = (IBytesMessage) message;
+                int length = (int)bms.BodyLength;
+                if (length == 0)
+                {
+                    // log error
+                    return;
+                }
+                byte[] bytes = new byte[length];
+                bms.ReadBytes(bytes);
+                object obj = getSerializationInstance(senderTopic).Deserialize(bytes);
+                if (obj == null)
+                {
+                    return;
+                }
+                objRecListener.OnMessage(obj);
+            }
+            else
+            {
+                // log error
+            }
+        }
 
-        public void CreateSubscriber(string subject, IObjectListener listener)
+        public void CreateSubscriber( IObjectListener listener)
         {
             // many listeners per subject allowed for publish/subscribe
             List<IObjectListener> listeners = null;
-            if (objSubscribers.ContainsKey(subject))
+            if (objSubscribers.ContainsKey(publisherTopic))
             {
-                listeners = objSubscribers[subject];
+                listeners = objSubscribers[publisherTopic];
             }
             else
             {
                 listeners = new List<IObjectListener>();
-                objSubscribers.Add(subject, listeners);
+                objSubscribers.Add(publisherTopic, listeners);
             }
             if (!listeners.Contains(listener))
             {
-                IDestination dest = session.GetTopic(subject);
+                IDestination dest = session.GetTopic(publisherTopic);
                 IMessageConsumer consumer = session.CreateConsumer(dest);
-                ISerialization serialization = getSerializationInstance(subject);
+                ISerialization serialization = getSerializationInstance(publisherTopic);
                 consumer.Listener += new MessageListener(Consumer_Listener2);
                 listeners.Add(listener);
                 objConsumers.Add(listener, consumer);
@@ -156,22 +187,56 @@ namespace Transport.Transport
 
         private void Consumer_Listener2(IMessage message)
         {
-            
+            if (message is ITextMessage)
+            {
+                string str = ((ITextMessage)message).Text;
+                object obj = getSerializationInstance(publisherTopic).Deserialize(str);
+                foreach(IObjectListener listener in objSubscribers[publisherTopic])
+                {
+                    listener.OnMessage(obj);
+                }
+                
+            }
+            else if (message is IBytesMessage)
+            {
+                IBytesMessage bms = (IBytesMessage)message;
+                int length = (int)bms.BodyLength;
+                if (length == 0)
+                {
+                    // log error
+                    return;
+                }
+                byte[] bytes = new byte[length];
+                bms.ReadBytes(bytes);
+                object obj = getSerializationInstance(publisherTopic).Deserialize(bytes);
+                if (obj == null)
+                {
+                    return;
+                }
+                foreach (IObjectListener listener in objSubscribers[publisherTopic])
+                {
+                    listener.OnMessage(obj);
+                }
+            }
+            else
+            {
+                // log error
+            }
         }
 
-        public void PublishMessage(string subject, object obj)
+        public void PublishMessage( object obj)
         {
-            CreateObjectPublisher(subject).SendMessage(obj);
+            CreateObjectPublisher().SendMessage(obj);
         }
 
-        public void RemoveSubscriber(string subject, IObjectListener listener)
+        public void RemoveSubscriber( IObjectListener listener)
         {
             // many listeners per subject allowed for publish/subscribe
-            if (!objSubscribers.ContainsKey(subject))
+            if (!objSubscribers.ContainsKey(publisherTopic))
             {
                 return;              
             }
-            List<IObjectListener>  listeners = objSubscribers[subject];
+            List<IObjectListener>  listeners = objSubscribers[publisherTopic];
             if (listeners.Contains(listener))
             {
                 if (!objConsumers.ContainsKey(listener))
@@ -185,9 +250,9 @@ namespace Transport.Transport
             }
         }
 
-        public void SendMessage(string subject, object obj)
+        public void SendMessage( object obj)
         {
-            CreateObjectSender(subject).SendMessage(obj);
+            CreateObjectSender().SendMessage(obj);
         }
 
         private ISerialization getSerializationInstance(string topic)
