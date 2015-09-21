@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -29,13 +31,13 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -85,6 +87,7 @@ import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
+import com.cyanspring.cstw.gui.session.GuiSession;
 
 public class SingleOrderStrategyView extends ViewPart implements
 		IAsyncEventListener {
@@ -112,7 +115,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private Action saveOrderAction;
 	private Action pinAction;
 	private Action countOrderAction;
-	
+
 	private final String TOOLBAR_ID_ENTERORDER = "TOOLBAR_ENTER_ORDER";
 	private final String TOOLBAR_ID_CANCELORDER = "TOOLBAR_CANCEL_ORDER";
 	private final String TOOLBAR_ID_PAUSEORDER = "TOOLBAR_PAUSE_ORDER";
@@ -165,7 +168,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private Action popCreate;
 	private Action popCancel;
 	private Action popSave;
-	
+
 	private final String MENU_ID_FORCECANCEL = "POPUP_FORCE_CANCEL";
 	private final String MENU_ID_PAUSE = "POPUP_PAUSE";
 	private final String MENU_ID_STOP = "POPUP_STOP";
@@ -175,7 +178,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private final String MENU_ID_CREATE = "POPUP_CREATE";
 	private final String MENU_ID_CANCEL = "POPUP_CANCEL";
 	private final String MENU_ID_SAVE = "POPUP_SAVE";
-	
+
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
 	};
@@ -223,7 +226,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				.getXstream(), strFile, BeanHolder.getInstance()
 				.getDataConverter());
 		viewer.init();
-		
+
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 1;
@@ -280,65 +283,72 @@ public class SingleOrderStrategyView extends ViewPart implements
 				.subscribe(AccountSelectionEvent.class, this);
 		showOrders();
 		this.parent = parent;
-		initKeyListener();
-		
-		
+
 		ISelectionProvider is = getViewSite().getSelectionProvider();
 		MenuManager mm = new MenuManager();
 		IMenuManager imm = getViewSite().getActionBars().getMenuManager();
 		IContributionItem actions[] = imm.getItems();
-		
-		log.info("actions size:{}",actions.length);
-		for(IContributionItem item : actions){
-			log.info("action:{}",item.getId());
-		}
-		
 
-		
-	}
-
-	private void initKeyListener() {
-		KeyAdapter keyAdapter = new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.F1) {
-					showOrderPadByType(true);
-				} else if (e.keyCode == SWT.F2) {
-					showOrderPadByType(false);
-				}
-			}
-		};
-
-		addKeyAdapter(parent, keyAdapter);
-	}
-
-	private void addKeyAdapter(Control control, KeyAdapter keyAdapter) {
-		control.addKeyListener(keyAdapter);
-		if (control instanceof Composite) {
-			Composite parentComposite = (Composite) control;
-			for (Control subControl : parentComposite.getChildren()) {
-				addKeyAdapter(subControl, keyAdapter);
-			}
+		log.info("actions size:{}", actions.length);
+		for (IContributionItem item : actions) {
+			log.info("action:{}", item.getId());
 		}
 
+		initKeyListener();
+		initSessionListener();
+
+	}
+
+	public void openByKeyCode(int keyCode) {
+		handleKeyCode(keyCode);
+	}
+
+	private void handleKeyCode(int keyCode) {
+		if (keyCode == SWT.F1) {
+			showOrderPadByType(true);
+		} else if (keyCode == SWT.F2) {
+			showOrderPadByType(false);
+		}
 	}
 
 	private void showOrderPadByType(boolean isBuying) {
-		if (panelComposite.isVisible()
-				&& ((isBuying && cbOrderSide.getSelectionIndex() == 0) || (!isBuying && cbOrderSide
-						.getSelectionIndex() == 1))) {
-			showOrderPad(false);
-		} else {
-			showOrderPad(true);
-			populateOrderPadServers();
-		}
+		showOrderPad(true);
+		populateOrderPadServers();
 		if (isBuying) {
 			cbOrderSide.select(0);
 		} else {
 			cbOrderSide.select(1);
 		}
-		txtSymbol.setFocus();
+		txtPrice.setFocus();
 		parent.layout();
+	}
+
+	private void initKeyListener() {
+		KeyListener listener = new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.character == SWT.CR) {
+					quickEnterOrder();
+				}
+			}
+		};
+
+		txtSymbol.addKeyListener(listener);
+		txtPrice.addKeyListener(listener);
+		txtQuantity.addKeyListener(listener);
+	}
+
+	private void initSessionListener() {
+		GuiSession.getInstance().addPropertyChangeListener("symbol",
+				new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						if (txtSymbol != null && !txtSymbol.isDisposed()) {
+							txtSymbol.setText(GuiSession.getInstance()
+									.getSymbol());
+						}
+					}
+				});
 	}
 
 	private void createQuickOrderPad(final Composite parent) {
@@ -361,6 +371,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		GridData gridData;
 		txtSymbol = new Text(panelComposite, SWT.BORDER);
 		txtSymbol.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+		txtSymbol.setText(GuiSession.getInstance().getSymbol());
 
 		Label lb2 = new Label(panelComposite, SWT.NONE);
 		lb2.setText("Price: ");
@@ -572,9 +583,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 	}
 
 	private void createBodyMenu(final Composite parent) {
-		
-		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this.getPartName());
-		
+
+		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this
+				.getPartName());
+
 		menuMgr.add(createPopCancelAction());
 		menuMgr.add(createPopForceCancelAction());
 		menuMgr.add(createPopPauseAction());
@@ -584,19 +596,19 @@ public class SingleOrderStrategyView extends ViewPart implements
 		menuMgr.add(createPopStartAction());
 		menuMgr.add(createPopStopAction());
 		menuMgr.add(createPopSaveAction());
-		
-		menu = menuMgr.createContextMenu(viewer.getTable());	
+
+		menu = menuMgr.createContextMenu(viewer.getTable());
 		viewer.setBodyMenu(menu);
 	}
-	
-	private Action createPopSaveAction(){
+
+	private Action createPopSaveAction() {
 		popSave = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.Save);
 			}
 		};
-		
+
 		popSave.setId(MENU_ID_SAVE);
 		popSave.setText("Save");
 		popSave.setToolTipText("Save");
@@ -606,15 +618,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popSave.setImageDescriptor(imageDesc);
 		return popSave;
 	}
-	
-	private Action createPopCreateAction(){
+
+	private Action createPopCreateAction() {
 		popCreate = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.Create);
 			}
 		};
-		
+
 		popCreate.setId(MENU_ID_CREATE);
 		popCreate.setText("Create");
 		popCreate.setToolTipText("Create");
@@ -624,15 +636,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popCreate.setImageDescriptor(imageDesc);
 		return popCreate;
 	}
-	
-	private Action createPopMultiAmendAction(){
+
+	private Action createPopMultiAmendAction() {
 		popMultiAmend = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.MultiAmend);
 			}
 		};
-		
+
 		popMultiAmend.setId(MENU_ID_MULTIAMEND);
 		popMultiAmend.setText("Multi Amend");
 		popMultiAmend.setToolTipText("Multi Amend");
@@ -642,15 +654,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popMultiAmend.setImageDescriptor(imageDesc);
 		return popMultiAmend;
 	}
-	
-	private Action createPopClearAlertAction(){
+
+	private Action createPopClearAlertAction() {
 		popClearAlert = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.ClearAlert);
 			}
 		};
-		
+
 		popClearAlert.setId(MENU_ID_CLEARALERT);
 		popClearAlert.setText("Clear Alert");
 		popClearAlert.setToolTipText("Clear Alert");
@@ -660,15 +672,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popClearAlert.setImageDescriptor(imageDesc);
 		return popClearAlert;
 	}
-	
-	private Action createPopStartAction(){
+
+	private Action createPopStartAction() {
 		popStart = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.Start);
 			}
 		};
-		
+
 		popStart.setId(MENU_ID_START);
 		popStart.setText("Start");
 		popStart.setToolTipText("Start");
@@ -678,15 +690,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popStart.setImageDescriptor(imageDesc);
 		return popStart;
 	}
-	
-	private Action createPopStopAction(){
+
+	private Action createPopStopAction() {
 		popStop = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.Stop);
 			}
 		};
-		
+
 		popStop.setId(MENU_ID_STOP);
 		popStop.setText("Stop");
 		popStop.setToolTipText("Stop");
@@ -696,15 +708,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popStop.setImageDescriptor(imageDesc);
 		return popStop;
 	}
-	
-	private Action createPopPauseAction(){
+
+	private Action createPopPauseAction() {
 		popPause = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.Pause);
 			}
 		};
-		
+
 		popPause.setId(MENU_ID_PAUSE);
 		popPause.setText("Pause");
 		popPause.setToolTipText("Pause");
@@ -715,16 +727,14 @@ public class SingleOrderStrategyView extends ViewPart implements
 		return popPause;
 	}
 
-	
-	
-	private Action createPopForceCancelAction(){
+	private Action createPopForceCancelAction() {
 		popForceCancel = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.ForceCancel);
 			}
 		};
-		
+
 		popForceCancel.setId(MENU_ID_FORCECANCEL);
 		popForceCancel.setText("Force Cancel");
 		popForceCancel.setToolTipText("Force Cancel");
@@ -735,15 +745,14 @@ public class SingleOrderStrategyView extends ViewPart implements
 		return popForceCancel;
 	}
 
-	
-	private Action createPopCancelAction(){
+	private Action createPopCancelAction() {
 		popCancel = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
 				strategyAction(StrategyAction.Cancel);
 			}
 		};
-		
+
 		popCancel.setId(MENU_ID_CANCEL);
 		popCancel.setText("Cancel");
 		popCancel.setToolTipText("Cancel");
@@ -753,7 +762,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		popCancel.setImageDescriptor(imageDesc);
 		return popCancel;
 	}
-	
+
 	private void createEnterOrderAction(final Composite parent) {
 		orderDialog = new OrderDialog(parent.getShell());
 		// create local toolbars
@@ -763,7 +772,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				orderDialog.open();
 			}
 		};
-		
+
 		enterOrderAction.setId(TOOLBAR_ID_ENTERORDER);
 		enterOrderAction.setText("Enter Order");
 		enterOrderAction.setToolTipText("Create an order");
@@ -783,7 +792,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				cancelOrders(false);
 			}
 		};
-		
+
 		cancelOrderAction.setId(TOOLBAR_ID_CANCELORDER);
 		cancelOrderAction.setText("Cancel Order");
 		cancelOrderAction.setToolTipText("Cancel the order");
@@ -1005,7 +1014,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				strategyAction(StrategyAction.Pause);
 			}
 		};
-		
+
 		pauseOrderAction.setId(TOOLBAR_ID_PAUSEORDER);
 		pauseOrderAction.setText("Pause Order");
 		pauseOrderAction.setToolTipText("Pause order");
@@ -1025,7 +1034,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				strategyAction(StrategyAction.Stop);
 			}
 		};
-		
+
 		stopOrderAction.setId(TOOLBAR_ID_STOP_ORDER);
 		stopOrderAction.setText("Stop Order");
 		stopOrderAction.setToolTipText("Stop order");
@@ -1069,7 +1078,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				messageBox.open();
 			}
 		};
-		
+
 		countOrderAction.setId(TOOLBAR_ID_COUNT_ORDER);
 		countOrderAction.setText("Check number of orders");
 		countOrderAction.setToolTipText("Check number of orders");
@@ -1188,7 +1197,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				parent.layout();
 			}
 		};
-		
+
 		filterAction.setId(TOOLBAR_ID_FILTER);
 		filterAction.setText("Filter");
 		filterAction.setToolTipText("show or hide filter");
@@ -1285,7 +1294,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			timerEvent = null;
 			asyncShowOrders();
 		} else if (event instanceof AccountSelectionEvent) {
-			
+
 			accountId = ((AccountSelectionEvent) event).getAccount();
 			if (pinned) {
 				accountFilter.setMatch("Account", accountId);

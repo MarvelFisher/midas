@@ -10,9 +10,10 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -21,9 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.gui.assist.OpenSingleOrderStrategyViewAssist;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
-	final private static Logger log = LoggerFactory.getLogger(ApplicationWorkbenchAdvisor.class); 
+	final private static Logger log = LoggerFactory
+			.getLogger(ApplicationWorkbenchAdvisor.class);
 
 	private static final String PERSPECTIVE_ID = "CSTW.perspective";
 
@@ -41,28 +44,36 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		super.initialize(configurer);
 		configurer.setSaveAndRestore(true);
 	}
+
 	@Override
 	public void preStartup() {
 		try {
 			Business.getInstance().start();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 		super.preStartup();
 	}
+
 	@Override
 	public void postStartup() {
-
+		Display.getDefault().addFilter(SWT.KeyDown, new Listener() {
+			public void handleEvent(Event e) {
+				if (e.keyCode == SWT.F1 || e.keyCode == SWT.F2) {
+					new OpenSingleOrderStrategyViewAssist().run(e.keyCode);
+				}
+			}
+		});
 	}
-	
+
 	@Override
 	public boolean preShutdown() {
-//		try {
-//			Business.getInstance().stop();
-//			Thread.sleep(100);
-//		} catch (Exception e) {
-//			log.error(e.getMessage(), e);
-//		}
+		// try {
+		// Business.getInstance().stop();
+		// Thread.sleep(100);
+		// } catch (Exception e) {
+		// log.error(e.getMessage(), e);
+		// }
 		return super.preShutdown();
 	}
 }
