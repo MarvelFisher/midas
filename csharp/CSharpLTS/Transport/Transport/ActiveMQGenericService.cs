@@ -130,13 +130,13 @@ namespace Transport.Transport
         
         private void Consumer_Listener1(IMessage message)
         {
-            if (message is ITextMessage)
-            {
-                string str = ((ITextMessage)message).Text;
-                object obj = getSerializationInstance(senderTopic).Deserialize(str);
-                objRecListener.OnMessage(obj);
-            }
-            else if (message is IBytesMessage)
+            //if (message is ITextMessage)
+            //{
+            //    string str = ((ITextMessage)message).Text;
+            //    object obj = getSerializationInstance(senderTopic).Deserialize<object>(str);
+            //    objRecListener.OnMessage(obj);
+            //}
+            if (message is IBytesMessage)
             {
                 IBytesMessage bms = (IBytesMessage) message;
                 int length = (int)bms.BodyLength;
@@ -187,17 +187,17 @@ namespace Transport.Transport
 
         private void Consumer_Listener2(IMessage message)
         {
-            if (message is ITextMessage)
-            {
-                string str = ((ITextMessage)message).Text;
-                object obj = getSerializationInstance(publisherTopic).Deserialize(str);
-                foreach(IObjectListener listener in objSubscribers[publisherTopic])
-                {
-                    listener.OnMessage(obj);
-                }
+            //if (message is ITextMessage)
+            //{
+            //    string str = ((ITextMessage)message).Text;
+            //    object obj = getSerializationInstance(publisherTopic).Deserialize(str);
+            //    foreach(IObjectListener listener in objSubscribers[publisherTopic])
+            //    {
+            //        listener.OnMessage(obj);
+            //    }
                 
-            }
-            else if (message is IBytesMessage)
+            //}
+            if (message is IBytesMessage)
             {
                 IBytesMessage bms = (IBytesMessage)message;
                 int length = (int)bms.BodyLength;

@@ -7,7 +7,7 @@ namespace Common.Transport
 {
     public interface ISerialization
     {
-        object Serialize(object obj);
-        object Deserialize(object obj);
+        byte[] Serialize(object obj);
+        object Deserialize(byte[] bytes);
     }
 }

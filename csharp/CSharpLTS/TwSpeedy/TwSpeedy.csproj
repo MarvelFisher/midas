@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E41F5BEA-EDC5-45C7-97BE-D7193A495208}</ProjectGuid>
+    <ProjectGuid>{5CA0DA3F-1EC9-4FD4-AF03-CC488198A7B0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TwSpeedy</RootNamespace>
@@ -105,9 +105,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Avro\Avro.csproj">
+    <ProjectReference Include="..\Avro\AvroObject.csproj">
       <Project>{4f8a6d36-df47-4330-b1c4-31c66b4ed2ed}</Project>
-      <Name>Avro</Name>
+      <Name>AvroObject</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{3ecabbc2-bf44-4aa9-a0f1-6306473c8caa}</Project>
