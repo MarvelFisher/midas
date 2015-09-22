@@ -250,13 +250,6 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		}
 	}
 	
-	private ChildOrder getChildOrderFromLocal(String id) throws Exception {
-		ChildOrder order = localOrders.get(id);
-		if (order == null)
-			throw new Exception("Order not found");
-		return order;
-	}
-	
 	private void onStateUpdate(StateUpdate update) {
 		if (!checkExchangeAccount(update.getExchangeAccount()))
 			return;
@@ -307,11 +300,13 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				exchangeOrders.put(update.getExchangeOrderId(), order);			
 			}
 		}
-			
+		
 		ExecType type = WrapExecType.valueOf(update.getExecType()).getCommonExecType();
 		OrdStatus status = WrapOrdStatus.valueOf(update.getOrdStatus()).getCommonOrdStatus();
+		
 		double delta = update.getCumQty() - order.getCumQty();
 		if (PriceUtils.GreaterThan(delta, 0)) {
+			order.setOrdStatus(status);
 			double price = (update.getAvgPx() * update.getCumQty() - order.getAvgPx() * order.getCumQty()) / delta;
 			order.setCumQty(update.getCumQty());
 			order.setAvgPx(update.getAvgPx());
@@ -322,17 +317,24 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 					order.getUser(), order.getAccount(), order.getRoute());
 			listener.onOrder(type, order, exe, update.getMsg());
 		} else if (PriceUtils.Equal(delta, 0)) {
+			order.setOrdStatus(status);
 			listener.onOrder(type, order, null, update.getMsg());
 		} else {
 			log.error("Wrong order qty, order id: " + update.getOrderId() + ", type: " + type + ", status: " + status);
 			return;
 		}
-		order.setOrdStatus(status);
 	}
 	
 	private boolean checkExchangeAccount(String exchangeAccount) {
 		if (this.exchangeAccount == null)
 			return true;
 		return this.exchangeAccount.equals(exchangeAccount);
+	}
+	
+	private ChildOrder getChildOrderFromLocal(String id) throws Exception {
+		ChildOrder order = localOrders.get(id);
+		if (order == null)
+			throw new Exception("Order not found");
+		return order;
 	}
 }
