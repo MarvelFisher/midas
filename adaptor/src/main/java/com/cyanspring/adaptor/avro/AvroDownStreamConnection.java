@@ -152,12 +152,17 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			orders.put(txId, order);
 			int side = WrapOrderSide.valueOf(order.getSide()).getCode();
 			int type = WrapOrderType.valueOf(ExchangeOrderType.toOrderType(order.getType())).getCode();
-			NewOrderRequest request = NewOrderRequest.newBuilder().setOrderId(order.getId())
+			NewOrderRequest request = NewOrderRequest.newBuilder()
+					.setOrderId(order.getId())
 					.setClOrderId(order.getClOrderId())
 					.setCreated(TimeUtil.formatDate(order.getCreated(), "yyyy-MM-dd HH:mm:ss.SSS"))
-					.setExchangeAccount(exchangeAccount).setOrderSide(side).setOrderType(type)
-					.setPrice(order.getPrice()).setQuantity(order.getQuantity()).setSymbol(order.getSymbol())
-					.setObjectType(WrapObjectType.NewOrderRequest.getCode()).setTxId(txId)
+					.setExchangeAccount(exchangeAccount)
+					.setOrderSide(side).setOrderType(type)
+					.setPrice(order.getPrice())
+					.setQuantity(order.getQuantity())
+					.setSymbol(order.getSymbol())
+					.setObjectType(WrapObjectType.NewOrderRequest.getCode())
+					.setTxId(txId)
 					.setTimeInForce(WrapTimeInForce.valueOf(order.get(TimeInForce.class, OrderField.TIF.value())).getCode())
 					.build();
 			downStreamEventSender.sendRemoteEvent(request, WrapObjectType.NewOrderRequest);
@@ -178,7 +183,8 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			String txId = IdGenerator.getInstance().getNextID();
 			orders.put(txId, local);
 			Builder request = AmendOrderRequest.newBuilder()
-					.setObjectType(WrapObjectType.AmendOrderRequest.getCode()).setOrderId(order.getClOrderId())
+					.setObjectType(WrapObjectType.AmendOrderRequest.getCode())
+					.setOrderId(order.getClOrderId())
 					.setExchangeAccount(exchangeAccount);
 			Double qty = (Double) fields.get(OrderField.QUANTITY.value());		
 			if (qty != null && PriceUtils.EqualGreaterThan(qty, 0))
@@ -204,7 +210,8 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			String txId = IdGenerator.getInstance().getNextID();
 			orders.put(txId, local);
 			CancelOrderRequest request = CancelOrderRequest.newBuilder()
-					.setObjectType(WrapObjectType.CancelOrderRequest.getCode()).setOrderId(order.getClOrderId())
+					.setObjectType(WrapObjectType.CancelOrderRequest.getCode())
+					.setOrderId(order.getClOrderId())
 					.setExchangeAccount(exchangeAccount).setTxId(txId).build();
 			downStreamEventSender.sendRemoteEvent(request, WrapObjectType.CancelOrderRequest);
 			local.setOrdStatus(OrdStatus.PENDING_CANCEL);
