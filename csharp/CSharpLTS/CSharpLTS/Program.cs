@@ -5,12 +5,16 @@ using System.Text;
 using Spring.Context;
 using Spring.Context.Support;
 using Log;
+using Common.Basic;
+using Common.Event;
 
 namespace CSharpLTS
 {
     class Program
     {
 
+        public IPlugin downStreamManager { set; get; }
+        public IRemoteEventManager remoteEventManager { set; get; }
 
         /// <summary>
         /// 应用程序的主入口点。
@@ -31,6 +35,9 @@ namespace CSharpLTS
         public void Init()
         {
             Console.WriteLine("Init...");
+            downStreamManager.Init();
+            remoteEventManager.init();
+           
 
         }
 

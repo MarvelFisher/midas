@@ -355,7 +355,7 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<list>
-				<ref bean="sessionChecker"/>
+				<ref bean="fitxSessionChecker"/>
 			</list>
 		</constructor-arg>
 	</bean>

@@ -8,6 +8,7 @@
 	<context:annotation-config />
 
 	<import resource="ft/*.xml" />
+	<import resource="ft/marketSession/*.xml" />
 <!-- 	<import resource="common/business.xml" /> -->
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
@@ -92,7 +93,7 @@
 	<bean id="windAdaptorFT"
 		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="showGui" value="true"/>
-		<property name="gatewayIp" value="10.0.0.32"/>
+		<property name="gatewayIp" value="10.1.1.153"/>
 		<property name="gatewayPort" value="10038"/>
 		<property name="marketDataLog" value="true"/>
 		<property name="tradeDateCheckIsOpen" value="true"/>

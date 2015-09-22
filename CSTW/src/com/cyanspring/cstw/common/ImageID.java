@@ -42,7 +42,8 @@ public enum ImageID {
 	STOP_PROGRESS_ICON("icons/stopProgress.png"),
 	MANUAL_PRICE_ICON("icons/manualPrice.png"),
 	USER_ICON("icons/user.png"),
-	POWER_ICON("icons/power.png")
+	POWER_ICON("icons/power.png"),
+	APP_ICON("icons/appIcon16.png")
 	;
 	private String value;
 	ImageID(String value) {

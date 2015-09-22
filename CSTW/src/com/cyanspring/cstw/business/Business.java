@@ -29,6 +29,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
@@ -40,6 +41,8 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
@@ -90,6 +93,7 @@ public class Business {
 	private String user = Default.getUser();
 	private String account = Default.getAccount();
 	private Account loginAccount = null;
+	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
 	// singleton implementation
 	private Business() {
@@ -304,7 +308,7 @@ public class Business {
 		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
 		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
 		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
-
+		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
 
@@ -444,6 +448,12 @@ public class Business {
 		return BeanHolder.getInstance().isLoginRequired();
 	}
 	
+	public void processAccountSettingSnapshotReplyEvent(AccountSettingSnapshotReplyEvent event){
+		if( null != event.getAccountSetting()){
+			accountSetting = event.getAccountSetting();
+		}
+	}
+	
 	public boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
 		if(!event.isOk())
 			return false;
@@ -451,6 +461,7 @@ public class Business {
 		List<Account>accountList = event.getAccountList();
 		if(null != accountList && !accountList.isEmpty()){
 			loginAccount = event.getAccountList().get(0);
+			sendAccountSettingRequestEvent(loginAccount.getId());		
 		}
 		UserGroup userGroup = event.getUserGroup();
 		this.user = userGroup.getUser();
@@ -463,6 +474,15 @@ public class Business {
 		this.userGroup = userGroup;
 		log.info("login user:{},{}",user,userGroup.getRole());
 		return true;
+	}
+	
+	private void sendAccountSettingRequestEvent(String accountId){
+		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(IdGenerator.getInstance().getNextID(), Business.getInstance().getFirstServer(), accountId, null);
+		try {
+			eventManager.sendRemoteEvent(settingRequestEvent);
+		} catch (Exception e) {
+			log.warn(e.getMessage(),e);
+		}
 	}
 	
 	public boolean processUserLoginReplyEvent(UserLoginReplyEvent event) {
@@ -517,6 +537,12 @@ public class Business {
 	public Account getLoginAccount() {
 		return loginAccount;
 	}
-	
-	
+
+	public AccountSetting getAccountSetting() {
+		return accountSetting;
+	}
+
+	public void setAccountSetting(AccountSetting accountSetting) {
+		this.accountSetting = accountSetting;
+	}
 }

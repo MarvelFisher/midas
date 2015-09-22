@@ -5,6 +5,26 @@
     xsi:schemaLocation="http://www.springframework.net
         http://www.springframework.net/xsd/spring-objects.xsd">
 
-  <object id="server" type="CSharpLTS.Program, CSharpLTS" />
+  <object id="server" type="CSharpLTS.Program, CSharpLTS" autowire="byName"/>
+  <object id="remoteEventManager" type="Common.Event.RemoteEventManager, Common" autowire="byName">
+    <constructor-arg>
+      <ref object="transportService"></ref>
+    </constructor-arg>
+  </object>
 
+  <object id="downStreamManager" type="Common.Adaptor.DownStreamManager, Common" >
+    <constructor-arg>
+      <list element-type="Common.Adaptor.IDownStreamAdaptor, Common">
+        <ref object="tradeAdaptor"/>
+      </list>
+    </constructor-arg>
+  </object>
+
+  <object id="tradeAdaptor" type="Adaptor.TwSpeedy.Main.TradeAdaptor, TwSpeedy"/>
+
+  <object id="transportService" type="Transport.Transport.ActiveMQGenericService, Transport" >
+    <property name="user" value="yu"></property>
+    <property name="password" value="junfeng"></property>
+  </object>
+  
 </objects>
