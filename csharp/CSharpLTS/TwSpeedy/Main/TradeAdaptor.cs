@@ -36,6 +36,7 @@ namespace Adaptor.TwSpeedy.Main
         public OrderMessage.MarketEnum market { get; set; } = MarketEnum.mFutures;
         public string host { get; set; } = "Speedy150.masterlink.com.tw";
         public int port { get; set; } = 23456;
+        public bool cancelOrdersAtSTart { get; set; } = true;
 
 
         public void init()
@@ -113,6 +114,10 @@ namespace Adaptor.TwSpeedy.Main
             //回補
             System.Diagnostics.Debug.WriteLine("====================Recovery Done====================");
             recovering = false;
+
+            if (cancelOrdersAtSTart)
+                cancelAllOrders();
+
             state = true;
             if (null != this.listener)
                 this.listener.onState(state);
@@ -143,8 +148,6 @@ namespace Adaptor.TwSpeedy.Main
                         order.orderId = item.orderId;
 
                         System.Diagnostics.Debug.WriteLine("Recovery add order: " + order);
-
-
                     }
                 }
                 else
@@ -331,6 +334,22 @@ namespace Adaptor.TwSpeedy.Main
 
             cancelOrderMessage.NID = exchangeConnection.GenerateUniqueID(this.market, OrderMessage.MessageTypeEnum.mtCancel);
             exchangeConnection.CancelOrder(cancelOrderMessage);
+        }
+
+        private void cancelAllOrders()
+        {
+            System.Diagnostics.Debug.WriteLine("Cancelling all orders");
+            foreach (KeyValuePair<string, Order> entry in orders)
+            {
+                Order order = entry.Value;
+                if(order.ordStatus == OrdStatus.New ||
+                    order.ordStatus == OrdStatus.PartiallyFilled ||
+                    order.ordStatus == OrdStatus.Replaced && PriceUtils.LessThan(order.cumQty, order.quantity))
+                {
+                    System.Diagnostics.Debug.WriteLine("Start up cancel order: " + order.orderId + ":" + order.exchangeOrderId);
+                    cancelOrder(order.exchangeOrderId);
+                }
+            }
         }
 
         public bool getState()
