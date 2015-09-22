@@ -104,9 +104,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Avro\Avro.csproj">
+    <ProjectReference Include="..\Avro\AvroObject.csproj">
       <Project>{4F8A6D36-DF47-4330-B1C4-31C66B4ED2ED}</Project>
-      <Name>Avro</Name>
+      <Name>AvroObject</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{3ECABBC2-BF44-4AA9-A0F1-6306473C8CAA}</Project>
