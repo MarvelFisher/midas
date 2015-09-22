@@ -3,7 +3,7 @@
 # fix Apps could not login between LTS restart - AppServer restart
 export LC_ALL="en_US.UTF-8"
 WORKDIR=$PWD
-cd ../appServer
+cd ../appServer.ft
 ./run.sh stop
 cd $WORKDIR
 
@@ -29,5 +29,5 @@ sleep 60
 
 sleep 60
 echo "Starting AppServer "`date` | tee -a ./log/console.log
-cd ../appServer
+cd ../appServer.ft
 ./run.sh start
