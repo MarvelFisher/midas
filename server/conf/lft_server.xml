@@ -10,7 +10,7 @@
 	<import resource="test/ft_test.xml" />
 	<import resource="test/ft_MarketSession.xml" />
 	<import resource="ft/LiveTrading.xml" />
-	<import resource="ft/marketsession/CFSessionState.xml" />
+	<import resource="ft/MarketSession.xml" />
 	<import resource="ft/business.xml" />
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
