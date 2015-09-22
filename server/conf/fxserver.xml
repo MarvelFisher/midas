@@ -60,6 +60,8 @@
     <bean id="dailyExec" class="java.lang.String">
         <constructor-arg value="04:45:00" />
     </bean>
+    
+    <bean id="KdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
 
     <!-- MarketDataManager setting -->
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">

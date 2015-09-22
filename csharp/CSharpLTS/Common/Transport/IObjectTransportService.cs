@@ -7,13 +7,13 @@ namespace Common.Transport
 {
     public interface IObjectTransportService : ITransportService
     {
-        void CreateReceiver(string subject, IObjectListener listener);
-        void CreateSubscriber(string subject, IObjectListener listener);
-        void RemoveSubscriber(string subject, IObjectListener listener);
-        void SendMessage(string subject, object obj);
-        void PublishMessage(string subject, object obj);
+        void CreateReceiver(IObjectListener listener);
+        void CreateSubscriber(IObjectListener listener);
+        void RemoveSubscriber(IObjectListener listener);
+        void SendMessage(object obj);
+        void PublishMessage(object obj);
 
-        IObjectSender CreateObjectSender(string subject);
-        IObjectSender CreateObjectPublisher(string subject);
+        IObjectSender CreateObjectSender();
+        IObjectSender CreateObjectPublisher();
     }
 }

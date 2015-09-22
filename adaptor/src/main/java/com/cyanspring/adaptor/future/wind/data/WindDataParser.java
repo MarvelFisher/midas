@@ -728,6 +728,18 @@ public class WindDataParser extends AbstractWindDataParser {
                 codeTableData.setSecurityExchange(new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8"));
             if (null != inputHashMap.get(FDTFields.SecurityType))
                 codeTableData.setSecurityType(((Number) inputHashMap.get(FDTFields.SecurityType)).intValue());
+            if (null != inputHashMap.get(FDTFields.Product))
+                codeTableData.setProduct(new String((byte[]) inputHashMap.get(FDTFields.Product), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.ProductName))
+                codeTableData.setProductName(new String((byte[]) inputHashMap.get(FDTFields.ProductName), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.SymbolName))
+                codeTableData.setSymbolName(new String((byte[]) inputHashMap.get(FDTFields.SymbolName), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.Group))
+                codeTableData.setGroup(new String((byte[]) inputHashMap.get(FDTFields.Group), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.Currency))
+                codeTableData.setCurrency(new String((byte[]) inputHashMap.get(FDTFields.Currency), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.ShowID))
+                codeTableData.setShowID(new String((byte[]) inputHashMap.get(FDTFields.ShowID), "UTF-8"));
         }
         return codeTableData;
     }

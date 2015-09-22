@@ -8,6 +8,10 @@
 >
 
 	<context:annotation-config />
+	
+	<bean id="quoteLog" class="java.lang.Boolean">
+		<constructor-arg value="true"/>
+	</bean>
 
 	<bean id="idMarketDataAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
 		<property name="account" value="fdtcanned"></property>		
@@ -22,9 +26,6 @@
 		<property name="reqPort" value="6086"></property>
 	
 		<property name="exch" value="687"></property>
-		<property name="preOpen" value="510"/>
-		<property name="open" value="515"/>
-		<property name="close" value="500"/>
 		<property name="sendHeartBeat" value="3"/>
 		
 		<property name="nonFX">

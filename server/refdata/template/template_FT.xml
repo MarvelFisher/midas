@@ -1,0 +1,98 @@
+<list>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Symbol</string>
+				<string>TXFJ5</string>
+			</entry>
+			<entry>
+				<string>Desc</string>
+				<string>期貨.台灣期交所.臺指</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>TWF</string>
+			</entry>
+			<entry>
+				<string>Currency</string>
+				<string>NTD</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<string>FITX1510</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>臺指1510</string>
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>臺指1510</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>TXFJ5.TWF</string>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>FITX</string>
+			</entry>
+			<entry>
+				<string>Spot TWName</string>
+				<string>臺指</string>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>ICE.TWF.FITX.201510</string>
+			</entry>
+			<entry>
+				<string>Subscribe symbol</string>
+				<string>ICE.TWF.FITX.201510</string>
+			</entry>
+			<entry>
+				<string>IType</string>
+				<string>2</string>
+			</entry>
+			<entry>
+				<string>Commodity</string>
+				<string>F</string>
+			</entry>
+			<entry>
+				<string>Type</string>
+				<string>INDEX_FU</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>1</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>200</double>
+			</entry>
+			<entry>
+				<string>TWTrading unit</string>
+				<string>元(新臺幣)/指數1點</string>
+			</entry>
+			<entry>
+				<string>CNTrading unit</string>
+				<string>元(新台币)/指数1点</string>
+			</entry>
+			<entry>
+				<string>ENTrading unit</string>
+				<string>NTD/Point</string>
+			</entry>
+			<entry>
+				<string>Price limit</string>
+				<double>10</double>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>TWF</string>
+			</entry>
+			<entry>
+				<string>Maximum hold</string>
+				<int>6000</int>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+</list>

@@ -406,7 +406,7 @@ public class RefData extends DataObject {
     public void setSubscribeSymbol(String subscribeSymbol) {
         this.set(subscribeSymbol, RefDataField.SUBSCRIBE_SYMBOL.value());
     }
-    
+
     public int getDayTradable() {
         return this.get(int.class, RefDataField.DAY_TRADABLE.value());
     }
@@ -414,4 +414,13 @@ public class RefData extends DataObject {
     public void setDayTradable(int dayTradable) {
         this.set(dayTradable, RefDataField.DAY_TRADABLE.value());
     }
+
+    public String getDesc() {
+        return this.get(String.class, RefDataField.DESC.value());
+    }
+
+    public void setDesc(String desc) {
+        this.set(desc, RefDataField.DESC.value());
+    }
+
 }

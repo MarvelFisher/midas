@@ -13,28 +13,13 @@ package com.cyanspring.cstw.gui.command;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.gui.SingleOrderStrategyView;
+import com.cyanspring.cstw.gui.assist.OpenSingleOrderStrategyViewAssist;
 
 public class SingleOrderStrategyViewCommand extends AbstractHandler {
-	private static final Logger log = LoggerFactory
-			.getLogger(SingleOrderStrategyViewCommand.class);
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IWorkbenchPage page = window.getActivePage();
-		try {
-			page.showView(SingleOrderStrategyView.ID);
-		} catch (PartInitException e) {
-			log.error(e.getMessage(), e);
-			e.printStackTrace();
-		}
+		new OpenSingleOrderStrategyViewAssist().run(-1);
 		return null;
 	}
 

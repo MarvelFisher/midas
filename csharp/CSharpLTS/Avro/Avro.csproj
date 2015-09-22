@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Avro, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\Avro.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,13 +44,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Generate\base\StateUpdate.cs" />
+    <Compile Include="Generate\base\types\ObjectType.cs" />
+    <Compile Include="Generate\market\bean\Quote.cs" />
+    <Compile Include="Generate\market\bean\SubscribeQuote.cs" />
+    <Compile Include="Generate\market\bean\UnsubscribeQuote.cs" />
+    <Compile Include="Generate\trade\bean\AmendOrderReply.cs" />
+    <Compile Include="Generate\trade\bean\AmendOrderRequest.cs" />
+    <Compile Include="Generate\trade\bean\CancelOrderReply.cs" />
+    <Compile Include="Generate\trade\bean\CancelOrderRequest.cs" />
+    <Compile Include="Generate\trade\bean\NewOrderReply.cs" />
+    <Compile Include="Generate\trade\bean\NewOrderRequest.cs" />
+    <Compile Include="Generate\trade\bean\OrderUpdate.cs" />
+    <Compile Include="Generate\trade\types\ExecType.cs" />
+    <Compile Include="Generate\trade\types\OrderSide.cs" />
+    <Compile Include="Generate\trade\types\OrderType.cs" />
+    <Compile Include="Generate\trade\types\OrdStatus.cs" />
+    <Compile Include="Generate\trade\types\TimeInForce.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{3ECABBC2-BF44-4AA9-A0F1-6306473C8CAA}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

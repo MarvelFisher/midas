@@ -1,0 +1,87 @@
+<map>
+  <entry>
+    <string>ICE.TWF.FITX.201512</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FITX.201512</windCode>
+      <cnName>臺指12 (台灣期交所)</cnName>
+      <spellName>tz12(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FITX.201512</englishName>
+      <product>FITX</product>
+      <productName>臺指</productName>
+      <symbolName>臺指12</symbolName>
+      <currency>NTD</currency>
+      <showID>TXFL5</showID>
+      <group>期貨.台灣期交所.臺指</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FITX.201606</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FITX.201606</windCode>
+      <cnName>臺指06 (台灣期交所)</cnName>
+      <spellName>tz06(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FITX.201606</englishName>
+      <product>FITX</product>
+      <productName>臺指</productName>
+      <symbolName>臺指06</symbolName>
+      <currency>NTD</currency>
+      <showID>TXFF6</showID>
+      <group>期貨.台灣期交所.臺指</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FITX.201510</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FITX.201510</windCode>
+      <cnName>臺指10 (台灣期交所)</cnName>
+      <spellName>tz10(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FITX.201510</englishName>
+      <product>FITX</product>
+      <productName>臺指</productName>
+      <symbolName>臺指10</symbolName>
+      <currency>NTD</currency>
+      <showID>TXFJ5</showID>
+      <group>期貨.台灣期交所.臺指</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FITX.201511</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FITX.201511</windCode>
+      <cnName>臺指11 (台灣期交所)</cnName>
+      <spellName>tz11(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FITX.201511</englishName>
+      <product>FITX</product>
+      <productName>臺指</productName>
+      <symbolName>臺指11</symbolName>
+      <currency>NTD</currency>
+      <showID>TXFK5</showID>
+      <group>期貨.台灣期交所.臺指</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FITX.201603</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FITX.201603</windCode>
+      <cnName>臺指03 (台灣期交所)</cnName>
+      <spellName>tz03(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FITX.201603</englishName>
+      <product>FITX</product>
+      <productName>臺指</productName>
+      <symbolName>臺指03</symbolName>
+      <currency>NTD</currency>
+      <showID>TXFC6</showID>
+      <group>期貨.台灣期交所.臺指</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+</map>

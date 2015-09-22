@@ -996,9 +996,9 @@ public class CentralDbProcessor implements IPlugin
 			{
 				for (SymbolData data : symboldatas)
 				{
+					data.setTradedate(session.getTradeDateByString());
 					data.setSessionType(newSessionType);
 					data.setSessionEnd(session.getEndDate());
-					data.setTradedate(session.getTradeDateByString());
 				}
 			}
 			catch (ParseException e)
@@ -1188,11 +1188,10 @@ public class CentralDbProcessor implements IPlugin
 	{
 		switch (serverMarket)
 		{
-		case "FC":
-		case "SC":
-			return true;
-		default:
+		case "FX":
 			return false;
+		default:
+			return true;
 		}
 	}
 	

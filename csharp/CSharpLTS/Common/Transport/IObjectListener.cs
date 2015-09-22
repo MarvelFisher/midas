@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Common.Transport
 {
-    public delegate void IObjectListener(object message); 
+    //public delegate void IObjectListener(object message); 
 
-    //public interface IObjectListener
-    //{
-    //    void OnMessage(object obj);
-    //}
+    public interface IObjectListener
+    {
+        void OnMessage(object obj);
+    }
 }

@@ -3,6 +3,8 @@ package com.cyanspring.server.persistence;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
@@ -82,6 +84,56 @@ public class KDBPersistenceManager implements IPlugin {
 		            ((Double[]) data[11])[i] = quote.getClose();
 		            ((Double[]) data[12])[i] = quote.getTotalVolume();
 		            ((QTimestamp[]) data[13])[i] = new QTimestamp(quote.getTimeStamp());
+				}				
+				con.sync("insert", "QuoteTable", data);
+				
+				if(throttler.check()) {
+					con.query(MessageType.SYNC, "`:QuoteTable insert (select from `QuoteTable)");
+					if (cleanCache) {
+						con.query(MessageType.SYNC, "delete from `QuoteTable");
+					}
+				}
+				
+			} else {
+				log.info("QConnection is not initialized");
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			return false;
+		}
+		
+		Date after = Clock.getInstance().now();
+		long pTime = TimeUtil.getTimePass(after, now);
+		if (pTime > 100)
+			log.info("Process time:" + pTime + "(msc)");
+		return true;
+	}
+	public boolean saveQuotes(Map<String, Quote> map) {
+		Date now = Clock.getInstance().now();
+		try {
+			if (con.isConnected()) {
+				int size = map.size();
+				final Object[] data = new Object[] {new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
+						, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
+								, new Double[size], new Double[size], new QTimestamp[size]};
+				int i = 0;
+				for (Entry<String, Quote> entry : map.entrySet()){
+					Quote quote = entry.getValue();
+					((String[]) data[0])[i] = quote.getSymbol();
+		            ((Double[]) data[1])[i] = quote.getBid();
+		            ((Double[]) data[2])[i] = quote.getAsk();
+		            ((Double[]) data[3])[i] = quote.getBidVol();
+		            ((Double[]) data[4])[i] = quote.getAskVol();
+		            ((Double[]) data[5])[i] = quote.getLast();
+		            ((Double[]) data[6])[i] = quote.getLastVol();
+		            ((Double[]) data[7])[i] = quote.getTurnover();
+		            ((Double[]) data[8])[i] = quote.getHigh();
+		            ((Double[]) data[9])[i] = quote.getLow();
+		            ((Double[]) data[10])[i] = quote.getOpen();
+		            ((Double[]) data[11])[i] = quote.getClose();
+		            ((Double[]) data[12])[i] = quote.getTotalVolume();
+		            ((QTimestamp[]) data[13])[i] = new QTimestamp(quote.getTimeStamp());
+		            i++;
 				}				
 				con.sync("insert", "QuoteTable", data);
 				

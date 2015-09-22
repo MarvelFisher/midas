@@ -55,6 +55,9 @@ public class RequestMgr implements IReqThreadCallback {
                     case WindType.IC_INDEX:
                         refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataICHashMap());
                         break;
+                    case WindType.FT_INDEX:
+                        refData = RefDataParser.convertCodeTableToRefData(codeTableData, windRefDataAdapter.getRefDataFTHashMap());
+                        break;
                     case WindType.SC_SHARES_A:
                     case WindType.SC_SHARES_G:
                     case WindType.SC_SHARES_S:
@@ -110,6 +113,27 @@ public class RequestMgr implements IReqThreadCallback {
                     marketList.add(codeTableResult.getSecurityExchange());
                     windRefDataAdapter.sendRquestCodeTable(marketList);
                 }
+            }
+            break;
+            case WindDef.MSG_SYS_REQUEST_SNAPSHOT: {
+                log.info("Request SnapShot");
+                Set<String> codeTableKeySet = new HashSet<>(windRefDataAdapter.getCodeTableDataBySymbolMap().keySet());
+                StringBuffer sb = new StringBuffer();
+                if(codeTableKeySet != null && codeTableKeySet.size() > 0){
+                    for(String symbol : codeTableKeySet){
+                        if(sb.toString().equals("")){
+                            sb.append(symbol);
+                        }else{
+                            sb.append(";").append(symbol);
+                        }
+                    }
+                    windRefDataAdapter.sendSubscribe(sb.toString());
+                }
+            }
+            break;
+            case WindDef.MSG_SYS_SNAPSHOTENDS: {
+                log.info("SnapShot Ends");
+                windRefDataAdapter.sendClearSubscribe();
             }
             break;
             case WindDef.MSG_REFDATA_CHECKUPDATE: {

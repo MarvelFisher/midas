@@ -57,6 +57,14 @@
   <ItemGroup>
     <Compile Include="Basic\IPlugin.cs" />
     <Compile Include="CommonLog\Logger.cs" />
+    <Compile Include="Adaptor\AmendableFieldEnum.cs" />
+    <Compile Include="Adaptor\DownStreamException.cs" />
+    <Compile Include="Adaptor\IDownStreamAdaptor.cs" />
+    <Compile Include="Adaptor\IDownStreamListener.cs" />
+    <Compile Include="Adaptor\Order.cs" />
+    <Compile Include="Adaptor\DownStreamManager.cs" />
+    <Compile Include="Event\IAsyncEventListener.cs" />
+    <Compile Include="Event\IAsyncEventManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transport\IClientSocketListener.cs" />
     <Compile Include="Transport\IClientSocketService.cs" />
@@ -71,6 +79,14 @@
     <Compile Include="Transport\ISocketStateListener.cs" />
     <Compile Include="Transport\ITransportService.cs" />
     <Compile Include="Transport\IUserSocketContext.cs" />
+    <Compile Include="Utils\AsyncQueueProcessor.cs" />
+    <Compile Include="Utils\PriceUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Avro\Avro.csproj">
+      <Project>{4f8a6d36-df47-4330-b1c4-31c66b4ed2ed}</Project>
+      <Name>Avro</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

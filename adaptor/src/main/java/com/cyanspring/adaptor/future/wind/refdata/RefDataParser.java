@@ -35,19 +35,35 @@ public class RefDataParser {
         refData.setTWDisplayName(ChineseConvert.StoT(codeTableData.getCnName()));
         refData.setENDisplayName(codeTableData.getEnglishName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
-        refData.setCommodity((String) defaultHashMap.get(RefDataField.COMMODITY));
-        
-        String commodity = refData.getCommodity();
-        
+        String commodity = (String) defaultHashMap.get(RefDataField.COMMODITY);
+        if(commodity.equals("FT")){
+            commodity = RefDataCommodity.FUTURES.getValue();
+            try {
+                String extractYYMMStr = codeTableData.getWindCode().replaceAll("\\D+", "").substring(2);
+                refData.setSymbol(codeTableData.getShowID());
+                refData.setDesc(codeTableData.getGroup());
+                refData.setCurrency(codeTableData.getCurrency());
+                refData.setENDisplayName(codeTableData.getProduct() + extractYYMMStr);
+                refData.setTWDisplayName(codeTableData.getProductName() + extractYYMMStr);
+                refData.setCNDisplayName(codeTableData.getProductName() + extractYYMMStr);
+                refData.setRefSymbol(refData.getSymbol() + "." + codeTableData.getSecurityExchange());
+                refData.setCategory(codeTableData.getProduct());
+                refData.setSpotTWName(codeTableData.getProductName());
+                refData.setCode(codeTableData.getWindCode());
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+            }
+        }
+        if(commodity.equals("FC")){
+            commodity = RefDataCommodity.FUTURES.getValue();
+        }
+        refData.setCommodity(commodity);
         if (commodity.equals(RefDataCommodity.STOCK.getValue())) {
         	refData.setCategory(refData.getExchange());
         }
-        
         if (commodity.equals(RefDataCommodity.INDEX.getValue())) {
         	refData.setCategory((String) defaultHashMap.get(RefDataField.CATEGORY));
         }
-        
-        
         if (commodity.equals(RefDataCommodity.STOCK.getValue())
         		|| commodity.equals(RefDataCommodity.INDEX.getValue())) {
         	refData.setSpellName(codeTableData.getSpellName());

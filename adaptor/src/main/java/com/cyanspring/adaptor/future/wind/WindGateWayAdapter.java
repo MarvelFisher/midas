@@ -15,6 +15,7 @@ import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
+import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Threading.IReqThreadCallback;
 import com.cyanspring.id.Library.Threading.RequestThread;
@@ -55,6 +56,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private boolean isSubTrans = false;
     private boolean modifyTickTime = true;
     private boolean useMarketSession = false;
+    private boolean useRefDataCodeSubscribe = false;
     private List<String> marketsList;
 
     private boolean isAlive = false;
@@ -78,6 +80,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private ConcurrentHashMap<String, WindIndexSessionCheckData> indexSessionCheckDataByIndexMap = new ConcurrentHashMap<>();
     protected HashMap<String, DataTimeStat> recordReceiveQuoteInfoBySymbolMap = new HashMap<>(); //calculate dataTimeStat
     private HashMap<String, String> exchangeBySymbols = new HashMap<String,String>();
+    private DualMap<String, String> codeBySymbols = new DualMap<String, String>();
 
     RequestThread thread = null;
     private QuoteMgr quoteMgr = new QuoteMgr(this);
@@ -470,7 +473,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 return;
             }
         }
-        log.info("subscribeMarketData Symbol: " + symbol);
+        log.info("subscribeMarketData Symbol: " + symbol );
+        if(useRefDataCodeSubscribe){
+            if(codeBySymbols != null){
+                try {
+                    symbol = codeBySymbols.get(symbol);
+                }catch (Exception e){
+                    log.error(e.getMessage());
+                    return;
+                }
+            }
+        }
         if (!quoteMgr.checkSymbol(symbol)) {
             subscribe(symbol);
         }
@@ -524,6 +537,16 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
                 if(index < 0) continue;
             }
+            if(useRefDataCodeSubscribe){
+                if(codeBySymbols != null){
+                    try {
+                        symbol = codeBySymbols.get(symbol);
+                    }catch (Exception e){
+                        log.error(e.getMessage());
+                        continue;
+                    }
+                }
+            }
             if(sb.length()+symbol.length() >= WindDef.SUBSCRIBE_MAX_LENGTH){
                 subscribe(sb.toString());
                 sb = new StringBuffer();
@@ -567,6 +590,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     public void sendInnerQuote(InnerQuote innerQuote) {
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+        if(useRefDataCodeSubscribe){
+            if(codeBySymbols != null){
+                try {
+                    String subscribeSymbol = innerQuote.getSymbol();
+                    innerQuote.getQuote().setSymbol(codeBySymbols.getKeyByValue(subscribeSymbol));
+                }catch (Exception e){
+                    log.error(e.getMessage());
+                    return;
+                }
+            }
+        }
         for (UserClient client : clients) {
             client.sendInnerQuote(innerQuote);
         }
@@ -574,6 +608,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     public void sendQuoteExtend(DataObject quoteExtend) {
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
+        if(useRefDataCodeSubscribe){
+            if(codeBySymbols != null){
+                try {
+                    String subscribeSymbol = quoteExtend.get(String.class, QuoteExtDataField.SYMBOL.value());
+                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), codeBySymbols.getKeyByValue(subscribeSymbol));
+                }catch (Exception e){
+                    log.error(e.getMessage());
+                    return;
+                }
+            }
+        }
         for (UserClient client : clients) {
             client.sendQuoteExtend(quoteExtend);
         }
@@ -702,6 +747,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             }
             if(IndexSessionType.SETTLEMENT.name().equals(indexSessionType)){
                 marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
+            }
+            if(useRefDataCodeSubscribe){
+                String code = refData.getCode();
+                if(code != null) codeBySymbols.put(refData.getSymbol(),refData.getCode());
             }
         }
     }
@@ -1092,6 +1141,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     public void setMarketsList(List<String> marketsList) {
         this.marketsList = marketsList;
+    }
+
+    public void setUseRefDataCodeSubscribe(boolean useRefDataCodeSubscribe) {
+        this.useRefDataCodeSubscribe = useRefDataCodeSubscribe;
     }
 }
 

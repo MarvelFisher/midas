@@ -1,6 +1,7 @@
 package com.cyanspring.common.staticdata.fu;
 
 public enum IType {
+	FUTURES_FT("2"),
 	FUTURES_IDX("112"),
 	FUTURES("113"),
 	FUTURES_EFP("117"),
