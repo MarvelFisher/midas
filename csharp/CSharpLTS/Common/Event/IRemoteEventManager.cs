@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Common.Event
 {
-    public interface IAsyncEventListener
+    public interface IRemoteEventManager : IAsyncEventManager
     {
+        void init();
+        void uninit();
+
     }
 }

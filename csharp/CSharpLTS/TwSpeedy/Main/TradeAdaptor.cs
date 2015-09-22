@@ -40,6 +40,7 @@ namespace Adaptor.TwSpeedy.Main
 
         public void init()
         {
+            Console.WriteLine("Init TradeAdaptor");
             try
             {
                 recovering = false;

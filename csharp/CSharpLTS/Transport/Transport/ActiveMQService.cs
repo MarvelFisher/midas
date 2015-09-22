@@ -32,7 +32,7 @@ namespace Transport.Transport
         protected Dictionary<string, IMessageProducer> senders = new Dictionary<string,IMessageProducer>();
         protected Dictionary<string, IMessageProducer> publishers = new Dictionary<string, IMessageProducer>();
 
-        private Dictionary<string, List<IMessageListener>> subscribers = new Dictionary<string, List<IMessageListener>>();
+        private Dictionary<string, List<IMessageListener>> subscribers = new Dictionary<string, List<IMessageListener>>(); 
         private Dictionary<IMessageListener, IMessageConsumer> consumers = new Dictionary<IMessageListener, IMessageConsumer>();
 
         private IMessageListener receiverListener ;
