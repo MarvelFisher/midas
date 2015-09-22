@@ -181,6 +181,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private final String MENU_ID_CANCEL = "POPUP_CANCEL";
 	private final String MENU_ID_SAVE = "POPUP_SAVE";
 
+	private final double basicPrice = 1;
+
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
 	};
@@ -347,6 +349,40 @@ public class SingleOrderStrategyView extends ViewPart implements
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
 					quickEnterOrder();
+				} else if (e.keyCode == SWT.ARROW_UP
+						|| e.keyCode == SWT.ARROW_DOWN
+						|| e.keyCode == SWT.ARROW_LEFT
+						|| e.keyCode == SWT.ARROW_RIGHT) {
+					e.doit = false;
+					double x;
+					if (txtPrice.getText() == null
+							|| txtPrice.getText().length() == 0) {
+						x = 0;
+					} else {
+						x = Double.valueOf(txtPrice.getText());
+					}
+					switch (e.keyCode) {
+					case SWT.ARROW_UP:
+						x = x + basicPrice;
+						break;
+					case SWT.ARROW_DOWN:
+						if (x - basicPrice > 0) {
+							x = x - basicPrice;
+						}
+						break;
+					case SWT.ARROW_LEFT:
+						x = x + basicPrice * 10;
+						break;
+					case SWT.ARROW_RIGHT:
+						if (x - basicPrice * 10 > 0) {
+							x = x - basicPrice * 10;
+						}
+						break;
+					default:
+						break;
+					}
+
+					txtPrice.setText(Double.toString(x));
 				}
 			}
 		};
