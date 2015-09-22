@@ -27,6 +27,7 @@
 			</map>
 		</property>
         <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+        <property name="index" value="FITX"/>
     </bean>
 	
 	<bean id="defaultSession" class="com.cyanspring.common.marketsession.MarketSession">

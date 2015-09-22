@@ -58,6 +58,10 @@
 				<string>F</string>
 			</entry>
 			<entry>
+				<string>Type</string>
+				<string>INDEX_FU</string>
+			</entry>
+			<entry>
 				<string>Lot size</string>
 				<int>1</int>
 			</entry>
