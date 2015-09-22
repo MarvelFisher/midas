@@ -23,6 +23,8 @@
   <object id="tradeAdaptor" type="Adaptor.TwSpeedy.Main.TradeAdaptor, TwSpeedy"/>
 
   <object id="transportService" type="Transport.Transport.ActiveMQGenericService, Transport" >
+    <property name="url" value="failover:(tcp://127.0.0.1:61616)"></property>
+    <property name="defaultSerialization" type="Avro.Serialization.AvroSerialization, Common"/>
     <property name="user" value="yu"></property>
     <property name="password" value="junfeng"></property>
   </object>

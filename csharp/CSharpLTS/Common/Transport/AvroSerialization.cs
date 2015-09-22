@@ -1,4 +1,4 @@
-﻿/*
+﻿
 using Avro.Generic;
 using Avro.Specific;
 using Common.Transport;
@@ -48,4 +48,3 @@ namespace Avro.Serialization
     }
     
 }
-*/
