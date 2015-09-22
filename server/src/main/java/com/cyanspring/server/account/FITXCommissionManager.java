@@ -9,8 +9,24 @@ import com.cyanspring.common.staticdata.fu.IType;
 
 public class FITXCommissionManager extends CommissionManager {
 
-	private final double TRX_FEE = 12;
-	private final double TRX_TAX_RATE = 0.00002;
+	private double trxFee = 12;
+	private double trxTaxRate = 0.00002;
+
+	public double getTrxFee() {
+		return trxFee;
+	}
+
+	public void setTrxFee(double trxFee) {
+		this.trxFee = trxFee;
+	}
+
+	public double getTrxTaxRate() {
+		return trxTaxRate;
+	}
+
+	public void setTrxTaxRate(double trxTaxRate) {
+		this.trxTaxRate = trxTaxRate;
+	}
 
 	@Override
 	public double getCommission(RefData refData, AccountSetting settings, double value, Execution execution) {
@@ -27,10 +43,10 @@ public class FITXCommissionManager extends CommissionManager {
 		}
 
         double quantity = execution.getQuantity();
-        double tax = value * TRX_TAX_RATE;
+        double tax = value * trxTaxRate;
         tax = Math.round(tax);
 
-        double commissionFee = (TRX_FEE * quantity) + tax;
+        double commissionFee = (trxFee * quantity) + tax;
         commissionFee *= accountCom;
 
         return commissionFee;
