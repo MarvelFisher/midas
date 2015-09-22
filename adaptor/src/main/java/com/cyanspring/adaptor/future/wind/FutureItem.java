@@ -130,7 +130,7 @@ public class FutureItem implements AutoCloseable {
             tickTime = DateUtil.now();
         }
 
-        if (futureData.getPreClose() > 0) {
+        if (futureData.getPreSettlePrice() > 0) {
 
             //modify tick Time
         	if (quoteMgr.isModifyTickTime()) {
@@ -175,7 +175,7 @@ public class FutureItem implements AutoCloseable {
             quote.setHigh((double) futureData.getHigh() / 10000);
             quote.setLow((double) futureData.getLow() / 10000);
             quote.setLast((double) futureData.getMatch() / 10000);
-            quote.setClose((double) futureData.getPreClose() / 10000);
+            quote.setClose((double) futureData.getPreSettlePrice() / 10000);
             quote.setTurnover((double) futureData.getTurnover());
 
             //Check Stale
@@ -246,7 +246,7 @@ public class FutureItem implements AutoCloseable {
             specialQuoteExtendIsChange = true;
         }
 
-        double preClose = (double) futureData.getPreClose() / 10000;
+        double preClose = (double) futureData.getPreSettlePrice() / 10000;
         if (PriceUtils.Compare(item.preClose, preClose) != 0) {
             item.preClose = preClose;
             quoteExtend.put(QuoteExtDataField.PRECLOSE.value(), preClose);

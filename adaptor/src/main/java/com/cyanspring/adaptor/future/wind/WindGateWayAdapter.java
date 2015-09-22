@@ -233,6 +233,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
+                if(useRefDataCodeSubscribe && futureData.getPreSettlePrice() == 0)
+                    futureData.setPreSettlePrice(futureData.getPreClose());
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
@@ -463,17 +465,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                                     IMarketDataListener listener) throws MarketDataException {
         if (symbol.isEmpty())
             return;
-        //Check Exchange
-        if(marketsList!= null){
-            if(exchangeBySymbols.get(symbol) != null) {
-                int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
-                if (index < 0) return;
-            }else {
-                log.debug("Symbol No exchange in RefData," + symbol);
-                return;
-            }
-        }
-        log.info("subscribeMarketData Symbol: " + symbol );
+        checkUserClient(symbol, listener, true);
         if(useRefDataCodeSubscribe){
             if(codeBySymbols != null){
                 try {
@@ -484,10 +476,20 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 }
             }
         }
+        //Check Exchange
+        if(marketsList!= null){
+            if(exchangeBySymbols.get(symbol) != null) {
+                int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
+                if (index < 0) return;
+            }else {
+                log.debug("Symbol No exchange in RefData," + symbol);
+                return;
+            }
+        }
+        log.info("subscribeMarketData Symbol: " + symbol);
         if (!quoteMgr.checkSymbol(symbol)) {
             subscribe(symbol);
         }
-        checkUserClient(symbol, listener, true);
     }
 
     /**
@@ -532,11 +534,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         if (subscribeList == null || subscribeList.size() == 0) return;
         StringBuffer sb = new StringBuffer();
         for(String symbol : subscribeList){
-            //Check Exchange
-            if(marketsList!= null && exchangeBySymbols.get(symbol) != null){
-                int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
-                if(index < 0) continue;
-            }
+            checkUserClient(symbol, listener, true);
             if(useRefDataCodeSubscribe){
                 if(codeBySymbols != null){
                     try {
@@ -547,6 +545,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     }
                 }
             }
+            //Check Exchange
+            if(marketsList!= null && exchangeBySymbols.get(symbol) != null){
+                int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
+                if(index < 0) continue;
+            }
             if(sb.length()+symbol.length() >= WindDef.SUBSCRIBE_MAX_LENGTH){
                 subscribe(sb.toString());
                 sb = new StringBuffer();
@@ -556,7 +559,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
             }else{
                 sb.append(";").append(symbol);
             }
-            checkUserClient(symbol, listener, true);
         }
         if(sb.length() > 0){
             subscribe(sb.toString());
@@ -736,21 +738,29 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         for (RefData refData : refDataList) {
             if(refData.getIndexSessionType() == null || "".equals(refData.getIndexSessionType()))
                 continue;
-            String exchange = refData.getExchange();
-            if(exchange != null ) exchangeBySymbols.put(refData.getSymbol(), exchange);
-            String indexSessionType = refData.getIndexSessionType();
-            if(IndexSessionType.EXCHANGE.name().equals(indexSessionType)){
-                marketRuleBySymbolMap.put(refData.getSymbol(), refData.getExchange());
-            }
-            if(IndexSessionType.SPOT.name().equals(indexSessionType)){
-                marketRuleBySymbolMap.put(refData.getSymbol(), refData.getCategory());
-            }
-            if(IndexSessionType.SETTLEMENT.name().equals(indexSessionType)){
-                marketRuleBySymbolMap.put(refData.getSymbol(), refData.getSymbol());
-            }
+
+            String symbol = refData.getSymbol();
             if(useRefDataCodeSubscribe){
                 String code = refData.getCode();
-                if(code != null) codeBySymbols.put(refData.getSymbol(),refData.getCode());
+                if(code != null) {
+                    codeBySymbols.put(refData.getSymbol(), refData.getCode());
+                    symbol = code;
+                }else{
+                    log.error("Symbol:" + refData.getSymbol() + " refData code is null");
+                    continue;
+                }
+            }
+            String exchange = refData.getExchange();
+            if(exchange != null ) exchangeBySymbols.put(symbol, exchange);
+            String indexSessionType = refData.getIndexSessionType();
+            if(IndexSessionType.EXCHANGE.name().equals(indexSessionType)){
+                marketRuleBySymbolMap.put(symbol, refData.getExchange());
+            }
+            if(IndexSessionType.SPOT.name().equals(indexSessionType)){
+                marketRuleBySymbolMap.put(symbol, refData.getCategory());
+            }
+            if(IndexSessionType.SETTLEMENT.name().equals(indexSessionType)){
+                marketRuleBySymbolMap.put(symbol, refData.getSymbol());
             }
         }
     }
