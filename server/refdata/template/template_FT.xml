@@ -38,9 +38,17 @@
 				<string>FITX</string>
 			</entry>
 			<entry>
-				<string>Spot TWName</string>
-				<string>臺指</string>
+				<string>Spot ENName</string>
+				<string>TX</string>
 			</entry>
+			<entry>
+                <string>Spot TWName</string>
+                <string>臺指</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>台指</string>
+            </entry>
 			<entry>
 				<string>Code</string>
 				<string>ICE.TWF.FITX.201510</string>
