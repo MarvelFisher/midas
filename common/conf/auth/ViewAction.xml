@@ -14,10 +14,12 @@
 	<import resource="view/PositionView.xml" />
 	<import resource="view/SingleOrderStrategyView.xml" />
 	<import resource="view/QuoteView.xml" />
+	<import resource="view/TraderPropertyView.xml" />
 	
 	<bean id="viewActionList" class="java.util.ArrayList">
     	<constructor-arg>
         	<list>
+        		<ref bean="traderPropertyView"/>
         		<ref bean="applicationView"/>
         		<ref bean="applicationViewAction1"/>
         		<ref bean="accountView"/>

@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -47,8 +47,9 @@ public class RefDataUtil {
 	}
 
 	public static ITradeDate getTradeManager(String category) {
-		if (!StringUtils.hasText(category))
+		if (!StringUtils.hasText(category)) {
 			return null;
+		}
 
 		if (marketSessionUtil == null) {
 			log.info("marketSessionUtil is null");
@@ -74,8 +75,9 @@ public class RefDataUtil {
 			int dayInMonth) {
 
 		String category = RefDataUtil.getCategory(refData);
-		if (!StringUtils.hasText(category))
+		if (!StringUtils.hasText(category)) {
 			return null;
+		}
 
 		Calendar calDate = Calendar.getInstance();
 		calDate.setTime(cal.getTime());
@@ -108,8 +110,9 @@ public class RefDataUtil {
 
 		String category = RefDataUtil.getCategory(refData);
 
-		if (!StringUtils.hasText(category))
+		if (!StringUtils.hasText(category)) {
 			return null;
+		}
 
 		Calendar calDate = Calendar.getInstance();
 		calDate.setTime(cal.getTime());
@@ -150,8 +153,9 @@ public class RefDataUtil {
 
 		String category = RefDataUtil.getCategory(refData);
 
-		if (!StringUtils.hasText(category))
+		if (!StringUtils.hasText(category)) {
 			return null;
+		}
 
 		Calendar calDate = Calendar.getInstance();
 		calDate.setTime(cal.getTime());
@@ -160,8 +164,9 @@ public class RefDataUtil {
 		int dayCount = 0;
 		while (dayCount != weeks) {
 			calDate.add(Calendar.DAY_OF_MONTH, 1);
-			if (calDate.get(Calendar.DAY_OF_WEEK) == daysInWeek)
+			if (calDate.get(Calendar.DAY_OF_WEEK) == daysInWeek) {
 				dayCount++;
+			}
 		}
 
 		ITradeDate tradeDateManager = getTradeManager(category);
@@ -189,33 +194,37 @@ public class RefDataUtil {
 	public static String getOnlyChars(String symbol) {
 		Pattern pattern = Pattern.compile("^[a-zA-Z]*");
 		Matcher matcher = pattern.matcher(symbol);
-		if (matcher.find())
+		if (matcher.find()) {
 			return matcher.group(0);
+		}
 		return null;
 	}
-	
+
 	public static String getSearchIndex(RefData refData) {
 		String index = null;
 		String indexType = refData.getIndexSessionType();
 		if (indexType != null) {
-			if (indexType.equals(IndexSessionType.SETTLEMENT.toString()))
+			if (indexType.equals(IndexSessionType.SETTLEMENT.toString())) {
 				index = refData.getSymbol();
-			else if (indexType.equals(IndexSessionType.SPOT.toString()))
+			} else if (indexType.equals(IndexSessionType.SPOT.toString())) {
 				index = refData.getCategory();
-			else if (indexType.equals(IndexSessionType.EXCHANGE.toString()))
+			} else if (indexType.equals(IndexSessionType.EXCHANGE.toString())) {
 				index = refData.getExchange();
+			}
 		}
 		return index;
 	}
 
 	public static String getCategory(RefData refData) {
 
-		if (null == refData)
+		if (null == refData) {
 			return null;
+		}
 
 		String refSymbol = refData.getRefSymbol();
-		if (!StringUtils.hasText(refSymbol))
+		if (!StringUtils.hasText(refSymbol)) {
 			return null;
+		}
 
 		String commodity = refData.getCommodity();
 		if (StringUtils.hasText(commodity)) {
@@ -247,8 +256,12 @@ public class RefDataUtil {
 	}
 
 	private static String getFutureCategory(RefData refData) {
+		String category = refData.getCategory();
+		if (category != null && category.trim().length() > 0) {
+			return category;
+		}
 
-		String category = refData.getRefSymbol().replaceAll(".[A-Z]+$", "")
+		category = refData.getRefSymbol().replaceAll(".[A-Z]+$", "")
 				.replaceAll("\\d", "");
 		if (!StringUtils.hasText(category)
 				&& StringUtils.hasText(refData.getCategory())) {

@@ -45,6 +45,8 @@ import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.event.InstrumentSelectionEvent;
+import com.cyanspring.cstw.event.MarketDataReplyEvent;
+import com.cyanspring.cstw.event.MarketDataRequestEvent;
 import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.ObjectSelectionEvent;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
@@ -80,7 +82,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private Label lbChange;
 	private Label lbChangePercent;
 	private Label lbStale;
-
+	private Quote nowQuote = null;
 	public MarketDataView() {
 	}
 
@@ -418,12 +420,20 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private synchronized void subscribeMD(String symbol, String server) {
+
+		if(!this.symbol.equals(symbol))
+			Business.getInstance().getEventManager().unsubscribe(QuoteEvent.class, this.symbol, this);
+			
+		Business.getInstance().getEventManager().subscribe(QuoteEvent.class, this.symbol, this);
+		Business.getInstance().getEventManager().subscribe(MarketDataRequestEvent.class, this);
+
 		if (!this.symbol.equals(symbol))
 			Business.getInstance().getEventManager()
 					.unsubscribe(QuoteEvent.class, this.symbol, this);
 
 		Business.getInstance().getEventManager()
 				.subscribe(QuoteEvent.class, this.symbol, this);
+
 		this.symbol = symbol;
 
 		if (!StringUtils.hasText(server))
@@ -444,6 +454,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private void showQuote(final Quote quote) {
 		if (!quote.getSymbol().equals(this.symbol)) {
 			return;
+		
 		} else if (tableViewer.getControl().isDisposed()) {
 			return;
 		}
@@ -451,8 +462,6 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		tableViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				// cbSymbol.setText(quote.getSymbol());
-
 				lbBid.setText(blankZero(quote.getBid()));
 				try {
 					lbBidVol.setText(BeanHolder.getInstance()
@@ -553,11 +562,23 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 		} else if (e instanceof QuoteEvent) {
 			showQuote(((QuoteEvent) e).getQuote());
-		} else if (e instanceof QuoteSymbolSelectEvent) {
-			QuoteSymbolSelectEvent event = (QuoteSymbolSelectEvent) e;
+		} else if (e instanceof QuoteSymbolSelectEvent) {			
+			QuoteSymbolSelectEvent event = (QuoteSymbolSelectEvent)e;
 			String symbol = event.getSymbol();
 			subscribeMD(symbol, null);
 			setSymbol(symbol);
+			
+		}else if (e instanceof MarketDataRequestEvent) {
+			log.info("get market data request event");
+			MarketDataRequestEvent event = (MarketDataRequestEvent)e;
+			String symbol = event.getSymbol();
+			if(null == symbol){
+				MarketDataReplyEvent reply = new MarketDataReplyEvent(nowQuote);
+				Business.getInstance().getEventManager().sendEvent(reply);
+			}else{
+				subscribeMD(symbol, null);
+				setSymbol(symbol);
+			}
 		} else {
 			log.error("Unhandled event: " + e.getClass());
 		}

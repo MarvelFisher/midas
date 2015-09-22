@@ -40,6 +40,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -55,13 +56,17 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.alert.ClearSingleAlertEvent;
 import com.cyanspring.common.event.order.AmendParentOrderEvent;
 import com.cyanspring.common.event.order.AmendParentOrderReplyEvent;
@@ -73,15 +78,19 @@ import com.cyanspring.common.event.order.ParentOrderReplyEvent;
 import com.cyanspring.common.event.strategy.PauseStrategyEvent;
 import com.cyanspring.common.event.strategy.StartStrategyEvent;
 import com.cyanspring.common.event.strategy.StopStrategyEvent;
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
+import com.cyanspring.cstw.event.MarketDataReplyEvent;
+import com.cyanspring.cstw.event.MarketDataRequestEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
@@ -140,7 +149,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private boolean orderFilter = false;
 
 	private Composite parent;
-	private String accountId = "";
+	private String accountId = Business.getInstance().getAccount();
 	private Label lblAccountName;
 	// QuickOrderPad
 	private String currentOrderPadId;
@@ -180,6 +189,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private final String MENU_ID_CREATE = "POPUP_CREATE";
 	private final String MENU_ID_CANCEL = "POPUP_CANCEL";
 	private final String MENU_ID_SAVE = "POPUP_SAVE";
+	private Quote nowQuote = null;
+
+	private final double basicPrice = 1;
 
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
@@ -260,22 +272,82 @@ public class SingleOrderStrategyView extends ViewPart implements
 				.subscribe(CancelParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(MarketDataReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(AccountSettingSnapshotReplyEvent.class, this);
+		
 		showOrders();
 		this.parent = parent;
 
+		initKeyListener();
 		ISelectionProvider is = getViewSite().getSelectionProvider();
 		MenuManager mm = new MenuManager();
 		IMenuManager imm = getViewSite().getActionBars().getMenuManager();
 		IContributionItem actions[] = imm.getItems();
+		
+	}
 
-		log.info("actions size:{}", actions.length);
-		for (IContributionItem item : actions) {
-			log.info("action:{}", item.getId());
+	private void initKeyListener() {
+		KeyAdapter keyAdapter = new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.F1) {
+					showOrderPadByType(true);
+					sendMarketDataRequestEvent(null);
+					sendAccounSettingRequestEvent();
+				} else if (e.keyCode == SWT.F2) {
+					showOrderPadByType(false);
+					sendMarketDataRequestEvent(null);
+					sendAccounSettingRequestEvent();
+				} else if (e.keyCode == SWT.CR) {
+					panelComposite.getDisplay().asyncExec(new Runnable() {				
+						@Override
+						public void run() {
+							
+							if(panelComposite.isVisible()){
+								btEnter.notifyListeners(SWT.Selection, new Event());
+							}							
+						}
+					});
+				}
+			}
+		};
+
+		addKeyAdapter(parent, keyAdapter);
+	}
+
+	private void sendAccounSettingRequestEvent() {	
+		if(!StringUtils.hasText(accountId)){
+			log.info("accoun id doesn't exist");
+			return;
 		}
+		
+		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), accountId, null);
+		try {
+			Business.getInstance().getEventManager().sendRemoteEvent(settingRequestEvent);
+		} catch (Exception e) {
+			log.info(e.getMessage(),e);
+		}
+	}
+	
+	private void sendMarketDataRequestEvent(String symbol){
+		//if null , send now market data view quote
+		MarketDataRequestEvent requestEvent = new MarketDataRequestEvent(symbol);
+		Business.getInstance().getEventManager().sendEvent(requestEvent);
+	}
+	
+	private void addKeyAdapter(Control control, KeyAdapter keyAdapter) {
+		control.addKeyListener(keyAdapter);
+		if (control instanceof Composite) {
+			Composite parentComposite = (Composite) control;
+			for (Control subControl : parentComposite.getChildren()) {
+				addKeyAdapter(subControl, keyAdapter);
+			}
 
 		initListener();
 		initSessionListener();
-
+		}
 	}
 
 	public void openByKeyCode(int keyCode) {
@@ -347,6 +419,40 @@ public class SingleOrderStrategyView extends ViewPart implements
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
 					quickEnterOrder();
+				} else if (e.keyCode == SWT.ARROW_UP
+						|| e.keyCode == SWT.ARROW_DOWN
+						|| e.keyCode == SWT.ARROW_LEFT
+						|| e.keyCode == SWT.ARROW_RIGHT) {
+					e.doit = false;
+					double x;
+					if (txtPrice.getText() == null
+							|| txtPrice.getText().length() == 0) {
+						x = 0;
+					} else {
+						x = Double.valueOf(txtPrice.getText());
+					}
+					switch (e.keyCode) {
+					case SWT.ARROW_UP:
+						x = x + basicPrice;
+						break;
+					case SWT.ARROW_DOWN:
+						if (x - basicPrice > 0) {
+							x = x - basicPrice;
+						}
+						break;
+					case SWT.ARROW_LEFT:
+						x = x + basicPrice * 10;
+						break;
+					case SWT.ARROW_RIGHT:
+						if (x - basicPrice * 10 > 0) {
+							x = x - basicPrice * 10;
+						}
+						break;
+					default:
+						break;
+					}
+
+					txtPrice.setText(Double.toString(x));
 				}
 			}
 		};
@@ -434,11 +540,11 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		btAmend = new Button(panelComposite, SWT.FLAT);
 		btAmend.setText("Amend");
-		btAmend.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+		btAmend.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 
 		btCancel = new Button(panelComposite, SWT.FLAT);
 		btCancel.setText("Cancel");
-		btCancel.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+		btCancel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 
 		btEnter.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -462,7 +568,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		});
 
 		lbStatus = new Label(panelComposite, SWT.NONE);
-		gdStatus = new GridData(SWT.FILL, SWT.CENTER, true, false, 12, 1);
+		gdStatus = new GridData(SWT.FILL, SWT.LEFT, true, false, 13, 1);
 		gdStatus.horizontalIndent = 1;
 		lbStatus.setLayoutData(gdStatus);
 		lbStatus.setText("");
@@ -1308,7 +1414,18 @@ public class SingleOrderStrategyView extends ViewPart implements
 		} else if (event instanceof GuiSingleOrderStrategyUpdateEvent) {
 			log.debug("Recieved event: " + event);
 			smartShowOrders();
-		} else if (event instanceof AsyncTimerEvent) {
+		} else if (event instanceof MarketDataReplyEvent) {
+			log.debug("Recieved event: " + event);
+			MarketDataReplyEvent e = (MarketDataReplyEvent)event;
+			if( null != e.getQuote()){
+				nowQuote = e.getQuote();
+				setQuoteToPad();
+			}
+		}else if (event instanceof AccountSettingSnapshotReplyEvent) {
+			log.debug("Recieved event: " + event);
+			AccountSettingSnapshotReplyEvent e = (AccountSettingSnapshotReplyEvent)event;
+			setDefaultQty(e.getAccountSetting());
+		}else if (event instanceof AsyncTimerEvent) {
 			timerEvent = null;
 			asyncShowOrders();
 		} else if (event instanceof AccountSelectionEvent) {
@@ -1339,5 +1456,41 @@ public class SingleOrderStrategyView extends ViewPart implements
 			log.warn("Unhandled event: " + event);
 		}
 
+	}
+
+	private void setQuoteToPad() {
+		panelComposite.getDisplay().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(panelComposite.isVisible() && null != nowQuote){
+					txtSymbol.setText(nowQuote.getSymbol());
+					String orderSide = cbOrderSide.getText();
+					if(orderSide.equals(OrderSide.Buy.toString())){
+						txtPrice.setText(""+nowQuote.getAsk());
+					}else{
+						txtPrice.setText(""+nowQuote.getBid());
+					}
+				}					
+			}
+		});
+
+	}
+
+	private void setDefaultQty(final AccountSetting accountSetting) {
+		panelComposite.getDisplay().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(panelComposite.isVisible()){
+					if(null == accountSetting){
+						if(null != Business.getInstance().getAccountSetting())
+							txtQuantity.setText(""+Business.getInstance().getAccountSetting().getDefaultQty());
+					}else{
+						txtQuantity.setText(""+accountSetting.getDefaultQty());
+					}
+				}				
+			}
+		});
 	}
 }

@@ -19,9 +19,11 @@ namespace Common.Adaptor
 
         public void Init()
         {
+            //debug
+            Console.WriteLine("Init DownStreamManager");
             foreach(IDownStreamAdaptor adaptor in _adaptors )
             {
-                // init
+                adaptor.init();
             }
         }
 
@@ -30,7 +32,7 @@ namespace Common.Adaptor
             foreach (IDownStreamAdaptor adaptor in _adaptors)
             {
                 adaptor.addListener(null);
-                //uninit
+                adaptor.uninit();
             }
         }
     }

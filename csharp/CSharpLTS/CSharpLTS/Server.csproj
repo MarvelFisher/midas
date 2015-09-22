@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CSharpLTS</RootNamespace>
     <AssemblyName>CSharpLTS</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -35,6 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>CSharpLTS.Program</StartupObject>
@@ -102,9 +104,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Avro\Avro.csproj">
+    <ProjectReference Include="..\Avro\AvroObject.csproj">
       <Project>{4F8A6D36-DF47-4330-B1C4-31C66B4ED2ED}</Project>
-      <Name>Avro</Name>
+      <Name>AvroObject</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{3ECABBC2-BF44-4AA9-A0F1-6306473C8CAA}</Project>
@@ -113,6 +115,10 @@
     <ProjectReference Include="..\Transport\Transport.csproj">
       <Project>{0E3C95A9-CDF5-4604-A052-82A681787BEF}</Project>
       <Name>Transport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TwSpeedy\TwSpeedy.csproj">
+      <Project>{5ca0da3f-1ec9-4fd4-af03-cc488198a7b0}</Project>
+      <Name>TwSpeedy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

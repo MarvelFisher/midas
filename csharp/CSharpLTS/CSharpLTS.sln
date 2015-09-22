@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "CSharpLTS\Server.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transport", "Transport\Transport.csproj", "{0E3C95A9-CDF5-4604-A052-82A681787BEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avro", "Avro\Avro.csproj", "{4F8A6D36-DF47-4330-B1C4-31C66B4ED2ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvroObject", "Avro\AvroObject.csproj", "{4F8A6D36-DF47-4330-B1C4-31C66B4ED2ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3ECABBC2-BF44-4AA9-A0F1-6306473C8CAA}"
 EndProject

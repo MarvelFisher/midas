@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.TimeUtil;
 
 public class ContractDateFilter implements IRefDataFilter {
 
@@ -62,11 +63,13 @@ public class ContractDateFilter implements IRefDataFilter {
 			SimpleDateFormat contractFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar now = Calendar.getInstance();
 			int thisYear = now.get(Calendar.YEAR);
+			
 			Calendar contractCal = Calendar.getInstance();
 			contractCal.setTime(contractFormat.parse(settlementDate));
 			int contractYear = contractCal.get(Calendar.YEAR);
-
-			if ((contractYear - thisYear) >= 5 || (contractYear - thisYear) < 0) {
+			contractCal.add(Calendar.DATE, 10);
+			
+			if ((contractYear - thisYear) >= 5 || contractCal.before(now)) {
 				return false;
 			} else {
 				return true;

@@ -8,6 +8,7 @@
 	<context:annotation-config />
 
 	<import resource="ft/*.xml" />
+	<import resource="ft/marketSession/*.xml" />
 <!-- 	<import resource="common/business.xml" /> -->
 	<import resource="common/strategy.xml" />
 	<import resource="common/centralDb.xml" />
