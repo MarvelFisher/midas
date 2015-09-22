@@ -8,28 +8,27 @@ import java.util.Map;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -39,18 +38,20 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.event.InstrumentSelectionEvent;
+import com.cyanspring.cstw.event.MarketDataReplyEvent;
+import com.cyanspring.cstw.event.MarketDataRequestEvent;
 import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.ObjectSelectionEvent;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
 import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
-import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 
 public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	
@@ -79,6 +80,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private Label lbChange;
 	private Label lbChangePercent;
 	private Label lbStale;
+	private Quote nowQuote = null;
 	
 	public MarketDataView() {
 	}
@@ -407,6 +409,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 			Business.getInstance().getEventManager().unsubscribe(QuoteEvent.class, this.symbol, this);
 			
 		Business.getInstance().getEventManager().subscribe(QuoteEvent.class, this.symbol, this);
+		Business.getInstance().getEventManager().subscribe(MarketDataRequestEvent.class, this);
 		this.symbol = symbol;
 		
 		if(!StringUtils.hasText(server))
@@ -428,6 +431,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		if(!quote.getSymbol().equals(this.symbol))
 			return;
 		
+		nowQuote = quote;
 		tableViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -522,10 +526,23 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		} else if (e instanceof QuoteEvent) {
 			showQuote(((QuoteEvent)e).getQuote());
 		} else if (e instanceof QuoteSymbolSelectEvent) {
+			
 			QuoteSymbolSelectEvent event = (QuoteSymbolSelectEvent)e;
 			String symbol = event.getSymbol();
 			subscribeMD(symbol, null);
 			setSymbol(symbol);
+			
+		}else if (e instanceof MarketDataRequestEvent) {
+			log.info("get market data request event");
+			MarketDataRequestEvent event = (MarketDataRequestEvent)e;
+			String symbol = event.getSymbol();
+			if(null == symbol){
+				MarketDataReplyEvent reply = new MarketDataReplyEvent(nowQuote);
+				Business.getInstance().getEventManager().sendEvent(reply);
+			}else{
+				subscribeMD(symbol, null);
+				setSymbol(symbol);
+			}
 		} else {
 			log.error("Unhandled event: " + e.getClass());
 		}

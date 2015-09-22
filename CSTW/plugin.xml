@@ -146,6 +146,14 @@
             name="Quote"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.trader.gui.TraderPropertyView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.trader.gui.TraderPropertyViewer"
+            name="Properties"
+            restorable="true">
+      </view>      
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -412,6 +420,18 @@
 	                  	</or>
             	  	 </visibleWhen>
             </command>
+            <command
+                     commandId="CSTW.TraderPropertyView"
+                     label="Properties"
+                     style="push">
+                     <visibleWhen checkEnabled="false">
+	                  	<or>
+		                   <with variable="Trader">
+		                      <equals value="ENABLED"></equals>        
+		                   </with>
+	                  	</or>
+            	  	 </visibleWhen>
+            </command>
             <menu
                   label="New">
                <command
@@ -571,6 +591,12 @@
             description="Quote"
             id="CSTW.QuoteView"
             name="Quote">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.trader.command.TraderPropertyViewCommand"
+            description="Trader Property"
+            id="CSTW.TraderPropertyView"
+            name="Properties">
       </command>
    </extension>
    <extension
