@@ -2,8 +2,10 @@
 using Avro.Generic;
 using Avro.IO;
 using Avro.Specific;
+using com.cyanspring.avro.generate.@base;
 using com.cyanspring.avro.generate.@base.types;
-using Common.Transport;
+using com.cyanspring.avro.generate.market.bean;
+using com.cyanspring.avro.generate.trade.bean;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,11 +55,12 @@ namespace Avro.Serialization
                     
                     int function = BitConverter.ToInt32(bytes, 0);
                     ObjectType type = (ObjectType)function;
-
+                    Schema schema = staticMap[type];
+                    reader = new SpecificDatumReader<ISpecificRecord>(schema, schema);
                     using (MemoryStream ms = new MemoryStream(bytes, false))
                     {
                         BinaryDecoder decoder = new BinaryDecoder(ms);
-
+                        return reader.Read(null, decoder);
                     }
                 }
                 catch (Exception)
@@ -68,7 +71,22 @@ namespace Avro.Serialization
             return null;
         }
 
+        private static Dictionary<ObjectType, Schema> staticMap = new Dictionary<ObjectType, Schema>();
+        static AvroSerialization()
+        {
+            staticMap.Add(ObjectType.AmendOrderReply, AmendOrderReply._SCHEMA);
+            staticMap.Add(ObjectType.AmendOrderRequest, AmendOrderRequest._SCHEMA);
+            staticMap.Add(ObjectType.CancelOrderReply, CancelOrderReply._SCHEMA);
+            staticMap.Add(ObjectType.CancelOrderRequest, CancelOrderRequest._SCHEMA);
+            staticMap.Add(ObjectType.NewOrderReply, NewOrderReply._SCHEMA);
+            staticMap.Add(ObjectType.NewOrderRequest, NewOrderRequest._SCHEMA);
+            staticMap.Add(ObjectType.OrderUpdate, OrderUpdate._SCHEMA);
+            staticMap.Add(ObjectType.StateUpdate, StateUpdate._SCHEMA);
+            staticMap.Add(ObjectType.Quote, Quote._SCHEMA);
+            staticMap.Add(ObjectType.SubscribeQuote, SubscribeQuote._SCHEMA);
+            staticMap.Add(ObjectType.UnsubscribeQuote, UnsubscribeQuote._SCHEMA);         
 
+        }
 
         
 

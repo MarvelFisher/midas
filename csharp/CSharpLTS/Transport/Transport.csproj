@@ -54,6 +54,10 @@
     <Compile Include="Transport\ActiveMQService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Avro\AvroObject.csproj">
+      <Project>{4f8a6d36-df47-4330-b1c4-31c66b4ed2ed}</Project>
+      <Name>AvroObject</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{3ECABBC2-BF44-4AA9-A0F1-6306473C8CAA}</Project>
       <Name>Common</Name>

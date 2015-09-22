@@ -1,4 +1,5 @@
 ﻿using Apache.NMS;
+using Avro.Serialization;
 using Common.Transport;
 using System;
 using System.Collections.Generic;
