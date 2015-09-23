@@ -105,6 +105,10 @@
 				<string>Tick table</string>
 				<string>FT</string>
 			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>1</double>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 </list>

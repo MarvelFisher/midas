@@ -148,12 +148,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		refData.setDetailCN(getCNDetailName(combineCnName));
 		refData.setDetailTW(getTWDetailName(combineTwName));
 		refData.setDetailEN(getCNDetailName(combineCnName));
-
-		if (IType.FUTURES_FT.getValue().equals(refData.getIType())) {
-			refData.setRefSymbol(getFITXRefSymbol(refData));
-		} else {
-			refData.setRefSymbol(getRefSymbol(refSymbol).toUpperCase());
-		}
+		refData.setRefSymbol(getRefSymbol(refSymbol).toUpperCase());
 	}
 
 	private boolean checkAcceptableRefData(RefData refData) {
@@ -290,55 +285,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 	protected SimpleDateFormat getSettlementDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd") ;
-	}
-
-	private String getFITXRefSymbol(RefData refData) throws ParseException {
-		// For FITX, RefSymbol should look like: TXF00, TXF01...
-		// Original RefSymbo: TXFF6, where F6 means 2016 June (ABCDEF, F is the 6th)
-		String refSymbol = getRefSymbol(refData.getRefSymbol());
-		refSymbol = refSymbol.substring(0, refSymbol.length() -2).toUpperCase();
-		Calendar calendar = Calendar.getInstance();
-		int currMon = calendar.get(Calendar.MONTH);
-		int currYear = calendar.get(Calendar.YEAR);
-
-		SimpleDateFormat contractSdf = new SimpleDateFormat("yyyyMM");
-		// ICE code would look like ICE.TWF.FITX.201606, we take the date part
-		String date = refData.getCode().replaceAll("[^0-9]", "");
-		Calendar refCalendar = Calendar.getInstance();
-		refCalendar.setTime(contractSdf.parse(date));
-		int refMon = refCalendar.get(Calendar.MONTH);
-		int refYear = refCalendar.get(Calendar.YEAR);
-
-		// Recognize recent 2 months and coming 3 quarter months
-		int monthDiff = ((refYear - currYear) * 12) + refMon - currMon;
-		switch (monthDiff) {
-		case 1:
-			refSymbol += "00";
-			break;
-		case 2:
-			refSymbol += "01";
-			break;
-		case 3:
-		case 4:
-		case 5:
-			refSymbol += "02";
-			break;
-		case 6:
-		case 7:
-		case 8:
-			refSymbol += "03";
-			break;
-		case 9:
-		case 10:
-		case 11:
-			refSymbol += "04";
-			break;
-
-		default:
-			break;
-		}
-
-		return refSymbol;
 	}
 
 }
