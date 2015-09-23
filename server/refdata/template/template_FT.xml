@@ -109,6 +109,30 @@
 				<string>Margin Rate</string>
 				<double>0.1</double>
 			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>100</int>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>100</int>
+			</entry>
+			<entry>
+				<string>Numerator DP</string>
+				<double>0</double>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Minimal CF</string>
+				<double>0</double>
+			</entry>
+			<entry>
+				<string>Tradable</string>
+				<string>1</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 </list>
