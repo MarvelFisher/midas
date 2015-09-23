@@ -23,9 +23,13 @@
   <object id="tradeAdaptor" type="Adaptor.TwSpeedy.Main.TradeAdaptor, TwSpeedy"/>
 
   <object id="transportService" type="Transport.Transport.ActiveMQGenericService, Transport" autowire="byName" >
-    <property name="url" value="failover:(tcp://127.0.0.1:61616)"></property>        
+    <property name="url" value="failover:(tcp://127.0.0.1:61616)"></property>
+    <property name="publishTopic" value="Test.EB.DownStream.node" />
+    <property name="subscribeTopic" value="Test.EB.DownStream.channel" />
+    <!--
     <property name="user" value="yu"></property>
     <property name="password" value="junfeng"></property>
+    -->
   </object>
 
   <object id="defaultSerialization" type="Avro.Serialization.AvroSerialization, AvroObject"/>

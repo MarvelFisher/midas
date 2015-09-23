@@ -39,9 +39,9 @@ namespace Avro.Serialization
                     return ms.ToArray();
                 }
             } 
-            catch(Exception)
+            catch(Exception e)
             {
-
+                Console.WriteLine(e.Message);
             }
             return null;
         }

@@ -68,6 +68,7 @@
     <Compile Include="Generate\trade\types\OrdStatus.cs" />
     <Compile Include="Generate\trade\types\TimeInForce.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\AvroPlus.cs" />
     <Compile Include="Serialization\AvroSerialization.cs" />
     <Compile Include="Serialization\ISerialization.cs" />
   </ItemGroup>
