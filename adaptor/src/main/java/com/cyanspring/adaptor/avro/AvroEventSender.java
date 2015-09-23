@@ -20,6 +20,7 @@ public class AvroEventSender implements IDownStreamEventSender {
 	private IObjectListener listener;
 	private ISerialization serializator;
 	private String channel;
+	private String node;
 	@Autowired
 	private SystemInfo systemInfo;
 	
@@ -36,8 +37,10 @@ public class AvroEventSender implements IDownStreamEventSender {
 			throw new Exception("TransportService not set");
 		if (serializator == null)
 			throw new Exception("Serializator not set");
-		channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream();
-		transportService.createSubscriber(channel, this);
+		channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream() + ".channel";
+		transportService.createPublisher(channel);
+		node = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream() + ".node";
+		transportService.createSubscriber(node, this);
 	}
 
 	@Override

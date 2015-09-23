@@ -29,7 +29,7 @@
 		</property>
 	</bean>
 
-	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQGenericService">
 		<property name="url" value="nio://localHost:61616"/>
 	</bean>
 

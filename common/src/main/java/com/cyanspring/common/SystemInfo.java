@@ -15,7 +15,7 @@ public class SystemInfo {
 	private String category = "EB";
 	private String id = "CSTW";
 	private String url = "nio://localhost:61616";
-	private String downStream = "downStream";
+	private String downStream = "DownStream";
 	
 	public String getId() {
 		return id;
