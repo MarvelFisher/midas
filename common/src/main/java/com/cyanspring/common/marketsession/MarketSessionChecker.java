@@ -3,19 +3,12 @@ package com.cyanspring.common.marketsession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionChecker implements IMarketSession {
-
-	private static final Logger log = LoggerFactory.getLogger(MarketSessionChecker.class);
-
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Date tradeDate;
     private Map<String, MarketSession> stateMap;
@@ -43,7 +36,8 @@ public class MarketSessionChecker implements IMarketSession {
     }
 
     @Override
-    public MarketSessionData getState(Date date, RefData refData) throws Exception {
+    public MarketSessionData getState(RefData refData) throws Exception {
+    	Date date = Clock.getInstance().now();
         MarketSessionData sessionData = null;
         String currentIndex = getCurrentIndex(date, refData);
         MarketSession session = stateMap.get(currentIndex);
@@ -84,7 +78,8 @@ public class MarketSessionChecker implements IMarketSession {
     }
 
     @Override
-	public MarketSession getMarketSession(Date date, RefData refData) throws Exception {
+	public MarketSession getMarketSession(RefData refData) throws Exception {
+    	Date date = Clock.getInstance().now();
 		String currentIndex = getCurrentIndex(date, refData);
 		MarketSession session = stateMap.get(currentIndex);
         if (session == null)

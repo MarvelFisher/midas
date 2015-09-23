@@ -161,13 +161,12 @@ public class RefDataUtil {
 		calDate.setTime(cal.getTime());
 		truncateDate(calDate);
 
-		int dayCount = 0;
-		while (dayCount != weeks) {
+		// Get the first desired DAY_OF_WEEK in month
+		while (calDate.get(Calendar.DAY_OF_WEEK) != daysInWeek) {
 			calDate.add(Calendar.DAY_OF_MONTH, 1);
-			if (calDate.get(Calendar.DAY_OF_WEEK) == daysInWeek) {
-				dayCount++;
-			}
 		}
+		// Get the desired n-th DAY_OF_WEEK in month
+		calDate.add(Calendar.DAY_OF_MONTH, 7 * (weeks - 1));
 
 		ITradeDate tradeDateManager = getTradeManager(category);
 

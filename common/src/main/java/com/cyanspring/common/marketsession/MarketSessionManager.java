@@ -65,9 +65,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
     public void processMarketSessionRequestEvent(MarketSessionRequestEvent event) {
     	log.info("Recieve MarketSessionRequest");
-        Date date = Clock.getInstance().now();
         try {
-            MarketSessionData sessionData = sessionChecker.getState(date, null);
+            MarketSessionData sessionData = sessionChecker.getState(null);
             MarketSessionEvent msEvent = new MarketSessionEvent(event.getKey(), event.getSender(), sessionData.getSessionType(),
                     sessionData.getStartDate(), sessionData.getEndDate(), sessionChecker.getTradeDate(), Default.getMarket());
             getEventManager().sendLocalOrRemoteEvent(msEvent);
@@ -89,9 +88,8 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
-        Date date = Clock.getInstance().now();
         try {
-            MarketSessionData sessionData = sessionChecker.getState(date, null);
+            MarketSessionData sessionData = sessionChecker.getState(null);
             checkMarketSession(sessionData);
             checkTradeDate();
         } catch (Exception e) {
