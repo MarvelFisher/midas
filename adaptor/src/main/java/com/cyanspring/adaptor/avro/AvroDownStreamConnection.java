@@ -177,9 +177,10 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			ChildOrder local = exchangeOrders.get(order.getExchangeOrderId());
 			if(!checkOrderStatus(order, local))
 				return;
+			log.info(order.getId() + "->" + order.getExchangeOrderId());
 			Builder request = AmendOrderRequest.newBuilder()
 					.setObjectType(WrapObjectType.AmendOrderRequest.getCode())
-					.setOrderId(order.getId())
+					.setOrderId(order.getExchangeOrderId())
 					.setExchangeAccount(exchangeAccount);
 			Double qty = (Double) fields.get(OrderField.QUANTITY.value());		
 			if (qty != null && PriceUtils.EqualGreaterThan(qty, 0))
@@ -198,9 +199,10 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			ChildOrder local = exchangeOrders.get(order.getExchangeOrderId());
 			if(!checkOrderStatus(order, local))
 				return;
+			log.info(order.getId() + "->" + order.getExchangeOrderId());
 			CancelOrderRequest request = CancelOrderRequest.newBuilder()
 					.setObjectType(WrapObjectType.CancelOrderRequest.getCode())
-					.setOrderId(order.getId())
+					.setOrderId(order.getExchangeOrderId())
 					.setExchangeAccount(exchangeAccount)
 					.setTxId(IdGenerator.getInstance().getNextID())
 					.build();
@@ -213,6 +215,12 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				listener.onOrder(ExecType.REJECTED, order, null, "Down stream connection not ready");
 				return false;
 			}
+			if (order.getExchangeOrderId() == null) {
+				log.error("null exchange order id, id: " + order.getId());
+				listener.onOrder(ExecType.REJECTED, order, null, "null exchange order id");
+				return false;
+			}
+			
 			if (local == null) {
 				log.error("Can't locate order, id: " + order.getId());
 				listener.onOrder(ExecType.REJECTED, order, null, "Can't locate order");
@@ -302,9 +310,10 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				exchangeOrders.put(update.getExchangeOrderId(), order);			
 			}
 		}
-		
 		ExecType type = WrapExecType.valueOf(update.getExecType()).getCommonExecType();
 		OrdStatus status = WrapOrdStatus.valueOf(update.getOrdStatus()).getCommonOrdStatus();
+		log.info("Order update, type:" + type + ", status: " + status + 
+				", id:" + update.getOrderId() + ", exchangeOrderId: " + update.getExchangeOrderId());
 		
 		double delta = update.getCumQty() - order.getCumQty();
 		if (PriceUtils.GreaterThan(delta, 0)) {
