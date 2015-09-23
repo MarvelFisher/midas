@@ -208,10 +208,6 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				.subscribe(AccountSelectionEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSnapshotReplyEvent.class, ID, this);
-		log.info("Business.getInstance().getOrderManager().isReady():{}",
-				Business.getInstance().getOrderManager().isReady());
-		log.info("Business.getInstance().getAccount():{}", Business
-				.getInstance().getAccount());
 		if (Business.getInstance().getOrderManager().isReady())
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		else
@@ -643,7 +639,6 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void sendTraderRequestEvent() {
-		log.info("sendTraderRequestEvent");
 		if (UserRole.Trader == Business.getInstance().getUserGroup().getRole()) {
 			Account account = Business.getInstance().getLoginAccount();
 			if (null != account) {

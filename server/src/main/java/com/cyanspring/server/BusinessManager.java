@@ -1192,7 +1192,7 @@ public class BusinessManager implements ApplicationContextAware {
 	public void processTickTableRequestEvent(TickTableRequestEvent event) {
 		try {
 			String symbol = event.getSymbol();
-			Map <AbstractTickTable,List<String>> map= tickTableManager.buildTickTableSymbolMap(symbol);			
+			Map <AbstractTickTable,List<RefData>> map= tickTableManager.buildTickTableSymbolMap(symbol);			
 			if(null == map){
 				log.info("no tick table map data:{}",symbol);
 				return;

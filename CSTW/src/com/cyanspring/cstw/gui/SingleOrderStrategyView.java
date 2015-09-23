@@ -63,6 +63,7 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -80,7 +81,6 @@ import com.cyanspring.common.event.strategy.PauseStrategyEvent;
 import com.cyanspring.common.event.strategy.StartStrategyEvent;
 import com.cyanspring.common.event.strategy.StopStrategyEvent;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.staticdata.AbstractTickTable;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
@@ -194,7 +194,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private final double basicPrice = 1;
 	private final DecimalFormat defaultPriceFormat = new DecimalFormat("#.#####");
-	private AbstractTickTable tickTable = null;
+	private Ticker ticker = null;
 
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
@@ -284,6 +284,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 		this.parent = parent;
 
 		initKeyListener();
+		initListener();
+		initSessionListener();
 		ISelectionProvider is = getViewSite().getSelectionProvider();
 		MenuManager mm = new MenuManager();
 		IMenuManager imm = getViewSite().getActionBars().getMenuManager();
@@ -344,16 +346,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 	
 	private void addKeyAdapter(Control control, KeyAdapter keyAdapter) {
 		control.addKeyListener(keyAdapter);
-//		if (control instanceof Composite) {
-//			Composite parentComposite = (Composite) control;
-//			for (Control subControl : parentComposite.getChildren()) {
-//				addKeyAdapter(subControl, keyAdapter);
-//			}
-//
-//
-//		}
-		initListener();
-		initSessionListener();
+		if (control instanceof Composite) {
+			Composite parentComposite = (Composite) control;
+			for (Control subControl : parentComposite.getChildren()) {
+				addKeyAdapter(subControl, keyAdapter);
+			}
+
+
+		}
+
 	}
 
 	public void openByKeyCode(int keyCode) {
@@ -468,37 +469,40 @@ public class SingleOrderStrategyView extends ViewPart implements
 	}
 
 	private String tickUp(double value){
-		if(null == tickTable){
+		if(null == ticker){
 			return defaultPriceFormat.format(value + basicPrice);
 		}else{
-			return defaultPriceFormat.format(tickTable.tickUp(value, true));
+			return ticker.tickUp(value, true);
 		}
 	}
 	
 	private String tickDown(double value){
-		if(null == tickTable){
-			return defaultPriceFormat.format(value + basicPrice * 10);
+		if(null == ticker){
+			if (value - basicPrice  > 0) {
+				value = value - basicPrice ;
+			}
+			return defaultPriceFormat.format(value);
 		}else{
-			return defaultPriceFormat.format(tickTable.tickDown(value, true));
+			return ticker.tickDown(value, true);
 		}
 	}
 	
 	private String tickTenTimes(double value){
-		if(null == tickTable){
+		if(null == ticker){
 			return defaultPriceFormat.format(value + basicPrice * 10);
 		}else{
-			return defaultPriceFormat.format(tickTable.tickUp(value,10, true));
+			return ticker.tickUp(value,10, true);
 		}
 	}
 	
 	private String tickMinusTenTimes(double value){
-		if(null == tickTable){
+		if(null == ticker){
 			if (value - basicPrice * 10 > 0) {
 				value = value - basicPrice * 10;
 			}
 			return defaultPriceFormat.format(value);
 		}else{
-			return defaultPriceFormat.format(tickTable.tickDown(value,10, true));
+			return ticker.tickDown(value,10, true);
 		}
 	}
 	
@@ -1505,7 +1509,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			public void run() {
 				if(panelComposite.isVisible() && null != nowQuote){
 					txtSymbol.setText(nowQuote.getSymbol());
-					tickTable = Business.getInstance().getTickTable(nowQuote.getSymbol());
+					ticker = Business.getInstance().getTicker(nowQuote.getSymbol());
 					String orderSide = cbOrderSide.getText();
 					if(orderSide.equals(OrderSide.Buy.toString())){
 						txtPrice.setText(""+nowQuote.getAsk());

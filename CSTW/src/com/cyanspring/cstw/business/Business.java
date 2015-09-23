@@ -36,6 +36,7 @@ import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.cstw.auth.IAuthChecker;
 import com.cyanspring.common.cstw.tick.TickManager;
+import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -56,7 +57,6 @@ import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
-import com.cyanspring.common.staticdata.AbstractTickTable;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
@@ -559,7 +559,7 @@ public class Business {
 		this.accountSetting = accountSetting;
 	}
 	
-	public AbstractTickTable getTickTable(String symbol){
+	public Ticker getTicker(String symbol){
 		return tickManager.getTickTable(symbol);
 	}
 }

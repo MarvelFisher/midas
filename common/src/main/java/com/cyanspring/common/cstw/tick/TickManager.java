@@ -1,5 +1,6 @@
 package com.cyanspring.common.cstw.tick;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,13 +15,14 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.statistic.TickTableReplyEvent;
 import com.cyanspring.common.event.statistic.TickTableRequestEvent;
 import com.cyanspring.common.staticdata.AbstractTickTable;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 
 public class TickManager implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(TickManager.class);
 	private IRemoteEventManager eventManager;
-	private Map<AbstractTickTable, List<String>> tickMap = new HashMap<AbstractTickTable, List<String>>();
+	private Map<AbstractTickTable, List<RefData>> tickMap = new HashMap<AbstractTickTable, List<RefData>>();
 	private String firstServer = "";
 
 	public TickManager(IRemoteEventManager eventManager) {
@@ -37,11 +39,11 @@ public class TickManager implements IAsyncEventListener {
 	}
 
 	private void processTickTableReplyEvent(TickTableReplyEvent evt) {
-		Iterator<List<String>> i = evt.getMap().values().iterator();
+		Iterator<List<RefData>> i = evt.getMap().values().iterator();
 		Iterator<AbstractTickTable> ii = evt.getMap().keySet().iterator();
 //		while (i.hasNext()) {
-//			for (String s : i.next()) {
-//				log.info("s:{}", s);
+//			for (RefData s : i.next()) {
+//				log.info("s:{}", s.getSymbol());
 //			}
 //		}
 //		while (ii.hasNext()) {
@@ -49,17 +51,40 @@ public class TickManager implements IAsyncEventListener {
 //			log.info("tick table:{}", a.toString());
 //		}
 
-		if (null != evt.getMap())
-			tickMap = evt.getMap();
+		if (null != evt.getMap()){
+			if( null == tickMap)
+				 tickMap = new HashMap<AbstractTickTable, List<RefData>>();
+			
+			Map<AbstractTickTable, List<RefData>> tempMap = evt.getMap();
+			Iterator <AbstractTickTable>keyIte = tempMap.keySet().iterator();
+			while(keyIte.hasNext()){
+				AbstractTickTable table = keyIte.next();
+				List<RefData> newList = tempMap.get(table);
+				if(tickMap.containsKey(table)){
+					List <RefData> oldList = tickMap.get(table);
+					oldList.addAll(newList);
+					tickMap.put(table, oldList);
+				}else{
+					List <RefData> oldList = new ArrayList<RefData>();
+					oldList.addAll(newList);
+					tickMap.put(table, oldList);
+				}
+			}
+			
+		}
+			
 	}
 
-	public AbstractTickTable getTickTable(String symbol){
+	public Ticker getTickTable(String symbol){
 		Iterator<AbstractTickTable> table = tickMap.keySet().iterator();
 		while(table.hasNext()){
 			AbstractTickTable tempTable = table.next();
-			List<String> symbolList = tickMap.get(tempTable);
-			if(symbolList.contains(symbol))
-				return tempTable;
+			List<RefData> symbolList = tickMap.get(tempTable);
+			for(RefData data : symbolList){
+				if(data.getSymbol().equals(symbol)){
+					return new Ticker(tempTable,data);
+				}
+			}
 		}
 		return null;
 	}

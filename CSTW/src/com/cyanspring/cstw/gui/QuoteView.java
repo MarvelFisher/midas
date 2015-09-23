@@ -271,7 +271,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof QuoteEvent) {
 			QuoteEvent e = (QuoteEvent) event;
-			log.info("e.getQuote().getSymbol():{},{}", e.getQuote().getSymbol());
 			if (!PriceUtils.isZero(e.getQuote().getAsk())
 					&& !PriceUtils.isZero(e.getQuote().getBid()))
 				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
