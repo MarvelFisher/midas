@@ -260,66 +260,71 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     private boolean dataCheck(String type, String symbol, long time, int tradingDay, int status) {
         boolean isCorrect = true;
-        String title = "";
-        if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
-        if ("S".equals(type)) title = WindDef.TITLE_STOCK;
-        if ("I".equals(type)) title = WindDef.TITLE_INDEX;
-        if ("T".equals(type)) title = WindDef.TITLE_TRANSATION;
-        if ("S".equals(type)) {
-            switch (status) {
-                case WindDef.STOCK_STATUS_STOP_SYMBOL:
-                case WindDef.STOCK_STATUS_STOP_SYMBOL_2:
-                    return true;
-                default:
-                    break;
+        try {
+            String title = "";
+            if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
+            if ("S".equals(type)) title = WindDef.TITLE_STOCK;
+            if ("I".equals(type)) title = WindDef.TITLE_INDEX;
+            if ("T".equals(type)) title = WindDef.TITLE_TRANSATION;
+            if ("S".equals(type)) {
+                switch (status) {
+                    case WindDef.STOCK_STATUS_STOP_SYMBOL:
+                    case WindDef.STOCK_STATUS_STOP_SYMBOL_2:
+                        return true;
+                    default:
+                        break;
+                }
             }
-        }
-        if (time >= 240000000) {
-            log.debug(String.format("%s %s,%s", title,
-                    WindDef.WARN_TIME_FORMAT_ERROR, symbol));
+            if (time >= 240000000) {
+                log.debug(String.format("%s %s,%s", title,
+                        WindDef.WARN_TIME_FORMAT_ERROR, symbol));
+                return false;
+            }
+            if (tradeDateCheckIsOpen) {
+                if (useMarketSession) {
+                    if (tradingDay != tradeDateForWindFormat) {
+                        log.debug(String.format("%s %s,%s", title,
+                                WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
+                        return false;
+                    }
+                } else {
+                    String index = marketRuleBySymbolMap.get(symbol);
+                    if (indexSessionCheckDataByIndexMap.get(index) == null) {
+                        log.error(String.format("%s %s,%s", title,
+                                WindDef.ERROR_NO_INDEXSESSION, symbol));
+                        return false;
+                    }
+                    if (tradingDay != indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()) {
+                        log.debug(String.format("%s %s,%s", title,
+                                WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
+                        return false;
+                    }
+                }
+            }
+            if (closeOverTimeControlIsOpen) {
+                if (useMarketSession) {
+                    if (bigSessionIsClose
+                            && TimeUtil.getTimePass(bigSessionCloseDate) > WindDef.ReceiveQuoteTimeInterval) {
+                        log.debug(String.format("%s %s,Session Close Time=%s,%s",
+                                title, WindDef.WARN_CLOSE_OVER_TIME,
+                                bigSessionCloseDate.toString(), symbol));
+                        return false;
+                    }
+                } else {
+                    String index = marketRuleBySymbolMap.get(symbol);
+                    WindIndexSessionCheckData windIndexSessionCheckData = indexSessionCheckDataByIndexMap.get(index);
+                    if (windIndexSessionCheckData.isSessionClose()
+                            && TimeUtil.getTimePass(windIndexSessionCheckData.getSessionCloseDate()) > WindDef.ReceiveQuoteTimeInterval) {
+                        log.debug(String.format("%s %s,Session Close Time=%s,%s",
+                                title, WindDef.WARN_CLOSE_OVER_TIME,
+                                bigSessionCloseDate.toString(), symbol));
+                        return false;
+                    }
+                }
+            }
+        }catch (Exception e){
+            log.error("data Check:" + e.getMessage() ,e);
             return false;
-        }
-        if(tradeDateCheckIsOpen) {
-            if (useMarketSession) {
-                if (tradingDay != tradeDateForWindFormat) {
-                    log.debug(String.format("%s %s,%s", title,
-                            WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
-                    return false;
-                }
-            } else {
-                String index = marketRuleBySymbolMap.get(symbol);
-                if (indexSessionCheckDataByIndexMap.get(index) == null){
-                    log.error(String.format("%s %s,%s", title,
-                            WindDef.ERROR_NO_INDEXSESSION, symbol));
-                    return false;
-                }
-                if (tradingDay != indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()) {
-                    log.debug(String.format("%s %s,%s", title,
-                            WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
-                    return false;
-                }
-            }
-        }
-        if(closeOverTimeControlIsOpen) {
-            if(useMarketSession) {
-                if (bigSessionIsClose
-                        && TimeUtil.getTimePass(bigSessionCloseDate) > WindDef.ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            title, WindDef.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString(), symbol));
-                    return false;
-                }
-            }else{
-                String index = marketRuleBySymbolMap.get(symbol);
-                WindIndexSessionCheckData windIndexSessionCheckData = indexSessionCheckDataByIndexMap.get(index);
-                if (windIndexSessionCheckData.isSessionClose()
-                        && TimeUtil.getTimePass(windIndexSessionCheckData.getSessionCloseDate()) > WindDef.ReceiveQuoteTimeInterval) {
-                    log.debug(String.format("%s %s,Session Close Time=%s,%s",
-                            title, WindDef.WARN_CLOSE_OVER_TIME,
-                            bigSessionCloseDate.toString(), symbol));
-                    return false;
-                }
-            }
         }
         return isCorrect;
     }
