@@ -218,6 +218,10 @@
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
 	</bean>
 
+    <bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
+    </bean>
+	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+	</bean>
 	<bean id="ftTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
         <property name="tickTable">
             <array>
@@ -229,7 +233,9 @@
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
-				<entry key="DEFAULT" value-ref="ftTickTable" />
+				<entry key="DEFAULT" value-ref="hkexTickTable" />
+                <entry key="FX" value-ref="forexTickTable" />
+                <entry key="FT" value-ref="ftTickTable" />
 			</map>
 		</property>
 	</bean>
