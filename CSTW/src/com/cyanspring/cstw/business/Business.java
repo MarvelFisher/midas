@@ -35,6 +35,7 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.cstw.auth.IAuthChecker;
+import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -55,6 +56,7 @@ import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
+import com.cyanspring.common.staticdata.AbstractTickTable;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
@@ -73,6 +75,7 @@ public class Business {
 	private IRemoteEventManager eventManager;
 	private OrderCachingManager orderManager;
 	private IAuthChecker authManager;
+	private TickManager tickManager;
 	private String inbox;
 	private String channel;
 	private String nodeInfoChannel;
@@ -137,12 +140,21 @@ public class Business {
 					requestStrategyInfo(initClientEvent.getSender());
 				}
 			}else if (event instanceof CSTWUserLoginReplyEvent) {
+				
 				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent)event;
 				processCSTWUserLoginReplyEvent(evt);
+				if(evt.isOk()){
+					tickManager.init(getFirstServer());
+				}
 				if(isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
 				}
-			} else if (event instanceof UserLoginReplyEvent) {
+			}else if (event instanceof AccountSettingSnapshotReplyEvent) {
+				
+				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent)event;
+				processAccountSettingSnapshotReplyEvent(evt);
+			}else if (event instanceof UserLoginReplyEvent) {
+				
 				UserLoginReplyEvent evt = (UserLoginReplyEvent)event;
 				processUserLoginReplyEvent(evt);
 				if(isLoginRequired() && evt.isOk()) {
@@ -173,7 +185,6 @@ public class Business {
 				log.error("I dont expect this event: " + event);
 			}
 		}
-
 	}
 	
 	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
@@ -277,6 +288,7 @@ public class Business {
 		eventManager = beanHolder.getEventManager();
 		alertColorConfig = beanHolder.getAlertColorConfig();
 		authManager = beanHolder.getAuthManager();
+		tickManager = beanHolder.getTickManager();
 		
 		boolean ok = false;
 		while(!ok) {
@@ -296,7 +308,8 @@ public class Business {
 		eventManager.addEventChannel(this.nodeInfoChannel);
 
 		orderManager = new OrderCachingManager(eventManager);
-
+		tickManager = new TickManager(eventManager);
+		
 		ServerStatusDisplay.getInstance().init();
 		
 		eventManager.subscribe(NodeInfoEvent.class, listener);
@@ -544,5 +557,9 @@ public class Business {
 
 	public void setAccountSetting(AccountSetting accountSetting) {
 		this.accountSetting = accountSetting;
+	}
+	
+	public AbstractTickTable getTickTable(String symbol){
+		return tickManager.getTickTable(symbol);
 	}
 }

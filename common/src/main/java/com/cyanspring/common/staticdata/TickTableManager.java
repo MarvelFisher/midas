@@ -10,12 +10,59 @@
  ******************************************************************************/
 package com.cyanspring.common.staticdata;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+
 public class TickTableManager {
+	
+    @Autowired
+    IRefDataManager refDataManager;
+    
 	private Map<String, AbstractTickTable> tickTables;
+	
+	public Map <AbstractTickTable,List<String>> buildTickTableSymbolMap(String symbol){
+		List<RefData> list = null;
+		if(StringUtils.hasText(symbol)){
+			list = new ArrayList<RefData>();
+			RefData refData =refDataManager.getRefData(symbol);
+			if( null != refData){
+				list.add(refData);
+			}
+		}else{
+			 list = refDataManager.getRefDataList();
+		}
+		
+		if( null == list || list.isEmpty())
+			return null;
+		
+		Map <AbstractTickTable,List<String>> map = new HashMap<AbstractTickTable,List<String>>();
+		for(RefData refData : list){
+			AbstractTickTable table = getTickTable(refData);
+			List <String> tempList = null;
+			if(map.containsKey(table)){
+				tempList = map.get(table);
+				if( null != tempList){
+					tempList.add(refData.getSymbol());
+					map.put(table, tempList);
+				}
+			}else{
+				tempList = new ArrayList<String>();
+				tempList.add(refData.getSymbol());
+				map.put(table, tempList);
+			}
+		}
+		return map;
+	}
 
 	public AbstractTickTable getTickTable(RefData refData) {
+		if( null == refData)
+			return tickTables.get("DEFAULT");
+		
 		String tickTableID = refData.getTickTable();
 		String exchange = refData.getExchange();
 		AbstractTickTable tickTable;

@@ -458,7 +458,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		} else if (tableViewer.getControl().isDisposed()) {
 			return;
 		}
-
+		nowQuote = quote;
 		tableViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {

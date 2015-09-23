@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,13 +80,13 @@ import com.cyanspring.common.event.strategy.PauseStrategyEvent;
 import com.cyanspring.common.event.strategy.StartStrategyEvent;
 import com.cyanspring.common.event.strategy.StopStrategyEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.staticdata.AbstractTickTable;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
@@ -192,6 +193,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private Quote nowQuote = null;
 
 	private final double basicPrice = 1;
+	private final DecimalFormat defaultPriceFormat = new DecimalFormat("#.#####");
+	private AbstractTickTable tickTable = null;
 
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
@@ -287,19 +290,21 @@ public class SingleOrderStrategyView extends ViewPart implements
 		IContributionItem actions[] = imm.getItems();
 		
 	}
-
+	private void getDefaultQuickData(){
+		sendMarketDataRequestEvent(null);
+		sendAccounSettingRequestEvent();
+		
+	}
 	private void initKeyListener() {
 		KeyAdapter keyAdapter = new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.F1) {
 					showOrderPadByType(true);
-					sendMarketDataRequestEvent(null);
-					sendAccounSettingRequestEvent();
+					getDefaultQuickData();
 				} else if (e.keyCode == SWT.F2) {
 					showOrderPadByType(false);
-					sendMarketDataRequestEvent(null);
-					sendAccounSettingRequestEvent();
+					getDefaultQuickData();
 				} else if (e.keyCode == SWT.CR) {
 					panelComposite.getDisplay().asyncExec(new Runnable() {				
 						@Override
@@ -339,15 +344,16 @@ public class SingleOrderStrategyView extends ViewPart implements
 	
 	private void addKeyAdapter(Control control, KeyAdapter keyAdapter) {
 		control.addKeyListener(keyAdapter);
-		if (control instanceof Composite) {
-			Composite parentComposite = (Composite) control;
-			for (Control subControl : parentComposite.getChildren()) {
-				addKeyAdapter(subControl, keyAdapter);
-			}
-
+//		if (control instanceof Composite) {
+//			Composite parentComposite = (Composite) control;
+//			for (Control subControl : parentComposite.getChildren()) {
+//				addKeyAdapter(subControl, keyAdapter);
+//			}
+//
+//
+//		}
 		initListener();
 		initSessionListener();
-		}
 	}
 
 	public void openByKeyCode(int keyCode) {
@@ -357,8 +363,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private void handleKeyCode(int keyCode) {
 		if (keyCode == SWT.F1) {
 			showOrderPadByType(true);
+			getDefaultQuickData();
 		} else if (keyCode == SWT.F2) {
 			showOrderPadByType(false);
+			getDefaultQuickData();
 		}
 	}
 
@@ -424,35 +432,32 @@ public class SingleOrderStrategyView extends ViewPart implements
 						|| e.keyCode == SWT.ARROW_LEFT
 						|| e.keyCode == SWT.ARROW_RIGHT) {
 					e.doit = false;
-					double x;
+					double price;
 					if (txtPrice.getText() == null
 							|| txtPrice.getText().length() == 0) {
-						x = 0;
+						price = 0;
 					} else {
-						x = Double.valueOf(txtPrice.getText());
+						price = Double.valueOf(txtPrice.getText());
 					}
+					String value="";				
 					switch (e.keyCode) {
-					case SWT.ARROW_UP:
-						x = x + basicPrice;
+					case SWT.ARROW_UP:				
+						value = tickUp(price);
 						break;
 					case SWT.ARROW_DOWN:
-						if (x - basicPrice > 0) {
-							x = x - basicPrice;
-						}
+						value = tickDown(price);
 						break;
 					case SWT.ARROW_LEFT:
-						x = x + basicPrice * 10;
+						value = tickTenTimes(price);
 						break;
 					case SWT.ARROW_RIGHT:
-						if (x - basicPrice * 10 > 0) {
-							x = x - basicPrice * 10;
-						}
+						value = tickMinusTenTimes(price);
 						break;
 					default:
 						break;
 					}
-
-					txtPrice.setText(Double.toString(x));
+					
+					txtPrice.setText(value);
 				}
 			}
 		};
@@ -462,6 +467,41 @@ public class SingleOrderStrategyView extends ViewPart implements
 		txtQuantity.addKeyListener(listener);
 	}
 
+	private String tickUp(double value){
+		if(null == tickTable){
+			return defaultPriceFormat.format(value + basicPrice);
+		}else{
+			return defaultPriceFormat.format(tickTable.tickUp(value, true));
+		}
+	}
+	
+	private String tickDown(double value){
+		if(null == tickTable){
+			return defaultPriceFormat.format(value + basicPrice * 10);
+		}else{
+			return defaultPriceFormat.format(tickTable.tickDown(value, true));
+		}
+	}
+	
+	private String tickTenTimes(double value){
+		if(null == tickTable){
+			return defaultPriceFormat.format(value + basicPrice * 10);
+		}else{
+			return defaultPriceFormat.format(tickTable.tickUp(value,10, true));
+		}
+	}
+	
+	private String tickMinusTenTimes(double value){
+		if(null == tickTable){
+			if (value - basicPrice * 10 > 0) {
+				value = value - basicPrice * 10;
+			}
+			return defaultPriceFormat.format(value);
+		}else{
+			return defaultPriceFormat.format(tickTable.tickDown(value,10, true));
+		}
+	}
+	
 	private void initSessionListener() {
 		GuiSession.getInstance().addPropertyChangeListener("symbol",
 				new PropertyChangeListener() {
@@ -1465,6 +1505,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			public void run() {
 				if(panelComposite.isVisible() && null != nowQuote){
 					txtSymbol.setText(nowQuote.getSymbol());
+					tickTable = Business.getInstance().getTickTable(nowQuote.getSymbol());
 					String orderSide = cbOrderSide.getText();
 					if(orderSide.equals(OrderSide.Buy.toString())){
 						txtPrice.setText(""+nowQuote.getAsk());
