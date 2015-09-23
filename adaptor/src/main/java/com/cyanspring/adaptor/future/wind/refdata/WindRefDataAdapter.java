@@ -227,12 +227,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     codeTableData.setEnglishName(windBaseDBData.getENDisplayName());
                 }
                 codeTableDataBySymbolMap.put(codeTableData.getWindCode(), codeTableData);
-                if (marketDataLog) {
+//                if (marketDataLog) {
                     log.debug("CODETABLE INFO:S=" + codeTableData.getWindCode()
                             + ",CT=" + ChineseConvert.StoT(codeTableData.getCnName()) + ",E="
-                            + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
-                            + ",Sp=" + codeTableData.getSpellName());
-                }
+                            + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType());
+//                }
                 requestMgr.addReqData(new Object[]{datatype, codeTableData});
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
