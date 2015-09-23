@@ -396,7 +396,6 @@
 				<ref bean="bbSessionChecker"/>
 				<ref bean="bSessionChecker"/>
 				<ref bean="fbSessionChecker"/>
-				<ref bean="tcSessionChecker"/>
 				<ref bean="rsSessionChecker"/>
 				<ref bean="riSessionChecker"/>
 				<ref bean="sfSessionChecker"/>
