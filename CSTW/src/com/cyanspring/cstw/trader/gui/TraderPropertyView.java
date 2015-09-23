@@ -150,6 +150,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		gd_btnModify.widthHint = 112;
 		btnModify.setLayoutData(gd_btnModify);
 		btnModify.setText("Modify");
+		btnModify.setImage(imageRegistry.getDescriptor(ImageID.PIN_ICON.toString()).createImage());
 		btnModify.addSelectionListener(new SelectionListener() {
 			
 			@Override
@@ -169,6 +170,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		gd_btnRestore.widthHint = 112;
 		btnRestore.setLayoutData(gd_btnRestore);
 		btnRestore.setText("Restore");
+		btnRestore.setImage(imageRegistry.getDescriptor(ImageID.REFRESH_ICON.toString()).createImage());
 		sashForm.setWeights(new int[] {119, 472});
 		btnRestore.addSelectionListener(new SelectionListener() {
 			
