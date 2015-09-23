@@ -31,6 +31,20 @@
 
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQGenericService">
 		<property name="url" value="nio://localHost:61616"/>
+		<property name="serializationMap">
+			<map key-type="java.lang.String">
+				<entry key-ref="csPubTopic" value-ref="avroSerialization"></entry>
+				<entry key-ref="csSubTopic" value-ref="avroSerialization"></entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="csPubTopic" class="java.lang.String">
+		<constructor-arg value="Test.EB.DownStream.channel" />
+	</bean>
+
+	<bean id="csSubTopic" class="java.lang.String">
+		<constructor-arg value="Test.EB.DownStream.node" />
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
