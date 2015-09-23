@@ -402,13 +402,8 @@
 		<constructor-arg>
 			<ref bean="transportService"/>
 		</constructor-arg>
-		<constructor-arg>
-			<ref bean="avroSerialization"/>
-		</constructor-arg>
 	</bean>
 	
-	<bean id="avroSerialization" class="com.cyanspring.avro.AvroSerialization"/>
-
 	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
 		<constructor-arg>
 			<list>

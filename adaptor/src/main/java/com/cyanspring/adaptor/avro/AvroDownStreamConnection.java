@@ -293,8 +293,10 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		ChildOrder order = exchangeOrders.get(update.getExchangeOrderId());
 		if (order == null){
 			order = localOrders.get(update.getOrderId());
-			if (order == null)
-				throw new Exception("Order not found");
+			if (order == null){
+				log.error("Can't find order, id: " + update.getOrderId() + ", exchange id: " + update.getExchangeOrderId());
+				return;
+			}
 			if (update.getExchangeOrderId() != null) {
 				order.setExchangeOrderId(update.getExchangeOrderId());
 				exchangeOrders.put(update.getExchangeOrderId(), order);			

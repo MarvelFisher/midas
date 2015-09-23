@@ -1,32 +1,30 @@
 package com.cyanspring.adaptor.avro;
 
+import org.apache.avro.specific.SpecificRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.avro.AvroSerializableObject;
-import com.cyanspring.avro.generate.trade.bean.AmendOrderRequest;
-import com.cyanspring.avro.generate.trade.bean.CancelOrderRequest;
-import com.cyanspring.avro.generate.trade.bean.NewOrderRequest;
 import com.cyanspring.avro.wrap.WrapObjectType;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.transport.IObjectListener;
+import com.cyanspring.common.transport.IObjectSender;
 import com.cyanspring.common.transport.IObjectTransportService;
-import com.cyanspring.common.transport.ISerialization;
 
 public class AvroEventSender implements IDownStreamEventSender {
 	private static final Logger log = LoggerFactory.getLogger(AvroEventSender.class);
 	private IObjectTransportService transportService;
 	private IObjectListener listener;
-	private ISerialization serializator;
 	private String channel;
 	private String node;
+	private IObjectSender publisher;
+	
 	@Autowired
 	private SystemInfo systemInfo;
 	
-	public AvroEventSender(IObjectTransportService transportService, ISerialization serializator) {
+	public AvroEventSender(IObjectTransportService transportService) {
 		this.transportService = transportService;
-		this.serializator = serializator;
 	}
 	
 	@Override
@@ -35,11 +33,12 @@ public class AvroEventSender implements IDownStreamEventSender {
 			throw new Exception("Listener not set");
 		if (transportService == null)
 			throw new Exception("TransportService not set");
-		if (serializator == null)
-			throw new Exception("Serializator not set");
-		channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream() + ".channel";
+		if (channel == null)
+			channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream() + ".channel";
 		transportService.createPublisher(channel);
-		node = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream() + ".node";
+		publisher = transportService.createObjectPublisher(channel);
+		if (node == null)
+			node = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + systemInfo.getDownStream() + ".node";
 		transportService.createSubscriber(node, this);
 	}
 
@@ -47,15 +46,13 @@ public class AvroEventSender implements IDownStreamEventSender {
 	public void uninit() throws Exception {
 		transportService.removeSubscriber(channel, this);
 		listener = null;
-		serializator = null;
 		transportService = null;
 	}
 
 	@Override
 	public void sendRemoteEvent(Object o, WrapObjectType type) {
 		try {
-			byte[] bytes = (byte[]) serializator.serialize(new AvroSerializableObject((NewOrderRequest)o, type));
-			transportService.sendMessage(channel, bytes);
+			publisher.sendMessage(new AvroSerializableObject((SpecificRecord) o, type));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}		
@@ -69,10 +66,25 @@ public class AvroEventSender implements IDownStreamEventSender {
 	@Override
 	public void onMessage(Object obj) {
 		try {
-			AvroSerializableObject deObj = (AvroSerializableObject) serializator.deSerialize(obj);			
-			listener.onMessage(deObj);
+			listener.onMessage(obj);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getNode() {
+		return node;
+	}
+
+	public void setNode(String node) {
+		this.node = node;
 	}
 }

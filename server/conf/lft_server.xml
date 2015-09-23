@@ -46,6 +46,8 @@
 	<bean id="csSubTopic" class="java.lang.String">
 		<constructor-arg value="Test.EB.DownStream.node" />
 	</bean>
+	
+	<bean id="avroSerialization" class="com.cyanspring.avro.AvroSerialization"/>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
 		<constructor-arg value="jdbc:mysql://125.227.191.247:3306/LTS?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
