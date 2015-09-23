@@ -179,7 +179,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>IH</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -303,7 +303,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>IC</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -421,7 +421,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>AG</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -539,7 +539,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>CU</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -657,7 +657,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>AU</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -775,7 +775,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>RB</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -893,7 +893,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>RU</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1011,7 +1011,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>ZN</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1132,7 +1132,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>M</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1250,7 +1250,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>I</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1368,7 +1368,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>L</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1486,7 +1486,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>Y</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1604,7 +1604,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>PP</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1722,7 +1722,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>P</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1840,7 +1840,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>J</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1958,7 +1958,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>JD</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2073,7 +2073,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>FG</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2191,7 +2191,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>RM</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2312,7 +2312,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>TA</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2433,7 +2433,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>SR</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2554,7 +2554,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>MA</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2675,7 +2675,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>CF</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2793,7 +2793,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>NI</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2911,7 +2911,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>AL</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3029,7 +3029,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>BU</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3147,7 +3147,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>PB</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3265,7 +3265,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>HC</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3383,7 +3383,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>SN</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3501,7 +3501,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>FU</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3619,7 +3619,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>WR</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3740,7 +3740,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>JM</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3858,7 +3858,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>C</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3976,7 +3976,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>CS</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4094,7 +4094,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>V</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4212,7 +4212,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>BB</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4330,7 +4330,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>B</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4448,7 +4448,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>FB</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4566,7 +4566,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>TC</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4687,7 +4687,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>RS</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4808,7 +4808,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>RI</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4929,7 +4929,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>SF</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -5050,7 +5050,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>LR</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -5171,7 +5171,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>SM</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -5292,7 +5292,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>IF</string>
+        <string>JR</string>
       </entry>
       <entry>
         <string>Decimal point</string>
