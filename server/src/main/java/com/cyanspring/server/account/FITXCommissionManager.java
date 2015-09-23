@@ -2,6 +2,7 @@ package com.cyanspring.server.account;
 
 import webcurve.util.PriceUtils;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.staticdata.RefData;
@@ -46,7 +47,9 @@ public class FITXCommissionManager extends CommissionManager {
         double tax = value * trxTaxRate;
         tax = Math.round(tax);
 
-        double commissionFee = (trxFee * quantity) + tax;
+        double defaultCommission = value * Default.getCommission();
+
+        double commissionFee = (trxFee * quantity) + tax + defaultCommission;
         commissionFee *= accountCom;
 
         return commissionFee;

@@ -107,7 +107,7 @@
 			</entry>
 			<entry>
 				<string>Margin Rate</string>
-				<double>1</double>
+				<double>0.1</double>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
