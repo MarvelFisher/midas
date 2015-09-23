@@ -150,7 +150,7 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-		log.info("XML:"+xstream.toXML(refData));
+//		log.debug("XML:"+xstream.toXML(refData));
 	}
 
 	private void initCategory(RefData refData) {

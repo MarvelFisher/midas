@@ -67,7 +67,7 @@
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <!--<ref bean="ibAdaptor" />-->
+                <ref bean="ibAdaptor" />
                 <ref bean="idAdaptor" />
             </list>
         </constructor-arg>
