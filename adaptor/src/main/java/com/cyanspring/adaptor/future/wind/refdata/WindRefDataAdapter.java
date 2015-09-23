@@ -6,6 +6,7 @@ import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
 import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
 import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
+import com.cyanspring.common.filter.IRefDataFilter;
 import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
@@ -91,6 +92,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private WindDBHandler windDBHandler;
     private IWindFilter windFilter;
     private IRefDataListener refDataListener;
+    private IRefDataFilter refDataFilter;
     private String refDataAdapterName = "NoName";
     protected ScheduleManager scheduleManager = new ScheduleManager();
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -428,6 +430,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         for(RefData refData: refDataList){
             log.debug("S=" + refData.getSymbol() +",CN=" + refData.getCNDisplayName() + ",TW=" + refData.getTWDisplayName());
         }
+        if(refDataFilter != null){
+            try {
+                refDataList = refDataFilter.filter(refDataList);
+            }catch (Exception e){
+                log.warn(e.getMessage(), e);
+            }
+        }
         if(refDataListener != null){
             refDataListener.onRefDataUpdate(refDataList, action);
         }
@@ -478,6 +487,13 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
             exchangeRefData.getRefDataHashMap().put(refData.getSymbol(),refData);
         }
         log.info("Save exchange refdata end");
+        if(refDataFilter != null){
+            try {
+                refDataList = refDataFilter.filter(refDataList);
+            }catch (Exception e){
+                log.warn(e.getMessage(), e);
+            }
+        }
         listener.onRefData(refDataList);
         subscribed = true;
     }
@@ -661,7 +677,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         this.refDataAdapterName = refDataAdapterName;
     }
 
-	@Override
+    public void setRefDataFilter(IRefDataFilter refDataFilter) {
+        this.refDataFilter = refDataFilter;
+    }
+
+    @Override
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
