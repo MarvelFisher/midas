@@ -296,7 +296,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		// For FITX, RefSymbol should look like: TXF00, TXF01...
 		// Original RefSymbo: TXFF6, where F6 means 2016 June (ABCDEF, F is the 6th)
 		String refSymbol = getRefSymbol(refData.getRefSymbol());
-		refSymbol = refSymbol.substring(0, refSymbol.length() -2 );
+		refSymbol = refSymbol.substring(0, refSymbol.length() -2).toUpperCase();
 		Calendar calendar = Calendar.getInstance();
 		int currMon = calendar.get(Calendar.MONTH);
 		int currYear = calendar.get(Calendar.YEAR);
@@ -304,10 +304,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		SimpleDateFormat contractSdf = new SimpleDateFormat("yyyyMM");
 		// ICE code would look like ICE.TWF.FITX.201606, we take the date part
 		String date = refData.getCode().replaceAll("[^0-9]", "");
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(contractSdf.parse(date));
-		int refMon = cal.get(Calendar.MONTH);
-		int refYear = cal.get(Calendar.YEAR);
+		Calendar refCalendar = Calendar.getInstance();
+		refCalendar.setTime(contractSdf.parse(date));
+		int refMon = refCalendar.get(Calendar.MONTH);
+		int refYear = refCalendar.get(Calendar.YEAR);
 
 		// Recognize recent 2 months and coming 3 quarter months
 		int monthDiff = ((refYear - currYear) * 12) + refMon - currMon;
