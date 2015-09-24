@@ -263,7 +263,8 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		if (!checkExchangeAccount(update.getExchangeAccount()))
 			return;
 		updated = Clock.getInstance().now();
-		this.setState(update.getOnline());
+		if (this.state != update.getOnline())
+			this.setState(update.getOnline());
 	}
 	
 	private void onNewOrderReply(NewOrderReply reply) throws Exception {
