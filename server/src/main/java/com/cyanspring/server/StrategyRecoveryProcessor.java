@@ -14,13 +14,22 @@ public class StrategyRecoveryProcessor implements IRecoveryProcessor<DataObject>
 	@Autowired
 	private PersistenceManager persistenceManager;
 
+	private boolean todayOnly;
+	
 	@Override
 	public List<DataObject> recover() {
 		List<DataObject> list = new ArrayList<DataObject>();
-		list.addAll(persistenceManager.recoverObject(PersistType.SINGLE_ORDER_STRATEGY));
-		list.addAll(persistenceManager.recoverObject(PersistType.SINGLE_INSTRUMENT_STRATEGY));
-		list.addAll(persistenceManager.recoverObject(PersistType.MULTI_INSTRUMENT_STRATEGY));
+		list.addAll(persistenceManager.recoverObject(PersistType.SINGLE_ORDER_STRATEGY, todayOnly));
+		list.addAll(persistenceManager.recoverObject(PersistType.SINGLE_INSTRUMENT_STRATEGY, todayOnly));
+		list.addAll(persistenceManager.recoverObject(PersistType.MULTI_INSTRUMENT_STRATEGY, todayOnly));
 		return list;
 	}
 
+	public boolean isTodayOnly() {
+		return todayOnly;
+	}
+
+	public void setTodayOnly(boolean todayOnly) {
+		this.todayOnly = todayOnly;
+	}
 }

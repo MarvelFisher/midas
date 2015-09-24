@@ -15,7 +15,7 @@ public class SignalRecoveryProcessor implements IRecoveryProcessor<DataObject> {
 
 	@Override
 	public List<DataObject> recover() {
-		return persistenceManager.recoverObject(PersistType.SIGNAL);
+		return persistenceManager.recoverObject(PersistType.SIGNAL, false);
 	}
 
 }
