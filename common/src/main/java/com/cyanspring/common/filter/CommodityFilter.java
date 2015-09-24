@@ -1,6 +1,6 @@
 package com.cyanspring.common.filter;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cyanspring.common.staticdata.RefData;
@@ -29,24 +29,33 @@ public class CommodityFilter implements IRefDataFilter {
 	@Override
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
 		if (lstRefData != null && lstRefData.size() > 0) {
-			Iterator<RefData> iterator = lstRefData.iterator();
+			ArrayList<RefData> fLstRefData = new ArrayList<RefData>();
+
 			if (lstExcludedSymbols != null && lstExcludedSymbols.size() > 0) {
-				while (iterator.hasNext()) {
-					RefData refData = iterator.next();
-					if (lstExcludedSymbols.contains(refData.getSymbol())) {
-						iterator.remove();
+				for (RefData refData : lstRefData) {
+					if (!lstExcludedSymbols.contains(refData.getSymbol())) {
+						fLstRefData.add(refData);
 					}
 				}
 			}
 
 			if (lstExcludedCategories != null && lstExcludedCategories.size() > 0) {
-				while (iterator.hasNext()) {
-					RefData refData = iterator.next();
-					if (lstExcludedCategories.contains(refData.getCategory())) {
-						iterator.remove();
+				if (fLstRefData.size() > 0) {
+					for (RefData refData : fLstRefData) {
+						if (lstExcludedCategories.contains(refData.getCategory())) {
+							fLstRefData.remove(refData);
+						}
+					}
+				} else {
+					for (RefData refData : lstRefData) {
+						if (!lstExcludedCategories.contains(refData.getCategory())) {
+							fLstRefData.add(refData);
+						}
 					}
 				}
 			}
+
+			return fLstRefData;
 		}
 
 		return lstRefData;
