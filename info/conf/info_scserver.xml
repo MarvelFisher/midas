@@ -177,12 +177,13 @@
 
 	<bean id="windAdaptor"
 		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+		<property name="id" value="W01"/>
 		<property name="showGui" value="true"/>
 		<property name="gatewayIp" value="10.0.0.32"/>
 		<property name="gatewayPort" value="10048"/>
 		<property name="marketDataLog" value="false"/>
-		<property name="tradeDateCheckIsOpen" value="true"></property>
-		<property name="closeOverTimeControlIsOpen" value="true"></property>
+		<property name="tradeDateCheckIsOpen" value="true"/>
+		<property name="closeOverTimeControlIsOpen" value="true"/>
 		<property name="msgPack" value="true"></property>
 		<property name="isSubTrans" value="false"></property>
 	</bean>

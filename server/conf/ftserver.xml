@@ -92,6 +92,7 @@
 
 	<bean id="windAdaptorFT"
 		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+		<property name="id" value="W01"/>
 		<property name="showGui" value="true"/>
 		<property name="gatewayIp" value="10.0.0.32"/>
 		<property name="gatewayPort" value="10038"/>

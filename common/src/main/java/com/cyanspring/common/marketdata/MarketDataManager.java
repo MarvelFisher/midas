@@ -174,12 +174,8 @@ public class MarketDataManager extends MarketDataReceiver {
         if(event != null && event.isOk() && event.getDataMap().size() > 0) {
             if(isInit) {
                 super.processIndexSessionEvent(event);
-                for (String index : indexSessions.keySet()) {
+                for (String index : event.getDataMap().keySet()) {
                     MarketSessionData marketSessionData = indexSessions.get(index);
-                    if(!event.getDataMap().containsKey(index)){
-                        log.debug("index:" + index + " no include this event");
-                        continue;
-                    }
                     if (marketSessionData != null) {
                         //Process LastTradeDateQuote
                         if (!marketSessionData.getTradeDateByString().equals(tradeDateByIndex.get(index)) || tradeDateByIndex.get(index) == null) {
