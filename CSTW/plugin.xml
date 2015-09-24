@@ -47,7 +47,7 @@
       </view>
       <view
             class="com.cyanspring.cstw.gui.MarketDataView"
-            icon="icons/Leaves16.png"
+            icon="icons/marketData.png"
             id="com.cyanspring.cstw.gui.MarketDataView"
             name="Market Data">
       </view>
