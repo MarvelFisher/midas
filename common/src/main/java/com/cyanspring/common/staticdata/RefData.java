@@ -373,17 +373,12 @@ public class RefData extends DataObject {
 
     @Override
     public boolean equals(Object object) {
-    	RefData compare = (RefData) object;
-
-    	if (compare.getSymbol() == null || this.getSymbol() == null) {
-			return super.equals(object);
-		}
-
-    	if (compare.getSymbol().equals(this.getSymbol())) {
-			return true;
-		}
-
-    	return false;
+    	RefData compare = (RefData) object;    	
+    	if (compare.getRefSymbol() != null && this.getRefSymbol() != null)
+    		return compare.getRefSymbol().equals(this.getRefSymbol());
+    	if (compare.getSymbol() != null && this.getSymbol() != null)
+			return compare.getSymbol().equals(this.getSymbol());
+    	return super.equals(object);
     }
 
     @Override
