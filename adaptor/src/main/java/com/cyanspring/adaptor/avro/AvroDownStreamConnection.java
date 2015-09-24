@@ -106,6 +106,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 
 	public void setState(boolean state) {
 		this.state = state;
+		listener.onState(state);
 	}
 
 	public String getExchangeAccount() {
@@ -262,7 +263,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		if (!checkExchangeAccount(update.getExchangeAccount()))
 			return;
 		updated = Clock.getInstance().now();
-		state = update.getOnline();
+		this.setState(update.getOnline());
 	}
 	
 	private void onNewOrderReply(NewOrderReply reply) throws Exception {
