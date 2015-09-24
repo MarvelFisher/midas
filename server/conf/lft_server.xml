@@ -91,4 +91,91 @@
 	<!-- Derby setting -->
 	<bean id="derbyPort" class="java.lang.String"><constructor-arg value="1528" /></bean>
 
+		<!-- risk control -->
+	<bean id="maxRiskOrderCount" class="java.lang.Integer">
+        <constructor-arg value="50" />
+    </bean>
+    
+    <bean id="maxTotalOrderCount" class="java.lang.Integer">
+        <constructor-arg value="450" />
+    </bean>
+
+    <!-- order parameter setting -->
+	
+    <bean id="marketMaximumOrderQuantity" class="java.lang.Double">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="limitMaximumOrderQuantity" class="java.lang.Double">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="minimumOrderQuantity" class="java.lang.Double">
+        <constructor-arg value="0.0" />
+    </bean>
+
+	<!-- Live Trading -->
+    <bean id="stopLiveTradingStartTime" class="java.lang.String">
+        <constructor-arg value="15:10:00" />
+    </bean>
+    
+    <bean id="stopLiveTradingEndTime" class="java.lang.String">
+        <constructor-arg value="33:00:00" />
+    </bean>
+    
+    <bean id="positionStopLossPercent" class="java.lang.Double">
+        <constructor-arg value="0.1" />
+    </bean>
+    
+    <bean id="frozenStopLossPercent" class="java.lang.Double">
+        <constructor-arg value="0.2" />
+    </bean>
+    
+    <bean id="terminateStopLossPercent" class="java.lang.Double">
+        <constructor-arg value="0.3" />
+    </bean>
+    
+    <bean id="companyStopLossValue" class="java.lang.Double">
+        <constructor-arg value="0" />
+    </bean>
+    
+    <bean id="frozenStopLossValue" class="java.lang.Double">
+        <constructor-arg value="0" />
+    </bean>
+    
+    <bean id="terminateStopLossValue" class="java.lang.Double">
+        <constructor-arg value="0" />
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
+        <property name="arguments">
+            <list>
+                <value>default</value>          <!-- user -->
+                <value>default</value>          <!-- account -->
+                <value>FC</value>               <!-- market -->
+                <value>CNY</value>              <!-- currency -->
+                <value>A</value>                <!-- accountPrefix -->
+                <value>1000000.0</value>        <!-- accountCash -->
+                <value>10</value>         <!-- marginTimes -->
+                <value>1.0</value>              <!-- marginCut -->
+                <value>0.00008</value>          <!-- commission -->
+                <value>2</value>                <!-- commissionMin -->
+                <null/>                         <!-- timeZone -->
+                <value>1.0</value>              <!-- orderQuantity -->
+                <value>0.0</value>              <!-- position stop loss -->
+                <value>0.98</value>             <!-- marginCall -->
+                <value>0</value>                <!-- settlementDays -->
+    			<ref bean="positionStopLossPercent"/> <!-- live trading : position stop loss -->
+   				<ref bean="frozenStopLossPercent"/>   <!-- live trading : freeze stop loss -->
+   				<ref bean="terminateStopLossPercent"/><!-- live trading : terminate stop loss -->
+                <value>true</value>             <!-- live trading : company live trading (trading Mode)-->
+                <value>true</value>             <!-- live trading : user live trading (stop loss)-->
+   				<ref bean="companyStopLossValue"/>    <!-- companyStopLossValue -->
+   				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
+   				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
+                <value>DEFAULT</value>          <!-- liveTradingType -->
+            </list>
+        </property>
+    </bean>
 </beans>

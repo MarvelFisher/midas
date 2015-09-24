@@ -39,7 +39,6 @@
 				<ref bean="validationDataProvider" />
 				<ref bean="statisticManager" />
 				<ref bean="systemSuspendValidator" />
-				<ref bean="coinManager" />
 				<ref bean="liveTradingSession" />
 			</list>
 		</property>
@@ -323,6 +322,10 @@
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
+	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
+		<property name="maxRiskOrderCount"  ref="maxRiskOrderCount"/>
+		<property name="maxTotalOrderCount"  ref="maxTotalOrderCount"/>
+	</bean>
 
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
@@ -412,12 +415,5 @@
 	       <value>13:30:00</value><!-- HH:mm:ss -->
 	    </property>
 	</bean>
-
-	<!-- coin control -->
-	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
-	</bean>
-
-	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
-	</bean>
-
+	
 </beans>
