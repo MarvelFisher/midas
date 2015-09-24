@@ -421,7 +421,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>AG</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -539,7 +539,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>CU</string>
+        <string>UNIT10</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -657,7 +657,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>AU</string>
+        <string>UNIT005</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -775,7 +775,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>RB</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -893,7 +893,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>RU</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1011,7 +1011,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>ZN</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1132,7 +1132,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>M</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1250,7 +1250,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>I</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1368,7 +1368,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>L</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1486,7 +1486,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>Y</string>
+        <string>UNIT2</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1604,7 +1604,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>PP</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1722,7 +1722,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>P</string>
+        <string>UNIT2</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1840,7 +1840,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>J</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -1958,7 +1958,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>JD</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2073,7 +2073,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>FG</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2191,7 +2191,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>RM</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2312,7 +2312,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>TA</string>
+        <string>UNIT2</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2433,7 +2433,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>SR</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2554,7 +2554,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>MA</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2675,7 +2675,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>CF</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2793,7 +2793,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>NI</string>
+        <string>UNIT10</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -2911,7 +2911,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>AL</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3029,7 +3029,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>BU</string>
+        <string>UNIT2</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3147,7 +3147,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>PB</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3265,7 +3265,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>HC</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3383,7 +3383,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>SN</string>
+        <string>UNIT10</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3501,7 +3501,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>FU</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3619,7 +3619,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>WR</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3740,7 +3740,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>JM</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3858,7 +3858,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>C</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -3976,7 +3976,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>CS</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4094,7 +4094,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>V</string>
+        <string>UNIT5</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4212,7 +4212,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>BB</string>
+        <string>UNIT005</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4330,7 +4330,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>B</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4448,7 +4448,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>FB</string>
+        <string>UNIT005</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4566,7 +4566,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>TC</string>
+        <string>IF</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4687,7 +4687,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>RS</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4808,7 +4808,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>RI</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -4929,7 +4929,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>SF</string>
+        <string>UNIT2</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -5050,7 +5050,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>LR</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -5171,7 +5171,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>SM</string>
+        <string>UNIT2</string>
       </entry>
       <entry>
         <string>Decimal point</string>
@@ -5292,7 +5292,7 @@
       </entry>
       <entry>
         <string>Tick table</string>
-        <string>JR</string>
+        <string>UNIT1</string>
       </entry>
       <entry>
         <string>Decimal point</string>
