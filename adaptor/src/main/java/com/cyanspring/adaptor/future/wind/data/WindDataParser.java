@@ -735,8 +735,10 @@ public class WindDataParser extends AbstractWindDataParser {
                 codeTableData.setGroup(new String((byte[]) inputHashMap.get(FDTFields.Group), "UTF-8"));
             if (null != inputHashMap.get(FDTFields.Currency))
                 codeTableData.setCurrency(new String((byte[]) inputHashMap.get(FDTFields.Currency), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.ShowID))
-                codeTableData.setShowID(new String((byte[]) inputHashMap.get(FDTFields.ShowID), "UTF-8"));
+            if (null != inputHashMap.get(FDTFields.ShowID)) {
+                String showID = new String((byte[]) inputHashMap.get(FDTFields.ShowID), "UTF-8");
+                if(!"".equals(showID))codeTableData.setShowID(showID);
+            }
         }
         return codeTableData;
     }

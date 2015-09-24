@@ -367,6 +367,7 @@
 		<property name="types">
 			<list>
 				<value>FUTURES_FT</value>
+				<value>EXCHANGE_INDEX</value>
 			</list>
 		</property>
 	</bean>
@@ -400,6 +401,7 @@
 		<constructor-arg>
 			<list>
 				<ref bean="fitxSessionChecker" />
+				<ref bean="indexSessionChecker" />
 			</list>
 		</constructor-arg>
 	</bean>

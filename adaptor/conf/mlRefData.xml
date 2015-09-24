@@ -7,6 +7,22 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+    <util:map id="refDataIndexChinaHashMap" map-class="java.util.HashMap">
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).DECIMALPOINT}" value="2" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).LOT_SIZE}" value="0" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).LIMIT_MAXIMUM_LOT}" value="1000000" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).MARKET_MAXIMUM_LOT}" value="1000000" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).MAXIMUM_HOLD}" value="0" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).MARGIN_RATE}" value="0" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).CATEGORY}" value="INDEX" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).TRADABLE}" value="0" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).STRATEGY}" value="INDEX" />
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="IT"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).TICK_TABLE}" value="SC"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).PRICE_PER_UNIT}" value="1.0"/>
+        <entry key="#{T(com.cyanspring.common.business.RefDataField).INDEX_SESSION_TYPE}" value="SPOT"/>
+    </util:map>
+
     <util:map id="refDataFutureTaiwanHashMap" map-class="java.util.HashMap">
         <entry key="#{T(com.cyanspring.common.business.RefDataField).COMMODITY}" value="FT"/>
     </util:map>
@@ -27,6 +43,7 @@
             </list>
         </property>
         <property name="refDataFTHashMap" ref="refDataFutureTaiwanHashMap"/>
+        <property name="refDataICHashMap" ref="refDataIndexChinaHashMap"/>
         <property name="refFilterList" ref="refFilterList"/>
     </bean>
 

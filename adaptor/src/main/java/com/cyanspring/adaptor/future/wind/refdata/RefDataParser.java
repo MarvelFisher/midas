@@ -36,6 +36,13 @@ public class RefDataParser {
         refData.setENDisplayName(codeTableData.getEnglishName());
         refData.setIType(String.valueOf(codeTableData.getSecurityType()));
         String commodity = (String) defaultHashMap.get(RefDataField.COMMODITY);
+        if(commodity.equals("IT")){
+            commodity = RefDataCommodity.INDEX.getValue();
+            int len = codeTableData.getWindCode().length();
+            refData.setSymbol("TWSE" + codeTableData.getWindCode().substring(len-2, len));
+            refData.setRefSymbol(refData.getSymbol());
+            refData.setCode(codeTableData.getWindCode());
+        }
         if(commodity.equals("FT")){
             commodity = RefDataCommodity.FUTURES.getValue();
             try {

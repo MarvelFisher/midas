@@ -122,6 +122,98 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>0.0</double>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>I</string>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
+        <string>Strategy</string>
+        <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>1000000</int>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.0</double>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>ICE.TWF.FITX</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Category</string>
+        <string>INDEX</string>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>TWF</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>1000000</int>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>TWSETX</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>ICE.TWF.FITX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>臺指 (台灣期交所)</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>臺指 (台灣期交所)</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>1</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>TWSETX</string>
+      </entry>
+      <entry>
+        <string>Tradable</string>
+        <string>0</string>
+      </entry>
+      <entry>
+        <string>Spell name</string>
+        <string>tz(twqjs)</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>SC</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>2</int>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
         <string>Spot TWName</string>
         <string>臺指</string>
       </entry>
