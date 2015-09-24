@@ -42,6 +42,16 @@
     <StartupObject>CSharpLTS.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\Common\Lib\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net">
+      <HintPath>..\Common\Lib\Common.Logging.Log4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\Lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Spring.Core">
       <HintPath>..\Common\Lib\Spring.Core.dll</HintPath>
     </Reference>

@@ -73,8 +73,8 @@
     <Compile Include="Adaptor\DownStreamManager.cs" />
     <Compile Include="Event\IAsyncEventListener.cs" />
     <Compile Include="Event\IAsyncEventManager.cs" />
-    <Compile Include="Event\IRemoteEventManager.cs" />
-    <Compile Include="Event\RemoteEventManager.cs" />
+    <Compile Include="Event\IBusniessManager.cs" />
+    <Compile Include="Event\BusniessManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transport\IClientSocketListener.cs" />
     <Compile Include="Transport\IClientSocketService.cs" />
@@ -90,6 +90,7 @@
     <Compile Include="Transport\IUserSocketContext.cs" />
     <Compile Include="Utils\AsyncQueueProcessor.cs" />
     <Compile Include="Utils\PriceUtils.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Avro\AvroObject.csproj">

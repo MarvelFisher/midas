@@ -6,7 +6,7 @@
         http://www.springframework.net/xsd/spring-objects.xsd">
 
   <object id="server" type="CSharpLTS.Program, CSharpLTS" autowire="byName"/>
-  <object id="remoteEventManager" type="Common.Event.RemoteEventManager, Common" autowire="byName">
+  <object id="busniessManager" type="Common.Event.BusniessManager, Common" autowire="byName">
     <constructor-arg>
       <ref object="transportService"></ref>
     </constructor-arg>

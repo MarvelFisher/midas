@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Event
 {
-    public interface IRemoteEventManager : IAsyncEventManager
+    public interface IBusniessManager : IAsyncEventManager
     {
         void init();
         void uninit();

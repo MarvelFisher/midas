@@ -6,6 +6,7 @@ using com.cyanspring.avro.generate.trade.bean;
 using com.cyanspring.avro.generate.trade.types;
 using Common.Adaptor;
 using Common.Transport;
+using Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,20 +16,22 @@ using System.Timers;
 
 namespace Common.Event
 {
-    public class RemoteEventManager : IRemoteEventManager
+    public class BusniessManager : IBusniessManager
     {
         public IObjectTransportService transport { set; get; }
 
         public IDownStreamManager downStreamManager { set; get; }
 
+        public long timerInterval { set; get; } = 5000;
+
         private Timer timer;
 
 
-        public RemoteEventManager (IObjectTransportService transport)
+        public BusniessManager (IObjectTransportService transport)
         {
             this.transport = transport;
             timer = new Timer();
-            timer.Interval = 5000; 
+            timer.Interval = timerInterval; 
             timer.Elapsed += timer_SendAdaptorStatus;
         }
 
@@ -100,10 +103,10 @@ namespace Common.Event
 
         private class AdaptorListener : IDownStreamListener
         {
-            private RemoteEventManager _manager;
+            private BusniessManager _manager;
             private IDownStreamAdaptor _adaptor;
 
-            public AdaptorListener(RemoteEventManager remoteEventManager, IDownStreamAdaptor adaptor)
+            public AdaptorListener(BusniessManager remoteEventManager, IDownStreamAdaptor adaptor)
             {
                 this._manager = remoteEventManager;
                 this._adaptor = adaptor;
@@ -112,21 +115,21 @@ namespace Common.Event
             public void onOrder(Order order)
             {
                 OrderUpdate update = new OrderUpdate();
-                update.orderId = order.orderId;
+                update.orderId = StringUtils.trim(order.orderId);
                 update.orderSide = (int)order.orderSide;
                 update.orderType = (int)order.orderType;
                 update.ordStatus = (int)order.ordStatus;
                 update.price = order.price;
                 update.quantity = order.quantity;
-                update.symbol = order.symbol;
+                update.symbol = StringUtils.trim(order.symbol);
                 update.timeInForce = (int)order.timeInForce;
 
-                update.exchangeOrderId = order.exchangeOrderId;
+                update.exchangeOrderId = StringUtils.trim(order.exchangeOrderId);
                 update.avgPx = order.avgPx;
-                update.clOrderId = order.clOrderId;
-                update.created = order.created;
+                update.clOrderId = StringUtils.trim(order.clOrderId);
+                update.created = StringUtils.trim(order.created);
                 update.cumQty = order.cumQty;
-                update.exchangeAccount = order.exchangeAccount;
+                update.exchangeAccount = StringUtils.trim(order.exchangeAccount);
                 update.execType = (int)order.execType;
 
                 _manager.Publish(update);
@@ -144,8 +147,8 @@ namespace Common.Event
 
         private class AvroEventProcess : IObjectListener
         {
-            private RemoteEventManager _manager;
-            public AvroEventProcess(RemoteEventManager manager)
+            private BusniessManager _manager;
+            public AvroEventProcess(BusniessManager manager)
             {
                 this._manager = manager;
             }
@@ -164,34 +167,24 @@ namespace Common.Event
                         {
                             AmendOrderRequest req = (AmendOrderRequest)avroObj;
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
-                            adaptor.amendOrder(req.orderId, req.price, req.quantity);
-                            AmendOrderReply rsp = new AmendOrderReply();
-                            rsp.result = true;
-                            rsp.orderId = req.orderId;
-                            _manager.Publish(rsp);
+                            processAmendOrder(adaptor, req);
+                            
                             break;
                         }
                     case ObjectType.CancelOrderRequest:
                         {
                             CancelOrderRequest req = (CancelOrderRequest)avroObj;
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
-                            adaptor.cancelOrder(req.orderId);
-                            CancelOrderReply rsp = new CancelOrderReply();
-                            rsp.result = true;
-                            rsp.orderId = req.orderId;
-                            _manager.Publish(rsp);
+                            processCancelOrder(adaptor, req);
+
                             break;
                         }
                     case ObjectType.NewOrderRequest:
                         {
                             NewOrderRequest req = (NewOrderRequest)avroObj;
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
-                            Order order = new Order(req.symbol, req.orderId, req.price, req.quantity, (OrderSide)req.orderSide, (OrderType)req.orderType);
-                            adaptor.newOrder(order);
-                            NewOrderReply rsp = new NewOrderReply();
-                            rsp.result = true;
-                            rsp.orderId = req.orderId;
-                            _manager.Publish(rsp);
+                            processNewOrder(adaptor, req);
+
                             break;
                         }
                     case ObjectType.SubscribeQuote:
@@ -211,6 +204,114 @@ namespace Common.Event
                         }
                 }
             }
+
+            private void processAmendOrder(IDownStreamAdaptor adaptor, AmendOrderRequest req)
+            {
+                if (adaptor != null)
+                {
+                    try
+                    {
+                        adaptor.amendOrder(req.orderId, req.price, req.quantity);
+                        AmendOrderReply rsp = new AmendOrderReply();
+                        rsp.result = true;
+                        rsp.orderId = req.orderId;
+                        rsp.exchangeAccount = req.exchangeAccount;
+                        rsp.message = "sucess";
+                        _manager.Publish(rsp);
+                    }
+                    catch (Exception e)
+                    {
+                        AmendOrderReply rsp = new AmendOrderReply();
+                        rsp.result = false;
+                        rsp.orderId = req.orderId;
+                        rsp.message = e.Message;
+                        _manager.Publish(rsp);
+                    }
+                }
+                else
+                {
+                    AmendOrderReply rsp = new AmendOrderReply();
+                    rsp.result = false;
+                    rsp.orderId = req.orderId;
+                    rsp.message = req.exchangeAccount + " not exist";
+                    _manager.Publish(rsp);
+                }
+            }
+
+            private void processCancelOrder(IDownStreamAdaptor adaptor, CancelOrderRequest req)
+            {
+                if (adaptor != null)
+                {
+                    try
+                    {
+                        adaptor.cancelOrder(req.orderId);
+                        CancelOrderReply rsp = new CancelOrderReply();
+                        rsp.result = true;
+                        rsp.orderId = req.orderId;
+                        rsp.exchangeAccount = req.exchangeAccount;
+                        rsp.message = "success";
+                        _manager.Publish(rsp);
+                    }
+                    catch(Exception e)
+                    {
+                        CancelOrderReply rsp = new CancelOrderReply();
+                        rsp.result = false;
+                        rsp.orderId = req.orderId;
+                        rsp.exchangeAccount = req.exchangeAccount;
+                        rsp.message = e.Message;
+                        _manager.Publish(rsp);
+                    }
+                    
+                }
+                else
+                {
+                    CancelOrderReply rsp = new CancelOrderReply();
+                    rsp.result = false;
+                    rsp.orderId = req.orderId;
+                    rsp.exchangeAccount = req.exchangeAccount;
+                    rsp.message = req.exchangeAccount + " not exist";
+                    _manager.Publish(rsp);
+                }
+                
+            }
+
+            private void processNewOrder(IDownStreamAdaptor adaptor, NewOrderRequest req)
+            {
+                if (adaptor != null)
+                {
+                    try
+                    {
+                        Order order = new Order(req.symbol, req.orderId, req.price, req.quantity, (OrderSide)req.orderSide, (OrderType)req.orderType);
+                        adaptor.newOrder(order);
+                        NewOrderReply rsp = new NewOrderReply();
+                        rsp.result = true;
+                        rsp.orderId = req.orderId;
+                        rsp.exchangeAccount = req.exchangeAccount;
+                        rsp.message = "sucess";
+                        _manager.Publish(rsp);
+                    }
+                    catch(Exception e)
+                    {
+                        NewOrderReply rsp = new NewOrderReply();
+                        rsp.result = false;
+                        rsp.orderId = req.orderId;
+                        rsp.exchangeAccount = req.exchangeAccount;
+                        rsp.message = e.Message;
+                        _manager.Publish(rsp);
+                    }
+                }
+                else
+                {
+                    NewOrderReply rsp = new NewOrderReply();
+                    rsp.result = false;
+                    rsp.orderId = req.orderId;
+                    rsp.exchangeAccount = req.exchangeAccount;
+                    rsp.message = req.exchangeAccount + " not exist";
+                    _manager.Publish(rsp);
+                }
+               
+            }
+
         }
 
 
