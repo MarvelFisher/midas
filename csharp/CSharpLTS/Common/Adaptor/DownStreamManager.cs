@@ -1,5 +1,6 @@
 ﻿using Common.Adaptor;
 using Common.Basic;
+using Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Common.Adaptor
 {
     public class DownStreamManager : IPlugin, IDownStreamManager
     {
+        private static ILog logger = LogManager.GetLogger(typeof(DownStreamManager));
 
         public virtual List<IDownStreamAdaptor> adaptors { set; get; }
         private Dictionary<string, IDownStreamAdaptor> adaptorsMap = new Dictionary<string, IDownStreamAdaptor>();
@@ -16,7 +18,6 @@ namespace Common.Adaptor
         public DownStreamManager(List<IDownStreamAdaptor> adaptors)
         {
             this.adaptors = adaptors;
-
             foreach(IDownStreamAdaptor adaptor in adaptors)
             {
                 adaptorsMap.Add(adaptor.id, adaptor);
@@ -26,7 +27,7 @@ namespace Common.Adaptor
         public void Init()
         {
             //debug
-            Console.WriteLine("Init DownStreamManager");
+            logger.Info("Init DownStreamManager...");
             foreach(IDownStreamAdaptor adaptor in adaptors )
             {
                 adaptor.init();

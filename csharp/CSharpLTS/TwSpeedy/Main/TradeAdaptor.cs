@@ -10,11 +10,15 @@ using OrderMessage;
 using TwSpeedy.Utils;
 using Common.Utils;
 using com.cyanspring.avro.generate.trade.types;
+using Common.Logging;
 
 namespace Adaptor.TwSpeedy.Main
 {
     class TradeAdaptor : IDownStreamAdaptor
     {
+        private static ILog logger = LogManager.GetLogger(typeof(TradeAdaptor));
+
+
         private IDownStreamListener listener;
         private bool state;
         private ConcurrentDictionary<string, Order> orders = new ConcurrentDictionary<string, Order>();
@@ -41,7 +45,7 @@ namespace Adaptor.TwSpeedy.Main
 
         public void init()
         {
-            Console.WriteLine("Init TradeAdaptor");
+            logger.Info("Init TradeAdaptor");
             try
             {
                 recovering = false;
@@ -60,6 +64,8 @@ namespace Adaptor.TwSpeedy.Main
             }
             catch (Exception e)
             {
+                logger.Error(e.Message);
+                logger.Error(e.StackTrace);
                 System.Diagnostics.Debug.WriteLine(e.Message);
                 System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
@@ -87,12 +93,14 @@ namespace Adaptor.TwSpeedy.Main
 
         private void onExchangeConnected()
         {
+            logger.Info("Connected");
             System.Diagnostics.Debug.WriteLine("====================Connected====================");
             login();
         }
 
         private void onExchangeDisconnected()
         {
+            logger.Info("Disconnected");
             System.Diagnostics.Debug.WriteLine("====================Disconnected====================");
         }
 
@@ -100,10 +108,12 @@ namespace Adaptor.TwSpeedy.Main
         {
             if (LogonResult == OrderConnection.LogonResultEnum.lrFailed)
             {
+                logger.Info("Login failed");
                 System.Diagnostics.Debug.WriteLine("Login failed");
             }
             else if (LogonResult == OrderConnection.LogonResultEnum.lrOK)
             {
+                logger.Info("Login succeeded");
                 System.Diagnostics.Debug.WriteLine("Login succeeded");
                 recovering = true;
                 exchangeConnection.Recover("031000", OrderConnection.RecoverTypeEnum.rtAll, OrderConnection.RecoverMarketEnum.rmAll);
@@ -113,6 +123,7 @@ namespace Adaptor.TwSpeedy.Main
         void onRecoverFinished(int Count)
         {
             //回補
+            logger.Info("Recovery Done");
             System.Diagnostics.Debug.WriteLine("====================Recovery Done====================");
             recovering = false;
 
@@ -141,6 +152,7 @@ namespace Adaptor.TwSpeedy.Main
                         PersistItem item = persistence.getItem(order.exchangeOrderId);
                         if (null == item) // log error here !!!
                         {
+                            logger.Error("Error: Cant find order in peristence: " + order.exchangeOrderId);
                             System.Diagnostics.Debug.WriteLine("Error: Cant find order in peristence: " + order.exchangeOrderId);
                             return;
                         }
@@ -148,6 +160,7 @@ namespace Adaptor.TwSpeedy.Main
                         order.symbol = item.symbol;
                         order.orderId = item.orderId;
 
+                        logger.Info("Recovery add order: " + order);
                         System.Diagnostics.Debug.WriteLine("Recovery add order: " + order);
                     }
                 }
@@ -173,6 +186,7 @@ namespace Adaptor.TwSpeedy.Main
                     }
                     else
                     {
+                        logger.Info("Cant find corresponding order in cache");
                         System.Diagnostics.Debug.WriteLine("Cant find corresponding order in cache");
                     }
 
@@ -180,6 +194,7 @@ namespace Adaptor.TwSpeedy.Main
             }
             else
             {
+                logger.Info("ExecutionReport OrderId is null or empty");
                 System.Diagnostics.Debug.WriteLine("ExecutionReport OrderId is null or empty");
             }
         }
@@ -339,6 +354,7 @@ namespace Adaptor.TwSpeedy.Main
 
         private void cancelAllOrders()
         {
+            logger.Info("Cancelling all orders");
             System.Diagnostics.Debug.WriteLine("Cancelling all orders");
             foreach (KeyValuePair<string, Order> entry in orders)
             {
@@ -347,6 +363,7 @@ namespace Adaptor.TwSpeedy.Main
                     order.ordStatus == OrdStatus.PartiallyFilled ||
                     order.ordStatus == OrdStatus.Replaced && PriceUtils.LessThan(order.cumQty, order.quantity))
                 {
+                    logger.Info("Start up cancel order: " + order.orderId + ":" + order.exchangeOrderId);
                     System.Diagnostics.Debug.WriteLine("Start up cancel order: " + order.orderId + ":" + order.exchangeOrderId);
                     cancelOrder(order.exchangeOrderId);
                 }

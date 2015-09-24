@@ -5,11 +5,14 @@ using System.Text;
 using Common.Transport;
 using Apache.NMS.ActiveMQ;
 using Apache.NMS;
+using Common.Logging;
 
 namespace Transport.Transport
 {
     class ActiveMQService : ITransportService
     {
+        private static ILog logger = LogManager.GetLogger(typeof(ActiveMQService));
+
         // ActiveMQ configuration parameters
         public string user{set;get;}
         public string password{set;get;}
@@ -74,6 +77,7 @@ namespace Transport.Transport
             connection.Start();
             connection.ExceptionListener += new ExceptionListener(connection_ExceptionListener);
             session = connection.CreateSession(ackMode);
+            logger.Info("Connection Start...");
         }
 
         private void connection_ExceptionListener(Exception e)
@@ -86,6 +90,7 @@ namespace Transport.Transport
             removeAllReceivers();
             session.Close();
             connection.Close();
+            logger.Info("Connection Closed...");
         }
 
         private void removeAllReceivers() {

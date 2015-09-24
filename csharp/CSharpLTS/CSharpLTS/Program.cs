@@ -23,7 +23,7 @@ namespace CSharpLTS
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
-        [STAThread]
+        [MTAThread]
         static void Main(string[] args)
         {            
 
@@ -31,7 +31,7 @@ namespace CSharpLTS
             
             Program server = ctx.GetObject("server") as Program;
 
-            logger.Error("Server Start...");
+            logger.Info("Server Start...");
             
             server.Init();
 
@@ -40,8 +40,16 @@ namespace CSharpLTS
 
         public void Init()
         {
-            busniessManager.init();
-            downStreamManager.Init();
+            try
+            {
+                busniessManager.init();
+                downStreamManager.Init();
+            }
+            catch(Exception e)
+            {
+                logger.Error(e.Message);
+            }
+            
 
 
             //NewOrderReply ev1 = new NewOrderReply();           

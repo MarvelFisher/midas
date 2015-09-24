@@ -5,6 +5,7 @@ using com.cyanspring.avro.generate.market.bean;
 using com.cyanspring.avro.generate.trade.bean;
 using com.cyanspring.avro.generate.trade.types;
 using Common.Adaptor;
+using Common.Logging;
 using Common.Transport;
 using Common.Utils;
 using System;
@@ -18,6 +19,8 @@ namespace Common.Event
 {
     public class BusniessManager : IBusniessManager
     {
+        private static ILog logger = LogManager.GetLogger(typeof(BusniessManager));
+
         public IObjectTransportService transport { set; get; }
 
         public IDownStreamManager downStreamManager { set; get; }
@@ -55,8 +58,7 @@ namespace Common.Event
 
         public void init()
         {
-            // debug
-            Console.WriteLine("Init RemoteEventManager");
+            logger.Info("Init BusniessManager...");
             if (transport == null)
             {
                 throw new Exception("Transport isn't instantiated");
@@ -132,13 +134,14 @@ namespace Common.Event
                 update.exchangeAccount = StringUtils.trim(order.exchangeAccount);
                 update.execType = (int)order.execType;
 
+                logger.Info("Send OrderUpdate: " + order.ToString());
                 _manager.Publish(update);
 
             }
 
             public void onState(bool up)
             {
-                Console.WriteLine("Connect Ready, " + (up ? "Timer Enable" : "Timer Disable"));
+                logger.Info("Connect Ready, " + (up ? "Timer Enable" : "Timer Disable"));
                 // enable timer to send StateUpdate
                 _manager.timer.Enabled = up;
             }
@@ -165,6 +168,7 @@ namespace Common.Event
                 {
                     case ObjectType.AmendOrderRequest:
                         {
+                            logger.Info("Get AmendOrderRequest");
                             AmendOrderRequest req = (AmendOrderRequest)avroObj;
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
                             processAmendOrder(adaptor, req);
@@ -173,6 +177,7 @@ namespace Common.Event
                         }
                     case ObjectType.CancelOrderRequest:
                         {
+                            logger.Info("Get CancelOrderRequest");
                             CancelOrderRequest req = (CancelOrderRequest)avroObj;
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
                             processCancelOrder(adaptor, req);
@@ -181,6 +186,7 @@ namespace Common.Event
                         }
                     case ObjectType.NewOrderRequest:
                         {
+                            logger.Info("Get NewOrderRequest");
                             NewOrderRequest req = (NewOrderRequest)avroObj;
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
                             processNewOrder(adaptor, req);

@@ -10,6 +10,7 @@
     <constructor-arg>
       <ref object="transportService"></ref>
     </constructor-arg>
+    <property name="timerInterval" value="5000"/>
   </object>
 
   <object id="downStreamManager" type="Common.Adaptor.DownStreamManager, Common" >

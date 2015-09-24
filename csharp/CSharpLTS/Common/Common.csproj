@@ -64,7 +64,6 @@
   <ItemGroup>
     <Compile Include="Adaptor\IDownStreamManager.cs" />
     <Compile Include="Basic\IPlugin.cs" />
-    <Compile Include="CommonLog\Logger.cs" />
     <Compile Include="Adaptor\AmendableFieldEnum.cs" />
     <Compile Include="Adaptor\DownStreamException.cs" />
     <Compile Include="Adaptor\IDownStreamAdaptor.cs" />
