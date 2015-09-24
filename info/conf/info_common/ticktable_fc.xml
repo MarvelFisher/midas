@@ -13,16 +13,99 @@
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
 	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
-	</bean>
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>0.2</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit1TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>1</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit2TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>2</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit5TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit10TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit005TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
 
-	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
-		<property name="tickTables">
-			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
-				<entry key="DEFAULT" value-ref="hkexTickTable" />
-				<entry key="FX" value-ref="forexTickTable" />
-				<entry key="IF" value-ref="ifTickTable" />
-			</map>
-		</property>
-	</bean>
+    <bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
+        <property name="tickTables">
+            <map key-type="java.lang.String"
+                value-type="com.cyanspring.common.staticdata.AbstractTickTable">
+                <entry key="DEFAULT" value-ref="hkexTickTable" />
+                <entry key="FX" value-ref="forexTickTable" />
+                <entry key="IF" value-ref="ifTickTable" />
+                <entry key="AG" value-ref="unit1TickTable" />
+                <entry key="CU" value-ref="unit10TickTable" />
+                <entry key="AU" value-ref="unit005TickTable" />
+                <entry key="RB" value-ref="unit1TickTable" />
+                <entry key="RU" value-ref="unit5TickTable" />
+                <entry key="ZN" value-ref="unit5TickTable" />
+                <entry key="M" value-ref="unit1TickTable" />
+                <entry key="I" value-ref="unit1TickTable" />
+                <entry key="L" value-ref="unit5TickTable" />
+                <entry key="Y" value-ref="unit2TickTable" />
+                <entry key="PP" value-ref="unit1TickTable" />
+                <entry key="P" value-ref="unit2TickTable" />
+                <entry key="J" value-ref="unit1TickTable" />
+                <entry key="JD" value-ref="unit1TickTable" />
+                <entry key="FG" value-ref="unit1TickTable" />
+                <entry key="RM" value-ref="unit1TickTable" />
+                <entry key="TA" value-ref="unit2TickTable" />
+                <entry key="SR" value-ref="unit1TickTable" />
+                <entry key="MA" value-ref="unit1TickTable" />
+                <entry key="CF" value-ref="unit5TickTable" />
+                <entry key="NI" value-ref="unit10TickTable" />
+                <entry key="AL" value-ref="unit5TickTable" />
+                <entry key="BU" value-ref="unit2TickTable" />
+                <entry key="PB" value-ref="unit5TickTable" />
+                <entry key="HC" value-ref="unit1TickTable" />
+                <entry key="SN" value-ref="unit10TickTable" />
+                <entry key="FU" value-ref="unit1TickTable" />
+                <entry key="WR" value-ref="unit1TickTable" />
+                <entry key="JM" value-ref="unit1TickTable" />
+                <entry key="C" value-ref="unit1TickTable" />
+                <entry key="CS" value-ref="unit1TickTable" />
+                <entry key="V" value-ref="unit5TickTable" />
+                <entry key="BB" value-ref="unit005TickTable" />
+                <entry key="B" value-ref="unit1TickTable" />
+                <entry key="FB" value-ref="unit005TickTable" />
+                <entry key="TC" value-ref="ifTickTable" />
+                <entry key="RS" value-ref="unit1TickTable" />
+                <entry key="RI" value-ref="unit1TickTable" />
+                <entry key="SF" value-ref="unit2TickTable" />
+                <entry key="LR" value-ref="unit1TickTable" />
+                <entry key="SM" value-ref="unit2TickTable" />
+                <entry key="JR" value-ref="unit1TickTable" />
+            </map>
+        </property>
+    </bean>
 
 </beans>
