@@ -1250,11 +1250,14 @@ public class PersistenceManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ClosedPosition> recoverClosedPositions() {
+	public List<ClosedPosition> recoverClosedPositions(boolean todayOnly) {
 		Session session = sessionFactory.openSession();
 		List<ClosedPosition> result = new ArrayList<ClosedPosition>();
 		try {
-			result = session.createCriteria(ClosedPosition.class).addOrder(Order.asc("created"))
+			result = session.createCriteria(ClosedPosition.class)
+					.add(Restrictions.gt("created", 
+							todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
+					.addOrder(Order.asc("created"))
 					.list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
@@ -1266,14 +1269,14 @@ public class PersistenceManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Execution> recoverExecutions() {
+	public List<Execution> recoverExecutions(boolean todayOnly) {
 		Session session = sessionFactory.openSession();
 		List<Execution> result = new ArrayList<Execution>();
 		try {
 			result = session.createCriteria(Execution.class)
 					.add(Restrictions.eq("serverId", IdGenerator.getInstance().getSystemId()))
 					.add(Restrictions.gt("created",
-							todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
+							this.todayOnly || todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
 					.addOrder(Order.asc("created")).list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
@@ -1294,7 +1297,7 @@ public class PersistenceManager {
 		}
 	}
 
-	public List<DataObject> recoverObject(PersistType persistType) {
+	public List<DataObject> recoverObject(PersistType persistType, boolean todayOnly) {
 		Session session = sessionFactory.openSession();
 
 		List<DataObject> result = new ArrayList<DataObject>();
@@ -1305,7 +1308,7 @@ public class PersistenceManager {
 					.add(Restrictions.eq("serverId", IdGenerator.getInstance().getSystemId()))
 					.add(Restrictions.eq("persistType", persistType))
 					.add(Restrictions.gt("timeStamp",
-							todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
+							this.todayOnly || todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
 					.addOrder(Order.asc("id")).addOrder(Order.asc("line")).list();
 
 			String currentId = "";
