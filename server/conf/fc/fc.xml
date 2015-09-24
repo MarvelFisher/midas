@@ -240,8 +240,6 @@
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
 				<entry key="IF" value-ref="ifTickTable" />
-				<entry key="IH" value-ref="ifTickTable" />
-				<entry key="IC" value-ref="ifTickTable" />
 				<entry key="AG" value-ref="unit1TickTable" />
 				<entry key="CU" value-ref="unit10TickTable" />
 				<entry key="AU" value-ref="unit005TickTable" />
