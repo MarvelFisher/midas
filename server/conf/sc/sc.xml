@@ -264,10 +264,17 @@
 			<list>
 				<ref bean="refDataAdapterSC"/>
 				<ref bean="refDataAdapterFCI"/>
+				<ref bean="simRefDataAdaptor"/>
 			</list>
 		</constructor-arg>   
 		<property name="eventManager" ref="eventManager"/>
 	</bean>
+	
+	<bean id="simRefDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
+        <property name="filePath">
+            <value>refdata/template/codetable_cf.xml</value>
+        </property>
+    </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.StockRefDataManager">
 		<property name="refDataTemplatePath">
