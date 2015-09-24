@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
@@ -560,6 +561,10 @@ public class Business {
 	}
 	
 	public Ticker getTicker(String symbol){
-		return tickManager.getTickTable(symbol);
+		Ticker ticker = tickManager.getTicker(symbol);
+		if(null == ticker && StringUtils.hasText(symbol)){
+			tickManager.requestTickTableInfo(symbol);
+		}
+		return ticker;
 	}
 }

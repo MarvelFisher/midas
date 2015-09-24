@@ -75,7 +75,7 @@ public class TickManager implements IAsyncEventListener {
 			
 	}
 
-	public Ticker getTickTable(String symbol){
+	public Ticker getTicker(String symbol){
 		Iterator<AbstractTickTable> table = tickMap.keySet().iterator();
 		while(table.hasNext()){
 			AbstractTickTable tempTable = table.next();
@@ -89,11 +89,9 @@ public class TickManager implements IAsyncEventListener {
 		return null;
 	}
 	
-	
-	
-	private void requestTickTableInfo() {
+	public void requestTickTableInfo(String symbol) {
 		TickTableRequestEvent event = new TickTableRequestEvent(IdGenerator
-				.getInstance().getNextID(), firstServer, null);
+				.getInstance().getNextID(), firstServer, symbol);
 		try {
 			eventManager.sendRemoteEvent(event);
 		} catch (Exception e) {
@@ -104,9 +102,8 @@ public class TickManager implements IAsyncEventListener {
 	public void init(String server) {
 		subEvent(TickTableReplyEvent.class);
 		firstServer = server;
-		log.info("firstServer:{}", firstServer);
 		log.info("send tick table request");
-		requestTickTableInfo();
+		requestTickTableInfo(null);
 	}
 
 	public void unInit() {

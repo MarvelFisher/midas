@@ -635,6 +635,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 				} else {
 					showOrderPad(true);
 					populateOrderPadServers();
+					getDefaultQuickData();
 				}
 				parent.layout();
 			}

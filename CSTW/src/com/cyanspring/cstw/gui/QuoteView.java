@@ -8,46 +8,34 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.ProgressBar;
-import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
-import com.cyanspring.common.account.OpenPosition;
-import com.cyanspring.common.account.User;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
-import com.cyanspring.common.event.account.UserUpdateEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
@@ -56,7 +44,6 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
-import com.cyanspring.cstw.gui.SetPriceDialog.Mode;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
@@ -109,6 +96,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					gd_text.widthHint = 171;
 					textSymbol.setLayoutData(gd_text);
 					textSymbol.setSize(149, 468);
+					textSymbol.addKeyListener(createKeyListener());
 				}
 				{
 					btnSubscribe = new Button(composite, SWT.NONE);
@@ -132,8 +120,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 							}
 
 							if (!quoteMap.containsKey(symbol)) {
-								log.info("send sub event:{},{}",
-										textSymbol.getText(), receiverId);
 								QuoteSubEvent subEvent = new QuoteSubEvent(
 										receiverId, Business.getInstance()
 												.getFirstServer(), symbol);
@@ -197,7 +183,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private void createQuoteViewer(Composite parent) {
 		String strFile = Business.getInstance().getConfigPath()
 				+ "QuoteTable.xml";
-		quoteViewer = new DynamicTableViewer(parent, SWT.MULTI
+		quoteViewer = new DynamicTableViewer(parent, SWT.SINGLE
 				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
 				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
 				.getDataConverter());
@@ -279,6 +265,18 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 
+	public KeyListener createKeyListener(){
+		KeyListener ka = new KeyAdapter(){
+			@Override
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+				if (e.keyCode == SWT.CR) {
+					btnSubscribe.notifyListeners(SWT.Selection, new Event());
+				}
+			}
+		};
+		return ka;
+	}
+	
 	private void refreshQuote() {
 		quoteViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -290,7 +288,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					if (null != quoteViewer.getTable()
 							&& null != quoteViewer.getTable().getMenu()
 							&& quoteViewer.getTable().getMenu().isVisible()) {
-						log.info("menu is visible dont refresh");
 						return;
 					}
 
