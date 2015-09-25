@@ -1208,19 +1208,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     // End: implementation of EWrapper
     // ////////////////////////////////////
 
-
-    @Override
-    public void subscirbeSymbolData(ISymbolDataListener listener) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void unsubscribeSymbolData(ISymbolDataListener listener) {
-        // TODO Auto-generated method stub
-
-    }
-
     @Override
     public void clean() {
 

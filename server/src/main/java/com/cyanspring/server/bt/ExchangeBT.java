@@ -573,16 +573,6 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	}
 
 	@Override
-	public void subscirbeSymbolData(ISymbolDataListener listener) {
-		
-	}
-
-	@Override
-	public void unsubscribeSymbolData(ISymbolDataListener listener) {
-		
-	}
-
-	@Override
 	public void clean() {
 
 	}

@@ -367,16 +367,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     }
 
     @Override
-    public void subscirbeSymbolData(ISymbolDataListener listener) {
-
-    }
-
-    @Override
-    public void unsubscribeSymbolData(ISymbolDataListener listener) {
-
-    }
-
-    @Override
     public void clean() {
 
     }

@@ -616,14 +616,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         lastQuoteExtendBySymbolMap.put(quoteExtend.get(String.class, QuoteExtDataField.SYMBOL.value()), quoteExtend);
     }
 
-    @Override
-    public void subscirbeSymbolData(ISymbolDataListener listener) {
-    }
-
-    @Override
-    public void unsubscribeSymbolData(ISymbolDataListener listener) {
-    }
-
     public void inputRefDataList(List<RefData> refDataList){
         for (RefData refData : refDataList) {
             if(refData.getIndexSessionType() == null || "".equals(refData.getIndexSessionType()))

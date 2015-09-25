@@ -22,7 +22,5 @@ public interface IMarketDataAdaptor {
 	public void unsubscribeMarketData(String instrument, IMarketDataListener listener);
 	public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException;
 	public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener);
-	public void subscirbeSymbolData(ISymbolDataListener listener) ;
-	public void unsubscribeSymbolData(ISymbolDataListener listener);
 	public void clean();
 }

@@ -192,16 +192,6 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	}
 
 	@Override
-	public void subscirbeSymbolData(ISymbolDataListener listener) {
-		
-	}
-
-	@Override
-	public void unsubscribeSymbolData(ISymbolDataListener listener) {
-		
-	}
-
-	@Override
 	public void clean() {
 
 	}
