@@ -134,9 +134,17 @@ public class SymbolData implements Comparable<SymbolData>
 		else
 		{
 			Quote q;
+			String commodity = centralDB.getRefSymbolInfo().getbySymbol(strSymbol).getCommodity();
 			while ((q = quoteTmp.poll()) != null)
 			{
-				if (centralDB.getServerMarket().equals("FX") == false &&
+				if (commodity == null)
+					continue;
+				if (commodity.equals("F") &&
+						PriceUtils.isZero(q.getTotalVolume()))
+				{
+					continue;
+				}
+				else if (commodity.equals("S") &&
 						(PriceUtils.isZero(q.getTotalVolume()) || PriceUtils.isZero(q.getTurnover())))
 				{
 					continue;
@@ -461,7 +469,10 @@ public class SymbolData implements Comparable<SymbolData>
     	}
     	else
     	{
-    		symbol = symbolinfos.get(0).getHint() + "." + symbolinfos.get(0).getCode().split("\\.")[1];
+    		String[] splits = symbolinfos.get(0).getCode().split("\\.");
+    		symbol = symbolinfos.get(0).getHint();
+    		if (splits.length > 1)
+    			symbol  += ("." + splits[1]);
     	}
 		centralDB.getDbhnd().get52WHighLow(this, market, symbol);
 		log.debug(strSymbol + " get52WHighLow() end" + 
