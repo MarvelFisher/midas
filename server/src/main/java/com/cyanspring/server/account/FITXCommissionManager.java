@@ -31,28 +31,36 @@ public class FITXCommissionManager extends CommissionManager {
 
 	@Override
 	public double getCommission(RefData refData, AccountSetting settings, double value, Execution execution) {
+		double accountCommission = 1;
+        if (settings != null && !PriceUtils.isZero(settings.getCommission())) {
+        	accountCommission = settings.getCommission();
+		}
+
 		if (refData != null) {
         	String type = refData.getIType();
         	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type))) {
 				return super.getCommission(refData, settings, value, execution);
 			}
+        	double lotCommissionFee = refData.getLotCommissionFee();
+			if (!nullOrZero(lotCommissionFee)) {
+				double quantity = execution.getQuantity();
+				return lotCommissionFee * quantity * accountCommission;
+			}
         }
 
-    	double accountCom = 1;
-        if (settings != null && !PriceUtils.isZero(settings.getCommission())) {
-			accountCom = settings.getCommission();
-		}
-
-        double quantity = execution.getQuantity();
         double tax = value * trxTaxRate;
         tax = Math.round(tax);
 
         double defaultCommission = value * Default.getCommission();
 
-        double commissionFee = (trxFee * quantity) + tax + defaultCommission;
-        commissionFee *= accountCom;
+        double commissionFee = trxFee + tax + defaultCommission;
+        commissionFee *= accountCommission;
 
         return commissionFee;
+	}
+
+	private boolean nullOrZero(Double commission) {
+		return commission == null || PriceUtils.isZero(commission);
 	}
 
 }
