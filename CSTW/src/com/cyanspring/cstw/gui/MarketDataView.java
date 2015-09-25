@@ -15,20 +15,27 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.ExpandEvent;
+import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -83,6 +90,11 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private Label lbChangePercent;
 	private Label lbStale;
 	private Quote nowQuote = null;
+	private ExpandBar expandBar = null;
+	private Composite askBidComposite = null;
+	private Composite detailComposite = null;
+	private Label lblBidvolume = null;
+	private Composite mainComposite = null;
 	public MarketDataView() {
 	}
 
@@ -132,12 +144,10 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void createPartControl(Composite parent) {
 
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(1, false));
-
-		topComposite = new Composite(composite, SWT.NONE);
+		mainComposite = new Composite(parent, SWT.BORDER);
+		mainComposite.setLayout(new GridLayout(1, true));
+		topComposite = new Composite(mainComposite, SWT.NONE);
 		GridLayout gl_topComposite = new GridLayout(3, true);
-		gl_topComposite.marginLeft = 10;
 		topComposite.setLayout(gl_topComposite);
 		topComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
@@ -183,63 +193,131 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 		});
 
-		Label lblNewLabel = new Label(topComposite, SWT.NONE);
-
-		// Label lblNewLabel_2 = new Label(topComposite, SWT.NONE);
-
-		Label lblBidvolume = new Label(topComposite, SWT.NONE);
-		lblBidvolume.setText("Bid/Vol");
-
-		lbBid = new Label(topComposite, SWT.NONE);
-
-		lbBidVol = new Label(topComposite, SWT.NONE);
-
-		Label lblNewLabel_5 = new Label(topComposite, SWT.NONE);
-		lblNewLabel_5.setText("Ask/Vol");
-
-		lbAsk = new Label(topComposite, SWT.NONE);
-
-		lbAskVol = new Label(topComposite, SWT.NONE);
-
-		Label lblLastvolume = new Label(topComposite, SWT.NONE);
-		lblLastvolume.setText("Last/Vol");
-
-		lbLast = new Label(topComposite, SWT.NONE);
-
-		lbLastVol = new Label(topComposite, SWT.NONE);
-
-		lblMktVol = new Label(topComposite, SWT.NONE);
-		lblMktVol.setText("Mkt Vol");
-
-		lbMktVol = new Label(topComposite, SWT.NONE);
 		new Label(topComposite, SWT.NONE);
+		
+		expandBar = new ExpandBar(mainComposite, SWT.NONE);
+		GridData gd_expandBar = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
+		expandBar.setLayoutData(gd_expandBar);		
+		expandBar.addExpandListener(new ExpandListener() {
+			private Display display = Display.getCurrent();			
+			private void layout(){
+				display.asyncExec(new Runnable(){
 
-		Label lblOpenclose = new Label(topComposite, SWT.NONE);
-		lblOpenclose.setText("Open/Close");
-
-		lbOpen = new Label(topComposite, SWT.NONE);
-
-		lbClose = new Label(topComposite, SWT.NONE);
-
-		Label lblHighlow = new Label(topComposite, SWT.NONE);
-		lblHighlow.setText("High/Low");
-
-		lbHigh = new Label(topComposite, SWT.NONE);
-
-		lbLow = new Label(topComposite, SWT.NONE);
-
-		lblNewLabel_1 = new Label(topComposite, SWT.NONE);
-		lblNewLabel_1.setText("Change/%");
-
-		lbChange = new Label(topComposite, SWT.NONE);
-
-		lbChangePercent = new Label(topComposite, SWT.NONE);
-
-		Label lbLabelStale = new Label(topComposite, SWT.NONE);
-		lbLabelStale.setText("Stale");
-		lbStale = new Label(topComposite, SWT.NONE);
-
-		tableViewer = new TableViewer(composite, SWT.BORDER
+					@Override
+					public void run() {
+						
+						Rectangle rec= expandBar.getBounds();
+						int height = rec.y+rec.height;
+						Rectangle rec2=tableViewer.getTable().getBounds();
+						rec2.y = height+10;				
+						tableViewer.getTable().setBounds(rec2);
+						tableViewer.refresh();
+						mainComposite.layout();
+					}
+					
+				});
+			}
+			
+			@Override
+			public void itemExpanded(ExpandEvent e) {
+				layout();
+			}
+			
+			@Override
+			public void itemCollapsed(ExpandEvent e) {
+				layout();
+			}
+		});
+		expandBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		{
+			ExpandItem xpndtmAskbid = new ExpandItem(expandBar, SWT.NONE);
+			xpndtmAskbid.setExpanded(false);
+			xpndtmAskbid.setText("Ask/Bid");
+			{
+				askBidComposite = new Composite(expandBar,  SWT.BORDER);
+				GridLayout gl_composite_1 = new GridLayout(6, true);
+				gl_composite_1.makeColumnsEqualWidth = true;
+				
+				askBidComposite.setLayout(gl_composite_1);
+				askBidComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
+						false, 1, 1));
+				
+				xpndtmAskbid.setControl(askBidComposite);
+				lblBidvolume = new Label(askBidComposite, SWT.NONE);
+				lblBidvolume.setText("Bid/Vol");
+				new Label(askBidComposite, SWT.NONE);
+				lbBid = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+				lbBidVol = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+			
+				Label lblNewLabel_5 = new Label(askBidComposite, SWT.NONE);
+				lblNewLabel_5.setText("Ask/Vol");
+				new Label(askBidComposite, SWT.NONE);
+				lbAsk = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+				lbAskVol = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+				
+				Label lblLastvolume = new Label(askBidComposite, SWT.NONE);
+				lblLastvolume.setText("Last/Vol");
+				new Label(askBidComposite, SWT.NONE);
+				lbLast = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+				lbLastVol = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+							
+				lblMktVol = new Label(askBidComposite, SWT.NONE);
+				lblMktVol.setText("Mkt Vol");
+				new Label(askBidComposite, SWT.NONE);
+				lbMktVol = new Label(askBidComposite, SWT.NONE);
+				new Label(askBidComposite, SWT.NONE);
+				
+			}
+			xpndtmAskbid.setHeight(xpndtmAskbid.getControl().computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+		}
+		{
+			ExpandItem xpndtmDetail = new ExpandItem(expandBar, SWT.NONE);
+			xpndtmDetail.setExpanded(true);
+			xpndtmDetail.setText("Detail");
+			{
+				detailComposite = new Composite(expandBar, SWT.BORDER);
+				xpndtmDetail.setControl(detailComposite);
+				detailComposite.setLayout(new GridLayout(6, true));
+				
+				Label lblOpenclose = new Label(detailComposite, SWT.NONE);		
+				lblOpenclose.setText("Open/Close");
+				new Label(detailComposite, SWT.NONE);
+				lbOpen = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);			
+				lbClose = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);
+				
+				Label lblHighlow = new Label(detailComposite, SWT.NONE);
+				lblHighlow.setText("High/Low");
+				new Label(detailComposite, SWT.NONE);
+				lbHigh = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);
+				lbLow = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);
+				
+				lblNewLabel_1 = new Label(detailComposite, SWT.NONE);
+				lblNewLabel_1.setText("Change/%");
+				new Label(detailComposite, SWT.NONE);
+				lbChange = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);
+				lbChangePercent = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);		
+				Label lbLabelStale = new Label(detailComposite, SWT.NONE);
+				
+				lbLabelStale.setText("Stale");
+				new Label(detailComposite, SWT.NONE);
+				lbStale = new Label(detailComposite, SWT.NONE);	
+			}
+			xpndtmDetail.setHeight(xpndtmDetail.getControl().computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+		}
+		
+		tableViewer = new TableViewer(mainComposite, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -247,7 +325,6 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		createActions();
 		initializeToolBar();
 		initializeMenu();
-
 		createColumns();
 
 		tableViewer.setContentProvider(new ViewContentProvider());
@@ -520,10 +597,16 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 				tableViewer.setInput(quote);
 				tableViewer.refresh();
+				askBidComposite.layout(true, true);
+				detailComposite.layout(true, true);
+				expandBar.layout(true, true);
 			}
 		});
+		
 	}
 
+	
+	
 	private void addSymbol(String symbol) {
 		boolean found = false;
 		for (String str : cbSymbol.getItems()) {
