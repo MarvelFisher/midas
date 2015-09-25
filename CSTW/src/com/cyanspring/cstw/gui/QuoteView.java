@@ -51,6 +51,8 @@ import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.session.GuiSession;
 
 public class QuoteView extends ViewPart implements IAsyncEventListener {
+	public QuoteView() {
+	}
 
 	private static final Logger log = LoggerFactory.getLogger(QuoteView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.QuoteViewer";
@@ -78,30 +80,39 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
 		{
-			SashForm sashForm = new SashForm(container, SWT.SMOOTH
-					| SWT.VERTICAL);
 			{
-				Composite composite = new Composite(sashForm, SWT.NONE);
-				GridLayout gl_composite = new GridLayout(3, false);
-				composite.setLayout(gl_composite);
 				{
-					Label lblSymbol = new Label(composite, SWT.NONE);
-					lblSymbol.setSize(43, 15);
-					lblSymbol.setText("Symbol :");
-				}
-				{
-					textSymbol = new Text(composite, SWT.BORDER);
-					GridData gd_text = new GridData(SWT.LEFT, SWT.CENTER,
-							false, false, 1, 1);
-					gd_text.widthHint = 171;
-					textSymbol.setLayoutData(gd_text);
-					textSymbol.setSize(149, 468);
-					textSymbol.addKeyListener(createKeyListener());
-				}
-				{
+					Composite composite_1 = new Composite(container, SWT.NONE);
+					GridLayout gl_composite_1 = new GridLayout(1, true);
+					gl_composite_1.marginWidth = 0;
+					composite_1.setLayout(gl_composite_1);
+					Composite composite = new Composite(composite_1, SWT.NONE);
+					composite.setLayout(new GridLayout(3, false));
+					{
+						Label lblSymbol = new Label(composite, SWT.NONE);
+						lblSymbol.setSize(43, 15);
+						lblSymbol.setText("Symbol :");
+					}
+					{
+						textSymbol = new Text(composite, SWT.BORDER);
+						GridData gd_textSymbol = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+						gd_textSymbol.widthHint = 165;
+						textSymbol.setLayoutData(gd_textSymbol);
+						textSymbol.setSize(149, 468);
+						textSymbol.addKeyListener(createKeyListener());
+					}
 					btnSubscribe = new Button(composite, SWT.NONE);
 					btnSubscribe.setSize(148, 468);
 					btnSubscribe.setText("Subscribe");
+					{
+						Composite bottomComposite = new Composite(composite_1, SWT.NONE);
+						bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+//						bottomComposite.setSize(297, 469);
+						bottomComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+						createQuoteViewer(bottomComposite);
+						createMenu(bottomComposite);
+					}
 					btnSubscribe.addSelectionListener(new SelectionListener() {
 
 						@Override
@@ -158,14 +169,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					});
 				}
 			}
-			{
-				Composite bottomComposite = new Composite(sashForm, SWT.NONE);
-				bottomComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
-				createQuoteViewer(bottomComposite);
-				createMenu(bottomComposite);
-
-			}
-			sashForm.setWeights(new int[] { 1, 4 });
 		}
 
 		subEvent(QuoteEvent.class);
