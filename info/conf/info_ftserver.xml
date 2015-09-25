@@ -43,7 +43,7 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_FT_F1"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTFT_Global_FT_S1"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	  <property name="maxActive"><value>20</value></property> 
@@ -61,7 +61,7 @@
 	
 	<bean id="dataSourceCentral" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 	  <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-	  <property name="url" value="jdbc:mysql://10.0.0.10/LTS_China"/>
+	  <property name="url" value="jdbc:mysql://10.0.0.10/LTFT_Global_FT"/>
 	  <property name="username" value="tqt001"/>
 	  <property name="password" value="tqt001"/>
 	  <property name="maxActive"><value>20</value></property> 
@@ -90,7 +90,7 @@
 			<value>Info</value>
 		</property>
 		<property name="id">
-			<value>I1</value>
+			<value>I2</value>
 		</property>
 	</bean>	
 	
@@ -112,7 +112,7 @@
 	<bean id="transportServiceMD" class="com.cyanspring.transport.ActiveMQObjectService">
 		<!-- 	Solve channel is inactive problem -->
 <!-- 		<property name="url" value="nio://10.0.0.51:61626?wireFormat.maxInactivityDuration=86400000"></property> -->
-		<property name="url" value="failover:(nio://localhost:61656?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
+		<property name="url" value="failover:(nio://10.0.0.61:61656?wireFormat.maxInactivityDuration=86400000)?initialReconnectDelay=5000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
 	</bean>
 	
 		<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -178,14 +178,16 @@
 
 	<bean id="windAdaptorFT"
 		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
-		<property name="showGui" value="true"></property>
-		<property name="gatewayIp" value="10.0.0.32"></property>
-		<property name="gatewayPort" value="10038"></property>
-		<property name="marketDataLog" value="false"></property>
-		<property name="tradeDateCheckIsOpen" value="true"></property>
-		<property name="closeOverTimeControlIsOpen" value="true"></property>
-		<property name="msgPack" value="true"></property>
-		<property name="isSubTrans" value="false"></property>
+		<property name="id" value="W01"/>
+		<property name="showGui" value="true"/>
+		<property name="gatewayIp" value="10.0.0.32"/>
+		<property name="gatewayPort" value="10038"/>
+		<property name="marketDataLog" value="false"/>
+		<property name="tradeDateCheckIsOpen" value="true"/>
+		<property name="closeOverTimeControlIsOpen" value="true"/>
+		<property name="msgPack" value="true"/>
+		<property name="isSubTrans" value="false"/>
+		<property name="useRefDataCodeSubscribe" value="true"/>
 		<property name="marketsList">
 			<list>
 				<value>TWF</value>

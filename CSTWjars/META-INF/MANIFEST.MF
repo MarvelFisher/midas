@@ -30,6 +30,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.business;uses:="com.cyanspring.common.data,com.cyanspring.common.type,com.cyanspring.common.strategy",
  com.cyanspring.common.business.util,
  com.cyanspring.common.cstw.auth,
+ com.cyanspring.common.cstw.tick,
  com.cyanspring.common.data,
  com.cyanspring.common.event,
  com.cyanspring.common.event.account,
@@ -40,6 +41,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
    com.cyanspring.common.type,
    com.cyanspring.common.event,
    com.cyanspring.common.business",
+ com.cyanspring.common.event.refdata,
  com.cyanspring.common.event.signal;uses:="com.cyanspring.common.data,com.cyanspring.common.event",
  com.cyanspring.common.event.statistic,
  com.cyanspring.common.event.strategy;
@@ -53,6 +55,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.message,
  com.cyanspring.common.server.event;uses:="com.cyanspring.common.event",
  com.cyanspring.common.signal,
+ com.cyanspring.common.staticdata,
  com.cyanspring.common.transport,
  com.cyanspring.common.type,
  com.cyanspring.common.util;uses:="com.cyanspring.common.marketdata,com.cyanspring.common.type,com.thoughtworks.xstream",

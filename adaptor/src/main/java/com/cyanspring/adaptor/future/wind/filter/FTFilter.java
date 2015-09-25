@@ -20,9 +20,16 @@ public class FTFilter implements IWindFilter {
             switch (codeTableData.getSecurityType()) {
                 case WindType.FT_INDEX:
                     String extractStr = codeTableData.getWindCode().replaceAll("\\D+","");
-                    if(extractStr == null || extractStr.length() < 6){
+                    if(extractStr == null){
                         log.debug("windCode isn't FT format," + codeTableData.getWindCode());
                         return false;
+                    }else{
+                        if(extractStr.length() > 0 && extractStr.length() != 6){
+                            return false;
+                        }
+                        if(extractStr.length() == 0){
+                            codeTableData.setSecurityType(WindType.IC_INDEX);
+                        }
                     }
                     checkPass = true;
                     break;

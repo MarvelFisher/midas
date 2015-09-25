@@ -38,11 +38,14 @@ namespace Adaptor
 
         public void onState(bool up)
         {
-            this.lbState.BeginInvoke((MethodInvoker)delegate () {
-                lbState.Text = "On line";
-                lbState.BackColor = Color.Green;
-            });
-
+            if (up)
+            {
+                this.lbState.BeginInvoke((MethodInvoker)delegate ()
+                {
+                    lbState.Text = "On line";
+                    lbState.BackColor = Color.Green;
+                });
+            }
         }
 
         private void btNew_Click(object sender, EventArgs e)

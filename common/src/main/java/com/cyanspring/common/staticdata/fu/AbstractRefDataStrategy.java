@@ -39,7 +39,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	public void init(Calendar cal, RefData template) {
 
 		this.template = template;
-		spotCnName = template.getSpotENName();
+		spotCnName = template.getSpotCNName();
 		spotTwName = template.getSpotTWName();
 
 		if (this.cal == null) {
@@ -67,6 +67,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			return data.getRefSymbol();
 		} else if (IType.FUTURES_CX_IDX.getValue().equals(data.getIType())) {
 			return data.getCategory() + data.getCNDisplayName().replaceAll("\\D", "") + "." + data.getExchange();
+		} else if (IType.FUTURES_FT.getValue().equals(data.getIType())) {
+			return data.getSymbol();
 		} else {
 			return "";
 		}
@@ -244,7 +246,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		}
 	}
 
-	protected Calendar getContractDate(String combineCnName) throws ParseException{
+	protected Calendar getContractDate(String combineCnName) throws ParseException {
 		SimpleDateFormat contractSdf = new SimpleDateFormat("yyyyMM");
 		String contractDate = combineCnName.replaceAll("\\D", "");
 		String year = getYearFromCNName(contractDate);

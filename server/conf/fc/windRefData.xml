@@ -55,6 +55,7 @@
         <property name="msgPack" value="#{windAdaptorFCI.msgPack}"></property>
         <property name="refDataFile" value="refdata/refData_fci.xml"/>
         <property name="windFilter" ref="fciFilter"/>
+        <property name="refDataFilter" ref="commodityFilter"/>
         <property name="marketsList">
             <list>
                 <value>CF</value>

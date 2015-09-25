@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\Common\Lib\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -105,9 +108,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Avro\Avro.csproj">
+    <ProjectReference Include="..\Avro\AvroObject.csproj">
       <Project>{4f8a6d36-df47-4330-b1c4-31c66b4ed2ed}</Project>
-      <Name>Avro</Name>
+      <Name>AvroObject</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{3ecabbc2-bf44-4aa9-a0f1-6306473c8caa}</Project>

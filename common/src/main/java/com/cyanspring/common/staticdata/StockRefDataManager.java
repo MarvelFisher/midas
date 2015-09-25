@@ -100,10 +100,8 @@ public class StockRefDataManager extends RefDataService {
 	private void updateRefData(Calendar cal, RefData refData) {
 		String iType = refData.getIType();
 		if(IType.isFuture(iType)){
-			log.debug("update future refdata:{},",refData.getRefSymbol());
 			updateFutureRefData(cal,refData);
 		}else if(IType.isStock(iType) || IType.isIndex(iType)){
-			log.debug("update stock refdata:{},",refData.getRefSymbol());
 			updateStockRefData(cal,refData);
 		}else{
 			log.info("none support type:{} , {}",iType,refData.getRefSymbol());
@@ -221,7 +219,7 @@ public class StockRefDataManager extends RefDataService {
 		strategy.updateRefData(refData);
 		refData.setDayTradable(template.getDayTradable());
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-		log.info("XML:"+xstream.toXML(refData));
+//		log.info("XML:"+xstream.toXML(refData));
 	}
 
 	private void initCategory(RefData refData) {

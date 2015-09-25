@@ -28,6 +28,12 @@
 	<bean id="authManager" class="com.cyanspring.common.cstw.auth.AuthManager">
 	</bean>
 
+	<bean id="tickManager" class="com.cyanspring.common.cstw.tick.TickManager">
+		<constructor-arg>
+	    	<ref bean="eventManager"/>
+	    </constructor-arg>
+	</bean>
+
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 	    <constructor-arg>
 	    	<ref bean="transportService"/>

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.ui.context.Theme;
+import org.springframework.util.StringUtils;
 
 import webcurve.util.PriceUtils;
 
@@ -83,6 +84,7 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.WeekDay;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
+import com.cyanspring.common.staticdata.AbstractTickTable;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.TickTableManager;
@@ -1189,9 +1191,17 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	public void processTickTableRequestEvent(TickTableRequestEvent event) {
 		try {
+			String symbol = event.getSymbol();
+			Map <AbstractTickTable,List<RefData>> map= tickTableManager.buildTickTableSymbolMap(symbol);			
+			if(null == map){
+				log.info("no tick table map data:{}",symbol);
+				return;
+			}
+
 			eventManager.sendLocalOrRemoteEvent(
 					new TickTableReplyEvent(event.getKey(), 
-							event.getSender(), tickTableManager.getTickTables()));
+							event.getSender(),map));
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

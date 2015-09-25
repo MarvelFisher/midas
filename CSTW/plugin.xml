@@ -26,7 +26,7 @@
       <view
             allowMultiple="true"
             class="com.cyanspring.cstw.gui.SingleOrderStrategyView"
-            icon="icons/Leaves16.png"
+            icon="icons/order.png"
             id="com.cyanspring.cstw.gui.ParentOrderView"
             name="Single Order Strategy"
             restorable="true">
@@ -47,7 +47,7 @@
       </view>
       <view
             class="com.cyanspring.cstw.gui.MarketDataView"
-            icon="icons/Leaves16.png"
+            icon="icons/marketData.png"
             id="com.cyanspring.cstw.gui.MarketDataView"
             name="Market Data">
       </view>
@@ -73,7 +73,7 @@
       </view>
       <view
             class="com.cyanspring.cstw.gui.MarketDataView"
-            icon="icons/Leaves16.png"
+            icon="icons/marketData.png"
             id="com.cyanspring.cstw.gui.MarketDataView2"
             name="Market Data">
       </view>
@@ -93,7 +93,7 @@
       </view>
       <view
             class="com.cyanspring.cstw.gui.PositionView"
-            icon="icons/Leaves16.png"
+            icon="icons/account.png"
             id="com.cyanspring.cstw.gui.PositionViewer"
             name="Account"
             restorable="true">
@@ -141,11 +141,19 @@
       <view
             allowMultiple="false"
             class="com.cyanspring.cstw.gui.QuoteView"
-            icon="icons/Leaves16.png"
+            icon="icons/quote.png"
             id="com.cyanspring.cstw.gui.QuoteViewer"
             name="Quote"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.trader.gui.TraderPropertyView"
+            icon="icons/property.png"
+            id="com.cyanspring.cstw.trader.gui.TraderPropertyViewer"
+            name="Properties"
+            restorable="true">
+      </view>      
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -225,6 +233,7 @@
             </command>
             <command
                   commandId="CSTW.ParentOrderView"
+                  icon="icons/order.png"
                   label="Single Order Strategy"
                   style="push">
                   <visibleWhen checkEnabled="false">
@@ -324,6 +333,7 @@
             </command>
             <command
                   commandId="CSTW.PositionView"
+                  icon="icons/account.png"
                   label="Account"
                   style="push">
                   <visibleWhen checkEnabled="false">
@@ -342,6 +352,7 @@
             </command>
             <command
                   commandId="CSTW.MarketDataView"
+                  icon="icons/marketData.png"
                   label="Market Data"
                   style="push">
                   <visibleWhen checkEnabled="false">
@@ -395,9 +406,10 @@
             	  </visibleWhen>       
             </command>
             <command
-                     commandId="CSTW.QuoteView"
-                     label="Quote"
-                     style="push">
+                  commandId="CSTW.QuoteView"
+                  icon="icons/quote.png"
+                  label="Quote"
+                  style="push">
                      <visibleWhen checkEnabled="false">
 	                  	<or>
 	                  	   <with variable="Admin">
@@ -406,6 +418,19 @@
 			               <with variable="RiskManager">
 		                  	  <equals value="ENABLED"></equals>        
 		               	   </with>
+		                   <with variable="Trader">
+		                      <equals value="ENABLED"></equals>        
+		                   </with>
+	                  	</or>
+            	  	 </visibleWhen>
+            </command>
+            <command
+                  commandId="CSTW.TraderPropertyView"
+                  icon="icons/property.png"
+                  label="Properties"
+                  style="push">
+                     <visibleWhen checkEnabled="false">
+	                  	<or>
 		                   <with variable="Trader">
 		                      <equals value="ENABLED"></equals>        
 		                   </with>
@@ -571,6 +596,12 @@
             description="Quote"
             id="CSTW.QuoteView"
             name="Quote">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.trader.command.TraderPropertyViewCommand"
+            description="Trader Property"
+            id="CSTW.TraderPropertyView"
+            name="Properties">
       </command>
    </extension>
    <extension

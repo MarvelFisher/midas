@@ -61,13 +61,13 @@
         <constructor-arg value="04:45:00" />
     </bean>
     
-    <bean id="KdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
+    <bean id="kdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
 
     <!-- MarketDataManager setting -->
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <!--<ref bean="ibAdaptor" />-->
+                <ref bean="ibAdaptor" />
                 <ref bean="idAdaptor" />
             </list>
         </constructor-arg>

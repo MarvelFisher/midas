@@ -150,7 +150,7 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-		log.info("XML:"+xstream.toXML(refData));
+//		log.debug("XML:"+xstream.toXML(refData));
 	}
 
 	private void initCategory(RefData refData) {
@@ -248,29 +248,11 @@ public class RefDataFactory extends RefDataService {
 
 	@Override
 	public boolean remove(RefData refData) {
-
 		boolean remove = false;
 		if(null == refDataList || refDataList.isEmpty()) {
 			return remove;
 		}
-
-		List<RefData> delList = new ArrayList<RefData>();
-
-		for (RefData ref : refDataList) {
-			if (ref.getRefSymbol().equals(refData.getRefSymbol())) {
-				delList.add(ref);
-			}
-		}
-
-		if (!delList.isEmpty()) {
-			remove = true;
-		}
-
-		for (RefData ref : delList) {
-			refDataList.remove(ref);
-		}
-
-		return remove;
+		return refDataList.remove(refData);
 	}
 
 	public boolean isTemplateListAsRefDataList() {

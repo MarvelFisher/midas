@@ -177,10 +177,12 @@ public class RequestMgr implements IReqThreadCallback {
                     if (refDataBoth.size() > 0) {
                         List<RefData> refDataModList = new ArrayList<>();
                         for (String key : refDataBoth) {
-                            String originCNName = exchangeRefDataUpdate.getRefDataHashMap().get(key).getCNDisplayName();
+                            String originCNName = exchangeRefData.getRefDataHashMap().get(key).getCNDisplayName();
                             String updateCNName = exchangeRefDataUpdate.getRefDataHashMap().get(key).getCNDisplayName();
-                            if (!originCNName.equals(updateCNName))
+                            if (!originCNName.equals(updateCNName)) {
                                 refDataModList.add(exchangeRefDataUpdate.getRefDataHashMap().get(key));
+                                log.debug("RefDataUpdate S=" + key + ",originCNName=" + originCNName + ",updateCNName=" + updateCNName);
+                            }
                         }
                         if (refDataModList.size() > 0) {
                             windRefDataAdapter.sendRefDataUpdate(refDataModList, RefDataUpdateEvent.Action.MOD);

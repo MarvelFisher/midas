@@ -191,7 +191,47 @@
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
 	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+	   <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>0.2</value></array>
+            </array>
+        </property>
 	</bean>
+	<bean id="unit1TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>1</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit2TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>2</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit5TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit10TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit005TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
@@ -200,6 +240,11 @@
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
 				<entry key="IF" value-ref="ifTickTable" />
+				<entry key="UNIT1" value-ref="unit1TickTable" />
+                <entry key="UNIT2" value-ref="unit2TickTable" />
+				<entry key="UNIT5" value-ref="unit5TickTable" />
+                <entry key="UNIT10" value-ref="unit10TickTable" />
+                <entry key="UNIT005" value-ref="unit005TickTable" />
 			</map>
 		</property>
 	</bean>
@@ -251,9 +296,16 @@
 			<list>
 				<ref bean="refDataAdapterFCI"/>
 				<ref bean="refDataAdapterFCC"/>
+				<ref bean="simRefDataAdaptor"/>
 			</list>
 		</constructor-arg>
 		<property name="eventManager" ref="eventManager"/>
+    </bean>
+    
+    <bean id="simRefDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
+        <property name="filePath">
+            <value>refdata/template/codetable_cf.xml</value>
+        </property>
     </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
@@ -316,6 +368,25 @@
 		</property>
 	</bean>
 	
+	<bean id="commodityFilter" class="com.cyanspring.common.filter.CommodityFilter">
+        <property name="lstExcludedSymbols">
+            <list>
+                <value>IHC1.CF</value>
+				<value>IHC2.CF</value>
+				<value>IHC3.CF</value>
+				<value>IHC4.CF</value>
+				<value>ICC1.CF</value>
+				<value>ICC2.CF</value>
+				<value>ICC3.CF</value>
+				<value>ICC4.CF</value>
+			</list>
+        </property>
+        <property name="lstExcludedCategories">
+            <list>
+            </list>
+        </property>
+    </bean>
+    
     <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
     	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
 	</bean>
@@ -346,6 +417,7 @@
 				<ref bean="refSymbolFilter"/>
 				<ref bean="itypeFilter"/>
 				<ref bean="contractDateFilter"/>
+				<ref bean="commodityFilter"/>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -396,7 +468,6 @@
 				<ref bean="bbSessionChecker"/>
 				<ref bean="bSessionChecker"/>
 				<ref bean="fbSessionChecker"/>
-				<ref bean="tcSessionChecker"/>
 				<ref bean="rsSessionChecker"/>
 				<ref bean="riSessionChecker"/>
 				<ref bean="sfSessionChecker"/>

@@ -28,6 +28,7 @@ namespace Adaptor.TwSpeedy.Main
         public void uninit()
         {
             stream.Close();
+            processor.uninit();
         }
 
         public void load()
@@ -78,13 +79,14 @@ namespace Adaptor.TwSpeedy.Main
             {
                 stream.WriteLine(item.Value.serialize());
             }
+            stream.Flush();
         }
 
         public void save(Order order)
         {
             if (items.ContainsKey(order.exchangeOrderId))
                 return;
-            PersistItem item = new PersistItem(DateTime.Now, order.exchangeOrderId, order.orderId, order.symbol);
+            PersistItem item = new PersistItem(DateTime.Now, order.exchangeOrderId, order.orderId, order.symbol, order.ordStatus.ToString());
             items.TryAdd(order.exchangeOrderId, item);
             processor.add(item);
         }

@@ -5,6 +5,34 @@
     xsi:schemaLocation="http://www.springframework.net
         http://www.springframework.net/xsd/spring-objects.xsd">
 
-  <object id="server" type="CSharpLTS.Program, CSharpLTS" />
+  <object id="server" type="CSharpLTS.Program, CSharpLTS" autowire="byName"/>
+  <object id="busniessManager" type="Common.Event.BusniessManager, Common" autowire="byName">
+    <constructor-arg>
+      <ref object="transportService"></ref>
+    </constructor-arg>
+    <property name="timerInterval" value="5000"/>
+  </object>
 
+  <object id="downStreamManager" type="Common.Adaptor.DownStreamManager, Common" >
+    <constructor-arg>
+      <list element-type="Common.Adaptor.IDownStreamAdaptor, Common">
+        <ref object="tradeAdaptor"/>
+      </list>
+    </constructor-arg>
+  </object>
+
+  <object id="tradeAdaptor" type="Adaptor.TwSpeedy.Main.TradeAdaptor, TwSpeedy"/>
+
+  <object id="transportService" type="Transport.Transport.ActiveMQGenericService, Transport" autowire="byName" >
+    <property name="url" value="failover:(tcp://127.0.0.1:61616)"></property>
+    <property name="publishTopic" value="Test.EB.DownStream.node" />
+    <property name="subscribeTopic" value="Test.EB.DownStream.channel" />
+    <!--
+    <property name="user" value="yu"></property>
+    <property name="password" value="junfeng"></property>
+    -->
+  </object>
+
+  <object id="defaultSerialization" type="Avro.Serialization.AvroSerialization, AvroObject"/>
+  
 </objects>

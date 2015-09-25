@@ -5,15 +5,18 @@ using System.Text;
 using Common.Transport;
 using Apache.NMS.ActiveMQ;
 using Apache.NMS;
+using Common.Logging;
 
 namespace Transport.Transport
 {
     class ActiveMQService : ITransportService
     {
+        private static ILog logger = LogManager.GetLogger(typeof(ActiveMQService));
+
         // ActiveMQ configuration parameters
         public string user{set;get;}
         public string password{set;get;}
-        public string url{set;get;}
+        public string url{set;get;} = "nio://localhost:61616";
         public MsgDeliveryMode persistent { set; get; } = MsgDeliveryMode.NonPersistent;
         public bool transacted { set; get; }
         public AcknowledgementMode ackMode { set; get; } = AcknowledgementMode.AutoAcknowledge;
@@ -23,11 +26,22 @@ namespace Transport.Transport
         protected IConnection connection;
         protected ISession session;
 
+
+        // topic
+        public string senderQueue { set; get; } = "q2";
+        public string receiveQueue { set; get; } = "q1";
+
+        public string publishTopic { set; get; } = "t2";
+        public string subscribeTopic { set; get; } = "t1";
+
         protected Dictionary<string, IMessageConsumer> receivers = new Dictionary<string, IMessageConsumer>();
         protected Dictionary<string, IMessageProducer> senders = new Dictionary<string,IMessageProducer>();
         protected Dictionary<string, IMessageProducer> publishers = new Dictionary<string, IMessageProducer>();
-        private Dictionary<string, List<IMessageListener>> subscribers = new Dictionary<string, List<IMessageListener>>();
+
+        private Dictionary<string, List<IMessageListener>> subscribers = new Dictionary<string, List<IMessageListener>>(); 
         private Dictionary<IMessageListener, IMessageConsumer> consumers = new Dictionary<IMessageListener, IMessageConsumer>();
+
+        private IMessageListener receiverListener ;
 
         class Sender : ISender
         {
@@ -63,6 +77,7 @@ namespace Transport.Transport
             connection.Start();
             connection.ExceptionListener += new ExceptionListener(connection_ExceptionListener);
             session = connection.CreateSession(ackMode);
+            logger.Info("Connection Start...");
         }
 
         private void connection_ExceptionListener(Exception e)
@@ -75,55 +90,56 @@ namespace Transport.Transport
             removeAllReceivers();
             session.Close();
             connection.Close();
+            logger.Info("Connection Closed...");
         }
 
         private void removeAllReceivers() {
             foreach (IMessageConsumer cum in receivers.Values)
             {
-                cum.Listener -= consumer_MessageListener;
+                cum.Listener -= consumer_MessageListener1;
             }
 	    }
 
-        public Common.Transport.ISender CreateSender(string subject)
+        public Common.Transport.ISender CreateSender()
         {
-            if (!senders.ContainsKey(subject))
+            if (!senders.ContainsKey(senderQueue))
             {
-                IDestination dest = session.GetQueue(subject);
+                IDestination dest = session.GetQueue(senderQueue);
                 IMessageProducer newProducer = session.CreateProducer(dest);
                 newProducer.DeliveryMode = persistent;
-                senders.Add(subject, newProducer);
+                senders.Add(senderQueue, newProducer);
             }
-            IMessageProducer producer = senders[subject];
+            IMessageProducer producer = senders[senderQueue];
             return new Sender(this, producer);
         }
 
-        public void CreateReceiver(string subject, Common.Transport.IMessageListener listener)
+        public void CreateReceiver(Common.Transport.IMessageListener listener)
         {
-            if (!receivers.ContainsKey(subject))
+            if (!receivers.ContainsKey(receiveQueue))
             {
-                IDestination dest = session.GetQueue(subject);
+                IDestination dest = session.GetQueue(receiveQueue);
                 IMessageConsumer newConsumer = session.CreateConsumer(dest);
-                receivers.Add(subject, newConsumer);
+                receivers.Add(receiveQueue, newConsumer);
             }
-            IMessageConsumer consumer = receivers[subject];
+            IMessageConsumer consumer = receivers[receiveQueue];
             if (listener == null)
             {
-                consumer.Listener -= consumer_MessageListener;
+                consumer.Listener -= consumer_MessageListener1;
             }
             else
             {
-                consumer.Listener += new MessageListener(consumer_MessageListener);
+                this.receiverListener = listener;           
+                consumer.Listener += new MessageListener(consumer_MessageListener1);
             }
         }
 
-        /**
-        * think about how to process this method
-        */
-        private void consumer_MessageListener(IMessage message)
+        private void consumer_MessageListener1(IMessage message)
         {
+           
             if (message is ITextMessage)
             {
-                
+                ITextMessage txt = (ITextMessage) message;
+                receiverListener.OnMessage(txt.Text);
             }
             else
             {
@@ -131,53 +147,69 @@ namespace Transport.Transport
             }
         }
 
-        public void RemoveReceiver(string subject)
+        public void RemoveReceiver()
         {
-            if (!receivers.ContainsKey(subject))
+            if (!receivers.ContainsKey(receiveQueue))
             {
                 return;
             }
-            IMessageConsumer consumer = receivers[subject];
-            consumer.Listener -= consumer_MessageListener;
+            IMessageConsumer consumer = receivers[receiveQueue];
+            consumer.Listener -= consumer_MessageListener1;
         }
 
-        public Common.Transport.ISender CreatePublisher(string subject)
+        public Common.Transport.ISender CreatePublisher()
         {
-            if (!publishers.ContainsKey(subject)) {
-                IDestination dest = session.GetTopic(subject);
+            if (!publishers.ContainsKey(publishTopic)) {
+                IDestination dest = session.GetTopic(publishTopic);
                 IMessageProducer newProducer = session.CreateProducer(dest);
                 newProducer.DeliveryMode = persistent;
-                publishers.Add(subject, newProducer);
+                publishers.Add(publishTopic, newProducer);
             }
-            IMessageProducer producer = publishers[subject];
+            IMessageProducer producer = publishers[publishTopic];
             return new Sender(this, producer);
         }
 
-        public void CreateSubscriber(string subject, Common.Transport.IMessageListener listener)
+        public void CreateSubscriber( Common.Transport.IMessageListener listener)
         {
-            if (!subscribers.ContainsKey(subject)) 
+            if (!subscribers.ContainsKey(subscribeTopic)) 
             {
-                subscribers.Add(subject, new List<IMessageListener>());
+                subscribers.Add(subscribeTopic, new List<IMessageListener>());
             }
-            List<IMessageListener> listeners = subscribers[subject];
+            List<IMessageListener> listeners = subscribers[subscribeTopic];
             if (!listeners.Contains(listener))
             {
-                IDestination dest = session.GetTopic(subject);
+                IDestination dest = session.GetTopic(subscribeTopic);
                 IMessageConsumer consumer = session.CreateConsumer(dest);
-                consumer.Listener += new MessageListener(consumer_MessageListener);
+                consumer.Listener += new MessageListener(consumer_MessageListener2);
                 listeners.Add(listener);
                 consumers[listener] = consumer;
             }
             
         }
 
-        public void RemoveSubscriber(string subject, Common.Transport.IMessageListener listener)
+        private void consumer_MessageListener2(IMessage message)
         {
-            if (!subscribers.ContainsKey(subject))
+            if (message is ITextMessage)
+            {
+                ITextMessage txt = (ITextMessage)message;
+                foreach(IMessageListener listener in subscribers[subscribeTopic])
+                {
+                    listener.OnMessage(txt.Text);
+                }               
+            }
+            else
+            {
+                // log error
+            }
+        }
+
+        public void RemoveSubscriber( Common.Transport.IMessageListener listener)
+        {
+            if (!subscribers.ContainsKey(subscribeTopic))
             {
                 return;
             }
-            List<IMessageListener> listeners = subscribers[subject];
+            List<IMessageListener> listeners = subscribers[subscribeTopic];
             if (listeners.Contains(listener))
             {
                 if (!consumers.ContainsKey(listener))
@@ -185,21 +217,22 @@ namespace Transport.Transport
                     return;
                 }
                 IMessageConsumer consumer = consumers[listener];
-                consumer.Listener -= consumer_MessageListener;
+                consumer.Listener -= consumer_MessageListener2;
                 consumers.Remove(listener);
                 listeners.Remove(listener);
             }
         }
 
-        public void SendMessage(string subject, string message)
+        public void SendMessage( string message)
         {
-            CreateSender(subject).SendMessage(message);
+            CreateSender().SendMessage(message);
         }
 
-        public void PublishMessage(string subject, string message)
+        public void PublishMessage( string message)
         {
-            CreatePublisher(subject).SendMessage(message);
+            CreatePublisher().SendMessage(message);
         }
 
+        
     }
 }

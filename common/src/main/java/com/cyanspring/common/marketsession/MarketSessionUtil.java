@@ -1,7 +1,6 @@
 package com.cyanspring.common.marketsession;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,13 +15,10 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataService;
 import com.cyanspring.common.staticdata.RefDataUtil;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
-import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.common.validation.OrderValidationException;
 
 public class MarketSessionUtil implements IPlugin{
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
@@ -40,20 +36,19 @@ public class MarketSessionUtil implements IPlugin{
     
     public Map<String, MarketSessionData> getMarketSession() throws Exception {
     	Map<String, MarketSessionData> ret = new HashMap<>();
-    	Date now = Clock.getInstance().now();
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
-    		ret.put(entry.getKey(), entry.getValue().getState(now, null));
+    		ret.put(entry.getKey(), entry.getValue().getState(null));
     	}
     	return ret;
     }
     
-    public MarketSessionData getMarketSession(RefData refData, Date date) throws Exception {
+    public MarketSessionData getMarketSession(RefData refData) throws Exception {
     	SessionPair pair = getSession(refData);
     	if (pair == null) {
     		log.warn("Can't find market session, symbol: {}", refData.getSymbol());
     		return null;
     	}
-    	return pair.session.getState(date, refData);
+    	return pair.session.getState(refData);
     }
     
     public MarketSessionData getCurrentMarketSession(String symbol) throws Exception{
@@ -61,7 +56,7 @@ public class MarketSessionUtil implements IPlugin{
     	if(null == refData)
     		return null;
     	
-    	MarketSessionData data = getMarketSession(refData,new Date());
+    	MarketSessionData data = getMarketSession(refData);
     	return data;
     }
     
@@ -132,33 +127,21 @@ public class MarketSessionUtil implements IPlugin{
     	for(RefData refData : indexList) {
     		SessionPair pair = getSession(refData); 
     		if (pair != null)
-    			ret.put(pair.index, pair.session.getState(date, refData));
+    			ret.put(pair.index, pair.session.getState(refData));
     		else
     			log.warn("Can't find market session, symbol: {}", refData.getSymbol());
     	}
     	return ret;
     }
     
-    public Map<String, MarketSessionData> getMarketSession(List<RefData> indexList, Map<String, Date> dateMap) throws Exception {
-    	Map<String, MarketSessionData> ret = new HashMap<>();
-    	for(RefData refData : indexList) {
-    		SessionPair pair = getSession(refData);
-    		if (pair != null)
-    			ret.put(pair.index, pair.session.getState(dateMap.get(refData.getSymbol()), refData));
-    		else
-    			log.warn("Can't find market session, symbol: {}", refData.getSymbol());
-    	}
-    	return ret;
-    }
-    
-    public MarketSession getMarketSessions(Date date, RefData refData) throws Exception{
+    public MarketSession getMarketSessions(RefData refData) throws Exception{
     	String index = searchIndex(refData);
     	if (!StringUtils.hasText(index)) 
     		return null;
     	IMarketSession session = sessionMap.get(index);
     	if (session == null)
     		return null;
-    	return session.getMarketSession(date, refData);
+    	return session.getMarketSession(refData);
     }
     
     public ITradeDate getTradeDateManager(String index){

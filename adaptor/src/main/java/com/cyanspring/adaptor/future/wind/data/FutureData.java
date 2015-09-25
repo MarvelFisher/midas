@@ -20,13 +20,13 @@ public class FutureData {
     private long open;
     private long openInterest;
     private long preClose;
+    private long preSettlePrice;
     private long settlePrice;
     private int status;
     private int time;
     private int tradingDay;
     private long turnover;
     private long volume;
-    private long fTurnover;
 
     public int getActionDay() {
         return actionDay;
@@ -204,11 +204,11 @@ public class FutureData {
         this.match = match;
     }
 
-    public long getfTurnover() {
-        return fTurnover;
+    public long getPreSettlePrice() {
+        return preSettlePrice;
     }
 
-    public void setfTurnover(long fTurnover) {
-        this.fTurnover = fTurnover;
+    public void setPreSettlePrice(long preSettlePrice) {
+        this.preSettlePrice = preSettlePrice;
     }
 }

@@ -119,7 +119,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         if (event.isOk() && event.getRefDataList().size() > 0) {
             if(isInit) {
-                log.debug("process RefData Event, Size=" + event.getRefDataList().size());
+                log.debug("process RefData Event, Size=" + event.getRefDataList().size() + ",Key=" + event.getKey());
                 preSubscriptionList.clear();
                 List<RefData> refDataList = event.getRefDataList();
                 for (int i = 0; i < refDataList.size(); i++) {

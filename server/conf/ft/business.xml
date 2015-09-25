@@ -164,36 +164,4 @@
      	<constructor-arg><value>23:00:00</value></constructor-arg>
 	</bean>
 
-    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
-        <property name="arguments">
-		    <list>
-	           	<value>default</value>
-	           	<value>default</value>
-	           	<value>FT</value>
-	           	<value>CNY</value>
-	           	<value>A</value>
-	           	<value>2000000.0</value>
-	           	<value>8.333333</value>
-	           	<value>1.0</value>
-	           	<value>0.00004</value>
-	           	<value>2</value>
-	           	<null/>
-	           	<value>1.0</value>
-	           	<value>0.0</value>
-	           	<value>0.98</value>
-				<value>0</value>
-				<value>0.1</value>
-				<value>0.2</value>
-				<value>0.3</value>
-				<value>false</value>
-				<value>false</value>
-				<value>0</value>
-				<value>0</value>
-				<value>0</value>
-				<value>DAY_TRADING</value>
-            </list>
-       </property>
-    </bean>
-
 </beans>

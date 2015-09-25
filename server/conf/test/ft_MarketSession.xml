@@ -48,7 +48,7 @@
 			</map>
 		</property>
 		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
-		<property name="index" value="CF"/>
+		<property name="index" value="FITX"/>
 	</bean>
 	
 	<bean id="txDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">

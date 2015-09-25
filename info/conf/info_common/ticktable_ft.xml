@@ -12,7 +12,12 @@
 	</bean>
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
-	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+	<bean id="ftTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
+	   <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>1</value></array>
+            </array>
+        </property>
 	</bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
@@ -20,7 +25,7 @@
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
-				<entry key="IF" value-ref="ifTickTable" />
+				<entry key="FT" value-ref="ftTickTable" />
 			</map>
 		</property>
 	</bean>

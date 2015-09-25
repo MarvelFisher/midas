@@ -183,6 +183,7 @@ public class SymbolData implements Comparable<SymbolData>
 		String tradedate = getTradedate();
 		if (tradedate == null)
 		{
+        	log.debug(String.format("Read: TradeDate null"));
 			return;
 		}
 		String strFile = String.format("./DAT/%s/%s", 
@@ -191,6 +192,7 @@ public class SymbolData implements Comparable<SymbolData>
 		File fileCache = new File(strFile + ".Ch");
 		if (fileMins.exists() == false)
 		{
+        	log.debug(String.format("Read: %s not exist", strFile));
 			return;
 		}
 	    try
@@ -221,6 +223,8 @@ public class SymbolData implements Comparable<SymbolData>
 				dCurVolume = Double.parseDouble(str);
 				data.close();
 			}
+        	log.debug(String.format("Read: S:%s;O:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", 
+        			strSymbol, dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));
         }
         catch (Exception e)
         {
@@ -242,8 +246,10 @@ public class SymbolData implements Comparable<SymbolData>
         try
         {
         	FileWriter fwrite = new FileWriter(strFile + ".Ch");
-        	log.debug(String.format("Cache: D:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));;
-        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));
+        	log.debug(String.format("Cache: S:%s;O:%f;H:%f;L:%f;C:%f;52H:%f;52L:%f;V:%d", 
+        			strSymbol, dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));
+        	fwrite.write(String.format("%f;%f;%f;%f;%f;%f;%d", 
+        			dOpen, dCurHigh, dCurLow, dClose, d52WHigh, d52WLow, (long)dCurVolume));
         	fwrite.flush();
         	fwrite.close();
         	synchronized(priceData)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Common.Event
 {
-    interface IAsyncEventListener
+    public interface IAsyncEventListener
     {
     }
 }

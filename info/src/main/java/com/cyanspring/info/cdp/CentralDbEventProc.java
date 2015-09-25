@@ -137,9 +137,9 @@ public class CentralDbEventProc implements Runnable
 		try 
 		{
 			if (startDate == null || startDate.isEmpty())
-				listPrice = centraldb.getDbhnd().getPeriodStartEndValue(centraldb.getServerMarket(), type, symbol, null, sdf.parse(endDate));
+				listPrice = centraldb.getDbhnd().getPeriodStartEndValue(symboldata.getMarket(), type, symbol, null, sdf.parse(endDate));
 			else
-				listPrice = centraldb.getDbhnd().getPeriodStartEndValue(centraldb.getServerMarket(), type, symbol, sdf.parse(startDate), sdf.parse(endDate));
+				listPrice = centraldb.getDbhnd().getPeriodStartEndValue(symboldata.getMarket(), type, symbol, sdf.parse(startDate), sdf.parse(endDate));
 		} 
 		catch (ParseException e) 
 		{
