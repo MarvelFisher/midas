@@ -48,7 +48,9 @@ public enum ImageID {
 	ORDER_ICON("icons/order.png"),
 	QUOTE_ICON("icons/quote.png"),
 	MARKET_DATA_ICON("icons/marketData.png"),
-	PROPERTY_ICON("icons/property.png")
+	PROPERTY_ICON("icons/property.png"),
+	ASKBID_ICON("icons/askbid.png"),
+	DETAILS_ICON("icons/details.png")
 	;
 	private String value;
 	ImageID(String value) {

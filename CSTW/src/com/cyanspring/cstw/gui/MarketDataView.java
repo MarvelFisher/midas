@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -51,6 +53,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.InstrumentSelectionEvent;
 import com.cyanspring.cstw.event.MarketDataReplyEvent;
 import com.cyanspring.cstw.event.MarketDataRequestEvent;
@@ -67,6 +70,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	public static final String ID = "com.cyanspring.cstw.gui.MarketDataView"; //$NON-NLS-1$
 	private static final DecimalFormat priceFormat = new DecimalFormat(
 			"#0.####");
+	private ImageRegistry imageRegistry;
 	private Composite topComposite;
 	private Table table;
 	private TableViewer tableViewer;
@@ -143,7 +147,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	@SuppressWarnings("unused")
 	@Override
 	public void createPartControl(Composite parent) {
-
+		imageRegistry = Activator.getDefault().getImageRegistry();
 		mainComposite = new Composite(parent, SWT.BORDER);
 		mainComposite.setLayout(new GridLayout(1, true));
 		topComposite = new Composite(mainComposite, SWT.NONE);
@@ -235,11 +239,12 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				layout();
 			}
 		});
-		expandBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		expandBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		{
 			ExpandItem xpndtmAskbid = new ExpandItem(expandBar, SWT.NONE);
+			xpndtmAskbid.setImage(imageRegistry.getDescriptor(ImageID.ASKBID_ICON.toString()).createImage());
 			xpndtmAskbid.setExpanded(false);
-			xpndtmAskbid.setText("Ask/Bid");
+			xpndtmAskbid.setText("Ask / Bid");
 			{
 				askBidComposite = new Composite(expandBar,  SWT.BORDER);
 				GridLayout gl_composite_1 = new GridLayout(6, true);
@@ -287,6 +292,8 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 			ExpandItem xpndtmDetail = new ExpandItem(expandBar, SWT.NONE);
 			xpndtmDetail.setExpanded(true);
 			xpndtmDetail.setText("Detail");
+			xpndtmDetail.setImage(imageRegistry.getDescriptor(ImageID.DETAILS_ICON.toString()).createImage());
+
 			{
 				detailComposite = new Composite(expandBar, SWT.BORDER);
 				xpndtmDetail.setControl(detailComposite);
