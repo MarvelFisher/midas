@@ -1222,12 +1222,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     @Override
-    public void refreshSymbolInfo(String market) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public void clean() {
 
     }

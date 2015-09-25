@@ -583,11 +583,6 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	}
 
 	@Override
-	public void refreshSymbolInfo(String market) {
-		
-	}
-
-	@Override
 	public void clean() {
 
 	}

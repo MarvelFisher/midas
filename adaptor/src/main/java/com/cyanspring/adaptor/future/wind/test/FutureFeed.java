@@ -109,16 +109,16 @@ public class FutureFeed implements IFrameClose {
 //        });
 //        mainframe.addButton(buttonRecon);
 
-        JButton buttonRefreshSymbol = new JButton("refreh Symbol");
-        buttonRefreshSymbol.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                adaptor.refreshSymbolInfo("SHF");
-            }
-        });
-
-        mainframe.addButton(buttonRefreshSymbol);
+//        JButton buttonRefreshSymbol = new JButton("refreh Symbol");
+//        buttonRefreshSymbol.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                adaptor.refreshSymbolInfo("SHF");
+//            }
+//        });
+//
+//        mainframe.addButton(buttonRefreshSymbol);
         mainframe.addLabel(new JLabel("Watch"));
         textField = new JTextField();
         textField.setText(this.watchSymbol);

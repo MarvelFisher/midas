@@ -202,11 +202,6 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	}
 
 	@Override
-	public void refreshSymbolInfo(String market) {
-		
-	}
-
-	@Override
 	public void clean() {
 
 	}

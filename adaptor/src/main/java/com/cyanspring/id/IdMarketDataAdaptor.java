@@ -377,11 +377,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     }
 
     @Override
-    public void refreshSymbolInfo(String market) {
-
-    }
-
-    @Override
     public void clean() {
 
     }
