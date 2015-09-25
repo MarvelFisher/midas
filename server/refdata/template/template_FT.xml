@@ -99,7 +99,145 @@
 			</entry>
 			<entry>
 				<string>Maximum hold</string>
-				<int>6000</int>
+				<int>4000</int>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>FT</string>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.1</double>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>100</int>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>100</int>
+			</entry>
+			<entry>
+				<string>Numerator DP</string>
+				<double>0</double>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Minimal CF</string>
+				<double>0</double>
+			</entry>
+			<entry>
+				<string>Tradable</string>
+				<string>1</string>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Symbol</string>
+				<string>MXFJ5</string>
+			</entry>
+			<entry>
+				<string>Desc</string>
+				<string>期貨.台灣期交所.小臺</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>TWF</string>
+			</entry>
+			<entry>
+				<string>Currency</string>
+				<string>NTD</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<string>FIMTX1510</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>小臺1510</string>
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>小台1510</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>MXFJ5.TWF</string>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>FIMTX</string>
+			</entry>
+			<entry>
+				<string>Spot ENName</string>
+				<string>MTX</string>
+			</entry>
+			<entry>
+				<string>Spot TWName</string>
+				<string>小臺</string>
+			</entry>
+			<entry>
+				<string>Spot CNName</string>
+				<string>小台</string>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>ICE.TWF.FIMTX.201510</string>
+			</entry>
+			<entry>
+				<string>Subscribe symbol</string>
+				<string>ICE.TWF.FIMTX.201510</string>
+			</entry>
+			<entry>
+				<string>IType</string>
+				<string>2</string>
+			</entry>
+			<entry>
+				<string>Commodity</string>
+				<string>F</string>
+			</entry>
+			<entry>
+				<string>Type</string>
+				<string>INDEX_FU</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>1</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>50</double>
+			</entry>
+			<entry>
+				<string>TWTrading unit</string>
+				<string>元(新臺幣)/指數1點</string>
+			</entry>
+			<entry>
+				<string>CNTrading unit</string>
+				<string>元(新台币)/指数1点</string>
+			</entry>
+			<entry>
+				<string>ENTrading unit</string>
+				<string>NTD/Point</string>
+			</entry>
+			<entry>
+				<string>Price limit</string>
+				<double>10</double>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>TWF</string>
+			</entry>
+			<!-- 與臺股期貨合併計算(依4口小型臺指期貨契約等於1口臺股期貨契約合併計算, 臺股期貨部位限制6,000) -->
+			<!-- 目前設置 臺股期貨4000, 小型臺指期貨8000, 4000 + 8000/4 = 6000 -->
+			<entry>
+				<string>Maximum hold</string>
+				<int>8000</int>
 			</entry>
 			<entry>
 				<string>Tick table</string>
