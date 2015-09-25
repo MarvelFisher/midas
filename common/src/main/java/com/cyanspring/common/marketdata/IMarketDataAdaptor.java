@@ -25,6 +25,5 @@ public interface IMarketDataAdaptor {
 	public void subscirbeSymbolData(ISymbolDataListener listener) ;
 	public void unsubscribeSymbolData(ISymbolDataListener listener);
 	public void refreshSymbolInfo(String market);
-	public void processEvent(Object object);
 	public void clean();
 }

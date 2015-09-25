@@ -588,11 +588,6 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	}
 
 	@Override
-	public void processEvent(Object object) {
-
-	}
-
-	@Override
 	public void clean() {
 
 	}

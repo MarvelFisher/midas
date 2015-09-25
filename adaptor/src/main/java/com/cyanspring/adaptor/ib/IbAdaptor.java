@@ -1228,10 +1228,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     @Override
-    public void processEvent(Object object) {
-    }
-
-    @Override
     public void clean() {
 
     }

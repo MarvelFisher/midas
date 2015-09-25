@@ -656,10 +656,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     }
 
-    @Override
-    public void processEvent(Object object) {
-    }
-
     public void inputRefDataList(List<RefData> refDataList){
         for (RefData refData : refDataList) {
             if(refData.getIndexSessionType() == null || "".equals(refData.getIndexSessionType()))

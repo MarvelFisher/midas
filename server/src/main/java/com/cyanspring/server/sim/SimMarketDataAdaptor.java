@@ -207,11 +207,6 @@ public class SimMarketDataAdaptor implements IMarketDataAdaptor {
 	}
 
 	@Override
-	public void processEvent(Object object) {
-
-	}
-
-	@Override
 	public void clean() {
 
 	}
