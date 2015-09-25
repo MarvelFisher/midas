@@ -267,7 +267,15 @@ namespace Adaptor.TwSpeedy.Main
             newOrderMsg.OrderQty = (int)order.quantity;
             newOrderMsg.Market = this.market;
             //TO DO
-            newOrderMsg.TimeInForce = OrderMessage.TimeInForceEnum.tifROD;
+            if (order.orderType == OrderType.Market)
+            {
+                newOrderMsg.TimeInForce = OrderMessage.TimeInForceEnum.tifIOC;
+            }               
+            else
+            {
+                newOrderMsg.TimeInForce = OrderMessage.TimeInForceEnum.tifROD;
+            }                
+
             newOrderMsg.Data = formatData(newOrderMsg.OrderQty);
             newOrderMsg.TradingSessionID = 0;
             newOrderMsg.PositionEffect = OrderMessage.PositionEffectEnum.peClose;

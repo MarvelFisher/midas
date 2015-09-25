@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +43,15 @@ public class TickManager implements IAsyncEventListener {
 	private void processTickTableReplyEvent(TickTableReplyEvent evt) {
 		Iterator<List<RefData>> i = evt.getMap().values().iterator();
 		Iterator<AbstractTickTable> ii = evt.getMap().keySet().iterator();
-//		while (i.hasNext()) {
-//			for (RefData s : i.next()) {
-//				log.info("s:{}", s.getSymbol());
-//			}
-//		}
-//		while (ii.hasNext()) {
-//			AbstractTickTable a = ii.next();
-//			log.info("tick table:{}", a.toString());
-//		}
+		while (i.hasNext()) {
+			for (RefData s : i.next()) {
+				log.info("s:{}", s.getSymbol());
+			}
+		}
+		while (ii.hasNext()) {
+			AbstractTickTable a = ii.next();
+			log.info("tick table:{}", a.toString());
+		}
 
 		if (null != evt.getMap()){
 			if( null == tickMap)
@@ -75,6 +77,25 @@ public class TickManager implements IAsyncEventListener {
 			
 	}
 
+	public List<String> getSymbolList(){	
+		Set <String> tempSet = new TreeSet<String>();
+		if( null == tickMap )
+			return null;
+		
+		Iterator<AbstractTickTable> table = tickMap.keySet().iterator();
+		while(table.hasNext()){
+			AbstractTickTable tempTable = table.next();
+			List<RefData> symbolList = tickMap.get(tempTable);
+			for(RefData refData : symbolList){
+				tempSet.add(refData.getSymbol());
+			}
+		}
+		
+		List<String> tempList = new ArrayList<String>();
+		tempList.addAll(tempSet);
+		return tempList;	
+	}
+	
 	public Ticker getTicker(String symbol){
 		Iterator<AbstractTickTable> table = tickMap.keySet().iterator();
 		while(table.hasNext()){
