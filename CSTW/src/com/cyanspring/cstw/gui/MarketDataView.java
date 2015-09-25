@@ -153,7 +153,14 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				false, 1, 1));
 
 		cbSymbol = new CCombo(topComposite, SWT.BORDER);
-		cbSymbol.setText("AUDUSD");
+		List<String> symbolList = Business.getInstance().getSymbolList();
+		if(null != symbolList && !symbolList.isEmpty()){	
+			cbSymbol.setItems(symbolList.toArray(new String[symbolList.size()]));
+			cbSymbol.setText(cbSymbol.getItem(0));
+		}else{
+			cbSymbol.setText("");
+		}
+		
 		cbSymbol.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				2, 1));
 		cbSymbol.addSelectionListener(new SelectionAdapter() {

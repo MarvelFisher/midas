@@ -99,6 +99,7 @@ public class Business {
 	private Account loginAccount = null;
 	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
+	private List<String> symbolList = new ArrayList<String>();
 	// singleton implementation
 	private Business() {
 	}
@@ -323,6 +324,7 @@ public class Business {
 		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
 		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
 		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+		
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
 
@@ -335,6 +337,7 @@ public class Business {
 		log.info("Published my node info");
 		
 	}
+	
 	public int getHeartBeatInterval() {
 		return heartBeatInterval;
 	}
@@ -490,6 +493,7 @@ public class Business {
 		return true;
 	}
 	
+	
 	private void sendAccountSettingRequestEvent(String accountId){
 		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(IdGenerator.getInstance().getNextID(), Business.getInstance().getFirstServer(), accountId, null);
 		try {
@@ -566,5 +570,12 @@ public class Business {
 			tickManager.requestTickTableInfo(symbol);
 		}
 		return ticker;
+	}
+	
+	public List<String> getSymbolList(){
+		if((null == symbolList || symbolList.isEmpty()) && null != tickManager)
+			symbolList = tickManager.getSymbolList();
+		
+		return symbolList;
 	}
 }
