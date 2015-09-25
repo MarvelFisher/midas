@@ -360,9 +360,6 @@
 		<property name="refDataTplLoader" ref="refDataTplLoader"></property>
 	</bean>
 
-	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
-	</bean>
-
 	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
@@ -372,19 +369,11 @@
 		</property>
 	</bean>
 
-	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
-		<property name="checkValidContractDate">
-			<value>true</value>
-		</property>
-	</bean>
-
 	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
 		<constructor-arg>
 			<list>
 				<ref bean="categoryFilter" />
-				<ref bean="refSymbolFilter" />
 				<ref bean="itypeFilter" />
-				<ref bean="contractDateFilter" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -401,6 +390,7 @@
 		<constructor-arg>
 			<list>
 				<ref bean="fitxSessionChecker" />
+				<ref bean="fimtxSessionChecker" />
 				<ref bean="indexSessionChecker" />
 			</list>
 		</constructor-arg>
