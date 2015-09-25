@@ -39,7 +39,8 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback, IWindGWListener {
+public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback
+        , IWindGWListener, IAsyncEventListener {
 
     private static final Logger log = LoggerFactory
             .getLogger(WindGateWayAdapter.class);
@@ -237,8 +238,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(useRefDataCodeSubscribe && futureData.getPreSettlePrice() == 0)
-                    futureData.setPreSettlePrice(futureData.getPreClose());
+                if(useRefDataCodeSubscribe) futureData.setPreSettlePrice(futureData.getPreClose());
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
@@ -829,6 +829,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
                 if (calculateMessageFlow(msgStr.length(), dataReceived)) dataReceived = 0;
             }
         }
+    }
+
+    /* AsyncEventListener */
+
+    @Override
+    public void onEvent(AsyncEvent event) {
+        log.debug(id + " Receive event" + event.getKey() +"," + event.getClass().getSimpleName());
     }
 
     /* netty process method*/
