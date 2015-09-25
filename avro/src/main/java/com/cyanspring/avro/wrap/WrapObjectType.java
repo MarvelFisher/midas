@@ -20,17 +20,17 @@ public enum WrapObjectType {
 	NewOrderReply(3, ObjectType.NewOrderReply,
 			com.cyanspring.avro.generate.trade.bean.NewOrderReply.SCHEMA$),
 
-	AmendOrderRequest(4, ObjectType.AmendOrderRequest,
-			com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$),
-
-	AmendOrderReply(5, ObjectType.AmendOrderReply,
-			com.cyanspring.avro.generate.trade.bean.AmendOrderReply.SCHEMA$),
-
-	CancelOrderRequest(6, ObjectType.CancelOrderRequest,
+	CancelOrderRequest(4, ObjectType.CancelOrderRequest,
 			com.cyanspring.avro.generate.trade.bean.CancelOrderRequest.SCHEMA$),
 
-	CancelOrderReply(7, ObjectType.CancelOrderReply,
+	CancelOrderReply(5, ObjectType.CancelOrderReply,
 			com.cyanspring.avro.generate.trade.bean.CancelOrderReply.SCHEMA$),
+
+	AmendOrderRequest(6, ObjectType.AmendOrderRequest,
+			com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$),
+
+	AmendOrderReply(7, ObjectType.AmendOrderReply,
+			com.cyanspring.avro.generate.trade.bean.AmendOrderReply.SCHEMA$),
 
 	Quote(8, ObjectType.Quote,
 			com.cyanspring.avro.generate.market.bean.Quote.SCHEMA$),
@@ -39,8 +39,8 @@ public enum WrapObjectType {
 			com.cyanspring.avro.generate.market.bean.SubscribeQuote.SCHEMA$),
 
 	UnsubscribeQuote(10, ObjectType.UnsubscribeQuote,
-			com.cyanspring.avro.generate.market.bean.UnsubscribeQuote.SCHEMA$), 
-			
+			com.cyanspring.avro.generate.market.bean.UnsubscribeQuote.SCHEMA$),
+
 	;
 
 	private int code;
