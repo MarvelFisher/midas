@@ -38,10 +38,18 @@ public class RefDataParser {
         String commodity = (String) defaultHashMap.get(RefDataField.COMMODITY);
         if(commodity.equals("IT")){
             commodity = RefDataCommodity.INDEX.getValue();
-            int len = codeTableData.getWindCode().length();
-            refData.setSymbol("TWSE" + codeTableData.getWindCode().substring(len-2, len));
+            try {
+            String lastIndexStr = codeTableData.getWindCode().substring(
+                    codeTableData.getWindCode().lastIndexOf(".") + 3,
+                    codeTableData.getWindCode().length()
+            );
+            refData.setSymbol("TWSE" + lastIndexStr);
             refData.setRefSymbol(refData.getSymbol());
             refData.setCode(codeTableData.getWindCode());
+            }catch (Exception e){
+                log.error(e.getMessage(),e);
+                return null;
+            }
         }
         if(commodity.equals("FT")){
             commodity = RefDataCommodity.FUTURES.getValue();
@@ -59,6 +67,7 @@ public class RefDataParser {
                 refData.setCode(codeTableData.getWindCode());
             }catch (Exception e){
                 log.error(e.getMessage(),e);
+                return null;
             }
         }
         if(commodity.equals("FC")){

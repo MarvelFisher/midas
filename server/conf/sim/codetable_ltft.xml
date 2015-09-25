@@ -1,5 +1,106 @@
 <map>
   <entry>
+    <string>ICE.TWF.FIMTX.201606</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FIMTX.201606</windCode>
+      <cnName>小臺06 (台灣期交所)</cnName>
+      <spellName>xt06(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FIMTX.201606</englishName>
+      <product>FIMTX</product>
+      <productName>小臺</productName>
+      <symbolName>小臺06</symbolName>
+      <currency>NTD</currency>
+      <showID>MXFF6</showID>
+      <group>期貨.台灣期交所.小臺</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FIMTX.201603</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FIMTX.201603</windCode>
+      <cnName>小臺03 (台灣期交所)</cnName>
+      <spellName>xt03(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FIMTX.201603</englishName>
+      <product>FIMTX</product>
+      <productName>小臺</productName>
+      <symbolName>小臺03</symbolName>
+      <currency>NTD</currency>
+      <showID>MXFC6</showID>
+      <group>期貨.台灣期交所.小臺</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FIMTX</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FIMTX</windCode>
+      <cnName>小臺 (台灣期交所)</cnName>
+      <spellName>xt(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FIMTX</englishName>
+      <product>FIMTX</product>
+      <productName>小臺</productName>
+      <symbolName>小臺</symbolName>
+      <currency>NTD</currency>
+      <group>期貨.台灣期交所.小臺</group>
+      <securityType>1</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FIMTX.201511</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FIMTX.201511</windCode>
+      <cnName>小臺11 (台灣期交所)</cnName>
+      <spellName>xt11(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FIMTX.201511</englishName>
+      <product>FIMTX</product>
+      <productName>小臺</productName>
+      <symbolName>小臺11</symbolName>
+      <currency>NTD</currency>
+      <showID>MXFK5</showID>
+      <group>期貨.台灣期交所.小臺</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FIMTX.201512</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FIMTX.201512</windCode>
+      <cnName>小臺12 (台灣期交所)</cnName>
+      <spellName>xt12(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FIMTX.201512</englishName>
+      <product>FIMTX</product>
+      <productName>小臺</productName>
+      <symbolName>小臺12</symbolName>
+      <currency>NTD</currency>
+      <showID>MXFL5</showID>
+      <group>期貨.台灣期交所.小臺</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
+    <string>ICE.TWF.FITX.201603</string>
+    <com.cyanspring.common.staticdata.CodeTableData>
+      <windCode>ICE.TWF.FITX.201603</windCode>
+      <cnName>臺指03 (台灣期交所)</cnName>
+      <spellName>tz03(twqjs)</spellName>
+      <securityExchange>TWF</securityExchange>
+      <englishName>ICE.TWF.FITX.201603</englishName>
+      <product>FITX</product>
+      <productName>臺指</productName>
+      <symbolName>臺指03</symbolName>
+      <currency>NTD</currency>
+      <showID>TXFC6</showID>
+      <group>期貨.台灣期交所.臺指</group>
+      <securityType>2</securityType>
+    </com.cyanspring.common.staticdata.CodeTableData>
+  </entry>
+  <entry>
     <string>ICE.TWF.FITX</string>
     <com.cyanspring.common.staticdata.CodeTableData>
       <windCode>ICE.TWF.FITX</windCode>
@@ -11,7 +112,6 @@
       <productName>臺指</productName>
       <symbolName>臺指</symbolName>
       <currency>NTD</currency>
-      <showID>TX</showID>
       <group>期貨.台灣期交所.臺指</group>
       <securityType>1</securityType>
     </com.cyanspring.common.staticdata.CodeTableData>
@@ -85,19 +185,19 @@
     </com.cyanspring.common.staticdata.CodeTableData>
   </entry>
   <entry>
-    <string>ICE.TWF.FITX.201603</string>
+    <string>ICE.TWF.FIMTX.201510</string>
     <com.cyanspring.common.staticdata.CodeTableData>
-      <windCode>ICE.TWF.FITX.201603</windCode>
-      <cnName>臺指03 (台灣期交所)</cnName>
-      <spellName>tz03(twqjs)</spellName>
+      <windCode>ICE.TWF.FIMTX.201510</windCode>
+      <cnName>小臺10 (台灣期交所)</cnName>
+      <spellName>xt10(twqjs)</spellName>
       <securityExchange>TWF</securityExchange>
-      <englishName>ICE.TWF.FITX.201603</englishName>
-      <product>FITX</product>
-      <productName>臺指</productName>
-      <symbolName>臺指03</symbolName>
+      <englishName>ICE.TWF.FIMTX.201510</englishName>
+      <product>FIMTX</product>
+      <productName>小臺</productName>
+      <symbolName>小臺10</symbolName>
       <currency>NTD</currency>
-      <showID>TXFC6</showID>
-      <group>期貨.台灣期交所.臺指</group>
+      <showID>MXFJ5</showID>
+      <group>期貨.台灣期交所.小臺</group>
       <securityType>2</securityType>
     </com.cyanspring.common.staticdata.CodeTableData>
   </entry>
