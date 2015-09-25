@@ -8,8 +8,8 @@
 >
 
 	<context:annotation-config />
-	<import resource="info_ft/*"/>
-	<import resource="info_common/ticktable_ft.xml"/>
+	<import resource="info_ltft/*"/>
+	<import resource="info_common/ticktable_ltft.xml"/>
 	
 	<bean id="alertManager" class="com.cyanspring.info.alert.AlertManager">		
 		<property name="maxNoOfAlerts" value="20" />

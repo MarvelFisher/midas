@@ -24,7 +24,7 @@ public class SimFITXRefDataAdapter implements IRefDataAdaptor {
 	private static final Logger log = LoggerFactory
 			.getLogger(SimFITXRefDataAdapter.class);
 
-	private String filePath = "./conf/sim/codetable_ft.xml";
+	private String filePath = "./conf/sim/codetable_ltft.xml";
 	private XStream xstream;
 	private Map<String, CodeTableData> map;
 	private List<IRefDataListener> listeners;

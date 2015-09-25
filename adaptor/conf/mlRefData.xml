@@ -34,7 +34,7 @@
         <property name="gatewayPort" value="10038"/>
         <property name="marketDataLog" value="true"/>
         <property name="msgPack" value="true"></property>
-        <property name="refDataFile" value="refdata/refData_ft.xml"/>
+        <property name="refDataFile" value="refdata/refData_ltft.xml"/>
         <property name="windFilter" ref="ftFilter"/>
         <property name="needsubscribe" value="true"/>
         <property name="marketsList">
