@@ -61,6 +61,20 @@ namespace com.cyanspring.avro.generate.trade.bean
         }
     }
 
+    public partial class AmendOrderRequest
+    {
+        override
+        public string ToString()
+        {
+            return
+               "orderId=" + orderId + "; " +
+               "exchangeAccount=" + exchangeAccount + "; " +
+               "price=" + price + "; " +
+               "quantity" + quantity + "; " +
+               "";
+        }
+    }
+
     public partial class CancelOrderReply
     {
         public CancelOrderReply()
@@ -73,6 +87,18 @@ namespace com.cyanspring.avro.generate.trade.bean
         }
     }
 
+    public partial class CancelOrderRequest
+    {
+        override
+        public string ToString()
+        {
+            return
+               "orderId=" + orderId + "; " +
+               "exchangeAccount=" + exchangeAccount + "; " +
+               "";
+        }
+    }
+
     public partial class NewOrderReply
     {
         public NewOrderReply()
@@ -82,6 +108,28 @@ namespace com.cyanspring.avro.generate.trade.bean
             this._message = "";
             this._orderId = "";
             this._txId = "";
+        } 
+    }
+
+    public partial class NewOrderRequest
+    {
+        override
+        public string ToString()
+        {
+            return
+                "symbol=" + symbol + "; " +
+                "orderId=" + orderId + "; " +
+                "exchangeAccount=" + exchangeAccount + "; " +               
+                "price=" + price + "; " +
+                "quantity=" + quantity + "; " +                
+                "timeInForce=" + timeInForce + "; " +
+                "orderSide=" + orderSide + "; " +
+                "orderType=" + orderType + "; " +
+                "created=" + created + "; " +
+                "clOrderId=" + clOrderId + "; " +
+                "timeInForce=" + timeInForce + "; " +
+                "";
+
         }
     }
 

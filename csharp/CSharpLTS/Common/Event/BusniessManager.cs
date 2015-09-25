@@ -168,26 +168,27 @@ namespace Common.Event
                 {
                     case ObjectType.AmendOrderRequest:
                         {
-                            logger.Info("Get AmendOrderRequest");
+                            
                             AmendOrderRequest req = (AmendOrderRequest)avroObj;
+                            logger.Info("Get AmendOrderRequest: " + req.ToString());
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
                             processAmendOrder(adaptor, req);
                             
                             break;
                         }
                     case ObjectType.CancelOrderRequest:
-                        {
-                            logger.Info("Get CancelOrderRequest");
+                        {                           
                             CancelOrderRequest req = (CancelOrderRequest)avroObj;
+                            logger.Info("Get CancelOrderRequest: " + req.ToString());
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
                             processCancelOrder(adaptor, req);
 
                             break;
                         }
                     case ObjectType.NewOrderRequest:
-                        {
-                            logger.Info("Get NewOrderRequest");
+                        {                           
                             NewOrderRequest req = (NewOrderRequest)avroObj;
+                            logger.Info("Get NewOrderRequest: " + req.ToString());
                             IDownStreamAdaptor adaptor = _manager.downStreamManager.getAdaptorById(req.exchangeAccount);
                             processNewOrder(adaptor, req);
 
