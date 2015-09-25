@@ -166,6 +166,11 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="eventListeners">
+			<list>
+				<ref bean="windAdaptorFT" />
+			</list>
+		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 	</bean>
 
@@ -184,7 +189,7 @@
 		<property name="gatewayPort" value="10038"/>
 		<property name="marketDataLog" value="false"/>
 		<property name="tradeDateCheckIsOpen" value="true"/>
-		<property name="closeOverTimeControlIsOpen" value="true"/>
+		<property name="closeOverTimeControlIsOpen" value="false"/>
 		<property name="msgPack" value="true"/>
 		<property name="isSubTrans" value="false"/>
 		<property name="useRefDataCodeSubscribe" value="true"/>

@@ -152,11 +152,8 @@
 				<ref bean="windAdaptorFCC" />
 			</list>		 
 		</constructor-arg>
-		<property name="quoteThrottle" value="1000"></property>
-		<property name="timerInterval" value="1000"></property>
 		<property name="quoteLogIsOpen" value="false"></property>
 		<property name="quoteExtendEventIsSend" value="false"></property>
-
 		<property name="preSubscriptionList">
 				<ref bean="preSubscriptionList" />
 		</property>
@@ -166,6 +163,12 @@
 				<entry key="PREMARKET" value="0" />
 				<entry key="CLOSE" value="0" />
 			</map>
+		</property>
+		<property name="eventListeners">
+			<list>
+				<ref bean="windAdaptorFCI" />
+				<ref bean="windAdaptorFCC" />
+			</list>
 		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 	</bean>

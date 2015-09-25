@@ -83,6 +83,12 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="eventListeners">
+			<list>
+				<ref bean="windAdaptorFCI" />
+				<ref bean="windAdaptorFCC" />
+			</list>
+		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 		<property name="quoteSaver" ref="quoteSaver"/>
 		<property name="quoteCleaner" ref="quoteCleaner"/>

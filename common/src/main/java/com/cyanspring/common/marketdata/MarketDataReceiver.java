@@ -69,6 +69,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected Map<String, InnerQuoteEvent> innerQuotesToBeSent = new HashMap<String, InnerQuoteEvent>();
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
+    protected List<IAsyncEventListener> eventListeners = new ArrayList<>();
     private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
@@ -156,11 +157,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 if (indexSessionTypes.get("NONAME") != null && indexSessionTypes.get("NONAME").size() > 0) {
                     log.debug("NoName index list:" + indexSessionTypes.get("NONAME"));
                 }
-                for (IMarketDataAdaptor adaptor : adaptors) {
-                    if (null != adaptor) {
-                        adaptor.processEvent(event);
-                    }
-                }
+                checkEventAndSend(event);
                 if (!isInitReqDataEnd) isInitRefDateReceived = true;
             }else{
                 refDataEvent = event;
@@ -174,11 +171,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         log.debug("Receive RefDataUpdate Event - " + event.getAction().name());
         List<RefData> refDataUpdateList = event.getRefDataList();
         if(refDataUpdateList != null && refDataUpdateList.size() > 0) {
-            for (IMarketDataAdaptor adaptor : adaptors) {
-                if (null != adaptor) {
-                    adaptor.processEvent(event);
-                }
-            }
+            checkEventAndSend(event);
             //Check Action
             switch (event.getAction()) {
                 case ADD:
@@ -234,9 +227,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     );
                     indexSessions.put(index, marketSessionData);
                 }
-                for (IMarketDataAdaptor adaptor : adaptors) {
-                    if (null != adaptor) adaptor.processEvent(event);
-                }
+                checkEventAndSend(event);
                 if (!isInitReqDataEnd) isInitIndexSessionReceived = true;
             }else{
                 indexSessionEvent = event;
@@ -346,7 +337,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             quote.setTimeSent(prev.getTimeSent()); // important record the last
             // time sent of this quote
             innerQuotesToBeSent.put(quote.getSymbol(),
-                    new InnerQuoteEvent(null, null, event.getQuote(),inEvent.getQuoteSource(),inEvent.getContributor()));
+                    new InnerQuoteEvent(null, null, event.getQuote(), inEvent.getQuoteSource(), inEvent.getContributor()));
             return;
         }
 
@@ -625,6 +616,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         log.debug("Market data presubscribe end");
     }
 
+    private void checkEventAndSend(AsyncEvent event){
+        if(eventListeners != null && eventListeners.size() > 0){
+            for(IAsyncEventListener eventListener: eventListeners){
+                if(eventListener != null) eventListener.onEvent(event);
+            }
+        }
+    }
+
     public int getQuoteExtendSegmentSize() {
         return quoteExtendSegmentSize;
     }
@@ -732,4 +731,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 	public void setQuoteListener(IQuoteListener quoteListener) {
 		this.quoteListener = quoteListener;
 	}
+
+    public void setEventListeners(List<IAsyncEventListener> eventListeners) {
+        this.eventListeners = eventListeners;
+    }
 }

@@ -91,7 +91,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private ChannelHandlerContext channelHandlerContext;
     private final int doConnect = 0;
     private volatile boolean isConnected = false;
-    private volatile boolean isInit = false;
 
     //Calculate packet use
     private int bufLenMin = 0, bufLenMax = 0, dataReceived = 0, blockCount = 0;
@@ -440,7 +439,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     @Override
     public void uninit() {
         log.info(id + " Wind uninit begin");
-        isInit = false;
         isAlive = false;
         printDataTimeStat();
         closeClient();
@@ -660,65 +658,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     @Override
     public void processEvent(Object object) {
-
-        //RefDataEvent
-        if (object instanceof RefDataEvent) {
-            log.debug("Wind Adapter Receive RefDataEvent");
-            RefDataEvent refDataEvent = (RefDataEvent) object;
-            inputRefDataList(refDataEvent.getRefDataList());
-        }
-
-        //RefDataUpdateEvent
-        if(object instanceof RefDataUpdateEvent){
-            log.debug("Wind Adapter Receive RefDataUpdateEvent");
-            RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) object;
-            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.ADD)
-                inputRefDataList(refDataUpdateEvent.getRefDataList());
-            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.MOD){
-                for(RefData refData : refDataUpdateEvent.getRefDataList()){
-                    DataObject quoteExtend = new DataObject();
-                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), refData.getSymbol());
-                    quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
-                    quoteExtend.put(QuoteExtDataField.CNNAME.value(), refData.getCNDisplayName());
-                    quoteExtend.put(QuoteExtDataField.TWNAME.value(), refData.getTWDisplayName());
-                    sendQuoteExtend(quoteExtend);
-                }
-            }
-
-        }
-        //IndexSessionEvent
-        if (object instanceof IndexSessionEvent) {
-            log.debug("Wind Adapter Receive IndexSessionEvent");
-            IndexSessionEvent indexSessionEvent = (IndexSessionEvent) object;
-            for (String index : indexSessionEvent.getDataMap().keySet()) {
-                MarketSessionData marketSessionData = indexSessionEvent.getDataMap().get(index);
-                marketSessionByIndexMap.put(index, marketSessionData);
-                if(!useMarketSession){
-                    int tradeDateForWindFormat = Integer.parseInt(marketSessionData.getTradeDateByString().replace(
-                            "-", ""));
-                    LogUtil.logInfo(
-                            log,
-                            "ProcessIndexMarketSession:" + index + "," + marketSessionData.getTradeDateByString() + ","
-                                    + marketSessionData.getSessionType()+ ",Windformat="
-                                    + tradeDateForWindFormat + "," + marketSessionData.getStart() + ","
-                                    + marketSessionData.getEnd());
-                    WindIndexSessionCheckData windIndexSessionCheckData = new WindIndexSessionCheckData(index);
-                    windIndexSessionCheckData.setTradeDateForWindFormat(tradeDateForWindFormat);
-                    MarketSessionType marketSessionType = marketSessionData.getSessionType();
-                    if (marketSessionType == MarketSessionType.CLOSE) {
-                        windIndexSessionCheckData.setSessionClose(true);
-                        try {
-                            windIndexSessionCheckData.setSessionCloseDate(marketSessionData.getStartDate());
-                        } catch (ParseException e) {
-                            log.error(e.getMessage());
-                        }
-                    }else{
-                        windIndexSessionCheckData.setSessionClose(false);
-                    }
-                    indexSessionCheckDataByIndexMap.put(index, windIndexSessionCheckData);
-                }
-            }
-        }
     }
 
     public void inputRefDataList(List<RefData> refDataList){
@@ -835,7 +774,61 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
 
     @Override
     public void onEvent(AsyncEvent event) {
-        log.debug(id + " Receive event" + event.getKey() +"," + event.getClass().getSimpleName());
+        log.debug(id + " Receive event = " + event.getClass().getSimpleName());
+
+        if (event instanceof RefDataEvent) {
+            RefDataEvent refDataEvent = (RefDataEvent) event;
+            inputRefDataList(refDataEvent.getRefDataList());
+        }
+
+        if(event instanceof RefDataUpdateEvent){
+            RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) event;
+            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.ADD)
+                inputRefDataList(refDataUpdateEvent.getRefDataList());
+            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.MOD){
+                for(RefData refData : refDataUpdateEvent.getRefDataList()){
+                    DataObject quoteExtend = new DataObject();
+                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), refData.getSymbol());
+                    quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
+                    quoteExtend.put(QuoteExtDataField.CNNAME.value(), refData.getCNDisplayName());
+                    quoteExtend.put(QuoteExtDataField.TWNAME.value(), refData.getTWDisplayName());
+                    sendQuoteExtend(quoteExtend);
+                }
+            }
+
+        }
+
+        if (event instanceof IndexSessionEvent) {
+            IndexSessionEvent indexSessionEvent = (IndexSessionEvent) event;
+            for (String index : indexSessionEvent.getDataMap().keySet()) {
+                MarketSessionData marketSessionData = indexSessionEvent.getDataMap().get(index);
+                marketSessionByIndexMap.put(index, marketSessionData);
+                if(!useMarketSession){
+                    int tradeDateForWindFormat = Integer.parseInt(marketSessionData.getTradeDateByString().replace(
+                            "-", ""));
+                    LogUtil.logInfo(
+                            log,
+                            "ProcessIndexMarketSession:" + index + "," + marketSessionData.getTradeDateByString() + ","
+                                    + marketSessionData.getSessionType()+ ",Windformat="
+                                    + tradeDateForWindFormat + "," + marketSessionData.getStart() + ","
+                                    + marketSessionData.getEnd());
+                    WindIndexSessionCheckData windIndexSessionCheckData = new WindIndexSessionCheckData(index);
+                    windIndexSessionCheckData.setTradeDateForWindFormat(tradeDateForWindFormat);
+                    MarketSessionType marketSessionType = marketSessionData.getSessionType();
+                    if (marketSessionType == MarketSessionType.CLOSE) {
+                        windIndexSessionCheckData.setSessionClose(true);
+                        try {
+                            windIndexSessionCheckData.setSessionCloseDate(marketSessionData.getStartDate());
+                        } catch (ParseException e) {
+                            log.error(e.getMessage());
+                        }
+                    }else{
+                        windIndexSessionCheckData.setSessionClose(false);
+                    }
+                    indexSessionCheckDataByIndexMap.put(index, windIndexSessionCheckData);
+                }
+            }
+        }
     }
 
     /* netty process method*/

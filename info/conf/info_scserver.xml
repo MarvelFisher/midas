@@ -147,7 +147,7 @@
 	<bean id="mdReceiver" class="com.cyanspring.common.marketdata.MarketDataReceiver">
 		<constructor-arg>
 			<list>
-				<ref bean="windAdaptor" />
+				<ref bean="windAdaptorSC" />
 			</list>		 
 		</constructor-arg>
 		<property name="quoteThrottle" value="1000"></property>
@@ -165,6 +165,11 @@
 				<entry key="CLOSE" value="0" />
 			</map>
 		</property>
+		<property name="eventListeners">
+			<list>
+				<ref bean="windAdaptorSC" />
+			</list>
+		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 	</bean>
 
@@ -175,7 +180,7 @@
 
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 
-	<bean id="windAdaptor"
+	<bean id="windAdaptorSC"
 		class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="id" value="W01"/>
 		<property name="showGui" value="true"/>
