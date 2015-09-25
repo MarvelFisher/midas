@@ -131,11 +131,11 @@ namespace Common.Event
                 update.clOrderId = StringUtils.trim(order.clOrderId);
                 update.created = StringUtils.trim(order.created);
                 update.cumQty = order.cumQty;
-                update.exchangeAccount = StringUtils.trim(order.exchangeAccount);
+                update.exchangeAccount = StringUtils.trim(_adaptor.id);
                 update.execType = (int)order.execType;
-
-                logger.Info("Send OrderUpdate: " + order.ToString());
+                
                 _manager.Publish(update);
+                logger.Info("Send OrderUpdate: " + order.ToString());
 
             }
 
@@ -206,6 +206,7 @@ namespace Common.Event
                     default:
                         {
                             //Log Error
+                            logger.Error("Undefined ObjectType: " + type);
                             return;
                         }
                 }
@@ -294,7 +295,7 @@ namespace Common.Event
                         rsp.orderId = req.orderId;
                         rsp.exchangeAccount = req.exchangeAccount;
                         rsp.message = "sucess";
-                        _manager.Publish(rsp);
+                        //_manager.Publish(rsp);
                     }
                     catch(Exception e)
                     {

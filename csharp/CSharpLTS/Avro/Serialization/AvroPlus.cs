@@ -89,7 +89,7 @@ namespace com.cyanspring.avro.generate.trade.bean
     {
         public OrderUpdate()
         {
-            this._orderType = (int)ObjectType.OrderUpdate;
+            this._objectType = (int)ObjectType.OrderUpdate;
             this._clOrderId = "";
             this._created = "";
             this._exchangeAccount = "";

@@ -1,11 +1,11 @@
-& C:
+& D:
 
-& cd C:\workspace_t\LTS\avro\idl
+& cd D:\TaibeiWorkSpace\LTS\avro\idl
 
 Get-ChildItem -Recurse -Include *.avsc | % {
 
     Write-Host "Processing '$_' ..."
 
-    & C:\workspace_t\LTS\avro\csharp\codegen\Release\avrogen.exe -s $_.FullName C:\workspace_t\LTS\avro\csharp\
+    & D:\TaibeiWorkSpace\LTS\avro\csharp\codegen\Release\avrogen.exe -s $_.FullName D:\TaibeiWorkSpace\LTS\avro\csharp
 
 }

@@ -57,7 +57,7 @@ namespace Avro.Serialization
                     ObjectType type = (ObjectType)function;
                     Schema schema = staticMap[type];
                     reader = new SpecificDatumReader<ISpecificRecord>(schema, schema);
-                    using (MemoryStream ms = new MemoryStream(bytes, false))
+                    using (MemoryStream ms = new MemoryStream(bytes, 4, bytes.Length - 4,  false))
                     {
                         BinaryDecoder decoder = new BinaryDecoder(ms);
                         return reader.Read(null, decoder);
