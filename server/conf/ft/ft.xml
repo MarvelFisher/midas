@@ -279,7 +279,7 @@
 	</bean>
 
 	<bean id="commissionManager" class="com.cyanspring.server.account.FITXCommissionManager">
-		<property name="trxFee" value="12" />
+		<property name="trxFee" value="80" />
 		<property name="trxTaxRate" value="0.00002" />
 	</bean>
 

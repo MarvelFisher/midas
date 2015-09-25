@@ -10,7 +10,7 @@ import com.cyanspring.common.staticdata.fu.IType;
 
 public class FITXCommissionManager extends CommissionManager {
 
-	private double trxFee = 12;
+	private double trxFee = 80;
 	private double trxTaxRate = 0.00002;
 
 	public double getTrxFee() {

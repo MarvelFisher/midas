@@ -288,7 +288,7 @@
 	</bean>
 
 	<bean id="commissionManager" class="com.cyanspring.server.account.FITXCommissionManager">
-		<property name="trxFee" value="12" />
+		<property name="trxFee" value="80" />
 		<property name="trxTaxRate" value="0.00002" />
 	</bean>
 
@@ -301,7 +301,7 @@
 		<property name="eventManager" ref="eventManager" />
 	</bean>
 
-	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
+	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimFITXRefDataAdapter">
 		<property name="filePath" value="./conf/sim/codetable_ft.xml"></property>
 	</bean>
 
@@ -324,9 +324,6 @@
 		<property name="refDataTplLoader" ref="refDataTplLoader"></property>
 	</bean>
 
-	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
-	</bean>
-
 	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
 		<property name="types">
 			<list>
@@ -335,19 +332,11 @@
 		</property>
 	</bean>
 
-	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
-		<property name="checkValidContractDate">
-			<value>true</value>
-		</property>
-	</bean>
-
 	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
 		<constructor-arg>
 			<list>
 				<ref bean="categoryFilter" />
-				<ref bean="refSymbolFilter" />
 				<ref bean="itypeFilter" />
-				<ref bean="contractDateFilter" />
 			</list>
 		</constructor-arg>
 	</bean>
