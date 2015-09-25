@@ -99,7 +99,7 @@
 			</entry>
 			<entry>
 				<string>Maximum hold</string>
-				<int>6000</int>
+				<int>4000</int>
 			</entry>
 			<entry>
 				<string>Tick table</string>
@@ -233,9 +233,11 @@
 				<string>Strategy</string>
 				<string>TWF</string>
 			</entry>
+			<!-- 與臺股期貨合併計算(依4口小型臺指期貨契約等於1口臺股期貨契約合併計算, 臺股期貨部位限制6,000) -->
+			<!-- 目前設置 臺股期貨4000, 小型臺指期貨8000, 4000 + 8000/4 = 6000 -->
 			<entry>
 				<string>Maximum hold</string>
-				<int>6000</int>
+				<int>8000</int>
 			</entry>
 			<entry>
 				<string>Tick table</string>
