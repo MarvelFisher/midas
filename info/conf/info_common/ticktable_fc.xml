@@ -13,16 +13,62 @@
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
 	<bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
-	</bean>
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>0.2</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit1TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>1</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit2TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>2</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit5TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit10TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
+    <bean id="unit005TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+       <property name="tickTable">
+            <array>
+                <array><value>0</value><value>1000000</value><value>5</value></array>
+            </array>
+        </property>
+    </bean>
 
-	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
-		<property name="tickTables">
-			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
-				<entry key="DEFAULT" value-ref="hkexTickTable" />
-				<entry key="FX" value-ref="forexTickTable" />
-				<entry key="IF" value-ref="ifTickTable" />
-			</map>
-		</property>
-	</bean>
+    <bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
+        <property name="tickTables">
+            <map key-type="java.lang.String"
+                value-type="com.cyanspring.common.staticdata.AbstractTickTable">
+                <entry key="DEFAULT" value-ref="hkexTickTable" />
+                <entry key="FX" value-ref="forexTickTable" />
+                <entry key="IF" value-ref="ifTickTable" />
+                <entry key="UNIT1" value-ref="unit1TickTable" />
+                <entry key="UNIT2" value-ref="unit2TickTable" />
+                <entry key="UNIT5" value-ref="unit5TickTable" />
+                <entry key="UNIT10" value-ref="unit10TickTable" />
+                <entry key="UNIT005" value-ref="unit005TickTable" />
+            </map>
+        </property>
+    </bean>
 
 </beans>
