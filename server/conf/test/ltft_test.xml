@@ -302,7 +302,7 @@
 	</bean>
 
 	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimFITXRefDataAdapter">
-		<property name="filePath" value="./conf/sim/codetable_ft.xml"></property>
+		<property name="filePath" value="./conf/sim/codetable_ltft.xml"></property>
 	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">

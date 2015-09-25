@@ -5,7 +5,6 @@ import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
 import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
-import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
 import com.cyanspring.common.filter.IRefDataFilter;
 import com.cyanspring.common.staticdata.WindBaseDBData;
@@ -39,7 +38,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -158,7 +156,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     } else {
                         f.channel().closeFuture().sync();
                     }
-                    if (!isAlive) return;
+                    if (!isAlive) {
+						return;
+					}
                 } catch (Exception e) {
                     log.warn(e.getMessage(), e);
                 }
@@ -171,15 +171,21 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
-            if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully();
+            if (eventLoopGroup != null) {
+				eventLoopGroup.shutdownGracefully();
+			}
         }
     }
 
     public void process(int datatype, String[] in_arr, HashMap<Integer, Object> inputMessageHashMap) {
         if (msgPack) {
-            if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) return;
+            if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) {
+				return;
+			}
         } else {
-            if (in_arr == null) return;
+            if (in_arr == null) {
+				return;
+			}
         }
         switch (datatype) {
             case WindDef.MSG_SYS_SNAPSHOTENDS:
@@ -195,7 +201,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                         LogUtil.logException(log, e);
                         return;
                     }
-                    if (futureCodeTableData == null) return;
+                    if (futureCodeTableData == null) {
+						return;
+					}
                     codeTableDataBySymbolMap.put(futureCodeTableData.getWindCode(), futureCodeTableData);
                     if (marketDataLog) {
                         log.debug("CODETABLE INFO:S=" + futureCodeTableData.getWindCode() + ",C=" + futureCodeTableData.getCnName()
@@ -227,13 +235,17 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     LogUtil.logException(log, e);
                     return;
                 }
-                if(codeTableResult == null || !marketsList.contains(codeTableResult.getSecurityExchange())) return;
+                if(codeTableResult == null || !marketsList.contains(codeTableResult.getSecurityExchange())) {
+					return;
+				}
                 codeTableResultByExchangeMap.put(codeTableResult.getSecurityExchange(),codeTableResult);
                 log.debug("codeTable exchange = " + codeTableResult.getSecurityExchange() + ",hashCode=" + codeTableResult.getHashCode());
                 requestMgr.addReqData(new Object[]{datatype, codeTableResult});
                 break;
             case WindDef.MSG_SYS_CODETABLE:
-                if (serverHeartBeatCountAfterCodeTableCome <= -1) serverHeartBeatCountAfterCodeTableCome = 0;
+                if (serverHeartBeatCountAfterCodeTableCome <= -1) {
+					serverHeartBeatCountAfterCodeTableCome = 0;
+				}
                 CodeTableData codeTableData = null;
                 WindBaseDBData windBaseDBData = null;
 
@@ -244,15 +256,21 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                     return;
                 }
 
-                if(codeTableData == null) return;
+                if(codeTableData == null) {
+					return;
+				}
 
                 if(windFilter != null) {
-                    if(!windFilter.codeTableFilter(codeTableData)) return;
+                    if(!windFilter.codeTableFilter(codeTableData)) {
+						return;
+					}
                 }
 
                 //filter List process
                 if(refFilterList != null && refFilterList.size() > 0){
-                    if(!refFilterList.contains(codeTableData.getWindCode())) return;
+                    if(!refFilterList.contains(codeTableData.getWindCode())) {
+						return;
+					}
                 }
 
                 //Check WindBaseDB Data
@@ -275,7 +293,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                             + codeTableData.getSecurityExchange() + ",SN=" + codeTableData.getShortName() + ",T=" + codeTableData.getSecurityType()
                             + ",Sp=" + codeTableData.getSpellName() + ",EN=" + codeTableData.getEnglishName());
 //                }
-                if(!needsubscribe) requestMgr.addReqData(new Object[]{datatype, codeTableData});
+                if(!needsubscribe) {
+					requestMgr.addReqData(new Object[]{datatype, codeTableData});
+				}
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:
                 //check CodeTable done.
@@ -287,7 +307,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
                         serverHeartBeatCountAfterCodeTableCome--;
                         if (serverHeartBeatCountAfterCodeTableCome < -3) {
                             if(needsubscribe && needsubscribeDataIsReceive){
-//                                RefDataParser.saveHashMapToFile("ticks/codetable_ft.xml", new HashMap<>(codeTableDataBySymbolMap));
+//                                RefDataParser.saveHashMapToFile("ticks/codetable_ltft.xml", new HashMap<>(codeTableDataBySymbolMap));
                                 codeTableIsProcessEnd = true;
                                 serverHeartBeatCountAfterCodeTableCome = -1;
                             }else {
@@ -382,12 +402,14 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         if(windDBHandler != null) {
             eventProcessor.setHandler(this);
             eventProcessor.init();
-            if (eventProcessor.getThread() != null)
-                eventProcessor.getThread().setName("WRDA eP-" + refDataAdapterName);
+            if (eventProcessor.getThread() != null) {
+				eventProcessor.getThread().setName("WRDA eP-" + refDataAdapterName);
+			}
 
-            if (!eventProcessor.isSync())
-                scheduleManager.scheduleRepeatTimerEvent(timerInterval,
+            if (!eventProcessor.isSync()) {
+				scheduleManager.scheduleRepeatTimerEvent(timerInterval,
                         eventProcessor, timerEvent);
+			}
         }
     }
 
@@ -444,14 +466,30 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     public int parsePackTypeToDataType(int packType, HashMap hashMap) {
         int dataType = -1;
-        if (packType == FDTFields.WindCodeTable) dataType = WindDef.MSG_SYS_CODETABLE;
-        if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
-        if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
-        if (packType == FDTFields.Heartbeat) dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
-        if (packType == FDTFields.WindConnected) dataType = WindDef.MSG_WINDGW_CONNECTED;
-        if (packType == FDTFields.WindCodeTableResult) dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
-        if (packType == FDTFields.WindMarkets) dataType = WindDef.MSG_SYS_MARKETS;
-        if (packType == FDTFields.SnapShotEnds) dataType = WindDef.MSG_SYS_SNAPSHOTENDS;
+        if (packType == FDTFields.WindCodeTable) {
+			dataType = WindDef.MSG_SYS_CODETABLE;
+		}
+        if (packType == FDTFields.WindFutureData) {
+			dataType = WindDef.MSG_DATA_FUTURE;
+		}
+        if (hashMap.get(FDTFields.WindSymbolCode) == null) {
+			dataType = -1;
+		}
+        if (packType == FDTFields.Heartbeat) {
+			dataType = WindDef.MSG_WINDGW_SERVERHEARTBEAT;
+		}
+        if (packType == FDTFields.WindConnected) {
+			dataType = WindDef.MSG_WINDGW_CONNECTED;
+		}
+        if (packType == FDTFields.WindCodeTableResult) {
+			dataType = WindDef.MSG_SYS_CODETABLE_RESULT;
+		}
+        if (packType == FDTFields.WindMarkets) {
+			dataType = WindDef.MSG_SYS_MARKETS;
+		}
+        if (packType == FDTFields.SnapShotEnds) {
+			dataType = WindDef.MSG_SYS_SNAPSHOTENDS;
+		}
         return dataType;
     }
 
@@ -594,7 +632,9 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public void onRequestEvent(RequestThread sender, Object reqObj) {
         if (reqObj instanceof Integer) {
             int signal = (int) reqObj;
-            if (signal == 0 && !connected) connect();
+            if (signal == 0 && !connected) {
+				connect();
+			}
         }
     }
 
