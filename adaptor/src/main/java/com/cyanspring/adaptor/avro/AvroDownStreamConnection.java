@@ -154,6 +154,12 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			localOrders.put(order.getId(), order);
 			int side = WrapOrderSide.valueOf(order.getSide()).getCode();
 			int type = WrapOrderType.valueOf(ExchangeOrderType.toOrderType(order.getType())).getCode();
+			
+			if (order.getClOrderId() == null)
+				order.setClOrderId(IdGenerator.getInstance().getNextID() + "X");
+			if (order.get(TimeInForce.class, OrderField.TIF.value()) == null)
+				order.set(TimeInForce.DAY, OrderField.TIF.value());
+			
 			NewOrderRequest request = NewOrderRequest.newBuilder()
 					.setOrderId(order.getId())
 					.setClOrderId(order.getClOrderId())
