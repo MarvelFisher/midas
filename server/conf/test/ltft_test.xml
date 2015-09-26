@@ -384,7 +384,7 @@
 	<bean id="avroDownStreamConnection" class="com.cyanspring.adaptor.avro.AvroDownStreamConnection">
 		<property name="downStreamEventSender" ref="avroEventSender"></property>
 		<property name="id" value="avro01"></property>
-		<property name="exchangeAccount" value="exAc1"></property>
+		<property name="exchangeAccount" value="YF01"></property>
 	</bean>
 	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">	
 		<constructor-arg>

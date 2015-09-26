@@ -21,7 +21,18 @@
     </constructor-arg>
   </object>
 
-  <object id="tradeAdaptor" type="Adaptor.TwSpeedy.Main.TradeAdaptor, TwSpeedy"/>
+  <object id="tradeAdaptor" type="Adaptor.TwSpeedy.Main.TradeAdaptor, TwSpeedy">
+    <property name="id" value="YF01"></property>
+    <property name="user" value="haida"></property>
+    <property name="account" value="1365651"></property>
+    <property name="password" value="123456"></property>
+    <property name="subAccount" value="1365651"></property>
+    <property name="brokerID" value="F018000"></property>
+    <property name="memberID" value="F018"></property>
+    <property name="host" value="Speedy150.masterlink.com.tw"></property>
+    <property name="port" value="23456"></property>
+    <property name="cancelOrdersAtSTart" value="true"></property>
+  </object>
 
   <object id="transportService" type="Transport.Transport.ActiveMQGenericService, Transport" autowire="byName" >
     <property name="url" value="failover:(tcp://127.0.0.1:61616)"></property>
