@@ -93,14 +93,14 @@ namespace Adaptor.TwSpeedy.Main
 
         private void onExchangeConnected()
         {
-            logger.Info("Connected");
+            logger.Info("====================Connected====================");
             System.Diagnostics.Debug.WriteLine("====================Connected====================");
             login();
         }
 
         private void onExchangeDisconnected()
         {
-            logger.Info("Disconnected");
+            logger.Info("====================Disconnected====================");
             System.Diagnostics.Debug.WriteLine("====================Disconnected====================");
         }
 
@@ -123,7 +123,7 @@ namespace Adaptor.TwSpeedy.Main
         void onRecoverFinished(int Count)
         {
             //回補
-            logger.Info("Recovery Done");
+            logger.Info("====================Recovery Done====================");
             System.Diagnostics.Debug.WriteLine("====================Recovery Done====================");
             recovering = false;
 

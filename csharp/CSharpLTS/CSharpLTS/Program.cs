@@ -10,6 +10,7 @@ using com.cyanspring.avro.generate.@base;
 using com.cyanspring.avro.generate.trade.bean;
 using System.Reflection;
 using log4net;
+using System.ServiceProcess;
 
 namespace CSharpLTS
 {
@@ -20,22 +21,40 @@ namespace CSharpLTS
         public IPlugin downStreamManager { set; get; }
         public IBusniessManager busniessManager { set; get; }
 
+        public static Program server { set; get; }
+
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
         [MTAThread]
         static void Main(string[] args)
-        {            
+        {
 
+            ServiceBase[] ServicesToRun;
+            ServicesToRun = new ServiceBase[]
+            {
+                new ExecutionService()
+            };
+            ServiceBase.Run(ServicesToRun);
+           
+        }
+
+
+        public static void Start()
+        {
             IApplicationContext ctx = ContextRegistry.GetContext();
-            
-            Program server = ctx.GetObject("server") as Program;
+
+            server = ctx.GetObject("server") as Program;
 
             logger.Info("Server Start...");
-            
-            server.Init();
 
-            Console.Read();
+            server.Init();
+        }
+
+        public static void Stop()
+        {
+            logger.Info("Server Stop...");
+            server.UnInit();
         }
 
         public void Init()
@@ -50,15 +69,19 @@ namespace CSharpLTS
                 logger.Error(e.Message);
             }
             
+        }
 
-
-            //NewOrderReply ev1 = new NewOrderReply();           
-
-            //StateUpdate ev = new StateUpdate();
-            //ev.exchangeAccount = "ex1";
-
-            //remoteEventManager.Publish(ev);
-            //remoteEventManager.Publish(ev);
+        public void UnInit()
+        {
+            try
+            {
+                busniessManager.uninit();
+                downStreamManager.UnInit();
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message);
+            }
         }
 
         private void RunGUI()
