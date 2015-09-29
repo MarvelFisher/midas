@@ -126,6 +126,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 								return;
 							}
 
+							Business.getInstance().getEventManager().subscribe(QuoteEvent.class, symbol, QuoteView.this);
 							QuoteSubEvent subEvent = new QuoteSubEvent(
 									receiverId, Business.getInstance()
 											.getFirstServer(), symbol);
@@ -141,7 +142,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 			}
 		}
 
-		subEvent(QuoteEvent.class);
+		Business.getInstance().getEventManager().subscribe(QuoteEvent.class, receiverId, QuoteView.this);
 		scheduleJob(refreshEvent, minRefreshInterval);
 	}
 
@@ -206,7 +207,9 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					for (TableItem item : items) {
 						Object obj = item.getData();
 						if (obj instanceof Quote) {
-							quoteMap.remove(((Quote) obj).getSymbol());
+							String symbol = ((Quote) obj).getSymbol();
+							Business.getInstance().getEventManager().unsubscribe(QuoteEvent.class, symbol, QuoteView.this);
+							quoteMap.remove(symbol);
 							refreshQuote();
 						}
 					}
@@ -290,10 +293,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 		});
-	}
-
-	private void subEvent(Class<? extends AsyncEvent> clazz) {
-		Business.getInstance().getEventManager().subscribe(clazz, this);
 	}
 
 	private void unSubEvent(Class<? extends AsyncEvent> clazz) {
