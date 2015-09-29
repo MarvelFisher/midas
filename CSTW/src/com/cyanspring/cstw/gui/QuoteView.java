@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -39,6 +40,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
@@ -63,14 +65,14 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private Text textSymbol;
 	private DynamicTableViewer quoteViewer;
 	private String receiverId = IdGenerator.getInstance().getNextID();
-	private ConcurrentMap<String, Quote> quoteMap = new ConcurrentHashMap<String, Quote>();
-	private List<String> subList = new ArrayList<String>();
+	private ArrayMap<String, Quote> quoteMap = new ArrayMap<String, Quote>();
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
-	private long maxRefreshInterval = 1000;
+	private long minRefreshInterval = 300;
 	private boolean columnCreated = false;
 	private Menu menu;
 	private Action popDeleteSymbol;
 	private final String MENU_ID_DELETESYMBOL = "POPUP_DELETE_SYMBOL";
+	private boolean updated = false;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -124,42 +126,10 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 								return;
 							}
 
-							if (subList.contains(symbol)) {
-								showMessageBox(symbol + " already subscribed",
-										parentComposite);
-								return;
-							}
-
-							if (!quoteMap.containsKey(symbol)) {
-								QuoteSubEvent subEvent = new QuoteSubEvent(
-										receiverId, Business.getInstance()
-												.getFirstServer(), symbol);
-								sendRemoteEvent(subEvent);
-								parentComposite.getDisplay().asyncExec(
-										new Runnable() {
-
-											@Override
-											public void run() {
-												try {
-													Thread.sleep(1000);
-												} catch (InterruptedException e) {
-													e.printStackTrace();
-												}
-												if (!quoteMap
-														.containsKey(symbol))
-													showMessageBox(
-															"this symbol doesn't exist or hasn't any quote yet",
-															parentComposite);
-												else {
-													subList.add(symbol);
-													refreshQuote();
-												}
-											}
-										});
-							} else {
-								subList.add(symbol);
-								refreshQuote();
-							}
+							QuoteSubEvent subEvent = new QuoteSubEvent(
+									receiverId, Business.getInstance()
+											.getFirstServer(), symbol);
+							sendRemoteEvent(subEvent);
 						}
 
 						@Override
@@ -172,7 +142,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		}
 
 		subEvent(QuoteEvent.class);
-		scheduleJob(refreshEvent, maxRefreshInterval);
+		scheduleJob(refreshEvent, minRefreshInterval);
 	}
 
 	private void triggerMarketData(String symbol) {
@@ -236,7 +206,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					for (TableItem item : items) {
 						Object obj = item.getData();
 						if (obj instanceof Quote) {
-							subList.remove(((Quote) obj).getSymbol());
+							quoteMap.remove(((Quote) obj).getSymbol());
 							refreshQuote();
 						}
 					}
@@ -261,10 +231,13 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		if (event instanceof QuoteEvent) {
 			QuoteEvent e = (QuoteEvent) event;
 			if (!PriceUtils.isZero(e.getQuote().getAsk())
-					&& !PriceUtils.isZero(e.getQuote().getBid()))
+					&& !PriceUtils.isZero(e.getQuote().getBid())) {
 				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
+				updated = true;
+			}
 		} else if (event instanceof AsyncTimerEvent) {
-			refreshQuote();
+			if(updated)
+				refreshQuote();
 		}
 	}
 
@@ -281,6 +254,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	}
 	
 	private void refreshQuote() {
+		updated = false;
 		quoteViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -294,41 +268,28 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						return;
 					}
 
-					List<Quote> tempList = collectQuote();
 					if (!columnCreated) {
 
-						if (tempList.isEmpty())
+						ArrayList<Quote> list = quoteMap.toArray();
+						if (list.isEmpty())
 							return;
 
-						Object obj = tempList.get(0);
+						Object obj = list.get(0);
 						List<ColumnProperty> properties = quoteViewer
 								.setObjectColumnProperties(obj);
 						quoteViewer.setSmartColumnProperties(obj.getClass()
 								.getName(), properties);
 
 						columnCreated = true;
-						quoteViewer.setInput(tempList);
+						quoteViewer.setInput(list);
 					} else {
-						quoteViewer.setInput(tempList);
+						//quoteViewer.setInput(list);
 					}
 
 					quoteViewer.refresh();
 				}
 			}
 		});
-	}
-
-	private List<Quote> collectQuote() {
-		List<Quote> list = new ArrayList<Quote>();
-		for (String symbol : subList) {
-			Quote quote = quoteMap.get(symbol);
-			if (null == quote) {
-				quote = new Quote(symbol, null, null);
-			}
-			list.add(quote);
-		}
-
-		return list;
 	}
 
 	private void subEvent(Class<? extends AsyncEvent> clazz) {

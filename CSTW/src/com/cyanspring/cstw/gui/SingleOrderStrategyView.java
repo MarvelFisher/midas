@@ -527,10 +527,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 		panelLayout.marginHeight = 1;
 		panelLayout.marginWidth = 5;
 
-		lblAccountName = new Label(panelComposite, SWT.BORDER);
-		lblAccountName.setText(accountId);
-		lblAccountName.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false,
-				true));
+		//lblAccountName = new Label(panelComposite, SWT.BORDER);
+		//lblAccountName.setText(accountId);
+		//lblAccountName.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false,
+		//		true));
 
 		Label lb1 = new Label(panelComposite, SWT.NONE);
 		lb1.setText("Symbol: ");
