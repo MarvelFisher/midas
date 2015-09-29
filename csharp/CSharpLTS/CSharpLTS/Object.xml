@@ -32,7 +32,14 @@
     <property name="host" value="Speedy150.masterlink.com.tw"></property>
     <property name="port" value="23456"></property>
     <property name="cancelOrdersAtSTart" value="true"></property>
+    <property name="persistence" ref="persistence"></property>
   </object>
+
+  <object id="persistence" type="Adaptor.TwSpeedy.Main.Persistence, TwSpeedy">
+    <property name="dir" value="data" />
+    <property name="file" value="order.dat" />
+  </object>
+  
 
   <object id="transportService" type="Transport.Transport.ActiveMQGenericService, Transport" autowire="byName" >
     <property name="url" value="failover:(tcp://127.0.0.1:61616)"></property>

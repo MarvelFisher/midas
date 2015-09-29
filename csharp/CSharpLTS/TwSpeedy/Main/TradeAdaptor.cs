@@ -28,7 +28,7 @@ namespace Adaptor.TwSpeedy.Main
         private TaifexConnection exchangeConnection;
         private string localIP;
         private bool recovering;
-        private Persistence persistence;
+        public Persistence persistence { set; get; }
 
         public string id { get; set; } = "YF01";
         public string user { get; set; } = "haida";
@@ -51,7 +51,6 @@ namespace Adaptor.TwSpeedy.Main
                 recovering = false;
                 state = false;
                 localIP = Utils.getLocalIPAddress();
-                persistence = new Persistence();
                 persistence.init();
 
                 exchangeConnection = new TaifexConnection();
