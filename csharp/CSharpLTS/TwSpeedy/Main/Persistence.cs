@@ -7,11 +7,14 @@ using Common.Utils;
 using System.IO;
 using System.Collections.Concurrent;
 using Common.Adaptor;
+using Common.Logging;
 
 namespace Adaptor.TwSpeedy.Main
 {
     class Persistence
     {
+        private static ILog logger = LogManager.GetLogger(typeof(Persistence));
+
         public string dir { get; set; } = "data";
         public string file { get; set; } = "order.dat";
         private AsyncQueueProcessor<PersistItem> processor;
@@ -50,7 +53,7 @@ namespace Adaptor.TwSpeedy.Main
                         PersistItem item = PersistItem.deserialize(line);
                         if(null == item)
                         {
-                            System.Diagnostics.Debug.WriteLine("persist data error in line " + count);
+                            logger.Error("persist data error in line " + count);
                             continue;
                         }
                         else
@@ -64,9 +67,9 @@ namespace Adaptor.TwSpeedy.Main
                     }
                     catch(Exception e)
                     {
-                        System.Diagnostics.Debug.WriteLine("persist data error in line " + count);
-                        System.Diagnostics.Debug.WriteLine(e);
-                        System.Diagnostics.Debug.WriteLine(e.StackTrace);
+                        logger.Error("persist data error in line " + count);
+                        logger.Error(e);
+                        logger.Error(e.StackTrace);
                     }
                 } // end while
                 file.Close();

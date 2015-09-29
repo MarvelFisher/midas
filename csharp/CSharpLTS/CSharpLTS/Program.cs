@@ -11,6 +11,7 @@ using com.cyanspring.avro.generate.trade.bean;
 using System.Reflection;
 using log4net;
 using System.ServiceProcess;
+using System.IO;
 
 namespace CSharpLTS
 {
@@ -24,6 +25,8 @@ namespace CSharpLTS
         [MTAThread]
         static void Main(string[] args)
         {
+            System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+            
 #if DEBUG
             Server.Start();
             Console.ReadLine();
@@ -37,7 +40,7 @@ namespace CSharpLTS
             ServiceBase.Run(ServicesToRun);
 #endif
 
-           
+
         }
 
         private void RunGUI()
