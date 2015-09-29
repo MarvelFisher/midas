@@ -45,9 +45,10 @@ import com.cyanspring.cstw.gui.common.StyledAction;
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(ApplicationWorkbenchWindowAdvisor.class);
+	private static final String title = "LTS Trader Workstation";
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
-	}
+	}	
 
 	public ActionBarAdvisor createActionBarAdvisor(
 			IActionBarConfigurer configurer) {
@@ -58,9 +59,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
-		configurer.setShowCoolBar(true);
+		configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(true);
-		configurer.setTitle("Cyan Spring Trader Workstation");
+		configurer.setTitle(title);
 		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
 	}
 
@@ -150,7 +151,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 	private void setUserAccount(String user, String account) {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setTitle("Cyan Spring Trader Workstation - " +
+		configurer.setTitle(title + " - " +
 				user + "/" + account);
 	}
 

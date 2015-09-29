@@ -132,7 +132,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		final FormData sashData = new FormData();
 		sashData.left = new FormAttachment(0, 0);
 		sashData.right = new FormAttachment(100, 0);
-		sashData.top = new FormAttachment(sash, 60);
+		sashData.top = new FormAttachment(sash, 80);
 		sash.setLayoutData(sashData);
 
 		sash.addListener(SWT.Selection, new Listener() {
