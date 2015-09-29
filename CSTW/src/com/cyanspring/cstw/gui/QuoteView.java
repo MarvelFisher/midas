@@ -236,6 +236,9 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 			if (!PriceUtils.isZero(e.getQuote().getAsk())
 					&& !PriceUtils.isZero(e.getQuote().getBid())) {
 				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
+				if(e.getKey().equals(receiverId)) { // first time receive, immediately refresh
+					refreshQuote();
+				}
 				updated = true;
 			}
 		} else if (event instanceof AsyncTimerEvent) {
@@ -295,10 +298,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 
-	private void unSubEvent(Class<? extends AsyncEvent> clazz) {
-		Business.getInstance().getEventManager().unsubscribe(clazz, ID, this);
-	}
-
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -337,7 +336,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void dispose() {
 		super.dispose();
-		unSubEvent(QuoteEvent.class);
 		cancelScheduleJob(refreshEvent);
 	}
 
