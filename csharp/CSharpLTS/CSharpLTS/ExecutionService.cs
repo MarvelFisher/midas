@@ -19,12 +19,12 @@ namespace CSharpLTS
 
         protected override void OnStart(string[] args)
         {
-            Program.Start();
+            Server.Start();
         }
 
         protected override void OnStop()
         {
-            Program.Stop();
+            Server.Stop();
         }
     }
 }

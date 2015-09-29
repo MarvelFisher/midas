@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,8 @@ namespace TwSpeedy.Utils
 {
     class Utils
     {
+        private static ILog logger = LogManager.GetLogger(typeof(Utils));
+
         public static string getLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -24,35 +27,36 @@ namespace TwSpeedy.Utils
 
         public static void printExecutionReport(OrderMessage.IExecutionReportMessage Msg, OrderConnection.ExecDupEnum PossDup)
         {
-            System.Diagnostics.Debug.WriteLine("");
-            System.Diagnostics.Debug.WriteLine("========================================");
-            System.Diagnostics.Debug.WriteLine("OrderConnection.ExecDupEnum: " + PossDup);
-            System.Diagnostics.Debug.WriteLine("Msg.Symbol: " + Msg.Symbol);
-            System.Diagnostics.Debug.WriteLine("Msg.ExchangeCode: " + Msg.ExchangeCode);
-            System.Diagnostics.Debug.WriteLine("Msg.ExecType: " + Msg.ExecType);
-            System.Diagnostics.Debug.WriteLine("Msg.OrderStatus: " + Msg.OrderStatus);
-            System.Diagnostics.Debug.WriteLine("Msg.Account: " + Msg.Account);
-            System.Diagnostics.Debug.WriteLine("Msg.Market: " + Msg.Market);
-            System.Diagnostics.Debug.WriteLine("Msg.NID: " + Msg.NID);
-            System.Diagnostics.Debug.WriteLine("Msg.OrderID: " + Msg.OrderID);
-            System.Diagnostics.Debug.WriteLine("Msg.ClOrdID: " + Msg.ClOrdID);
-            System.Diagnostics.Debug.WriteLine("Msg.CumQty: " + Msg.CumQty);
-            System.Diagnostics.Debug.WriteLine("Msg.OrderQty: " + Msg.OrderQty);
-            System.Diagnostics.Debug.WriteLine("Msg.Price: " + Msg.Price);
-            System.Diagnostics.Debug.WriteLine("Msg.Side: " + Msg.Side);
-            System.Diagnostics.Debug.WriteLine("Msg.TimeInForce: " + Msg.TimeInForce);
-            System.Diagnostics.Debug.WriteLine("Msg.LastPx: " + Msg.LastPx);
-            System.Diagnostics.Debug.WriteLine("Msg.LastQty: " + Msg.LastQty);
-            System.Diagnostics.Debug.WriteLine("Msg.LeavesQty: " + Msg.LeavesQty);
-            System.Diagnostics.Debug.WriteLine("Msg.PriceBase: " + Msg.PriceBase);
-            System.Diagnostics.Debug.WriteLine("Msg.OrdRejReason: " + Msg.OrdRejReason);
-            System.Diagnostics.Debug.WriteLine("Msg.CxlRejResponseTo: " + Msg.CxlRejResponseTo);
-            System.Diagnostics.Debug.WriteLine("Msg.Text: " + Msg.Text);
-            System.Diagnostics.Debug.WriteLine("Msg.Data: " + Msg.Data);
-            System.Diagnostics.Debug.WriteLine("Msg.src: " + Msg.src);
-            System.Diagnostics.Debug.WriteLine("Msg.TransactTime: " + Msg.TransactTime);
-            System.Diagnostics.Debug.WriteLine("========================================");
-            System.Diagnostics.Debug.WriteLine("");
+            logger.Info("");
+            logger.Info("========================================");
+            logger.Info("OrderConnection.ExecDupEnum: " + PossDup);
+            logger.Info("Msg.Symbol: " + Msg.Symbol);
+            logger.Info("Msg.ExchangeCode: " + Msg.ExchangeCode);
+            logger.Info("Msg.ExecType: " + Msg.ExecType);
+            logger.Info("Msg.OrderStatus: " + Msg.OrderStatus);
+            logger.Info("Msg.Account: " + Msg.Account);
+            logger.Info("Msg.Market: " + Msg.Market);
+            logger.Info("Msg.NID: " + Msg.NID);
+            logger.Info("Msg.OrderID: " + Msg.OrderID);
+            logger.Info("Msg.ClOrdID: " + Msg.ClOrdID);
+            logger.Info("Msg.CumQty: " + Msg.CumQty);
+            logger.Info("Msg.OrderQty: " + Msg.OrderQty);
+            logger.Info("Msg.Price: " + Msg.Price);
+            logger.Info("Msg.Side: " + Msg.Side);
+            logger.Info("Msg.TimeInForce: " + Msg.TimeInForce);
+            logger.Info("Msg.LastPx: " + Msg.LastPx);
+            logger.Info("Msg.LastQty: " + Msg.LastQty);
+            logger.Info("Msg.LeavesQty: " + Msg.LeavesQty);
+            logger.Info("Msg.PriceBase: " + Msg.PriceBase);
+            logger.Info("Msg.OrdRejReason: " + Msg.OrdRejReason);
+            logger.Info("Msg.CxlRejResponseTo: " + Msg.CxlRejResponseTo);
+            logger.Info("Msg.Text: " + Msg.Text);
+            logger.Info("Msg.Data: " + Msg.Data);
+            logger.Info("Msg.src: " + Msg.src);
+            logger.Info("Msg.TransactTime: " + Msg.TransactTime);
+            logger.Info("========================================");
+            logger.Info("");
+
         }
     }
 }

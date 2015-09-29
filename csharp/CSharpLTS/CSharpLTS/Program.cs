@@ -18,70 +18,26 @@ namespace CSharpLTS
     {
         private static ILog logger = LogManager.GetLogger(typeof(Program));       
 
-        public IPlugin downStreamManager { set; get; }
-        public IBusniessManager busniessManager { set; get; }
-
-        public static Program server { set; get; }
-
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
         [MTAThread]
         static void Main(string[] args)
         {
-
+#if DEBUG
+            Server.Start();
+            Console.ReadLine();
+            Server.Stop();
+#else
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
                 new ExecutionService()
             };
             ServiceBase.Run(ServicesToRun);
+#endif
+
            
-        }
-
-
-        public static void Start()
-        {
-            IApplicationContext ctx = ContextRegistry.GetContext();
-
-            server = ctx.GetObject("server") as Program;
-
-            logger.Info("Server Start...");
-
-            server.Init();
-        }
-
-        public static void Stop()
-        {
-            logger.Info("Server Stop...");
-            server.UnInit();
-        }
-
-        public void Init()
-        {
-            try
-            {
-                busniessManager.init();
-                downStreamManager.Init();
-            }
-            catch(Exception e)
-            {
-                logger.Error(e.Message);
-            }
-            
-        }
-
-        public void UnInit()
-        {
-            try
-            {
-                busniessManager.uninit();
-                downStreamManager.UnInit();
-            }
-            catch (Exception e)
-            {
-                logger.Error(e.Message);
-            }
         }
 
         private void RunGUI()

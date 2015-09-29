@@ -94,14 +94,12 @@ namespace Adaptor.TwSpeedy.Main
         private void onExchangeConnected()
         {
             logger.Info("====================Connected====================");
-            System.Diagnostics.Debug.WriteLine("====================Connected====================");
             login();
         }
 
         private void onExchangeDisconnected()
         {
             logger.Info("====================Disconnected====================");
-            System.Diagnostics.Debug.WriteLine("====================Disconnected====================");
         }
 
         void onLogonReply(string ReplyString, OrderConnection.LogonResultEnum LogonResult, int ConnectionID)
@@ -109,12 +107,10 @@ namespace Adaptor.TwSpeedy.Main
             if (LogonResult == OrderConnection.LogonResultEnum.lrFailed)
             {
                 logger.Info("Login failed");
-                System.Diagnostics.Debug.WriteLine("Login failed");
             }
             else if (LogonResult == OrderConnection.LogonResultEnum.lrOK)
             {
                 logger.Info("Login succeeded");
-                System.Diagnostics.Debug.WriteLine("Login succeeded");
                 recovering = true;
                 exchangeConnection.Recover("031000", OrderConnection.RecoverTypeEnum.rtAll, OrderConnection.RecoverMarketEnum.rmAll);
             }
@@ -124,7 +120,6 @@ namespace Adaptor.TwSpeedy.Main
         {
             //回補
             logger.Info("====================Recovery Done====================");
-            System.Diagnostics.Debug.WriteLine("====================Recovery Done====================");
             recovering = false;
 
             if (cancelOrdersAtSTart)
@@ -153,7 +148,6 @@ namespace Adaptor.TwSpeedy.Main
                         if (null == item) // log error here !!!
                         {
                             logger.Error("Error: Cant find order in peristence: " + order.exchangeOrderId);
-                            System.Diagnostics.Debug.WriteLine("Error: Cant find order in peristence: " + order.exchangeOrderId);
                             return;
                         }
                         // This is the only reason we need persistence!
@@ -161,7 +155,6 @@ namespace Adaptor.TwSpeedy.Main
                         order.orderId = item.orderId;
 
                         logger.Info("Recovery add order: " + order);
-                        System.Diagnostics.Debug.WriteLine("Recovery add order: " + order);
                     }
                 }
                 else
@@ -187,7 +180,6 @@ namespace Adaptor.TwSpeedy.Main
                     else
                     {
                         logger.Info("Cant find corresponding order in cache");
-                        System.Diagnostics.Debug.WriteLine("Cant find corresponding order in cache");
                     }
 
                 }
@@ -195,7 +187,6 @@ namespace Adaptor.TwSpeedy.Main
             else
             {
                 logger.Info("ExecutionReport OrderId is null or empty");
-                System.Diagnostics.Debug.WriteLine("ExecutionReport OrderId is null or empty");
             }
         }
 
@@ -363,7 +354,6 @@ namespace Adaptor.TwSpeedy.Main
         private void cancelAllOrders()
         {
             logger.Info("Cancelling all orders");
-            System.Diagnostics.Debug.WriteLine("Cancelling all orders");
             foreach (KeyValuePair<string, Order> entry in orders)
             {
                 Order order = entry.Value;
@@ -372,7 +362,6 @@ namespace Adaptor.TwSpeedy.Main
                     order.ordStatus == OrdStatus.Replaced && PriceUtils.LessThan(order.cumQty, order.quantity))
                 {
                     logger.Info("Start up cancel order: " + order.orderId + ":" + order.exchangeOrderId);
-                    System.Diagnostics.Debug.WriteLine("Start up cancel order: " + order.orderId + ":" + order.exchangeOrderId);
                     cancelOrder(order.exchangeOrderId);
                 }
             }

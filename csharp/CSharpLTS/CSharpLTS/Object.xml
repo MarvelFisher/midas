@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.springframework.net
         http://www.springframework.net/xsd/spring-objects.xsd">
 
-  <object id="server" type="CSharpLTS.Program, CSharpLTS" autowire="byName"/>
+  <object id="server" type="CSharpLTS.Server, CSharpLTS" autowire="byName"/>
   <object id="busniessManager" type="Common.Event.BusniessManager, Common" autowire="byName">
     <constructor-arg>
       <ref object="transportService"></ref>
