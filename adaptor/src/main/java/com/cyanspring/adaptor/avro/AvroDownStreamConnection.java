@@ -278,6 +278,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			return;
 		if (!reply.getResult()) {
 			ChildOrder order = getChildOrderFromLocal(reply.getOrderId());
+			order.setOrdStatus(OrdStatus.REJECTED);
 			log.info("order: " + reply.getOrderId() + ", msg" + reply.getMessage());
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
 		}
