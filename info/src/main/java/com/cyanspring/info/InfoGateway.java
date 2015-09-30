@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.cyanspring.common.alert.SendNotificationRequestEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,8 +97,12 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processMarketSessionEvent(event, Computes);
-				}
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + " " + oldName);
+                    compute.processMarketSessionEvent(event, Computes);
+                    currentThread.setName(oldName);
+                }
 			});
 		}		
 	}
@@ -110,7 +115,11 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processChildOrderUpdateEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processChildOrderUpdateEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}
@@ -123,7 +132,11 @@ public class InfoGateway implements IPlugin {
         for (final Compute compute : Computes) {
             service.submit(new Runnable() {
                 public void run() {
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
                     compute.processParentOrderUpdateEvent(event, Computes);
+                    currentThread.setName(oldName);
                 }
             });
         }
@@ -136,7 +149,11 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processResetAccountRequestEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processResetAccountRequestEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}
@@ -149,7 +166,11 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processQueryOrderAlertRequestEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processQueryOrderAlertRequestEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}
@@ -159,7 +180,11 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processQuoteEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processQuoteEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}
@@ -171,7 +196,11 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processSetPriceAlertRequestEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processSetPriceAlertRequestEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}
@@ -183,18 +212,42 @@ public class InfoGateway implements IPlugin {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processQueryPriceAlertRequestEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processQueryPriceAlertRequestEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}
 	}
+
+    public void processSendNotificationRequestEvent(final SendNotificationRequestEvent event)
+    {
+        log.info("[processSendNotificationRequestEvent] " + event.toString());
+        for (final Compute compute : Computes) {
+            service.submit(new Runnable() {
+                public void run() {
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processSendNotificationRequestEvent(event, Computes);
+                    currentThread.setName(oldName);
+                }
+            });
+        }
+    }
 
 	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(final AsyncTimerEvent event) {
 		for (final Compute compute : Computes) {
 			service.submit(new Runnable() {
 				public void run() {
-					compute.processAsyncTimerEvent(event, Computes);
+                    final Thread currentThread = Thread.currentThread();
+                    final String oldName = currentThread.getName();
+                    currentThread.setName(compute.getThreadName() + "-" + oldName);
+                    compute.processAsyncTimerEvent(event, Computes);
+                    currentThread.setName(oldName);
 				}
 			});
 		}

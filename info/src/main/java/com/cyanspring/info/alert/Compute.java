@@ -3,6 +3,7 @@ package com.cyanspring.info.alert;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cyanspring.common.alert.SendNotificationRequestEvent;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -27,6 +28,7 @@ public abstract class Compute {
 	private AsyncEventProcessor eventProcessor ;
 	private AsyncEventProcessor eventProcessorMD ;
 	private InfoGateway gateway;
+    private String ThreadName ;
 	public List<Class<? extends AsyncEvent>> getSubscirbetoEventList() {
 		setLst(new ArrayList<Class<? extends AsyncEvent>>());
 		SubscirbetoEvents();
@@ -117,7 +119,11 @@ public abstract class Compute {
                                               List<Compute> computes) {
     }
 
-	public List<Class<? extends AsyncEvent>> getLst() {
+    public void processSendNotificationRequestEvent(SendNotificationRequestEvent event,
+                                                    List<Compute> computes) {
+    }
+
+    public List<Class<? extends AsyncEvent>> getLst() {
 		return lst;
 	}
 
@@ -150,4 +156,13 @@ public abstract class Compute {
 	{
 		this.gateway = gateway;
 	}
+
+    public String getThreadName() {
+        return ThreadName;
+    }
+
+    public void setThreadName(String threadName) {
+        ThreadName = threadName;
+    }
+
 }

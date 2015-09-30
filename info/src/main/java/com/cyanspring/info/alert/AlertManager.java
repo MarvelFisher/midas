@@ -88,7 +88,7 @@ public class AlertManager extends Compute {
 		loadSQLdata();
         Calendar cal = Calendar.getInstance();
         LastHeartbeat = cal.getTime();
-
+        setThreadName("AlertManager");
 		AsyncTimerEvent SendSQLHeartTimer = new AsyncTimerEvent();
 		SendSQLHeartTimer.setKey("SendSQLHeartTimer");
 		scheduleManager.scheduleRepeatTimerEvent(getTimerinterval(), getEventProcessorMD(), SendSQLHeartTimer);
