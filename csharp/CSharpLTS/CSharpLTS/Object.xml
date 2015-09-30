@@ -33,6 +33,7 @@
     <property name="port" value="23456"></property>
     <property name="cancelOrdersAtSTart" value="true"></property>
     <property name="persistence" ref="persistence"></property>
+    <property name="maxOrderCount" value="1000"></property>
   </object>
 
   <object id="persistence" type="Adaptor.TwSpeedy.Main.Persistence, TwSpeedy">

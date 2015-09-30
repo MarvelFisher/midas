@@ -41,13 +41,15 @@ namespace Adaptor.TwSpeedy.Main
         public string host { get; set; } = "Speedy150.masterlink.com.tw";
         public int port { get; set; } = 23456;
         public bool cancelOrdersAtSTart { get; set; } = true;
-
+        public int maxOrderCount { get; set; } = 1000;
+        private DailyKeyCounter placeOrderCount;
 
         public void init()
         {
             logger.Info("Init TradeAdaptor");
             try
             {
+                placeOrderCount = new DailyKeyCounter(maxOrderCount);
                 recovering = false;
                 state = false;
                 localIP = Utils.getLocalIPAddress();
@@ -242,6 +244,12 @@ namespace Adaptor.TwSpeedy.Main
 
         public void newOrder(Order order)
         {
+            if (!placeOrderCount.check(order.symbol)){
+                string msg = "Max new order count reached: " + this.maxOrderCount;
+                logger.Error(msg);
+                throw new Exception(msg);
+            }
+
             if (order.orderId == null)
                 throw new DownStreamException("Order id can't be null");
 

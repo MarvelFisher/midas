@@ -88,6 +88,7 @@
     <Compile Include="Transport\ITransportService.cs" />
     <Compile Include="Transport\IUserSocketContext.cs" />
     <Compile Include="Utils\AsyncQueueProcessor.cs" />
+    <Compile Include="Utils\DailyKeyCounter.cs" />
     <Compile Include="Utils\PriceUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
