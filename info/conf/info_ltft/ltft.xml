@@ -33,7 +33,7 @@
 	</bean>
 	
 	<bean id="useLocalMdReceiver" class="java.lang.Boolean">
-		<constructor-arg value="true"/>
+		<constructor-arg value="false"/>
 	</bean>
 	
 	<bean id="centralDbProcessor" class="com.cyanspring.info.cdp.CentralDbProcessor">

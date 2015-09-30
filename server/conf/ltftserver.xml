@@ -93,7 +93,7 @@
 		<property name="quoteSaver" ref="quoteSaver"/>
 		<property name="quoteCleaner" ref="quoteCleaner"/>
 		<property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
-        <property name="broadcastQuote" value="false"/>
+        <property name="broadcastQuote" value="true"/>
 	</bean>
 	<!-- WindAdaptor setting (Setting can be marked if not used) -->
 

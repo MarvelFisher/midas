@@ -85,7 +85,7 @@
 			</map>
 		</property>
 		<property name="quoteSaver" ref="quoteSaver"/>
-        <property name="broadcastQuote" value="false"/>
+        <property name="broadcastQuote" value="true"/>
     </bean>
 
 	<!-- Derby setting -->
