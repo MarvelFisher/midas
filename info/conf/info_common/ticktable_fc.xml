@@ -38,14 +38,14 @@
     <bean id="unit10TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
        <property name="tickTable">
             <array>
-                <array><value>0</value><value>1000000</value><value>5</value></array>
+                <array><value>0</value><value>1000000</value><value>10</value></array>
             </array>
         </property>
     </bean>
     <bean id="unit005TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
        <property name="tickTable">
             <array>
-                <array><value>0</value><value>1000000</value><value>5</value></array>
+                <array><value>0</value><value>1000000</value><value>0.05</value></array>
             </array>
         </property>
     </bean>
