@@ -217,24 +217,28 @@
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
 	</bean>
 
-    <bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
-    </bean>
+	<bean id="hkexTickTable" class="com.cyanspring.common.staticdata.HKexTickTable">
+	</bean>
 	<bean id="forexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 	</bean>
 	<bean id="ftTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
-        <property name="tickTable">
-            <array>
-                <array><value>0</value><value>1000000</value><value>1</value></array>
-            </array>
-        </property>
-    </bean>
+		<property name="tickTable">
+			<array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>1</value>
+				</array>
+			</array>
+		</property>
+	</bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
-                <entry key="FX" value-ref="forexTickTable" />
-                <entry key="FT" value-ref="ftTickTable" />
+				<entry key="FX" value-ref="forexTickTable" />
+				<entry key="FT" value-ref="ftTickTable" />
 			</map>
 		</property>
 	</bean>
@@ -323,8 +327,8 @@
 	</bean>
 
 	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
-		<property name="maxRiskOrderCount"  ref="maxRiskOrderCount"/>
-		<property name="maxTotalOrderCount"  ref="maxTotalOrderCount"/>
+		<property name="maxRiskOrderCount" ref="maxRiskOrderCount" />
+		<property name="maxTotalOrderCount" ref="maxTotalOrderCount" />
 	</bean>
 
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
@@ -395,17 +399,19 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.fu.TWFStrategy">
-	    <property name="weekOfMonth">
-	       <value>3</value>
-	    </property>
-	    <property name="dayOfWeek">
-	       <value>4</value><!-- Calendar.WEDNESDAY -->
-	    </property>
-	    <property name="settlementTime">
-	       <value>13:30:00</value><!-- HH:mm:ss -->
-	    </property>
+		<property name="weekOfMonth">
+			<value>3</value>
+		</property>
+		<property name="dayOfWeek">
+			<value>4</value><!-- Calendar.WEDNESDAY -->
+		</property>
+		<property name="settlementTime">
+			<!-- The value must be aligned with the CLOSE time of SettlementSession 
+				in FITXSessionState.xml/FIMTXSessionState.xml -->
+			<value>13:30:00</value><!-- HH:mm:ss -->
+		</property>
 	</bean>
-	
+
 </beans>
