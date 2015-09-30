@@ -73,7 +73,7 @@ public class IndexMarketSessionManager implements IPlugin {
 		if (rawMap != null && rawMap.size() > 0)
 			eventManager.sendEvent(new InternalSessionEvent(null, null, rawMap, true));
 		else
-			log.warn("Get InternalSessionRequestEvent but manager is't finish initial yet");
+			log.warn("Get InternalSessionRequestEvent but manager isn't finish initial yet");
 	}
 	
 	public void processIndexSessionRequestEvent(IndexSessionRequestEvent event) {
