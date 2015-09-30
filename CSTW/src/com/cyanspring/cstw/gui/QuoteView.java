@@ -1,16 +1,15 @@
 package com.cyanspring.cstw.gui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -25,6 +24,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
@@ -60,7 +60,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	public static final String ID = "com.cyanspring.cstw.gui.QuoteViewer";
 	private Composite parentComposite = null;
 	private ImageRegistry imageRegistry;
-	private Composite topComposite;
 	private Button btnSubscribe;
 	private Text textSymbol;
 	private DynamicTableViewer quoteViewer;
@@ -232,9 +231,11 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof QuoteEvent) {
+			
 			QuoteEvent e = (QuoteEvent) event;
 			if (!PriceUtils.isZero(e.getQuote().getAsk())
 					&& !PriceUtils.isZero(e.getQuote().getBid())) {
+				
 				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
 				if(e.getKey().equals(receiverId)) { // first time receive, immediately refresh
 					refreshQuote();
@@ -279,7 +280,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						ArrayList<Quote> list = quoteMap.toArray();
 						if (list.isEmpty())
 							return;
-
+						
 						Object obj = list.get(0);
 						List<ColumnProperty> properties = quoteViewer
 								.setObjectColumnProperties(obj);
@@ -287,12 +288,11 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 								.getName(), properties);
 
 						columnCreated = true;
+						quoteViewer.setSorter(new QuoteSorter());
 						quoteViewer.setInput(list);
-					} else {
-						//quoteViewer.setInput(list);
-					}
-
-					quoteViewer.refresh();
+					} 
+					
+					quoteViewer.refresh();	
 				}
 			}
 		});
@@ -339,4 +339,12 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		cancelScheduleJob(refreshEvent);
 	}
 
+	class QuoteSorter extends ViewerSorter{
+		@Override
+		public int compare(Viewer viewer, Object e1, Object e2) {
+			Quote q1 = (Quote)e1;
+			Quote q2 = (Quote)e2;		
+			return q1.getSymbol().compareTo(q2.getSymbol());
+		}
+	}
 }
