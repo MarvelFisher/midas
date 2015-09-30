@@ -151,6 +151,8 @@
 				<ref bean="windAdaptorFT" />
 			</list>
 		</constructor-arg>
+		<property name="quoteThrottle" value="500"/>
+		<property name="timerInterval" value="500"/>
 		<property name="quoteLogIsOpen" value="false"></property>
 		<property name="quoteExtendEventIsSend" value="false"></property>
 
