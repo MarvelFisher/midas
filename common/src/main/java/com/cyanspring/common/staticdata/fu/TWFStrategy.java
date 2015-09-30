@@ -17,6 +17,8 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 
 	private int weekOfMonth = 3;
 	private int dayOfWeek = Calendar.WEDNESDAY;
+	// The value must be aligned with the CLOSE time
+	// of SettlementSession in FITXSessionState.xml/FIMTXSessionState.xml
 	private String settlementTime = "13:30:00";
 
 	public int getWeekOfMonth() {
@@ -102,7 +104,7 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 		// if yes, the first tradable month would be next month, need not to plus 1
 		// if no, current month is the first trade month, need to plus 1
 		// ex: current date: 20150901, first tradable is TXFI5, where monthDiff would be 0
-		//     thus we plus 1 into monthDiff for be aligned with switch/case
+		//     thus we plus 1 into monthDiff for being aligned with switch/case
 		int gracePeriod = 1;
 		if (currCalendar.after(currMonthSettleCalendar)) {
 			gracePeriod = 0;
