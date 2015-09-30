@@ -19,11 +19,6 @@
         </property>
     </bean>
     <bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
-       <property name="tickTable">
-            <array>
-                <array><value>0</value><value>1000000</value><value>0.2</value></array>
-            </array>
-        </property>
     </bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">

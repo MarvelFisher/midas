@@ -4,11 +4,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionChecker implements IMarketSession {
+	private static final Logger log = LoggerFactory.getLogger(MarketSessionChecker.class);
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Date tradeDate;
     private Map<String, MarketSession> stateMap;
@@ -32,11 +37,12 @@ public class MarketSessionChecker implements IMarketSession {
                 }
             }
             tradeDate = tradeDateManager.preTradeDate(date);
+            log.debug("Initial trade date, index: " + index + ", tradeDate:" + tradeDate);
         }
     }
 
     @Override
-    public MarketSessionData getState(RefData refData) throws Exception {
+    public synchronized MarketSessionData getState(RefData refData) throws Exception {
     	Date date = Clock.getInstance().now();
         MarketSessionData sessionData = null;
         String currentIndex = getCurrentIndex(date, refData);
@@ -51,7 +57,9 @@ public class MarketSessionChecker implements IMarketSession {
                 if (currentType != null && !currentType.equals(data.getSessionType())){
                 	if( tradeDate == null)
                 		continue;
+                	log.debug("Change trade date for index: " + index + ", from: " + tradeDate);
                 	tradeDate = tradeDateManager.nextTradeDate(tradeDate);                	
+                	log.debug("Change trade date for index: " + index + ", to: " + tradeDate);
                 }
             }
             sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
@@ -138,10 +146,6 @@ public class MarketSessionChecker implements IMarketSession {
             return true;
         }
         return false;
-    }
- 
-    public void setTradeDate(Date tradeDate) {
-        this.tradeDate = tradeDate;
     }
 
     public void setTradeDateManager(ITradeDate tradeDateManager) {
