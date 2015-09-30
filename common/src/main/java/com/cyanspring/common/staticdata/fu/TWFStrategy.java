@@ -20,6 +20,8 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 	// The value must be aligned with the CLOSE time
 	// of SettlementSession in FITXSessionState.xml/FIMTXSessionState.xml
 	private String settlementTime = "13:30:00";
+	Calendar currMonthSettleCalendar = null;
+	int gracePeriod = 0;
 
 	public int getWeekOfMonth() {
 		return weekOfMonth;
@@ -60,7 +62,7 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 			refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(
 					refData, cal, weekOfMonth, dayOfWeek));
 			refData.setIndexSessionType(getIndexSessionType(refData));
-			refData.setRefSymbol(getFITXRefSymbol(refData));
+			refData.setRefSymbol(getRefSymbol(refData));
 		} catch (RefDataException e) {
 			log.warn(e.getMessage());
 		} catch (Exception e) {
@@ -73,24 +75,30 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 		super.setRequireData(objects);
 	}
 
-	private String getFITXRefSymbol(RefData refData) throws ParseException {
+	private String getRefSymbol(RefData refData) throws ParseException {
 		Calendar currCalendar = Calendar.getInstance();
 		int currMon = currCalendar.get(Calendar.MONTH);
 		int currYear = currCalendar.get(Calendar.YEAR);
 
-		SimpleDateFormat settleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if (currMonthSettleCalendar == null) {
+			SimpleDateFormat settleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		// Get the settlement date in current month
-		String settleDateInCurrMonth = RefDataUtil.calSettlementDateByWeekDay(
-				refData, currCalendar, weekOfMonth, dayOfWeek);
-		settleDateInCurrMonth = settleDateInCurrMonth + " " + settlementTime;
-		Calendar currMonthSettleCalendar = Calendar.getInstance();
-		currMonthSettleCalendar.setTime(settleSdf.parse(settleDateInCurrMonth));
+			// Get the settlement date in current month
+			String settleDateInCurrMonth = RefDataUtil.calSettlementDateByWeekDay(
+					refData, currCalendar, weekOfMonth, dayOfWeek);
+			settleDateInCurrMonth = settleDateInCurrMonth + " " + settlementTime;
+			currMonthSettleCalendar = Calendar.getInstance();
+			currMonthSettleCalendar.setTime(settleSdf.parse(settleDateInCurrMonth));
 
-		// For FITX, RefSymbol should look like: TXF00, TXF01...
-		// Original RefSymbo: TXFF6, where F6 means 2016 June (ABCDEF, F is the 6th)
-		String refSymbol = getRefSymbol(refData.getRefSymbol());
-		refSymbol = refSymbol.substring(0, refSymbol.length() - 2).toUpperCase();
+			// Recognize if current date is before settlement date,
+			// if yes, current month is the first trade month, need to plus 1
+			// if no, the first trade month would be next month, need not to plus 1
+			// ex: current date: 20150901, first tradable is TXFI5, where monthDiff would be 0
+			//     thus we plus 1 into monthDiff for being aligned with switch/case
+			if (currCalendar.before(currMonthSettleCalendar)) {
+				gracePeriod = 1;
+			}
+		}
 
 		SimpleDateFormat codeSdf = new SimpleDateFormat("yyyyMM");
 		// ICE code would look like ICE.TWF.FITX.201606, we take the date part
@@ -99,19 +107,14 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 		refCalendar.setTime(codeSdf.parse(date));
 		int refMon = refCalendar.get(Calendar.MONTH);
 		int refYear = refCalendar.get(Calendar.YEAR);
-
-		// Recognize if current date is after settlement date,
-		// if yes, the first tradable month would be next month, need not to plus 1
-		// if no, current month is the first trade month, need to plus 1
-		// ex: current date: 20150901, first tradable is TXFI5, where monthDiff would be 0
-		//     thus we plus 1 into monthDiff for being aligned with switch/case
-		int gracePeriod = 1;
-		if (currCalendar.after(currMonthSettleCalendar)) {
-			gracePeriod = 0;
-		}
 		int monthDiff = ((refYear - currYear) * 12) + refMon - currMon + gracePeriod;
 
-		// Recognize recent 2 months and coming 3 quarter months
+		// For FITX, RefSymbol should look like: TXF00, TXF01...
+		// Original RefSymbo: TXFF6, where F6 means 2016 June (ABCDEF, F is the 6th)
+		String refSymbol = getRefSymbol(refData.getRefSymbol());
+		refSymbol = refSymbol.substring(0, refSymbol.length() - 2).toUpperCase();
+
+		// Append corresponding sequence string for recent 2 months and coming 3 quarter months
 		switch (monthDiff) {
 		case 1:
 			refSymbol += "00";
