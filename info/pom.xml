@@ -102,6 +102,23 @@
 			<version>0.2.8</version>
 		</dependency>
 		
+		<!-- IM connection lib -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>fluent-hc</artifactId>
+			<version>4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20141113</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.cyanspring.common</groupId>
 			<artifactId>cyanspring-common</artifactId>
