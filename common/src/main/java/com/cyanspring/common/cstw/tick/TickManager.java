@@ -41,18 +41,6 @@ public class TickManager implements IAsyncEventListener {
 	}
 
 	private void processTickTableReplyEvent(TickTableReplyEvent evt) {
-		Iterator<List<RefData>> i = evt.getMap().values().iterator();
-		Iterator<AbstractTickTable> ii = evt.getMap().keySet().iterator();
-		while (i.hasNext()) {
-			for (RefData s : i.next()) {
-				log.info("s:{}", s.getSymbol());
-			}
-		}
-		while (ii.hasNext()) {
-			AbstractTickTable a = ii.next();
-			log.info("tick table:{}", a.toString());
-		}
-
 		if (null != evt.getMap()){
 			if( null == tickMap)
 				 tickMap = new HashMap<AbstractTickTable, List<RefData>>();

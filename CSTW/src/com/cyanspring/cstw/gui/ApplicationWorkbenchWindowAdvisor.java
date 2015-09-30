@@ -32,6 +32,7 @@ import org.eclipse.ui.services.ISourceProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
@@ -57,9 +58,16 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 	@Override
 	public void preWindowOpen() {
+		if(Business.getInstance().isLoginRequired()) {
+			LoginDialog loginDialog = new LoginDialog(null);
+			loginDialog.open();
+		}
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
-		configurer.setShowCoolBar(false);
+		if(Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin))
+			configurer.setShowCoolBar(true);
+		else
+			configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(true);
 		configurer.setTitle(title);
 		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
@@ -75,11 +83,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			//add listener
 			ViewAuthListener authListener =new  ViewAuthListener();
 			page.addPartListener(authListener);
-			if(Business.getInstance().isLoginRequired()) {
-				LoginDialog loginDialog = new LoginDialog(window.getShell());
-				loginDialog.open();
-			}
-
 			setUserAccount(Business.getInstance().getUser(), Business.getInstance().getAccount());
 
 			// check login role
@@ -88,6 +91,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
 			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
 			commandStateService.fireAccountChanged();
+			
+			log.info("Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin):"+Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin));
+			if(Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin))
+				getWindowConfigurer().setShowCoolBar(true);
 
 			// filter already open view
 			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
