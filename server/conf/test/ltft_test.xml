@@ -301,7 +301,7 @@
 		<property name="eventManager" ref="eventManager" />
 	</bean>
 
-	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimFITXRefDataAdapter">
+	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimTWFRefDataAdapter">
 		<property name="filePath" value="./conf/sim/codetable_ltft.xml"></property>
 	</bean>
 

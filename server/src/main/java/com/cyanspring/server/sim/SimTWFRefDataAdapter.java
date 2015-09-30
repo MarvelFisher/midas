@@ -11,39 +11,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.staticdata.CodeTableData;
-import com.cyanspring.common.staticdata.IRefDataAdaptor;
-import com.cyanspring.common.staticdata.IRefDataListener;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataCommodity;
 import com.cyanspring.common.staticdata.fu.IType;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class SimFITXRefDataAdapter implements IRefDataAdaptor {
+public class SimTWFRefDataAdapter extends SimRefDataAdaptor {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(SimFITXRefDataAdapter.class);
-
-	private String filePath = "./conf/sim/codetable_ltft.xml";
-	private XStream xstream;
-	private Map<String, CodeTableData> map;
-	private List<IRefDataListener> listeners;
-	private Boolean status = false;
-	private Timer timer;
-
-	@Override
-	public boolean getStatus() {
-		return status;
-	}
-
-	@Override
-	public void flush() {
-
-	}
+			.getLogger(SimTWFRefDataAdapter.class);
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void init() throws Exception {
+		filePath = "./conf/sim/codetable_ltft.xml";
 		log.info("Initializing");
 		xstream = new XStream(new DomDriver("UTF-8"));
 		listeners = new ArrayList<>();
@@ -75,40 +57,10 @@ public class SimFITXRefDataAdapter implements IRefDataAdaptor {
 			refDataList.add(refData);
 		}
 
-		timer = new Timer("SimFITXRefDataAdapter");
+		timer = new Timer("SimTWFRefDataAdapter");
 		RefDataUpdateTask updateTask = new RefDataUpdateTask(listeners,
 				refDataList, this);
 		timer.schedule(updateTask, 5000);
-	}
-
-	@Override
-	public void uninit() {
-		xstream = null;
-		listeners = null;
-		map = null;
-	}
-
-	@Override
-	public void subscribeRefData(IRefDataListener listener) throws Exception {
-		if (!listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
-
-	@Override
-	public void unsubscribeRefData(IRefDataListener listener) {
-		if (listeners.contains(listener)) {
-			listeners.remove(listener);
-		}
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
-	@Override
-	public void setStatus(boolean status) {
-		this.status = status;
 	}
 
 }
