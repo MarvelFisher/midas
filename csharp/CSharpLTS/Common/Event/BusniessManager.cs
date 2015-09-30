@@ -296,7 +296,7 @@ namespace Common.Event
                         rsp.orderId = req.orderId;
                         rsp.exchangeAccount = req.exchangeAccount;
                         rsp.message = "sucess";
-                        //_manager.Publish(rsp);
+                        _manager.Publish(rsp);
                     }
                     catch(Exception e)
                     {
