@@ -38,10 +38,26 @@
 			<value>S1</value>
 		</property>
 	</bean>
-
-	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+	
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQGenericService">
 		<property name="url" value="nio://0.0.0.0:61656"></property>
+		<property name="serializationMap">
+			<map key-type="java.lang.String">
+				<entry key-ref="csPubTopic" value-ref="avroSerialization"></entry>
+				<entry key-ref="csSubTopic" value-ref="avroSerialization"></entry>
+			</map>
+		</property>
 	</bean>
+	
+	<bean id="csPubTopic" class="java.lang.String">
+		<constructor-arg value="Test.EB.DownStream.channel" />
+	</bean>
+
+	<bean id="csSubTopic" class="java.lang.String">
+		<constructor-arg value="Test.EB.DownStream.node" />
+	</bean>
+	
+	<bean id="avroSerialization" class="com.cyanspring.avro.AvroSerialization"/>
 	
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://10.0.0.51:60006"></property>
