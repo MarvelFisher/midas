@@ -123,7 +123,13 @@ public class IndexMarketSessionManager implements IPlugin {
 				}
 				if (send.get(index) != null)
 					continue;
-				MarketSession session = marketSessionUtil.getMarketSessions(refData);
+				MarketSessionData current = currentSessionMap.get(refData.getSymbol());
+				if (current == null) {
+					log.warn("Can't find market session. symbol: " + refData.getSymbol());
+					continue;
+				}
+					
+				MarketSession session = marketSessionUtil.getMarketSessions(refData, current.getTradeDateByString());
 				if (session == null) {
 					log.warn("Can't find market session, symbol: {}, category: {}", refData.getSymbol(), refData.getCategory());
 					continue;

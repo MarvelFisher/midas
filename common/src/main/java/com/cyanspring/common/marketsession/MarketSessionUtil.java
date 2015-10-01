@@ -134,14 +134,14 @@ public class MarketSessionUtil implements IPlugin{
     	return ret;
     }
     
-    public MarketSession getMarketSessions(RefData refData) throws Exception{
+    public MarketSession getMarketSessions(RefData refData, String date) throws Exception{
     	String index = searchIndex(refData);
     	if (!StringUtils.hasText(index)) 
     		return null;
     	IMarketSession session = sessionMap.get(index);
     	if (session == null)
     		return null;
-    	return session.getMarketSession(refData);
+    	return session.getMarketSession(refData, date);
     }
     
     public ITradeDate getTradeDateManager(String index){
