@@ -23,10 +23,78 @@
 		<constructor-arg>
 			<list>
 				<ref bean="sessionChecker"/>
+				<ref bean="rubSessionChecker"/>
 			</list>
 		</constructor-arg>
 	</bean>
 	
+	<bean id="rubSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+		<property name="stateMap">
+			<map>
+				<entry key="DEFAULT">
+					<ref bean="rubDefaultSession"/>
+				</entry>
+				<entry key="HOLIDAY">
+					<ref bean="rubHolidaySession"/>
+				</entry>
+			</map>
+		</property>
+		<property name="tradeDateManager"><ref bean="rubTradeDateManager"/></property>
+		<property name="index" value="RUB"></property>
+	</bean>
+	
+	<bean id="rubDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+		<constructor-arg>
+			<list>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>CLOSE</value></constructor-arg>
+					<constructor-arg><value>-1:00:00</value></constructor-arg>
+					<constructor-arg><value>14:55:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>PREMARKET</value></constructor-arg>
+					<constructor-arg><value>14:55:00</value></constructor-arg>
+					<constructor-arg><value>15:00:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>OPEN</value></constructor-arg>
+					<constructor-arg><value>15:00:00</value></constructor-arg>
+					<constructor-arg><value>23:00:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>CLOSE</value></constructor-arg>
+					<constructor-arg><value>23:00:00</value></constructor-arg>
+					<constructor-arg><value>38:55:00</value></constructor-arg>
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="rubHolidaySession" class="com.cyanspring.common.marketsession.MarketSession">
+		<constructor-arg>
+			<list>
+		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+		        	<constructor-arg><value>CLOSE</value></constructor-arg>
+		        	<constructor-arg><value>-1:00:00</value></constructor-arg>
+		        	<constructor-arg><value>38:55:00</value></constructor-arg>
+				</bean>	
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="rubTradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
+		<constructor-arg>
+			<list>
+			</list>
+		</constructor-arg>
+		<constructor-arg>
+			<list>
+				<value>2015-01-01</value>
+				<value>2015-12-25</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
 	<bean id="sessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>
@@ -47,85 +115,85 @@
 		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
 		<property name="index" value="FX"></property>
 	</bean>
-	
+
 	<bean id="defaultSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 					<constructor-arg><value>OPEN</value></constructor-arg>
-		        	<constructor-arg><value>-18:-45:00</value></constructor-arg>
-		        	<constructor-arg><value>05:00:00</value></constructor-arg>
+					<constructor-arg><value>-18:-45:00</value></constructor-arg>
+					<constructor-arg><value>05:00:00</value></constructor-arg>
 				</bean>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>05:00:00</value></constructor-arg>
-		        	<constructor-arg><value>05:10:00</value></constructor-arg>
+					<constructor-arg><value>CLOSE</value></constructor-arg>
+					<constructor-arg><value>05:00:00</value></constructor-arg>
+					<constructor-arg><value>05:10:00</value></constructor-arg>
 				</bean>
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>PREMARKET</value></constructor-arg>
-		        	<constructor-arg><value>05:10:00</value></constructor-arg>
-		        	<constructor-arg><value>05:15:00</value></constructor-arg>
-				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>OPEN</value></constructor-arg>
-		        	<constructor-arg><value>05:15:00</value></constructor-arg>
-		        	<constructor-arg><value>29:00:00</value></constructor-arg>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>PREMARKET</value></constructor-arg>
+					<constructor-arg><value>05:10:00</value></constructor-arg>
+					<constructor-arg><value>05:15:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>OPEN</value></constructor-arg>
+					<constructor-arg><value>05:15:00</value></constructor-arg>
+					<constructor-arg><value>29:00:00</value></constructor-arg>
 				</bean>
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="wahSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>-19:00:00</value></constructor-arg>
-		        	<constructor-arg><value>05:10:00</value></constructor-arg>
+					<constructor-arg><value>CLOSE</value></constructor-arg>
+					<constructor-arg><value>-19:00:00</value></constructor-arg>
+					<constructor-arg><value>05:10:00</value></constructor-arg>
 				</bean>
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>PREMARKET</value></constructor-arg>
-		        	<constructor-arg><value>05:10:00</value></constructor-arg>
-		        	<constructor-arg><value>05:15:00</value></constructor-arg>
-				</bean>		
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>OPEN</value></constructor-arg>
-		        	<constructor-arg><value>05:15:00</value></constructor-arg>
-		        	<constructor-arg><value>29:00:00</value></constructor-arg>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>PREMARKET</value></constructor-arg>
+					<constructor-arg><value>05:10:00</value></constructor-arg>
+					<constructor-arg><value>05:15:00</value></constructor-arg>
+				</bean>
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>OPEN</value></constructor-arg>
+					<constructor-arg><value>05:15:00</value></constructor-arg>
+					<constructor-arg><value>29:00:00</value></constructor-arg>
 				</bean>
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="hawSession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>OPEN</value></constructor-arg>
-		        	<constructor-arg><value>-18:-45:00</value></constructor-arg>
-		        	<constructor-arg><value>05:00:00</value></constructor-arg>
+					<constructor-arg><value>OPEN</value></constructor-arg>
+					<constructor-arg><value>-18:-45:00</value></constructor-arg>
+					<constructor-arg><value>05:00:00</value></constructor-arg>
 				</bean>
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>05:00:00</value></constructor-arg>
-		        	<constructor-arg><value>29:00:00</value></constructor-arg>
-				</bean>	
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>CLOSE</value></constructor-arg>
+					<constructor-arg><value>05:00:00</value></constructor-arg>
+					<constructor-arg><value>29:00:00</value></constructor-arg>
+				</bean>
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="holidaySession" class="com.cyanspring.common.marketsession.MarketSession">
 		<constructor-arg>
 			<list>
-		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
-		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>-19:00:00</value></constructor-arg>
-		        	<constructor-arg><value>29:00:00</value></constructor-arg>
-				</bean>	
+				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+					<constructor-arg><value>CLOSE</value></constructor-arg>
+					<constructor-arg><value>-19:00:00</value></constructor-arg>
+					<constructor-arg><value>29:00:00</value></constructor-arg>
+				</bean>
 			</list>
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="tradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
 			<list>
@@ -138,6 +206,5 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	
-	
+
 </beans>
