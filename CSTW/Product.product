@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="CSTW" uid="com.cyanspring.cstw.product" id="com.cyanspring.cstw.product" application="com.cyanspring.cstw.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
-
+<product name="LTW" uid="com.cyanspring.cstw.product" id="com.cyanspring.cstw.product" application="com.cyanspring.cstw.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -18,17 +17,16 @@
 
    <splash
       location="CSTWjars" />
-   <launcher name="CSTW">
+   <launcher name="LTW">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
 
-
    <vm>
+      <macos include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</macos>
    </vm>
-
 
    <plugins>
       <plugin id="CSTWjars"/>
