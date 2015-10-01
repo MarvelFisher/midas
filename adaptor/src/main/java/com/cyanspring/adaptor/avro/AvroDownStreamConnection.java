@@ -181,6 +181,11 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		public void amendOrder(ChildOrder order, Map<String, Object> fields)
 				throws DownStreamException {
 			log.info("Amend order: " + order.getId());
+			if (order.getExchangeOrderId() == null) {
+				log.error("null exchange order id, id: " + order.getId());
+				listener.onOrder(ExecType.REJECTED, order, null, "null exchange order id");
+				return;
+			}
 			ChildOrder local = exchangeOrders.get(order.getExchangeOrderId());
 			if(!checkOrderStatus(order, local))
 				return;
@@ -203,6 +208,11 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
 			log.info("Cancel order: " + order.getId());
+			if (order.getExchangeOrderId() == null) {
+				log.error("null exchange order id, id: " + order.getId());
+				listener.onOrder(ExecType.REJECTED, order, null, "null exchange order id");
+				return;
+			}
 			ChildOrder local = exchangeOrders.get(order.getExchangeOrderId());
 			if(!checkOrderStatus(order, local))
 				return;
@@ -222,12 +232,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				listener.onOrder(ExecType.REJECTED, order, null, "Down stream connection not ready");
 				return false;
 			}
-			if (order.getExchangeOrderId() == null) {
-				log.error("null exchange order id, id: " + order.getId());
-				listener.onOrder(ExecType.REJECTED, order, null, "null exchange order id");
-				return false;
-			}
-			
+
 			if (local == null) {
 				log.error("Can't locate order, id: " + order.getId());
 				listener.onOrder(ExecType.REJECTED, order, null, "Can't locate order");

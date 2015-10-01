@@ -334,15 +334,22 @@
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
-				<ref bean="avroAdaptor" />
+				<ref bean="hyperDownStreamAdaptor" />
 			</list>
 		</constructor-arg>
 		<constructor-arg>
 			<list>
-				<!-- <ref bean="ibAdaptor" /> -->
+				<ref bean="avroAdaptor" />
 			</list>
 		</constructor-arg>
 	</bean>
+
+	<bean id="hyperDownStreamAdaptor" class="com.cyanspring.server.sim.HyperDownStreamAdaptor">
+    </bean>
+
+    <bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
+        <property name="checkSingleSide" value="true"/>
+    </bean>
 
 	<bean id="avroAdaptor" class="com.cyanspring.adaptor.avro.AvroAdaptor">
 		<property name="connections">
