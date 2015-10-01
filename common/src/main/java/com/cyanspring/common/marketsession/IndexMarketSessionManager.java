@@ -97,7 +97,8 @@ public class IndexMarketSessionManager implements IPlugin {
 
 			Map<String, MarketSessionData> send = new HashMap<>();
 			for (RefData refData : refDataList) {
-				MarketSessionData data = currentSessionMap.get(refData.getSymbol());
+				String index = RefDataUtil.getSearchIndex(refData);
+				MarketSessionData data = currentSessionMap.get(index);
 				if (data == null) {
 					log.error("Request data not complete, index: {}", refData.getSymbol());
 					continue;
@@ -123,7 +124,7 @@ public class IndexMarketSessionManager implements IPlugin {
 				}
 				if (send.get(index) != null)
 					continue;
-				MarketSessionData current = currentSessionMap.get(refData.getSymbol());
+				MarketSessionData current = currentSessionMap.get(index);
 				if (current == null) {
 					log.warn("Can't find market session. symbol: " + refData.getSymbol());
 					continue;
