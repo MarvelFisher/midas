@@ -126,6 +126,10 @@
 				<int>0</int>
 			</entry>
 			<entry>
+                <string>Lot CF</string>
+                <double>80</double>
+            </entry>
+			<entry>
 				<string>Minimal CF</string>
 				<double>0</double>
 			</entry>
@@ -262,6 +266,10 @@
 			<entry>
 				<string>Decimal point</string>
 				<int>0</int>
+			</entry>
+			<entry>
+				<string>Lot CF</string>
+				<double>20</double>
 			</entry>
 			<entry>
 				<string>Minimal CF</string>

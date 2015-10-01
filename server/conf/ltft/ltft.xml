@@ -282,8 +282,7 @@
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
 
-	<bean id="commissionManager" class="com.cyanspring.server.account.FITXCommissionManager">
-		<property name="trxFee" value="80" />
+	<bean id="commissionManager" class="com.cyanspring.server.account.FTCommissionManager">
 		<property name="trxTaxRate" value="0.00002" />
 	</bean>
 
