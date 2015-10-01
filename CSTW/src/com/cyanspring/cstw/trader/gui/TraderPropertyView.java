@@ -199,9 +199,16 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 	private void sendPropertyModifyEvent() {
 		if(!isNumberType(txt_defaultQty.getText())){
 			showMessageBox("Default Quantity is not number type", parentComposite);
+			setAccountSettingParams();
 			return;
 		}
 		double defaultQty = Double.parseDouble(txt_defaultQty.getText());
+		if(PriceUtils.LessThan(defaultQty, 0)){
+			showMessageBox("Default Quantity can't be nagative number",parentComposite);
+			setAccountSettingParams();
+			return;
+		}
+		
 		if(PriceUtils.Equal(defaultQty, accountSetting.getDefaultQty())){
 			showMessageBox("Default Quantity not modified", parentComposite);
 			return;
