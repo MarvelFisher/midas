@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +130,7 @@ public class CentralDbProcessor implements IPlugin
 	private ArrayList<String> appServIDList = new ArrayList<String>();
 	private DBHandler dbhnd ;
 	
-	private HashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap = null;
+	private ConcurrentHashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap = null;
 	
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -860,7 +861,7 @@ public class CentralDbProcessor implements IPlugin
 	{
 		if (getRetrieveMap() == null)
 		{
-			setRetrieveMap(new HashMap<String, HashMap<String, List<HistoricalPrice>>>());
+			setRetrieveMap(new ConcurrentHashMap<String, HashMap<String, List<HistoricalPrice>>>());
 		}
 		getRetrieveMap().clear();
 	}
@@ -1416,12 +1417,12 @@ public class CentralDbProcessor implements IPlugin
 		this.runInsertSQL = runInsertSQL;
 	}
 
-	public HashMap<String, HashMap<String, List<HistoricalPrice>>> getRetrieveMap()
+	public ConcurrentHashMap<String, HashMap<String, List<HistoricalPrice>>> getRetrieveMap()
 	{
 		return retrieveMap;
 	}
 
-	public void setRetrieveMap(HashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap)
+	public void setRetrieveMap(ConcurrentHashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap)
 	{
 		this.retrieveMap = retrieveMap;
 	}

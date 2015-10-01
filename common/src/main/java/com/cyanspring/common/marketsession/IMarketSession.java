@@ -10,7 +10,7 @@ public interface IMarketSession {
 	public void init(Date date, RefData refData) throws Exception;
 	public MarketSessionData getState(RefData refData) throws Exception;
     public MarketSessionData searchState(Date date, RefData refData) throws Exception;
-    public MarketSession getMarketSession(RefData refData) throws Exception;
+    public MarketSession getMarketSession(RefData refData, String date) throws Exception;
     public String getIndex();
     public String getTradeDate();
     public ITradeDate getTradeDateManager();
