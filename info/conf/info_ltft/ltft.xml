@@ -50,6 +50,11 @@
 	            <value>TXF02</value>
 	            <value>TXF03</value>
 	            <value>TXF04</value>
+	            <value>MXF00</value>
+	            <value>MXF01</value>
+	            <value>MXF02</value>
+	            <value>MXF03</value>
+	            <value>MXF04</value>
 	        </list>    
 		</property>
 		<property name="historicalDataCount">
