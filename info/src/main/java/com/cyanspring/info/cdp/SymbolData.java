@@ -149,12 +149,12 @@ public class SymbolData implements Comparable<SymbolData>
 				{
 					continue;
 				}
-				setPrice(q) ;
+				setPrice(q, commodity) ;
 				dCurVolume = q.getTotalVolume() ;
 			}
 		}
 	}
-	public boolean setPrice(Quote quote)
+	public boolean setPrice(Quote quote, String commodity)
 	{
 		boolean changed;
 		synchronized(priceData)
@@ -166,13 +166,13 @@ public class SymbolData implements Comparable<SymbolData>
 			if (price == null)
 			{
 				price = new HistoricalPrice(strSymbol, getTradedate(), cal.getTime());
-				changed = setter.setPrice(price, quote, dCurVolume);
+				changed = setter.setPrice(price, quote, dCurVolume, commodity);
 				if (changed)
 					priceData.put(cal.getTime(), price);
 			}
 			else
 			{
-				changed = setter.setPrice(price, quote, dCurVolume);
+				changed = setter.setPrice(price, quote, dCurVolume, commodity);
 			}
 		}
 		if (changed && writeMin) //writeToMin() ; 

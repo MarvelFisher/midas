@@ -1,43 +1,175 @@
 package com.cyanspring.info.alert;
 
+import com.cyanspring.common.alert.ParseData;
 import com.cyanspring.common.alert.SendNotificationRequestEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.ScheduleManager;
+
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by xiaowenda on 2015/9/21.
  */
-public class IMManager extends Compute {
-    private static final Logger log = LoggerFactory
-            .getLogger(AlertManager.class);
+public class IMManager extends Compute
+{
+	private static final Logger log = LoggerFactory.getLogger(AlertManager.class);
 
-    @Autowired
-    SessionFactory sessionFactory;
+	public ConcurrentLinkedQueue<ParseData> ParseDataQueue;
+	private ArrayList<IMThread> IMThreadList;
 
-    @Autowired
-    ScheduleManager scheduleManager;
+	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+	private int timeoutSecond;
+	private int createThreadCount;
+	private int maxRetrytimes;
+	private long killTimeoutSecond;
 
-    @Override
-    public void SubscirbetoEvents() {
-    }
+	private String uri;
+	private String appKey;
+	private String appSecret;
+	private String tokenSalt;
+	private String iv;
 
-    @Override
-    public void SubscribetoEventsMD() {
-        SubscirbetoEvent(SendNotificationRequestEvent.class);
-    }
+	private int CheckThreadStatusInterval = 60000; // 60 seconds
 
-    @Override
-    public void init() {
+	@Autowired
+	SessionFactory sessionFactory;
 
-    }
+	@Autowired
+	ScheduleManager scheduleManager;
 
-    @Override
-    public void processSendNotificationRequestEvent(SendNotificationRequestEvent event,
-                                                    List<Compute> computes) {
-    }
+	@Override
+	public void SubscirbetoEvents()
+	{
+	}
+
+	@Override
+	public void SubscribetoEventsMD()
+	{
+		SubscirbetoEvent(SendNotificationRequestEvent.class);
+	}
+
+	@Override
+	public void init()
+	{
+		String strThreadId = "";
+		try
+		{
+			log.info("Initialising...");
+
+			ParseDataQueue = new ConcurrentLinkedQueue<ParseData>();
+			IMThreadList = new ArrayList<IMThread>();
+
+			scheduleManager.scheduleRepeatTimerEvent(CheckThreadStatusInterval,
+					getEventProcessorMD(), timerEvent);
+
+			if (createThreadCount > 0)
+			{
+				for (int i = 0; i < createThreadCount; i++)
+				{
+					strThreadId = "IMThread" + String.valueOf(i);
+					IMThread IMT = new IMThread(strThreadId, ParseDataQueue, timeoutSecond,
+							maxRetrytimes, getUri(), getAppKey(), getAppSecret(), getTokenSalt(),
+							getIv());
+					log.info("[" + strThreadId + "] New.");
+					IMThreadList.add(IMT);
+					IMT.start();
+				}
+			}
+			else
+			{
+				log.warn("createThreadCount Setting error : "
+						+ String.valueOf(getCreateThreadCount()));
+			}
+
+		}
+		catch (Exception e)
+		{
+			log.warn("[" + strThreadId + "] Exception : " + e.getMessage());
+		}
+
+	}
+
+	@Override
+	public void processSendNotificationRequestEvent(SendNotificationRequestEvent event,
+			List<Compute> computes)
+	{
+		ParseDataQueue.add(event.getPD());
+	}
+
+	public int getCreateThreadCount()
+	{
+		return createThreadCount;
+	}
+
+	public void setCreateThreadCount(int createThreadCount)
+	{
+		this.createThreadCount = createThreadCount;
+	}
+
+	public long getKillTimeoutSecond()
+	{
+		return killTimeoutSecond;
+	}
+
+	public void setKillTimeoutSecond(long killTimeoutSecond)
+	{
+		this.killTimeoutSecond = killTimeoutSecond;
+	}
+
+	public String getUri()
+	{
+		return uri;
+	}
+
+	public void setUri(String uri)
+	{
+		this.uri = uri;
+	}
+
+	public String getAppKey()
+	{
+		return appKey;
+	}
+
+	public void setAppKey(String appKey)
+	{
+		this.appKey = appKey;
+	}
+
+	public String getAppSecret()
+	{
+		return appSecret;
+	}
+
+	public void setAppSecret(String appSecret)
+	{
+		this.appSecret = appSecret;
+	}
+
+	public String getTokenSalt()
+	{
+		return tokenSalt;
+	}
+
+	public void setTokenSalt(String tokenSalt)
+	{
+		this.tokenSalt = tokenSalt;
+	}
+
+	public String getIv()
+	{
+		return iv;
+	}
+
+	public void setIv(String iv)
+	{
+		this.iv = iv;
+	}
 }

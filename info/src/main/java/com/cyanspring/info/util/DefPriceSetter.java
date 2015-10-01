@@ -11,10 +11,10 @@ import com.cyanspring.info.cdp.SymbolData;
 public class DefPriceSetter implements IPriceSetter
 {
 	@Override
-	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume) 
+	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume, String commodity) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getLast(), 0)
-				|| PriceUtils.EqualLessThan(quote.getLastVol(), 0))
+				|| (commodity.equals("I") == false && PriceUtils.EqualLessThan(quote.getLastVol(), 0)))
 		{
 			return false;
 		}
