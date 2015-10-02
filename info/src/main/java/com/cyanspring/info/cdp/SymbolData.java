@@ -180,7 +180,7 @@ public class SymbolData implements Comparable<SymbolData>
 			centralDB.getChartCacheProcessor().put(this);
 			writeMin = false;
 		}
-		setter.setDataPrice(this, quote);
+		setter.setDataPrice(this, quote, commodity);
 		return changed;
 	}
 	
