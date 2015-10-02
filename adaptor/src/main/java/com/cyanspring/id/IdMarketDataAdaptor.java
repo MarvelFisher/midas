@@ -66,7 +66,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
     private Map<String, Integer> nonFX;
     private List<String> contributeList;
     private List<String> unContributeList;
-    private Map<String,String> pluginContributeBySymbolMap;
     private long throwQuoteTimeInterval = 0;
 
     @Override
@@ -430,14 +429,6 @@ public class IdMarketDataAdaptor implements IMarketDataAdaptor, IReqThreadCallba
 
     public void setUnContributeList(List<String> unContributeList) {
         this.unContributeList = unContributeList;
-    }
-
-    public Map<String, String> getPluginContributeBySymbolMap() {
-        return pluginContributeBySymbolMap;
-    }
-
-    public void setPluginContributeBySymbolMap(Map<String, String> pluginContributeBySymbolMap) {
-        this.pluginContributeBySymbolMap = pluginContributeBySymbolMap;
     }
 
     public Date getTime() {

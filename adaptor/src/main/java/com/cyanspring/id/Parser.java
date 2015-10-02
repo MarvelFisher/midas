@@ -256,16 +256,10 @@ public class Parser implements IReqThreadCallback {
         //check Contribute
         List<String> contributeList = adaptor.getContributeList();
         List<String> unContributeList = adaptor.getUnContributeList();
-        Map<String, String> pluginContributeBySymbolMap = adaptor.getPluginContributeBySymbolMap();
 
         if (contributeList != null && contributeList.size() > 0) {
             if (Collections.binarySearch(contributeList, nContributeCode) < 0) {
-                if (pluginContributeBySymbolMap != null) {
-                    if (!(pluginContributeBySymbolMap.containsKey(strID) && nContributeCode.equals(pluginContributeBySymbolMap.get(strID))))
-                        return false;
-                } else {
                     return false;
-                }
             }
         } else {
             if (unContributeList != null && unContributeList.size() > 0) {
