@@ -72,12 +72,6 @@
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.MarketDataView"
-            icon="icons/marketData.png"
-            id="com.cyanspring.cstw.gui.MarketDataView2"
-            name="Market Data">
-      </view>
-      <view
             class="com.cyanspring.cstw.gui.SingleInstrumentStrategyView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.SingleInstrumentStrategyView"
@@ -153,7 +147,15 @@
             id="com.cyanspring.cstw.trader.gui.TraderPropertyViewer"
             name="Properties"
             restorable="true">
-      </view>      
+      </view>    
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.kdb.gui.KDBInfoView"
+            icon="icons/active.png"
+            id="com.cyanspring.cstw.kdb.gui.KDBInfoViewer"
+            name="Signal"
+            restorable="true">
+      </view>        
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -437,6 +439,19 @@
 	                  	</or>
             	  	 </visibleWhen>
             </command>
+            <command
+                  commandId="CSTW.KDBInfoView"
+                  icon="icons/active.png"
+                  label="Signal"
+                  style="push">
+                     <visibleWhen checkEnabled="false">
+	                  	<or>
+	                  	   <with variable="Admin">
+			                  <equals value="ENABLED"></equals>        
+			               </with>
+	                  	</or>
+            	  	 </visibleWhen>
+            </command>
             <menu
                   label="New">
                <command
@@ -475,10 +490,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="com.cyanspring.cstw.application"
-            name="CSTW">
+            name="LTW">
          <property
                name="appName"
-               value="CSTW">
+               value="LTW">
          </property>
          <property
                name="windowImages"
@@ -603,6 +618,12 @@
             id="CSTW.TraderPropertyView"
             name="Properties">
       </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.kdb.command.KDBInfoViewCommand"
+            description="Signal"
+            id="CSTW.KDBInfoView"
+            name="Signal">
+      </command>      
    </extension>
    <extension
          point="org.eclipse.ui.services">

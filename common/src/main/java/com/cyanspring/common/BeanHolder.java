@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.cstw.auth.IAuthChecker;
+import com.cyanspring.common.cstw.kdb.SignalManager;
 import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -38,6 +39,9 @@ public class BeanHolder {
 	
 	@Autowired
 	TickManager	tickManager;
+	
+	@Autowired
+	SignalManager signalManager;
 	
 	@Autowired
 	@Qualifier("alertColorConfig")
@@ -90,5 +94,9 @@ public class BeanHolder {
 	
 	public TickManager getTickManager() {
 		return tickManager;
+	}
+	
+	public SignalManager getSignalManager() {
+		return signalManager;
 	}
 }

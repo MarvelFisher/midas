@@ -36,6 +36,8 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.cstw.auth.IAuthChecker;
+import com.cyanspring.common.cstw.kdb.SignalManager;
+import com.cyanspring.common.cstw.kdb.SignalType;
 import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.data.AlertType;
@@ -77,6 +79,7 @@ public class Business {
 	private OrderCachingManager orderManager;
 	private IAuthChecker authManager;
 	private TickManager tickManager;
+	private SignalManager signalManager;
 	private String inbox;
 	private String channel;
 	private String nodeInfoChannel;
@@ -291,6 +294,7 @@ public class Business {
 		alertColorConfig = beanHolder.getAlertColorConfig();
 		authManager = beanHolder.getAuthManager();
 		tickManager = beanHolder.getTickManager();
+		signalManager = beanHolder.getSignalManager();
 		
 		boolean ok = false;
 		while(!ok) {
@@ -577,5 +581,9 @@ public class Business {
 			symbolList = tickManager.getSymbolList();
 		
 		return symbolList;
+	}
+	
+	public SignalType getSignal(String symbol,double scale){
+		return signalManager.getSignal(symbol, scale);
 	}
 }

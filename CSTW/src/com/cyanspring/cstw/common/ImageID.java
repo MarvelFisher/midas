@@ -50,7 +50,10 @@ public enum ImageID {
 	MARKET_DATA_ICON("icons/marketData.png"),
 	PROPERTY_ICON("icons/property.png"),
 	ASKBID_ICON("icons/askbid.png"),
-	DETAILS_ICON("icons/details.png")
+	DETAILS_ICON("icons/details.png"),
+	REDLIGHT_ICON("icons/redlight.png"),
+	YELLOWLIGHT_ICON("icons/yellowlight.png"),
+	GREENLIGHT_ICON("icons/greenlight.png")
 	;
 	private String value;
 	ImageID(String value) {

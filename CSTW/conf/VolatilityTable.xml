@@ -1,0 +1,27 @@
+<map>
+  <entry>
+    <string>com.cyanspring.common.kdb.Volatility</string>
+    <list>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Symbol</title>
+        <width>150</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Time</title>
+        <width>97</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Scale</title>
+        <width>97</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Class</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+    </list>
+  </entry>
+</map>
