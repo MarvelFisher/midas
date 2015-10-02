@@ -3,9 +3,11 @@ package com.cyanspring.info.alert;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.ExecType;
+
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -64,6 +66,7 @@ public class AlertManager extends Compute {
 	private Map<String, ArrayList<TradeAlert>> userTradeAlerts = new HashMap<String, ArrayList<TradeAlert>>();
 
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
+	private Map<String, Object> userLocks = new ConcurrentHashMap<String, Object>();
 
 	@Override
 	public void SubscirbetoEvents() {
@@ -244,62 +247,64 @@ public class AlertManager extends Compute {
             // save to Array
             ArrayList<TradeAlert> list;
             list = userTradeAlerts.get(parentOrder.getUser());
-            if (null == list) {
-                session = sessionFactory.openSession();
-                Query query = session.getNamedQuery("LoadPastTradeAlert");
-                query.setString(0, parentOrder.getUser());
-//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-                Iterator iterator = query.list().iterator();
-                list = new ArrayList<TradeAlert>();
-                ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
-                while (iterator.hasNext()) {
-                    TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
-                    if (list.size() < 20)
-                    {
-                        list.add(pastTradeAlert);
-                    }
-                    else
-                    {
-                        lstExpired.add(pastTradeAlert);
-                    }
-                }
-                if (list.size() == 0) {
-                    list.add(TA);
-                } else if (list.size() >= 20) {
-                    list.remove(19);
-                    list.add(0, TA);
-                } else {
-                    list.add(0, TA);
-                }
-                userTradeAlerts.put(parentOrder.getUser(), list);
-                if (lstExpired.size() > 0)
-                {
-                    try {
-                        Transaction tx = session.beginTransaction();
-                        for (TradeAlert tradealert : lstExpired)
-                        {
-                            session.delete(tradealert);
-                        }
-                        tx.commit();
-                    } catch (Exception e) {
-                        log.warn("[SQLDelete] : " + e.getMessage());
-                    }
-                }
-            } else {
-                if (list.indexOf(TA) != -1) {
-                    log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
-                    if (null != session) {
-                        session.close();
-                    }
-                    return;
-                } else {
-                    if (list.size() >= 20) {
-                        list.remove(19);
-                        list.add(0, TA);
-                    } else {
-                        list.add(0, TA);
-                    }
-                }
+            synchronized(getUserLock(parentOrder.getUser())) {
+	            if (null == list) {
+	                session = sessionFactory.openSession();
+	                Query query = session.getNamedQuery("LoadPastTradeAlert");
+	                query.setString(0, parentOrder.getUser());
+	//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+	                Iterator iterator = query.list().iterator();
+	                list = new ArrayList<TradeAlert>();
+	                ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
+	                while (iterator.hasNext()) {
+	                    TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
+	                    if (list.size() < 20)
+	                    {
+	                        list.add(pastTradeAlert);
+	                    }
+	                    else
+	                    {
+	                        lstExpired.add(pastTradeAlert);
+	                    }
+	                }
+	                if (list.size() == 0) {
+	                    list.add(TA);
+	                } else if (list.size() >= 20) {
+	                    list.remove(19);
+	                    list.add(0, TA);
+	                } else {
+	                    list.add(0, TA);
+	                }
+	                userTradeAlerts.put(parentOrder.getUser(), list);
+	                if (lstExpired.size() > 0)
+	                {
+	                    try {
+	                        Transaction tx = session.beginTransaction();
+	                        for (TradeAlert tradealert : lstExpired)
+	                        {
+	                            session.delete(tradealert);
+	                        }
+	                        tx.commit();
+	                    } catch (Exception e) {
+	                        log.warn("[SQLDelete] : " + e.getMessage());
+	                    }
+	                }
+	            } else {
+	                if (list.indexOf(TA) != -1) {
+	                    log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
+	                    if (null != session) {
+	                        session.close();
+	                    }
+	                    return;
+	                } else {
+	                    if (list.size() >= 20) {
+	                        list.remove(19);
+	                        list.add(0, TA);
+	                    } else {
+	                        list.add(0, TA);
+	                    }
+	                }
+	            }
             }
             // save to SQL
             SQLSave(TA);
@@ -356,63 +361,65 @@ public class AlertManager extends Compute {
 			// save to Array
 			ArrayList<TradeAlert> list;
 			list = userTradeAlerts.get(execution.getUser());
-			if (null == list) {
-				session = sessionFactory.openSession();
-				Query query = session.getNamedQuery("LoadPastTradeAlert");
-				query.setString(0, execution.getUser());
-//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-				Iterator iterator = query.list().iterator();
-				list = new ArrayList<TradeAlert>();
-				ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
-				while (iterator.hasNext()) {
-					TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
-					if (list.size() < 20)
-					{
-						list.add(pastTradeAlert);
-					}
-					else
-					{
-						lstExpired.add(pastTradeAlert);
-					}
-				}
-				if (list.size() == 0) {
-					list.add(TA);
-				} else if (list.size() >= 20) {
-					list.remove(19);
-					list.add(0, TA);
-				} else {
-					list.add(0, TA);
-				}
-				userTradeAlerts.put(execution.getUser(), list);
-				if (lstExpired.size() > 0)
-				{
-					try {
-						Transaction tx = session.beginTransaction();
-						for (TradeAlert tradealert : lstExpired)
+            synchronized(getUserLock(execution.getUser())) {
+				if (null == list) {
+					session = sessionFactory.openSession();
+					Query query = session.getNamedQuery("LoadPastTradeAlert");
+					query.setString(0, execution.getUser());
+	//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+					Iterator iterator = query.list().iterator();
+					list = new ArrayList<TradeAlert>();
+					ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
+					while (iterator.hasNext()) {
+						TradeAlert pastTradeAlert = (TradeAlert) iterator.next();
+						if (list.size() < 20)
 						{
-							session.delete(tradealert);
+							list.add(pastTradeAlert);
 						}
-						tx.commit();
-					} catch (Exception e) {
-						log.warn("[SQLDelete] : " + e.getMessage());
+						else
+						{
+							lstExpired.add(pastTradeAlert);
+						}
 					}
-				}
-			} else {
-				if (list.indexOf(TA) != -1) {
-					log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
-					if (null != session) {
-						session.close();
-					}
-					return;
-				} else {
-					if (list.size() >= 20) {
+					if (list.size() == 0) {
+						list.add(TA);
+					} else if (list.size() >= 20) {
 						list.remove(19);
 						list.add(0, TA);
 					} else {
 						list.add(0, TA);
 					}
+					userTradeAlerts.put(execution.getUser(), list);
+					if (lstExpired.size() > 0)
+					{
+						try {
+							Transaction tx = session.beginTransaction();
+							for (TradeAlert tradealert : lstExpired)
+							{
+								session.delete(tradealert);
+							}
+							tx.commit();
+						} catch (Exception e) {
+							log.warn("[SQLDelete] : " + e.getMessage());
+						}
+					}
+				} else {
+					if (list.indexOf(TA) != -1) {
+						log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
+						if (null != session) {
+							session.close();
+						}
+						return;
+					} else {
+						if (list.size() >= 20) {
+							list.remove(19);
+							list.add(0, TA);
+						} else {
+							list.add(0, TA);
+						}
+					}
 				}
-			}
+            }
 			// save to SQL
 			SQLSave(TA);
 		} catch (Exception e) {
@@ -426,86 +433,88 @@ public class AlertManager extends Compute {
 	
 	private void receiveQueryOrderAlertRequestEvent(QueryOrderAlertRequestEvent event, List<Compute> computes) {
 		String Msg = "";
-		try {			
+		try {
 			AlertType type = event.getType();
 			
 			QueryOrderAlertReplyEvent queryorderalertreplyevent = null;
 			if (type == AlertType.TRADE_QUERY_PAST) {
 				ArrayList<TradeAlert> list = userTradeAlerts.get(event
 						.getuserId());
-				if (null == list) {
-					Session session = null;
-					try {
-						session = sessionFactory.openSession();
-
-						Query query = session
-								.getNamedQuery("LoadPastTradeAlert");
-						query.setString(0, event.getuserId());
-//						query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-						Iterator iterator = query.list().iterator();
-						list = new ArrayList<TradeAlert>();
-						ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
-						while (iterator.hasNext()) {
-							TradeAlert pastTradeAlert = (TradeAlert) iterator
-									.next();
-							if (list.size() < 20)
-							{
-								list.add(pastTradeAlert);
+	            synchronized(getUserLock(event.getuserId())) {
+					if (null == list) {
+						Session session = null;
+						try {
+							session = sessionFactory.openSession();
+	
+							Query query = session
+									.getNamedQuery("LoadPastTradeAlert");
+							query.setString(0, event.getuserId());
+	//						query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+							Iterator iterator = query.list().iterator();
+							list = new ArrayList<TradeAlert>();
+							ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
+							while (iterator.hasNext()) {
+								TradeAlert pastTradeAlert = (TradeAlert) iterator
+										.next();
+								if (list.size() < 20)
+								{
+									list.add(pastTradeAlert);
+								}
+								else
+								{
+									lstExpired.add(pastTradeAlert);
+								}
 							}
-							else
+							if (list.size() == 0) {
+								log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.");
+								// Send orderalert event reply
+								Msg = "userOrderAlert list isn't exists";
+								queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
+										null, event.getSender(), list,
+										event.getTxId(), event.getuserId(), true,
+										Msg);							
+							} else {
+								queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
+										null, event.getSender(), list,
+										event.getTxId(), event.getuserId(), true,
+										null);
+							}
+							if (lstExpired.size() > 0)
 							{
-								lstExpired.add(pastTradeAlert);
+								try {
+									Transaction tx = session.beginTransaction();
+									for (TradeAlert TA : lstExpired)
+									{
+										session.delete(TA);
+									}
+									tx.commit();
+								} catch (Exception e) {
+									log.warn("[SQLDelete] : " + e.getMessage());
+								}
+							}						
+						} catch (Throwable t) {
+							log.warn("[processQueryOrderAlertRequestEvent] Exceptions : ",t);
+						} finally {
+							if (null != session) {
+								session.close();
 							}
 						}
+						userTradeAlerts.put(event.getuserId(), list);
+					} else {
 						if (list.size() == 0) {
 							log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.");
-							// Send orderalert event reply
 							Msg = "userOrderAlert list isn't exists";
 							queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
-									null, event.getSender(), list,
-									event.getTxId(), event.getuserId(), true,
-									Msg);							
+									null, event.getSender(), list, event.getTxId(),
+									event.getuserId(), true, Msg);
 						} else {
+							// Send orderalert event reply
 							queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
-									null, event.getSender(), list,
-									event.getTxId(), event.getuserId(), true,
-									null);
-						}
-						if (lstExpired.size() > 0)
-						{
-							try {
-								Transaction tx = session.beginTransaction();
-								for (TradeAlert TA : lstExpired)
-								{
-									session.delete(TA);
-								}
-								tx.commit();
-							} catch (Exception e) {
-								log.warn("[SQLDelete] : " + e.getMessage());
-							}
-						}						
-					} catch (Throwable t) {
-						log.warn("[processQueryOrderAlertRequestEvent] Exceptions : ",t);
-					} finally {
-						if (null != session) {
-							session.close();
+									null, event.getSender(), list, event.getTxId(),
+									event.getuserId(), true, null);
 						}
 					}
-					userTradeAlerts.put(event.getuserId(), list);
-				} else {
-					if (list.size() == 0) {
-						log.info("[processQueryOrderAlertRequestEvent] : user OrderAlert list isn't exists.");
-						Msg = "userOrderAlert list isn't exists";
-						queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
-								null, event.getSender(), list, event.getTxId(),
-								event.getuserId(), true, Msg);
-					} else {
-						// Send orderalert event reply
-						queryorderalertreplyevent = new QueryOrderAlertReplyEvent(
-								null, event.getSender(), list, event.getTxId(),
-								event.getuserId(), true, null);
-					}
-				}
+	            }
 			} else {
 				Msg = "Event AlertTypeError.";
 				queryorderalertreplyevent = new QueryOrderAlertReplyEvent(null,
@@ -711,35 +720,37 @@ public class AlertManager extends Compute {
 	private void loadPastPriceAlert(String userId) {
 		Session session = null;
 		try {
-			session = sessionFactory.openSession();
-			ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
-			ArrayList<PastPriceAlert> PastPriceAlertlist = new ArrayList<PastPriceAlert>();
-			Query query = session.getNamedQuery("LoadPastPriceAlert");
-			query.setString(0, userId);
-//			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-			Iterator iterator = query.list().iterator();
-			while (iterator.hasNext()) {
-				PastPriceAlert pastPriceAlert = (PastPriceAlert) iterator
-						.next();
-				if (BasePriceAlertlist.size() < 20)
-				{
-					BasePriceAlertlist.add(pastPriceAlert);
+            synchronized(getUserLock(userId)) {
+				session = sessionFactory.openSession();
+				ArrayList<BasePriceAlert> BasePriceAlertlist = new ArrayList<BasePriceAlert>();
+				ArrayList<PastPriceAlert> PastPriceAlertlist = new ArrayList<PastPriceAlert>();
+				Query query = session.getNamedQuery("LoadPastPriceAlert");
+				query.setString(0, userId);
+	//			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
+				Iterator iterator = query.list().iterator();
+				while (iterator.hasNext()) {
+					PastPriceAlert pastPriceAlert = (PastPriceAlert) iterator
+							.next();
+					if (BasePriceAlertlist.size() < 20)
+					{
+						BasePriceAlertlist.add(pastPriceAlert);
+					}
+					else
+					{
+						PastPriceAlertlist.add(pastPriceAlert);
+					}
 				}
-				else
+				userPastPriceAlerts.put(userId, BasePriceAlertlist);
+				if (PastPriceAlertlist.size() > 0)
 				{
-					PastPriceAlertlist.add(pastPriceAlert);
+					Transaction tx = session.getTransaction();
+					for (PastPriceAlert PPT : PastPriceAlertlist)
+					{
+						session.delete(PPT);
+					}
+					tx.commit();
 				}
-			}
-			userPastPriceAlerts.put(userId, BasePriceAlertlist);
-			if (PastPriceAlertlist.size() > 0)
-			{
-				Transaction tx = session.getTransaction();
-				for (PastPriceAlert PPT : PastPriceAlertlist)
-				{
-					session.delete(PPT);
-				}
-				tx.commit();
-			}
+            }
 		} catch (Exception e) {
 			log.warn("Exception : " + e.getMessage());
 		} finally {
@@ -1298,6 +1309,12 @@ public class AlertManager extends Compute {
 
     public void setTimerinterval(int timerinterval) {
         this.timerinterval = timerinterval;
+    }
+    
+    private Object getUserLock(String userID) {
+    	if (userLocks.get(userID) == null)
+    		userLocks.put(userID, new Object());
+    	return userLocks.get(userID);
     }
 
 }
