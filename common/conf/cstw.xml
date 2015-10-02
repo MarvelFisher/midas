@@ -13,7 +13,7 @@
 	<import resource="classpath:kdb/SignalSettings.xml" />
  
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://10.1.1.113:61616"></property>
+		<property name="url" value="nio://localhost:61616"></property>
 		<!-- DEV -->
 		<!--property name="url" value="nio://10.0.0.51:61616"></property-->
 		<!--property name="url" value="tcp://125.227.191.252:61616"></property-->
