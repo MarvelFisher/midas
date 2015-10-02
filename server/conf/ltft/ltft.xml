@@ -92,13 +92,6 @@
 		</property>
 	</bean>
 
-	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
-		<constructor-arg>
-			<ref bean="globalTransportService" />
-		</constructor-arg>
-		<property name="embedBroker" value="false" />
-	</bean>
-
 	<bean id="premiumFollowManager" class="com.cyanspring.server.account.PremiumFollowManager" />
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
