@@ -33,10 +33,10 @@ public class DefPriceSetter implements IPriceSetter
 	}
 
 	@Override
-	public boolean setDataPrice(SymbolData symboldata, Quote quote) 
+	public boolean setDataPrice(SymbolData symboldata, Quote quote, String commodity) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getLast(), 0)
-				|| PriceUtils.EqualLessThan(quote.getLastVol(), 0))
+				|| (commodity.equals("I") == false && PriceUtils.EqualLessThan(quote.getLastVol(), 0)))
 		{
 			return false;
 		}

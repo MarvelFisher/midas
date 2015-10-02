@@ -24,7 +24,7 @@ public class FXPriceSetter implements IPriceSetter
 	}
 
 	@Override
-	public boolean setDataPrice(SymbolData symboldata, Quote quote) 
+	public boolean setDataPrice(SymbolData symboldata, Quote quote, String commodity) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getBid(), 0) || PriceUtils.EqualLessThan(quote.getAsk(), 0))
 		{
