@@ -23,7 +23,7 @@ import com.exxeleron.qjava.QConnection.MessageType;
 public class KDBPersistenceManager implements IPlugin {
 	public static final Logger log = LoggerFactory.getLogger(KDBPersistenceManager.class);
 	private String ip = "localhost";
-	private int port = 5001;
+	private int port = 5010;
 	private String user = "";
 	private String pwd = "";
 	private QConnection con;
@@ -46,15 +46,15 @@ public class KDBPersistenceManager implements IPlugin {
 	public boolean saveQuote(Quote quote) {
 		try {
 			if (con.isConnected()) {
-				final Object[] data = new Object[] {quote.getSymbol(), quote.getBid(), quote.getAsk(), quote.getBidVol(), quote.getAskVol(), quote.getLast(), 
-						quote.getLastVol(), quote.getTurnover(), quote.getHigh(), quote.getLow(), quote.getOpen(), quote.getClose(), quote.getTotalVolume(), 
-						new QTimestamp(quote.getTimeStamp())};
-				con.sync("insert", "QuoteTable", data);				
+				final Object[] data = new Object[] {new QTimestamp(quote.getTimeStamp()), quote.getSymbol(), quote.getBid(), quote.getAsk(), quote.getBidVol(), quote.getAskVol(), quote.getLast(),
+						quote.getLastVol(), quote.getTurnover(), quote.getHigh(), quote.getLow(), quote.getOpen(), quote.getClose(), quote.getTotalVolume()};
+				con.sync(".u.upd", "quote", data);
 			} else {
 				log.info("QConnection is not initialized");
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -65,40 +65,42 @@ public class KDBPersistenceManager implements IPlugin {
 		try {
 			if (con.isConnected()) {
 				int size = list.size();
-				final Object[] data = new Object[] {new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
+				final Object[] data = new Object[] {new QTimestamp[size], new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
 						, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
-								, new Double[size], new Double[size], new QTimestamp[size]};
+								, new Double[size], new Double[size]};
 				for (int i=0; i < size; i++) {
 					Quote quote = list.get(i);
-					((String[]) data[0])[i] = quote.getSymbol();
-		            ((Double[]) data[1])[i] = quote.getBid();
-		            ((Double[]) data[2])[i] = quote.getAsk();
-		            ((Double[]) data[3])[i] = quote.getBidVol();
-		            ((Double[]) data[4])[i] = quote.getAskVol();
-		            ((Double[]) data[5])[i] = quote.getLast();
-		            ((Double[]) data[6])[i] = quote.getLastVol();
-		            ((Double[]) data[7])[i] = quote.getTurnover();
-		            ((Double[]) data[8])[i] = quote.getHigh();
-		            ((Double[]) data[9])[i] = quote.getLow();
-		            ((Double[]) data[10])[i] = quote.getOpen();
-		            ((Double[]) data[11])[i] = quote.getClose();
-		            ((Double[]) data[12])[i] = quote.getTotalVolume();
-		            ((QTimestamp[]) data[13])[i] = new QTimestamp(quote.getTimeStamp());
-				}				
-				con.sync("insert", "QuoteTable", data);
-				
-				if(throttler.check()) {
-					con.query(MessageType.SYNC, "`:QuoteTable insert (select from `QuoteTable)");
-					if (cleanCache) {
-						con.query(MessageType.SYNC, "delete from `QuoteTable");
-					}
+					((QTimestamp[]) data[0])[i] = new QTimestamp(quote.getTimeStamp());
+					((String[]) data[1])[i] = quote.getSymbol();
+		            ((Double[]) data[2])[i] = quote.getBid();
+		            ((Double[]) data[3])[i] = quote.getAsk();
+		            ((Double[]) data[4])[i] = quote.getBidVol();
+		            ((Double[]) data[5])[i] = quote.getAskVol();
+		            ((Double[]) data[6])[i] = quote.getLast();
+		            ((Double[]) data[7])[i] = quote.getLastVol();
+		            ((Double[]) data[8])[i] = quote.getTurnover();
+		            ((Double[]) data[9])[i] = quote.getHigh();
+		            ((Double[]) data[10])[i] = quote.getLow();
+		            ((Double[]) data[11])[i] = quote.getOpen();
+		            ((Double[]) data[12])[i] = quote.getClose();
+		            ((Double[]) data[13])[i] = quote.getTotalVolume();
 				}
+
+				con.sync(".u.upd", "quote", data);
+				
+//				if(throttler.check()) {
+//					con.query(MessageType.SYNC, "`:quote insert (select from `quote)");
+//					if (cleanCache) {
+//						con.query(MessageType.SYNC, "delete from `quote");
+//					}
+//				}
 				
 			} else {
 				log.info("QConnection is not initialized");
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -113,42 +115,43 @@ public class KDBPersistenceManager implements IPlugin {
 		try {
 			if (con.isConnected()) {
 				int size = map.size();
-				final Object[] data = new Object[] {new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
+				final Object[] data = new Object[] {new QTimestamp[size], new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
 						, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
-								, new Double[size], new Double[size], new QTimestamp[size]};
+								, new Double[size], new Double[size]};
 				int i = 0;
 				for (Entry<String, Quote> entry : map.entrySet()){
 					Quote quote = entry.getValue();
-					((String[]) data[0])[i] = quote.getSymbol();
-		            ((Double[]) data[1])[i] = quote.getBid();
-		            ((Double[]) data[2])[i] = quote.getAsk();
-		            ((Double[]) data[3])[i] = quote.getBidVol();
-		            ((Double[]) data[4])[i] = quote.getAskVol();
-		            ((Double[]) data[5])[i] = quote.getLast();
-		            ((Double[]) data[6])[i] = quote.getLastVol();
-		            ((Double[]) data[7])[i] = quote.getTurnover();
-		            ((Double[]) data[8])[i] = quote.getHigh();
-		            ((Double[]) data[9])[i] = quote.getLow();
-		            ((Double[]) data[10])[i] = quote.getOpen();
-		            ((Double[]) data[11])[i] = quote.getClose();
-		            ((Double[]) data[12])[i] = quote.getTotalVolume();
-		            ((QTimestamp[]) data[13])[i] = new QTimestamp(quote.getTimeStamp());
+					((QTimestamp[]) data[0])[i] = new QTimestamp(quote.getTimeStamp());
+					((String[]) data[1])[i] = quote.getSymbol();
+					((Double[]) data[2])[i] = quote.getBid();
+					((Double[]) data[3])[i] = quote.getAsk();
+					((Double[]) data[4])[i] = quote.getBidVol();
+					((Double[]) data[5])[i] = quote.getAskVol();
+					((Double[]) data[6])[i] = quote.getLast();
+					((Double[]) data[7])[i] = quote.getLastVol();
+					((Double[]) data[8])[i] = quote.getTurnover();
+					((Double[]) data[9])[i] = quote.getHigh();
+					((Double[]) data[10])[i] = quote.getLow();
+					((Double[]) data[11])[i] = quote.getOpen();
+					((Double[]) data[12])[i] = quote.getClose();
+					((Double[]) data[13])[i] = quote.getTotalVolume();
 		            i++;
-				}				
-				con.sync("insert", "QuoteTable", data);
-				
-				if(throttler.check()) {
-					con.query(MessageType.SYNC, "`:QuoteTable insert (select from `QuoteTable)");
-					if (cleanCache) {
-						con.query(MessageType.SYNC, "delete from `QuoteTable");
-					}
 				}
+				con.sync(".u.upd", "quote", data);
+				
+//				if(throttler.check()) {
+//					con.query(MessageType.SYNC, "`:quote insert (select from `quote)");
+//					if (cleanCache) {
+//						con.query(MessageType.SYNC, "delete from `quote");
+//					}
+//				}
 				
 			} else {
 				log.info("QConnection is not initialized");
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+			e.printStackTrace();
 			return false;
 		}
 		
