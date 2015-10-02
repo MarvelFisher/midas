@@ -1097,5 +1097,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     public void setId(String id) {
         this.id = id;
     }
+
+    public String getId() {
+        return id;
+    }
 }
 
