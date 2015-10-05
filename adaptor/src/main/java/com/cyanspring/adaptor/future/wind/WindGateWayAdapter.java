@@ -7,9 +7,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
-import com.cyanspring.common.event.marketsession.IndexSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
@@ -17,10 +15,7 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.DualMap;
-import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.id.Library.Threading.IReqThreadCallback;
-import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -38,8 +33,10 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
-public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallback
+public class WindGateWayAdapter implements IMarketDataAdaptor
         , IWindGWListener, IAsyncEventListener {
 
     private static final Logger log = LoggerFactory
@@ -83,10 +80,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     private HashMap<String, String> exchangeBySymbols = new HashMap<String,String>();
     private DualMap<String, String> codeBySymbols = new DualMap<String, String>();
 
-    RequestThread thread = null;
+    private ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+    private Thread controlReqThread = null;
     private QuoteMgr quoteMgr = new QuoteMgr(this);
     private ChannelHandlerContext channelHandlerContext;
-    private final int doConnect = 0;
     private volatile boolean isConnected = false;
 
     //Calculate packet use
@@ -141,22 +138,39 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     }
 
     void initReqThread() {
-        if (thread == null) {
-            thread = new RequestThread(this, "Wind Adapter");
-        }
-        thread.start();
-    }
-
-    void closeReqThread() {
-        if (thread != null) {
-            thread.close();
-            thread = null;
-        }
-    }
-
-    void addReqData(Object objReq) {
-        if (thread != null) {
-            thread.addRequest(objReq);
+        if (controlReqThread == null){
+            //ControlReqThread control queue task, if queue size > 0 , poll and exec process method.
+            controlReqThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        if (queue.size() > 0) {
+                            Object reqObj;
+                            try {
+                                reqObj = queue.poll();
+                            }catch (Exception e){
+                                log.error(e.getMessage(),e);
+                                reqObj = null;
+                            }
+                            if (reqObj == null) {
+                                continue;
+                            }
+                            if (reqObj instanceof Integer) {
+                                int signal = (int) reqObj;
+                                if (signal == 0 && !isConnected) {
+                                    connect();
+                                }
+                            }
+                        }
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(1);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+            });
+            controlReqThread.setName("RDAReqThread" + id);
+            controlReqThread.start();
         }
     }
 
@@ -311,6 +325,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
     }
 
     public void connect(){
+        log.info(String.format(id + " connect to WindGW %s:%d", gatewayIp, gatewayPort));
         log.debug(id + " Run Netty WindGW Adapter");
         eventLoopGroup = new NioEventLoopGroup(2);
         ChannelFuture f;
@@ -383,10 +398,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         return isConnected;
     }
 
-    public void doConnect() {
-        this.addReqData(doConnect);
-    }
-
     @Override
     public void init() throws Exception {
         isAlive = true;
@@ -400,7 +411,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         quoteMgr.init();
         quoteMgr.setModifyTickTime(modifyTickTime);
         initReqThread();
-        doConnect();
+        if(controlReqThread != null){
+            queue.offer(new Integer(0));
+        }
 
         if(marketsList != null) Collections.sort(marketsList);
 
@@ -416,7 +429,10 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         printDataTimeStat();
         closeClient();
         quoteMgr.uninit();
-        closeReqThread();
+        if (controlReqThread != null){
+            controlReqThread.interrupt();
+            controlReqThread = null;
+        }
         if (!eventProcessor.isSync())
             scheduleManager.uninit();
         log.info(id + " Wind uninit end");
@@ -677,28 +693,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor, IReqThreadCallbac
         IndexItem.indexItemBySymbolMap.clear();
         TransationItem.transationItemBySymbolMap.clear();
         sendClearSubscribe();
-    }
-
-    @Override
-    public void onStartEvent(RequestThread sender) {
-
-    }
-
-    @Override
-    public void onRequestEvent(RequestThread sender, Object reqObj) {
-        int type = (int) reqObj;
-        if (type == doConnect) {
-            if (isConnected)
-                return;
-            log.info(String.format(id + " connect to WindGW %s:%d",
-                    gatewayIp, gatewayPort));
-            connect();
-        }
-    }
-
-    @Override
-    public void onStopEvent(RequestThread sender) {
-
     }
 
     @Override

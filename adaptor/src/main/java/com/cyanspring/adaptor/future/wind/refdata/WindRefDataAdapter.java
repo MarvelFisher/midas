@@ -5,22 +5,16 @@ import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
 import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
-import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
-import com.cyanspring.common.filter.IRefDataFilter;
-import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.event.*;
+import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.staticdata.CodeTableData;
-import com.cyanspring.common.staticdata.IRefDataAdaptor;
-import com.cyanspring.common.staticdata.IRefDataListener;
-import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.filter.IRefDataFilter;
+import com.cyanspring.common.staticdata.*;
 import com.cyanspring.common.util.ChineseConvert;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.id.Library.Threading.IReqThreadCallback;
-import com.cyanspring.id.Library.Threading.RequestThread;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -44,9 +38,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, IWindGWListener {
+public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
 
     private static final Logger log = LoggerFactory
             .getLogger(WindRefDataAdapter.class);
@@ -91,7 +86,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     private ConcurrentHashMap<String, ExchangeRefData> exRefDataUpdateHashMap = new ConcurrentHashMap<String, ExchangeRefData>();
     protected WindDataParser windDataParser = new WindDataParser();
     EventLoopGroup eventLoopGroup = null;
-    private RequestThread thread = null;
+//    private RequestThread thread = null;
     private ChannelHandlerContext channelHandlerContext;
     private RequestMgr requestMgr = new RequestMgr(this);
     private WindDBHandler windDBHandler;
@@ -103,6 +98,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     private long timerInterval = 1000 * 1;
     private long lastGetDBTime = System.currentTimeMillis();
+    private ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+    private Thread controlReqThread = null;
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -135,7 +132,8 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     }
 
     private void connect() {
-        log.debug("Run Netty RefData Adapter-" + Thread.currentThread().getName());
+        log.info(String.format(refDataAdapterName + " connect to GW %s:%d", gatewayIp, gatewayPort));
+        log.debug(refDataAdapterName + " Run Netty RefData Adapter-" + Thread.currentThread().getName());
         eventLoopGroup = new NioEventLoopGroup(2);
         ChannelFuture f;
         Bootstrap bootstrap = new Bootstrap()
@@ -338,22 +336,39 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     }
 
     void initReqThread(String refDataAdapterName) {
-        if (thread == null) {
-            thread = new RequestThread(this, "WindRefDataAdapter-" + refDataAdapterName);
-        }
-        thread.start();
-    }
-
-    void closeReqThread() {
-        if (thread != null) {
-            thread.close();
-            thread = null;
-        }
-    }
-
-    void addReqData(Object objReq) {
-        if (thread != null) {
-            thread.addRequest(objReq);
+        if (controlReqThread == null){
+            //ControlReqThread control queue task, if queue size > 0 , poll and exec process method.
+            controlReqThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        if (queue.size() > 0) {
+                            Object reqObj;
+                            try {
+                                reqObj = queue.poll();
+                            }catch (Exception e){
+                                log.error(e.getMessage(),e);
+                                reqObj = null;
+                            }
+                            if (reqObj == null) {
+                                continue;
+                            }
+                            if (reqObj instanceof Integer) {
+                                int signal = (int) reqObj;
+                                if (signal == 0 && !connected) {
+                                    connect();
+                                }
+                            }
+                        }
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(1);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+            });
+            controlReqThread.setName("RDAReqThread" + refDataAdapterName);
+            controlReqThread.start();
         }
     }
 
@@ -394,16 +409,17 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
             exRefDataHashMap.put(exchange,exchangeRefData);
         }
         processWindDB();
-        //connect WindGW
         initReqThread(refDataAdapterName);
         requestMgr.init();
-        addReqData(new Integer(0));
-
+        //queue offer new element, trigger connect to WindGW
+        if(controlReqThread != null){
+            queue.offer(new Integer(0));
+        }
         if(windDBHandler != null) {
             eventProcessor.setHandler(this);
             eventProcessor.init();
             if (eventProcessor.getThread() != null) {
-				eventProcessor.getThread().setName("WRDA eP-" + refDataAdapterName);
+				eventProcessor.getThread().setName("WRDAeP" + refDataAdapterName);
 			}
 
             if (!eventProcessor.isSync()) {
@@ -569,7 +585,10 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
         isAlive = false;
         closeNetty();
         requestMgr.uninit();
-        closeReqThread();
+        if (controlReqThread != null){
+            controlReqThread.interrupt();
+            controlReqThread = null;
+        }
     }
 
     @Override
@@ -621,26 +640,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
 
     @Override
     public void unsubscribeRefData(IRefDataListener listener) {
-    }
-
-    @Override
-    public void onStartEvent(RequestThread sender) {
-
-    }
-
-    @Override
-    public void onRequestEvent(RequestThread sender, Object reqObj) {
-        if (reqObj instanceof Integer) {
-            int signal = (int) reqObj;
-            if (signal == 0 && !connected) {
-				connect();
-			}
-        }
-    }
-
-    @Override
-    public void onStopEvent(RequestThread sender) {
-
     }
 
     @Override
@@ -826,7 +825,12 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IReqThreadCallback, 
     public boolean isNeedsubscribe() {
         return needsubscribe;
     }
+
     public void setRefDataFilter(IRefDataFilter refDataFilter) {
         this.refDataFilter = refDataFilter;
+    }
+
+    public String getRefDataAdapterName() {
+        return refDataAdapterName;
     }
 }
