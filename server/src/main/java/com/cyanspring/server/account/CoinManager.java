@@ -180,7 +180,7 @@ public class CoinManager implements IPlugin{
 	
 	public boolean canCheckPositionStopLoss(String accountId){	
 		if(!activePositionCoinControl)
-			return false;
+			return true;
 		
 		CoinControl coin = getCoinControlOrDefault(accountId);	
 		if(null == coin)
@@ -191,7 +191,7 @@ public class CoinManager implements IPlugin{
 
 	public boolean canCheckDailyStopLoss(String accountId){	
 		if(!activeDailyCoinControl)
-			return false;
+			return true;
 		
 		CoinControl coin = getCoinControlOrDefault(accountId);	
 		if(null == coin)
@@ -202,7 +202,7 @@ public class CoinManager implements IPlugin{
 	
 	public boolean canCheckTrailingStop(String accountId){	
 		if(!activeTrailingStopCoinControl)
-			return false;
+			return true;
 		
 		CoinControl coin = getCoinControlOrDefault(accountId);			
 		if(null == coin)
@@ -213,7 +213,7 @@ public class CoinManager implements IPlugin{
 	
 	public boolean canCheckDayTradingMode(String accountId){	
 		if(!activeDayTradingModeCoinControl)
-			return false;
+			return true;
 		
 		CoinControl coin = getCoinControlOrDefault(accountId);		
 		if(null == coin)
