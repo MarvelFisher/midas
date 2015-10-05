@@ -164,6 +164,13 @@ public class UserManager implements IPlugin {
 			query = sessionCentral.createSQLQuery(strCmd);
 			iterator = query.list().iterator();
 
+			if (tradeDate == null || tradeDate.isEmpty())
+			{
+				Date now = new Date();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+				tradeDate = sdf.format(now);
+			}
 			while (iterator.hasNext()) {
 				Object[] rows = (Object[]) iterator.next();
 				String StartDate = rows[2].toString();
@@ -175,6 +182,10 @@ public class UserManager implements IPlugin {
 				ContestIdArray.add((String) rows[0]);
 			}
 
+			if (market == null || market.isEmpty())
+			{
+				market = event.getMarket();
+			}
 			for (String ContestId : ContestIdArray) {
 				strCmd = "delete from " + ContestId + "_"
 						+ market.toLowerCase() + " where USER_ID='" + UserId
@@ -185,7 +196,7 @@ public class UserManager implements IPlugin {
 						+ "' and DATE='0'";
 				UpdateQuery(strCmd, sessionCentral);
 			}
-            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "') on duplicate update set USER_ID='" + UserId + "';";
+            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "') on duplicate key update USER_ID='" + UserId + "';";
             try {
                 query = session.createSQLQuery(strCmd);
                 Return = query.executeUpdate();
