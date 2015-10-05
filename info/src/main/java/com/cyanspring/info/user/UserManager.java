@@ -201,7 +201,7 @@ public class UserManager implements IPlugin {
 						+ "' and DATE='0'";
 				UpdateQuery(strCmd, sessionCentral);
 			}
-            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "') on duplicate update set USER_ID='" + UserId + "';";
+            strCmd = "insert into RESETUSER(USER_ID) values('" + UserId + "') on duplicate key update USER_ID='" + UserId + "';";
             try {
                 query = session.createSQLQuery(strCmd);
                 Return = query.executeUpdate();
