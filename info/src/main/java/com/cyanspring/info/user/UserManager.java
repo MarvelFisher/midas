@@ -169,6 +169,13 @@ public class UserManager implements IPlugin {
 			query = sessionCentral.createSQLQuery(strCmd);
 			iterator = query.list().iterator();
 
+			if (tradeDate == null || tradeDate.isEmpty())
+			{
+				Date now = new Date();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+				tradeDate = sdf.format(now);
+			}
 			while (iterator.hasNext()) {
 				Object[] rows = (Object[]) iterator.next();
 				String StartDate = (String) rows[2].toString();
