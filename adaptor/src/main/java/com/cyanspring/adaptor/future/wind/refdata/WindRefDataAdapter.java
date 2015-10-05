@@ -86,7 +86,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
     private ConcurrentHashMap<String, ExchangeRefData> exRefDataUpdateHashMap = new ConcurrentHashMap<String, ExchangeRefData>();
     protected WindDataParser windDataParser = new WindDataParser();
     EventLoopGroup eventLoopGroup = null;
-//    private RequestThread thread = null;
     private ChannelHandlerContext channelHandlerContext;
     private RequestMgr requestMgr = new RequestMgr(this);
     private WindDBHandler windDBHandler;
