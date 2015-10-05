@@ -197,9 +197,15 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			Double qty = (Double) fields.get(OrderField.QUANTITY.value());		
 			if (qty != null && PriceUtils.EqualGreaterThan(qty, 0))
 				request.setQuantity(qty);
+			else
+				request.setQuantity(0.0);
+				
 			Double price = (Double) fields.get(OrderField.PRICE.value());
 			if (price != null && PriceUtils.EqualGreaterThan(price, 0))
-				request.setQuantity(price);
+				request.setPrice(price);
+			else
+				request.setPrice(0.0);
+			
 			request.setTxId(IdGenerator.getInstance().getNextID());
 			local.setOrdStatus(OrdStatus.PENDING_REPLACE);
 			downStreamEventSender.sendRemoteEvent(request.build(), WrapObjectType.AmendOrderRequest);
@@ -328,6 +334,9 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		OrdStatus status = WrapOrdStatus.valueOf(update.getOrdStatus()).getCommonOrdStatus();
 		log.info("Order update, type:" + type + ", status: " + status + 
 				", id:" + update.getOrderId() + ", exchangeOrderId: " + update.getExchangeOrderId());
+		
+		order.setQuantity(update.getQuantity());
+		order.setPrice(update.getPrice());
 		
 		double delta = update.getCumQty() - order.getCumQty();
 		if (PriceUtils.GreaterThan(delta, 0)) {

@@ -26,7 +26,7 @@
     <property name="user" value="haida"></property>
     <property name="account" value="1365651"></property>
     <property name="password" value="123456"></property>
-    <property name="subAccount" value="1365651"></property>
+    <property name="subAccount" value="       "></property>
     <property name="brokerID" value="F018000"></property>
     <property name="memberID" value="F018"></property>
     <property name="host" value="Speedy150.masterlink.com.tw"></property>

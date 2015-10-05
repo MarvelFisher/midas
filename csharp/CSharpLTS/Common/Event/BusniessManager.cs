@@ -232,6 +232,7 @@ namespace Common.Event
                         AmendOrderReply rsp = new AmendOrderReply();
                         rsp.result = false;
                         rsp.orderId = req.orderId;
+                        rsp.exchangeAccount = req.exchangeAccount;
                         rsp.message = e.Message;
                         _manager.Publish(rsp);
                     }

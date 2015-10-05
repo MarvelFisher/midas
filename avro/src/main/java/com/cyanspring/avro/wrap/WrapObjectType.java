@@ -26,11 +26,11 @@ public enum WrapObjectType {
 	CancelOrderReply(5, ObjectType.CancelOrderReply,
 			com.cyanspring.avro.generate.trade.bean.CancelOrderReply.SCHEMA$),
 
-	AmendOrderRequest(6, ObjectType.AmendOrderRequest,
-			com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$),
-
-	AmendOrderReply(7, ObjectType.AmendOrderReply,
+	AmendOrderReply(6, ObjectType.AmendOrderReply,
 			com.cyanspring.avro.generate.trade.bean.AmendOrderReply.SCHEMA$),
+
+	AmendOrderRequest(7, ObjectType.AmendOrderRequest,
+			com.cyanspring.avro.generate.trade.bean.AmendOrderRequest.SCHEMA$),
 
 	Quote(8, ObjectType.Quote,
 			com.cyanspring.avro.generate.market.bean.Quote.SCHEMA$),
