@@ -192,9 +192,9 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		Business business = Business.getInstance();
 		// need to review which server to get login
 		String server = business.getFirstServer();
-		User user = new User(txtUser.getText(), txtPassword.getText());
-		user.setEmail(txtEmail.getText());
-		user.setPhone(txtPhone.getText());
+		User user = new User(txtUser.getText().trim(), txtPassword.getText().trim());
+		user.setEmail(txtEmail.getText().trim());
+		user.setPhone(txtPhone.getText().trim());
 		user.setUserType(UserType.valueOf(cbUserType.getText()));
 		user.setRole(UserRole.valueOf(cbUserRole.getText()));
 		user.setName(txtUser.getText());
