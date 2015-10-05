@@ -187,6 +187,10 @@ public class UserManager implements IPlugin {
 				ContestIdArray.add((String) rows[0]);
 			}
 
+			if (market == null || market.isEmpty())
+			{
+				market = event.getMarket();
+			}
 			for (String ContestId : ContestIdArray) {
 				strCmd = "delete from " + ContestId + "_"
 						+ market.toLowerCase() + " where USER_ID='" + UserId
