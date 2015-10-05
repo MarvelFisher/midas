@@ -7,42 +7,69 @@ import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.id.Library.Threading.IReqThreadCallback;
-import com.cyanspring.id.Library.Threading.RequestThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
-public class RequestMgr implements IReqThreadCallback {
+public class RequestMgr{
 
     private static final Logger log = LoggerFactory
             .getLogger(RequestMgr.class);
 
     private WindRefDataAdapter windRefDataAdapter;
-    RequestThread thread = null;
+    private ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+    private Thread controlReqThread = null;
 
     RequestMgr(WindRefDataAdapter windRefDataAdapter) {
         this.windRefDataAdapter = windRefDataAdapter;
     }
 
     public void init() {
-        if (thread == null) {
-            thread = new RequestThread(this, "RequestMgr");
-            thread.start();
+        if (controlReqThread == null){
+            //ControlReqThread control queue task, if queue size > 0 , poll and exec process method.
+            controlReqThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        if (queue.size() > 0) {
+                            Object[] arr;
+                            try {
+                                arr = (Object[]) queue.poll();
+                            }catch (Exception e){
+                                log.error(e.getMessage(),e);
+                                arr = null;
+                            }
+                            if (arr == null || arr.length != 2) {
+                                continue;
+                            }
+                            int type = (int) arr[0];
+                            process(type, arr[1]);
+                        }
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(1);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+            });
+            controlReqThread.setName("RequsetMgr-" + windRefDataAdapter.getRefDataAdapterName());
+            controlReqThread.start();
         }
     }
 
     public void uninit() {
-        if (thread != null) {
-            thread.close();
-            thread = null;
+        if (controlReqThread != null){
+            controlReqThread.interrupt();
+            controlReqThread = null;
         }
     }
 
     void addReqData(Object objReq) {
-        if (thread != null) {
-            thread.addRequest(objReq);
+        if(controlReqThread != null){
+            queue.offer(objReq);
         }
     }
 
@@ -212,25 +239,5 @@ public class RequestMgr implements IReqThreadCallback {
             default:
                 break;
         }
-    }
-
-    @Override
-    public void onStartEvent(RequestThread sender) {
-
-    }
-
-    @Override
-    public void onRequestEvent(RequestThread sender, Object reqObj) {
-        Object[] arr = (Object[]) reqObj;
-        if (arr == null || arr.length != 2) {
-            return;
-        }
-        int type = (int) arr[0];
-        process(type, arr[1]);
-    }
-
-    @Override
-    public void onStopEvent(RequestThread sender) {
-
     }
 }

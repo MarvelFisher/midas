@@ -305,7 +305,8 @@ namespace Adaptor.TwSpeedy.Main
                 throw new DownStreamException("Can't amend quantity to equal or less than filled quantity: " + exchangeOrderId);
             }
 
-            if (!PriceUtils.Equal(price, order.price) && !PriceUtils.Equal(qty, order.quantity))
+            if (!PriceUtils.isZero(price) && !PriceUtils.Equal(price, order.price) &&
+                !PriceUtils.isZero(qty) && !PriceUtils.Equal(qty, order.quantity))
             {
                 throw new DownStreamException("Can't amend both price and quantity: " + exchangeOrderId);
             }
@@ -322,12 +323,12 @@ namespace Adaptor.TwSpeedy.Main
             replaceOrderMessage.Symbol = order.symbol;
             replaceOrderMessage.OrderID = order.exchangeOrderId;
             replaceOrderMessage.Side = FieldConverter.convert(order.orderSide);
-            if(!PriceUtils.Equal(price, order.price))
+            if(!PriceUtils.isZero(price) && !PriceUtils.Equal(price, order.price))
             {
                 replaceOrderMessage.Price = price;
             }
 
-            if(!PriceUtils.Equal(qty, order.quantity))
+            if(!PriceUtils.isZero(qty) && !PriceUtils.Equal(qty, order.quantity))
             {
                 replaceOrderMessage.OrderQty = (int)qty;
             }

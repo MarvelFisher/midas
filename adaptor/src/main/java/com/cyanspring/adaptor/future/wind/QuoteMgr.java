@@ -27,11 +27,11 @@ public class QuoteMgr {
 
     public void init() {
         if (controlReqThread == null){
+            //ControlReqThread control queue task, if queue size > 0 , poll and exec process method.
             controlReqThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while(true){
-                        synchronized (queue) {
                             if (queue.size() > 0) {
                                 Object[] arr;
                                 try {
@@ -46,7 +46,6 @@ public class QuoteMgr {
                                 int type = (int) arr[0];
                                 process(type, arr[1]);
                             }
-                        }
                         try {
                             TimeUnit.MILLISECONDS.sleep(1);
                         } catch (InterruptedException e) {
@@ -54,7 +53,7 @@ public class QuoteMgr {
                     }
                 }
             });
-            controlReqThread.setName("ControlReqThread-" + windGateWayAdapter.getId());
+            controlReqThread.setName("QuoteMgr-" + windGateWayAdapter.getId());
             controlReqThread.start();
         }
     }
@@ -67,7 +66,9 @@ public class QuoteMgr {
     }
 
     public void AddRequest(Object reqObj) {
-        queue.offer(reqObj);
+        if(controlReqThread != null) {
+            queue.offer(reqObj);
+        }
     }
 
     public boolean checkSymbol(String symbol){
