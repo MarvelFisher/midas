@@ -119,7 +119,7 @@
         <property name="password" value="MFW9dC26"></property>
         <property name="gateway" value="false"></property>
         <property name="reqIp" value="10.0.0.32"></property>
-        <property name="reqPort" value="6086"></property>
+        <property name="reqPort" value="6088"></property>
         <property name="exch" value="687"></property>
         <property name="sendHeartBeat" value="3"></property>
         <property name="throwQuoteTimeInterval" value="10000"/>
