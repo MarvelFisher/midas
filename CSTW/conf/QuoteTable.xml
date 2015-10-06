@@ -16,6 +16,7 @@
         <title>Asks</title>
         <width>0</width>
         <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Bid</title>
         <width>97</width>
@@ -30,8 +31,6 @@
         <title>BidVol</title>
         <width>97</width>
         <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Class</title>

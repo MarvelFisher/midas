@@ -344,12 +344,15 @@
 	</bean>
 
 	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
 	</bean>
 
 	<bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
 	</bean>
 
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
 	</bean>
 
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">

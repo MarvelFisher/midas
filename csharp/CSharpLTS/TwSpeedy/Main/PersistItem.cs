@@ -14,24 +14,26 @@ namespace Adaptor.TwSpeedy.Main
         public string orderId { get; set; }
         public string symbol { get; set; }
         public string ordStatus { get; set; }
+        public string account { get; set; }
 
-        public PersistItem(DateTime time, string exchangeOrderId, string orderId, string symbol, string ordStatus)
+        public PersistItem(DateTime time, string exchangeOrderId, string orderId, string symbol, string ordStatus, string account)
         {
             this.time = time;
             this.exchangeOrderId = exchangeOrderId;
             this.orderId = orderId;
             this.symbol = symbol;
             this.ordStatus = ordStatus;
+            this.account = account;
         }
 
         public static PersistItem deserialize(string str)
         {
             string[] list = str.Split(':');
-            if (list.Length != 5)
+            if (list.Length != 6)
                 return null;
 
             return new PersistItem(DateTime.Parse(list[0]),
-                list[1], list[2], list[3], list[4]);
+                list[1], list[2], list[3], list[4], list[5]);
             
         }
 
@@ -42,7 +44,8 @@ namespace Adaptor.TwSpeedy.Main
             exchangeOrderId + ':' +
             orderId + ':' +
             symbol + ':' +
-            ordStatus;
+            ordStatus + ':' +
+            account;
         }
     }
 }

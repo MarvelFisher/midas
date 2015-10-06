@@ -171,6 +171,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 					.setQuantity(order.getQuantity())
 					.setSymbol(order.getSymbol())
 					.setObjectType(WrapObjectType.NewOrderRequest.getCode())
+					.setAccount(order.getAccount())
 					.setTxId(IdGenerator.getInstance().getNextID())
 					.setTimeInForce(WrapTimeInForce.valueOf(order.get(TimeInForce.class, OrderField.TIF.value())).getCode())
 					.build();

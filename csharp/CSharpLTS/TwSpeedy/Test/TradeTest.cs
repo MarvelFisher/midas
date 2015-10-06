@@ -53,7 +53,7 @@ namespace Adaptor
             Order order = new Order(edSymbol.Text, "Order id",
                 Double.Parse(edPrice.Text), Double.Parse(edQuantity.Text),
                 (OrderSide)Enum.Parse(typeof(OrderSide), cbSide.Text),
-                (OrderType)Enum.Parse(typeof(OrderType), cbType.Text));
+                (OrderType)Enum.Parse(typeof(OrderType), cbType.Text), "account");
             adaptor.newOrder(order);
         }
 

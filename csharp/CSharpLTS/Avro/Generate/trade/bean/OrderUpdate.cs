@@ -15,7 +15,7 @@ namespace com.cyanspring.avro.generate.trade.bean
 	
 	public partial class OrderUpdate : ISpecificRecord
 	{
-		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""OrderUpdate"",""namespace"":""com.cyanspring.avro.generate.trade.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""orderId"",""type"":""string""},{""name"":""exchangeAccount"",""type"":""string""},{""name"":""exchangeOrderId"",""type"":""string""},{""name"":""symbol"",""type"":""string""},{""name"":""price"",""type"":""double""},{""name"":""quantity"",""type"":""double""},{""name"":""cumQty"",""type"":""double""},{""name"":""avgPx"",""type"":""double""},{""name"":""execType"",""type"":""int""},{""name"":""ordStatus"",""type"":""int""},{""name"":""orderSide"",""type"":""int""},{""name"":""orderType"",""type"":""int""},{""name"":""timeInForce"",""type"":""int""},{""name"":""created"",""type"":""string""},{""name"":""clOrderId"",""type"":""string""},{""name"":""txId"",""type"":""string""},{""name"":""msg"",""type"":""string""}]}");
+		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""OrderUpdate"",""namespace"":""com.cyanspring.avro.generate.trade.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""orderId"",""type"":""string""},{""name"":""exchangeAccount"",""type"":""string""},{""name"":""exchangeOrderId"",""type"":""string""},{""name"":""symbol"",""type"":""string""},{""name"":""price"",""type"":""double""},{""name"":""quantity"",""type"":""double""},{""name"":""cumQty"",""type"":""double""},{""name"":""avgPx"",""type"":""double""},{""name"":""execType"",""type"":""int""},{""name"":""ordStatus"",""type"":""int""},{""name"":""orderSide"",""type"":""int""},{""name"":""orderType"",""type"":""int""},{""name"":""timeInForce"",""type"":""int""},{""name"":""created"",""type"":""string""},{""name"":""clOrderId"",""type"":""string""},{""name"":""account"",""type"":""string""},{""name"":""txId"",""type"":""string""},{""name"":""msg"",""type"":""string""}]}");
 		private int _objectType;
 		private string _orderId;
 		private string _exchangeAccount;
@@ -32,6 +32,7 @@ namespace com.cyanspring.avro.generate.trade.bean
 		private int _timeInForce;
 		private string _created;
 		private string _clOrderId;
+		private string _account;
 		private string _txId;
 		private string _msg;
 		public virtual Schema Schema
@@ -217,6 +218,17 @@ namespace com.cyanspring.avro.generate.trade.bean
 				this._clOrderId = value;
 			}
 		}
+		public string account
+		{
+			get
+			{
+				return this._account;
+			}
+			set
+			{
+				this._account = value;
+			}
+		}
 		public string txId
 		{
 			get
@@ -259,8 +271,9 @@ namespace com.cyanspring.avro.generate.trade.bean
 			case 13: return this.timeInForce;
 			case 14: return this.created;
 			case 15: return this.clOrderId;
-			case 16: return this.txId;
-			case 17: return this.msg;
+			case 16: return this.account;
+			case 17: return this.txId;
+			case 18: return this.msg;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Get()");
 			};
 		}
@@ -284,8 +297,9 @@ namespace com.cyanspring.avro.generate.trade.bean
 			case 13: this.timeInForce = (System.Int32)fieldValue; break;
 			case 14: this.created = (System.String)fieldValue; break;
 			case 15: this.clOrderId = (System.String)fieldValue; break;
-			case 16: this.txId = (System.String)fieldValue; break;
-			case 17: this.msg = (System.String)fieldValue; break;
+			case 16: this.account = (System.String)fieldValue; break;
+			case 17: this.txId = (System.String)fieldValue; break;
+			case 18: this.msg = (System.String)fieldValue; break;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Put()");
 			};
 		}
