@@ -155,11 +155,11 @@
     </bean>
     
     <bean id="positionStopLossPercent" class="java.lang.Double">
-        <constructor-arg value="0.1" />
+        <constructor-arg value="0.0" />
     </bean>
     
     <bean id="frozenStopLossPercent" class="java.lang.Double">
-        <constructor-arg value="0.2" />
+        <constructor-arg value="0.0" />
     </bean>
     
     <bean id="terminateStopLossPercent" class="java.lang.Double">
@@ -171,7 +171,7 @@
     </bean>
     
     <bean id="frozenStopLossValue" class="java.lang.Double">
-        <constructor-arg value="0" />
+        <constructor-arg value="10000" />
     </bean>
     
     <bean id="terminateStopLossValue" class="java.lang.Double">
