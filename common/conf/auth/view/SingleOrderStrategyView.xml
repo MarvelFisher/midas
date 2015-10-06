@@ -30,10 +30,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="POPUP_PAUSE"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>		
 	
@@ -41,10 +38,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="POPUP_STOP"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>		
 
@@ -52,10 +46,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="POPUP_START"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>		
 
@@ -106,10 +97,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="TOOLBAR_ENTER_ORDER"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>		
 	
@@ -128,10 +116,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="TOOLBAR_PAUSE_ORDER"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>		
 	
@@ -139,10 +124,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="TOOLBAR_STOP_ORDER"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>	
 	
@@ -150,10 +132,7 @@
 		<constructor-arg value="Single Order Strategy"/><!-- part name -->
 		<constructor-arg value="TOOLBAR_START_ORDER"/> <!-- action id -->
 		<constructor-arg>					   <!-- permission:UserRole -->
-		<array>
-			<value>Trader</value>
-			<value>RiskManager</value>
-		</array>
+		<null/>
 		</constructor-arg>
 	</bean>	
 
@@ -204,5 +183,17 @@
 			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
-	</bean>			
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewToolBarAction11" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_ID_FILTER_COMPLETE_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>
+	
 </beans>

@@ -18,8 +18,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
@@ -35,6 +38,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -138,6 +143,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private final String TOOLBAR_ID_COUNT_ORDER = "TOOLBAR_COUNT_ORDER";
 	private final String TOOLBAR_ID_ORDER_PAD = "TOOLBAR_ORDER_PAD";
 	private final String TOOLBAR_ID_FILTER = "TOOLBAR_FILTER";
+	private final String TOOLBAR_ID_FILTER_COMPLETE_ORDER = "TOOLBAR_ID_FILTER_COMPLETE_ORDER";
 
 	private OrderDialog orderDialog;
 	private AmendDialog amendDialog;
@@ -165,6 +171,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private Button btAmend;
 	private Button btCancel;
 	private Label lbStatus;
+	private Label lbPrice;
 	GridData gdStatus;
 	// end QuickOrderPad
 
@@ -199,7 +206,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
 	};
+	
+	private enum CustomOrderType {
+		Limit,Market,Stop
+	};
 
+	private enum LogType {
+		Enter,Cancel,Amend
+	};
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -304,10 +319,16 @@ public class SingleOrderStrategyView extends ViewPart implements
 				if (e.keyCode == SWT.F1) {
 					showOrderPadByType(true);
 					getDefaultQuickData();
-				} else if (e.keyCode == SWT.F2) {
+				}else if (e.keyCode == SWT.F2) {
 					showOrderPadByType(false);
 					getDefaultQuickData();
-				} else if (e.keyCode == SWT.CR) {
+				}else if(e.keyCode == SWT.F3){// Buy Stop Order
+					showOrderPadByType(true,CustomOrderType.Stop);
+					getDefaultQuickData();
+				}else if(e.keyCode == SWT.F4){// Sell Stop Order
+					showOrderPadByType(false,CustomOrderType.Stop);
+					getDefaultQuickData();
+				}else if (e.keyCode == SWT.CR) {
 					panelComposite.getDisplay().asyncExec(new Runnable() {				
 						@Override
 						public void run() {
@@ -326,7 +347,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void sendAccounSettingRequestEvent() {	
 		if(!StringUtils.hasText(accountId)){
-			log.info("accoun id doesn't exist");
+			log.info("account id doesn't exist");
 			return;
 		}
 		
@@ -363,10 +384,16 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void handleKeyCode(int keyCode) {
 		if (keyCode == SWT.F1) {
-			showOrderPadByType(true);
+			showOrderPadByType(true,CustomOrderType.Limit);
 			getDefaultQuickData();
 		} else if (keyCode == SWT.F2) {
-			showOrderPadByType(false);
+			showOrderPadByType(false,CustomOrderType.Limit);
+			getDefaultQuickData();
+		}else if(keyCode == SWT.F3){// Buy Stop Order
+			showOrderPadByType(true,CustomOrderType.Stop);
+			getDefaultQuickData();
+		}else if(keyCode == SWT.F4){// Sell Stop Order
+			showOrderPadByType(false,CustomOrderType.Stop);
 			getDefaultQuickData();
 		}
 	}
@@ -379,6 +406,29 @@ public class SingleOrderStrategyView extends ViewPart implements
 		} else {
 			cbOrderSide.select(1);
 		}
+		txtPrice.setFocus();
+		parent.layout();
+	}
+	
+	private void showOrderPadByType(boolean isBuying,CustomOrderType type) {
+		showOrderPad(true);
+		populateOrderPadServers();
+		if (isBuying) {
+			cbOrderSide.select(0);
+		} else {
+			cbOrderSide.select(1);
+		}
+		
+		if(CustomOrderType.Limit == type){
+			cbOrderType.select(0);
+		}else if(CustomOrderType.Market == type){
+			cbOrderType.select(1);
+		}else if(CustomOrderType.Stop == type){
+			cbOrderType.select(2);
+		}
+		cbOrderType.notifyListeners(SWT.Selection, new Event());
+
+		
 		txtPrice.setFocus();
 		parent.layout();
 	}
@@ -541,9 +591,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 		txtSymbol.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 		txtSymbol.setText(GuiSession.getInstance().getSymbol());
 
-		Label lb2 = new Label(panelComposite, SWT.NONE);
-		lb2.setText("Price: ");
-		lb2.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+		lbPrice = new Label(panelComposite, SWT.NONE);
+		lbPrice.setText("Price: ");
+		lbPrice.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
 
 		txtPrice = new Text(panelComposite, SWT.BORDER);
 		gridData = new GridData(SWT.RIGHT, SWT.FILL, false, true);
@@ -570,10 +620,37 @@ public class SingleOrderStrategyView extends ViewPart implements
 		cbOrderType = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
 		cbOrderType
 				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		String[] typeItems = { OrderType.Limit.toString(),
-				OrderType.Market.toString() };
+		String[] typeItems = { CustomOrderType.Limit.toString(),
+				CustomOrderType.Market.toString(),
+				CustomOrderType.Stop.toString()
+				};
 		cbOrderType.setItems(typeItems);
 		cbOrderType.select(0);
+		cbOrderType.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String selected = cbOrderType.getText();
+				if(CustomOrderType.Stop.toString().equals(selected)){
+					lbPrice.setText("Stop Price: ");
+				}else{
+					lbPrice.setText("Price: ");
+				}
+				panelComposite.getDisplay().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						panelComposite.layout();
+					}
+				});
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		cbServer = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
 		cbServer.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
@@ -690,6 +767,17 @@ public class SingleOrderStrategyView extends ViewPart implements
 		data.exclude = !show;
 	}
 
+	private void logOrder(Map<String,Object> fields,LogType type){
+		StringBuffer sb =new StringBuffer();
+		Set <Entry<String,Object>> entrys = fields.entrySet();
+		Iterator<Entry<String,Object>> ite = entrys.iterator();
+		while(ite.hasNext()){
+			Entry <String,Object>entry = ite.next();
+			sb.append(entry.getValue()+" - "+entry.getValue()+"\n");
+		}
+		log.info(type.toString()+" : "+sb.toString());
+	}
+	
 	private void quickEnterOrder() {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
 
@@ -702,7 +790,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
 		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
 				.getAccount());
-
+		
+		changeStrategyByType(fields);
+		logOrder(fields,LogType.Enter);
 		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
 				.getInstance().getInbox(), cbServer.getText(), fields, null,
 				false);
@@ -714,6 +804,14 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	}
 
+	private void changeStrategyByType(HashMap<String, Object> fields) {
+		if(CustomOrderType.Stop.toString().equals(cbOrderType.getText())){
+			fields.put(OrderField.STRATEGY.value(), "STOP");
+			fields.remove(OrderField.PRICE.value());
+			fields.put(OrderField.STOP_LOSS_PRICE.value(),txtPrice.getText());
+			fields.put(OrderField.TYPE.value(), CustomOrderType.Market.toString());
+		}
+	}
 	private void quickAmendOrder() {
 
 		Table table = this.viewer.getTable();
@@ -735,8 +833,13 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		HashMap<String, Object> changes = new HashMap<String, Object>();
 		changes.put(OrderField.ID.value(), id);
-		changes.put(OrderField.PRICE.value(), txtPrice.getText());
+		if(CustomOrderType.Stop.toString().equals(cbOrderType.getText())){
+			changes.put(OrderField.STOP_LOSS_PRICE.value(), txtPrice.getText());
+		}else{
+			changes.put(OrderField.PRICE.value(), txtPrice.getText());
+		}
 		changes.put(OrderField.QUANTITY.value(), txtQuantity.getText());
+		logOrder(changes,LogType.Amend);
 		AmendParentOrderEvent event = new AmendParentOrderEvent(id, server, id,
 				changes, null);
 		try {
@@ -1058,6 +1161,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 					String id = (String) map.get(OrderField.ID.value());
 					String server = (String) map.get(OrderField.SERVER_ID
 							.value());
+					logOrder(map,LogType.Cancel);
 					Business.getInstance()
 							.getEventManager()
 							.sendRemoteEvent(
@@ -1289,7 +1393,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		completeFilter = new ParentOrderFilter();
 		completeFilter.setMatch("Status", matchLst);
 		// viewer.addFilter(completeFilter);
-
+		pinAction.setId(TOOLBAR_ID_FILTER_COMPLETE_ORDER);
 		pinAction.setText("Order Filter");
 		pinAction.setToolTipText("hide completed orders");
 
@@ -1480,8 +1584,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 				accountFilter.setMatch("Account", accountId);
 				smartShowOrders();
 			}
-			lblAccountName.setText(accountId);
-			lblAccountName.getParent().layout();
+			
+//			lblAccountName.setText(accountId);
+//			lblAccountName.getParent().layout();
 		} else if (event instanceof ParentOrderReplyEvent) {
 			final ParentOrderReplyEvent evt = (ParentOrderReplyEvent) event;
 			viewer.getControl().getDisplay().asyncExec(new Runnable() {
