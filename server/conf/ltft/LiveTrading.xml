@@ -14,7 +14,7 @@
 	<bean id="liveTradingSetting" class="com.cyanspring.server.livetrading.LiveTradingSetting">
 		<property name="needCheckPosition" value="true"/>
 		<property name="needCheckFreeze" value="true"/>
-		<property name="needCheckTerminate" value="true"/>
+		<property name="needCheckTerminate" value="false"/>
 		<property name="changeSettingFrozenDays" value="0"/>
 		<property name="userStopLiveTradingStartTime" ref="stopLiveTradingStartTime"/>
         <property name="userStopLiveTradingEndTime" ref="stopLiveTradingEndTime"/>

@@ -27,6 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
+                <ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager" />
@@ -289,8 +290,10 @@
 	            <value>USDJPY</value>
 	            <value>USDCHF</value>
 	            <value>USDCAD</value>
+	            <value>USDRUB</value>
 	            <value>EURUSD</value>
 	            <value>EURJPY</value>
+	            <value>EURRUB</value>
 	            <value>GBPUSD</value>
 	            <value>NZDUSD</value>
 	            <value>GBPJPY</value>

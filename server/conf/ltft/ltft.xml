@@ -182,8 +182,8 @@
 		<property name="todayOnly" value="false" />
 		<property name="checkEmailUnique" value="onlyExist" />
 		<property name="checkPhoneUnique" value="noCheck" />
-		<property name="syncCentralDb" value="false" />
-		<property name="useLtsGateway" value="true" />
+		<property name="syncCentralDb" value="true" />
+		<property name="useLtsGateway" value="false" />
 	</bean>
 
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver" />
@@ -257,6 +257,12 @@
 			</list>
 		</property>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
+		<property name="dynamicUpdateInterval">
+            <value>500</value>
+		</property>
+		<property name="rmUpdateInterval">
+            <value>450</value>
+        </property>
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
