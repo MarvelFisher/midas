@@ -69,7 +69,7 @@
 				<ref bean="windAdaptorFT" />
 			</list>
 		</constructor-arg>
-		<property name="quoteThrottle" value="500"/>
+		<property name="quoteThrottle" value="300"/>
 		<property name="timerInterval" value="500"/>
 		<property name="quoteLogIsOpen" value="true"/>
 		<property name="quoteExtendEventIsSend" value="true"/>
@@ -187,8 +187,8 @@
                 <value>FT</value>               <!-- market -->
                 <value>NTD</value>              <!-- currency -->
                 <value>A</value>                <!-- accountPrefix -->
-                <value>1000000.0</value>        <!-- accountCash -->
-                <value>10</value>               <!-- marginTimes -->
+                <value>100000</value>        <!-- accountCash -->
+                <value>20</value>               <!-- marginTimes -->
                 <value>1.0</value>              <!-- marginCut -->
                 <value>0</value>                <!-- commission -->
                 <value>0</value>                <!-- commissionMin -->

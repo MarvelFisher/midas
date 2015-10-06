@@ -933,7 +933,7 @@
     <fields>
       <entry>
         <string>Category</string>
-        <string>RUB</string>
+        <string>FX</string>
       </entry>
       <entry>
         <string>Detail TW</string>
@@ -1026,7 +1026,7 @@
     <fields>
       <entry>
         <string>Category</string>
-        <string>RUB</string>
+        <string>FX</string>
       </entry>
       <entry>
         <string>Detail TW</string>
