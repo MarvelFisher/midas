@@ -132,7 +132,7 @@
     </bean>
     
     <bean id="terminateStopLossPercent" class="java.lang.Double">
-        <constructor-arg value="0.3" />
+        <constructor-arg value="0.0" />
     </bean>
     
     <bean id="companyStopLossValue" class="java.lang.Double">
