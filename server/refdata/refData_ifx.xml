@@ -929,4 +929,190 @@
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>RUB</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>美元 兌 俄羅斯盧布</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>USDRUB</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>美元/盧布</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>美元 兑 俄罗斯卢布</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>US Dollar vs Russian Ruble</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.025</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>美元/卢布</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>USD.RUB</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>USD</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>RUB</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Category</string>
+        <string>RUB</string>
+      </entry>
+      <entry>
+        <string>Detail TW</string>
+        <string>歐元 兌 俄羅斯盧布</string>
+      </entry>
+      <entry>
+        <string>Decimal point</string>
+        <int>-1</int>
+      </entry>
+      <entry>
+        <string>Index Session Type</string>
+        <string>SPOT</string>
+      </entry>
+      <entry>
+        <string>Price per unit</string>
+        <double>1.0</double>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>EURRUB</string>
+      </entry>
+      <entry>
+        <string>Lot size</string>
+        <int>1000</int>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>歐元/盧布</string>
+      </entry>
+      <entry>
+        <string>Detail CN</string>
+        <string>欧元 兑 俄罗斯卢布</string>
+      </entry>
+      <entry>
+        <string>Detail EN</string>
+        <string>Euro vs Russian Ruble</string>
+      </entry>
+      <entry>
+        <string>Tick table</string>
+        <string>EURRUB</string>
+      </entry>
+      <entry>
+        <string>Margin Rate</string>
+        <double>0.025</double>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>欧元/卢布</string>
+      </entry>
+      <entry>
+        <string>Market maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FX</string>
+      </entry>
+      <entry>
+        <string>Limit maximum lot</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <string>EUR.RUB</string>
+      </entry>
+      <entry>
+        <string>Maximum hold</string>
+        <int>0</int>
+      </entry>
+      <entry>
+        <string>Contract</string>
+        <com.ib.client.Contract>
+          <m__conId>0</m__conId>
+          <m__symbol>EUR</m__symbol>
+          <m__secType>CASH</m__secType>
+          <m__strike>0.0</m__strike>
+          <m__exchange>IDEALPRO</m__exchange>
+          <m__currency>RUB</m__currency>
+          <m__includeExpired>false</m__includeExpired>
+          <m__comboLegs/>
+        </com.ib.client.Contract>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
 </list>
