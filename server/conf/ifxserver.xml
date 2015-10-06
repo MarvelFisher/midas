@@ -190,7 +190,7 @@
             <list>
                 <value>default</value>          <!-- user -->
                 <value>default</value>          <!-- account -->
-                <value>IFX</value>              <!-- market -->
+                <value>FX</value>               <!-- market -->
                 <value>USD</value>              <!-- currency -->
                 <value>A</value>                <!-- accountPrefix -->
                 <value>100000.0</value>         <!-- accountCash -->

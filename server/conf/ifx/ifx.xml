@@ -27,6 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
+                <ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager" />
