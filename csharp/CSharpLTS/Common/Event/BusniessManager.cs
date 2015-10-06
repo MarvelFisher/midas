@@ -133,6 +133,7 @@ namespace Common.Event
                 update.cumQty = order.cumQty;
                 update.exchangeAccount = StringUtils.trim(_adaptor.id);
                 update.execType = (int)order.execType;
+                update.account = order.account;
                 
                 _manager.Publish(update);
                 logger.Info("Send OrderUpdate: " + order.ToString());
@@ -290,7 +291,8 @@ namespace Common.Event
                 {
                     try
                     {
-                        Order order = new Order(req.symbol, req.orderId, req.price, req.quantity, (OrderSide)req.orderSide, (OrderType)req.orderType);
+                        Order order = new Order(req.symbol, req.orderId, req.price, req.quantity, 
+                            (OrderSide)req.orderSide, (OrderType)req.orderType, req.account);
                         adaptor.newOrder(order);
                         NewOrderReply rsp = new NewOrderReply();
                         rsp.result = true;

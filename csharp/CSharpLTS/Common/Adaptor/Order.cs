@@ -24,8 +24,10 @@ namespace Common.Adaptor
         public double cumQty { get; set; }
         public double avgPx { get; set; }
         public string lastMsg { get; set; }
+        public string account { get; set; }
 
-        public Order(string symbol, string orderId, double price, double quantity, OrderSide orderSide, OrderType orderType)
+        public Order(string symbol, string orderId, double price, double quantity, 
+            OrderSide orderSide, OrderType orderType, string account)
         {
             this.symbol = symbol;
             this.orderId = orderId;
@@ -36,6 +38,7 @@ namespace Common.Adaptor
 
             this.execType = ExecType.New;
             this.ordStatus = OrdStatus.PendingNew;
+            this.account = account;
         }
 
         override
@@ -59,6 +62,7 @@ namespace Common.Adaptor
                 "lastMsg=" + lastMsg + "; " +
                 "created=" + created + "; " +
                 "clOrderId=" + clOrderId + "; " +
+                "account=" + account + "; " +
                 "";
         }
 

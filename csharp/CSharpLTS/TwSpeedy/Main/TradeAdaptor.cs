@@ -140,7 +140,7 @@ namespace Adaptor.TwSpeedy.Main
                 if(this.recovering) // during recovery there won't be an order in the cache
                 {
                     Order order = new Order(msg.Symbol, "unknown", msg.Price, msg.OrderQty,
-                        FieldConverter.convert(msg.Side), FieldConverter.convert(msg.OrderType));
+                        FieldConverter.convert(msg.Side), FieldConverter.convert(msg.OrderType), "recovered");
 
                     if (updateOrder(order, msg))
                     {
@@ -154,6 +154,7 @@ namespace Adaptor.TwSpeedy.Main
                         // This is the only reason we need persistence!
                         order.symbol = item.symbol;
                         order.orderId = item.orderId;
+                        order.account = item.account;
 
                         logger.Info("Recovery add order: " + order);
                     }
@@ -274,7 +275,7 @@ namespace Adaptor.TwSpeedy.Main
                 newOrderMsg.TimeInForce = OrderMessage.TimeInForceEnum.tifROD;
             }                
 
-            newOrderMsg.Data = formatData(newOrderMsg.OrderQty);
+            newOrderMsg.Data = formatData(newOrderMsg.OrderQty, order.account);
             newOrderMsg.TradingSessionID = 0;
             newOrderMsg.PositionEffect = OrderMessage.PositionEffectEnum.peClose;
             //DateTime dt = new DateTime();
@@ -332,7 +333,7 @@ namespace Adaptor.TwSpeedy.Main
             {
                 replaceOrderMessage.OrderQty = (int)qty;
             }
-            replaceOrderMessage.Data = formatData(replaceOrderMessage.OrderQty);
+            replaceOrderMessage.Data = formatData(replaceOrderMessage.OrderQty, order.account);
 
             replaceOrderMessage.NID = exchangeConnection.GenerateUniqueID(this.market, OrderMessage.MessageTypeEnum.mtReplace);
             exchangeConnection.ReplaceOrder(replaceOrderMessage);
@@ -353,7 +354,7 @@ namespace Adaptor.TwSpeedy.Main
             cancelOrderMessage.Symbol = order.symbol;
             cancelOrderMessage.OrderID = order.exchangeOrderId;
             cancelOrderMessage.Side = FieldConverter.convert(order.orderSide);
-            cancelOrderMessage.Data = formatData((int)order.quantity);
+            cancelOrderMessage.Data = formatData((int)order.quantity, order.account);
 
             cancelOrderMessage.NID = exchangeConnection.GenerateUniqueID(this.market, OrderMessage.MessageTypeEnum.mtCancel);
             exchangeConnection.CancelOrder(cancelOrderMessage);
@@ -380,10 +381,10 @@ namespace Adaptor.TwSpeedy.Main
             return state;
         }
 
-        private string formatData(long qty)
+        private string formatData(long qty, string account)
         {
-            return String.Format("{0,-7}{1,-20}{2,10}{3:D4}",
-                subAccount, localIP, " ", qty);
+            return String.Format("{0,-7}{1,-20}{2,10}{3:D4}{4}",
+                subAccount, localIP, " ", qty, account);
         }
 
 
