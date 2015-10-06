@@ -145,7 +145,8 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
-			log.info("New order: " + order.getId());
+			log.info("New order: " + order.getId() + ", account: " + order.getAccount() + ", side: " + order.getSide() +
+                ", qty: " + order.getQuantity() + ", price: " + order.getPrice());
 			if (!state) {
 				log.warn("Down stream connection not ready");
 				listener.onOrder(ExecType.REJECTED, order, null, "Down stream connection not ready");
@@ -180,7 +181,8 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		@Override
 		public void amendOrder(ChildOrder order, Map<String, Object> fields)
 				throws DownStreamException {
-			log.info("Amend order: " + order.getId());
+			log.info("Amend order: " + order.getId() + ", qty: " + fields.get(OrderField.QUANTITY.value()) +
+            ", price: " + fields.get(OrderField.PRICE.value()));
 			if (order.getExchangeOrderId() == null) {
 				log.error("null exchange order id, id: " + order.getId());
 				listener.onOrder(ExecType.REJECTED, order, null, "null exchange order id");
@@ -332,13 +334,14 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		}
 		ExecType type = WrapExecType.valueOf(update.getExecType()).getCommonExecType();
 		OrdStatus status = WrapOrdStatus.valueOf(update.getOrdStatus()).getCommonOrdStatus();
-		log.info("Order update, type:" + type + ", status: " + status + 
-				", id:" + update.getOrderId() + ", exchangeOrderId: " + update.getExchangeOrderId());
-		
-		order.setQuantity(update.getQuantity());
-		order.setPrice(update.getPrice());
-		
-		double delta = update.getCumQty() - order.getCumQty();
+        order.setQuantity(update.getQuantity());
+        order.setPrice(update.getPrice());
+        double delta = update.getCumQty() - order.getCumQty();
+
+        log.info("Order update, type:" + type + ", status: " + status +
+				", id:" + update.getOrderId() + ", exchangeOrderId: " + update.getExchangeOrderId() +
+                ", qty: " + update.getQuantity() + ", price: " + update.getPrice() + ", delta: " + delta);
+
 		if (PriceUtils.GreaterThan(delta, 0)) {
 			order.setOrdStatus(status);
 			double price = (update.getAvgPx() * update.getCumQty() - order.getAvgPx() * order.getCumQty()) / delta;
