@@ -84,7 +84,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private List<ClosedPosition> closedPositions;
 	private List<Execution> executions;
 
-	private DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
+	private DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
 	private String currentAccount = Business.getInstance().getAccount();
 	private ImageRegistry imageRegistry;
 
@@ -377,7 +377,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						// TODO: we need to change when CSTW talks to multip
 						// servers
 						String server = Business.getInstance().getFirstServer();
-
+						log.info("Close Position: Account:{}, Symbol:{}, Qty:{}, AcPnl:{}, Price:{}",new Object[]{position.getAccount(),
+								position.getSymbol(),
+								position.getQty(),
+								position.getAcPnL(),
+								position.getPrice()});
 						ClosePositionRequestEvent request = new ClosePositionRequestEvent(
 								position.getAccount(), server,
 								position.getAccount(), position.getSymbol(),
@@ -648,6 +652,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void sendSubscriptionRequest(String account) {
+		log.info("sendSubscriptionRequest");
+		currentAccount = account;
+
 		// unsubscribe for current account event
 		Business.getInstance()
 				.getEventManager()
@@ -674,7 +681,6 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				.unsubscribe(ClosePositionReplyEvent.class, currentAccount,
 						this);
 
-		currentAccount = account;
 		// subscribe for new account
 		Business.getInstance().getEventManager()
 				.subscribe(OpenPositionUpdateEvent.class, currentAccount, this);

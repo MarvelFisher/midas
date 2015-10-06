@@ -55,7 +55,9 @@ import com.cyanspring.cstw.gui.session.GuiSession;
 public class QuoteView extends ViewPart implements IAsyncEventListener {
 	public QuoteView() {
 	}
-
+	private enum Column{
+		Symbol
+	}
 	private static final Logger log = LoggerFactory.getLogger(QuoteView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.QuoteViewer";
 	private Composite parentComposite = null;
@@ -288,16 +290,26 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 								.getName(), properties);
 
 						columnCreated = true;
-						quoteViewer.setSorter(new QuoteSorter());
+//						quoteViewer.setSorter(new QuoteSorter());
+//						quoteViewer.getTable().setSortColumn(quoteViewer.getTable().getColumn(symbolColNum));
 						quoteViewer.setInput(list);
+						
 					} 
-					
 					quoteViewer.refresh();	
 				}
 			}
 		});
 	}
 
+	private int getColumnPosition(Table table,Column col){
+		TableColumn columns[] = table.getColumns();
+		for(int i=0 ;i < columns.length ; i++){
+			if(col.name().equals(columns[i].getText()))
+				return i;
+		}
+		return -1;
+	}
+	
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);

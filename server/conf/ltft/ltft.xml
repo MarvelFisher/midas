@@ -263,6 +263,9 @@
 		<property name="rmUpdateInterval">
             <value>450</value>
         </property>
+        <property name="sendDynamicPositionUpdate">
+            <value>true</value>
+        </property>
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">

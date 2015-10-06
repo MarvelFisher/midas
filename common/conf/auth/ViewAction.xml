@@ -50,6 +50,7 @@
             	<ref bean="singleOrderStrategyViewToolBarAction8"/>
             	<ref bean="singleOrderStrategyViewToolBarAction9"/>
             	<ref bean="singleOrderStrategyViewToolBarAction10"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction11"/>
             	<ref bean="quoteView"/>
             	<ref bean="quoteViewPopAction1"/>
             	<ref bean="marketDataView"/>

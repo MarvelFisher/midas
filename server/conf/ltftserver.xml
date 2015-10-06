@@ -59,7 +59,7 @@
 	</bean>
 
 	<bean id="dailyExec" class="java.lang.String">
-		<constructor-arg value="16:45:00" />
+		<constructor-arg value="14:00:00" />
 	</bean>
 
 	<!-- MarketDataManager setting -->
