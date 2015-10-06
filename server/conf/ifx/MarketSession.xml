@@ -109,7 +109,7 @@
             </map>
         </property>
         <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
-        <property name="index" value="IFX"></property>
+        <property name="index" value="FX"></property>
     </bean>
 
     <bean id="defaultSession" class="com.cyanspring.common.marketsession.MarketSession">

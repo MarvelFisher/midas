@@ -2,6 +2,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
         <string>Detail TW</string>
         <string>澳洲元 兌 美元</string>
       </entry>
@@ -90,6 +94,10 @@
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
       <entry>
         <string>Detail TW</string>
         <string>美元 兌 日本圓</string>
@@ -180,6 +188,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
         <string>Detail TW</string>
         <string>美元 兌 瑞士法郎</string>
       </entry>
@@ -268,6 +280,10 @@
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
       <entry>
         <string>Detail TW</string>
         <string>美元 兌 加拿大元</string>
@@ -358,6 +374,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
         <string>Detail TW</string>
         <string>歐元 兌 美元</string>
       </entry>
@@ -446,6 +466,10 @@
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
       <entry>
         <string>Detail TW</string>
         <string>歐元 兌 日本圓</string>
@@ -536,6 +560,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
         <string>Detail TW</string>
         <string>英國鎊 兌 美元</string>
       </entry>
@@ -624,6 +652,10 @@
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
       <entry>
         <string>Detail TW</string>
         <string>紐西蘭元 兌 美元</string>
@@ -714,6 +746,10 @@
   <com.cyanspring.common.staticdata.RefData>
     <fields>
       <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
+      <entry>
         <string>Detail TW</string>
         <string>英國鎊 兌 日本圓</string>
       </entry>
@@ -802,6 +838,10 @@
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
     <fields>
+      <entry>
+        <string>Category</string>
+        <string>FX</string>
+      </entry>
       <entry>
         <string>Detail TW</string>
         <string>美元 兌 中國離岸人民幣</string>
