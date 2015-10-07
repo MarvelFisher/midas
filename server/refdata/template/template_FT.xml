@@ -127,7 +127,7 @@
 			</entry>
 			<entry>
                 <string>Lot CF</string>
-                <double>30</double>
+                <double>35</double>
             </entry>
 			<entry>
 				<string>Minimal CF</string>
@@ -269,7 +269,7 @@
 			</entry>
 			<entry>
 				<string>Lot CF</string>
-				<double>15</double>
+				<double>20</double>
 			</entry>
 			<entry>
 				<string>Minimal CF</string>
