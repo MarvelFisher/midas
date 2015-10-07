@@ -215,6 +215,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 		Enter,Cancel,Amend
 	};
 	
+	private enum Strategy {
+		STOP,SDMA
+	};
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -738,6 +742,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 	}
 
 	private void populateOrderPad(HashMap<String, Object> map) {
+		String strategy = (String) map.get(OrderField.STRATEGY.value());
+		
 		currentOrderPadId = (String) map.get(OrderField.ID.value());
 		txtSymbol.setText((String) map.get(OrderField.SYMBOL.value()));
 		Double price = (Double) map.get(OrderField.PRICE.value());
@@ -750,6 +756,12 @@ public class SingleOrderStrategyView extends ViewPart implements
 		cbOrderSide.setText(((OrderSide) map.get(OrderField.SIDE.value()))
 				.toString());
 		cbServer.setText((String) map.get(OrderField.SERVER_ID.value()));
+		
+		if(Strategy.STOP.toString().equals(strategy)){
+			cbOrderType.select(2);
+		}
+		cbOrderType.notifyListeners(SWT.Selection, new Event());
+
 	}
 
 	private void populateOrderPadServers() {
