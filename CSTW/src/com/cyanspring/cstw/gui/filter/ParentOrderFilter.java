@@ -15,6 +15,8 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.ui.internal.intro.impl.util.Log;
+import org.springframework.util.StringUtils;
 
 public class ParentOrderFilter extends ViewerFilter {
 	String column;
@@ -38,15 +40,19 @@ public class ParentOrderFilter extends ViewerFilter {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Object> map = (HashMap<String, Object>)element;
 		Object field = map.get(column);
-		if (null == field)
+		if (null == field){			
+			if(StringUtils.hasText(pattern))
+				return false;
+			
 			return true;
-		
+		}
 		if(pattern != null){
-			if(pattern.toUpperCase().indexOf(field.toString().toUpperCase()) > -1)
+			if(field.toString().toUpperCase().indexOf(pattern.toUpperCase()) > -1)
 				return true;			
 		}
-		if(lst != null)
+		if(lst != null){
 			return lst.contains(field.toString());
+		}
 		return false;
 	}
 
