@@ -65,7 +65,7 @@
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <ref bean="ibAdaptor" />
+                <!--<ref bean="ibAdaptor" />-->
                 <ref bean="idAdaptor" />
             </list>
         </constructor-arg>
@@ -98,17 +98,17 @@
 
     <!-- IBAdaptor setting (Setting can be marked if not used) -->
 
-    <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
-        <property name="id" value="IB01" />
-        <property name="host" value="10.0.0.30" />
-        <property name="port" value="4001" />
-        <property name="clientId" value="200" />
-        <property name="reqMarketDepth" value="false" />
-        <property name="logMarketData" value="false" />
-        <property name="newsIsSubCurrentDay" value="false" />
-        <property name="checkLastTimeInterval" value="15000" />
-        <!--<property name="cancelOpenOrders" value="true" /> -->
-    </bean>
+    <!--<bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">-->
+        <!--<property name="id" value="IB01" />-->
+        <!--<property name="host" value="10.0.0.30" />-->
+        <!--<property name="port" value="4001" />-->
+        <!--<property name="clientId" value="200" />-->
+        <!--<property name="reqMarketDepth" value="false" />-->
+        <!--<property name="logMarketData" value="false" />-->
+        <!--<property name="newsIsSubCurrentDay" value="false" />-->
+        <!--<property name="checkLastTimeInterval" value="15000" />-->
+        <!--&lt;!&ndash;<property name="cancelOpenOrders" value="true" /> &ndash;&gt;-->
+    <!--</bean>-->
 
     <!-- IDAdaptor setting (Setting can be marked if not used) -->
 
@@ -117,7 +117,7 @@
         <property name="password" value="MFW9dC26"></property>
         <property name="gateway" value="false"></property>
         <property name="reqIp" value="10.0.0.32"></property>
-        <property name="reqPort" value="6086"></property>
+        <property name="reqPort" value="6088"></property>
         <property name="exch" value="687"></property>
         <property name="sendHeartBeat" value="3"></property>
         <property name="throwQuoteTimeInterval" value="10000"/>
@@ -129,10 +129,6 @@
         </property>
         <property name="contributeList">
             <list>
-                <value>AXI</value>
-                <value>FXN</value>
-				<value>WBRS</value>
-                <value>DUBA</value>
             </list>
         </property>
         <property name="unContributeList">
