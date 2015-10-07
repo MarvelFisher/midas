@@ -69,9 +69,9 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 			ChangeAccountSettingReplyEvent evt = (ChangeAccountSettingReplyEvent)event;
 			log.info("Account setting change: " + evt.isOk() + ", " + evt.getMessage());
 			if(evt.isOk()){
-				showMessageBox("modified sucess", parentComposite);
+				showMessageBox("Account settings updated", parentComposite);
 			}else{
-				showMessageBox("modified fail:"+evt.getMessage(), parentComposite);
+				showMessageBox("Account settings update fail:"+evt.getMessage(), parentComposite);
 			}
 			sendAccountSettingRequestEvent();
 		} else {

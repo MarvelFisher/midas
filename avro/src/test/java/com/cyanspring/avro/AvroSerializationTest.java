@@ -44,6 +44,7 @@ public class AvroSerializationTest {
 						WrapOrderSide.valueOf(childOrder.getSide()).getCode())
 				.setOrderType(WrapOrderType.valueOf(OrderType.Market).getCode())
 				.setTimeInForce(WrapTimeInForce.valueOf(TimeInForce.DAY).getCode())
+				.setAccount(childOrder.getAccount())
 				.setTxId(childOrder.getId())
 				.setCreated(dateFormat.format(childOrder.getCreated()))
 				.setClOrderId(clOrderId)
@@ -91,8 +92,11 @@ public class AvroSerializationTest {
 		// Set ChildOrder exchangeOrderType
 		ExchangeOrderType exchangeOrderType = ExchangeOrderType.MARKET;
 
-		return parentOrder.createChild(parentOrder.getQuantity(),
+		ChildOrder order = parentOrder.createChild(parentOrder.getQuantity(),
 				parentOrder.getPrice(), exchangeOrderType);
+		
+		order.setAccount("acc1");
+		return order;
 	}
 
 }

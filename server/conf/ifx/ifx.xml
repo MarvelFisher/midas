@@ -27,6 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
+                <ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager" />
@@ -289,8 +290,10 @@
 	            <value>USDJPY</value>
 	            <value>USDCHF</value>
 	            <value>USDCAD</value>
+	            <value>USDRUB</value>
 	            <value>EURUSD</value>
 	            <value>EURJPY</value>
+	            <value>EURRUB</value>
 	            <value>GBPUSD</value>
 	            <value>NZDUSD</value>
 	            <value>GBPJPY</value>
@@ -341,12 +344,15 @@
 	</bean>
 
 	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
 	</bean>
 
 	<bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
 	</bean>
 
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
 	</bean>
 
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">

@@ -15,7 +15,7 @@ namespace com.cyanspring.avro.generate.trade.bean
 	
 	public partial class NewOrderRequest : ISpecificRecord
 	{
-		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""NewOrderRequest"",""namespace"":""com.cyanspring.avro.generate.trade.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""orderId"",""type"":""string""},{""name"":""exchangeAccount"",""type"":""string""},{""name"":""symbol"",""type"":""string""},{""name"":""orderSide"",""type"":""int""},{""name"":""orderType"",""type"":""int""},{""name"":""timeInForce"",""type"":""int""},{""name"":""price"",""type"":""double""},{""name"":""quantity"",""type"":""double""},{""name"":""created"",""type"":""string""},{""name"":""clOrderId"",""type"":""string""},{""name"":""txId"",""type"":""string""}]}");
+		public static Schema _SCHEMA = Avro.Schema.Parse(@"{""type"":""record"",""name"":""NewOrderRequest"",""namespace"":""com.cyanspring.avro.generate.trade.bean"",""fields"":[{""name"":""objectType"",""type"":""int""},{""name"":""orderId"",""type"":""string""},{""name"":""exchangeAccount"",""type"":""string""},{""name"":""symbol"",""type"":""string""},{""name"":""orderSide"",""type"":""int""},{""name"":""orderType"",""type"":""int""},{""name"":""timeInForce"",""type"":""int""},{""name"":""price"",""type"":""double""},{""name"":""quantity"",""type"":""double""},{""name"":""created"",""type"":""string""},{""name"":""clOrderId"",""type"":""string""},{""name"":""account"",""type"":""string""},{""name"":""txId"",""type"":""string""}]}");
 		private int _objectType;
 		private string _orderId;
 		private string _exchangeAccount;
@@ -27,6 +27,7 @@ namespace com.cyanspring.avro.generate.trade.bean
 		private double _quantity;
 		private string _created;
 		private string _clOrderId;
+		private string _account;
 		private string _txId;
 		public virtual Schema Schema
 		{
@@ -156,6 +157,17 @@ namespace com.cyanspring.avro.generate.trade.bean
 				this._clOrderId = value;
 			}
 		}
+		public string account
+		{
+			get
+			{
+				return this._account;
+			}
+			set
+			{
+				this._account = value;
+			}
+		}
 		public string txId
 		{
 			get
@@ -182,7 +194,8 @@ namespace com.cyanspring.avro.generate.trade.bean
 			case 8: return this.quantity;
 			case 9: return this.created;
 			case 10: return this.clOrderId;
-			case 11: return this.txId;
+			case 11: return this.account;
+			case 12: return this.txId;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Get()");
 			};
 		}
@@ -201,7 +214,8 @@ namespace com.cyanspring.avro.generate.trade.bean
 			case 8: this.quantity = (System.Double)fieldValue; break;
 			case 9: this.created = (System.String)fieldValue; break;
 			case 10: this.clOrderId = (System.String)fieldValue; break;
-			case 11: this.txId = (System.String)fieldValue; break;
+			case 11: this.account = (System.String)fieldValue; break;
+			case 12: this.txId = (System.String)fieldValue; break;
 			default: throw new AvroRuntimeException("Bad index " + fieldPos + " in Put()");
 			};
 		}

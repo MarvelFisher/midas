@@ -68,6 +68,10 @@
       "type": "string"
     },
     {
+      "name": "account",
+      "type": "string"
+    },
+    {
       "name": "txId",
       "type": "string"
     },

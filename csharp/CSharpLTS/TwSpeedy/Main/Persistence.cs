@@ -89,7 +89,8 @@ namespace Adaptor.TwSpeedy.Main
         {
             if (items.ContainsKey(order.exchangeOrderId))
                 return;
-            PersistItem item = new PersistItem(DateTime.Now, order.exchangeOrderId, order.orderId, order.symbol, order.ordStatus.ToString());
+            PersistItem item = new PersistItem(DateTime.Now, order.exchangeOrderId, 
+                order.orderId, order.symbol, order.ordStatus.ToString(), order.account);
             items.TryAdd(order.exchangeOrderId, item);
             processor.add(item);
         }

@@ -107,7 +107,7 @@
 			</entry>
 			<entry>
 				<string>Margin Rate</string>
-				<double>0.1</double>
+				<double>0.05</double>
 			</entry>
 			<entry>
 				<string>Limit maximum lot</string>
@@ -127,7 +127,7 @@
 			</entry>
 			<entry>
                 <string>Lot CF</string>
-                <double>80</double>
+                <double>30</double>
             </entry>
 			<entry>
 				<string>Minimal CF</string>
@@ -249,7 +249,7 @@
 			</entry>
 			<entry>
 				<string>Margin Rate</string>
-				<double>0.1</double>
+				<double>0.05</double>
 			</entry>
 			<entry>
 				<string>Limit maximum lot</string>
@@ -269,7 +269,7 @@
 			</entry>
 			<entry>
 				<string>Lot CF</string>
-				<double>20</double>
+				<double>30</double>
 			</entry>
 			<entry>
 				<string>Minimal CF</string>

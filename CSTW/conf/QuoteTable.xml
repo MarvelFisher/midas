@@ -1,49 +1,10 @@
 <map>
   <entry>
     <string>com.cyanspring.common.marketdata.Quote</string>
-    <list>      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>TimeSent</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
+    <list>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Last</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>LastVol</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Turnover</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Open</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Close</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>TotalVolume</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>TimeStamp</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Id</title>
-        <width>0</width>
+        <title>Symbol</title>
+        <width>91</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -54,16 +15,6 @@
       <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Asks</title>
         <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Class</title>
-        <width>0</width>
-        <editable>false</editable>
-      </com.cyanspring.cstw.gui.common.ColumnProperty>
-      <com.cyanspring.cstw.gui.common.ColumnProperty>
-        <title>Symbol</title>
-        <width>91</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -82,8 +33,28 @@
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Class</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>AskVol</title>
         <width>97</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>TotalVolume</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>TimeStamp</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Id</title>
+        <width>0</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -92,8 +63,38 @@
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Turnover</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Open</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Close</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
         <title>Low</title>
         <width>116</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>TimeSent</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Last</title>
+        <width>0</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>LastVol</title>
+        <width>0</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
       <com.cyanspring.cstw.gui.common.ColumnProperty>
@@ -101,7 +102,6 @@
         <width>122</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
-
     </list>
   </entry>
 </map>
