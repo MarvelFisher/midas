@@ -65,6 +65,7 @@ public class MarketSessionChecker implements IMarketSession {
             sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
             sessionData.setDate(tradeDate);
             currentType = data.getSessionType();
+            break;
         }
         return sessionData;
     }
