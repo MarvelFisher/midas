@@ -588,9 +588,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		GridData gridData;
 		txtSymbol = new Text(panelComposite, SWT.BORDER);
-		txtSymbol.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+		gridData = new GridData(SWT.LEFT, SWT.FILL, false, true);
+		gridData.widthHint = 100;
+		txtSymbol.setLayoutData(gridData);
 		txtSymbol.setText(GuiSession.getInstance().getSymbol());
-
 		lbPrice = new Label(panelComposite, SWT.NONE);
 		lbPrice.setText("Price: ");
 		lbPrice.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
