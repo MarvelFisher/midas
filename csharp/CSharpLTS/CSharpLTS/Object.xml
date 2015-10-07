@@ -32,6 +32,8 @@
     <property name="host" value="Speedy150.masterlink.com.tw"></property>
     <property name="port" value="23456"></property>
     <property name="cancelOrdersAtSTart" value="true"></property>
+    <property name="copyAccount" value="false"></property>
+    <property name="skipRecover" value="false"></property>
     <property name="persistence" ref="persistence"></property>
     <property name="maxOrderCount" value="1000"></property>
   </object>

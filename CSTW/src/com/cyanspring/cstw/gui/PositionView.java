@@ -263,28 +263,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lbCashDeduct = new Label(comp2, SWT.RIGHT);
 		lbCashDeduct
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Label lb4 = new Label(comp1, SWT.LEFT);
-		lb4.setText("Daily P&&L: ");
-		lb4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbDailyPnL = new Label(comp1, SWT.RIGHT);
-		lbDailyPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Label lb5 = new Label(comp2, SWT.LEFT);
-		lb5.setText("P&&L: ");
-		lb5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbPnL = new Label(comp2, SWT.RIGHT);
-		lbPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		Label lb6 = new Label(comp3, SWT.LEFT);
-		lb6.setText("Unrealized P&&L: ");
-		lb6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		lbUrPnL = new Label(comp3, SWT.RIGHT);
-		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
+		
 		Label lb7 = new Label(comp3, SWT.LEFT);
 		lb7.setText("Cash Available: ");
 		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -292,6 +271,30 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lbCashAvailable = new Label(comp3, SWT.RIGHT);
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
+
+
+		Label lb5 = new Label(comp1, SWT.LEFT);
+		lb5.setText("P&&L: ");
+		lb5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbPnL = new Label(comp1, SWT.RIGHT);
+		lbPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		Label lb6 = new Label(comp2, SWT.LEFT);
+		lb6.setText("Unrealized P&&L: ");
+		lb6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbUrPnL = new Label(comp2, SWT.RIGHT);
+		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+
+		Label lb4 = new Label(comp3, SWT.LEFT);
+		lb4.setText("Daily P&&L: ");
+		lb4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbDailyPnL = new Label(comp3, SWT.RIGHT);
+		lbDailyPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
 
 		// Label lb2 = new Label(comp2, SWT.LEFT);
 		// lb2.setText("Cash value: ");

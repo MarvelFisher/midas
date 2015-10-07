@@ -34,7 +34,7 @@ namespace Adaptor.TwSpeedy.Main
         public string user { get; set; } = "haida";
         public string account { get; set; } = "1365651";
         public string password { get; set; } = "123456";
-        public string subAccount { get; set; } = "1365651";
+        public string subAccount { get; set; } = "       ";
         public string brokerID { get; set; } = "F018000";
         public string memberID { get; set; } = "F018";
         public OrderMessage.MarketEnum market { get; set; } = MarketEnum.mFutures;
@@ -42,7 +42,10 @@ namespace Adaptor.TwSpeedy.Main
         public int port { get; set; } = 23456;
         public bool cancelOrdersAtSTart { get; set; } = true;
         public int maxOrderCount { get; set; } = 1000;
+        public bool copyAccount { get; set; }
+        public bool skipRecover { get; set; }
         private DailyKeyCounter placeOrderCount;
+        private long recoveryCount;
 
         public void init()
         {
@@ -112,8 +115,18 @@ namespace Adaptor.TwSpeedy.Main
             else if (LogonResult == OrderConnection.LogonResultEnum.lrOK)
             {
                 logger.Info("Login succeeded");
-                recovering = true;
-                exchangeConnection.Recover("031000", OrderConnection.RecoverTypeEnum.rtAll, OrderConnection.RecoverMarketEnum.rmAll);
+                if(!skipRecover)
+                {
+                    recoveryCount = 0;
+                    recovering = true;
+                    exchangeConnection.Recover("031000", OrderConnection.RecoverTypeEnum.rtAll, OrderConnection.RecoverMarketEnum.rmAll);
+                }
+                else
+                {
+                    state = true;
+                    if (null != this.listener)
+                        this.listener.onState(state);
+                }
             }
         }
 
@@ -121,6 +134,7 @@ namespace Adaptor.TwSpeedy.Main
         {
             //回補
             logger.Info("====================Recovery Done====================");
+            logger.Info("Recovery Count: " + recoveryCount);
             recovering = false;
 
             if (cancelOrdersAtSTart)
@@ -139,6 +153,7 @@ namespace Adaptor.TwSpeedy.Main
             {
                 if(this.recovering) // during recovery there won't be an order in the cache
                 {
+                    recoveryCount++;
                     Order order = new Order(msg.Symbol, "unknown", msg.Price, msg.OrderQty,
                         FieldConverter.convert(msg.Side), FieldConverter.convert(msg.OrderType), "recovered");
 
@@ -383,8 +398,11 @@ namespace Adaptor.TwSpeedy.Main
 
         private string formatData(long qty, string account)
         {
+            string str = subAccount;
+            if (copyAccount)
+                str = account;
             return String.Format("{0,-7}{1,-20}{2,10}{3:D4}{4}",
-                subAccount, localIP, " ", qty, account);
+                str, localIP, " ", qty, account);
         }
 
 
