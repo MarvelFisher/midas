@@ -597,12 +597,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void requestRequireData() throws Exception {
+        log.debug("requestRequireData begin - " + serverInfo);
         IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(requestDataEventkey, null, null);
         RefDataRequestEvent rdrEvent = new RefDataRequestEvent(requestDataEventkey, null);
         isrEvent.setReceiver(serverInfo);
         rdrEvent.setReceiver(serverInfo);
         eventManager.sendRemoteEvent(isrEvent);
         eventManager.sendRemoteEvent(rdrEvent);
+        log.debug("requestRequireData end");
     }
 
     private void preSubscribe(IMarketDataAdaptor adaptor) {
