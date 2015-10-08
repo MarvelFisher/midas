@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.cyanspring.common.event.account.*;
+import com.cyanspring.common.staticdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -50,10 +52,6 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
-import com.cyanspring.common.event.account.ResetAccountReplyEvent;
-import com.cyanspring.common.event.account.ResetAccountReplyType;
-import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
@@ -84,10 +82,6 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.WeekDay;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.staticdata.AbstractTickTable;
-import com.cyanspring.common.staticdata.IRefDataManager;
-import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.TickTableManager;
 import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.strategy.GlobalStrategySettings;
 import com.cyanspring.common.strategy.IStrategy;
@@ -168,6 +162,9 @@ public class BusinessManager implements ApplicationContextAware {
 	
 	@Autowired
 	ITransactionValidator transactionValidator;
+
+    @Autowired(required = false)
+    OrderSaver orderSaver;
 	
 	ScheduleManager scheduleManager = new ScheduleManager();
 
@@ -209,6 +206,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 			subscribeToEvent(TickTableRequestEvent.class, null);
+            subscribeToEvent(PmEndOfDayRollEvent.class, null);
 		}
 
 		@Override
@@ -1206,6 +1204,15 @@ public class BusinessManager implements ApplicationContextAware {
 			log.error(e.getMessage(), e);
 		}
 	}
+
+    public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
+        if (orderSaver !=null ) {
+            for (Account a : accountKeeper.getAllAccounts()) {
+                orderSaver.setOrderMap(orders.getMap(a.getId()));
+                orderSaver.saveOrderToFile();
+            }
+        }
+    }
 
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers

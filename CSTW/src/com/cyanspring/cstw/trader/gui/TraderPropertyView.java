@@ -12,6 +12,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
@@ -36,6 +38,8 @@ import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
 
 public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
+	public TraderPropertyView() {
+	}
 	enum TraderProperty{
 		DEFAULT_QUANTITY("Default Quantity");
 		private String value;
@@ -56,7 +60,10 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 	private Composite parentComposite = null;
 	private AccountSetting accountSetting = Business.getInstance().getAccountSetting();
 	private String accountId = Business.getInstance().getAccount();
-	
+	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
+	private long minRefreshInterval = 3000;
+	private Button btnEdit;
+	private Button btnModify;
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if(event instanceof AccountSettingSnapshotReplyEvent) {
@@ -73,6 +80,8 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 			}else{
 				showMessageBox("Account settings update fail:"+evt.getMessage(), parentComposite);
 			}
+			sendAccountSettingRequestEvent();
+		} else if(event instanceof AsyncEvent) {
 			sendAccountSettingRequestEvent();
 		} else {
 			log.error("Unhandled event: " + event);
@@ -95,8 +104,11 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 			
 			@Override
 			public void run() {
-				txt_defaultQty.setText(Double.toString(accountSetting.getDefaultQty()));
-				trtmDefaultQuantity.setText(TraderProperty.DEFAULT_QUANTITY.getValue()+" : "+txt_defaultQty.getText());
+				
+				if(!btnEdit.getSelection())
+					txt_defaultQty.setText(Double.toString(accountSetting.getDefaultQty()));
+				
+				trtmDefaultQuantity.setText(TraderProperty.DEFAULT_QUANTITY.getValue()+" : "+accountSetting.getDefaultQty());
 			}
 		});
 		
@@ -137,6 +149,26 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		grpAccountSettings.setLayout(gl_grpAccountSettings);
 		grpAccountSettings.setText("Account Settings");
 		
+	    btnEdit = new Button(grpAccountSettings, SWT.CHECK);
+		btnEdit.setText("Edit");
+		new Label(grpAccountSettings, SWT.NONE);
+		btnEdit.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(btnEdit.getSelection()){
+					enableSettingParams(true);
+				}else{
+					enableSettingParams(false);
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
+		
 		Label lblDefaultQuantity = new Label(grpAccountSettings, SWT.NONE);
 		lblDefaultQuantity.setText("Default Quantity :");
 		
@@ -145,7 +177,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		gd_text.widthHint = 99;
 		txt_defaultQty.setLayoutData(gd_text);
 		
-		Button btnModify = new Button(grpAccountSettings, SWT.NONE);
+		btnModify = new Button(grpAccountSettings, SWT.NONE);
 		GridData gd_btnModify = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnModify.widthHint = 112;
 		btnModify.setLayoutData(gd_btnModify);
@@ -189,8 +221,25 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		subEvent(AccountSettingSnapshotReplyEvent.class);
 		subEvent(ChangeAccountSettingReplyEvent.class);
 		sendAccountSettingRequestEvent();
+		scheduleJob(refreshEvent,minRefreshInterval);
+		btnEdit.notifyListeners(SWT.Selection, new Event());
 	}
+	private void enableSettingParams(final boolean enable) {
+		parentComposite.getDisplay().asyncExec(new Runnable() {
 
+			@Override
+			public void run() {
+				if(enable){
+					txt_defaultQty.setEnabled(true);
+					btnModify.setEnabled(true);
+				}else{
+					txt_defaultQty.setEnabled(false);
+					btnModify.setEnabled(false);
+				}				
+			}
+			
+		});
+	}
 	private void sendAccountSettingRequestEvent(){
 		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), accountId, null);
 		sendRemoteEvent(settingRequestEvent);
@@ -229,7 +278,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 	}
 	
 	private void unSubEvent(Class<? extends AsyncEvent> clazz){
-		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
+		Business.getInstance().getEventManager().unsubscribe(clazz, this);		
 	}
 	
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
@@ -255,11 +304,24 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		});
 	}
 	
+	private void scheduleJob(AsyncTimerEvent timerEvent, long maxRefreshInterval) {
+		Business.getInstance()
+				.getScheduleManager()
+				.scheduleRepeatTimerEvent(maxRefreshInterval, TraderPropertyView.this,
+						timerEvent);
+	}
+
+	private void cancelScheduleJob(AsyncTimerEvent timerEvent) {
+		Business.getInstance().getScheduleManager()
+				.cancelTimerEvent(timerEvent);
+	}
+	
 	@Override
 	public void dispose() {
 		super.dispose();
 		unSubEvent(AccountSettingSnapshotReplyEvent.class);
 		unSubEvent(ChangeAccountSettingReplyEvent.class);
+		cancelScheduleJob(refreshEvent);
 	}
 	
 	private boolean isNumberType(String strOld) {

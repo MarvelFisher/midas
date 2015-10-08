@@ -257,7 +257,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 			sessionDataMap.put(index, session.getValue());
 			log.info(index + ", " + type.toString());
 			if (type != MarketSessionType.PREMARKET)
-				continue;			
+				continue;
 			try {
 				List<RefData> update = refDataManager.update(index, session.getValue().getTradeDateByString());
 				send.addAll(update);

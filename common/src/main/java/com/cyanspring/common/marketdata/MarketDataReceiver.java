@@ -424,10 +424,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         // subscribe to events
         if (quoteListener != null)
         	quoteListener.init();
+        log.info("eventProcessor init begin -" + (eventProcessor.getEventManager() == null?"null":"ok"));
         eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("MarketDataReceiver");
+        log.info("eventProcessor init end -" + (eventProcessor.getEventManager() == null?"null":"ok"));
 
         requestRequireData();
 
@@ -587,12 +589,14 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     }
 
     protected void requestRequireData() throws Exception {
+        log.debug("requestRequireData begin - " + serverInfo);
         IndexSessionRequestEvent isrEvent = new IndexSessionRequestEvent(requestDataEventkey, null, null);
         RefDataRequestEvent rdrEvent = new RefDataRequestEvent(requestDataEventkey, null);
         isrEvent.setReceiver(serverInfo);
         rdrEvent.setReceiver(serverInfo);
         eventManager.sendRemoteEvent(isrEvent);
         eventManager.sendRemoteEvent(rdrEvent);
+        log.debug("requestRequireData end");
     }
 
     private void preSubscribe(IMarketDataAdaptor adaptor) {
