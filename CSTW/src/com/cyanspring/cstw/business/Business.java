@@ -229,25 +229,6 @@ public class Business {
 		log.info("Multi-Instrument strategy field def update: " + event.getConfig().getStrategy());
 	}
 	
-	private void loadSystemInfo() throws IOException {
-	    String strFile = configPath + SystemInfo.class.getSimpleName() + ".xml";
-		File file = new File(strFile);
-		if (!file.exists()) {
-			log.info("writing default SystemInfo file: " + strFile);
-			file.createNewFile();
-			systemInfo = new SystemInfo();
-			FileOutputStream os = new FileOutputStream(file);
-			xstream.toXML(systemInfo, os);
-			os.close();
-			log.info("writen default SystemInfo file: " + strFile);
-		} else {
-			log.info("loading SystemInfo file: " + strFile);
-			systemInfo = (SystemInfo)xstream.fromXML(file);
-			log.info("loaded SystemInfo file: " + strFile);
-		}
-		log.info("SystemInfo: " + systemInfo);
-	}
-	
 	public void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
 		lastHeartBeats.put(event.getSender(), Clock.getInstance().now());	
 	}
@@ -271,7 +252,7 @@ public class Business {
 
 	public void init() throws Exception {
 		log.info("Initializing business obj...");
-		loadSystemInfo();
+		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
 		this.user = Default.getUser();
 		this.account = Default.getAccount();
 		

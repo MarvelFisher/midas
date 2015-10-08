@@ -59,6 +59,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
@@ -407,9 +408,20 @@ public class SingleOrderStrategyView extends ViewPart implements
 			cbOrderType.select(2);
 		}
 		
+		if(null == type && CustomOrderType.Stop.toString().equals(cbOrderType.getText())){
+			cbOrderType.select(0);
+		}
+		
 		cbOrderType.notifyListeners(SWT.Selection, new Event());
 		txtPrice.setFocus();
 		parent.layout();
+		clearStatus();
+	}
+	
+	private void clearStatus(){
+		
+		if(StringUtils.hasText(lbStatus.getText()))
+			lbStatus.setText("");
 	}
 
 	private void initListener() {
@@ -432,7 +444,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 											Business.getInstance()
 													.getSingleOrderAmendableFields(
 															strategyName)));
+					clearStatus();
 				}
+				
 			}
 		});
 
