@@ -476,7 +476,8 @@ public class CentralDbProcessor implements IPlugin
 		}
 		else
 		{
-			getDbhnd().updateSQL(sqlcmd);
+			if (symbolinfos.isEmpty() == false)
+				getDbhnd().updateSQL(sqlcmd);
 			retsymbollist.clear();
 			retsymbollist.addAll(getDbhnd().getGroupSymbol(user, group, market, refSymbolInfo, true));
 			if (symbolinfos.isEmpty() && retEvent.isAllowEmpty() == false)
