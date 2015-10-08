@@ -59,7 +59,7 @@
       </view>
       <view
             class="com.cyanspring.cstw.gui.ExecutionView"
-            icon="icons/Leaves16.png"
+            icon="icons/executions.png"
             id="com.cyanspring.cstw.gui.ExecutionView"
             name="Executions"
             restorable="true">
@@ -290,6 +290,7 @@
             </command>
             <command
                   commandId="CSTW.ExecutionView"
+                  icon="icons/executions.png"
                   label="Executions"
                   style="push">
                   <visibleWhen checkEnabled="false">
@@ -298,6 +299,9 @@
 		                  <equals value="ENABLED"></equals>        
 		               </with>
 		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+		               <with variable="Trader">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
                   	</or>
