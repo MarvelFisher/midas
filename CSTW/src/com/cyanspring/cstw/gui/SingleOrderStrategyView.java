@@ -292,8 +292,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 				.subscribe(AccountSelectionEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(MarketDataReplyEvent.class, this);
-		Business.getInstance().getEventManager()
-				.subscribe(AccountSettingSnapshotReplyEvent.class, this);
 		
 		showOrders();
 		this.parent = parent;
