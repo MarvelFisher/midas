@@ -364,10 +364,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void handleKeyCode(int keyCode) {
 		if (keyCode == SWT.F1) {
-			showOrderPadByType(true,CustomOrderType.Limit);
+			showOrderPadByType(true,null);
 			getDefaultQuickData();
 		} else if (keyCode == SWT.F2) {
-			showOrderPadByType(false,CustomOrderType.Limit);
+			showOrderPadByType(false,null);
 			getDefaultQuickData();
 		}else if(keyCode == SWT.F3){// Buy Stop Order
 			showOrderPadByType(true,CustomOrderType.Stop);
@@ -398,7 +398,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		} else {
 			cbOrderSide.select(1);
 		}
-		
+
 		if(CustomOrderType.Limit == type){
 			cbOrderType.select(0);
 		}else if(CustomOrderType.Market == type){
@@ -406,9 +406,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 		}else if(CustomOrderType.Stop == type){
 			cbOrderType.select(2);
 		}
-		cbOrderType.notifyListeners(SWT.Selection, new Event());
-
 		
+		cbOrderType.notifyListeners(SWT.Selection, new Event());
 		txtPrice.setFocus();
 		parent.layout();
 	}
@@ -1565,10 +1564,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 				nowQuote = e.getQuote();
 				setQuoteToPad();
 			}
-		}else if (event instanceof AccountSettingSnapshotReplyEvent) {
-			log.debug("Recieved event: " + event);
-			AccountSettingSnapshotReplyEvent e = (AccountSettingSnapshotReplyEvent)event;
-			setDefaultQty(e.getAccountSetting());
 		}else if (event instanceof AsyncTimerEvent) {
 			timerEvent = null;
 			asyncShowOrders();
