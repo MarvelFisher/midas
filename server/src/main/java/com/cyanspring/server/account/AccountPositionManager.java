@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cyanspring.common.staticdata.AccountSaver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,6 +224,9 @@ public class AccountPositionManager implements IPlugin {
 
 	@Autowired(required = false)
 	SystemSuspendValidator systemSuspendValidator;
+
+    @Autowired(required = false)
+    AccountSaver accountSaver;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -1777,7 +1781,11 @@ public class AccountPositionManager implements IPlugin {
             account.resetDailyPnL();
         }
 
-        eventManager.sendEvent(new PmEndOfDayRollEvent(PersistenceManager.ID, null, tradeDate));
+        eventManager.sendEvent(new PmEndOfDayRollEvent(null, null, tradeDate));
+        if (accountSaver != null) {
+            accountSaver.setAccounts(accountKeeper.getAllAccounts());
+            accountSaver.saveAccountToFile();
+        }
     }
 
     public void processTradeDateEvent(TradeDateEvent event) {
