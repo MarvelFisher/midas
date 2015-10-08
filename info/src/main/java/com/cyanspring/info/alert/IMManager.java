@@ -25,16 +25,17 @@ public class IMManager extends Compute
 	private ArrayList<IMThread> IMThreadList;
 
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private int timeoutSecond;
 	private int createThreadCount;
 	private int maxRetrytimes;
 	private long killTimeoutSecond;
 
-	private String uri;
-	private String appKey;
-	private String appSecret;
-	private String tokenSalt;
-	private String iv;
+	private String uri = "";
+	private String appKey = "";
+	private String appSecret = "";
+	private String tokenSalt = "0123456789abcdef";
+	private String iv = "0123456789abcdef";
+	private String action = "";
+	private String serverAccount = "";
 
 	private int CheckThreadStatusInterval = 60000; // 60 seconds
 
@@ -74,9 +75,9 @@ public class IMManager extends Compute
 				for (int i = 0; i < createThreadCount; i++)
 				{
 					strThreadId = "IMThread" + String.valueOf(i);
-					IMThread IMT = new IMThread(strThreadId, ParseDataQueue, timeoutSecond,
-							maxRetrytimes, getUri(), getAppKey(), getAppSecret(), getTokenSalt(),
-							getIv());
+					IMThread IMT = new IMThread(strThreadId, ParseDataQueue,
+							maxRetrytimes, serverAccount, uri, appKey, 
+							appSecret, tokenSalt, iv, action);
 					log.info("[" + strThreadId + "] New.");
 					IMThreadList.add(IMT);
 					IMT.start();
@@ -171,5 +172,25 @@ public class IMManager extends Compute
 	public void setIv(String iv)
 	{
 		this.iv = iv;
+	}
+
+	public String getAction()
+	{
+		return action;
+	}
+
+	public void setAction(String action)
+	{
+		this.action = action;
+	}
+
+	public String getServerAccount()
+	{
+		return serverAccount;
+	}
+
+	public void setServerAccount(String serverAccount)
+	{
+		this.serverAccount = serverAccount;
 	}
 }

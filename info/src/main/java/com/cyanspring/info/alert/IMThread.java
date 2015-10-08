@@ -1,9 +1,5 @@
 package com.cyanspring.info.alert;
-import java.io.DataOutputStream;
-import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,9 +10,10 @@ import com.cyanspring.info.ne.NetEaseClient;
 
 public class IMThread extends Thread{
 	private String strThreadId = "";
+	private String action = "";
+	private String serverAccount = "";
 	private NetEaseClient NEClient;
 	ThreadStatus threadStatus ;
-	private int timeoutSecond;
 	private int retryTimes;
 	private ConcurrentLinkedQueue<ParseData> ParseDataQueue ;
 	
@@ -40,18 +37,20 @@ public class IMThread extends Thread{
     //********************************************************************************************	
 	
 	public IMThread(String strThreadId, ConcurrentLinkedQueue<ParseData> parseDataQueue, 
-			int timeoutSecond, int retryTimes, String uri, String appKey, String appSecret, String tokenSalt, String iv)	
+			int retryTimes, String serverAccount, String uri, String appKey, 
+			String appSecret, String tokenSalt, String iv, String action)	
 	{
 		try
 		{
-			if (uri == "" || appKey == "" || appSecret == "")
+			if (uri == "" || appKey == "" || appSecret == "" || serverAccount == "")
 			{
 				return ;
 			}
 			NEClient = new NetEaseClient(uri, appKey, appSecret, tokenSalt, iv);
+			this.serverAccount = serverAccount;
+	        this.action = action;
 			this.startThread = true ;
 	        this.ParseDataQueue = parseDataQueue ;
-	        this.timeoutSecond = timeoutSecond;
 	        this.strThreadId = strThreadId;
 	        this.retryTimes = retryTimes ;
 	        this.threadStatus = new ThreadStatus();
@@ -119,39 +118,25 @@ public class IMThread extends Thread{
 	}
 	
 	protected void sendPost(ParseData PD) throws Exception 
-	{   	 		
-//		URL obj = new URL("https://api.parse.com/1/push") ;
-//		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-		 
-		String strPoststring = "{ \"where\": {\"userId\": \"" + PD.getStrUserId() + "\" , \"deviceType\": { \"$in\": [ \"ios\", \"android\", \"winphone\", \"js\" ] }}, " +
-                "\"data\": {\"alert\": \"" + PD.getStrpushMessage() + "\",\"msgid\":\"" + PD.getStrMsgId() + "\",\"msgType\":\"" + PD.getStrMsgType() +
-                /*"\",\"action\":\"" + ParseAction + */((PD.getStrLocalTime().length() > 0) ? ("\",\"datetime\":\"" + PD.getStrLocalTime()) : "") + 
+	{ 
+		String strPoststring = 
+				"{\"alert\": \"" + PD.getStrpushMessage() + 
+				"\",\"msgid\":\"" + PD.getStrMsgId() + 
+				"\",\"msgType\":\"" + PD.getStrMsgType() +
+                "\",\"action\":\"" + action + 
+                ((PD.getStrLocalTime().length() > 0) ? ("\",\"datetime\":\"" + PD.getStrLocalTime()) : "") + 
                 (((PD.getStrKeyValue()).length() > 0) ? ("\",\"KeyValue\":\"" + PD.getStrKeyValue()) : "") +
                 ((PD.getStrDeepLink().length() > 0) ? ("\",\"deeplink\":\"" + PD.getStrDeepLink()) :"") +
                 "\"" + ", \"badge\": \"Increment\"}}";
 		
 		JSONObject json = new JSONObject();
 		json.put("msg", strPoststring);
-		String responseCode = NEClient.sendTextMsg("mikelin", "wchioudev", json);
-//		log.info("Parse message: " + strPoststring);
-//		//add reuqest header
-//		con.setRequestMethod("POST");
-//		con.setRequestProperty("X-Parse-Application-Id", strParseApplicationId);
-//		con.setRequestProperty("X-Parse-REST-API-KEY", strParseRESTAPIKey);
-//		con.setRequestProperty("Content-type", "application/json");
-//		con.setRequestProperty("Content-Length", Integer.toString(strPoststring.length()));
-//		con.setConnectTimeout(timeoutSecond);
-//		con.setReadTimeout(timeoutSecond);
-//		// Send post request
-//		con.setDoOutput(true);
-//		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-//		wr.writeBytes(strPoststring);
-//		wr.flush();
-//		wr.close();
-//		
-//		int responseCode = con.getResponseCode();
-//		con.disconnect();
-//		
+		JSONObject responseJSON = 
+				new JSONObject(NEClient.sendThirdPartyMsg(serverAccount, PD.getStrUserId(), json));
+		String responseCode = responseJSON.get("code").toString();
+		if (responseCode.equals("200") == false)
+			responseCode += ", " + responseJSON.get("desc");
+		
 		log.info("Return code: " + responseCode);
 	}
 	
