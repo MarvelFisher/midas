@@ -433,10 +433,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         // subscribe to events
         if (quoteListener != null)
         	quoteListener.init();
+        log.info("eventProcessor init begin -" + (eventProcessor.getEventManager() == null?"null":"ok"));
         eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
             eventProcessor.getThread().setName("MarketDataReceiver");
+        log.info("eventProcessor init end -" + (eventProcessor.getEventManager() == null?"null":"ok"));
 
         requestRequireData();
 
