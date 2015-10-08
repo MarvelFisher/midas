@@ -16,6 +16,8 @@ public abstract class Position implements Serializable{
 	private double PnL;
 	private Date created;
 	private double acPnL;
+	private double lastPnL;
+	private double acLastPnL;
 
 	protected Position() {
 		
@@ -94,6 +96,22 @@ public abstract class Position implements Serializable{
 
 	protected void setUser(String user) {
 		this.user = user;
+	}
+
+	public double getLastPnL() {
+		return lastPnL;
+	}
+
+	public void setLastPnL(double lastPnL) {
+		this.lastPnL = lastPnL;
+	}
+
+	public double getAcLastPnL() {
+		return acLastPnL;
+	}
+
+	public void setAcLastPnL(double acLastPnL) {
+		this.acLastPnL = acLastPnL;
 	}
 
 	public double addQty(double qty) {

@@ -14,6 +14,7 @@ public abstract class BaseAccount implements Serializable {
 	private double PnL;
 	private double urPnL;
 	private double allTimePnL;
+	private double lastPnL;
 	private boolean active;
 	private String currency;
 	private double cash;
@@ -217,6 +218,15 @@ public abstract class BaseAccount implements Serializable {
 	public void setCashDeduct(double cashDeduct) {
 		this.cashDeduct = cashDeduct;
 	}
+	
+	public double getLastPnL() {
+		return lastPnL;
+	}
+
+	public void setLastPnL(double lastPnL) {
+		this.lastPnL = lastPnL;
+	}
+
 	// end of getters/setters
 	
 	public synchronized void addMargin(double value) {

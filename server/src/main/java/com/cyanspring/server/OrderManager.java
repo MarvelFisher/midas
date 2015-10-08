@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.Instrument;
@@ -32,6 +33,7 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotRequestEvent;
@@ -45,6 +47,7 @@ import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
+import com.cyanspring.common.staticdata.OrderSaver;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.DualKeyMap;
@@ -66,6 +69,9 @@ public class OrderManager {
 	private IRemoteEventManager eventManager;
 	private Map<String, String> clientChildOrderSubscription = new HashMap<String, String>();
 	private Map<String, String> clientExecutionSubscription = new HashMap<String, String>();
+	
+    @Autowired(required = false)
+    OrderSaver orderSaver;
 
 	@Autowired
 	@Qualifier("fixToOrderMap")
@@ -83,6 +89,7 @@ public class OrderManager {
 			subscribeToEvent(SingleInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(MultiInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
+			subscribeToEvent(PmEndOfDayRollEvent.class, null);
 		}
 
 		@Override
@@ -332,6 +339,15 @@ public class OrderManager {
 		}
 
 	}
+	
+    public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
+        if (orderSaver !=null ) {
+            for (ParentOrder p : parentOrders.values()) {
+                orderSaver.addOrderMap(p);
+            }
+            orderSaver.saveOrderToFile();
+        }
+    }
 
 	public void init() throws Exception {
 		// subscribe to events
