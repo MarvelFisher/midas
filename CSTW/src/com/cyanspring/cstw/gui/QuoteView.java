@@ -235,15 +235,12 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		if (event instanceof QuoteEvent) {
 			
 			QuoteEvent e = (QuoteEvent) event;
-//			if (!PriceUtils.isZero(e.getQuote().getAsk())
-//					&& !PriceUtils.isZero(e.getQuote().getBid())) {
-				
-				quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
-				if(e.getKey().equals(receiverId)) { // first time receive, immediately refresh
-					refreshQuote();
-				}
-				updated = true;
-//			}
+
+			quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
+			if(e.getKey().equals(receiverId)) { // first time receive, immediately refresh
+				refreshQuote();
+			}
+			updated = true;
 		} else if (event instanceof AsyncTimerEvent) {
 			if(updated)
 				refreshQuote();
@@ -290,8 +287,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 								.getName(), properties);
 
 						columnCreated = true;
-//						quoteViewer.setSorter(new QuoteSorter());
-//						quoteViewer.getTable().setSortColumn(quoteViewer.getTable().getColumn(symbolColNum));
 						quoteViewer.setInput(list);
 						
 					} 
