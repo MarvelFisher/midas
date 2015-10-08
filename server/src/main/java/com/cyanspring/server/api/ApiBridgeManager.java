@@ -1,9 +1,7 @@
 package com.cyanspring.server.api;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.apievent.reply.ServerReadyEvent;
@@ -17,12 +15,15 @@ import com.cyanspring.event.api.obj.SpamController;
 import com.cyanspring.event.api.obj.reply.IApiReply;
 import com.cyanspring.event.api.obj.request.ApiUserLoginEvent;
 import com.cyanspring.event.api.obj.request.IApiRequest;
+import com.cyanspring.server.account.AccountKeeper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventBridge;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -43,11 +44,17 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
     @Autowired
     private ApiResourceManager resourceManager;
 
+    @Autowired
+	AccountKeeper accountKeeper;
+
     private IEventTranslatror translator = new ApiEventTranslator();
     private Map<String, String> requestMap = new HashMap<String, String>();
     private Map<String, String> replyMap = new HashMap<String, String>();
     private Map<String, SpamController> spamMap = new HashMap<>();
     private int restrict = 1000;
+
+    AccountSetting setting = null;
+    boolean hasLtsApiPerm = true;
 
     private IServerSocketListener listener = new IServerSocketListener() {
         @Override
@@ -70,14 +77,21 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
                 	con = new SpamController(ctx.getUser(), restrict);
                 	spamMap.put(ctx.getUser(), con);
                 }
-                
+
                 if (!con.checkAndCount(Calendar.getInstance())) {
                 	log.info("Account: " + con.getAccount() + " reach max access limit.");
                     ctx.send(new SystemErrorEvent(null, null, 305, MessageLookup.buildEventMessage(ErrorMessage.REACH_MAX_ACCESS_LIMIT, "")));
                     return;
                 }
+
+                try {
+					setting = accountKeeper.getAccountSetting(con.getAccount());
+					hasLtsApiPerm = setting.isLtsApiPerm();
+				} catch (AccountException e) {
+					log.info("Account: " + con.getAccount() + " does not has AccountSetting.");
+				}
         	}
-        	
+
         	//check user client version
         	if(null != obj && obj instanceof UserLoginEvent){
         		UserLoginEvent checkVersion = (UserLoginEvent)obj;
@@ -88,7 +102,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
                     return;
         		}
         	}
-            
+
             IApiRequest tranObject = translator.translateRequest(obj);
             if (tranObject == null) {
                 ctx.send(new SystemErrorEvent(null, null, 302, MessageLookup.buildEventMessage(ErrorMessage.EVENT_TYPE_NOT_SUPPORT, obj.getClass().toString())));
@@ -97,7 +111,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
                 tranObject.sendEventToLts(obj, ctx);
             } else if (ctx.getUser() == null) {
                 ctx.send(new SystemErrorEvent(null, null, 301, MessageLookup.buildEventMessage(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS, "")));
-            } else {
+            } else if (!hasLtsApiPerm) {
+    			ctx.send(new SystemErrorEvent(null, null, 307, MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_PERM_DENIED, obj.getClass().toString())));
+    		} else {
                 tranObject.setResourceManager(resourceManager);
                 tranObject.sendEventToLts(obj, ctx);
             }
@@ -171,7 +187,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
     public void setRequestMap(Map<String, String> requestMap) {
         this.requestMap = requestMap;
     }
-    
+
     public void setRestrict(int restrict) {
     	this.restrict = restrict;
     }

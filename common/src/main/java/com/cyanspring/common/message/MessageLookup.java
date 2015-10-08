@@ -18,20 +18,21 @@ public class MessageLookup {
 	private	static final String MSG_SEPARATOR="|&|";
 
 	private static void addAndCheck(ErrorMessage m, MessageBean bean) throws Exception {
-		if(map.put(m, bean) != null)
+		if(map.put(m, bean) != null) {
 			throw new Exception("Critical error: error code duplicate: " + bean.getCode());
+		}
 	}
 	private static MessageBean getBean(int code,String msg){
 		MessageBean bean = new MessageBean(code,msg,"");
 		return bean;
 	}
 	static {
-		try {	
+		try {
 			// exception messagg start with 900
 			addAndCheck(ErrorMessage.EXCEPTION_MESSAGE,getBean(900,"Unrecognized Error"));
 			addAndCheck(ErrorMessage.NONE_MATCHED_MESSAGE,getBean(901,"None matched message"));
 			addAndCheck(ErrorMessage.EMPTY_MESSAGE,getBean(902,"Empty message"));
-			
+
 			// system errors start with 100
 			addAndCheck(ErrorMessage.RECEIVE_HANDLE_ERROR,getBean(100,"Receive handle error"));
 			addAndCheck(ErrorMessage.ACTIVEMQ_CONNECT_FAILED,getBean(101, "ActiveMQ connect failed"));
@@ -42,7 +43,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.CONNECTION_NOT_AVAILABLE,getBean(106, "connection is not available"));
 			addAndCheck(ErrorMessage.CONNECTION_BROKEN,getBean(107, "connection is broken"));
 			addAndCheck(ErrorMessage.INVALID_CMD_PACKET,getBean(108, "Invalid Cmd Packet"));
-			addAndCheck(ErrorMessage.UNSUPPORTED_CMD_PACKET,getBean(109, "Unsupported Cmd Packet"));			
+			addAndCheck(ErrorMessage.UNSUPPORTED_CMD_PACKET,getBean(109, "Unsupported Cmd Packet"));
 			addAndCheck(ErrorMessage.SERVER_NOT_AVAILABLE,getBean(110, "Server Not Available"));
 			addAndCheck(ErrorMessage.SEND_FRAME_FAILED,getBean(111, "send frame failed"));
 			addAndCheck(ErrorMessage.NONE_SET_USER,getBean(112, "doesn't set user"));
@@ -52,7 +53,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.SERVER_NOT_READY_FOR_LOGIN,getBean(116, "Server is not set up for login"));
 			addAndCheck(ErrorMessage.SERVER_SUSPEND,getBean(117, "System is suspended from trading"));
 			addAndCheck(ErrorMessage.FAST_REJECT,getBean(118, "Transaction sent too fast one after another"));
-			
+
 			// business errors start with 200
 			addAndCheck(ErrorMessage.PREMIUM_FOLLOW_INFO_INCOMPLETE,getBean(200, "Premium follow info incomplete"));
 			addAndCheck(ErrorMessage.PREMIUM_FOLLOW_REQUEST_TIMEOUT,getBean(201, "Premium request time out"));
@@ -62,7 +63,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.TRADE_ALERT_ERROR,getBean(205, "Trade Alert error"));
 			addAndCheck(ErrorMessage.NO_ALERT_DATA,getBean(206, "No Alert Data"));
 			addAndCheck(ErrorMessage.REF_SYMBOL_NOT_FOUND,getBean(207, "Ref Symbols not found"));
-			addAndCheck(ErrorMessage.REF_SYMBOL_DUPLICATED,getBean(208, "Ref Symbols duplicated"));			
+			addAndCheck(ErrorMessage.REF_SYMBOL_DUPLICATED,getBean(208, "Ref Symbols duplicated"));
 			addAndCheck(ErrorMessage.REF_SYMBOL_NOT_VALID,getBean(209, "Ref Symbols not valid"));
 			addAndCheck(ErrorMessage.REF_SYMBOL_RUNTIME_ERROR,getBean(210, "Ref Symbols runtime error"));
 			addAndCheck(ErrorMessage.USER_HAVE_NOT_SUBSCRIBE_SYMBOL,getBean(211, "User didn't subscribe"));
@@ -112,15 +113,16 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.TICK_DATA_BID_VOL_OUT_OF_SEQ,getBean(255, "depth bid vol out of sequence"));
 			addAndCheck(ErrorMessage.COIN_TYPE_NOT_FOUND,getBean(256, "Coin type not found"));
 			addAndCheck(ErrorMessage.COIN_END_DATE_NOT_SETTING,getBean(257, "Coin end date not setting"));
-			
+
 			// api errors start with 300
 			addAndCheck(ErrorMessage.SEVER_NOT_CONNECTED,getBean(300, "Server isn't connected"));
 			addAndCheck(ErrorMessage.USER_NEED_LOGIN_BEFORE_EVENTS,getBean(301, "User must login before send any events"));
-			addAndCheck(ErrorMessage.EVENT_TYPE_NOT_SUPPORT,getBean(302, "Event type not support"));			
-			addAndCheck(ErrorMessage.ACCOUNT_NOT_MATCH,getBean(303, "Account & user not match"));			
+			addAndCheck(ErrorMessage.EVENT_TYPE_NOT_SUPPORT,getBean(302, "Event type not support"));
+			addAndCheck(ErrorMessage.ACCOUNT_NOT_MATCH,getBean(303, "Account & user not match"));
 			addAndCheck(ErrorMessage.LOGIN_BLOCKED,getBean(304, "Can't login, blocked by existing connection"));
 			addAndCheck(ErrorMessage.REACH_MAX_ACCESS_LIMIT,getBean(305, "Reach max access limit"));
 			addAndCheck(ErrorMessage.VERSION_NEED_UPDATE,getBean(306, "Api version need update"));
+			addAndCheck(ErrorMessage.ACCOUNT_PERM_DENIED,getBean(307, "Account not permitted for LTS API"));
 
 			// order errors start with 400
 			addAndCheck(ErrorMessage.ACTION_CANCELLED,getBean(400, "action is cancelled"));
@@ -131,7 +133,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_TYPE_NOT_SUPPORT,getBean(405, "order type is not supported"));
 			addAndCheck(ErrorMessage.ACCOUNT_NOT_EXIST,getBean(406, "account doesn't exist"));
 			addAndCheck(ErrorMessage.USER_NOT_LOGIN,getBean(407, "user didn't login"));
-			addAndCheck(ErrorMessage.ENTER_ORDER_ERROR,getBean(408, "enter order error"));			
+			addAndCheck(ErrorMessage.ENTER_ORDER_ERROR,getBean(408, "enter order error"));
 			addAndCheck(ErrorMessage.AMEND_ORDER_ERROR,getBean(409, "amend order error"));
 			addAndCheck(ErrorMessage.CANCEL_ORDER_ERROR,getBean(410, "cancel order error"));
 			addAndCheck(ErrorMessage.AMEND_PARAM_SHORT,getBean(411, "amend parameters not enough"));
@@ -191,9 +193,9 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.TRADING_SUSPENSION, getBean(464, "Trading Suspenstion!"));
 			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_SETTING, getBean(465, "The order quantity is over maximum setting"));
 			addAndCheck(ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING, getBean(466, "The order quantity is not met minimum setting"));
-		
+
 			// user errors start with 500
-			addAndCheck(ErrorMessage.CREATE_USER_FAILED,getBean(500, "Create user failed"));			
+			addAndCheck(ErrorMessage.CREATE_USER_FAILED,getBean(500, "Create user failed"));
 			addAndCheck(ErrorMessage.USER_LOGIN_FAILED,getBean(501, "User login failed"));
 			addAndCheck(ErrorMessage.CHANGE_USER_PWD_FAILED,getBean(502, "Change User Password failed"));
 			addAndCheck(ErrorMessage.USER_LOGIN_APPSERVER_FAILED,getBean(503, "User could not login this AppServer, try another"));
@@ -223,20 +225,20 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.USER_POSITION_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(527, "The value you set exceeds max. position stop loss!"));
 			addAndCheck(ErrorMessage.USER_DAILY_STOP_LOSS_VALUE_EXCEEDS_COMPANY_SETTING, getBean(528, "The value you set exceeds max. daily stop loss!"));
 			addAndCheck(ErrorMessage.FDT_ID_IS_UNDER_PROCESSING, getBean(529, "Your FDT ID is under processing. It will be created during weekend. Thank you!"));
-			addAndCheck(ErrorMessage.ACCOUNT_ALREADY_ACTIVE, getBean(530, "Your state already in ACTIVE!"));				
-			addAndCheck(ErrorMessage.OVER_TERMINATE_LOSS, getBean(531, "over terminate loss!"));			
-			addAndCheck(ErrorMessage.OVER_FROZEN_LOSS, getBean(532, "over frozen loss!"));	
-			addAndCheck(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, getBean(533, "Create group management failed!"));			
-			addAndCheck(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, getBean(534, "Get group management info failed!"));			
-			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(535, "CSTW Login failed!"));			
-			addAndCheck(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, getBean(536, "Delete group management failed!"));			
-			addAndCheck(ErrorMessage.CHANGE_USER_ROLE_FAILED, getBean(537, "Change user role failed!"));			
-			addAndCheck(ErrorMessage.FREEZE_ACCOUNT_FAILED, getBean(538, "Freeze account failed!"));		
-			addAndCheck(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, getBean(539, "Change account state failed!"));			
+			addAndCheck(ErrorMessage.ACCOUNT_ALREADY_ACTIVE, getBean(530, "Your state already in ACTIVE!"));
+			addAndCheck(ErrorMessage.OVER_TERMINATE_LOSS, getBean(531, "over terminate loss!"));
+			addAndCheck(ErrorMessage.OVER_FROZEN_LOSS, getBean(532, "over frozen loss!"));
+			addAndCheck(ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED, getBean(533, "Create group management failed!"));
+			addAndCheck(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, getBean(534, "Get group management info failed!"));
+			addAndCheck(ErrorMessage.CSTW_LOGIN_FAILED, getBean(535, "CSTW Login failed!"));
+			addAndCheck(ErrorMessage.DELETE_GROUP_MANAGEMENT_FAILED, getBean(536, "Delete group management failed!"));
+			addAndCheck(ErrorMessage.CHANGE_USER_ROLE_FAILED, getBean(537, "Change user role failed!"));
+			addAndCheck(ErrorMessage.FREEZE_ACCOUNT_FAILED, getBean(538, "Freeze account failed!"));
+			addAndCheck(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, getBean(539, "Change account state failed!"));
 
 
 			// client errors start with 600
-			addAndCheck(ErrorMessage.NEED_RESTART_APP,getBean(600, "Please restart your App"));			
+			addAndCheck(ErrorMessage.NEED_RESTART_APP,getBean(600, "Please restart your App"));
 			addAndCheck(ErrorMessage.SERVER_IN_MAINTAINING,getBean(601, "Server in Maintaining , Please wait"));
 			addAndCheck(ErrorMessage.ANOTHER_DEVICE_ALREADY_LOGIN,getBean(602, "Another device login your ID"));
 			addAndCheck(ErrorMessage.NEW_VERSION_NEED_DOWNLOAD,getBean(603, "New version is available now, please download it"));
@@ -257,7 +259,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.WRONG_ACTION,getBean(703, "Wrong Action"));
 			addAndCheck(ErrorMessage.CANT_CONNECT_TO_CENTRAL_DATABASE,getBean(704, "can't connect to central database"));
 
-			
+
 
 			//quote errors start with 800
 			addAndCheck(ErrorMessage.INVALID_QUOTE_ID,getBean(800, "Quote id is not valid"));
@@ -278,16 +280,16 @@ public class MessageLookup {
 					int length = eventMessage.split("\\|"+"&"+"\\|").length;
 					String tempMsgs[] = eventMessage.split("\\|"+"&"+"\\|");
 					if(length==2){
-						
+
 						mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],"");
 
 					}else{
-						
+
 						mb = new MessageBean(Integer.parseInt(tempMsgs[0]),tempMsgs[1],tempMsgs[2]);
 
 					}
-					
-					
+
+
 				}else{
 					if(!StringUtils.hasText(eventMessage)){
 						mb = lookup(ErrorMessage.EMPTY_MESSAGE);
@@ -305,11 +307,11 @@ public class MessageLookup {
 				log.error(e.getMessage(),e);
 			}
 		return mb;
-		
+
 	}
 	public static String buildEventMessageWithCode(ErrorMessage m,String localMessage){
 		MessageBean mb = lookup(m);
-		if(null==mb){			
+		if(null==mb){
 			mb = lookup(ErrorMessage.NONE_MATCHED_MESSAGE);
 		}
 		if(null==localMessage){
@@ -318,11 +320,11 @@ public class MessageLookup {
 		String eventMsg = mb.getCode()+MSG_SEPARATOR+localMessage+MSG_SEPARATOR+localMessage;
 		log.info(eventMsg);
 		return eventMsg;
-		
+
 	}
 	public static String buildEventMessage(ErrorMessage m,String localMessage){
 		MessageBean mb = lookup(m);
-		if(null==mb){			
+		if(null==mb){
 			mb = lookup(ErrorMessage.NONE_MATCHED_MESSAGE);
 		}
 		if(null==localMessage){
@@ -331,36 +333,38 @@ public class MessageLookup {
 		String eventMsg = mb.getCode()+MSG_SEPARATOR+mb.getMsg()+MSG_SEPARATOR+localMessage;
 		log.info(eventMsg);
 		return eventMsg;
-		
+
 	}
-	
+
 	public static List<String> searchObjectMessage(Object[] object){
-		
-		if( null == object || object.length <=0)
+
+		if( null == object || object.length <=0) {
 			return null;
-		
+		}
+
 		List <String> msgs = new ArrayList<>();
 
 		for(Object obj:object){
-			
-			if(obj == null)
+
+			if(obj == null) {
 				continue;
-						
-			if( obj instanceof Map){	
-				
+			}
+
+			if( obj instanceof Map){
+
 				Iterator c =((Map)obj).values().iterator();
-				
+
 				while(c.hasNext()){
 					msgs.add(c.next().toString());
-				}				
+				}
 			}else {
 				msgs.add(String.valueOf(obj));
 			}
 		}
-		
+
 		return msgs;
 	}
-	
+
 	public static MessageBean lookup(ErrorMessage m) {
 		return map.get(m);
 	}

@@ -254,6 +254,7 @@
   	<property column="FREEZE_VALUE" 			name="freezeValue" 		  type="java.lang.Double"/>
   	<property column="TERMINATE_VALUE" 			name="terminateValue" 		  type="java.lang.Double"/>	
   	<property column="DEFAULT_QTY2"		name="defaultQty2"	  type="java.lang.String"/>
+  	<property column="LTS_API_PERM"          name="ltsApiPerm"       type="java.lang.Boolean"/>
   </class>
   
   <class name="com.cyanspring.common.account.PositionPeakPrice" table="ANYONE.POSITION_PEAK_PRICE">

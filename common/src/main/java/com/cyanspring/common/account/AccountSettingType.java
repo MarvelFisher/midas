@@ -22,11 +22,12 @@ public enum AccountSettingType {
 	LIVE_TRADING_SETTED_DATE("live trading setted date"),
 	FREEZE_VALUE("Freeze value"),
 	TERMINATE_VALUE("Terminate value"),
-	DEFAULT_QTY2("Default Qty2")
+	DEFAULT_QTY2("Default Qty2"),
+	LTS_API_PERM("LST API permission");
 	;
-   
+
 	static HashMap<String, AccountSettingType> map = new HashMap<String, AccountSettingType>();
-	
+
 	private String value;
 	AccountSettingType(String value) {
 		this.value = value;
@@ -34,7 +35,7 @@ public enum AccountSettingType {
 	public String value() {
 		return value;
 	}
-	
+
 	static public AccountSettingType getValue(String str) {
 		return map.get(str);
 	}
@@ -49,6 +50,6 @@ public enum AccountSettingType {
 				map.put(field.value(), field);
 			}
 		}
-	
+
 	}
 }
