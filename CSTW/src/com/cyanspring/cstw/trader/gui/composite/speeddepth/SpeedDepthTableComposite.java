@@ -86,9 +86,10 @@ public final class SpeedDepthTableComposite extends Composite {
 		lockPriceItem.setImage(ResourceManager.getPluginImage(
 				"com.cyanspring.cstw", "icons/stop.png"));
 		lockPriceItem.setToolTipText("Lock Price");
-		
+
 		cancelItem = new ToolItem(toolBar, SWT.NONE);
-		cancelItem.setImage(ResourceManager.getPluginImage("com.cyanspring.cstw", "icons/cancel.png"));
+		cancelItem.setImage(ResourceManager.getPluginImage(
+				"com.cyanspring.cstw", "icons/cancel.png"));
 
 		tableViewer = new TableViewer(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
@@ -140,6 +141,16 @@ public final class SpeedDepthTableComposite extends Composite {
 				isLock = false;
 				tableViewer.setInput(speedDepthService.getSpeedDepthList(
 						currentQuote, isLock));
+			}
+		});
+
+		cancelItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (currentQuote == null) {
+					return;
+				}
+				speedDepthService.cancelOrder(currentQuote.getSymbol());
 			}
 		});
 

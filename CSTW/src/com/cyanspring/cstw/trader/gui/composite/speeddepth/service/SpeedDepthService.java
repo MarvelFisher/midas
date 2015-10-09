@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.OrdStatus;
@@ -134,6 +135,28 @@ public final class SpeedDepthService {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+		}
+	}
+
+	public void cancelOrder(String currentSymbol) {
+		List<Map<String, Object>> orders = Business.getInstance()
+				.getOrderManager().getParentOrders();
+		for (Map<String, Object> map : orders) {
+			String symbol = (String) map.get("Symbol");
+			String id = (String) map.get("id");
+			OrdStatus status = (OrdStatus) map.get("Status");
+			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
+				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
+						Business.getInstance().getFirstServer(), id, false,
+						null);
+				System.out.println("cancel....."+id);
+				try {
+					Business.getInstance().getEventManager()
+							.sendRemoteEvent(event);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
 		}
 	}
 
