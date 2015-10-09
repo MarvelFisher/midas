@@ -217,6 +217,7 @@ public abstract class BaseAccount implements Serializable {
 	public void setCashDeduct(double cashDeduct) {
 		this.cashDeduct = cashDeduct;
 	}
+
 	// end of getters/setters
 	
 	public synchronized void addMargin(double value) {

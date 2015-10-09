@@ -44,6 +44,9 @@ public class BeanHolder {
 	SignalManager signalManager;
 	
 	@Autowired
+	SystemInfo systemInfo;
+	
+	@Autowired
 	@Qualifier("alertColorConfig")
 	private HashMap<AlertType, Integer> alertColorConfig;
 	
@@ -98,5 +101,9 @@ public class BeanHolder {
 	
 	public SignalManager getSignalManager() {
 		return signalManager;
+	}
+	
+	public SystemInfo getSystemInfo() {
+		return systemInfo;
 	}
 }

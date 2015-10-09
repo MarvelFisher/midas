@@ -20,6 +20,8 @@ public class OpenPosition extends Position implements Cloneable {
 	private double price;
 	private double margin;
 	private double availableQty;
+	private double lastPnL;
+	private double acLastPnL;
 	
 	public double getPrice() {
 		return price;
@@ -44,7 +46,23 @@ public class OpenPosition extends Position implements Cloneable {
 	public void setAvailableQty(double availableQty) {
 		this.availableQty = availableQty;
 	}
+	
+	public double getLastPnL() {
+		return lastPnL;
+	}
 
+	public void setLastPnL(double lastPnL) {
+		this.lastPnL = lastPnL;
+	}
+
+	public double getAcLastPnL() {
+		return acLastPnL;
+	}
+
+	public void setAcLastPnL(double acLastPnL) {
+		this.acLastPnL = acLastPnL;
+	}
+	
 	public double getDetailAvailableQty(RefData refData) {
 		if (refData != null && refData.getDayTradable() == 1)
 			return getQty();

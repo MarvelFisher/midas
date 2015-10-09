@@ -14,8 +14,8 @@ public class AccountSaver {
     private FileManager fileManager = new FileManager();
     private List<Account> accounts;
     private String filePath;
-    private String prefix;
-    private String suffix;
+    private String prefix = "";
+    private String suffix = "";
 
     public void saveAccountToFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

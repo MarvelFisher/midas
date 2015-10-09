@@ -112,7 +112,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmUpdateDetailOpenPositionEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ClosedPositionUpdateEvent.class, null);
 			subscribeToEvent(PmChangeAccountSettingEvent.class, PersistenceManager.ID);
-			subscribeToEvent(PmEndOfDayRollEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmEndOfDayRollEvent.class, null);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 			subscribeToEvent(PmPositionPeakPriceUpdateEvent.class, null);
 			subscribeToEvent(PmPositionPeakPriceDeleteEvent.class, null);

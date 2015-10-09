@@ -2,7 +2,8 @@ package com.cyanspring.common.account;
 
 
 public class Account extends BaseAccount implements Cloneable {
-	
+	private double urLastPnL;
+
 	protected Account() {
 		super();
 	}
@@ -16,5 +17,12 @@ public class Account extends BaseAccount implements Cloneable {
 		return (Account)super.clone();
 	}
 	
+	public double getUrLastPnL() {
+		return urLastPnL;
+	}
 
+	public void setUrLastPnL(double urLastPnL) {
+		this.urLastPnL = urLastPnL;
+	}
+	
 }
