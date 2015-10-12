@@ -1,0 +1,199 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>	
+	<bean id="singleOrderStrategyView" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/>
+		<constructor-arg value=""/>
+		<constructor-arg >					   
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="singleOrderStrategyViewPopAction1" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_FORCE_CANCEL"/> <!-- action id -->
+		<constructor-arg >					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="singleOrderStrategyViewPopAction2" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_PAUSE"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewPopAction3" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_STOP"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>		
+
+	<bean id="singleOrderStrategyViewPopAction4" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_START"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>		
+
+	<bean id="singleOrderStrategyViewPopAction5" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_CLEAR_ALERT"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="singleOrderStrategyViewPopAction6" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_MULTI_AMEND"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="singleOrderStrategyViewPopAction7" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_CREATE"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="singleOrderStrategyViewPopAction8" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_CANCEL"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="singleOrderStrategyViewPopAction9" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="POPUP_SAVE"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+
+	<bean id="singleOrderStrategyViewToolBarAction1" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_ENTER_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewToolBarAction2" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_CANCEL_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewToolBarAction3" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_PAUSE_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewToolBarAction4" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_STOP_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="singleOrderStrategyViewToolBarAction5" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_START_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+
+	<bean id="singleOrderStrategyViewToolBarAction6" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_SAVE_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="singleOrderStrategyViewToolBarAction7" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_PIN"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>			
+	
+	<bean id="singleOrderStrategyViewToolBarAction8" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_COUNT_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewToolBarAction9" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_ORDER_PAD"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="singleOrderStrategyViewToolBarAction10" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_FILTER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>		
+	
+	<bean id="singleOrderStrategyViewToolBarAction11" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Single Order Strategy"/><!-- part name -->
+		<constructor-arg value="TOOLBAR_ID_FILTER_COMPLETE_ORDER"/> <!-- action id -->
+		<constructor-arg>					   <!-- permission:UserRole -->
+		<array>
+			<value>Trader</value>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>
+	
+</beans>

@@ -27,13 +27,32 @@
 				<version>2.6</version>
 				<executions>
 				  <execution>
-				    <id>copy-resources</id>
+				    <id>copy-resources2client</id>
 				    <phase>install</phase>
 				    <goals>
 				      <goal>copy-resources</goal>
 				    </goals>
 				    <configuration>
 				      <outputDirectory>${basedir}/../client/lib</outputDirectory>
+				      <resources>          
+					<resource>
+					  <directory>${basedir}/target</directory>
+					  <filtering>false</filtering>
+					  <includes>
+					    <include>*.jar</include>
+					  </includes>
+					</resource>
+				      </resources>              
+				    </configuration>            
+				  </execution>
+				  <execution>
+				    <id>copy-resources2CSTWjars</id>
+				    <phase>install</phase>
+				    <goals>
+				      <goal>copy-resources</goal>
+				    </goals>
+				    <configuration>
+				      <outputDirectory>${basedir}/../CSTWjars</outputDirectory>
 				      <resources>          
 					<resource>
 					  <directory>${basedir}/target</directory>

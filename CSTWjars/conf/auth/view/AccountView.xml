@@ -1,0 +1,56 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean id="accountView" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Account View"/>
+		<constructor-arg value=""/>
+		<constructor-arg >					   
+		<array>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>	
+		
+	<bean id="accountViewAction1" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Account View"/><!-- view name -->
+		<constructor-arg value="CREATE_USER"/> <!-- action id -->
+		<constructor-arg >					   <!-- permission:UserRole -->
+		<null/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="accountViewAction2" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Account View"/>
+		<constructor-arg value="COUNT_ACCOUNT"/>
+		<constructor-arg >
+		<null/>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="accountViewAction3" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Account View"/>
+		<constructor-arg value="MANUAL_REFRESH"/>
+		<constructor-arg >					   
+		<array>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>	
+	
+	<bean id="accountViewAction4" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Account View"/>
+		<constructor-arg value="SEARCH_ID"/>
+		<constructor-arg >					   
+		<array>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
+	</bean>		
+	
+</beans>

@@ -1,0 +1,77 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>CSTWparent</groupId>
+  <artifactId>CSTWparent</artifactId>
+  <version>${algo-version}</version>
+  <packaging>pom</packaging>
+  
+  <modules>
+   
+    <!-- <module>../CSTW</module>  -->
+    <module>../CSTW</module>
+    <module>../CSTWjars</module>   
+    <module>../CSTWproduct</module>
+  </modules>
+  
+  <!-- common settings for all modules -->
+   <properties>
+   		<tycho-version>0.19.0</tycho-version>
+	</properties>
+   
+   <repositories>
+    <!-- configure p2 repository to resolve against -->    
+    <repository>
+      <id>eclipse-platform-luna</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/releases/luna/</url>
+    </repository>
+  </repositories>
+  	
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <configuration>
+          <dependency-resolution>
+            <extraRequirements>
+              <requirement>
+                <type>eclipse-plugin</type>
+                <id>org.eclipse.jface.text</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+            </extraRequirements>
+          </dependency-resolution>
+          <environments>
+                         
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+			              <os>macosx</os>
+			              <ws>cocoa</ws>
+			              <arch>x86_64</arch>
+            			</environment>
+                        <!-- 
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86</arch>
+                        </environment>
+                         -->
+                        
+           </environments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
