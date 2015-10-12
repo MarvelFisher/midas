@@ -31,6 +31,14 @@ public final class SpeedDepthService {
 
 	private List<SpeedDepthModel> currentList;
 
+	private double tick;
+
+	private double middleValue;
+
+	public SpeedDepthService(double tick) {
+		this.tick = tick;
+	}
+
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
 
@@ -56,6 +64,9 @@ public final class SpeedDepthService {
 				SpeedDepthModel model = new SpeedDepthModel();
 				model.setSymbol(quote.getSymbol());
 				QtyPrice qp = quote.getBids().get(i);
+				if (i == 0) {
+					middleValue = qp.price;
+				}
 				model.setPrice(qp.price);
 				if (i < 5) {
 					model.setVol(qp.quantity);
@@ -65,13 +76,12 @@ public final class SpeedDepthService {
 			}
 		}
 
-		
 		if (!isLock) {
 			currentList = list;
 		} else {
 			combineListByPrice(list);
 		}
-
+		refreshByTick();
 		refreshByCurrentOrder();
 
 		return currentList;
@@ -89,6 +99,22 @@ public final class SpeedDepthService {
 				}
 			}
 		}
+	}
+
+	private void refreshByTick() {
+		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
+		for (int i = 10; i > -10; i--) {
+			SpeedDepthModel model = new SpeedDepthModel();
+			model.setPrice(middleValue + i * tick);
+			for (SpeedDepthModel currentModel : currentList) {
+				if (currentModel.getPrice() == model.getPrice()) {
+					model.setType(currentModel.getType());
+					model.setVol(currentModel.getVol());
+				}
+			}
+			list.add(model);
+		}
+		currentList = list;
 	}
 
 	private void refreshByCurrentOrder() {
@@ -149,9 +175,10 @@ public final class SpeedDepthService {
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();
 		for (Map<String, Object> map : orders) {
-			String symbol = (String) map.get("Symbol");
-			String id = (String) map.get("id");
-			OrdStatus status = (OrdStatus) map.get("Status");
+			String symbol = (String) map.get(OrderField.SYMBOL.value());
+			String id = (String) map.get(OrderField.ID.value());
+			OrdStatus status = (OrdStatus) map
+					.get(OrderField.ORDSTATUS.value());
 			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,

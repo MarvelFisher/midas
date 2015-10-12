@@ -6,6 +6,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.Constants;
 
 /**
  * 
@@ -65,7 +67,10 @@ public final class SpeedDepthMainComposite extends Composite implements
 		defaultQuantityText.setText("1000");
 		speedDepthComposite = new SpeedDepthTableComposite(this, SWT.NONE);
 		speedDepthComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				true, true, 3, 1));
+				true, true, 4, 1));
+
+		changeFont(SpeedDepthMainComposite.this);
+		SpeedDepthMainComposite.this.layout();
 
 	}
 
@@ -97,14 +102,25 @@ public final class SpeedDepthMainComposite extends Composite implements
 		});
 	}
 
+	private void changeFont(Control control) {
+		control.setFont(Constants.M_FONT);
+		if (control instanceof Composite) {
+			Composite composite = (Composite) control;
+			for (Control subControl : composite.getChildren()) {
+				changeFont(subControl);
+			}
+		}
+
+	}
+
 	@Override
 	public void onEvent(final AsyncEvent event) {
 		if (event instanceof QuoteEvent) {
 			speedDepthComposite.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					speedDepthComposite.setQuote(((QuoteEvent) event)
-							.getQuote());
+					speedDepthComposite.setQuote(
+							((QuoteEvent) event).getQuote(), 0.05);
 				}
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {

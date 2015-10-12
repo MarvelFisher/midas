@@ -57,7 +57,6 @@ public final class SpeedDepthTableComposite extends Composite {
 			int style) {
 		super(mainComposite, style);
 		this.mainComposite = mainComposite;
-		speedDepthService = new SpeedDepthService();
 		initComponent();
 		initProvider();
 		initListener();
@@ -97,22 +96,22 @@ public final class SpeedDepthTableComposite extends Composite {
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		table.setBounds(0, 0, 85, 85);
 
-		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn.setWidth(100);
 
-		tblclmnAskVol = new TableColumn(table, SWT.NONE);
+		tblclmnAskVol = new TableColumn(table, SWT.CENTER);
 		tblclmnAskVol.setWidth(100);
 		tblclmnAskVol.setText("Volume");
 
-		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_2.setWidth(100);
 		tblclmnNewColumn_2.setText("Ask/Bid");
 
-		tblBidsVol = new TableColumn(table, SWT.NONE);
+		tblBidsVol = new TableColumn(table, SWT.CENTER);
 		tblBidsVol.setWidth(100);
 		tblBidsVol.setText("Volume");
 
-		TableColumn tblclmnNewColumn_4 = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnNewColumn_4 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_4.setWidth(100);
 	}
 
@@ -177,8 +176,9 @@ public final class SpeedDepthTableComposite extends Composite {
 		});
 	}
 
-	public void setQuote(Quote quote) {
+	public void setQuote(Quote quote, double tick) {
 		currentQuote = quote;
+		speedDepthService = new SpeedDepthService(tick);
 		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
 				isLock));
 	}

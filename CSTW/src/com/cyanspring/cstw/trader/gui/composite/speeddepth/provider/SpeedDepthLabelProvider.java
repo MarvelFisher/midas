@@ -1,5 +1,12 @@
 package com.cyanspring.cstw.trader.gui.composite.speeddepth.provider;
 
+import java.text.DecimalFormat;
+
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.wb.swt.SWTResourceManager;
+
 import com.cyanspring.cstw.trader.gui.basic.DefaultLabelProviderAdapter;
 import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel;
 
@@ -9,7 +16,8 @@ import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel
  * @create date 2015/10/08
  *
  */
-public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter {
+public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
+		implements ITableColorProvider {
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
@@ -26,7 +34,8 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter {
 			}
 			return "";
 		case 2:
-			return "" + model.getPrice();
+			DecimalFormat df = new DecimalFormat("#####0.00");
+			return df.format(model.getPrice());
 		case 3:
 			if (model.getType() == SpeedDepthModel.ASK && model.getVol() > 0) {
 				return "" + model.getVol();
@@ -39,5 +48,21 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter {
 			return "";
 		}
 		return "";
+	}
+
+	@Override
+	public Color getBackground(Object element, int columnIndex) {
+		switch (columnIndex) {
+		case 1:
+			return SWTResourceManager.getColor(SWT.COLOR_DARK_RED);
+		case 3:
+			return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
+		}
+		return null;
+	}
+
+	@Override
+	public Color getForeground(Object element, int columnIndex) {
+		return null;
 	}
 }
