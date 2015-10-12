@@ -117,8 +117,10 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 			if (parent instanceof Quote) {
 				Quote quote = (Quote) parent;
 				List<DepthItem> list = new ArrayList<DepthItem>();
-				for (int i = 0; i < Math.max(quote.getBids().size(), quote
-						.getAsks().size()); i++) {
+				List <QtyPrice>bids = quote.getBids()==null ? new ArrayList<QtyPrice>(): quote.getBids();
+				List <QtyPrice>asks = quote.getAsks()==null? new ArrayList<QtyPrice>(): quote.getAsks();
+				
+				for (int i = 0; i < Math.max(bids.size(), asks.size()); i++) {
 					DepthItem item = new DepthItem();
 					if (i < quote.getBids().size()) {
 						QtyPrice qp = quote.getBids().get(i);
