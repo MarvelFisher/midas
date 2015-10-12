@@ -68,7 +68,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private String receiverId = IdGenerator.getInstance().getNextID();
 	private ArrayMap<String, Quote> quoteMap = new ArrayMap<String, Quote>();
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
-	private long minRefreshInterval = 300;
+	private long minRefreshInterval = 100;
 	private boolean columnCreated = false;
 	private Menu menu;
 	private Action popDeleteSymbol;
