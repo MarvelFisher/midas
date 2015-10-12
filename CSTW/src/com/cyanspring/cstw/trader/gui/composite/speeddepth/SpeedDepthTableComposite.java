@@ -87,7 +87,7 @@ public final class SpeedDepthTableComposite extends Composite {
 		cancelButton = new Button(composite, SWT.NONE);
 		cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
 				true, 1, 1));
-		cancelButton.setText("Cancel Order");
+		cancelButton.setText("Cancel ALL");
 
 		tableViewer = new TableViewer(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
