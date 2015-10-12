@@ -209,4 +209,15 @@
             </list>
         </property>
     </bean>
+    
+    <!-- File Save -->
+    <bean id="orderSaver" class="com.cyanspring.common.staticdata.OrderSaver">
+        <property name="filePath" value="report/"/>
+        <property name="suffix" value="_t"/>
+    </bean>
+    
+    <bean id="accountSaver" class="com.cyanspring.common.staticdata.AccountSaver">
+        <property name="filePath" value="report/"/>
+        <property name="suffix" value="_a"/>
+    </bean>
 </beans>

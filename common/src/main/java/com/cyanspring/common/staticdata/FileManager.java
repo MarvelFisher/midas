@@ -16,10 +16,13 @@ public class FileManager {
     private FileWriter writer;
 
     public void loadFile(String path) {
-        file = new File( System.getProperty("user.dir") + "/" + path);
+        file = new File(System.getProperty("user.dir") + "/" + path);
         try {
-            if (!file.exists() || file.isDirectory())
-                file.createNewFile();
+            if (!file.exists()) {
+            	File directory = new File(file.getParentFile().getAbsolutePath());
+            	directory.mkdirs();
+				file.createNewFile();
+			}
             writer = new FileWriter(file);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
