@@ -42,7 +42,6 @@ public final class SpeedDepthService {
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
-
 		if (quote.getAsks() != null) {
 			int askSize = quote.getAsks().size();
 			for (int i = askSize - 1; i >= 0; i--) {

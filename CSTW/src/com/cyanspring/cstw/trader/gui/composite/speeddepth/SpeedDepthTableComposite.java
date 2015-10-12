@@ -126,18 +126,10 @@ public final class SpeedDepthTableComposite extends Composite {
 		lockButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (lockButton.getSelection()) {
-					if (tableViewer.getInput() == null) {
-						return;
-					}
-					isLock = true;
+				isLock = lockButton.getSelection();
+				if (currentQuote != null) {
 					tableViewer.setInput(speedDepthService.getSpeedDepthList(
 							currentQuote, isLock));
-				} else {
-					isLock = false;
-					tableViewer.setInput(speedDepthService.getSpeedDepthList(
-							currentQuote, isLock));
-
 				}
 			}
 		});
