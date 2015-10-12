@@ -16,6 +16,7 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
+import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.Constants;
 
@@ -79,6 +80,10 @@ public final class SpeedDepthMainComposite extends Composite implements
 				.getEventManager()
 				.subscribe(EnterParentOrderReplyEvent.class,
 						SpeedDepthMainComposite.this);
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(ParentOrderUpdateEvent.class,
+						SpeedDepthMainComposite.this);
 
 		symbolText.addKeyListener(new KeyAdapter() {
 			@Override
@@ -128,6 +133,25 @@ public final class SpeedDepthMainComposite extends Composite implements
 			log.info(replyEvent.getAccount() + ":" + replyEvent.isOk() + ":"
 					+ replyEvent.getKey() + ":" + replyEvent.getMessage());
 		}
+
+		else if (event instanceof ParentOrderUpdateEvent) {
+
+			ParentOrderUpdateEvent updateEvent = (ParentOrderUpdateEvent) event;
+
+			String orderSymbol = updateEvent.getOrder().getSymbol();
+
+			if (symbol == null || !symbol.equals(orderSymbol)) {
+				return;
+			}
+
+			speedDepthComposite.getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					speedDepthComposite.refresh();
+				}
+			});
+
+		}
 	}
 
 	public Text getDefaultQuantityText() {
@@ -145,6 +169,11 @@ public final class SpeedDepthMainComposite extends Composite implements
 		Business.getInstance()
 				.getEventManager()
 				.unsubscribe(EnterParentOrderReplyEvent.class,
+						SpeedDepthMainComposite.this);
+
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(ParentOrderUpdateEvent.class,
 						SpeedDepthMainComposite.this);
 	}
 

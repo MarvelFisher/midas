@@ -35,7 +35,7 @@ public final class SpeedDepthService {
 
 	private double middleValue;
 
-	public SpeedDepthService(double tick) {
+	public void setTick(double tick) {
 		this.tick = tick;
 	}
 
@@ -76,12 +76,13 @@ public final class SpeedDepthService {
 			}
 		}
 
-		if (!isLock) {
-			currentList = list;
-		} else {
+		if (isLock && currentList != null) {
 			combineListByPrice(list);
+		} else {
+			currentList = list;
+			refreshByTick(quote.getSymbol());
 		}
-		refreshByTick();
+
 		refreshByCurrentOrder();
 
 		return currentList;
@@ -101,10 +102,11 @@ public final class SpeedDepthService {
 		}
 	}
 
-	private void refreshByTick() {
+	private void refreshByTick(String symbol) {
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
 		for (int i = 10; i > -10; i--) {
 			SpeedDepthModel model = new SpeedDepthModel();
+			model.setSymbol(symbol);
 			model.setPrice(middleValue + i * tick);
 			for (SpeedDepthModel currentModel : currentList) {
 				if (currentModel.getPrice() == model.getPrice()) {
@@ -182,7 +184,7 @@ public final class SpeedDepthService {
 			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
-						null);
+						null, true);
 				try {
 					Business.getInstance().getEventManager()
 							.sendRemoteEvent(event);

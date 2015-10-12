@@ -56,6 +56,7 @@ public final class SpeedDepthTableComposite extends Composite {
 	public SpeedDepthTableComposite(SpeedDepthMainComposite mainComposite,
 			int style) {
 		super(mainComposite, style);
+		speedDepthService = new SpeedDepthService();
 		this.mainComposite = mainComposite;
 		initComponent();
 		initProvider();
@@ -178,7 +179,12 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	public void setQuote(Quote quote, double tick) {
 		currentQuote = quote;
-		speedDepthService = new SpeedDepthService(tick);
+		speedDepthService.setTick(0.05);
+		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
+				isLock));
+	}
+
+	public void refresh() {
 		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
 				isLock));
 	}
