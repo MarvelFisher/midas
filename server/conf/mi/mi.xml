@@ -58,15 +58,6 @@
 	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
 
-	<bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener">
-		<property name="quoteThrottlingInterval">
-			<value>1000</value>
-		</property>
-		<property name="kdbThrottling">
-			<ref bean="kdbThrottling" />
-		</property>
-	</bean>
-
 	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager"></bean>
 	
 	<bean id="kdbEventManager" class="com.cyanspring.server.kdb.KdbEventManager"></bean>
