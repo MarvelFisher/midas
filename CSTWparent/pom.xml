@@ -2,11 +2,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>CSTWparent</groupId>
   <artifactId>CSTWparent</artifactId>
-  <version>${algo-version}</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
+  <name>CSTWparent</name>
+  <parent>
+	<groupId>com.cyanspring.algo</groupId>
+	<artifactId>algo</artifactId>
+	<version>2.56</version>
+  </parent>
   
-  <modules>
-   
+  <modules>   
     <!-- <module>../CSTW</module>  -->
     <module>../CSTW</module>
     <module>../CSTWjars</module>   
@@ -15,7 +20,7 @@
   
   <!-- common settings for all modules -->
    <properties>
-   		<tycho-version>0.19.0</tycho-version>
+   		<tycho-version>0.23.1</tycho-version>
 	</properties>
    
    <repositories>

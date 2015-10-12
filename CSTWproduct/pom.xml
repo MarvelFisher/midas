@@ -8,7 +8,7 @@
   <parent>
     <groupId>CSTWparent</groupId>
     <artifactId>CSTWparent</artifactId>
-    <version>${algo-version}</version>
+    <version>1.0.0</version>
     <relativePath>../CSTWparent</relativePath>
   </parent>
   
