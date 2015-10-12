@@ -44,6 +44,8 @@
 
     <bean id="kdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
 
+    <bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener" />
+
     <!-- MarketDataManager setting -->
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
