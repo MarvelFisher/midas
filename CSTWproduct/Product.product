@@ -3,6 +3,7 @@
 
 <product name="LTW" uid="com.cyanspring.cstw.product" id="com.cyanspring.cstw.product" application="com.cyanspring.cstw.application" version="1.0.0" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -13,7 +14,7 @@
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages i16="/CSTW/icons/appIcon16.png" i32="/CSTW/icons/appIcon32.png" i48="/CSTW/icons/appIcon48.png" i64="/CSTW/icons/appIcon64.png" i128="/CSTW/icons/appIcon128.png"/>
+   <windowImages i16="/com.cyanspring.cstw/icons/appIcon16.png" i32="/com.cyanspring.cstw/icons/appIcon32.png" i48="/com.cyanspring.cstw/icons/appIcon48.png" i64="/com.cyanspring.cstw/icons/appIcon64.png" i128="/com.cyanspring.cstw/icons/appIcon128.png"/>
 
    <splash
       location="CSTWjars" />
@@ -23,6 +24,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
       <macos include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</macos>
