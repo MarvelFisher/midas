@@ -1,0 +1,74 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+
+	<import resource="test/mi_test.xml" />
+	<import resource="mi/MarketSession.xml" />
+	<import resource="classpath*:conf/common.xml" />
+
+	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>DEV</value>
+		</property>
+		<property name="category">
+			<value>MI</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+
+	<bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>GLOBAL</value>
+		</property>
+		<property name="category">
+			<value>FX-MQ</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+	
+	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="nio://localHost:61616" />
+	</bean>
+
+	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://localhost:60006"/>
+    </bean>
+
+	<!-- MarketDataManager setting -->
+	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
+		<constructor-arg>
+			<list>
+				<ref bean="simMarketDataAdaptor" />
+			</list>
+		</constructor-arg>
+		<property name="quoteThrottle" value="1000" />
+		<property name="timerInterval" value="1000" />
+		<property name="quoteLogIsOpen" value="true" />
+		<property name="quoteExtendEventIsSend" value="false" />
+		<property name="preSubscriptionList">
+			<ref bean="preSubscriptionList" />
+		</property>
+		<property name="sessionMonitor">
+			<map>
+				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+				<entry key="PREMARKET" value="0" />
+				<entry key="CLOSE" value="0" />
+			</map>
+		</property>
+		<property name="quoteChecker">
+			<null />
+		</property> <!-- dont set this or cant test in weekend -->
+		<property name="quoteSaver" ref="quoteSaver" />
+		<property name="broadcastQuote" value="true" />
+	</bean>
+
+</beans>

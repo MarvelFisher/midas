@@ -1,0 +1,109 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:annotation-config />
+
+    <import resource="mi/*" />
+    <import resource="classpath*:conf/common.xml" />
+
+    <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>DEV</value>
+        </property>
+        <property name="category">
+            <value>MI</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>GLOBAL</value>
+        </property>
+        <property name="category">
+            <value>FX-MQ</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://0.0.0.0:61616"/>
+    </bean>
+
+    <bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://10.0.0.51:60006"/>
+    </bean>
+
+    <bean id="kdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
+
+    <!-- MarketDataManager setting -->
+    <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
+        <constructor-arg>
+            <list>
+                <!--<ref bean="ibAdaptor" />-->
+                <ref bean="idAdaptor" />
+            </list>
+        </constructor-arg>
+        <property name="quoteThrottle" value="1000"/>
+        <property name="timerInterval" value="1000"/>
+        <property name="quoteLogIsOpen" value="true"/>
+        <property name="quoteExtendEventIsSend" value="false"/>
+        <property name="quoteExtendSegmentSize" value="300"/>
+
+        <property name="aggregator" >
+            <ref bean="quoteAggregator" />
+        </property>
+
+        <property name="preSubscriptionList">
+            <ref bean="preSubscriptionList" />
+        </property>
+        <property name="sessionMonitor">
+            <map>
+                <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
+                <entry key="PREMARKET" value="0" />
+                <entry key="CLOSE" value="0" />
+            </map>
+        </property>
+        <property name="quoteChecker" ref="quoteChecker"/>
+        <property name="quoteSaver" ref="quoteSaver"/>
+        <property name="quoteCleaner" ref="quoteCleaner"/>
+        <property name="broadcastQuote" value="true"/>
+        <!-- <property name="quoteListener" ref="kdbQuoteListener"/> -->
+    </bean>
+
+    <!-- IDAdaptor setting (Setting can be marked if not used) -->
+
+    <bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
+        <property name="account" value="fdtcanned"></property>
+        <property name="password" value="MFW9dC26"></property>
+        <property name="gateway" value="false"></property>
+        <property name="reqIp" value="10.0.0.32"></property>
+        <property name="reqPort" value="6088"></property>
+        <property name="exch" value="687"></property>
+        <property name="sendHeartBeat" value="3"></property>
+        <property name="throwQuoteTimeInterval" value="10000"/>
+        <property name="nonFX">
+            <map>
+                <entry key="XAUUSD" value="691" />
+                <entry key="XAGUSD" value="691" />
+            </map>
+        </property>
+        <property name="contributeList">
+            <list>
+            </list>
+        </property>
+        <property name="unContributeList">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+</beans>
