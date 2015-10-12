@@ -171,6 +171,9 @@ public final class SpeedDepthTableComposite extends Composite {
 						speedDepthService.quickEnterOrder(model, "Sell",
 								mainComposite.getDefaultQuantityText()
 										.getText());
+					} else if (columnIndex == 0 || columnIndex == 4) {
+						speedDepthService.cancelOrder(model.getSymbol(),
+								Double.valueOf(model.getPrice()));
 					}
 				}
 			}

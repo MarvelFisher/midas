@@ -15,6 +15,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.QtyPrice;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel;
 
@@ -173,7 +174,7 @@ public final class SpeedDepthService {
 		}
 	}
 
-	public void cancelOrder(String currentSymbol) {
+	public void cancelOrder(String currentSymbol, Double price) {
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();
 		for (Map<String, Object> map : orders) {
@@ -181,7 +182,15 @@ public final class SpeedDepthService {
 			String id = (String) map.get(OrderField.ID.value());
 			OrdStatus status = (OrdStatus) map
 					.get(OrderField.ORDSTATUS.value());
-			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
+			boolean isPriceEqual;
+			if (price == null) {
+				isPriceEqual = true;
+			} else {
+				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
+				isPriceEqual = PriceUtils.Equal(orderPrice, price);
+			}
+			if (!status.isCompleted() && symbol.equals(currentSymbol)
+					&& isPriceEqual) {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
 						null, true);
@@ -193,6 +202,10 @@ public final class SpeedDepthService {
 				}
 			}
 		}
+	}
+
+	public void cancelOrder(String currentSymbol) {
+		cancelOrder(currentSymbol, null);
 	}
 
 }
