@@ -95,7 +95,7 @@ public final class SpeedDepthService {
 		}
 		for (SpeedDepthModel model : list) {
 			for (SpeedDepthModel currentModel : currentList) {
-				if (currentModel.getPrice() == model.getPrice()) {
+				if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
 					currentModel.setType(model.getType());
 					currentModel.setVol(model.getVol());
 				}
@@ -110,7 +110,7 @@ public final class SpeedDepthService {
 			model.setSymbol(symbol);
 			model.setPrice(middleValue + i * tick);
 			for (SpeedDepthModel currentModel : currentList) {
-				if (currentModel.getPrice() == model.getPrice()) {
+				if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
 					model.setType(currentModel.getType());
 					model.setVol(currentModel.getVol());
 				}
@@ -134,7 +134,7 @@ public final class SpeedDepthService {
 					String symbol = (String) map.get("Symbol");
 					double price = (Double) map.get("Price");
 					if (currentModel.getSymbol().equals(symbol)
-							&& price == currentModel.getPrice()) {
+							&& PriceUtils.Equal(price, currentModel.getPrice())) {
 						OrderSide side = (OrderSide) map.get("Side");
 						double cumQty = (Double) map.get("Qty");
 						if (side.isBuy()) {
