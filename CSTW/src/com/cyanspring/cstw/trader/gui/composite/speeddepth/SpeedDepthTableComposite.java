@@ -10,12 +10,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.wb.swt.ResourceManager;
 
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel;
@@ -37,17 +36,16 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private Table table;
 	private TableViewer tableViewer;
-	private ToolItem lockPriceItem;
-
-	private boolean isLock = false;
 
 	private SpeedDepthContentProvider speedDepthContentProvider;
-
 	private SpeedDepthMainComposite mainComposite;
-	private ToolItem lastPriceItem;
 	private TableColumn tblclmnAskVol;
 	private TableColumn tblBidsVol;
-	private ToolItem cancelItem;
+	private Composite composite;
+	private Button cancelButton;
+	private Button lockButton;
+
+	private boolean isLock = false;
 
 	/**
 	 * Create the composite.
@@ -77,19 +75,20 @@ public final class SpeedDepthTableComposite extends Composite {
 		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1));
 
-		lastPriceItem = new ToolItem(toolBar, SWT.NONE);
-		lastPriceItem.setImage(ResourceManager.getPluginImage(
-				"com.cyanspring.cstw", "icons/start.png"));
-		lastPriceItem.setToolTipText("Last Price");
+		toolBar.setVisible(false);
 
-		lockPriceItem = new ToolItem(toolBar, SWT.NONE);
-		lockPriceItem.setImage(ResourceManager.getPluginImage(
-				"com.cyanspring.cstw", "icons/stop.png"));
-		lockPriceItem.setToolTipText("Lock Price");
+		composite = new Composite(this, SWT.NONE);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,
+				1, 1));
+		composite.setLayout(new GridLayout(2, false));
 
-		cancelItem = new ToolItem(toolBar, SWT.NONE);
-		cancelItem.setImage(ResourceManager.getPluginImage(
-				"com.cyanspring.cstw", "icons/cancel.png"));
+		lockButton = new Button(composite, SWT.CHECK);
+		lockButton.setText("LOCK");
+
+		cancelButton = new Button(composite, SWT.NONE);
+		cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
+				true, 1, 1));
+		cancelButton.setText("Cancel Order");
 
 		tableViewer = new TableViewer(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
@@ -124,27 +123,26 @@ public final class SpeedDepthTableComposite extends Composite {
 	}
 
 	private void initListener() {
-		lockPriceItem.addSelectionListener(new SelectionAdapter() {
+		lockButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (tableViewer.getInput() == null) {
-					return;
+				if (lockButton.getSelection()) {
+					if (tableViewer.getInput() == null) {
+						return;
+					}
+					isLock = true;
+					tableViewer.setInput(speedDepthService.getSpeedDepthList(
+							currentQuote, isLock));
+				} else {
+					isLock = false;
+					tableViewer.setInput(speedDepthService.getSpeedDepthList(
+							currentQuote, isLock));
+
 				}
-				isLock = true;
-				tableViewer.setInput(speedDepthService.getSpeedDepthList(
-						currentQuote, isLock));
-			}
-		});
-		lastPriceItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				isLock = false;
-				tableViewer.setInput(speedDepthService.getSpeedDepthList(
-						currentQuote, isLock));
 			}
 		});
 
-		cancelItem.addSelectionListener(new SelectionAdapter() {
+		cancelButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (currentQuote == null) {
@@ -156,9 +154,10 @@ public final class SpeedDepthTableComposite extends Composite {
 
 		table.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
+			public void mouseDown(MouseEvent e) {
 				ViewerCell cell = tableViewer.getCell(new Point(e.x, e.y));
-				if (cell.getElement() instanceof SpeedDepthModel) {
+				if (cell != null
+						&& cell.getElement() instanceof SpeedDepthModel) {
 					SpeedDepthModel model = (SpeedDepthModel) cell.getElement();
 					int columnIndex = cell.getColumnIndex();
 					// ask

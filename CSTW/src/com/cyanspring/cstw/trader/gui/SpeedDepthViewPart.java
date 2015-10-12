@@ -14,6 +14,9 @@ import com.cyanspring.cstw.trader.gui.composite.speeddepth.SpeedDepthMainComposi
  *
  */
 public final class SpeedDepthViewPart extends ViewPart {
+
+	private SpeedDepthMainComposite mainComposite;
+
 	public SpeedDepthViewPart() {
 	}
 
@@ -27,7 +30,12 @@ public final class SpeedDepthViewPart extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
-		new SpeedDepthMainComposite(parent, SWT.NONE);
+		mainComposite = new SpeedDepthMainComposite(parent, SWT.NONE);
+	}
+
+	@Override
+	public void dispose() {
+		mainComposite.dispose();
 	}
 
 	@Override

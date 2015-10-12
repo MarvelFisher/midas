@@ -33,32 +33,39 @@ public final class SpeedDepthService {
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
-		int askSize = quote.getAsks().size();
-		for (int i = askSize - 1; i >= 0; i--) {
-			if (i < 10) {
+
+		if (quote.getAsks() != null) {
+			int askSize = quote.getAsks().size();
+			for (int i = askSize - 1; i >= 0; i--) {
+				if (i < 10) {
+					SpeedDepthModel model = new SpeedDepthModel();
+					QtyPrice qp = quote.getAsks().get(i);
+					model.setSymbol(quote.getSymbol());
+					model.setPrice(qp.price);
+					if (i < 5) {
+						model.setVol(qp.quantity);
+					}
+					model.setType(SpeedDepthModel.ASK);
+					list.add(model);
+				}
+			}
+		}
+
+		if (quote.getBids() != null) {
+			for (int i = 0; i < quote.getBids().size() && i < 10; i++) {
 				SpeedDepthModel model = new SpeedDepthModel();
-				QtyPrice qp = quote.getAsks().get(i);
 				model.setSymbol(quote.getSymbol());
+				QtyPrice qp = quote.getBids().get(i);
 				model.setPrice(qp.price);
 				if (i < 5) {
 					model.setVol(qp.quantity);
 				}
-				model.setType(SpeedDepthModel.ASK);
+				model.setType(SpeedDepthModel.BID);
 				list.add(model);
 			}
 		}
 
-		for (int i = 0; i < quote.getBids().size() && i < 10; i++) {
-			SpeedDepthModel model = new SpeedDepthModel();
-			model.setSymbol(quote.getSymbol());
-			QtyPrice qp = quote.getBids().get(i);
-			model.setPrice(qp.price);
-			if (i < 5) {
-				model.setVol(qp.quantity);
-			}
-			model.setType(SpeedDepthModel.BID);
-			list.add(model);
-		}
+		
 		if (!isLock) {
 			currentList = list;
 		} else {
@@ -149,7 +156,6 @@ public final class SpeedDepthService {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
 						null);
-				System.out.println("cancel....."+id);
 				try {
 					Business.getInstance().getEventManager()
 							.sendRemoteEvent(event);

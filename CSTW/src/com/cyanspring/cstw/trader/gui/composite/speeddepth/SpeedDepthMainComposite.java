@@ -8,10 +8,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.cstw.business.Business;
 
 /**
@@ -22,6 +25,9 @@ import com.cyanspring.cstw.business.Business;
  */
 public final class SpeedDepthMainComposite extends Composite implements
 		IAsyncEventListener {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(SpeedDepthMainComposite.class);
 
 	private SpeedDepthTableComposite speedDepthComposite;
 	private Text symbolText;
@@ -49,13 +55,13 @@ public final class SpeedDepthMainComposite extends Composite implements
 		symbolText.setLayoutData(gd_symbolText);
 
 		Label lblNewLabel = new Label(this, SWT.NONE);
-		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
+		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
 				false, 1, 1));
 		lblNewLabel.setText("Default Quantity:");
 
 		defaultQuantityText = new Text(this, SWT.BORDER);
-		defaultQuantityText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-				true, false, 1, 1));
+		defaultQuantityText.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
+				false, false, 1, 1));
 		defaultQuantityText.setText("1000");
 		speedDepthComposite = new SpeedDepthTableComposite(this, SWT.NONE);
 		speedDepthComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
@@ -64,6 +70,11 @@ public final class SpeedDepthMainComposite extends Composite implements
 	}
 
 	private void initListener() {
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(EnterParentOrderReplyEvent.class,
+						SpeedDepthMainComposite.this);
+
 		symbolText.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -96,11 +107,29 @@ public final class SpeedDepthMainComposite extends Composite implements
 							.getQuote());
 				}
 			});
+		} else if (event instanceof EnterParentOrderReplyEvent) {
+			EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
+			log.info(replyEvent.getAccount() + ":" + replyEvent.isOk() + ":"
+					+ replyEvent.getKey() + ":" + replyEvent.getMessage());
 		}
 	}
 
 	public Text getDefaultQuantityText() {
 		return defaultQuantityText;
+	}
+
+	@Override
+	public void dispose() {
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(QuoteEvent.class,
+						SpeedDepthMainComposite.this.symbol,
+						SpeedDepthMainComposite.this);
+
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(EnterParentOrderReplyEvent.class,
+						SpeedDepthMainComposite.this);
 	}
 
 	@Override
