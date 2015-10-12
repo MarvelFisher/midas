@@ -10,11 +10,11 @@
 	<bean id="mdServer" class="com.cyanspring.server.MarketDataServer">
 		<property name="plugins">
 			<list>
-				<ref bean="kdbPersistenceManager"/>
 				<ref bean="marketSessionUtil"/>
                 <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager" />
 				<ref bean="mdManager" />
+				<ref bean="kdbPersistenceManager"/>
 				<!-- <ref bean="kdbEventManager"/> -->
 			</list>
 		</property>
