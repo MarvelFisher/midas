@@ -61,6 +61,11 @@ public class KDBPersistenceManager implements IPlugin {
 	}
 	
 	public boolean saveQuotes(List<Quote> list) {
+
+		if (list.isEmpty()) {
+			return true;
+		}
+
 		Date now = Clock.getInstance().now();
 		try {
 			if (con.isConnected()) {
