@@ -18,7 +18,6 @@ import com.cyanspring.common.util.TimeUtil;
 import com.exxeleron.qjava.QBasicConnection;
 import com.exxeleron.qjava.QConnection;
 import com.exxeleron.qjava.QTimestamp;
-import com.exxeleron.qjava.QConnection.MessageType;
 
 public class KDBPersistenceManager implements IPlugin {
 	public static final Logger log = LoggerFactory.getLogger(KDBPersistenceManager.class);
@@ -104,6 +103,9 @@ public class KDBPersistenceManager implements IPlugin {
 				log.info("QConnection is not initialized");
 			}
 		} catch (Exception e) {
+
+			log.info("quotes:", list);
+
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 			return false;
@@ -161,6 +163,9 @@ public class KDBPersistenceManager implements IPlugin {
 				log.info("QConnection is not initialized");
 			}
 		} catch (Exception e) {
+
+			log.info("quotes:", map);
+
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 			return false;
