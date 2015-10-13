@@ -25,14 +25,13 @@ public class KDBPersistenceManager implements IPlugin {
 	private int port = 5010;
 	private String user = "";
 	private String pwd = "";
-	private QConnection con;
+	private final QConnection con = new QBasicConnection(ip, port, user, pwd);
 	private boolean cleanCache = true;
 	private int writeFileInterval = 60;
 	private TimeThrottler throttler;
 	
 	@Override
 	public void init() throws Exception {
-		con = new QBasicConnection(ip, port, user, pwd);
 		con.open();
 		throttler = new TimeThrottler(writeFileInterval * 1000);
 	}
