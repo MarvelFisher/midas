@@ -128,9 +128,9 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		lblUserRole.setText("User Role:");
 		cbUserRole = new Combo(container, SWT.BORDER);
 		for(UserRole userRole: UserRole.values()) {
-			cbUserRole.add(userRole.toString());
+			cbUserRole.add(userRole.desc());
 		}
-		cbUserRole.setText(UserRole.Trader.toString());
+		cbUserRole.setText(UserRole.Trader.desc());
 		cbUserRole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
 
@@ -196,7 +196,7 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		user.setEmail(txtEmail.getText());
 		user.setPhone(txtPhone.getText());
 		user.setUserType(UserType.valueOf(cbUserType.getText()));
-		user.setRole(UserRole.valueOf(cbUserRole.getText()));
+		user.setRole(getRole(cbUserRole.getText()));
 		user.setName(txtUser.getText());
 		CreateUserEvent event = new CreateUserEvent(id, server, 
 				user, "", "", IdGenerator.getInstance().getNextID());
@@ -206,6 +206,15 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 			log.error(ex.getMessage(), ex);
 		}
 		
+	}
+	
+	public UserRole getRole(String desc){
+		for(UserRole role : UserRole.values()){
+			if(role.desc().equals(desc)){
+				return role;
+			}
+		}
+		return null;
 	}
 	
 	@Override
