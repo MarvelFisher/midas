@@ -16,6 +16,8 @@ public final class SpeedDepthModel {
 
 	private double price = 0;
 
+	private String formatPrice;
+
 	private int type;
 
 	private double askQty;
@@ -82,4 +84,12 @@ public final class SpeedDepthModel {
 		this.isLastPrice = isLastPrice;
 	}
 
+	public String getFormatPrice() {
+		return formatPrice;
+	}
+
+	public void setFormatPrice(String formatPrice) {
+		this.formatPrice = formatPrice;
+	}
+	
 }

@@ -75,7 +75,7 @@ public class Ticker {
 		return formatPrice(tickTable.tickUp(price, ticks, roundUp));
 	}
 	
-	public ITickTable getTickTable(String symbol) {
+	public ITickTable getTickTable() {
 		return this.tickTable;
 	}
 }

@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.staticdata.HKexTickTable;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
@@ -36,15 +36,22 @@ public final class SpeedDepthService {
 
 	private ITickTable tickTable;
 
+	private Ticker ticker;
+
 	private double middlePrice;
 
 	private double lastPrice;
 
-	public SpeedDepthService() {
-		tickTable = new HKexTickTable();
-	}
-
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
+		if (Business.getInstance().getTicker(quote.getSymbol()) == null
+				|| Business.getInstance().getTicker(quote.getSymbol())
+						.getTickTable() == null) {
+			return null;
+		}
+
+		ticker = Business.getInstance().getTicker(quote.getSymbol());
+		tickTable = ticker.getTickTable();
+
 		lastPrice = quote.getLast();
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
 		if (quote.getAsks() != null) {
@@ -120,6 +127,7 @@ public final class SpeedDepthService {
 				currentPrice = tickTable.tickUp(currentPrice, false);
 			}
 			model.setPrice(currentPrice);
+			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
 			list.add(0, model);
 		}
@@ -130,6 +138,7 @@ public final class SpeedDepthService {
 			model.setSymbol(symbol);
 			currentPrice = tickTable.tickDown(currentPrice, false);
 			model.setPrice(currentPrice);
+			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
 			list.add(model);
 		}
