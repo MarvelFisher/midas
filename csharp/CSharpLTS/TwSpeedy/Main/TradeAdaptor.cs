@@ -260,6 +260,7 @@ namespace Adaptor.TwSpeedy.Main
 
         public void newOrder(Order order)
         {
+            logger.Info("New Order: " + order.ToString());
             if (!placeOrderCount.check(order.symbol)){
                 string msg = "Max new order count reached: " + this.maxOrderCount;
                 logger.Error(msg);
@@ -305,6 +306,7 @@ namespace Adaptor.TwSpeedy.Main
 
         public void amendOrder(String exchangeOrderId, double price, double qty)
         {
+            logger.Info("Amend Order: " + "exchangeOrderId=" + exchangeOrderId + "; price=" + price + "; qty=" + qty);
             Order order;
             if(!orders.TryGetValue(exchangeOrderId, out order))
             {
@@ -356,6 +358,7 @@ namespace Adaptor.TwSpeedy.Main
 
         public void cancelOrder(string exchangeOrderId)
         {
+            logger.Info("Cancel Order: " + "exchangeOrderId=" + exchangeOrderId);
             Order order;
             if (!orders.TryGetValue(exchangeOrderId, out order))
             {
