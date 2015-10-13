@@ -3,6 +3,8 @@ package com.cyanspring.cstw.gui.session;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import com.cyanspring.common.account.AccountSetting;
+
 /**
  * 
  * @author NingXiaofeng
@@ -17,6 +19,11 @@ public final class GuiSession {
 	private PropertyChangeSupport pcs;
 
 	private String symbol;
+	private AccountSetting accountSetting = null;
+	
+	public enum Property{
+		SYMBOL,ACCOUNT_SETTING
+	}
 
 	private GuiSession() {
 		pcs = new PropertyChangeSupport(this);
@@ -33,6 +40,7 @@ public final class GuiSession {
 	public String getSymbol() {
 		return symbol;
 	}
+	
 
 	public void setSymbol(String symbol) {
 		String oldSymbol = this.symbol;
@@ -45,4 +53,13 @@ public final class GuiSession {
 		pcs.addPropertyChangeListener(propertyName, listener);
 	}
 
+	public AccountSetting getAccountSetting() {
+		return accountSetting;
+	}
+
+	public void setAccountSetting(AccountSetting accountSetting) {
+		AccountSetting oldSetting = this.accountSetting;
+		this.accountSetting = accountSetting;
+		pcs.firePropertyChange(Property.ACCOUNT_SETTING.toString(), oldSetting, accountSetting);
+	}
 }

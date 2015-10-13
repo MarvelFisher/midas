@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.cyanspring.cstw.business;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -65,6 +67,7 @@ import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.ServerStatusDisplay;
+import com.cyanspring.cstw.gui.session.GuiSession;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -103,6 +106,8 @@ public class Business {
 	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
 	private List<String> symbolList = new ArrayList<String>();
+	private TraderInfoListener traderInfoListener = null;
+	
 	// singleton implementation
 	private Business() {
 	}
@@ -150,6 +155,8 @@ public class Business {
 				processCSTWUserLoginReplyEvent(evt);
 				if(evt.isOk()){
 					tickManager.init(getFirstServer());
+					if(null != loginAccount);
+						traderInfoListener.init(loginAccount);
 				}
 				if(isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
@@ -312,7 +319,8 @@ public class Business {
 		
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
-
+		traderInfoListener = new TraderInfoListener();
+		initSessionListener();
 	}
 	
 	public void start() throws Exception {
@@ -463,6 +471,7 @@ public class Business {
 		List<Account>accountList = event.getAccountList();
 		if(null != accountList && !accountList.isEmpty()){
 			loginAccount = event.getAccountList().get(0);
+			log.info("loginAccount:{}",loginAccount.getId());
 			sendAccountSettingRequestEvent(loginAccount.getId());		
 		}
 		UserGroup userGroup = event.getUserGroup();
@@ -566,5 +575,16 @@ public class Business {
 	
 	public SignalType getSignal(String symbol,double scale){
 		return signalManager.getSignal(symbol, scale);
+	}
+	
+	private void initSessionListener() {
+		GuiSession.getInstance().addPropertyChangeListener(GuiSession.Property.ACCOUNT_SETTING.toString(),
+				new PropertyChangeListener() {
+
+					@Override
+					public void propertyChange(PropertyChangeEvent arg0) {
+						accountSetting = GuiSession.getInstance().getAccountSetting();
+					}
+				});
 	}
 }
