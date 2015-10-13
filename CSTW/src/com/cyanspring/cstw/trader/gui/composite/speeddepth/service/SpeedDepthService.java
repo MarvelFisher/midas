@@ -34,6 +34,8 @@ public final class SpeedDepthService {
 
 	private List<SpeedDepthModel> currentList;
 
+	private List<SpeedDepthModel> existedList;
+
 	private ITickTable tickTable;
 
 	private Ticker ticker;
@@ -42,8 +44,9 @@ public final class SpeedDepthService {
 
 	private double lastPrice;
 
+	private double delta = 0.0001;
+
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
-		log.info("received Quote:" + quote.getSymbol() + ":" + quote);
 		ticker = Business.getInstance().getTicker(quote.getSymbol());
 		if (ticker == null) {
 			return null;
@@ -88,35 +91,27 @@ public final class SpeedDepthService {
 			}
 		}
 
-		if (isLock && currentList != null) {
-			combineListByPrice(list);
+		currentList = list;
+
+		refreshByTick(quote.getSymbol());
+
+		if (isLock) {
+			if (existedList == null) {
+				existedList = currentList;
+			} else if (existedList != null) {
+				combineExistedListByPrice(currentList);
+			}
 		} else {
-			currentList = list;
-			refreshByTick(quote.getSymbol());
+			existedList = null;
 		}
 
-		refreshByCurrentOrder();
+		refreshCurrentListByExistedOrder();
 
 		return currentList;
 	}
 
-	private void combineListByPrice(List<SpeedDepthModel> list) {
-		// clear data
-		for (SpeedDepthModel currentModel : currentList) {
-			currentModel.setVol(0);
-		}
-		for (SpeedDepthModel model : list) {
-			for (SpeedDepthModel currentModel : currentList) {
-				if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
-					currentModel.setType(model.getType());
-					currentModel.setVol(model.getVol());
-				}
-			}
-		}
-	}
-
 	private void refreshByTick(String symbol) {
-		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
+		List<SpeedDepthModel> newList = new ArrayList<SpeedDepthModel>();
 		// add 10 UP Price
 		double currentPrice = 0;
 		for (int i = 0; i < 10; i++) {
@@ -125,39 +120,61 @@ public final class SpeedDepthService {
 			if (i == 0) {
 				currentPrice = middlePrice;
 			} else {
-				currentPrice = tickTable.tickUp(currentPrice, true);
+				currentPrice = currentPrice + tickTable.getTick(currentPrice);
 			}
 			model.setPrice(currentPrice);
 			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
-			list.add(0, model);
+			newList.add(0, model);
 		}
 		// add 10 DOWN Price
 		currentPrice = middlePrice;
 		for (int i = 0; i < 10; i++) {
 			SpeedDepthModel model = new SpeedDepthModel();
 			model.setSymbol(symbol);
-			currentPrice = tickTable.tickDown(currentPrice, true);
+			currentPrice = currentPrice - tickTable.getTick(currentPrice);
 			model.setPrice(currentPrice);
 			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
-			list.add(model);
+			newList.add(model);
 		}
-		currentList = list;
+		currentList = newList;
 	}
 
 	private void combineValueByCurrentList(SpeedDepthModel model) {
 		for (SpeedDepthModel currentModel : currentList) {
-			if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
+			log.info(":" + currentModel.getPrice() + ":" + model.getPrice());
+			if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice(),
+					delta)) {
 				model.setType(currentModel.getType());
 				model.setVol(currentModel.getVol());
+				log.info("YES");
+			} else {
+				log.info("NO");
 			}
 		}
 	}
 
-	private void refreshByCurrentOrder() {
+	private void combineExistedListByPrice(List<SpeedDepthModel> list) {
+		// clear data
+		for (SpeedDepthModel currentModel : existedList) {
+			currentModel.setVol(0);
+		}
+		for (SpeedDepthModel model : list) {
+			for (SpeedDepthModel currentModel : existedList) {
+				if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice(),
+						delta)) {
+					currentModel.setType(model.getType());
+					currentModel.setVol(model.getVol());
+				}
+			}
+		}
+	}
+
+	// Always run in last time
+	private void refreshCurrentListByExistedOrder() {
 		for (SpeedDepthModel currentModel : currentList) {
-			if (PriceUtils.Equal(lastPrice, currentModel.getPrice())) {
+			if (PriceUtils.Equal(lastPrice, currentModel.getPrice(), delta)) {
 				currentModel.setLastPrice(true);
 			}
 			currentModel.setAskQty(0);
@@ -172,7 +189,8 @@ public final class SpeedDepthService {
 					String symbol = (String) map.get("Symbol");
 					double price = (Double) map.get("Price");
 					if (currentModel.getSymbol().equals(symbol)
-							&& PriceUtils.Equal(price, currentModel.getPrice())) {
+							&& PriceUtils.Equal(price, currentModel.getPrice(),
+									delta)) {
 						OrderSide side = (OrderSide) map.get("Side");
 						double cumQty = (Double) map.get("Qty");
 						if (side.isBuy()) {
@@ -229,7 +247,7 @@ public final class SpeedDepthService {
 				isPriceEqual = true;
 			} else {
 				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
-				isPriceEqual = PriceUtils.Equal(orderPrice, price);
+				isPriceEqual = PriceUtils.Equal(orderPrice, price, delta);
 			}
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
 					&& isPriceEqual) {

@@ -17,6 +17,10 @@ public class PriceUtils {
 	private static final double roundingFactor = Math.pow(10, (double) scale);
 	private static final double EPSILON = 1.0 / roundingFactor;
 
+	static public boolean Equal(double x, double y, double delta) {
+		return Math.abs(x - y) < y * delta;
+	}
+
 	static public boolean Equal(double x, double y) {
 		return Math.abs(x - y) < EPSILON;
 	}
@@ -49,10 +53,10 @@ public class PriceUtils {
 
 	// sort by ascending, least priority order coming after
 	static public int CompareBySide(OrderSide side, double x, double y) {
-		 if (side == OrderSide.Buy)
-			 return PriceUtils.Compare(y, x);
-		 else
-			 return PriceUtils.Compare(x, y);
+		if (side == OrderSide.Buy)
+			return PriceUtils.Compare(y, x);
+		else
+			return PriceUtils.Compare(x, y);
 	}
 
 	// x in the limit of y price
