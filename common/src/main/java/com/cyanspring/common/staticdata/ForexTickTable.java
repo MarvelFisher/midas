@@ -24,25 +24,6 @@ public class ForexTickTable extends AbstractTickTable{
 		{20,			50,			0.0005},
 		{50,		Double.MAX_VALUE,		0.005}
 	};
-
-	
-	private double getTick(double price) {
-		
-		for (double[] arr : tickTable) {
-			if (arr[0] < price && price <= arr[1]) {
-				return arr[2];
-			}
-		}
-		
-		int length = tickTable.length;
-		if (price <= tickTable[0][1])
-			return tickTable[0][2];
-		if (price >= tickTable[length - 1][0])
-			return tickTable[length - 1][2];		
-		
-		return  delta;		
-		 
-	}
 	
 	public double getSpread(double priceBid, double priceAsk) {
 		

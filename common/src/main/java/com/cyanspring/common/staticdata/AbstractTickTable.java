@@ -94,5 +94,24 @@ public abstract class AbstractTickTable implements ITickTable {
 	public boolean validPrice(double price) {
 		return PriceUtils.GreaterThan(price, 0) && PriceUtils.LessThan(price, getMaxPrice());
 	}
+	
+	@Override
+	public double getTick(double price) {
+		
+		for (double[] arr : this.getTickTable()) {
+			if (arr[0] < price && price <= arr[1]) {
+				return arr[2];
+			}
+		}
+		
+		int length = this.getTickTable().length;
+		if (price <= this.getTickTable()[0][1])
+			return this.getTickTable()[0][2];
+		if (price >= this.getTickTable()[length - 1][0])
+			return this.getTickTable()[length - 1][2];		
+		
+		return  0;		
+		 
+	}
 
 }
