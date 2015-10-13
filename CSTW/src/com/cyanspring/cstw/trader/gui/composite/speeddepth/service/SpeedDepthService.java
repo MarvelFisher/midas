@@ -43,16 +43,15 @@ public final class SpeedDepthService {
 	private double lastPrice;
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
-		if (Business.getInstance().getTicker(quote.getSymbol()) == null
-				|| Business.getInstance().getTicker(quote.getSymbol())
-						.getTickTable() == null) {
+		ticker = Business.getInstance().getTicker(quote.getSymbol());
+		if (ticker == null) {
 			return null;
+		} else {
+			tickTable = ticker.getTickTable();
 		}
 
-		ticker = Business.getInstance().getTicker(quote.getSymbol());
-		tickTable = ticker.getTickTable();
-
 		lastPrice = quote.getLast();
+
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
 		if (quote.getAsks() != null) {
 			int askSize = quote.getAsks().size();
@@ -101,6 +100,7 @@ public final class SpeedDepthService {
 	}
 
 	private void combineListByPrice(List<SpeedDepthModel> list) {
+		// clear data
 		for (SpeedDepthModel currentModel : currentList) {
 			currentModel.setVol(0);
 		}
@@ -211,6 +211,10 @@ public final class SpeedDepthService {
 		}
 	}
 
+	public void cancelOrder(String currentSymbol) {
+		cancelOrder(currentSymbol, null);
+	}
+
 	public void cancelOrder(String currentSymbol, Double price) {
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();
@@ -239,10 +243,6 @@ public final class SpeedDepthService {
 				}
 			}
 		}
-	}
-
-	public void cancelOrder(String currentSymbol) {
-		cancelOrder(currentSymbol, null);
 	}
 
 }
