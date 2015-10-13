@@ -33,6 +33,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private Text defaultQuantityText;
 	private String symbol = "";
 
+	private int defaultQty = 1000;
+
 	/**
 	 * Create the composite.
 	 * 
@@ -61,7 +63,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 		defaultQuantityText = new Text(this, SWT.BORDER);
 		defaultQuantityText.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
 				false, false, 1, 1));
-		defaultQuantityText.setText("1000");
+		defaultQuantityText.setText(Integer.toString(defaultQty));
 		speedDepthComposite = new SpeedDepthTableComposite(this, SWT.NONE);
 		speedDepthComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
 				true, true, 4, 1));
@@ -120,8 +122,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 			speedDepthComposite.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					speedDepthComposite.setQuote(
-							((QuoteEvent) event).getQuote(), 0.05);
+					speedDepthComposite.setQuote(((QuoteEvent) event)
+							.getQuote());
 				}
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {

@@ -172,7 +172,7 @@ public final class SpeedDepthTableComposite extends Composite {
 		});
 	}
 
-	public void setQuote(Quote quote, double tick) {
+	public void setQuote(Quote quote) {
 		currentQuote = quote;
 		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
 				isLock));
