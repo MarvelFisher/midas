@@ -9,12 +9,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
+import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
+import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.Constants;
 import com.cyanspring.cstw.common.GUIUtils;
@@ -27,6 +32,11 @@ import com.cyanspring.cstw.common.GUIUtils;
  */
 public final class SpeedDepthMainComposite extends Composite implements
 		IAsyncEventListener {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(SpeedDepthMainComposite.class);
+
+	private String receiverId = IdGenerator.getInstance().getNextID();
 
 	private SpeedDepthTableComposite speedDepthComposite;
 	private Text symbolText;
@@ -87,19 +97,35 @@ public final class SpeedDepthMainComposite extends Composite implements
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
-					Business.getInstance()
-							.getEventManager()
-							.unsubscribe(QuoteEvent.class,
-									SpeedDepthMainComposite.this.symbol,
-									SpeedDepthMainComposite.this);
-
-					SpeedDepthMainComposite.this.symbol = symbolText.getText();
 
 					Business.getInstance()
 							.getEventManager()
-							.subscribe(QuoteEvent.class,
-									SpeedDepthMainComposite.this.symbol,
+							.unsubscribe(QuoteEvent.class, symbol,
 									SpeedDepthMainComposite.this);
+
+					symbol = symbolText.getText();
+
+					log.info("subscrib QuoteEvent symbol:"
+							+ SpeedDepthMainComposite.this.symbol);
+
+					Business.getInstance()
+							.getEventManager()
+							.subscribe(QuoteEvent.class, symbol,
+									SpeedDepthMainComposite.this);
+
+					Business.getInstance()
+							.getEventManager()
+							.subscribe(QuoteEvent.class, receiverId,
+									SpeedDepthMainComposite.this);
+
+					QuoteSubEvent quoteSubEvent = new QuoteSubEvent(receiverId,
+							Business.getInstance().getFirstServer(), symbol);
+					try {
+						Business.getInstance().getEventManager()
+								.sendRemoteEvent(quoteSubEvent);
+					} catch (Exception en) {
+						log.error(en.getMessage(), en);
+					}
 				}
 			}
 		});
@@ -122,8 +148,10 @@ public final class SpeedDepthMainComposite extends Composite implements
 			speedDepthComposite.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					speedDepthComposite.setQuote(((QuoteEvent) event)
-							.getQuote());
+					Quote quote = ((QuoteEvent) event).getQuote();
+					if (symbol.equals(quote.getSymbol())) {
+						speedDepthComposite.setQuote(quote);
+					}
 				}
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {
@@ -162,8 +190,12 @@ public final class SpeedDepthMainComposite extends Composite implements
 	public void dispose() {
 		Business.getInstance()
 				.getEventManager()
-				.unsubscribe(QuoteEvent.class,
-						SpeedDepthMainComposite.this.symbol,
+				.unsubscribe(QuoteEvent.class, symbol,
+						SpeedDepthMainComposite.this);
+
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(QuoteEvent.class, receiverId,
 						SpeedDepthMainComposite.this);
 
 		Business.getInstance()

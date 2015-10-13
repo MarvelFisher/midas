@@ -43,6 +43,7 @@ public final class SpeedDepthService {
 	private double lastPrice;
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
+		log.info("received Quote:" + quote.getSymbol() + ":" + quote);
 		ticker = Business.getInstance().getTicker(quote.getSymbol());
 		if (ticker == null) {
 			return null;
@@ -124,7 +125,7 @@ public final class SpeedDepthService {
 			if (i == 0) {
 				currentPrice = middlePrice;
 			} else {
-				currentPrice = tickTable.tickUp(currentPrice, false);
+				currentPrice = tickTable.tickUp(currentPrice, true);
 			}
 			model.setPrice(currentPrice);
 			model.setFormatPrice(ticker.formatPrice(currentPrice));
@@ -136,7 +137,7 @@ public final class SpeedDepthService {
 		for (int i = 0; i < 10; i++) {
 			SpeedDepthModel model = new SpeedDepthModel();
 			model.setSymbol(symbol);
-			currentPrice = tickTable.tickDown(currentPrice, false);
+			currentPrice = tickTable.tickDown(currentPrice, true);
 			model.setPrice(currentPrice);
 			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
